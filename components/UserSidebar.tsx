@@ -1,22 +1,14 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
-import { useMoralis } from "react-moralis";
-import { BeakerIcon } from "@heroicons/react/outline";
 import LogoIcon from "./LogoIcon";
 
 import { useGlobalState, setGlobalState } from "../state";
 import WalletData from "./WalletData";
+import ConnectWallet from "./ConnectWallet";
 
 const UserSidebar = () => {
   const [isOpen] = useGlobalState("userSidebarOpen");
-
-  const { user, logout } = useMoralis();
-
-  const disconnect = async () => {
-    await logout();
-    setGlobalState("userSidebarOpen", false);
-  };
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -47,7 +39,7 @@ const UserSidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex-1 flex flex-col max-w-md w-full bg-white focus:outline-none">
+            <Dialog.Panel className="relative flex-1 flex flex-col max-w-screen-lg w-full bg-white dark:bg-zinc-900 dark:border-gray-800 focus:outline-none">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -68,33 +60,18 @@ const UserSidebar = () => {
                   </button>
                 </div>
               </Transition.Child>
+
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <div className="flex-shrink-0 flex items-center px-4">
-                  <LogoIcon classNames="w-12 text-dark" />
+                  <LogoIcon classNames="w-12 text-dark dark:text-brand" />
                 </div>
 
-                {/* <WalletData address={user?.get("ethAddress")} /> */}
+                <div className="w-full mt-6 p-4">
+                  <WalletData />
+                </div>
               </div>
-              <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-                <button
-                  onClick={disconnect}
-                  className="flex-shrink-0 w-full group block"
-                >
-                  <div className="flex items-center">
-                    <div className="border-2 border-dark rounded-full p-2">
-                      <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
-                    </div>
-                    <div className="ml-3 overflow-hidden">
-                      <p className="text-sm font-medium truncate text-gray-700 group-hover:text-gray-900">
-                        {user?.get("ethAddress")}
-                      </p>
-                      <p className="text-xs text-left font-medium text-gray-500 group-hover:text-gray-700">
-                        Disconnect
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              </div>
+
+              <ConnectWallet />
             </Dialog.Panel>
           </Transition.Child>
           <div className="flex-shrink-0 w-14" aria-hidden="true">

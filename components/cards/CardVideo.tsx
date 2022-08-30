@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-import Modal from "./Modal";
+import Modal from "../Modal";
 
 const CardVideo = ({ cardId }: { cardId: string }) => {
   const [selected, setSelected] = useState(false);

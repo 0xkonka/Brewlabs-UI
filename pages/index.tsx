@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import CardVideo from "../components/CardVideo";
+import CardVideo from "../components/cards/CardVideo";
 
 import Footer from "../components/Footer";
 import Container from "../components/layout/Container";

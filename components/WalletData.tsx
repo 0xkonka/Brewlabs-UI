@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from "react";
+import Card from "./cards/Card";
 
-const WalletData = ({ address }: { address: string }) => {
-  //
-  const [data, setData] = useState(null);
-  const [isLoading, setLoading] = useState(false);
+const WalletData = () => (
+  <div
+    role="list"
+    className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+  >
+    <Card>
+      <h3>Your investments</h3>
+    </Card>
 
-  useEffect(() => {
-    setLoading(true);
+    <Card>
+      <h3>Your investments</h3>
+    </Card>
 
-    fetch(`https://api.walletnow.net/accounts/${address}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      });
-  }, [address]);
-
-  if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No profile data</p>;
-
-  return <div>{JSON.stringify(data)}</div>;
-};
+    <Card>
+      <h3>Your investments</h3>
+    </Card>
+  </div>
+);
 
 export default WalletData;
