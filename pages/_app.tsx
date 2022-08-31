@@ -11,7 +11,7 @@ import NavigationDesktop from "../components/NavigationDesktop";
 import NavigationMobile from "../components/NavigationMobile";
 
 const client = createClient({
-  autoConnect: false,
+  autoConnect: true,
   provider: getDefaultProvider(),
 });
 
@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system">
+    <ThemeProvider attribute="class" enableSystem={false}>
       <WagmiConfig client={client}>
         <div className="relative min-h-screen bg-gradient-to-b from-white to-gray-200 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-zinc-900">
           <div className="h-full flex">
