@@ -1,14 +1,22 @@
+import { useEffect, useState } from "react";
 import { setGlobalState } from "../state";
 import { BeakerIcon } from "@heroicons/react/outline";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 const ConnectWallet = () => {
+  const [mounted, setMounted] = useState(false);
   const { address, isConnected } = useAccount();
 
-  const { connect, error, isLoading } = useConnect({
+  // When mounted on client, now we can show the UI
+  // Solves Next hydration error
+  useEffect(() => setMounted(true), []);
+
+  const { connect, isLoading } = useConnect({
     connector: new InjectedConnector(),
   });
+
+  if (!mounted) return null;
 
   return (
     <div className="flex-shrink-0 flex p-4 border-t border-gray-200 dark:border-gray-800">
