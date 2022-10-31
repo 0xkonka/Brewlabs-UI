@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -11,9 +13,15 @@ module.exports = {
       },
     },
     fontFamily: {
+      script: ['"Caveat"'],
       brand: ['"Questrial"'],
     },
   },
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    plugin(function ({ addVariant }) {
+      addVariant("home", ".home &");
+    }),
+  ],
   darkMode: "class",
 };
