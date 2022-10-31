@@ -7,7 +7,9 @@ import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import CryptoCard from "../components/cards/CryptoCard";
 import Input from "../components/inputs/Input";
-import TransactionCard from "../components/cards/TransactionCard";
+import TransactionCard, {
+  mockTransactions,
+} from "../components/cards/TransactionCard";
 import ChainSelector from "../components/ChainSelector";
 import WordHighlight from "../components/text/WordHighlight";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
@@ -15,94 +17,6 @@ import { useGlobalState, setGlobalState } from "../state";
 import { networks } from "../data/networks";
 
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
-
-const mockTransactions = [
-  {
-    id: 213,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-  {
-    id: 6565,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-  {
-    id: 4674,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-  {
-    id: 1634,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-  {
-    id: 46562,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-
-  {
-    id: 67674,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-  {
-    id: 4454,
-    fromChain: "BSB",
-    toChain: "ETH",
-    date: "10 October 2022, 15:34",
-    amount: "64534",
-    direction: "in",
-    tax: {
-      sending: "0.5465",
-      receiving: "0.565845",
-    },
-  },
-];
 
 const Bridge: NextPage = () => {
   const [locked, setLocked] = useState(false);
