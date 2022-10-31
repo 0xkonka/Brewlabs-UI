@@ -55,3 +55,16 @@ html.dark h3 {
     transform: translate(85px, 0%);
   }
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.shadow-right {
+  box-shadow: 15px 0 15px -5px rgba(0, 0, 0, 0.85);
+}
