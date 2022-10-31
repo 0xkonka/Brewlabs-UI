@@ -1,3 +1,11 @@
+import { IconName } from "../components/DynamicHeroIcon";
+
+type navigationDataDefs = {
+  name: string;
+  href: string;
+  icon: IconName;
+};
+
 export const navigationData = [
   {
     name: "Home",
@@ -5,33 +13,38 @@ export const navigationData = [
     icon: "HomeIcon",
   },
   {
-    name: "Pools",
-    href: "/pools",
-    icon: "CalendarIcon",
+    name: "Staking",
+    href: "/staking",
+    icon: "ClockIcon",
   },
   {
     name: "Farms",
     href: "/farms",
-    icon: "UserGroupIcon",
+    icon: "ArrowTrendingUpIcon",
   },
   {
     name: "Stables",
     href: "/stables",
-    icon: "UserGroupIcon",
+    icon: "BanknotesIcon",
+  },
+  {
+    name: "Bridge",
+    href: "/bridge",
+    icon: "ArrowsRightLeftIcon",
   },
   {
     name: "Zap",
     href: "/zapper",
-    icon: "SearchCircleIcon",
+    icon: "BoltIcon",
   },
   {
     name: "Swap",
     href: "/swap",
-    icon: "SpeakerphoneIcon",
+    icon: "ArrowPathRoundedSquareIcon",
   },
   {
     name: "Constructor",
     href: "/constructor",
-    icon: "MapIcon",
+    icon: "ArrowDownOnSquareIcon",
   },
-];
+] as navigationDataDefs[];
