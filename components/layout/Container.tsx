@@ -8,7 +8,7 @@ const Container = ({
   className?: string;
 }) => (
   <div
-    className={`relative max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 ${className}`}
+    className={`relative mx-auto max-w-7xl px-0 sm:px-6 lg:max-w-screen-xl lg:px-8 ${className}`}
   >
     {children}
   </div>
