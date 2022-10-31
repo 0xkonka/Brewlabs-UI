@@ -1,4 +1,6 @@
 import "../styles/globals.css";
+import "../styles/animations.scss";
+import clsx from "clsx";
 import { getDefaultProvider } from "ethers";
 import { WagmiConfig, createClient } from "wagmi";
 import { useRouter } from "next/router";
@@ -6,9 +8,9 @@ import { ThemeProvider } from "next-themes";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
 import type { AppProps } from "next/app";
 import UserSidebar from "../components/UserSidebar";
-import HeaderMobile from "../components/HeaderMobile";
-import NavigationDesktop from "../components/NavigationDesktop";
-import NavigationMobile from "../components/NavigationMobile";
+import HeaderMobile from "../components/navigation/HeaderMobile";
+import NavigationDesktop from "../components/navigation/NavigationDesktop";
+import NavigationMobile from "../components/navigation/NavigationMobile";
 
 const client = createClient({
   autoConnect: true,
@@ -23,15 +25,20 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider attribute="class" enableSystem={false}>
       <WagmiConfig client={client}>
-        <div className="relative min-h-screen bg-gradient-to-b from-white to-gray-200 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-zinc-900">
-          <div className="h-full flex">
+        <div
+          className={clsx(
+            router?.pathname === "/" && "home",
+            "relative min-h-screen bg-gradient-to-b from-white to-gray-200 dark:bg-gradient-to-tr dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+          )}
+        >
+          <div className="flex h-full">
             <NavigationDesktop />
 
             <NavigationMobile />
 
             <UserSidebar />
 
-            <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
+            <div className="flex min-w-0 flex-1 flex-col">
               <HeaderMobile />
 
               <LazyMotion features={domAnimation}>
