@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-import { useGlobalState, setGlobalState } from "../state";
+import { useGlobalState, setGlobalState } from "../../state";
 import Navigation from "./Navigation";
 
 const NavigationMobile = () => {
@@ -26,7 +26,7 @@ const NavigationMobile = () => {
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
         </Transition.Child>
 
-        <div className="fixed inset-0 flex z-40">
+        <div className="fixed inset-0 z-40 flex">
           <Transition.Child
             as={Fragment}
             enter="transition ease-in-out duration-300 transform"
@@ -36,7 +36,7 @@ const NavigationMobile = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex-1 flex flex-col max-w-xs w-full bg-white focus:outline-none">
+            <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white focus:outline-none">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -49,11 +49,14 @@ const NavigationMobile = () => {
                 <div className="absolute top-0 right-0 -mr-12 pt-2">
                   <button
                     type="button"
-                    className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                    className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                     onClick={() => setGlobalState("mobileNavOpen", false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    <XMarkIcon
+                      className="h-6 w-6 text-white"
+                      aria-hidden="true"
+                    />
                   </button>
                 </div>
               </Transition.Child>
@@ -61,7 +64,7 @@ const NavigationMobile = () => {
               <Navigation />
             </Dialog.Panel>
           </Transition.Child>
-          <div className="flex-shrink-0 w-14" aria-hidden="true">
+          <div className="w-14 flex-shrink-0" aria-hidden="true">
             {/* Force sidebar to shrink to fit close icon */}
           </div>
         </div>
