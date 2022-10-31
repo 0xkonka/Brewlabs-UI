@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { Switch } from "@headlessui/react";
-import { MoonIcon, SunIcon } from "@heroicons/react/outline";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
@@ -30,39 +30,36 @@ const ThemeSwitcher = () => {
       <Switch
         checked={isDark}
         onChange={toggleTheme}
-        className={clsx(
-          isDark ? "bg-slate-600" : "bg-gray-400",
-          "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand"
-        )}
+        className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-400 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 dark:bg-slate-600"
       >
         <span className="sr-only">Change theme</span>
         <span
           className={clsx(
             isDark ? "translate-x-5" : "translate-x-0",
-            "pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
+            "pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
           )}
         >
           <span
             className={clsx(
               isDark
-                ? "opacity-0 ease-out duration-100"
-                : "opacity-100 ease-in duration-200",
-              "absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                ? "opacity-0 duration-100 ease-out"
+                : "opacity-100 duration-200 ease-in",
+              "absolute inset-0 flex h-full w-full items-center justify-center transition-opacity"
             )}
             aria-hidden="true"
           >
-            <SunIcon className="w-4 h-4 text-dark" />
+            <SunIcon className="h-4 w-4 text-dark" />
           </span>
           <span
             className={clsx(
               isDark
-                ? "opacity-100 ease-in duration-200"
-                : "opacity-0 ease-out duration-100",
-              "absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                ? "opacity-100 duration-200 ease-in"
+                : "opacity-0 duration-100 ease-out",
+              "absolute inset-0 flex h-full w-full items-center justify-center transition-opacity"
             )}
             aria-hidden="true"
           >
-            <MoonIcon className="w-4 h-4 text-dark" />
+            <MoonIcon className="h-4 w-4 text-dark" />
           </span>
         </span>
       </Switch>
