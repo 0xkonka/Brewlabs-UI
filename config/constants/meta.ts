@@ -26,6 +26,7 @@ const getPathList = (): PathList => {
       "/farms": { title: "Farms" },
       "/stables": { title: "Stables" },
       "/staking": { title: "Staking pools" },
+      "/bridge": { title: "Bridge" },
       "/constructor": { title: "Constructor" },
     },
     defaultTitleSuffix: "Brewlabs Earn",
