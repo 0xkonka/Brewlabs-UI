@@ -1,5 +1,5 @@
 import React from "react";
-import { networks } from "../data/networks";
+import { networks } from "../config/constants/networks";
 
 type ChainSelectorProps = {
   selectFn: (selectedValue: string) => void;

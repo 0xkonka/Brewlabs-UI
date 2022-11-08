@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import PageHeader from "../components/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
@@ -8,14 +7,6 @@ import WordHighlight from "../components/text/WordHighlight";
 const Swap: NextPage = () => {
   return (
     <PageWrapper>
-      <Head>
-        <title>Brewlabs - Swap</title>
-        <meta
-          name="description"
-          content="Stake your tokens in a range of projects to earn passive income and reflections."
-        />
-      </Head>
-
       <PageHeader
         title={
           <>

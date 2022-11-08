@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
-import Head from "next/head";
 import { motion } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import CryptoCard from "../components/cards/CryptoCard";
 import Input from "../components/inputs/Input";
-import TransactionCard, {
-  mockTransactions,
-} from "../components/cards/TransactionCard";
+import TransactionCard, { mockTransactions } from "../components/cards/TransactionCard";
 import ChainSelector from "../components/ChainSelector";
 import WordHighlight from "../components/text/WordHighlight";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { useGlobalState, setGlobalState } from "../state";
-import { networks } from "../data/networks";
+import { networks } from "../config/constants/networks";
 
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 
@@ -64,14 +61,6 @@ const Bridge: NextPage = () => {
 
   return (
     <PageWrapper>
-      <Head>
-        <title>Brewlabs - Bridge</title>
-        <meta
-          name="description"
-          content="Stake your tokens in a range of projects to earn passive income and reflections."
-        />
-      </Head>
-
       <PageHeader
         title={
           <>
@@ -89,19 +78,12 @@ const Bridge: NextPage = () => {
             modal={{
               buttonText: networkFrom,
               modalContent: (
-                <ChainSelector
-                  selectFn={(selectedValue) =>
-                    setGlobalState("userBridgeFrom", selectedValue)
-                  }
-                />
+                <ChainSelector selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)} />
               ),
             }}
           >
             <div className="mx-auto mt-4 max-w-md">
-              <label
-                htmlFor="price"
-                className="block text-sm font-medium text-gray-400"
-              >
+              <label htmlFor="price" className="block text-sm font-medium text-gray-400">
                 Token and Amount
               </label>
               <div className="relative mt-1 rounded-md shadow-sm">
@@ -120,11 +102,7 @@ const Bridge: NextPage = () => {
                   </select>
                 </div>
 
-                <Input
-                  value="0.00"
-                  name="bridge_amount"
-                  onBlurFn={calculateReturn}
-                />
+                <Input value="0.00" name="bridge_amount" onBlurFn={calculateReturn} />
 
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <label htmlFor="currency" className="sr-only">
@@ -160,10 +138,7 @@ const Bridge: NextPage = () => {
               dragTransition={{ bounceStiffness: 600, bounceDamping: 30 }}
               className="rounded-ful relative h-16 w-16 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
               style={{
-                backgroundImage: `url('${
-                  networks.find((network) => network.name === networkFrom)
-                    ?.image
-                }')`,
+                backgroundImage: `url('${networks.find((network) => network.name === networkFrom)?.image}')`,
               }}
             ></motion.div>
 
@@ -187,9 +162,7 @@ const Bridge: NextPage = () => {
             <div
               className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dotted border-gray-700 bg-slate-800 bg-cover bg-no-repeat"
               style={{
-                backgroundImage: `url('${
-                  networks.find((network) => network.name === networkTo)?.image
-                }')`,
+                backgroundImage: `url('${networks.find((network) => network.name === networkTo)?.image}')`,
               }}
             ></div>
           </div>
@@ -205,11 +178,7 @@ const Bridge: NextPage = () => {
               modalContent: locked ? (
                 <ConfirmBridgeMessage />
               ) : (
-                <ChainSelector
-                  selectFn={(selectedValue) =>
-                    setGlobalState("userBridgeTo", selectedValue)
-                  }
-                />
+                <ChainSelector selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)} />
               ),
             }}
           >
@@ -220,9 +189,7 @@ const Bridge: NextPage = () => {
         </div>
 
         <div className="my-20">
-          <h2 className="font-brand text-3xl text-slate-600 dark:text-slate-400">
-            Transaction history
-          </h2>
+          <h2 className="font-brand text-3xl text-slate-600 dark:text-slate-400">Transaction history</h2>
 
           <div className="no-scrollbar -ml-8 overflow-x-auto p-8">
             <div className="flex flex-row-reverse justify-end">

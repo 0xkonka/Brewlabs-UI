@@ -1,0 +1,96 @@
+import { configureChains, createClient } from "wagmi";
+import memoize from "lodash/memoize";
+
+import { SafeConnector } from "@gnosis.pm/safe-apps-wagmi";
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+
+import {
+  bsc,
+  mainnet,
+  polygon,
+  avalandche,
+  fantomOpera,
+  cronos,
+  brise,
+  bscTest,
+  goerli,
+  BinanceWalletConnector,
+} from "../contexts/wagmi";
+
+const CHAINS = [bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli];
+
+export const { provider, chains } = configureChains(CHAINS, [
+  jsonRpcProvider({
+    rpc: (chain) => {
+      switch (chain.id) {
+        case mainnet.id:
+          return { http: "https://cloudflare-eth.com" };
+        default:
+          return { http: chain.rpcUrls.default };
+      }
+    },
+  }),
+]);
+
+export const injectedConnector = new InjectedConnector({
+  chains,
+  options: {
+    shimDisconnect: false,
+    shimChainChangedDisconnect: true,
+  },
+});
+
+export const coinbaseConnector = new CoinbaseWalletConnector({
+  chains,
+  options: {
+    appName: "Brewlabs Earn",
+    appLogoUrl: "https://earn.brewlabs.info/logo.png",
+  },
+});
+
+export const walletConnectConnector = new WalletConnectConnector({
+  chains,
+  options: {
+    qrcode: true,
+  },
+});
+
+export const walletConnectNoQrCodeConnector = new WalletConnectConnector({
+  chains,
+  options: {
+    qrcode: false,
+  },
+});
+
+export const metaMaskConnector = new MetaMaskConnector({
+  chains,
+  options: {
+    shimDisconnect: false,
+    shimChainChangedDisconnect: true,
+  },
+});
+
+export const bscConnector = new BinanceWalletConnector({ chains });
+
+export const client = createClient({
+  autoConnect: false,
+  provider,
+  connectors: [
+    new SafeConnector({ chains }),
+    metaMaskConnector,
+    injectedConnector,
+    coinbaseConnector,
+    walletConnectConnector,
+    bscConnector,
+  ],
+});
+
+export const CHAIN_IDS = chains.map((c) => c.id);
+
+export const isChainSupported = memoize((chainId: number) => CHAIN_IDS.includes(chainId));
+export const isChainTestnet = memoize((chainId: number) => chains.find((c) => c.id === chainId)?.testnet);

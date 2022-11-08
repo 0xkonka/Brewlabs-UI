@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import CardVideo from "../components/cards/CardVideo";
 import Footer from "../components/Footer";
 import Container from "../components/layout/Container";
@@ -8,11 +7,6 @@ import PageHero from "../components/PageHero";
 
 const Home: NextPage = () => (
   <PageWrapper>
-    <Head>
-      <title>Brewlabs - Earn</title>
-      <meta name="description" content="Earn with Brewlabs" />
-    </Head>
-
     <PageHero
       pageTitle="Welcome to Brewlabs"
       pageIntro="Make use of the Brewlabs constructor to create tax free liquidity tokens."
