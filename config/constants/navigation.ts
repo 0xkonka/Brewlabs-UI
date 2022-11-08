@@ -1,6 +1,6 @@
-import { IconName } from "../components/DynamicHeroIcon";
+import { IconName } from "../../components/DynamicHeroIcon";
 
-type navigationDataDefs = {
+type NavigationItem = {
   name: string;
   href: string;
   icon: IconName;
@@ -47,4 +47,4 @@ export const navigationData = [
     href: "/constructor",
     icon: "ArrowDownOnSquareIcon",
   },
-] as navigationDataDefs[];
+] as NavigationItem[];

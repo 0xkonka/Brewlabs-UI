@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import PageHeader from "../components/PageHeader";
@@ -73,14 +72,6 @@ const mockPoolData = [
 const Pools: NextPage = () => {
   return (
     <PageWrapper>
-      <Head>
-        <title>Brewlabs - Pools</title>
-        <meta
-          name="description"
-          content="Stake your tokens in a range of projects to earn passive income and reflections."
-        />
-      </Head>
-
       <PageHeader
         title={
           <>
