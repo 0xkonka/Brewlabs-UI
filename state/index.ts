@@ -5,6 +5,7 @@ const userState = {
   userBridgeTo: "No network selected",
   userBridgeFrom: "No network selected",
   userBridgeLocked: false,
+  userBridgeAmount: 0,
 };
 
 // Create a single global state object

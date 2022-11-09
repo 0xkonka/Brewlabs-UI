@@ -5,7 +5,7 @@ import PageHeader from "../components/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import CryptoCard from "../components/cards/CryptoCard";
-import Input from "../components/inputs/Input";
+import InputNumber from "../components/inputs/InputNumber";
 import ChainSelector from "../components/ChainSelector";
 import WordHighlight from "../components/text/WordHighlight";
 
@@ -17,10 +17,11 @@ import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
 
 const Bridge: NextPage = () => {
   const [locking, setLocking] = useState(false);
-  const [returnAmount, setReturnAmount] = useState("0.0");
+  const [returnAmount, setReturnAmount] = useState(0.0);
 
   const [networkTo] = useGlobalState("userBridgeTo");
   const [networkFrom] = useGlobalState("userBridgeFrom");
+  const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
 
   useEffect(() => {
@@ -41,9 +42,10 @@ const Bridge: NextPage = () => {
     }
   }, [locked, setLocked, locking]);
 
-  const calculateReturn = (inputAmount: string) => {
+  const calculateReturn = (inputAmount: number) => {
+    setAmount(inputAmount);
     // Do some stuff, this is placeholder logic
-    setReturnAmount((parseInt(inputAmount) * 1.1).toString());
+    setReturnAmount(inputAmount * 1.1);
   };
 
   return (
@@ -89,7 +91,7 @@ const Bridge: NextPage = () => {
                   </select>
                 </div>
 
-                <Input value="0.00" name="bridge_amount" onBlurFn={calculateReturn} />
+                <InputNumber value={0.0} name="bridge_amount" onBlurFn={calculateReturn} />
 
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <label htmlFor="currency" className="sr-only">
