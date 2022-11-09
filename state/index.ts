@@ -4,8 +4,10 @@ const userState = {
   userPoolsStakeOnly: false,
   userBridgeTo: "No network selected",
   userBridgeFrom: "No network selected",
+  userBridgeLocked: false,
 };
 
+// Create a single global state object
 const initialState = {
   ...userState,
   showBackdrop: false,
