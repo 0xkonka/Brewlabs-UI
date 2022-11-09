@@ -14,9 +14,10 @@ interface ConnectWalletProps {
 
 const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { address, isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
   const { isLoading } = useConnect();
   const { chain } = useNetwork();
+
+  const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
 
   const [mounted, setMounted] = useState(false);
@@ -29,7 +30,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
     if (chain?.unsupported && switchNetwork) {
       switchNetwork(bsc.id);
     }
-  }, [chain?.unsupported, bsc, switchNetwork]);
+  }, [chain?.unsupported, switchNetwork]);
 
   if (!mounted) return null;
 
