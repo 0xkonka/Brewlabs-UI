@@ -8,16 +8,14 @@ import ConnectWallet from "../ConnectWallet";
 import ThemeSwitcher from "../ThemeSwitcher";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
-import { navigationData } from "../../data/navigation";
+import { navigationData } from "../../config/constants/navigation";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
 
   useEffect(() => {
     // Close the mobile navigation when navigating
-    router.events.on("routeChangeStart", () =>
-      setGlobalState("mobileNavOpen", false)
-    );
+    router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
   }, [router.events]);
 
   return (

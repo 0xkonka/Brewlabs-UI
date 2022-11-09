@@ -23,7 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   return (
-    <ThemeProvider attribute="class" enableSystem={false}>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
       <WagmiConfig client={client}>
         <div
           className={clsx(

@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import PageHeader from "../components/PageHeader";
 import Container from "../components/layout/Container";
@@ -9,19 +8,10 @@ import WordHighlight from "../components/text/WordHighlight";
 const Swap: NextPage = () => {
   return (
     <PageWrapper>
-      <Head>
-        <title>Brewlabs - Swap</title>
-        <meta
-          name="description"
-          content="Stake your tokens in a range of projects to earn passive income and reflections."
-        />
-      </Head>
-
       <PageHeader
         title={
           <>
-            Discover the power of <WordHighlight content="farming" /> staked
-            liquidity.
+            Discover the power of <WordHighlight content="farming" /> staked liquidity.
           </>
         }
         summary="Stake liquidity tokens in our Brewlabs farming platform for passive income."
@@ -48,9 +38,7 @@ const Swap: NextPage = () => {
                 <p className="font-[Questrial] text-2xl">ETH</p>
                 <ChevronDownIcon className="h-6 w-6 dark:text-brand" />
               </div>
-              <p className="font-[Questrial] text-xs text-white/50">
-                24.21 ETH
-              </p>
+              <p className="font-[Questrial] text-xs text-white/50">24.21 ETH</p>
             </div>
           </div>
         </div>
@@ -66,9 +54,7 @@ const Swap: NextPage = () => {
                 <p className="font-[Questrial] text-2xl">ETH</p>
                 <ChevronDownIcon className="h-6 w-6 dark:text-brand" />
               </div>
-              <p className="font-[Questrial] text-xs text-white/50">
-                24.21 ETH
-              </p>
+              <p className="font-[Questrial] text-xs text-white/50">24.21 ETH</p>
             </div>
           </div>
         </div>

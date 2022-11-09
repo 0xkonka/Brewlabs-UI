@@ -8,14 +8,6 @@ import WordHighlight from "../components/text/WordHighlight";
 const Constructor: NextPage = () => {
   return (
     <PageWrapper>
-      <Head>
-        <title>Brewlabs - Zap</title>
-        <meta
-          name="description"
-          content="Stake your tokens in a range of projects to earn passive income and reflections."
-        />
-      </Head>
-
       <PageHeader
         title={
           <>

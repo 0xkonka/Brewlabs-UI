@@ -2,19 +2,14 @@ import { ReactElement } from "react";
 
 type InputProps = {
   name: string;
-  value?: string;
+  value?: number;
   placeholder?: string;
-  onBlurFn?: (inputValue: string) => void;
+  onBlurFn?: (inputValue: number) => void;
 };
 
-const Input = ({
-  name,
-  value,
-  placeholder,
-  onBlurFn,
-}: InputProps): ReactElement => {
+const Input = ({ name, value, placeholder, onBlurFn }: InputProps): ReactElement => {
   // Fires on blur
-  const onBlur = (inputValue: string) => {
+  const onBlur = (inputValue: number) => {
     if (onBlurFn) {
       onBlurFn(inputValue);
     }
@@ -26,7 +21,8 @@ const Input = ({
       autoComplete="off"
       defaultValue={value}
       placeholder={placeholder}
-      onBlur={(event) => onBlur(event.currentTarget.value)}
+      type="number"
+      onBlur={(event) => onBlur(parseInt(event.currentTarget.value))}
       className="block w-full rounded-md border border-gray-300 py-2 pl-24 pr-12 focus:border-amber-300 focus:ring-amber-300 dark:bg-zinc-800 sm:text-sm"
     />
   );

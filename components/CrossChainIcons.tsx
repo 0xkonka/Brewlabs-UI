@@ -1,5 +1,5 @@
 import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import { networks } from "../data/networks";
+import { networks } from "../config/constants/networks";
 
 type CrossChainIconsProps = {
   chainOne: string;
