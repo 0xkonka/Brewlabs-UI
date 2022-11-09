@@ -24,7 +24,7 @@ import {
 
 const CHAINS = [bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli];
 
-export const { provider, chains } = configureChains(CHAINS, [
+export const { provider, webSocketProvider, chains } = configureChains(CHAINS, [
   jsonRpcProvider({
     rpc: (chain) => {
       switch (chain.id) {
@@ -40,7 +40,7 @@ export const { provider, chains } = configureChains(CHAINS, [
 export const injectedConnector = new InjectedConnector({
   chains,
   options: {
-    shimDisconnect: false,
+    // shimDisconnect: false,
     shimChainChangedDisconnect: true,
   },
 });
@@ -70,7 +70,7 @@ export const walletConnectNoQrCodeConnector = new WalletConnectConnector({
 export const metaMaskConnector = new MetaMaskConnector({
   chains,
   options: {
-    shimDisconnect: false,
+    // shimDisconnect: false,
     shimChainChangedDisconnect: true,
   },
 });
@@ -78,8 +78,9 @@ export const metaMaskConnector = new MetaMaskConnector({
 export const bscConnector = new BinanceWalletConnector({ chains });
 
 export const client = createClient({
-  autoConnect: false,
+  autoConnect: true,
   provider,
+  webSocketProvider,
   connectors: [
     new SafeConnector({ chains }),
     metaMaskConnector,

@@ -1,11 +1,11 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import LogoIcon from "./LogoIcon";
 
 import { useGlobalState, setGlobalState } from "../state";
-import WalletData from "./WalletData";
 import ConnectWallet from "./ConnectWallet";
+import LogoIcon from "./LogoIcon";
+import WalletData from "./WalletData";
 
 const UserSidebar = () => {
   const [isOpen] = useGlobalState("userSidebarOpen");
@@ -74,7 +74,7 @@ const UserSidebar = () => {
                 </div>
               </div>
 
-              <ConnectWallet />
+              <ConnectWallet allowDisconnect/>
             </Dialog.Panel>
           </Transition.Child>
           <div className="w-14 flex-shrink-0" aria-hidden="true">

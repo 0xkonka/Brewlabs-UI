@@ -46,7 +46,8 @@ const Modal = ({
           <motion.div
             layout
             layoutId={layoutId}
-            className="z-90 absolute inset-x-0 top-32 m-auto h-fit sm:w-7/12"
+            onClick={(e) => {e.stopPropagation()}}
+            className="z-90 absolute inset-x-0 top-32 m-auto h-fit sm:w-7/12 md:w-2/6 md:min-w-[400px]"
           >
             <div className="overflow-hidden rounded-xl border-2 border-amber-300 bg-gray-600 bg-opacity-60 dark:bg-zinc-900">
               {children}

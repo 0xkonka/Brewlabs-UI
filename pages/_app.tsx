@@ -1,21 +1,18 @@
-import "../styles/globals.css";
-import "../styles/animations.scss";
 import clsx from "clsx";
-import { getDefaultProvider } from "ethers";
-import { WagmiConfig, createClient } from "wagmi";
-import { useRouter } from "next/router";
-import { ThemeProvider } from "next-themes";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import { ThemeProvider } from "next-themes";
+import { WagmiProvider } from 'contexts/wagmi'
+import { client } from 'utils/wagmi'
+
+import "../styles/globals.css";
+import "../styles/animations.scss";
+
 import UserSidebar from "../components/UserSidebar";
 import HeaderMobile from "../components/navigation/HeaderMobile";
 import NavigationDesktop from "../components/navigation/NavigationDesktop";
 import NavigationMobile from "../components/navigation/NavigationMobile";
-
-const client = createClient({
-  autoConnect: true,
-  provider: getDefaultProvider(),
-});
 
 // TODO: Better name MyApp
 // TODO: See if some markup can be reduced
@@ -24,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      <WagmiConfig client={client}>
+      <WagmiProvider client={client}>
         <div
           className={clsx(
             router?.pathname === "/" && "home",
@@ -49,7 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </div>
           </div>
         </div>
-      </WagmiConfig>
+      </WagmiProvider>
     </ThemeProvider>
   );
 }
