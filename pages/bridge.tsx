@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
 
-import PageHeader from "../components/PageHeader";
+import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import CryptoCard from "../components/cards/CryptoCard";

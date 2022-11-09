@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useGlobalState, setGlobalState } from "../state";
-import ConnectWallet from "./ConnectWallet";
+import ConnectWallet from "./wallet/ConnectWallet";
 import LogoIcon from "./LogoIcon";
 import WalletData from "./WalletData";
 
@@ -12,11 +12,7 @@ const UserSidebar = () => {
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-40"
-        onClose={() => setGlobalState("userSidebarOpen", false)}
-      >
+      <Dialog as="div" className="relative z-40" onClose={() => setGlobalState("userSidebarOpen", false)}>
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"
@@ -56,10 +52,7 @@ const UserSidebar = () => {
                     onClick={() => setGlobalState("userSidebarOpen", false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
+                    <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </button>
                 </div>
               </Transition.Child>
@@ -74,7 +67,7 @@ const UserSidebar = () => {
                 </div>
               </div>
 
-              <ConnectWallet allowDisconnect/>
+              <ConnectWallet allowDisconnect />
             </Dialog.Panel>
           </Transition.Child>
           <div className="w-14 flex-shrink-0" aria-hidden="true">

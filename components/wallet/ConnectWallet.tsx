@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 
-import { setGlobalState } from "../state";
-import Modal from "./Modal";
+import Modal from "../Modal";
+import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
 
 interface ConnectWalletProps {

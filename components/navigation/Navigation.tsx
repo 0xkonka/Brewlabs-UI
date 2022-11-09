@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import clsx from "clsx";
 import Link from "next/link";
 import LogoIcon from "../LogoIcon";
-import ConnectWallet from "../ConnectWallet";
+import ConnectWallet from "../wallet/ConnectWallet";
 import ThemeSwitcher from "../ThemeSwitcher";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
