@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
 
 import { bsc } from "contexts/wagmi";
+import { NetworkOptions } from "config/constants/networks";
+import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 
 import Modal from "../Modal";
+import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
 
@@ -17,11 +21,15 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { isLoading } = useConnect();
   const { chain } = useNetwork();
 
+  const supportedNetworks = useSupportedNetworks();
+
   const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
 
   const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(false);
+
+  const [openWalletModal, setOpenWalletModal] = useState(false);
+  const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -36,20 +44,29 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
-      {open && (
-        <Modal closeFn={() => setOpen(false)} layoutId="wallet-connect" disableAutoCloseOnClick>
-          <WalletSelector onDismiss={() => setOpen(false)} />
+      {openWalletModal && (
+        <Modal closeFn={() => setOpenWalletModal(false)} layoutId="wallet-connect" disableAutoCloseOnClick>
+          <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
         </Modal>
       )}
+      {openSwitchNetworkModal && (
+        <SwitchNetworkModal
+          networks={supportedNetworks}
+          onDismiss={() => setOpenSwitchNetworkModal(false)}
+          onSelected={(_chainId) => {
+            console.log(_chainId);
+          }}
+        />
+      )}
       {!isConnected ? (
-        <button onClick={() => setOpen(true)} className="group block w-full flex-shrink-0">
+        <button onClick={() => setOpenWalletModal(true)} className="group block w-full flex-shrink-0">
           <div className="flex animate-pulse items-center">
             <div className="rounded-full border-2 border-dark p-2">
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-700 group-hover:text-gray-500">
-                {open ? `Connecting wallet` : `Connect wallet`}
+                {openWalletModal ? `Connecting wallet` : `Connect wallet`}
               </p>
               <p className="text-xs font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
             </div>
@@ -61,7 +78,15 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           className="group block w-full flex-shrink-0"
         >
           <div className="flex items-center">
-            <div className="rounded-full border-2 border-dark p-2 dark:border-brand">
+            <div
+              className="rounded-full border-2 border-dark p-2 dark:border-brand"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (supportedNetworks.length > 1) {
+                  setOpenSwitchNetworkModal(true);
+                }
+              }}
+            >
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
             </div>
             <div className="ml-3 overflow-hidden" onClick={() => allowDisconnect && disconnect()}>

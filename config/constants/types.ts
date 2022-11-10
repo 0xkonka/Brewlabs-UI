@@ -1,3 +1,4 @@
+import { ChainId } from "@brewlabs/sdk";
 
 export type PageMeta = {
   title: string;
@@ -28,3 +29,9 @@ export type WalletConfig<T = unknown> = {
   mobileOnly?: boolean
   qrCode?: () => Promise<string>
 }
+
+export type NetworkConfig = {
+  id: ChainId;
+  name: string;
+  image: string;
+};
