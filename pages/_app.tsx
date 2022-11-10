@@ -5,10 +5,14 @@ import { useRouter } from "next/router";
 import { ThemeProvider } from "next-themes";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { ToastContainer } from "react-toastify";
 import { SWRConfig } from "swr";
 
+import "react-toastify/dist/ReactToastify.css";
+
 import { WagmiProvider } from "contexts/wagmi";
-import { persistor, useStore } from "state";
+// import { useAccountEventListener } from "hooks/useAccountEventListener";
+import { persistor, useAppDispatch, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
 import { client } from "utils/wagmi";
 
@@ -19,6 +23,13 @@ import UserSidebar from "../components/UserSidebar";
 import HeaderMobile from "../components/navigation/HeaderMobile";
 import NavigationDesktop from "../components/navigation/NavigationDesktop";
 import NavigationMobile from "../components/navigation/NavigationMobile";
+import { useAccountEventListener } from "hooks/useAccountEventListener";
+
+function GlobalHooks() {
+  usePollBlockNumber();
+  useAccountEventListener();
+  return null;
+}
 
 // TODO: Better name MyApp
 // TODO: See if some markup can be reduced
@@ -26,14 +37,13 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
   const router = useRouter();
   const store = useStore(pageProps.initialReduxState);
 
-  usePollBlockNumber()
-
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      <WagmiProvider client={client}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <SWRConfig>
+    <WagmiProvider client={client}>
+      <Provider store={store}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <SWRConfig>
+            <GlobalHooks />
+            <PersistGate loading={null} persistor={persistor}>
               <div
                 className={clsx(
                   router?.pathname === "/" && "home",
@@ -56,13 +66,14 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
                       </AnimatePresence>
                     </LazyMotion>
                   </div>
+                  <ToastContainer />
                 </div>
               </div>
-            </SWRConfig>
-          </PersistGate>
-        </Provider>
-      </WagmiProvider>
-    </ThemeProvider>
+            </PersistGate>
+          </SWRConfig>
+        </ThemeProvider>
+      </Provider>
+    </WagmiProvider>
   );
 }
 
