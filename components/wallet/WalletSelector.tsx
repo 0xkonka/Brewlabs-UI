@@ -13,7 +13,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
   const { isConnected } = useAccount();
 
   const { chainId } = useActiveChainId();
-  
+
   const [errorMsg, setErrorMsg] = useState("");
   const wallets = useMemo(() => createWallets(chainId, connectAsync), [chainId, connectAsync]);
 

@@ -5,8 +5,8 @@ import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import { updateVersion } from "./global/actions";
 import farmsReducer from "./farms";
+import { updateVersion } from "./global/actions";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 

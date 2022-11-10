@@ -37,21 +37,22 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
       {open && (
-        <Modal closeFn={() => setOpen(false)} layoutId="wallet-connect">
+        <Modal closeFn={() => setOpen(false)} layoutId="wallet-connect" disableAutoCloseOnClick>
           <WalletSelector onDismiss={() => setOpen(false)} />
         </Modal>
       )}
       {!isConnected ? (
-        <button onClick={() => setOpen(true)} className="group block w-full flex-shrink-0">
+        <button onClick={() => setOpen(true)}
+         className="group block w-full flex-shrink-0">
           <div className="flex animate-pulse items-center">
             <div className="rounded-full border-2 border-dark p-2">
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+              <p className="text-sm font-medium text-gray-700 group-hover:text-gray-500">
                 {open ? `Connecting wallet` : `Connect wallet`}
               </p>
-              <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">Connect to interact</p>
+              <p className="text-xs font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
             </div>
           </div>
         </button>
