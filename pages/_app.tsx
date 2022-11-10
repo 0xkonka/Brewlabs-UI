@@ -55,7 +55,7 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
                   <NavigationMobile />
                   <UserSidebar />
 
-                  <div className="flex min-w-0 flex-1 flex-col px-3 pt-5">
+                  <div className="flex min-w-0 flex-1 flex-col">
                     <HeaderMobile />
 
                     <LazyMotion features={domAnimation}>

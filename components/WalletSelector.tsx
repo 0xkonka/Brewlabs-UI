@@ -13,7 +13,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
   const { isConnected } = useAccount();
 
   const { chainId } = useActiveChainId();
-  
+
   const [errorMsg, setErrorMsg] = useState("");
   const wallets = useMemo(() => createWallets(chainId, connectAsync), [chainId, connectAsync]);
 
@@ -62,7 +62,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
               }}
-              className="flex w-full items-center from-zinc-900 via-zinc-800 to-zinc-900 py-4 hover:bg-gradient-to-r"
+              className="flex w-full items-center  py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
             >
               <img className="h-10 w-10 rounded-full" src={wallet.icon} alt="" />
               <div className="ml-4 flex-col text-left">

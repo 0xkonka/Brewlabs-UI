@@ -65,7 +65,7 @@ const SwitchNetworkModal = ({ networks, onDismiss }: SwitchNetworkModalProps) =>
               <button
                 onClick={() => switchNetwork(network.id)}
                 disabled={isLoading || !canSwitch}
-                className="flex w-full from-zinc-900 via-zinc-800 to-zinc-900 py-4 hover:bg-gradient-to-r"
+                className="flex w-full  py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
               >
                 <img className="h-10 w-10 rounded-full" src={network.image} alt="" />
                 <div className="ml-4 flex-col text-left">
