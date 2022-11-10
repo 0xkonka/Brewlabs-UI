@@ -6,25 +6,12 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import {
-  bsc,
-  mainnet,
-  polygon,
-  avalandche,
-  fantomOpera,
-  cronos,
-  brise,
-  bscTest,
-  goerli,
-  BinanceWalletConnector,
-} from "../contexts/wagmi";
+import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
+import { SupportedChains } from "config/constants/networks";
 
-const CHAINS = [bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli];
-
-export const { provider, chains } = configureChains(CHAINS, [
+export const { provider, webSocketProvider, chains } = configureChains(SupportedChains, [
   jsonRpcProvider({
     rpc: (chain) => {
       switch (chain.id) {
@@ -40,7 +27,7 @@ export const { provider, chains } = configureChains(CHAINS, [
 export const injectedConnector = new InjectedConnector({
   chains,
   options: {
-    shimDisconnect: false,
+    // shimDisconnect: false,
     shimChainChangedDisconnect: true,
   },
 });
@@ -70,7 +57,7 @@ export const walletConnectNoQrCodeConnector = new WalletConnectConnector({
 export const metaMaskConnector = new MetaMaskConnector({
   chains,
   options: {
-    shimDisconnect: false,
+    // shimDisconnect: false,
     shimChainChangedDisconnect: true,
   },
 });
@@ -78,8 +65,9 @@ export const metaMaskConnector = new MetaMaskConnector({
 export const bscConnector = new BinanceWalletConnector({ chains });
 
 export const client = createClient({
-  autoConnect: false,
+  autoConnect: true,
   provider,
+  webSocketProvider,
   connectors: [
     new SafeConnector({ chains }),
     metaMaskConnector,

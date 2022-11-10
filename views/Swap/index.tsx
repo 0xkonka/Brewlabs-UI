@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import PageHeader from "../../components/PageHeader";
+import PageHeader from "../../components/layout/PageHeader";
 import Container from "../../components/layout/Container";
 import PageWrapper from "../../components/layout/PageWrapper";
 import WordHighlight from "../../components/text/WordHighlight";

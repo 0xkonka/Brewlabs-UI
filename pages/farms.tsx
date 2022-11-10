@@ -1,6 +1,5 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import PageHeader from "../components/PageHeader";
+import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import WordHighlight from "../components/text/WordHighlight";
@@ -11,8 +10,7 @@ const Farms: NextPage = () => {
       <PageHeader
         title={
           <>
-            Discover the power of <WordHighlight content="farming" /> staked
-            liquidity.
+            Discover the power of <WordHighlight content="farming" /> staked liquidity.
           </>
         }
         summary="Stake liquidity tokens in our Brewlabs farming platform for passive income."
