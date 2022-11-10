@@ -1,19 +1,20 @@
 import React from "react";
-import { NetworkOptions } from "../config/constants/networks";
+import { NetworkConfig } from "config/constants/types";
 
 type ChainSelectorProps = {
+  networks: NetworkConfig[];
   selectFn: (selectedValue: string) => void;
   onDismiss?: () => void;
 };
 
-const ChainSelector = ({ selectFn, onDismiss }: ChainSelectorProps) => {
+const ChainSelector = ({ networks, selectFn, onDismiss }: ChainSelectorProps) => {
   return (
     <div className="p-4 font-brand">
       <h5 className="mb-2 text-2xl">Networks</h5>
       <p className="dark:text-gray-500">Select a network to send fund from</p>
 
       <ul role="list" className="mt-4 divide-y divide-gray-200 dark:divide-gray-700">
-        {NetworkOptions.map((network) => (
+        {networks.map((network) => (
           <li key={network.name}>
             <button
               onClick={() => {
