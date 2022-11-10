@@ -42,8 +42,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         </Modal>
       )}
       {!isConnected ? (
-        <button onClick={() => setOpen(true)}
-         className="group block w-full flex-shrink-0">
+        <button onClick={() => setOpen(true)} className="group block w-full flex-shrink-0">
           <div className="flex animate-pulse items-center">
             <div className="rounded-full border-2 border-dark p-2">
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
