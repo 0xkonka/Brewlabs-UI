@@ -10,6 +10,7 @@ import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import WrongNetworkModal from "components/network/WrongNetworkModal";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -55,6 +56,9 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           onDismiss={() => setOpenSwitchNetworkModal(false)}
         />
       )}
+      {isWrongNetwork && (
+        <WrongNetworkModal currentChain={supportedNetworks.find((network) => network.id === chainId)} />
+      )}
       {!isConnected ? (
         <button onClick={() => setOpenWalletModal(true)} className="group block w-full flex-shrink-0">
           <div className="flex animate-pulse items-center">
@@ -94,7 +98,13 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 {allowDisconnect ? (
                   `Disconnect`
                 ) : (
-                  <span className={`text-${isWrongNetwork ? 'red' : 'green'}-500 hover:text-${isWrongNetwork ? 'red' : 'green'}-400`}>{chain?.name}</span>
+                  <span
+                    className={`text-${isWrongNetwork ? "red" : "green"}-500 hover:text-${
+                      isWrongNetwork ? "red" : "green"
+                    }-400`}
+                  >
+                    {chain?.name}
+                  </span>
                 )}
               </p>
             </div>

@@ -10,7 +10,6 @@ export const useSupportedNetworks = () => {
 
   useEffect(() => {
     const page = pathname.split("/")[1];
-    console.log(page, pathname)
     setNetworks(NetworkOptions.filter((network) => PAGE_SUPPORTED_CHAINS[page]?.includes(network.id)));
   }, [pathname]);
 
