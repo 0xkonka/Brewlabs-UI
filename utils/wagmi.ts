@@ -8,22 +8,10 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import {
-  bsc,
-  mainnet,
-  polygon,
-  avalandche,
-  fantomOpera,
-  cronos,
-  brise,
-  bscTest,
-  goerli,
-  BinanceWalletConnector,
-} from "../contexts/wagmi";
+import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
+import { SupportedChains } from "config/constants/networks";
 
-const CHAINS = [bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli];
-
-export const { provider, webSocketProvider, chains } = configureChains(CHAINS, [
+export const { provider, webSocketProvider, chains } = configureChains(SupportedChains, [
   jsonRpcProvider({
     rpc: (chain) => {
       switch (chain.id) {
