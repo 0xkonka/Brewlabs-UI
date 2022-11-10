@@ -22,7 +22,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { chain } = useNetwork();
 
   const supportedNetworks = useSupportedNetworks();
-  const { chainId, isWrongNetwork, isNotMatched } = useActiveChainId();
+  const { chainId, isWrongNetwork } = useActiveChainId();
 
   const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();

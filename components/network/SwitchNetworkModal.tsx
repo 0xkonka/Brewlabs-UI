@@ -33,13 +33,16 @@ const SwitchNetworkModal = ({ networks, onDismiss }: SwitchNetworkModalProps) =>
       <div className="p-4 font-brand">
         <h5 className="mb-2 text-2xl">Switch Network</h5>
         <p className="dark:text-gray-500">Select a network</p>
-        
+
         {!canSwitch && (
-          <div className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-700" role="alert">
+          <div
+            className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-700"
+            role="alert"
+          >
             <strong className="font-bold">Unable to switch network. Please try it on your wallet</strong>
           </div>
         )}
-        
+
         {errorMsg && (
           <div className="relative mt-2 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700" role="alert">
             <strong className="font-bold">{errorMsg}</strong>
