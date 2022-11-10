@@ -64,7 +64,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
         animate="enter"
         exit="exit"
         variants={router.pathname === "/" ? variantsHome : variants}
-        className="relative z-0 flex-1 focus:outline-none xl:order-last"
+        className="relative z-0 flex-1 focus:outline-none xl:order-last px-3 pt-5"
       >
         <Bubbles />
         <Image

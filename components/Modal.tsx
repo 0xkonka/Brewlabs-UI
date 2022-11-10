@@ -43,7 +43,7 @@ const Modal = ({
           onClick={closeFn}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute top-0 left-0 z-10 h-full w-full bg-zinc-900 bg-opacity-90"
+          className="absolute top-0 left-0 z-10 h-full w-full bg-gray-300 dark:bg-zinc-900 bg-opacity-90"
         >
           <motion.div
             layout
@@ -51,7 +51,7 @@ const Modal = ({
             onClick={(e) => disableAutoCloseOnClick && e.stopPropagation()}
             className="z-90 absolute inset-x-0 top-32 m-auto h-fit sm:w-7/12 md:w-2/6 md:min-w-[400px]"
           >
-            <div className="overflow-hidden rounded-xl border-2 border-amber-300 bg-gray-600 bg-opacity-60 dark:bg-zinc-900">
+            <div className="overflow-hidden rounded-xl border-2 border-amber-300 bg-white dark:bg-zinc-900">
               {children}
             </div>
 
