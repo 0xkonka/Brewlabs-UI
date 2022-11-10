@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@brewlabs/sdk": "^1.1.6",
+    "@brewlabs/sdk": "^1.1.7",
     "@gnosis.pm/safe-apps-wagmi": "^1.1.0",
     "@headlessui/react": "^1.6.0",
     "@heroicons/react": "^2.0.12",
