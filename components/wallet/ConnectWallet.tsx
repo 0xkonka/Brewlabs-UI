@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
-import { toast } from "react-toastify";
 
 import { bsc } from "contexts/wagmi";
-import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 
 import Modal from "../Modal";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -22,6 +21,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { chain } = useNetwork();
 
   const supportedNetworks = useSupportedNetworks();
+  const { chainId, isWrongNetwork, isNotMatched } = useActiveChainId();
 
   const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
@@ -51,11 +51,8 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
       )}
       {openSwitchNetworkModal && (
         <SwitchNetworkModal
-          networks={supportedNetworks}
+          networks={supportedNetworks.filter((network) => network.id !== chainId)}
           onDismiss={() => setOpenSwitchNetworkModal(false)}
-          onSelected={(_chainId) => {
-            console.log(_chainId);
-          }}
         />
       )}
       {!isConnected ? (
@@ -78,23 +75,27 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           className="group block w-full flex-shrink-0"
         >
           <div className="flex items-center">
-            <div
-              className="rounded-full border-2 border-dark p-2 dark:border-brand"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (supportedNetworks.length > 1) {
-                  setOpenSwitchNetworkModal(true);
-                }
-              }}
-            >
+            <div className="rounded-full border-2 border-dark p-2 dark:border-brand">
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
             </div>
             <div className="ml-3 overflow-hidden" onClick={() => allowDisconnect && disconnect()}>
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
               </p>
-              <p className="text-left text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-100">
-                {allowDisconnect ? `Disconnect` : `Connected`}
+              <p
+                className="text-left text-xs font-medium"
+                onClick={(e) => {
+                  if (supportedNetworks.length > 1 && !allowDisconnect) {
+                    e.stopPropagation();
+                    setOpenSwitchNetworkModal(true);
+                  }
+                }}
+              >
+                {allowDisconnect ? (
+                  `Disconnect`
+                ) : (
+                  <span className={`text-${isWrongNetwork ? 'red' : 'green'}-500 hover:text-${isWrongNetwork ? 'red' : 'green'}-400`}>{chain?.name}</span>
+                )}
               </p>
             </div>
           </div>
