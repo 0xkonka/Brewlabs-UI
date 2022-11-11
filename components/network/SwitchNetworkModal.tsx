@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
 import Modal from "components/Modal";
 import { NetworkConfig } from "config/constants/types";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 type SwitchNetworkModalProps = {
   open: boolean;
@@ -13,6 +15,7 @@ type SwitchNetworkModalProps = {
 
 const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalProps) => {
   const { canSwitch, switchNetwork, isLoading, isSuccess, error, pendingChainId } = useSwitchNetwork();
+  const { chainId } = useActiveChainId();
 
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -64,9 +67,9 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
           {networks.map((network) => (
             <li key={network.id}>
               <button
-                onClick={() => switchNetwork(network.id)}
+                onClick={() => network.id !== chainId && switchNetwork(network.id)}
                 disabled={isLoading || !canSwitch}
-                className="flex w-full  py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
+                className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
               >
                 <img className="h-10 w-10 rounded-full" src={network.image} alt="" />
                 <div className="ml-4 flex-col text-left">
@@ -75,6 +78,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
                 </div>
 
                 <div className="ml-auto">
+                  {network.id === chainId && <CheckIcon className="mr-2 h-6 w-6 text-green-600" />}
                   {isLoading && network.id === pendingChainId && (
                     <div role="status">
                       <svg

@@ -1,18 +1,16 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 
 import { bsc } from "contexts/wagmi";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 import Modal from "../Modal";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
+import WrongNetworkModal from "../network/WrongNetworkModal";
 import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import WrongNetworkModal from "components/network/WrongNetworkModal";
-import { Dialog, Transition } from "@headlessui/react";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -52,7 +50,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
       </Modal>
       <SwitchNetworkModal
         open={openSwitchNetworkModal}
-        networks={supportedNetworks.filter((network) => network.id !== chainId)}
+        networks={supportedNetworks}
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
       <WrongNetworkModal open={!!isWrongNetwork} currentChain={supportedNetworks.find((network) => network.id === chainId)} />
