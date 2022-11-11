@@ -18,7 +18,7 @@ const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
         }}
       />
 
-      <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden  rounded-full bg-white text-gray-900" />
+      <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden rounded-full bg-white text-gray-900" />
 
       <div
         className="-ml-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"

@@ -33,7 +33,7 @@ const ExpandableRow = ({ data }: { data: any }) => {
               <li>Earn {data.earnCoin}</li>
               <li>
                 Lock{" "}
-                <span className="font-bold text-brand">
+                <span className="font-bold text-[#f36d0f] dark:text-brand">
                   {data.lockPeriodDays}
                 </span>{" "}
                 Days
@@ -44,7 +44,7 @@ const ExpandableRow = ({ data }: { data: any }) => {
           <div className="text-sm">
             <h5 className="mb-2 tracking-wide">Earned</h5>
             <ul>
-              <li className="text-brand">1,8343,0976</li>
+              <li className="text-[#f36d0f] dark:text-brand">1,8343,0976</li>
               <li>~ 23.90 USD</li>
             </ul>
           </div>
@@ -64,7 +64,7 @@ const ExpandableRow = ({ data }: { data: any }) => {
           <div className="text-sm">
             <h5 className="mb-2 tracking-wide">Total staked</h5>
             <ul>
-              <li className="text-brand">5,8343,0976</li>
+              <li className="text-[#f36d0f] dark:text-brand">5,8343,0976</li>
               <li>~ 2323.90 USD</li>
             </ul>
           </div>

@@ -10,7 +10,7 @@ const Card = ({
 }) => (
   <div
     className={clsx(
-      "shadow-right w-54 -mr-12 min-w-fit rounded-lg border-t border-slate-800 bg-zinc-900 bg-opacity-90 px-4 py-2 shadow-lg backdrop-blur-sm",
+      "shadow-right w-54 min-w-fit rounded-lg border-t border-slate-800 bg-zinc-900 bg-opacity-90 px-4 py-2 shadow-lg backdrop-blur-sm",
       `shadow-${shadowColor}`
     )}
   >

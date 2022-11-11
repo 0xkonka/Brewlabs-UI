@@ -3,8 +3,12 @@ import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } f
 import { BeakerIcon } from "@heroicons/react/24/outline";
 
 import { bsc } from "contexts/wagmi";
+import { useSupportedNetworks } from "hooks/useSupportedNetworks";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 import Modal from "../Modal";
+import SwitchNetworkModal from "../network/SwitchNetworkModal";
+import WrongNetworkModal from "../network/WrongNetworkModal";
 import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
 
@@ -17,11 +21,16 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { isLoading } = useConnect();
   const { chain } = useNetwork();
 
+  const supportedNetworks = useSupportedNetworks();
+  const { chainId, isWrongNetwork } = useActiveChainId();
+
   const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
 
   const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(false);
+
+  const [openWalletModal, setOpenWalletModal] = useState(false);
+  const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -36,20 +45,30 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
-      {open && (
-        <Modal closeFn={() => setOpen(false)} layoutId="wallet-connect" disableAutoCloseOnClick>
-          <WalletSelector onDismiss={() => setOpen(false)} />
-        </Modal>
-      )}
+      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
+        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
+      </Modal>
+      <SwitchNetworkModal
+        open={openSwitchNetworkModal}
+        networks={supportedNetworks}
+        onDismiss={() => setOpenSwitchNetworkModal(false)}
+      />
+      <WrongNetworkModal open={!!isWrongNetwork} currentChain={supportedNetworks.find((network) => network.id === chainId)} />
+
       {!isConnected ? (
-        <button onClick={() => setOpen(true)} className="group block w-full flex-shrink-0">
+        <button
+          onClick={() => {
+            setOpenWalletModal(true);
+          }}
+          className="group block w-full flex-shrink-0"
+        >
           <div className="flex animate-pulse items-center">
             <div className="rounded-full border-2 border-dark p-2">
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-700 group-hover:text-gray-500">
-                {open ? `Connecting wallet` : `Connect wallet`}
+                {openWalletModal ? `Connecting wallet` : `Connect wallet`}
               </p>
               <p className="text-xs font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
             </div>
@@ -68,8 +87,26 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
               </p>
-              <p className="text-left text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-100">
-                {allowDisconnect ? `Disconnect` : `Connected`}
+              <p
+                className="text-left text-xs font-medium"
+                onClick={(e) => {
+                  if (supportedNetworks.length > 1 && !allowDisconnect) {
+                    e.stopPropagation();
+                    setOpenSwitchNetworkModal(true);
+                  }
+                }}
+              >
+                {allowDisconnect ? (
+                  `Disconnect`
+                ) : (
+                  <span
+                    className={`text-${isWrongNetwork ? "red" : "green"}-500 hover:text-${
+                      isWrongNetwork ? "red" : "green"
+                    }-400`}
+                  >
+                    {chain?.name}
+                  </span>
+                )}
               </p>
             </div>
           </div>
