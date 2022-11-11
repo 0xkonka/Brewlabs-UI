@@ -22,10 +22,10 @@ const PageHero = ({
       <div id="brand" className="relative py-8">
         <header className="mt-4 mb-4 font-brand text-dark sm:mt-5 lg:mt-6">
           <h1 className="text-3xl uppercase sm:text-4xl lg:text-6xl">{pageTitle}</h1>
-          <h3 className="ml-1 font-bold tracking-widest">BY BREWLABS</h3>
+          <h3 className="ml-1 font-bold dark:text-dark tracking-widest">BY BREWLABS</h3>
         </header>
 
-        <p>{pageIntro}</p>
+        <p className="dark:text-dark">{pageIntro}</p>
 
         {children}
       </div>

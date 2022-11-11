@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import Modal from "../Modal";
+import Modal from "../MotionModal";
 
 type CryptoCardProps = {
   id: string;
@@ -16,13 +16,7 @@ type CryptoCardProps = {
   };
 };
 
-const CryptoCard = ({
-  id,
-  title,
-  modal,
-  active,
-  children,
-}: CryptoCardProps) => {
+const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => {
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -67,9 +61,7 @@ const CryptoCard = ({
 
             {children}
 
-            <h5 className="mt-6 text-center dark:text-gray-500">
-              Current price: 0.056
-            </h5>
+            <h5 className="mt-6 text-center dark:text-gray-500">Current price: 0.056</h5>
           </div>
         </div>
       </motion.div>

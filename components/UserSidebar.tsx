@@ -45,10 +45,10 @@ const UserSidebar = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="absolute top-0 right-0 -mr-12 pt-2">
+                <div className="absolute top-0 right-0 sm:-mr-12 pt-2">
                   <button
                     type="button"
-                    className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                    className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none sm:focus:ring-2 focus:ring-inset focus:ring-white"
                     onClick={() => setGlobalState("userSidebarOpen", false)}
                   >
                     <span className="sr-only">Close sidebar</span>
@@ -70,7 +70,7 @@ const UserSidebar = () => {
               <ConnectWallet allowDisconnect />
             </Dialog.Panel>
           </Transition.Child>
-          <div className="w-14 flex-shrink-0" aria-hidden="true">
+          <div className="sm:w-14 flex-shrink-0" aria-hidden="true">
             {/* Force sidebar to shrink to fit close icon */}
           </div>
         </div>

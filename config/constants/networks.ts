@@ -1,11 +1,10 @@
 import { ChainId } from "@brewlabs/sdk";
-import { chainId } from "wagmi";
 import { bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli } from "../../contexts/wagmi";
 
 export const SupportedChains = [bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli];
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
-export const PAGE_SUPPORTED_CHAINS = {
+export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   farms: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
@@ -15,7 +14,7 @@ export const PAGE_SUPPORTED_CHAINS = {
     ChainId.CRONOS,
     ChainId.BRISE,
   ],
-  pools: [
+  staking: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
     ChainId.POLYGON,
