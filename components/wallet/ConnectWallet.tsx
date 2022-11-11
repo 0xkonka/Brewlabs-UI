@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 
 import { bsc } from "contexts/wagmi";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import Modal from "../Modal";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
@@ -11,6 +12,7 @@ import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import WrongNetworkModal from "components/network/WrongNetworkModal";
+import { Dialog, Transition } from "@headlessui/react";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -45,22 +47,23 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
-      {openWalletModal && (
-        <Modal closeFn={() => setOpenWalletModal(false)} layoutId="wallet-connect" disableAutoCloseOnClick>
-          <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
-        </Modal>
-      )}
-      {openSwitchNetworkModal && (
-        <SwitchNetworkModal
-          networks={supportedNetworks.filter((network) => network.id !== chainId)}
-          onDismiss={() => setOpenSwitchNetworkModal(false)}
-        />
-      )}
-      {isWrongNetwork && (
-        <WrongNetworkModal currentChain={supportedNetworks.find((network) => network.id === chainId)} />
-      )}
+      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
+        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
+      </Modal>
+      <SwitchNetworkModal
+        open={openSwitchNetworkModal}
+        networks={supportedNetworks.filter((network) => network.id !== chainId)}
+        onDismiss={() => setOpenSwitchNetworkModal(false)}
+      />
+      <WrongNetworkModal open={!!isWrongNetwork} currentChain={supportedNetworks.find((network) => network.id === chainId)} />
+
       {!isConnected ? (
-        <button onClick={() => setOpenWalletModal(true)} className="group block w-full flex-shrink-0">
+        <button
+          onClick={() => {
+            setOpenWalletModal(true);
+          }}
+          className="group block w-full flex-shrink-0"
+        >
           <div className="flex animate-pulse items-center">
             <div className="rounded-full border-2 border-dark p-2">
               <BeakerIcon className="inline-block h-6 w-6 rounded-full" />

@@ -6,11 +6,12 @@ import { NetworkConfig } from "config/constants/types";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 
 type SwitchNetworkModalProps = {
+  open: boolean;
   networks: NetworkConfig[];
   onDismiss: () => void;
 };
 
-const SwitchNetworkModal = ({ networks, onDismiss }: SwitchNetworkModalProps) => {
+const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalProps) => {
   const { canSwitch, switchNetwork, isLoading, isSuccess, error, pendingChainId } = useSwitchNetwork();
 
   const [errorMsg, setErrorMsg] = useState("");
@@ -29,7 +30,7 @@ const SwitchNetworkModal = ({ networks, onDismiss }: SwitchNetworkModalProps) =>
   }, [isSuccess]);
 
   return (
-    <Modal closeFn={onDismiss} layoutId="switch-network" disableAutoCloseOnClick>
+    <Modal open={open} onClose={onDismiss}>
       <div className="p-4 font-brand">
         <h5 className="mb-2 text-2xl">Switch Network</h5>
         <p className="dark:text-gray-500">Select a network</p>
