@@ -9,10 +9,11 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import Modal from "components/Modal";
 
 type WrongNetworkModalProps = {
+  open: boolean;
   currentChain?: NetworkConfig;
 };
 
-const WrongNetworkModal = ({ currentChain }: WrongNetworkModalProps) => {
+const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
   const { canSwitch, switchNetwork, isLoading, error } = useSwitchNetwork();
   const { chain } = useNetwork();
 
@@ -25,7 +26,7 @@ const WrongNetworkModal = ({ currentChain }: WrongNetworkModalProps) => {
   }, [error]);
 
   return (
-    <Modal closeFn={() => {}} layoutId="switch-network" disableAutoCloseOnClick>
+    <Modal open={open} onClose={() => {}}>
       <div className="p-4 font-brand">
         <h5 className="mb-2 text-2xl">You are in wrong network</h5>
 
