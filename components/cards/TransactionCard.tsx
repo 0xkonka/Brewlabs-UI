@@ -103,14 +103,7 @@ type TransactionCardProps = {
   };
 };
 
-const TransactionCard = ({
-  fromChain,
-  toChain,
-  date,
-  amount,
-  direction,
-  tax,
-}: TransactionCardProps) => (
+const TransactionCard = ({ fromChain, toChain, date, amount, direction, tax }: TransactionCardProps) => (
   <motion.div
     initial={{ zIndex: 1, filter: "blur(0.5px)" }}
     whileHover={{ zIndex: 100, scale: 1.2, filter: "blur(0px)" }}
@@ -119,7 +112,7 @@ const TransactionCard = ({
   >
     <Card>
       <div className="mb-5 flex gap-3">
-        <div className="-ml-5 -mt-3 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 bg-opacity-80 shadow-lg shadow-green-900">
+        <div className="-ml-5 -mt-3 flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 bg-opacity-80 shadow-lg shadow-green-900 dark:bg-zinc-900">
           <div className="h-2 w-2 rounded-full bg-green-300" />
         </div>
 
