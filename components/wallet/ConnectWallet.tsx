@@ -11,6 +11,7 @@ import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
 import { setGlobalState } from "../../state";
 import WalletSelector from "./WalletSelector";
+import { NetworkOptions } from "../../config/constants/networks";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -53,7 +54,10 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         networks={supportedNetworks}
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
-      <WrongNetworkModal open={!!isWrongNetwork} currentChain={supportedNetworks.find((network) => network.id === chainId)} />
+      <WrongNetworkModal
+        open={!!isWrongNetwork}
+        currentChain={supportedNetworks.find((network) => network.id === chainId)}
+      />
 
       {!isConnected ? (
         <button
@@ -80,9 +84,23 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           className="group block w-full flex-shrink-0"
         >
           <div className="flex items-center">
-            <div className="rounded-full border-2 border-dark p-2 dark:border-brand">
-              <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
-            </div>
+            <button
+              onClick={(e) => {
+                if (supportedNetworks.length > 1 && !allowDisconnect) {
+                  e.stopPropagation();
+                  setOpenSwitchNetworkModal(true);
+                }
+              }}
+              className="rounded-full border-2"
+            >
+              <div
+                className="h-12 w-12 overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
+                style={{
+                  backgroundImage: `url('${NetworkOptions.find((network) => network.id === chain.id)?.image}')`,
+                }}
+              />
+            </button>
+
             <div className="ml-3 overflow-hidden" onClick={() => allowDisconnect && disconnect()}>
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
