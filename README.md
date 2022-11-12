@@ -34,6 +34,8 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 ## Tools, libraries and patterns
 
+### Styling/CSS
+
 ##### https://tailwindcss.com/
 
 Tailwind is used to write utility based CSS.
@@ -41,6 +43,12 @@ Tailwind is used to write utility based CSS.
 ##### https://wagmi.sh/
 
 wagmi is a collection of React Hooks containing everything you need to start working with Ethereum.
+
+### State Management
+
+For managing global state please use React Hooks Global State module.
+
+This should be sufficient for out needs.
 
 ##### https://www.npmjs.com/package/react-hooks-global-state
 
