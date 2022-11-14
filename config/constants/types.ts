@@ -41,7 +41,7 @@ export enum Chef {
 }
 
 interface FarmConfigBaseProps {
-  pid: number
+  pid: number | null
   farmId?: number
   poolId?: number
   v1pid?: number

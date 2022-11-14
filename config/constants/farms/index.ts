@@ -3,6 +3,7 @@ import { serializeTokens } from "../tokens";
 import { SerializedFarmConfig, Version } from "../types";
 
 export * from "./pancake";
+export * from "./priceHelperLps"
 
 const farms: SerializedFarmConfig[] = [
   /**

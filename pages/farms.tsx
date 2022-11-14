@@ -3,8 +3,10 @@ import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
 import WordHighlight from "../components/text/WordHighlight";
+import {priceHelperLps} from "config/constants/farms";
 
 const Farms: NextPage = () => {
+  console.log(priceHelperLps)
   return (
     <PageWrapper>
       <PageHeader
