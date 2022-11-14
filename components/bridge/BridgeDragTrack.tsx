@@ -57,9 +57,13 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
 
       <div
         className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dotted border-gray-400 bg-gray-200 bg-cover bg-no-repeat dark:border-gray-700 dark:bg-slate-800"
-        style={{
-          backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkTo)?.image}')`,
-        }}
+        style={
+          NetworkOptions.find((network) => network.name === networkTo)
+            ? {
+                backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkTo)?.image}')`,
+              }
+            : {}
+        }
       ></div>
     </div>
   );
