@@ -28,7 +28,7 @@ import {
   getPancakeMasterChefAddress,
   getExternalMasterChefAddress,
 } from 'utils/addressHelpers'
-import { simpleRpcProvider } from 'utils/providers'
+import { provider } from './wagmi'
 
 
 const getContract = (
@@ -37,7 +37,7 @@ const getContract = (
   address: string,
   signer?: ethers.Signer | ethers.providers.Provider,
 ) => {
-  const signerOrProvider = signer ?? simpleRpcProvider(chainId)
+  const signerOrProvider = signer ?? provider({chainId})
   return new ethers.Contract(address, abi, signerOrProvider)
 }
 export const getBrewsTokenContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
