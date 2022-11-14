@@ -31,7 +31,7 @@ import {
 import { provider } from './wagmi'
 
 
-const getContract = (
+export const getContract = (
   chainId: ChainId,
   abi: any,
   address: string,

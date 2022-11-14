@@ -5,8 +5,10 @@ import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import farmsReducer from "./farms";
 import { updateVersion } from "./global/actions";
+
+import farmsReducer from "./farms";
+import multicall from './multicall/reducer'
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -22,6 +24,7 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     farms: farmsReducer,
+    multicall,
   })
 );
 

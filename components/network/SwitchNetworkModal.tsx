@@ -30,7 +30,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
       onDismiss();
       toast.success(`Switched to ${networks.find((network) => network.id === pendingChainId)?.name}`);
     }
-  }, [isSuccess]);
+  }, [isSuccess, networks, pendingChainId, onDismiss]);
 
   return (
     <Modal open={open} onClose={onDismiss}>

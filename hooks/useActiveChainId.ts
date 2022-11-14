@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { useDeferredValue, useEffect, useState } from "react";
+import { ChainId } from "@brewlabs/sdk";
 import { useNetwork } from "wagmi";
 
 import { bsc } from "contexts/wagmi";
-import { isChainSupported } from "utils/wagmi";
 import { useGlobalState } from "state";
-
+import { isChainSupported } from "utils/wagmi";
 
 export const useQueryChainId = () => {
   const [queryChainId, setQueryChainId] = useState(-1);
@@ -31,7 +31,7 @@ export function useLocalNetworkChain() {
   return undefined;
 }
 
-export const useActiveChainId = () => {
+export const useActiveChainId = (): {chainId: ChainId, isWrongNetwork: any, isNotMatched: any} => {
   const localChainId = useLocalNetworkChain();
   const queryChainId = useQueryChainId();
 

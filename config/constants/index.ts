@@ -5,6 +5,8 @@ import { BIG_TEN } from "utils/bigNumber"
 export const FAST_INTERVAL = 10000
 export const SLOW_INTERVAL = 60000
 
+export const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 export const EXCHANGE_URLS = {
     [ChainId.ETHEREUM]: 'https://app.uniswap.org/#',
     [ChainId.GOERLI]: 'https://app.uniswap.org/#',
