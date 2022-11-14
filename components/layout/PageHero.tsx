@@ -1,8 +1,6 @@
 import React, { ReactNode } from "react";
 import VideoBackground from "../VideoBackground";
 
-import styles from "./PageHero.module.scss";
-
 const PageHero = ({
   pageTitle,
   pageIntro,
@@ -14,18 +12,14 @@ const PageHero = ({
   videoBgPath?: string;
   children?: ReactNode;
 }) => (
-  <div
-    id={styles.hero}
-    className="relative flex flex-col justify-center bg-gradient-to-bl from-amber-300 to-yellow-500 pt-20 md:justify-end lg:overflow-hidden"
-  >
+  <div className="relative flex flex-col justify-center bg-gradient-to-bl from-amber-300 to-yellow-500 pt-20 md:justify-end lg:overflow-hidden">
     <div className="mx-auto w-full max-w-7xl px-4 text-left font-brand sm:px-8">
-      <div id="brand" className="relative py-8">
+      <div className="relative py-8">
         <header className="mt-4 mb-4 font-brand text-dark sm:mt-5 lg:mt-6">
           <h1 className="text-3xl uppercase sm:text-4xl lg:text-6xl">{pageTitle}</h1>
-          <h3 className="ml-1 font-bold dark:text-dark tracking-widest">BY BREWLABS</h3>
         </header>
 
-        <p className="dark:text-dark">{pageIntro}</p>
+        <p className="text-xl text-dark">{pageIntro}</p>
 
         {children}
       </div>
