@@ -31,7 +31,7 @@ export enum Version {
 export enum AppId {
   PANCAKESWAP = 'pancakeswap',
   APESWAP = 'apeswap',
-  KNIGHT = 'knight',
+  // KNIGHT = 'knight',
   SUSHISWAP = 'sushiswap',
 }
 
