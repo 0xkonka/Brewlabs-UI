@@ -40,6 +40,10 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 Tailwind is used to write utility based CSS.
 
+##### https://daisyui.com/
+
+We use Daisy UI to extend Tailwind and make use of components quickly
+
 ##### https://wagmi.sh/
 
 wagmi is a collection of React Hooks containing everything you need to start working with Ethereum.
