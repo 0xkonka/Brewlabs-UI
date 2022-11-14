@@ -101,6 +101,7 @@ const initialState1 = {
   showBackdrop: false,
   mobileNavOpen: false,
   userSidebarOpen: false,
+  sessionChainId: undefined as any,
 };
 
 const { useGlobalState, setGlobalState } = createGlobalState(initialState1);

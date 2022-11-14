@@ -24,15 +24,8 @@ const NavigationDesktop = () => {
   };
 
   return (
-    <div className="hidden lg:flex lg:flex-shrink-0 h-screen sticky top-0">
-      <motion.div
-        layout
-        transition={spring}
-        className={clsx(
-          "flex flex-col",
-          slimVersion ? "w-14 overflow-hidden" : "w-64"
-        )}
-      >
+    <div className="sticky top-0 z-10 hidden h-screen lg:flex lg:flex-shrink-0">
+      <motion.div layout transition={spring} className={clsx("flex flex-col", slimVersion ? "w-14" : "w-64")}>
         <Navigation slim={slimVersion} />
       </motion.div>
     </div>

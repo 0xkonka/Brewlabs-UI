@@ -22,7 +22,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
 
   return (
     <div className="relative z-10 col-span-3 -my-6 flex flex-col items-center justify-between sm:-mx-6 sm:flex-row">
-      <div className="absolute left-0 top-0 h-16 w-16 rounded-full border-2 border-dotted border-gray-700 bg-slate-800"></div>
+      <div className="absolute left-0 top-0 h-16 w-16 rounded-full border-2 border-dotted border-gray-400 bg-gray-200 dark:border-gray-700 dark:bg-slate-800"></div>
 
       <motion.div
         drag="x"
@@ -47,7 +47,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
         <p>Drag to complete the transaction.</p>
       </motion.div>
 
-      <div className="-z-10 h-36 w-1 animate-pulse border-r-4 border-dotted border-gray-700 sm:h-1 sm:w-full sm:border-t-4" />
+      <div className="-z-10 h-36 w-1 animate-pulse border-r-4 border-dotted border-gray-300 dark:border-gray-700 sm:h-1 sm:w-full sm:border-t-4" />
 
       {networkFrom !== "No network selected" && (
         <div className="slide-x absolute left-14">
@@ -56,7 +56,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
       )}
 
       <div
-        className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dotted border-gray-700 bg-slate-800 bg-cover bg-no-repeat"
+        className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dotted border-gray-400 bg-gray-200 bg-cover bg-no-repeat dark:border-gray-700 dark:bg-slate-800"
         style={{
           backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkTo)?.image}')`,
         }}
