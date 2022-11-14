@@ -1,33 +1,29 @@
 import { useRouter } from "next/router";
-import { atom, useAtom, useAtomValue } from "jotai";
-import { useDeferredValue } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { useNetwork } from "wagmi";
 
 import { bsc } from "contexts/wagmi";
 import { isChainSupported } from "utils/wagmi";
+import { useGlobalState } from "state";
 
-const queryChainIdAtom = atom(-1); // -1 unload, 0 no chainId on query
-const sessionChainIdAtom = atom<number>(0);
 
-queryChainIdAtom.onMount = (set) => {
-  const params = new URL(window.location.href).searchParams;
-  const c = params.get("chainId") ?? "0";
-  if (isChainSupported(+c)) {
-    set(+c);
-  } else {
-    set(0);
-  }
+export const useQueryChainId = () => {
+  const [queryChainId, setQueryChainId] = useState(-1);
+  const { query } = useRouter();
+
+  useEffect(() => {
+    if (query.chainId === undefined) setQueryChainId(-1);
+    if (typeof query.chainId === "string") setQueryChainId(+query.chainId);
+  }, [query.chainId]);
+
+  return queryChainId;
 };
 
 export function useLocalNetworkChain() {
-  const [sessionChainId] = useSessionChainId();
-  // useRouter is kind of slow, we only get this query chainId once
-  const queryChainId = useAtomValue(queryChainIdAtom);
+  const [sessionChainId] = useGlobalState("sessionChainId");
+  const queryChainId = useQueryChainId();
 
-  const { query } = useRouter();
-
-  const chainId = +(sessionChainId || query.chainId || queryChainId);
-
+  const chainId = +(sessionChainId || queryChainId);
   if (isChainSupported(chainId)) {
     return chainId;
   }
@@ -35,13 +31,9 @@ export function useLocalNetworkChain() {
   return undefined;
 }
 
-export const useSessionChainId = () => {
-  return useAtom(sessionChainIdAtom);
-};
-
 export const useActiveChainId = () => {
   const localChainId = useLocalNetworkChain();
-  const queryChainId = useAtomValue(queryChainIdAtom);
+  const queryChainId = useQueryChainId();
 
   const { chain } = useNetwork();
   const chainId = localChainId ?? chain?.id ?? (queryChainId >= 0 ? bsc.id : -1);

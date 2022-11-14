@@ -1,27 +1,25 @@
 /* eslint-disable consistent-return */
 import { ChainId } from '@brewlabs/sdk'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from 'wagmi'
 
 import { ConnectorNames } from 'config/constants/wallets';
 import replaceBrowserHistory from 'utils/replaceBrowserHistory'
-import { useSessionChainId } from './useActiveChainId'
-import { useSwitchNetworkLoading } from './useSwitchNetworkLoading'
+import { setGlobalState } from 'state';
 
 export function useSwitchNetworkLocal() {
-  const [, setSessionChainId] = useSessionChainId()
   return useCallback(
     (chainId: number) => {
-      setSessionChainId(chainId)
+      setGlobalState("sessionChainId", chainId)
       replaceBrowserHistory('chainId', chainId === ChainId.BSC_MAINNET ? null : chainId)
     },
-    [setSessionChainId],
+    [],
   )
 }
 
 export function useSwitchNetwork() {
-  const [loading, setLoading] = useSwitchNetworkLoading()
+  const [loading, setLoading] = useState(false)
   const {
     switchNetworkAsync: _switchNetworkAsync,
     isLoading: _isLoading,
