@@ -19,7 +19,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
   }, [router.events]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
+    <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
       <div className="flex flex-1 flex-col pt-5 pb-4">
         <div className="flex flex-shrink-0 items-center px-4">
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
@@ -32,11 +32,12 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                   layout="position"
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.05 }}
+                  data-tip={item.name}
                   className={clsx(
                     item.href === router.pathname
                       ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-500 dark:hover:bg-gray-800",
-                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium"
+                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium home:tooltip home:tooltip-right"
                   )}
                 >
                   <DynamicHeroIcon
@@ -48,7 +49,6 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                       slim ? "h-5 w-5" : "mr-3 h-6 w-6"
                     )}
                   />
-
                   <span className={clsx(slim && "sr-only")}>{item.name}</span>
                 </motion.a>
               </Link>

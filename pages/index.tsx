@@ -7,10 +7,7 @@ import PageHero from "../components/layout/PageHero";
 
 const Home: NextPage = () => (
   <PageWrapper>
-    <PageHero
-      pageTitle="Welcome to Brewlabs"
-      pageIntro="Make use of the Brewlabs constructor to create tax free liquidity tokens."
-    />
+    <PageHero pageTitle="Ready to earn" pageIntro="Brewlabs Earn is where you can build your future" />
 
     <main className="mt-16 min-h-screen">
       <section>

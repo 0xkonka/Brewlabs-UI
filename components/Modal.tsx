@@ -22,7 +22,7 @@ const Modal = ({ open, children, onClose }: ModalProps): ReactElement | null => 
                 </div>
                 <button
                   onClick={onClose}
-                  className="absolute -top-0 -right-0 p-2 rounded-full bg-white dark:bg-zinc-900"
+                  className="absolute -top-0 -right-0 rounded-full bg-white p-2 dark:bg-zinc-900"
                 >
                   <span className="sr-only">Close</span>
                   <XMarkIcon className="h-4 w-4" />
