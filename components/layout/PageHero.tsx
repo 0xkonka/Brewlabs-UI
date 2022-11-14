@@ -1,15 +1,12 @@
 import React, { ReactNode } from "react";
-import VideoBackground from "../VideoBackground";
 
 const PageHero = ({
   pageTitle,
   pageIntro,
-  videoBgPath,
   children,
 }: {
   pageTitle: string;
   pageIntro: string;
-  videoBgPath?: string;
   children?: ReactNode;
 }) => (
   <div className="relative flex flex-col justify-center bg-gradient-to-bl from-amber-300 to-yellow-500 pt-20 md:justify-end lg:overflow-hidden">
@@ -24,7 +21,7 @@ const PageHero = ({
         {children}
       </div>
     </div>
-    {videoBgPath !== undefined && <VideoBackground path={videoBgPath} />}
+
     <div className="waves relative h-16">
       <svg
         className="absolute bottom-0 h-8 w-full"
