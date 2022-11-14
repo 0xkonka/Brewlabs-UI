@@ -96,7 +96,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <div
                 className="h-12 w-12 overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
                 style={{
-                  backgroundImage: `url('${NetworkOptions.find((network) => network.id === chain.id)?.image}')`,
+                  backgroundImage: `url('${NetworkOptions.find((network) => network.id === chain?.id)?.image}')`,
                 }}
               />
             </button>
