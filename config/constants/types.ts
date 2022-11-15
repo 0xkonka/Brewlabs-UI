@@ -1,4 +1,4 @@
-import { ChainId, Currency } from "@brewlabs/sdk";
+import { ChainId, Currency, Token } from "@brewlabs/sdk";
 
 export interface SerializedToken {
   chainId: ChainId;
@@ -120,11 +120,17 @@ export interface DeserializedPoolConfig extends PoolConfigBaseProps {
   reflectionTokens?: Currency[];
 }
 
+export interface BridgeToken extends SerializedToken {
+  mode?: string
+  mediator?: string
+  helperContractAddress?: string
+}
 export interface BridgeDirectionConfig {
+  bridgeDirectionId: number;
   homeChainId: ChainId;
   foreignChainId: ChainId;
-  homeToken: SerializedToken;
-  foreignToken: SerializedToken;
+  homeToken: BridgeToken;
+  foreignToken: BridgeToken;
   enableForeignCurrencyBridge: boolean;
   homeWrappedForeignCurrencyAddress: string | null;
   wrappedForeignCurrencyAddress: string | null;
