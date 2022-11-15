@@ -1,20 +1,35 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { ChainId } from "@brewlabs/sdk";
 
-import { bridgeConfig } from "config/constants/bridge";
+import { bridgeConfigs } from "config/constants/bridge";
 import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";
 
-export const useBridgeDirection = () => {
-  const bridgeDirection = "ETH-BSC";
-  // const bridgeConfig = useMemo(
-  //   () => networks[bridgeDirection] || Object.values(networks)[0],
-  //   [bridgeDirection],
-  // );
+export const useBridgeDirection = (fromChainId: ChainId, fromTokenAddress?: string, toChainId?: ChainId) => {
+  const bridgeConfig = useMemo(() => {
+    let configs = bridgeConfigs.filter(
+      (c) =>
+        (c.homeChainId === fromChainId && c.homeToken.address === fromTokenAddress) ||
+        (c.foreignChainId === fromChainId && c.foreignToken.address === fromTokenAddress)
+    );
+
+    if (configs.length > 0) {
+      let config = configs.find(
+        (c) =>
+          (c.homeChainId === fromChainId && c.foreignChainId === toChainId) ||
+          (c.foreignChainId === fromChainId && c.homeChainId === toChainId)
+      );
+
+      return config ?? configs[0];
+    } else {
+      let config = bridgeConfigs.find(c => c.homeChainId === fromChainId || c.foreignChainId === fromChainId)
+      return config ?? bridgeConfigs[0]
+    }
+  }, [fromChainId, fromTokenAddress, toChainId]);
 
   const { homeChainId, foreignChainId, homeGraphName, foreignGraphName, homeAmbAddress, foreignAmbAddress } =
-    bridgeConfig[0];
+    bridgeConfig;
 
   const foreignAmbVersion = useAmbVersion(foreignChainId, foreignAmbAddress);
 
@@ -51,7 +66,7 @@ export const useBridgeDirection = () => {
   );
 
   return {
-    bridgeDirection,
+    ...bridgeConfig,
     getBridgeChainId,
     getGraphEndpoint,
     getAMBAddress,
@@ -61,6 +76,5 @@ export const useBridgeDirection = () => {
     getTotalConfirms,
     requiredSignatures,
     validatorList,
-    ...bridgeConfig[0],
   };
 };

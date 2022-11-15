@@ -3,7 +3,7 @@ import { BigNumber, ethers, utils } from "ethers";
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useSigner } from "wagmi";
-import { bridgeConfig } from "config/constants/bridge";
+import { bridgeConfigs } from "config/constants/bridge";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useMediatorInfo } from "hooks/bridge/useMediatorInfo";
 import { fetchToAmount, fetchToToken, relayTokens } from "lib/bridge/bridge";
@@ -22,7 +22,7 @@ export const BridgeProvider = ({ children }: any) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { data: signer } = useSigner();
 
-  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId } = useBridgeDirection();
+  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId } = useBridgeDirection(providerChainId);
 
   const [receiver, setReceiver] = useState("");
   const [amountInput, setAmountInput] = useState("");
@@ -191,7 +191,7 @@ export const BridgeProvider = ({ children }: any) => {
 
   const setDefaultToken = useCallback(
     async (chainId: ChainId, force = false) => {
-      const token = chainId === bridgeConfig[0].homeChainId ? bridgeConfig[0].homeToken : bridgeConfig[0].foreignToken;
+      const token = chainId === bridgeConfigs[0].homeChainId ? bridgeConfigs[0].homeToken : bridgeConfigs[0].foreignToken;
       if (force || !fromToken || (token?.chainId !== fromToken?.chainId && token?.address !== fromToken?.address)) {
         await setToken(token);
       }

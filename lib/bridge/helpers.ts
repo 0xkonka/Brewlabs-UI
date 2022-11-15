@@ -1,5 +1,5 @@
 import { ChainId } from "@brewlabs/sdk";
-import { bridgeConfig } from "config/constants/bridge";
+import { bridgeConfigs } from "config/constants/bridge";
 import { CHAIN_LABLES } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
 import { Connector } from "wagmi";
@@ -24,7 +24,7 @@ export const getNetworkLabel = (chainId: ChainId) => {
 };
 
 export const getMediatorAddress = (chainId: ChainId) => {
-  const direction = bridgeConfig.find((direction) => direction.homeChainId === chainId) ?? bridgeConfig[0];
+  const direction = bridgeConfigs.find((direction) => direction.homeChainId === chainId) ?? bridgeConfigs[0];
   return direction.homeMediatorAddress;
 };
 

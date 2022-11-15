@@ -4,7 +4,7 @@ import { BridgeDirectionConfig } from "./types";
 export const GRAPH_HEALTH_ENDPOINT = "https://api.thegraph.com/index-node/graphql";
 export const POLLING_INTERVAL = 5000;
 
-export const bridgeConfig: BridgeDirectionConfig[] = [
+export const bridgeConfigs: BridgeDirectionConfig[] = [
   {
     bridgeDirectionId: 1,
     homeChainId: 5,
