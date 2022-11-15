@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useProvider } from "wagmi";
 
 import { POLLING_INTERVAL } from "config/constants/bridge";
 import { useBridgeContext } from "contexts/BridgeContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { timeout, withTimeout } from "lib/bridge/helpers";
 import { getMessage, getMessageData, messageCallStatus, NOT_ENOUGH_COLLECTED_SIGNATURES } from "lib/bridge/message";
+import { provider } from "utils/wagmi";
 
 import { useBridgeDirection } from "./useBridgeDirection";
 import { useNeedsClaiming } from "./useNeedsClaiming";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { provider } from "utils/wagmi";
-import { useAccount, useProvider } from "wagmi";
-import { timeout, withTimeout } from "lib/bridge/helpers";
 
 export const useTransactionStatus = (setMessage: any) => {
   const needsClaiming = useNeedsClaiming();
   const { homeChainId, getBridgeChainId, getAMBAddress, getTotalConfirms } = useBridgeDirection();
   const { chainId } = useActiveChainId();
-  const ethersProvider = useProvider()
+  const ethersProvider = useProvider();
   const { loading, setLoading, txHash, setTxHash }: any = useBridgeContext();
 
   const isHome = chainId === homeChainId;
@@ -61,7 +61,7 @@ export const useTransactionStatus = (setMessage: any) => {
       if (txReceipt) {
         setConfirmations(numConfirmations);
         if (enoughConfirmations) {
-          const bridgeProvider = await provider({chainId: bridgeChainId});
+          const bridgeProvider = await provider({ chainId: bridgeChainId });
           const bridgeAmbAddress = getAMBAddress(bridgeChainId);
           if (needsClaiming) {
             setLoadingText("Collecting Signatures");

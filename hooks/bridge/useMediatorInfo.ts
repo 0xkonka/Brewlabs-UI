@@ -9,7 +9,7 @@ import { useBridgeDirection } from "./useBridgeDirection";
 
 export const useMediatorInfo = () => {
   const { address: account } = useAccount();
-  const { chainId: providerChainId} = useActiveChainId()
+  const { chainId: providerChainId } = useActiveChainId();
 
   const { homeChainId, homeMediatorAddress, foreignChainId, foreignMediatorAddress } = useBridgeDirection();
   const [currentDay, setCurrentDay] = useState();
@@ -85,22 +85,15 @@ export const useMediatorInfo = () => {
 
         setHomeFeeManagerAddress(homeManagerAddress);
 
-        const foreignEthersProvider = await provider({chainId: foreignChainId});
-        const foreignMediatorContract = new Contract(
-          foreignMediatorAddress,
-          abi,
-          foreignEthersProvider,
-        );
-        const foreignManagerAddress =
-          await foreignMediatorContract.feeManager();
+        const foreignEthersProvider = await provider({ chainId: foreignChainId });
+        const foreignMediatorContract = new Contract(foreignMediatorAddress, abi, foreignEthersProvider);
+        const foreignManagerAddress = await foreignMediatorContract.feeManager();
         setForeignFeeManagerAddress(foreignManagerAddress);
 
         await Promise.all([
           checkRewardAddress(
-            providerChainId === homeChainId
-              ? homeManagerAddress
-              : foreignManagerAddress,
-            providerChainId === homeChainId ? homeChainId : foreignChainId,
+            providerChainId === homeChainId ? homeManagerAddress : foreignManagerAddress,
+            providerChainId === homeChainId ? homeChainId : foreignChainId
           ),
           calculateFees(homeManagerAddress, homeChainId),
         ]);

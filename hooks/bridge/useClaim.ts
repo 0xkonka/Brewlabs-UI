@@ -8,7 +8,6 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { executeSignatures, TOKENS_CLAIMED } from "lib/bridge/amb";
 import { getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
-
 import { getMessage, getRemainingSignatures, messageCallStatus } from "lib/bridge/message";
 import { provider } from "utils/wagmi";
 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchAmbVersion } from "lib/bridge/amb";
 import { ChainId } from "@brewlabs/sdk";
-import { provider as getProvider } from "utils/wagmi";
+import { fetchAmbVersion } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
+import { provider as getProvider } from "utils/wagmi";
 
 export const useAmbVersion = (foreignChainId: ChainId, foreignAmbAddress: string) => {
   const [foreignAmbVersion, setForeignAmbVersion] = useState<string | null>("");

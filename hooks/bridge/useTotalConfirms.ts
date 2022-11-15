@@ -23,8 +23,8 @@ export const useTotalConfirms = (
     const fetchConfirms = async () => {
       try {
         const [homeProvider, foreignProvider] = await Promise.all([
-          provider({chainId: homeChainId}),
-          provider({chainId: foreignChainId}),
+          provider({ chainId: homeChainId }),
+          provider({ chainId: foreignChainId }),
         ]);
         const [home, foreign] = await Promise.all([
           fetchConfirmations(homeAmbAddress, homeProvider),

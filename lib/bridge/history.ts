@@ -6,13 +6,7 @@ const pageSize = 1000;
 
 const requestsUserQuery = gql`
   query getRequests($user: String!, $first: Int!, $skip: Int!) {
-    requests: userRequests(
-      where: { user: $user }
-      orderBy: txHash
-      orderDirection: desc
-      first: $first
-      skip: $skip
-    ) {
+    requests: userRequests(where: { user: $user }, orderBy: txHash, orderDirection: desc, first: $first, skip: $skip) {
       user: recipient
       txHash
       messageId
@@ -149,9 +143,7 @@ export const combineRequestsWithExecutions = (
   bridgeChainId: ChainId
 ) =>
   requests.map((req) => {
-    const execution = executions.find(
-      (exec) => exec.messageId === req.messageId
-    );
+    const execution = executions.find((exec) => exec.messageId === req.messageId);
     return {
       user: req.user,
       chainId,

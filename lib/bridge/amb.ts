@@ -57,7 +57,12 @@ export const isRevertedError = (error: any) =>
   REVERT_ERROR_CODES.includes(error?.code && error?.code.toString()) ||
   REVERT_ERROR_CODES.includes(error?.error?.code && error?.error?.code.toString());
 
-export const executeSignatures = async (signer: Signer, address: string, version: string, { messageData, signatures }: any) => {
+export const executeSignatures = async (
+  signer: Signer,
+  address: string,
+  version: string,
+  { messageData, signatures }: any
+) => {
   const abi = [
     "function executeSignatures(bytes messageData, bytes signatures) external",
     "function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external",

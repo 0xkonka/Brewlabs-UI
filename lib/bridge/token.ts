@@ -1,15 +1,11 @@
 import { ChainId } from "@brewlabs/sdk";
 import { Provider } from "@wagmi/core";
-import { BridgeToken } from "config/constants/types";
 import { BigNumber, Contract, ethers, Signer, utils } from "ethers";
+import { BridgeToken } from "config/constants/types";
 import { provider } from "utils/wagmi";
 import { getMediatorAddress } from "./helpers";
 
-export const fetchAllowance = async (
-  { mediator, address }: BridgeToken,
-  account: string,
-  ethersProvider: Signer
-) => {
+export const fetchAllowance = async ({ mediator, address }: BridgeToken, account: string, ethersProvider: Signer) => {
   if (
     !account ||
     !address ||
@@ -32,28 +28,22 @@ export const fetchAllowance = async (
 };
 
 const fetchMode = async (token: BridgeToken) => {
-  const ethersProvider = await provider({chainId: token.chainId});
+  const ethersProvider = await provider({ chainId: token.chainId });
   const mediatorAddress = getMediatorAddress(token.chainId);
   const abi = ["function nativeTokenAddress(address) view returns (address)"];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(
-    token.address
-  );
+  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(token.address);
   if (nativeTokenAddress === ethers.constants.AddressZero) return "erc20";
   return "erc677";
 };
 
-export const fetchTokenName = async (token: {chainId: ChainId, name?: string, address: string} | BridgeToken) => {
-  const ethersProvider = await provider({chainId: token.chainId});
+export const fetchTokenName = async (token: { chainId: ChainId; name?: string; address: string } | BridgeToken) => {
+  const ethersProvider = await provider({ chainId: token.chainId });
 
   let tokenName = token.name || "";
   try {
     const stringAbi = ["function name() view returns (string)"];
-    const tokenContractString = new Contract(
-      token.address ?? ethers.constants.AddressZero,
-      stringAbi,
-      ethersProvider
-    );
+    const tokenContractString = new Contract(token.address ?? ethers.constants.AddressZero, stringAbi, ethersProvider);
     tokenName = await tokenContractString.name();
   } catch {
     const bytes32Abi = ["function name() view returns (bytes32)"];
@@ -68,7 +58,7 @@ export const fetchTokenName = async (token: {chainId: ChainId, name?: string, ad
 };
 
 const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
-  const ethersProvider = await provider({chainId: token.chainId});
+  const ethersProvider = await provider({ chainId: token.chainId });
   const abi = [
     "function decimals() view returns (uint8)",
     "function symbol() view returns (bytes32)",
@@ -88,7 +78,7 @@ const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
 };
 
 const fetchTokenDetailsString = async (token: BridgeToken) => {
-  const ethersProvider = await provider({ chainId: token.chainId});
+  const ethersProvider = await provider({ chainId: token.chainId });
   const abi = [
     "function decimals() view returns (uint8)",
     "function symbol() view returns (string)",
@@ -134,18 +124,14 @@ export const fetchTokenDetails = async (token: BridgeToken) => {
   };
 };
 
-export const approveToken = async (
-  signer: Signer,
-  { address, mediator }: BridgeToken,
-  amount: BigNumber
-) => {
+export const approveToken = async (signer: Signer, { address, mediator }: BridgeToken, amount: BigNumber) => {
   const abi = ["function approve(address, uint256)"];
   const tokenContract = new Contract(address ?? ethers.constants.AddressZero, abi, signer);
   return tokenContract.approve(mediator, amount);
 };
 
 export const fetchTokenBalance = async (token: BridgeToken, account: string) => {
-  const ethersProvider = await provider({chainId: token.chainId});
+  const ethersProvider = await provider({ chainId: token.chainId });
   return fetchTokenBalanceWithProvider(ethersProvider, token, account);
 };
 
@@ -157,12 +143,7 @@ export const fetchTokenBalanceWithProvider = async (
   if (address === ethers.constants.AddressZero && mode === "NATIVE") {
     return ethersProvider.getBalance(account);
   }
-  if (
-    !account ||
-    !address ||
-    address === ethers.constants.AddressZero ||
-    !ethersProvider
-  ) {
+  if (!account || !address || address === ethers.constants.AddressZero || !ethersProvider) {
     return BigNumber.from(0);
   }
   try {

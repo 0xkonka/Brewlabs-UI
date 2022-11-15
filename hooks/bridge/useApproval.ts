@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
-import { approveToken, fetchAllowance } from "lib/bridge/token";
 import { useAccount, useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { BridgeToken } from "config/constants/types";
+import { approveToken, fetchAllowance } from "lib/bridge/token";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHash: string) => {
   const { chainId: providerChainId } = useActiveChainId();
@@ -15,7 +15,7 @@ export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHas
 
   useEffect(() => {
     if (fromToken && account && providerChainId === fromToken.chainId) {
-      if(signer) fetchAllowance(fromToken, account, signer).then(setAllowance);
+      if (signer) fetchAllowance(fromToken, account, signer).then(setAllowance);
     } else {
       setAllowance(BigNumber.from(0));
     }
@@ -36,7 +36,7 @@ export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHas
     setUnlockLoading(true);
     const approvalAmount = fromAmount;
     try {
-      if(!signer) return
+      if (!signer) return;
       const tx = await approveToken(signer, fromToken, approvalAmount);
       setApprovalTxHash(tx.hash);
       await tx.wait();

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useBridgeContext } from "contexts/BridgeContext";
-import { useBridgeDirection } from "./useBridgeDirection";
-import { combineRequestsWithExecutions, getExecutions, getRequests } from "lib/bridge/history";
 import { useAccount } from "wagmi";
+import { useBridgeContext } from "contexts/BridgeContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { combineRequestsWithExecutions, getExecutions, getRequests } from "lib/bridge/history";
+import { useBridgeDirection } from "./useBridgeDirection";
 
 export const useClaimableTransfers = () => {
   const { address: account } = useAccount();

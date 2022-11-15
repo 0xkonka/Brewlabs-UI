@@ -1,10 +1,10 @@
+import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, Contract, ethers, Signer } from "ethers";
+import { BridgeToken } from "config/constants/types";
 import { bridgeConfigs } from "config/constants/bridge";
+import { provider } from "utils/wagmi";
 import { fetchTokenName } from "./token";
 import { getMediatorAddress, getNetworkLabel } from "./helpers";
-import { provider } from "utils/wagmi";
-import { BridgeToken } from "config/constants/types";
-import { ChainId } from "@brewlabs/sdk";
 
 const getToName = async (fromToken: BridgeToken, toChainId: ChainId, toAddress: string) => {
   const { name } = fromToken;
@@ -72,7 +72,7 @@ export const fetchToAmount = async (
 ) => {
   if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   const { homeChainId, homeMediatorAddress } =
-  bridgeConfigs.find((bridge) => bridge.bridgeDirectionId === bridgeDirectionId) ?? bridgeConfigs[0];
+    bridgeConfigs.find((bridge) => bridge.bridgeDirectionId === bridgeDirectionId) ?? bridgeConfigs[0];
 
   const isHome = homeChainId === toToken.chainId;
   const tokenAddress = isHome ? toToken.address : fromToken.address;

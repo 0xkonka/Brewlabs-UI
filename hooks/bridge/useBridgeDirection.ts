@@ -23,8 +23,8 @@ export const useBridgeDirection = (fromChainId?: ChainId, fromTokenAddress?: str
 
       return config ?? configs[0];
     } else {
-      let config = bridgeConfigs.find(c => c.homeChainId === fromChainId || c.foreignChainId === fromChainId)
-      return config ?? bridgeConfigs[0]
+      let config = bridgeConfigs.find((c) => c.homeChainId === fromChainId || c.foreignChainId === fromChainId);
+      return config ?? bridgeConfigs[0];
     }
   }, [fromChainId, fromTokenAddress, toChainId]);
 

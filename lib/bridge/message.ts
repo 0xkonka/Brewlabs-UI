@@ -4,19 +4,10 @@ import { Contract, utils } from "ethers";
 export const NOT_ENOUGH_COLLECTED_SIGNATURES =
   "Transaction to the bridge is found but oracles’ confirmations are not collected yet. Wait for a minute and try again.";
 
-export const getMessageData = async (
-  isHome: boolean,
-  ethersProvider: Provider,
-  txHash: string,
-  txReceipt?: any
-) => {
+export const getMessageData = async (isHome: boolean, ethersProvider: Provider, txHash: string, txReceipt?: any) => {
   const abi = isHome
-    ? new utils.Interface([
-        "event UserRequestForSignature(bytes32 indexed messageId, bytes encodedData)",
-      ])
-    : new utils.Interface([
-        "event UserRequestForAffirmation(bytes32 indexed messageId, bytes encodedData)",
-      ]);
+    ? new utils.Interface(["event UserRequestForSignature(bytes32 indexed messageId, bytes encodedData)"])
+    : new utils.Interface(["event UserRequestForAffirmation(bytes32 indexed messageId, bytes encodedData)"]);
   let receipt = txReceipt;
   if (!receipt) {
     try {
@@ -32,15 +23,9 @@ export const getMessageData = async (
   const eventTopic = abi.getEventTopic(eventFragment);
   const event = receipt.logs.find((e: any) => e.topics[0] === eventTopic);
   if (!event) {
-    throw Error(
-      "It is not a bridge transaction. Specify hash of a transaction sending tokens to the bridge."
-    );
+    throw Error("It is not a bridge transaction. Specify hash of a transaction sending tokens to the bridge.");
   }
-  const decodedLog = abi.decodeEventLog(
-    eventFragment,
-    event.data,
-    event.topics
-  );
+  const decodedLog = abi.decodeEventLog(eventFragment, event.data, event.topics);
 
   return {
     messageId: decodedLog.messageId,
@@ -49,11 +34,7 @@ export const getMessageData = async (
 };
 
 export const getMessage = async (isHome: boolean, provider: Provider, ambAddress: string, txHash: string) => {
-  const { messageId, messageData } = await getMessageData(
-    isHome,
-    provider,
-    txHash
-  );
+  const { messageId, messageData } = await getMessageData(isHome, provider, txHash);
   const messageHash = utils.solidityKeccak256(["bytes"], [messageData]);
 
   const abi = [
@@ -68,9 +49,7 @@ export const getMessage = async (isHome: boolean, provider: Provider, ambAddress
     ambContract.numMessagesSigned(messageHash),
   ]);
 
-  const isAlreadyProcessed = await ambContract.isAlreadyProcessed(
-    numMessagesSigned
-  );
+  const isAlreadyProcessed = await ambContract.isAlreadyProcessed(numMessagesSigned);
   if (!isAlreadyProcessed) {
     throw Error(NOT_ENOUGH_COLLECTED_SIGNATURES);
   }
@@ -88,14 +67,8 @@ export const getMessage = async (isHome: boolean, provider: Provider, ambAddress
   };
 };
 
-export const messageCallStatus = async (
-  ambAddress: string,
-  ethersProvider: Provider,
-  messageId: string
-) => {
-  const abi = [
-    "function messageCallStatus(bytes32 _messageId) public view returns (bool)",
-  ];
+export const messageCallStatus = async (ambAddress: string, ethersProvider: Provider, messageId: string) => {
+  const abi = ["function messageCallStatus(bytes32 _messageId) public view returns (bool)"];
   const ambContract = new Contract(ambAddress, abi, ethersProvider);
   const claimed = await ambContract.messageCallStatus(messageId);
   return claimed;
@@ -131,48 +104,29 @@ export const getRemainingSignatures = (
   validatorList: any[]
 ) => {
   const signatures = [];
-  const remainingValidators = Object.fromEntries(
-    validatorList.map((validator) => [validator, true])
-  );
-  for (
-    let i = 0;
-    i < signaturesCollected.length && signatures.length < requiredSignatures;
-    i += 1
-  ) {
-    const signer = utils.verifyMessage(
-      utils.arrayify(messageData),
-      signaturesCollected[i]
-    );
+  const remainingValidators = Object.fromEntries(validatorList.map((validator) => [validator, true]));
+  for (let i = 0; i < signaturesCollected.length && signatures.length < requiredSignatures; i += 1) {
+    const signer = utils.verifyMessage(utils.arrayify(messageData), signaturesCollected[i]);
     if (validatorList.includes(signer)) {
       delete remainingValidators[signer];
       signatures.push(signaturesCollected[i]);
     }
   }
   if (signatures.length < requiredSignatures) {
-    console.debug(
-      "On-chain collected signatures are not enough for message execution"
-    );
+    console.debug("On-chain collected signatures are not enough for message execution");
     const manualValidators = Object.keys(remainingValidators);
     const msgHash = utils.keccak256(messageData);
-    for (
-      let i = 0;
-      i < manualValidators.length && signatures.length < requiredSignatures;
-      i += 1
-    ) {
+    for (let i = 0; i < manualValidators.length && signatures.length < requiredSignatures; i += 1) {
       try {
         const overrideSignatures: any = {};
         if (overrideSignatures[msgHash]) {
           console.debug(`Adding manual signature from ${manualValidators[i]}`);
           signatures.push(overrideSignatures[msgHash]);
         } else {
-          console.debug(
-            `No manual signature from ${manualValidators[i]} was found`
-          );
+          console.debug(`No manual signature from ${manualValidators[i]} was found`);
         }
       } catch (e) {
-        console.error(
-          `Signatures overrides are not present for ${manualValidators[i]}`
-        );
+        console.error(`Signatures overrides are not present for ${manualValidators[i]}`);
       }
     }
   }

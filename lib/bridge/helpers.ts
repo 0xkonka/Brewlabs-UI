@@ -1,8 +1,8 @@
 import { ChainId } from "@brewlabs/sdk";
+import { Connector } from "wagmi";
 import { bridgeConfigs } from "config/constants/bridge";
 import { CHAIN_LABLES } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
-import { Connector } from "wagmi";
 
 const IMPOSSIBLE_ERROR = "Unable to perform the operation. Reload the application and try again.";
 
@@ -35,12 +35,12 @@ export const addTokenToMetamask = async (conector: Connector, { address, symbol,
 };
 
 // eslint-disable-next-line no-promise-executor-return
-export const timeout = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const timeout = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const withTimeout = (ms: number, promise: any) =>
   new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error('timed out'));
+      reject(new Error("timed out"));
     }, ms);
 
     promise

@@ -16,8 +16,7 @@ export const useTokenLimits = () => {
       toToken &&
       fromToken.chainId &&
       toToken.chainId &&
-      (fromToken.symbol.includes(toToken.symbol) ||
-        toToken.symbol.includes(fromToken.symbol)) &&
+      (fromToken.symbol.includes(toToken.symbol) || toToken.symbol.includes(fromToken.symbol)) &&
       [homeChainId, foreignChainId].includes(fromToken.chainId) &&
       [homeChainId, foreignChainId].includes(toToken.chainId) &&
       currentDay

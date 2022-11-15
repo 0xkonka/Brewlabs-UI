@@ -1,5 +1,5 @@
-import { GRAPH_HEALTH_ENDPOINT } from "config/constants/bridge";
 import { gql, request } from "graphql-request";
+import { GRAPH_HEALTH_ENDPOINT } from "config/constants/bridge";
 
 const healthQuery = gql`
   query getHealthStatus($subgraph: String!) {
@@ -49,10 +49,7 @@ export const getHealthStatus = async (subgraph: any) => {
     });
     return extractStatus(data.status);
   } catch (graphHealthError) {
-    console.error(
-      `Error getting subgraph health for ${subgraph}`,
-      graphHealthError
-    );
+    console.error(`Error getting subgraph health for ${subgraph}`, graphHealthError);
     return failedStatus;
   }
 };
