@@ -118,8 +118,8 @@ const Bridge: NextPage = () => {
     }
   }, [locked, setLocked, locking]);
 
-  const fromTokenSelected = (address: string | undefined) => {
-    setFromToken(supportedFromTokens.find((token) => token.address === address));
+  const fromTokenSelected = (e: any) => {
+    setFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
   };
 
   const calculateReturn = (inputAmount: number) => {
@@ -170,14 +170,14 @@ const Bridge: NextPage = () => {
                   <select
                     id="currency"
                     name="currency"
-                    value={fromToken?.address}
+                    value={fromToken?.address}                    
+                    onChange={fromTokenSelected}
                     className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
                   >
                     {supportedFromTokens.map((token) => (
                       <option
                         key={`${token.chainId}-${token.address}`}
                         value={token.address}
-                        onClick={() => token.address !== fromToken?.address && fromTokenSelected(token.address)}
                       >
                         {token.symbol}
                       </option>
