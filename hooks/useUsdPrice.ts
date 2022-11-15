@@ -78,7 +78,7 @@ export const useBrewsUsdPrice = (): number | undefined => {
   const { chainId } = useActiveChainId();
   const { tokenPrices } = useContext(TokenPriceContext);
 
-  const brewsPrice = tokenPrices[getCurrencyId(chainId, brewsToken[chainId].address)];
+  const brewsPrice = tokenPrices[getCurrencyId(chainId, brewsToken[chainId]?.address)];
   return brewsPrice;
 };
 
