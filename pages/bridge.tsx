@@ -20,32 +20,85 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import { ChainId } from "@brewlabs/sdk";
 
 const Bridge: NextPage = () => {
-  const supportedNetworks = useSupportedNetworks()
-  const fromChainId = useFromChainId()
-  const [supportedFromTokens, setSupportedFromTokens] = useState<BridgeToken[]>([]);
+  const supportedNetworks = useSupportedNetworks();
+  const fromChainId = useFromChainId();
 
+  const [networkFrom, setNetworkFrom] = useGlobalState("userBridgeFrom");
+  const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
+  const [amount, setAmount] = useGlobalState("userBridgeAmount");
+  const [locked, setLocked] = useGlobalState("userBridgeLocked");
   const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
 
-  const [networkTo] = useGlobalState("userBridgeTo");
-  const [networkFrom] = useGlobalState("userBridgeFrom");
-  const [amount, setAmount] = useGlobalState("userBridgeAmount");
-  const [locked, setLocked] = useGlobalState("userBridgeLocked");
+  const [supportedFromTokens, setSupportedFromTokens] = useState<BridgeToken[]>([]);
+  const [fromToken, setFromToken] = useState<BridgeToken>();
+  const [toToken, setToToken] = useState<BridgeToken>();
+  const [toChains, setToChains] = useState<ChainId[]>();
+
+  const [openFromChainModal, setOpenFromChainModal] = useState(false)
 
   useEffect(() => {
     const tmpTokens = [];
     tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
-    tmpTokens.push(...bridgeConfigs.filter((c) => c.foreignChainId === fromChainId).map((config) => config.foreignToken));
+    tmpTokens.push(
+      ...bridgeConfigs.filter((c) => c.foreignChainId === fromChainId).map((config) => config.foreignToken)
+    );
     tmpTokens.sort((a, b) => {
       if (a.name > b.symbol) return -1;
       if (a.symbol < b.symbol) return 1;
       return 0;
     });
 
+    setNetworkFrom(fromChainId.toString());
     setSupportedFromTokens(tmpTokens);
   }, [fromChainId]);
+
+  useEffect(() => {
+    if (fromToken?.chainId !== fromChainId) {
+      setFromToken(supportedFromTokens[0]);
+    }
+  }, [fromChainId, fromToken, supportedFromTokens]);
+
+  useEffect(() => {
+    const chainIds = bridgeConfigs
+      .filter((c) => c.homeChainId === fromChainId && c.homeToken.address === fromToken?.address)
+      .map((config) => config.foreignChainId);
+    chainIds.push(
+      ...bridgeConfigs
+        .filter((c) => c.foreignChainId === fromChainId && c.foreignToken.address === fromToken?.address)
+        .map((config) => config.homeChainId)
+    );
+    setToChains(chainIds);
+    if (chainIds.length === 0) {
+      setToToken(undefined);
+      return;
+    }
+    // set toChain
+    let _toChainId = +networkTo;
+    if (!chainIds.includes(+networkTo)) {
+      _toChainId = chainIds[0];
+      setNetworkTo(chainIds[0].toString());
+    }
+
+    // set toToken
+    const config = bridgeConfigs.find(
+      (c) =>
+        (c.homeChainId === fromChainId &&
+          c.homeToken.address === fromToken?.address &&
+          c.foreignChainId === _toChainId) ||
+        (c.foreignChainId === fromChainId &&
+          c.foreignToken.address === fromToken?.address &&
+          c.homeChainId === _toChainId)
+    );
+    if (config?.homeToken.address === fromToken?.address) {
+      setToToken(config?.foreignToken);
+    } else {
+      setToToken(config?.homeToken);
+    }
+  }, [fromChainId, fromToken]);
 
   useEffect(() => {
     if (locked) {
@@ -64,6 +117,10 @@ const Bridge: NextPage = () => {
       setLocked(false);
     }
   }, [locked, setLocked, locking]);
+
+  const fromTokenSelected = (address: string | undefined) => {
+    setFromToken(supportedFromTokens.find((token) => token.address === address));
+  };
 
   const calculateReturn = (inputAmount: number) => {
     setAmount(inputAmount);
@@ -89,8 +146,15 @@ const Bridge: NextPage = () => {
             id="bridge_card_from"
             modal={{
               buttonText: getNetworkLabel(+networkFrom),
+              disableAutoCloseOnClick: true,
+              openModal: openFromChainModal,
+              onOpen: () => setOpenFromChainModal(true),
+              onClose: () => setOpenFromChainModal(false),
               modalContent: (
-                <ChainSelector networks={supportedNetworks} selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)} />
+                <ChainSelector
+                  networks={supportedNetworks}
+                  selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)}
+                />
               ),
             }}
           >
@@ -106,11 +170,18 @@ const Bridge: NextPage = () => {
                   <select
                     id="currency"
                     name="currency"
+                    value={fromToken?.address}
                     className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
                   >
-                    <option>BREW</option>
-                    <option>GROVE</option>
-                    <option>ETH</option>
+                    {supportedFromTokens.map((token) => (
+                      <option
+                        key={`${token.chainId}-${token.address}`}
+                        value={token.address}
+                        onClick={() => token.address !== fromToken?.address && fromTokenSelected(token.address)}
+                      >
+                        {token.symbol}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -149,12 +220,17 @@ const Bridge: NextPage = () => {
               modalContent: locked ? (
                 <ConfirmBridgeMessage />
               ) : (
-                <ChainSelector networks={supportedNetworks} selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)} />
+                <ChainSelector
+                  networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
+                  selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)}
+                />
               ),
             }}
           >
             <div className="mt-8">
-              <div className="text-center text-2xl text-slate-400">{returnAmount}</div>
+              <div className="text-center text-2xl text-slate-400">
+                {returnAmount} {toToken?.symbol}
+              </div>
             </div>
           </CryptoCard>
         </div>

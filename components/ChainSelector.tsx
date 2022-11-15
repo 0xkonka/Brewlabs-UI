@@ -18,7 +18,7 @@ const ChainSelector = ({ networks, selectFn, onDismiss }: ChainSelectorProps) =>
           <li key={network.name}>
             <button
               onClick={() => {
-                selectFn(network.name);
+                selectFn(network.id.toString());
                 if (onDismiss) onDismiss();
               }}
               className="flex w-full  py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
@@ -26,7 +26,7 @@ const ChainSelector = ({ networks, selectFn, onDismiss }: ChainSelectorProps) =>
               <img className="h-10 w-10 rounded-full" src={network.image} alt={network.name} />
               <div className="ml-4 flex-col text-left">
                 <p className="text-sm font-medium text-gray-900">{network.name}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-500">Current price:0000</p>
+                <p className="text-sm text-gray-600 dark:text-gray-500">Current price: 0.000</p>
               </div>
             </button>
           </li>

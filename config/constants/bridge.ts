@@ -1,3 +1,4 @@
+import { ChainId } from "@brewlabs/sdk";
 import { serializeTokens } from "./tokens";
 import { BridgeDirectionConfig } from "./types";
 
@@ -7,10 +8,10 @@ export const POLLING_INTERVAL = 5000;
 export const bridgeConfigs: BridgeDirectionConfig[] = [
   {
     bridgeDirectionId: 1,
-    homeChainId: 5,
-    foreignChainId: 97,
-    homeToken: serializeTokens(5).test,
-    foreignToken: serializeTokens(97).test,
+    homeChainId: ChainId.GOERLI,
+    foreignChainId: ChainId.BSC_TESTNET,
+    homeToken: serializeTokens(ChainId.GOERLI).test,
+    foreignToken: serializeTokens(ChainId.BSC_TESTNET).test,
     enableForeignCurrencyBridge: false,
     homeWrappedForeignCurrencyAddress: null,
     wrappedForeignCurrencyAddress: null,

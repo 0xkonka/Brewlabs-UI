@@ -9,8 +9,10 @@ type CryptoCardProps = {
   active?: boolean;
   children: ReactNode;
   modal: {
+    disableAutoCloseOnClick?: boolean
     openModal?: boolean;
-    onClose?: any;
+    onOpen?: () => void;
+    onClose?: () => void;
     buttonText: string;
     modalContent: ReactElement;
   };
@@ -52,6 +54,7 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
                   className="underline text-gray-400"
                   onClick={() => {
                     setSelected(true);
+                    if(modal.onOpen) modal.onOpen()
                   }}
                 >
                   {modal.buttonText}
@@ -67,7 +70,7 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
       </motion.div>
 
       {selected && modal && (
-        <Modal closeFn={closeSelected} layoutId={id}>
+        <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
           {modal.modalContent}
         </Modal>
       )}
