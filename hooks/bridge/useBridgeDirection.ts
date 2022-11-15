@@ -6,7 +6,7 @@ import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";
 
-export const useBridgeDirection = (fromChainId: ChainId, fromTokenAddress?: string, toChainId?: ChainId) => {
+export const useBridgeDirection = (fromChainId?: ChainId, fromTokenAddress?: string, toChainId?: ChainId) => {
   const bridgeConfig = useMemo(() => {
     let configs = bridgeConfigs.filter(
       (c) =>

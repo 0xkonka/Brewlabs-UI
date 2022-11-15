@@ -1,5 +1,5 @@
 import { BigNumber, Contract, ethers, Signer } from "ethers";
-import { bridgeConfig } from "config/constants/bridge";
+import { bridgeConfigs } from "config/constants/bridge";
 import { fetchTokenName } from "./token";
 import { getMediatorAddress, getNetworkLabel } from "./helpers";
 import { provider } from "utils/wagmi";
@@ -72,7 +72,7 @@ export const fetchToAmount = async (
 ) => {
   if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   const { homeChainId, homeMediatorAddress } =
-    bridgeConfig.find((bridge) => bridge.bridgeDirectionId === bridgeDirectionId) ?? bridgeConfig[0];
+  bridgeConfigs.find((bridge) => bridge.bridgeDirectionId === bridgeDirectionId) ?? bridgeConfigs[0];
 
   const isHome = homeChainId === toToken.chainId;
   const tokenAddress = isHome ? toToken.address : fromToken.address;
@@ -169,7 +169,7 @@ export const fetchTokenLimits = async (fromToken: BridgeToken, toToken: BridgeTo
       await provider({ chainId: toToken.chainId })
     );
 
-    const { wrappedForeignCurrencyAddress } = bridgeConfig[0];
+    const { wrappedForeignCurrencyAddress } = bridgeConfigs[0];
 
     const fromTokenAddress =
       fromToken.address === ethers.constants.AddressZero && fromToken.mode === "NATIVE"

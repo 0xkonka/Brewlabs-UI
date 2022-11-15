@@ -1,4 +1,8 @@
 import { ChainId } from "@brewlabs/sdk";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useAccount, useSigner } from "wagmi";
+
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
@@ -6,16 +10,13 @@ import { executeSignatures, TOKENS_CLAIMED } from "lib/bridge/amb";
 import { getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 
 import { getMessage, getRemainingSignatures, messageCallStatus } from "lib/bridge/message";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { provider } from "utils/wagmi";
-import { useAccount, useSigner } from "wagmi";
 
 const useExecution = () => {
-  const { foreignChainId, foreignAmbAddress, foreignAmbVersion } = useBridgeDirection();
   const { canSwitch, switchNetworkAsync } = useSwitchNetwork();
+  const { data: signer } = useSigner();
   const { chainId: providerChainId } = useActiveChainId();
-  const { data: signer } = useSigner()
+  const { foreignChainId, foreignAmbAddress, foreignAmbVersion } = useBridgeDirection(providerChainId);
 
   const [doRepeat, setDoRepeat] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -41,7 +42,7 @@ const useExecution = () => {
 
   const executeCallback = useCallback(
     async (msgData: any) => {
-      if(!signer) return
+      if (!signer) return;
 
       try {
         setExecuting(true);
@@ -77,15 +78,7 @@ const useExecution = () => {
         setExecuting(false);
       }
     },
-    [
-      signer,
-      foreignChainId,
-      foreignAmbVersion,
-      foreignAmbAddress,
-      showError,
-      switchChain,
-      isRightNetwork,
-    ]
+    [signer, foreignChainId, foreignAmbVersion, foreignAmbAddress, showError, switchChain, isRightNetwork]
   );
 
   useEffect(() => {
@@ -100,11 +93,11 @@ const useExecution = () => {
 };
 
 export const useClaim = () => {
-  const { homeChainId, homeAmbAddress, foreignChainId, foreignAmbAddress, requiredSignatures, validatorList } =
-    useBridgeDirection();
   const { chainId: providerChainId } = useActiveChainId();
-  const { connector } = useAccount()
+  const { connector } = useAccount();
   const { executeCallback, executing, executionTx } = useExecution();
+  const { homeChainId, homeAmbAddress, foreignChainId, foreignAmbAddress, requiredSignatures, validatorList } =
+    useBridgeDirection(providerChainId);
 
   const claim = useCallback(
     async (txHash: string, txMessage: any) => {
@@ -113,7 +106,7 @@ export const useClaim = () => {
       }
       let message = txMessage && txMessage.messageData && txMessage.signatures ? txMessage : null;
       if (!message) {
-        const homeProvider = await provider({chainId: homeChainId});
+        const homeProvider = await provider({ chainId: homeChainId });
         message = await getMessage(true, homeProvider, homeAmbAddress, txHash);
       }
       message.signatures = getRemainingSignatures(
@@ -122,7 +115,7 @@ export const useClaim = () => {
         requiredSignatures,
         validatorList
       );
-      const foreignProvider = await provider({chainId: foreignChainId});
+      const foreignProvider = await provider({ chainId: foreignChainId });
       const claimed = await messageCallStatus(foreignAmbAddress, foreignProvider, message.messageId);
       if (claimed) {
         throw Error(TOKENS_CLAIMED);
