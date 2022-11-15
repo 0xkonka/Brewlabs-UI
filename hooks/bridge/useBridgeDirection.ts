@@ -1,10 +1,15 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { ChainId } from "@brewlabs/sdk";
 
 import { bridgeConfigs } from "config/constants/bridge";
+import { setGlobalState, useGlobalState } from "state";
 import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useRouter } from "next/router";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import replaceBrowserHistory from "utils/replaceBrowserHistory";
 
 export const useBridgeDirection = (fromChainId?: ChainId, fromTokenAddress?: string, toChainId?: ChainId) => {
   const bridgeConfig = useMemo(() => {
@@ -77,4 +82,25 @@ export const useBridgeDirection = (fromChainId?: ChainId, fromTokenAddress?: str
     requiredSignatures,
     validatorList,
   };
+};
+
+export const useFromChainId = () => {
+  const [networkFrom] = useGlobalState("userBridgeFrom");
+  const { chainId } = useActiveChainId();
+  const { query } = useRouter();
+
+  let fromChainId = +(query.chainId ?? (+networkFrom > 0 ? networkFrom : chainId));
+
+  useEffect(() => {
+    if (!PAGE_SUPPORTED_CHAINS["bridge"].includes(fromChainId)) {
+      fromChainId = +networkFrom > 0 ? +networkFrom : PAGE_SUPPORTED_CHAINS["bridge"][0];
+      replaceBrowserHistory("chainId", fromChainId.toString());
+      setGlobalState("userBridgeFrom", fromChainId.toString());
+      setGlobalState("sessionChainId", fromChainId.toString())
+    } else if (fromChainId !== +networkFrom) {
+      setGlobalState("userBridgeFrom", fromChainId.toString());
+    }
+  }, [query.chainId, fromChainId, networkFrom]);
+
+  return fromChainId;
 };

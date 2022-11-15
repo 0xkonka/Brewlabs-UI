@@ -20,7 +20,7 @@ export const handleWalletError = (error: any, showError: (msg: string) => void) 
 };
 
 export const getNetworkLabel = (chainId: ChainId) => {
-  return CHAIN_LABLES[chainId];
+  return CHAIN_LABLES[chainId] ?? "No Network Selected";
 };
 
 export const getMediatorAddress = (chainId: ChainId) => {

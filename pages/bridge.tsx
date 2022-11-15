@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
 
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
+import { useFromChainId } from "hooks/bridge/useBridgeDirection";
+import { getNetworkLabel } from "lib/bridge/helpers";
 
 import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
@@ -19,6 +21,7 @@ import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
 
 const Bridge: NextPage = () => {
   const supportedNetworks = useSupportedNetworks()
+  const fromChainId = useFromChainId()
 
   const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
@@ -69,7 +72,7 @@ const Bridge: NextPage = () => {
             title="Bridge from"
             id="bridge_card_from"
             modal={{
-              buttonText: networkFrom,
+              buttonText: getNetworkLabel(+networkFrom),
               modalContent: (
                 <ChainSelector networks={supportedNetworks} selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)} />
               ),
@@ -124,7 +127,7 @@ const Bridge: NextPage = () => {
             id="bridge_card_to"
             active={locking}
             modal={{
-              buttonText: networkTo,
+              buttonText: getNetworkLabel(+networkTo),
               onClose: () => setLocking(false),
               openModal: locked,
               modalContent: locked ? (

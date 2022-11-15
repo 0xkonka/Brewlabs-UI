@@ -92,8 +92,8 @@ export function useStore(initialState: any) {
 
 const userState = {
   userPoolsStakeOnly: false,
-  userBridgeTo: "No network selected",
-  userBridgeFrom: "No network selected",
+  userBridgeTo: "0",
+  userBridgeFrom: "0",
   userBridgeLocked: false,
   userBridgeAmount: 0,
 };
