@@ -5,14 +5,15 @@ import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from 'wagmi'
 
 import { ConnectorNames } from 'config/constants/wallets';
-import replaceBrowserHistory from 'utils/replaceBrowserHistory'
 import { setGlobalState } from 'state';
+import { useReplaceQueryParams } from './useReplaceQueryParams';
 
 export function useSwitchNetworkLocal() {
+  const { replaceQueryParams } = useReplaceQueryParams();
   return useCallback(
     (chainId: number) => {
       setGlobalState("sessionChainId", chainId)
-      replaceBrowserHistory('chainId', chainId === ChainId.BSC_MAINNET ? null : chainId)
+      replaceQueryParams('chainId', chainId === ChainId.BSC_MAINNET ? null : chainId)
     },
     [],
   )

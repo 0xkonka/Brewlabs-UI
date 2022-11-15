@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
 
+import { bridgeConfigs } from "config/constants/bridge";
+import { BridgeToken } from "config/constants/types";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useFromChainId } from "hooks/bridge/useBridgeDirection";
 import { getNetworkLabel } from "lib/bridge/helpers";
@@ -22,6 +24,7 @@ import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
 const Bridge: NextPage = () => {
   const supportedNetworks = useSupportedNetworks()
   const fromChainId = useFromChainId()
+  const [supportedFromTokens, setSupportedFromTokens] = useState<BridgeToken[]>([]);
 
   const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
@@ -30,6 +33,19 @@ const Bridge: NextPage = () => {
   const [networkFrom] = useGlobalState("userBridgeFrom");
   const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
+
+  useEffect(() => {
+    const tmpTokens = [];
+    tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
+    tmpTokens.push(...bridgeConfigs.filter((c) => c.foreignChainId === fromChainId).map((config) => config.foreignToken));
+    tmpTokens.sort((a, b) => {
+      if (a.name > b.symbol) return -1;
+      if (a.symbol < b.symbol) return 1;
+      return 0;
+    });
+
+    setSupportedFromTokens(tmpTokens);
+  }, [fromChainId]);
 
   useEffect(() => {
     if (locked) {

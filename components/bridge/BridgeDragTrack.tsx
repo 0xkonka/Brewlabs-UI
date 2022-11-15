@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 import { motion } from "framer-motion";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { useGlobalState } from "../../state";
 import { NetworkOptions } from "../../config/constants/networks";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAction<boolean>> }) => {
   // Retrieve global state
@@ -34,9 +34,9 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
         dragConstraints={{ left: 0, right: 200 }}
         className="rounded-ful relative h-16 w-16 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
         style={
-          NetworkOptions.find((network) => network.name === networkFrom)
+          NetworkOptions.find((network) => network.id === +networkFrom)
             ? {
-                backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkFrom)?.image}')`,
+                backgroundImage: `url('${NetworkOptions.find((network) => network.id === +networkFrom)?.image}')`,
               }
             : {}
         }
@@ -62,9 +62,9 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
       <div
         className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dotted border-gray-400 bg-gray-200 bg-cover bg-no-repeat dark:border-gray-700 dark:bg-slate-800"
         style={
-          NetworkOptions.find((network) => network.name === networkTo)
+          NetworkOptions.find((network) => network.id === +networkTo)
             ? {
-                backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkTo)?.image}')`,
+                backgroundImage: `url('${NetworkOptions.find((network) => network.id === +networkTo)?.image}')`,
               }
             : {}
         }

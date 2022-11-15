@@ -6,8 +6,8 @@ export interface SerializedToken {
   isToken: boolean;
   address?: string;
   decimals: number;
-  symbol?: string;
-  name?: string;
+  symbol: string;
+  name: string;
   projectLink?: string;
 }
 
