@@ -33,9 +33,13 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
         onDrag={(event, info) => handleDrag(info)}
         dragConstraints={{ left: 0, right: 200 }}
         className="rounded-ful relative h-16 w-16 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
-        style={{
-          backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkFrom)?.image}')`,
-        }}
+        style={
+          NetworkOptions.find((network) => network.name === networkFrom)
+            ? {
+                backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkFrom)?.image}')`,
+              }
+            : {}
+        }
       ></motion.div>
 
       <motion.div
