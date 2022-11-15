@@ -60,7 +60,7 @@ const AnimationModal = ({
               className="absolute -top-0 -right-0 rounded-full bg-white p-2 dark:bg-zinc-900"
             >
               <span className="sr-only">Close</span>
-              <XMarkIcon className="h-4 w-4" />
+              <XMarkIcon className="h-4 w-4 dark:text-slate-400" />
             </motion.button>
           </motion.div>
         </motion.div>
