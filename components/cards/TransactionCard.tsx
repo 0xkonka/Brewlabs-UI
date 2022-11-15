@@ -117,7 +117,7 @@ const TransactionCard = ({ fromChain, toChain, date, amount, direction, tax }: T
         </div>
 
         <header>
-          <h4 className="flex items-center gap-3 text-xl">
+          <h4 className="flex items-center gap-3 text-xl dark:text-slate-500">
             {fromChain} <ChevronDoubleRightIcon className="h-4 w-4" /> {toChain}
           </h4>
           <h5 className=" text-gray-500">{date}</h5>
