@@ -135,7 +135,7 @@ const Bridge: NextPage = () => {
             }}
           >
             <div className="mt-8">
-              <div className="text-center text-2xl">{returnAmount}</div>
+              <div className="text-center text-2xl text-slate-400">{returnAmount}</div>
             </div>
           </CryptoCard>
         </div>

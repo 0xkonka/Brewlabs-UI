@@ -45,11 +45,11 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
         <div className="h-72 rounded-3xl border-t border-slate-100 bg-slate-300 bg-opacity-60 shadow-lg dark:border-slate-600 dark:bg-zinc-900 dark:bg-opacity-60">
           <div className="p-10">
             <header className="text-center">
-              <h4 className="text-2xl">{title}</h4>
+              <h4 className="text-2xl text-slate-600 dark:text-slate-300">{title}</h4>
 
               {modal?.buttonText && (
                 <button
-                  className="underline"
+                  className="underline text-gray-400"
                   onClick={() => {
                     setSelected(true);
                   }}
