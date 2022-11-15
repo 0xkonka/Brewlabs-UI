@@ -8,7 +8,7 @@ import { useBridgeDirection } from "./useBridgeDirection";
 export const useClaimableTransfers = () => {
   const { address: account } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
-  const { homeChainId, foreignChainId, getGraphEndpoint } = useBridgeDirection(providerChainId);
+  const { homeChainId, foreignChainId, getGraphEndpoint } = useBridgeDirection();
   const { txHash }: any = useBridgeContext();
   const [transfers, setTransfers] = useState<any[]>();
   const [loading, setLoading] = useState(false);

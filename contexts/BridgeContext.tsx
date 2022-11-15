@@ -22,7 +22,7 @@ export const BridgeProvider = ({ children }: any) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { data: signer } = useSigner();
 
-  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId } = useBridgeDirection(providerChainId);
+  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState("");
   const [amountInput, setAmountInput] = useState("");

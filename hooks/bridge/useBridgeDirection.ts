@@ -12,27 +12,24 @@ import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";
 
-export const useBridgeDirection = (fromChainId?: ChainId, fromTokenAddress?: string, toChainId?: ChainId) => {
+export const useBridgeDirection = () => {
+  const [fromChainId] = useGlobalState("userBridgeFrom");
+  const [toChainId] = useGlobalState("userBridgeTo");
+  const [fromToken] = useGlobalState("userBridgeFromToken");
+
   const bridgeConfig = useMemo(() => {
-    let configs = bridgeConfigs.filter(
+    const config = bridgeConfigs.find(
       (c) =>
-        (c.homeChainId === fromChainId && c.homeToken.address === fromTokenAddress) ||
-        (c.foreignChainId === fromChainId && c.foreignToken.address === fromTokenAddress)
+        (c.homeChainId === fromChainId &&
+          c.homeToken.address === fromToken?.address &&
+          c.foreignChainId === toChainId) ||
+        (c.foreignChainId === fromChainId &&
+          c.foreignToken.address === fromToken?.address &&
+          c.homeChainId === toChainId)
     );
 
-    if (configs.length > 0) {
-      let config = configs.find(
-        (c) =>
-          (c.homeChainId === fromChainId && c.foreignChainId === toChainId) ||
-          (c.foreignChainId === fromChainId && c.homeChainId === toChainId)
-      );
-
-      return config ?? configs[0];
-    } else {
-      let config = bridgeConfigs.find((c) => c.homeChainId === fromChainId || c.foreignChainId === fromChainId);
-      return config ?? bridgeConfigs[0];
-    }
-  }, [fromChainId, fromTokenAddress, toChainId]);
+    return config ?? bridgeConfigs[0];
+  }, [fromChainId, fromToken?.address, toChainId]);
 
   const { homeChainId, foreignChainId, homeGraphName, foreignGraphName, homeAmbAddress, foreignAmbAddress } =
     bridgeConfig;
@@ -99,10 +96,10 @@ export const useFromChainId = () => {
     if (!PAGE_SUPPORTED_CHAINS["bridge"].includes(chain?.id ?? 0)) {
       fromChainId = +networkFrom > 0 ? +networkFrom : PAGE_SUPPORTED_CHAINS["bridge"][0];
       replaceQueryParams("chainId", fromChainId.toString());
-      setGlobalState("userBridgeFrom", fromChainId.toString());
+      setGlobalState("userBridgeFrom", fromChainId);
       setGlobalState("sessionChainId", fromChainId.toString());
     } else if (fromChainId !== +networkFrom) {
-      setGlobalState("userBridgeFrom", fromChainId.toString());
+      setGlobalState("userBridgeFrom", fromChainId);
     }
   }, [chain, fromChainId, networkFrom]);
 

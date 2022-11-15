@@ -15,7 +15,7 @@ const useExecution = () => {
   const { canSwitch, switchNetworkAsync } = useSwitchNetwork();
   const { data: signer } = useSigner();
   const { chainId: providerChainId } = useActiveChainId();
-  const { foreignChainId, foreignAmbAddress, foreignAmbVersion } = useBridgeDirection(providerChainId);
+  const { foreignChainId, foreignAmbAddress, foreignAmbVersion } = useBridgeDirection();
 
   const [doRepeat, setDoRepeat] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -96,7 +96,7 @@ export const useClaim = () => {
   const { connector } = useAccount();
   const { executeCallback, executing, executionTx } = useExecution();
   const { homeChainId, homeAmbAddress, foreignChainId, foreignAmbAddress, requiredSignatures, validatorList } =
-    useBridgeDirection(providerChainId);
+    useBridgeDirection();
 
   const claim = useCallback(
     async (txHash: string, txMessage: any) => {
