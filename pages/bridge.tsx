@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ChainId } from "@brewlabs/sdk";
 import type { NextPage } from "next";
 
 import { bridgeConfigs } from "config/constants/bridge";
@@ -20,7 +21,6 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
-import { ChainId } from "@brewlabs/sdk";
 
 const Bridge: NextPage = () => {
   const supportedNetworks = useSupportedNetworks();
