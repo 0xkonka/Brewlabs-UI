@@ -30,11 +30,11 @@ const Bridge: NextPage = () => {
   const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
   const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
+  const [fromToken, setFromToken] = useGlobalState("userBridgeFromToken");
   const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
 
   const [supportedFromTokens, setSupportedFromTokens] = useState<BridgeToken[]>([]);
-  const [fromToken, setFromToken] = useState<BridgeToken>();
   const [toToken, setToToken] = useState<BridgeToken>();
   const [toChains, setToChains] = useState<ChainId[]>();
 
@@ -52,9 +52,9 @@ const Bridge: NextPage = () => {
       return 0;
     });
 
-    setNetworkFrom(fromChainId.toString());
+    setNetworkFrom(fromChainId);
     setSupportedFromTokens(tmpTokens);
-  }, [fromChainId]);
+  }, [fromChainId, setNetworkFrom]);
 
   useEffect(() => {
     if (fromToken?.chainId !== fromChainId) {
@@ -80,7 +80,7 @@ const Bridge: NextPage = () => {
     let _toChainId = +networkTo;
     if (!chainIds.includes(+networkTo)) {
       _toChainId = chainIds[0];
-      setNetworkTo(chainIds[0].toString());
+      setNetworkTo(chainIds[0]);
     }
 
     // set toToken
@@ -98,7 +98,7 @@ const Bridge: NextPage = () => {
     } else {
       setToToken(config?.homeToken);
     }
-  }, [fromChainId, fromToken]);
+  }, [fromChainId, fromToken, setNetworkTo]);
 
   useEffect(() => {
     if (locked) {
@@ -153,7 +153,7 @@ const Bridge: NextPage = () => {
               modalContent: (
                 <ChainSelector
                   networks={supportedNetworks}
-                  selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)}
+                  selectFn={(selectedValue) => setGlobalState("userBridgeFrom", +selectedValue)}
                 />
               ),
             }}
@@ -222,7 +222,7 @@ const Bridge: NextPage = () => {
               ) : (
                 <ChainSelector
                   networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
-                  selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)}
+                  selectFn={(selectedValue) => setGlobalState("userBridgeTo", +selectedValue)}
                 />
               ),
             }}

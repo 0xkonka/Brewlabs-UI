@@ -8,7 +8,8 @@ import storage from "redux-persist/lib/storage";
 import { updateVersion } from "./global/actions";
 
 import farmsReducer from "./farms";
-import multicall from './multicall/reducer'
+import multicall from "./multicall/reducer";
+import { BridgeToken } from "config/constants/types";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -90,10 +91,18 @@ export function useStore(initialState: any) {
   return useMemo(() => initializeStore(initialState), [initialState]);
 }
 
-const userState = {
+const userState: {
+  userPoolsStakeOnly: boolean;
+  userBridgeTo: number;
+  userBridgeFrom: number;
+  userBridgeFromToken: BridgeToken | undefined;
+  userBridgeLocked: boolean;
+  userBridgeAmount: number;
+} = {
   userPoolsStakeOnly: false,
-  userBridgeTo: "0",
-  userBridgeFrom: "0",
+  userBridgeTo: 0,
+  userBridgeFrom: 0,
+  userBridgeFromToken: undefined,
   userBridgeLocked: false,
   userBridgeAmount: 0,
 };

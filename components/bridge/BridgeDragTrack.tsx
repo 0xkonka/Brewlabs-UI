@@ -53,7 +53,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
 
       <div className="-z-10 h-36 w-1 animate-pulse border-r-4 border-dotted border-gray-300 dark:border-gray-700 sm:h-1 sm:w-full sm:border-t-4" />
 
-      {networkFrom !== "No network selected" && (
+      {networkFrom !== 0 && (
         <div className="slide-x absolute left-14">
           <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500" />
         </div>
