@@ -36,7 +36,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
   return (
     <Modal open={open} onClose={onDismiss}>
       <div className="p-4 font-brand">
-        <h5 className="mb-2 text-2xl">Switch Network</h5>
+        <h5 className="mb-2 text-2xl dark:text-slate-400">Switch Network</h5>
         <p className="dark:text-gray-500">Select a network</p>
 
         {!canSwitch && (

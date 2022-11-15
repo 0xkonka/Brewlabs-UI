@@ -10,7 +10,7 @@ type ChainSelectorProps = {
 const ChainSelector = ({ networks, selectFn, onDismiss }: ChainSelectorProps) => {
   return (
     <div className="p-4 font-brand">
-      <h5 className="mb-2 text-2xl">Networks</h5>
+      <h5 className="mb-2 text-2xl dark:text-slate-400">Networks</h5>
       <p className="dark:text-gray-500">Select a network to send fund from</p>
 
       <ul role="list" className="mt-4 divide-y divide-gray-200 dark:divide-gray-700">

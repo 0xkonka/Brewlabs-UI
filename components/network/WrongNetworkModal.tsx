@@ -28,7 +28,7 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
   return (
     <Modal open={open} onClose={() => {}}>
       <div className="p-4 font-brand">
-        <h5 className="mb-2 text-2xl">You are in wrong network</h5>
+        <h5 className="mb-2 text-2xl dark:text-slate-400">You are in wrong network</h5>
 
         {errorMsg && (
           <div className="relative mt-2 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700" role="alert">
@@ -55,13 +55,13 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
               src={NetworkOptions.find((n) => n.id === chain?.id)?.image}
               alt=""
             />
-            <span>{"=>"}</span>
+            <span className="dark:text-slate-400">{"=>"}</span>
             <img className="ml-3 mr-auto h-10 w-10 rounded-full" src={currentChain?.image} alt="" />
           </div>
 
           {canSwitch ? (
             <button
-              className="dark:text-white-700 m-auto flex items-center rounded border border-blue-500 bg-transparent py-2 px-4 hover:border-transparent hover:bg-blue-500 hover:text-white"
+              className="dark:text-gray-500 dark:hover:text-white m-auto flex items-center rounded border border-blue-500 bg-transparent py-2 px-4 hover:border-transparent hover:bg-blue-500 hover:text-white"
               disabled={isLoading}
               onClick={() => switchNetwork(currentChain?.id || ChainId.BSC_MAINNET)}
             >
