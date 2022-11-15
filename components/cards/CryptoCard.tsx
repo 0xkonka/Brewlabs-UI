@@ -69,7 +69,7 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
         </div>
       </motion.div>
 
-      {selected && modal && (
+      {selected && modal && (id === "bridge_card_to" || modal.openModal ) && (
         <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
           {modal.modalContent}
         </Modal>
