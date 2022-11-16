@@ -82,7 +82,8 @@ export const BridgeProvider = ({ children }: any) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { data: signer } = useSigner();
 
-  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId } = useBridgeDirection();
+  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId, homeToken, foreignToken } =
+    useBridgeDirection();
 
   const [receiver, setReceiver] = useState("");
   const [amountInput, setAmountInput] = useState("");
@@ -252,8 +253,7 @@ export const BridgeProvider = ({ children }: any) => {
 
   const setDefaultToken = useCallback(
     async (chainId: ChainId, force = false) => {
-      const token =
-        chainId === bridgeConfigs[0].homeChainId ? bridgeConfigs[0].homeToken : bridgeConfigs[0].foreignToken;
+      const token = chainId === homeChainId ? homeToken : foreignToken;
       if (force || !fromToken || (token?.chainId !== fromToken?.chainId && token?.address !== fromToken?.address)) {
         await setToken(token);
       }

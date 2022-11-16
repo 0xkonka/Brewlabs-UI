@@ -127,7 +127,7 @@ export interface BridgeToken extends SerializedToken {
 }
 export interface BridgeDirectionConfig {
   bridgeDirectionId: number;
-  version: Version;
+  version?: Version;
   homeChainId: ChainId;
   foreignChainId: ChainId;
   homeToken: BridgeToken;

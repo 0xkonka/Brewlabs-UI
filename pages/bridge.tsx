@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
+import { useTheme } from "next-themes";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
@@ -31,7 +32,6 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
-import { useTheme } from "next-themes";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -58,11 +58,9 @@ const Bridge: NextPage = () => {
 
   const [networkFrom, setNetworkFrom] = useGlobalState("userBridgeFrom");
   const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
-  // const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
   const [bridgeFromToken, setBridgeFromToken] = useGlobalState("userBridgeFromToken");
   const [locking, setLocking] = useState(false);
-  const [returnAmount, setReturnAmount] = useState(0.0);
 
   const [supportedFromTokens, setSupportedFromTokens] = useState<BridgeToken[]>([]);
   const [bridgeToToken, setBridgeToToken] = useState<BridgeToken>();
@@ -78,6 +76,7 @@ const Bridge: NextPage = () => {
   const {
     txHash,
     fromToken,
+    setToken,
     fromBalance,
     fromAmount,
     setFromBalance,
@@ -106,8 +105,8 @@ const Bridge: NextPage = () => {
       ...bridgeConfigs.filter((c) => c.foreignChainId === fromChainId).map((config) => config.foreignToken)
     );
     tmpTokens.sort((a, b) => {
-      if (a.name > b.symbol) return -1;
-      if (a.symbol < b.symbol) return 1;
+      if (a.name < b.symbol) return -1;
+      if (a.symbol > b.symbol) return 1;
       return 0;
     });
 
@@ -152,6 +151,7 @@ const Bridge: NextPage = () => {
           c.foreignToken.address === bridgeFromToken?.address &&
           c.homeChainId === _toChainId)
     );
+
     if (config?.homeToken.address === bridgeFromToken?.address) {
       setBridgeToToken(config?.foreignToken);
     } else {
@@ -223,6 +223,7 @@ const Bridge: NextPage = () => {
 
   const fromTokenSelected = (e: any) => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
+    setToken(supportedFromTokens.find((token) => token.address === e.target.value)!)
   };
 
   const unlockButtonDisabled =
@@ -232,10 +233,14 @@ const Bridge: NextPage = () => {
     !!fromToken && allowed && !loading && !toAmountLoading && isConnected && chain?.id === fromToken?.chainId;
 
   const onPercentSelected = (index: number) => {
-    const realPercentages = [100, 10, 25, 50, 75]
+    const realPercentages = [100, 10, 25, 50, 75];
     if (fromBalance && fromToken) {
-      setAmountInput(ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString());
-      setAmount(ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString());
+      setAmountInput(
+        ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString()
+      );
+      setAmount(
+        ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString()
+      );
     }
     setPercent(index);
   };
@@ -377,7 +382,7 @@ const Bridge: NextPage = () => {
                   <select
                     id="currency"
                     name="currency"
-                    value={fromToken?.address}
+                    value={bridgeFromToken?.address}
                     onChange={fromTokenSelected}
                     className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
                   >
@@ -440,7 +445,7 @@ const Bridge: NextPage = () => {
             active={locking}
             modal={{
               buttonText: getNetworkLabel(+networkTo),
-              onClose: () => setLocking(false),
+              onClose: () => setLocked(false),
               openModal: locked,
               modalContent: locked ? (
                 <ConfirmBridgeMessage />

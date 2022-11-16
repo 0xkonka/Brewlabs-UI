@@ -13,7 +13,7 @@ const Input = (props: InputProps): ReactElement => {
     <input
       type="number"
       autoComplete="off"
-      defaultValue={value}
+      value={value}
       placeholder={placeholder}
       {...props}
       className="block w-full rounded-md border border-gray-300 py-2 pl-24 pr-12 text-black focus:border-amber-300 focus:ring-amber-300 dark:bg-zinc-800 dark:text-white sm:text-sm"
