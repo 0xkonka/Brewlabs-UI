@@ -1,9 +1,11 @@
 import { ChainId } from "@brewlabs/sdk";
 import { utils } from "ethers";
 import { Connector } from "wagmi";
+
 import { bridgeConfigs } from "config/constants/bridge";
-import { CHAIN_LABLES } from "config/constants/networks";
+import { CHAIN_LABLES, SupportedChains } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
+import { bsc } from "contexts/wagmi";
 
 const IMPOSSIBLE_ERROR = "Unable to perform the operation. Reload the application and try again.";
 
@@ -22,6 +24,21 @@ export const handleWalletError = (error: any, showError: (msg: string) => void) 
 
 export const getNetworkLabel = (chainId: ChainId) => {
   return CHAIN_LABLES[chainId] ?? "No Network Selected";
+};
+
+export const getExplorerLink = (chainId: ChainId, type: string, addressOrHash: string) => {
+  const explorerUrl = (SupportedChains.find((c) => c.id === chainId) ?? bsc).blockExplorers?.default.url;
+
+  switch (type) {
+    case "address":
+      return `${explorerUrl}/address/${addressOrHash}`;
+    case "token":
+      return `${explorerUrl}/token/${addressOrHash}`;
+    case "transaction":
+      return `${explorerUrl}/tx/${addressOrHash}`;
+    default:
+      return explorerUrl;
+  }
 };
 
 export const getMediatorAddress = (bridgeDirectionId: number, chainId: ChainId) => {

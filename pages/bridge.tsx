@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import { toast } from "react-toastify";
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
-import Skeleton from "react-loading-skeleton";
-import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
 import { BridgeToken } from "config/constants/types";
-import { useApproval } from "hooks/bridge/useApproval";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
+import { useApproval } from "hooks/bridge/useApproval";
 import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
@@ -32,6 +32,7 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -223,7 +224,7 @@ const Bridge: NextPage = () => {
 
   const fromTokenSelected = (e: any) => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
-    setToken(supportedFromTokens.find((token) => token.address === e.target.value)!)
+    setToken(supportedFromTokens.find((token) => token.address === e.target.value)!);
   };
 
   const unlockButtonDisabled =
@@ -333,6 +334,8 @@ const Bridge: NextPage = () => {
         }
         summary="Easily transfer tokens with confidence."
       />
+
+      <BridgeLoadingModal />
 
       <Container>
         <div className="relative sm:grid sm:grid-cols-11 sm:items-center">
