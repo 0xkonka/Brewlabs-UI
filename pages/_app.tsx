@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { SWRConfig } from "swr";
 
 import "react-toastify/dist/ReactToastify.css";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";

@@ -7,10 +7,10 @@ type CryptoCardProps = {
   id: string;
   title?: string;
   active?: boolean;
-  children: ReactNode;
   tokenPrice: number;
+  children: ReactNode;
   modal: {
-    disableAutoCloseOnClick?: boolean
+    disableAutoCloseOnClick?: boolean;
     openModal?: boolean;
     onOpen?: () => void;
     onClose?: () => void;
@@ -52,10 +52,10 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCa
 
               {modal?.buttonText && (
                 <button
-                  className="underline text-gray-400"
+                  className="text-gray-400 underline"
                   onClick={() => {
                     setSelected(true);
-                    if(modal.onOpen) modal.onOpen()
+                    if (modal.onOpen) modal.onOpen();
                   }}
                 >
                   {modal.buttonText}
@@ -70,7 +70,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCa
         </div>
       </motion.div>
 
-      {selected && modal && (id === "bridge_card_to" || modal.openModal ) && (
+      {selected && modal && (id === "bridge_card_to" || modal.openModal) && (
         <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
           {modal.modalContent}
         </Modal>

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
+import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -30,6 +31,7 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import { useTheme } from "next-themes";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -48,6 +50,7 @@ const useDelay = (fn: any, ms: number) => {
 const percents = ["MAX", "10%", "25%", "50%", "75%"];
 
 const Bridge: NextPage = () => {
+  const { theme } = useTheme();
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
   const { address: account, isConnected } = useAccount();
@@ -214,12 +217,9 @@ const Bridge: NextPage = () => {
 
   const updateAmount = useCallback(() => setAmount(amountInput), [amountInput, setAmount]);
   const delayedSetAmount = useDelay(updateAmount, 500);
-  const showError = useCallback(
-    (msg: any) => {
-      if (msg) toast.error(msg);
-    },
-    []
-  );
+  const showError = useCallback((msg: any) => {
+    if (msg) toast.error(msg);
+  }, []);
 
   const fromTokenSelected = (e: any) => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
@@ -350,9 +350,22 @@ const Bridge: NextPage = () => {
             }}
           >
             <div className="mx-auto mt-4 max-w-md">
-              <label htmlFor="price" className="block text-sm font-medium text-gray-400">
-                Token and Amount
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="price" className="text-sm font-medium text-gray-400">
+                  Token and Amount
+                </label>
+                {balanceLoading ? (
+                  <Skeleton
+                    width={80}
+                    baseColor={theme === "dark" ? "#3e3e3e" : "#bac3cf"}
+                    highlightColor={theme === "dark" ? "#686363" : "#747c87"}
+                  />
+                ) : (
+                  <label className="text-sm font-medium text-gray-400">
+                    {formatValue(fromBalance, fromToken?.decimals)}
+                  </label>
+                )}
+              </div>
               <div className="relative mt-1 rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 flex items-center">
                   <label htmlFor="currency" className="sr-only">
