@@ -2,8 +2,8 @@ import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import { NetworkOptions } from "../config/constants/networks";
 
 type CrossChainIconsProps = {
-  chainOne: string;
-  chainTwo: string;
+  chainOne: number;
+  chainTwo: number;
 };
 
 const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
@@ -13,7 +13,7 @@ const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
         className="-mr-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
         style={{
           backgroundImage: `url('${
-            NetworkOptions.find((network) => network.name === chainOne)?.image
+            NetworkOptions.find((network) => network.id === chainOne)?.image
           }')`,
         }}
       />
@@ -24,7 +24,7 @@ const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
         className="-ml-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
         style={{
           backgroundImage: `url('${
-            NetworkOptions.find((network) => network.name === chainTwo)?.image
+            NetworkOptions.find((network) => network.id === chainTwo)?.image
           }')`,
         }}
       />

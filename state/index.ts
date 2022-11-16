@@ -5,8 +5,11 @@ import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import farmsReducer from "./farms";
 import { updateVersion } from "./global/actions";
+
+import farmsReducer from "./farms";
+import multicall from "./multicall/reducer";
+import { BridgeToken } from "config/constants/types";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -22,6 +25,7 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     farms: farmsReducer,
+    multicall,
   })
 );
 
@@ -87,10 +91,18 @@ export function useStore(initialState: any) {
   return useMemo(() => initializeStore(initialState), [initialState]);
 }
 
-const userState = {
+const userState: {
+  userPoolsStakeOnly: boolean;
+  userBridgeTo: number;
+  userBridgeFrom: number;
+  userBridgeFromToken: BridgeToken | undefined;
+  userBridgeLocked: boolean;
+  userBridgeAmount: number;
+} = {
   userPoolsStakeOnly: false,
-  userBridgeTo: "No network selected",
-  userBridgeFrom: "No network selected",
+  userBridgeTo: 0,
+  userBridgeFrom: 0,
+  userBridgeFromToken: undefined,
   userBridgeLocked: false,
   userBridgeAmount: 0,
 };

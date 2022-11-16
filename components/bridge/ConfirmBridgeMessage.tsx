@@ -1,13 +1,17 @@
 import { ReactElement } from "react";
+import { useBridgeContext } from "contexts/BridgeContext";
+import { getNetworkLabel } from "lib/bridge/helpers";
 import { useGlobalState } from "../../state";
-import CrossChainIcons from "../../components/CrossChainIcons";
+import CrossChainIcons from "../CrossChainIcons";
 import Button from "../Button";
 
 const ConfirmBridgeMessage = (): ReactElement => {
+  const { amountInput, fromToken, toToken } = useBridgeContext();
+
   const [amount] = useGlobalState("userBridgeAmount");
   const [networkTo] = useGlobalState("userBridgeTo");
   const [networkFrom] = useGlobalState("userBridgeFrom");
-  const [locked, setLocked] = useGlobalState("userBridgeLocked");
+  const [, setLocked] = useGlobalState("userBridgeLocked");
 
   return (
     <div className="p-8">
@@ -19,9 +23,9 @@ const ConfirmBridgeMessage = (): ReactElement => {
           <p className="text-sm text-gray-500">
             You are about to send{" "}
             <span className="font-bolder text-brand">
-              {amount} BREWLABS from the {networkFrom}
+              {amountInput} {fromToken?.symbol} from the {getNetworkLabel(networkFrom)}
             </span>{" "}
-            network to the <span className="font-bolder text-brand">{networkTo}</span> network.
+            network to the <span className="font-bolder text-brand">{getNetworkLabel(networkTo)}</span> network.
           </p>
         </div>
       </div>

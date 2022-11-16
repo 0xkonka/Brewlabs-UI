@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 import { motion } from "framer-motion";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { useGlobalState } from "../../state";
 import { NetworkOptions } from "../../config/constants/networks";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAction<boolean>> }) => {
   // Retrieve global state
@@ -33,9 +33,13 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
         onDrag={(event, info) => handleDrag(info)}
         dragConstraints={{ left: 0, right: 200 }}
         className="rounded-ful relative h-16 w-16 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
-        style={{
-          backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkFrom)?.image}')`,
-        }}
+        style={
+          NetworkOptions.find((network) => network.id === +networkFrom)
+            ? {
+                backgroundImage: `url('${NetworkOptions.find((network) => network.id === +networkFrom)?.image}')`,
+              }
+            : {}
+        }
       ></motion.div>
 
       <motion.div
@@ -49,7 +53,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
 
       <div className="-z-10 h-36 w-1 animate-pulse border-r-4 border-dotted border-gray-300 dark:border-gray-700 sm:h-1 sm:w-full sm:border-t-4" />
 
-      {networkFrom !== "No network selected" && (
+      {networkFrom !== 0 && (
         <div className="slide-x absolute left-14">
           <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500" />
         </div>
@@ -57,9 +61,13 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
 
       <div
         className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dotted border-gray-400 bg-gray-200 bg-cover bg-no-repeat dark:border-gray-700 dark:bg-slate-800"
-        style={{
-          backgroundImage: `url('${NetworkOptions.find((network) => network.name === networkTo)?.image}')`,
-        }}
+        style={
+          NetworkOptions.find((network) => network.id === +networkTo)
+            ? {
+                backgroundImage: `url('${NetworkOptions.find((network) => network.id === +networkTo)?.image}')`,
+              }
+            : {}
+        }
       ></div>
     </div>
   );

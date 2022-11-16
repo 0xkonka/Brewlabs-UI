@@ -7,16 +7,19 @@ type CryptoCardProps = {
   id: string;
   title?: string;
   active?: boolean;
+  tokenPrice: number;
   children: ReactNode;
   modal: {
+    disableAutoCloseOnClick?: boolean;
     openModal?: boolean;
-    onClose?: any;
+    onOpen?: () => void;
+    onClose?: () => void;
     buttonText: string;
     modalContent: ReactElement;
   };
 };
 
-const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => {
+const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCardProps) => {
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -45,13 +48,14 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
         <div className="h-72 rounded-3xl border-t border-slate-100 bg-slate-300 bg-opacity-60 shadow-lg dark:border-slate-600 dark:bg-zinc-900 dark:bg-opacity-60">
           <div className="p-10">
             <header className="text-center">
-              <h4 className="text-2xl">{title}</h4>
+              <h4 className="text-2xl text-slate-600 dark:text-slate-300">{title}</h4>
 
               {modal?.buttonText && (
                 <button
-                  className="underline"
+                  className="text-gray-400 underline"
                   onClick={() => {
                     setSelected(true);
+                    if (modal.onOpen) modal.onOpen();
                   }}
                 >
                   {modal.buttonText}
@@ -61,13 +65,13 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
 
             {children}
 
-            <h5 className="mt-6 text-center dark:text-gray-500">Current price: 0.056</h5>
+            <h5 className="mt-6 text-center dark:text-gray-500">Current price: {tokenPrice}</h5>
           </div>
         </div>
       </motion.div>
 
-      {selected && modal && (
-        <Modal closeFn={closeSelected} layoutId={id}>
+      {selected && modal && (id === "bridge_card_to" || modal.openModal) && (
+        <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
           {modal.modalContent}
         </Modal>
       )}
