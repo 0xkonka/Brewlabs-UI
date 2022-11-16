@@ -225,17 +225,20 @@ const Bridge: NextPage = () => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
   };
 
-  const calculateReturn = (inputAmount: number) => {
-    // setAmount(inputAmount);
-    // // Do some stuff, this is placeholder logic
-    // setReturnAmount(inputAmount * 1.1);
-  };
-
   const unlockButtonDisabled =
     !fromToken || allowed || toAmountLoading || !(isConnected && chain?.id === fromToken?.chainId);
 
   const transferButtonEnabled =
     !!fromToken && allowed && !loading && !toAmountLoading && isConnected && chain?.id === fromToken?.chainId;
+
+  const onPercentSelected = (index: number) => {
+    const realPercentages = [100, 10, 25, 50, 75]
+    if (fromBalance && fromToken) {
+      setAmountInput(ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString());
+      setAmount(ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString());
+    }
+    setPercent(index);
+  };
 
   const approveValid = useCallback(() => {
     if (!chain?.id) {
@@ -386,7 +389,25 @@ const Bridge: NextPage = () => {
                   </select>
                 </div>
 
-                <InputNumber value={0.0} name="bridge_amount" onBlurFn={calculateReturn} />
+                <InputNumber
+                  name="bridge_amount"
+                  placeholder={"0.0"}
+                  value={amountInput}
+                  onKeyPress={(e: any) => {
+                    if (e.key === ".") {
+                      if (e.target.value.includes(".")) {
+                        e.preventDefault();
+                      }
+                    } else if (Number.isNaN(Number(e.key))) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onKeyUp={delayedSetAmount}
+                  onChange={(event) => {
+                    setPercent(0);
+                    setAmountInput(event.target.value);
+                  }}
+                />
 
                 <div className="absolute inset-y-0 right-0 flex items-center">
                   <label htmlFor="currency" className="sr-only">
@@ -396,7 +417,7 @@ const Bridge: NextPage = () => {
                     id="currency"
                     name="currency"
                     value={percent}
-                    onChange={(e) => setPercent(+e.target.value)}
+                    onChange={(e) => onPercentSelected(+e.target.value)}
                     className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
                   >
                     {percents.map((val, idx) => (
@@ -433,8 +454,17 @@ const Bridge: NextPage = () => {
             }}
           >
             <div className="mt-8">
-              <div className="text-center text-2xl text-slate-400">
-                {returnAmount} {bridgeToToken?.symbol}
+              <div className="flex justify-center text-2xl text-slate-400">
+                {toAmountLoading ? (
+                  <Skeleton
+                    width={100}
+                    baseColor={theme === "dark" ? "#3e3e3e" : "#bac3cf"}
+                    highlightColor={theme === "dark" ? "#686363" : "#747c87"}
+                  />
+                ) : (
+                  <span>{formatValue(toAmount, bridgeToToken?.decimals)}</span>
+                )}
+                <span className="ml-1"> {bridgeToToken?.symbol}</span>
               </div>
             </div>
           </CryptoCard>

@@ -1,28 +1,21 @@
-import { ReactElement } from "react";
+import { InputHTMLAttributes, ReactElement } from "react";
 
-type InputProps = {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
-  value?: number;
+  value?: string;
   placeholder?: string;
-  onBlurFn?: (inputValue: number) => void;
 };
 
-const Input = ({ name, value, placeholder, onBlurFn }: InputProps): ReactElement => {
-  // Fires on blur
-  const onBlur = (inputValue: number) => {
-    if (onBlurFn) {
-      onBlurFn(inputValue);
-    }
-  };
+const Input = (props: InputProps): ReactElement => {
+  const {value, placeholder} = props
 
   return (
     <input
-      name={name}
+      type="number"
       autoComplete="off"
       defaultValue={value}
       placeholder={placeholder}
-      type="number"
-      onBlur={(event) => onBlur(parseInt(event.currentTarget.value))}
+      {...props}
       className="block w-full rounded-md border border-gray-300 py-2 pl-24 pr-12 text-black focus:border-amber-300 focus:ring-amber-300 dark:bg-zinc-800 dark:text-white sm:text-sm"
     />
   );

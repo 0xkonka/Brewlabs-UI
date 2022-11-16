@@ -121,12 +121,13 @@ export interface DeserializedPoolConfig extends PoolConfigBaseProps {
 }
 
 export interface BridgeToken extends SerializedToken {
-  mode?: string
-  mediator?: string
-  helperContractAddress?: string
+  mode?: string;
+  mediator?: string;
+  helperContractAddress?: string;
 }
 export interface BridgeDirectionConfig {
   bridgeDirectionId: number;
+  version: Version;
   homeChainId: ChainId;
   foreignChainId: ChainId;
   homeToken: BridgeToken;

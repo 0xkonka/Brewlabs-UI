@@ -11,7 +11,7 @@ export const useMediatorInfo = () => {
   const { address: account } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
 
-  const { homeChainId, homeMediatorAddress, foreignChainId, foreignMediatorAddress } = useBridgeDirection();
+  const { version, homeChainId, homeMediatorAddress, foreignChainId, foreignMediatorAddress } = useBridgeDirection();
   const [currentDay, setCurrentDay] = useState<string>();
   const [homeFeeManagerAddress, setHomeFeeManagerAddress] = useState<string>();
   const [foreignFeeManagerAddress, setForeignFeeManagerAddress] = useState<string>();
@@ -85,15 +85,21 @@ export const useMediatorInfo = () => {
 
         setHomeFeeManagerAddress(homeManagerAddress);
 
-        const foreignEthersProvider = await provider({ chainId: foreignChainId });
-        const foreignMediatorContract = new Contract(foreignMediatorAddress, abi, foreignEthersProvider);
-        const foreignManagerAddress = await foreignMediatorContract.feeManager();
-        setForeignFeeManagerAddress(foreignManagerAddress);
+        let foreignManagerAddress
+        if(version) {
+          const foreignEthersProvider = await provider({ chainId: foreignChainId });
+          const foreignMediatorContract = new Contract(foreignMediatorAddress, abi, foreignEthersProvider);
+          foreignManagerAddress = await foreignMediatorContract.feeManager();
+          setForeignFeeManagerAddress(foreignManagerAddress);
+        } else {
+          foreignManagerAddress = homeFeeManagerAddress
+          setForeignFeeManagerAddress(homeManagerAddress)
+        }
 
         await Promise.all([
           checkRewardAddress(
-            providerChainId === homeChainId ? homeManagerAddress : foreignManagerAddress,
-            providerChainId === homeChainId ? homeChainId : foreignChainId
+            (providerChainId === homeChainId || !version) ? homeManagerAddress : foreignManagerAddress,
+            (providerChainId === homeChainId || !version) ? homeChainId : foreignChainId
           ),
           calculateFees(homeManagerAddress, homeChainId),
         ]);

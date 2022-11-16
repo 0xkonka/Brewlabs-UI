@@ -71,7 +71,7 @@ export const fetchToAmount = async (
   feeManagerAddress: string
 ) => {
   if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
-  const { homeChainId, homeMediatorAddress } =
+  const { version, homeChainId, homeMediatorAddress } =
     bridgeConfigs.find((bridge) => bridge.bridgeDirectionId === bridgeDirectionId) ?? bridgeConfigs[0];
 
   const isHome = homeChainId === toToken.chainId;
@@ -82,7 +82,7 @@ export const fetchToAmount = async (
   }
 
   try {
-    const ethersProvider = await provider({ chainId: homeChainId });
+    const ethersProvider = await provider({ chainId: version ? fromToken.chainId : homeChainId });
     const abi = ["function calculateFee(bytes32, address, uint256) view returns (uint256)"];
     const feeManagerContract = new Contract(feeManagerAddress, abi, ethersProvider);
 
