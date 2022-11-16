@@ -1,6 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import { serializeTokens } from "./tokens";
-import { BridgeDirectionConfig } from "./types";
+import { BridgeDirectionConfig, Version } from "./types";
 
 export const GRAPH_HEALTH_ENDPOINT = "https://api.thegraph.com/index-node/graphql";
 export const POLLING_INTERVAL = 5000;
@@ -8,6 +8,7 @@ export const POLLING_INTERVAL = 5000;
 export const bridgeConfigs: BridgeDirectionConfig[] = [
   {
     bridgeDirectionId: 1,
+    version: Version.V1,
     homeChainId: ChainId.GOERLI,
     foreignChainId: ChainId.BSC_TESTNET,
     homeToken: serializeTokens(ChainId.GOERLI).test,
