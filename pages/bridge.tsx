@@ -70,8 +70,8 @@ const Bridge: NextPage = () => {
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
 
-  const [balanceLoading, setBalanceLoading] = useState(true);
-  const [toBalanceLoading, setToBalanceLoading] = useState(true);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [toBalanceLoading, setToBalanceLoading] = useState(false);
 
   const { homeChainId, foreignChainId, getBridgeChainId, getTotalConfirms } = useBridgeDirection();
   const {
