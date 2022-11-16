@@ -13,8 +13,68 @@ import { getNetworkLabel } from "lib/bridge/helpers";
 import { BridgeToken } from "config/constants/types";
 import { ChainId } from "@brewlabs/sdk";
 
-export const BridgeContext = React.createContext({});
+export interface BridgeContextState {
+  amountInput: string;
+  setAmountInput: React.Dispatch<React.SetStateAction<string>>;
+  fromAmount: BigNumber;
+  toAmount: BigNumber;
+  toAmountLoading: boolean;
+  setAmount: (inputAmount: string) => Promise<void>;
+  fromBalance: BigNumber;
+  setFromBalance: React.Dispatch<React.SetStateAction<BigNumber>>;
+  toBalance: BigNumber;
+  setToBalance: React.Dispatch<React.SetStateAction<BigNumber>>;
+  // tokens
+  fromToken: BridgeToken | null;
+  toToken: BridgeToken | null;
+  setToToken: (newToToken: BridgeToken) => void;
+  setToken: (tokenWithoutMode: BridgeToken, isQueryToken?: boolean) => void;
+  switchTokens: () => void;
+  // bridge
+  transfer: () => Promise<void>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  txHash: string | undefined;
+  setTxHash: React.Dispatch<React.SetStateAction<string | undefined>>;
+  // misc
+  receiver: string;
+  setReceiver: React.Dispatch<React.SetStateAction<string>>;
+  shouldReceiveNativeCur: boolean;
+  setShouldReceiveNativeCur: React.Dispatch<React.SetStateAction<boolean>>;
+  currentDay: string | undefined;
+}
 
+const emptyHandler = async () => {};
+export const BridgeContext = React.createContext<BridgeContextState>({
+  amountInput: "",
+  setAmountInput: () => "",
+  fromAmount: BigNumber.from(0),
+  toAmount: BigNumber.from(0),
+  toAmountLoading: false,
+  setAmount: emptyHandler,
+  fromBalance: BigNumber.from(0),
+  setFromBalance: () => BigNumber.from(0),
+  toBalance: BigNumber.from(0),
+  setToBalance: () => BigNumber.from(0),
+  // tokens
+  fromToken: null,
+  toToken: null,
+  setToToken: emptyHandler,
+  setToken: emptyHandler,
+  switchTokens: emptyHandler,
+  // bridge
+  transfer: emptyHandler,
+  loading: true,
+  setLoading: () => false,
+  txHash: undefined,
+  setTxHash: () => undefined,
+  // misc
+  receiver: "",
+  setReceiver: () => "",
+  shouldReceiveNativeCur: false,
+  setShouldReceiveNativeCur: () => false,
+  currentDay: undefined,
+});
 export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }: any) => {
@@ -39,7 +99,7 @@ export const BridgeProvider = ({ children }: any) => {
   const [shouldReceiveNativeCur, setShouldReceiveNativeCur] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
-  const [txHash, setTxHash] = useState();
+  const [txHash, setTxHash] = useState<string>();
 
   const {
     homeFeeManagerAddress,
@@ -191,7 +251,8 @@ export const BridgeProvider = ({ children }: any) => {
 
   const setDefaultToken = useCallback(
     async (chainId: ChainId, force = false) => {
-      const token = chainId === bridgeConfigs[0].homeChainId ? bridgeConfigs[0].homeToken : bridgeConfigs[0].foreignToken;
+      const token =
+        chainId === bridgeConfigs[0].homeChainId ? bridgeConfigs[0].homeToken : bridgeConfigs[0].foreignToken;
       if (force || !fromToken || (token?.chainId !== fromToken?.chainId && token?.address !== fromToken?.address)) {
         await setToken(token);
       }

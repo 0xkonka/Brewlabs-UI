@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import type { NextPage } from "next";
 
 import { bridgeConfigs } from "config/constants/bridge";
 import { BridgeToken } from "config/constants/types";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
-import { useFromChainId } from "hooks/bridge/useBridgeDirection";
-import { getNetworkLabel } from "lib/bridge/helpers";
+import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
+import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 
 import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
@@ -21,24 +21,81 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
+import { useTokenLimits } from "hooks/bridge/useTokenLimits";
+import { useApproval } from "hooks/bridge/useApproval";
+import { useTokenPrices } from "hooks/useTokenPrice";
+import { useAccount, useNetwork } from "wagmi";
+import { fetchTokenBalance } from "lib/bridge/token";
+import { BigNumber, ethers } from "ethers";
+import { toast } from "react-toastify";
+import { isRevertedError } from "lib/bridge/amb";
+import Link from "next/link";
+
+const useDelay = (fn: any, ms: number) => {
+  const timer: any = useRef(0);
+
+  const delayCallBack = useCallback(
+    (...args: any) => {
+      clearTimeout(timer.current);
+      timer.current = setTimeout(fn.bind(this, ...args), ms || 0);
+    },
+    [fn, ms]
+  );
+
+  return delayCallBack;
+};
+
+const percents = ["MAX", "10%", "25%", "50%", "75%"];
 
 const Bridge: NextPage = () => {
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
+  const { address: account, isConnected } = useAccount();
+  const { chain } = useNetwork();
 
   const [networkFrom, setNetworkFrom] = useGlobalState("userBridgeFrom");
   const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
-  const [amount, setAmount] = useGlobalState("userBridgeAmount");
+  // const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
-  const [fromToken, setFromToken] = useGlobalState("userBridgeFromToken");
+  const [bridgeFromToken, setBridgeFromToken] = useGlobalState("userBridgeFromToken");
   const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
 
   const [supportedFromTokens, setSupportedFromTokens] = useState<BridgeToken[]>([]);
-  const [toToken, setToToken] = useState<BridgeToken>();
+  const [bridgeToToken, setBridgeToToken] = useState<BridgeToken>();
   const [toChains, setToChains] = useState<ChainId[]>();
+  const [percent, setPercent] = useState(0);
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
+
+  const [balanceLoading, setBalanceLoading] = useState(true);
+  const [toBalanceLoading, setToBalanceLoading] = useState(true);
+
+  const { homeChainId, foreignChainId, getBridgeChainId, getTotalConfirms } = useBridgeDirection();
+  const {
+    txHash,
+    fromToken,
+    fromBalance,
+    fromAmount,
+    setFromBalance,
+    setAmount,
+    amountInput,
+    setAmountInput,
+
+    receiver,
+    toToken,
+    toBalance,
+    toAmount,
+    toAmountLoading,
+    setToBalance,
+
+    loading,
+    transfer,
+  }: BridgeContextState = useBridgeContext();
+  const tokenPrices = useTokenPrices();
+  const { tokenLimits } = useTokenLimits();
+  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash!);
 
   useEffect(() => {
     const tmpTokens = [];
@@ -57,23 +114,23 @@ const Bridge: NextPage = () => {
   }, [fromChainId, setNetworkFrom]);
 
   useEffect(() => {
-    if (fromToken?.chainId !== fromChainId) {
-      setFromToken(supportedFromTokens[0]);
+    if (bridgeFromToken?.chainId !== fromChainId) {
+      setBridgeFromToken(supportedFromTokens[0]);
     }
-  }, [fromChainId, fromToken, supportedFromTokens]);
+  }, [fromChainId, bridgeFromToken, supportedFromTokens]);
 
   useEffect(() => {
     const chainIds = bridgeConfigs
-      .filter((c) => c.homeChainId === fromChainId && c.homeToken.address === fromToken?.address)
+      .filter((c) => c.homeChainId === fromChainId && c.homeToken.address === bridgeFromToken?.address)
       .map((config) => config.foreignChainId);
     chainIds.push(
       ...bridgeConfigs
-        .filter((c) => c.foreignChainId === fromChainId && c.foreignToken.address === fromToken?.address)
+        .filter((c) => c.foreignChainId === fromChainId && c.foreignToken.address === bridgeFromToken?.address)
         .map((config) => config.homeChainId)
     );
     setToChains(chainIds);
     if (chainIds.length === 0) {
-      setToToken(undefined);
+      setBridgeToToken(undefined);
       return;
     }
     // set toChain
@@ -87,18 +144,18 @@ const Bridge: NextPage = () => {
     const config = bridgeConfigs.find(
       (c) =>
         (c.homeChainId === fromChainId &&
-          c.homeToken.address === fromToken?.address &&
+          c.homeToken.address === bridgeFromToken?.address &&
           c.foreignChainId === _toChainId) ||
         (c.foreignChainId === fromChainId &&
-          c.foreignToken.address === fromToken?.address &&
+          c.foreignToken.address === bridgeFromToken?.address &&
           c.homeChainId === _toChainId)
     );
-    if (config?.homeToken.address === fromToken?.address) {
-      setToToken(config?.foreignToken);
+    if (config?.homeToken.address === bridgeFromToken?.address) {
+      setBridgeToToken(config?.foreignToken);
     } else {
-      setToToken(config?.homeToken);
+      setBridgeToToken(config?.homeToken);
     }
-  }, [fromChainId, fromToken, setNetworkTo]);
+  }, [fromChainId, bridgeFromToken, setNetworkTo]);
 
   useEffect(() => {
     if (locked) {
@@ -118,15 +175,146 @@ const Bridge: NextPage = () => {
     }
   }, [locked, setLocked, locking]);
 
+  useEffect(() => {
+    if (fromToken && account) {
+      (async () => {
+        try {
+          setBalanceLoading(true);
+          const b = await fetchTokenBalance(fromToken, account);
+          setFromBalance(b);
+        } catch (fromBalanceError) {
+          setFromBalance(BigNumber.from(0));
+          console.error({ fromBalanceError });
+        } finally {
+          setBalanceLoading(false);
+        }
+      })();
+    } else {
+      setFromBalance(BigNumber.from(0));
+    }
+  }, [txHash, fromToken, account, setFromBalance, setBalanceLoading]);
+
+  useEffect(() => {
+    if (toToken && account) {
+      (async () => {
+        try {
+          setToBalanceLoading(true);
+          const b = await fetchTokenBalance(toToken, account);
+          setToBalance(b);
+        } catch (toBalanceError) {
+          setToBalance(BigNumber.from(0));
+          console.error({ toBalanceError });
+        } finally {
+          setToBalanceLoading(false);
+        }
+      })();
+    } else {
+      setToBalance(BigNumber.from(0));
+    }
+  }, [txHash, toToken, account, setToBalance, setToBalanceLoading]);
+
+  const updateAmount = useCallback(() => setAmount(amountInput), [amountInput, setAmount]);
+  const delayedSetAmount = useDelay(updateAmount, 500);
+  const showError = useCallback(
+    (msg: any) => {
+      if (msg) toast.error(msg);
+    },
+    [toast]
+  );
+
   const fromTokenSelected = (e: any) => {
-    setFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
+    setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
   };
 
   const calculateReturn = (inputAmount: number) => {
-    setAmount(inputAmount);
-    // Do some stuff, this is placeholder logic
-    setReturnAmount(inputAmount * 1.1);
+    // setAmount(inputAmount);
+    // // Do some stuff, this is placeholder logic
+    // setReturnAmount(inputAmount * 1.1);
   };
+
+  const unlockButtonDisabled =
+    !fromToken || allowed || toAmountLoading || !(isConnected && chain?.id === fromToken?.chainId);
+
+  const transferButtonEnabled =
+    !!fromToken && allowed && !loading && !toAmountLoading && isConnected && chain?.id === fromToken?.chainId;
+
+  const approveValid = useCallback(() => {
+    if (!chain?.id) {
+      showError("Please connect wallet");
+      return false;
+    }
+    if (chain?.id !== fromToken?.chainId) {
+      showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
+      return false;
+    }
+    if (fromAmount.lte(0)) {
+      showError("Please specify amount");
+      return false;
+    }
+    if (fromBalance.lt(fromAmount)) {
+      showError("Not enough balance");
+      return false;
+    }
+    return true;
+  }, [chain, fromToken?.chainId, fromAmount, fromBalance, showError]);
+
+  const onApprove = useCallback(() => {
+    if (!unlockLoading && !unlockButtonDisabled && approveValid()) {
+      approve().catch((error) => {
+        console.log(error);
+        if (error && error.message) {
+          if (
+            isRevertedError(error) ||
+            (error.data && (error.data.includes("Bad instruction fe") || error.data.includes("Reverted")))
+          ) {
+            showError(
+              <div>
+                There is problem with the token unlock. Try to revoke previous approval if any on{" "}
+                <a href="https://revoke.cash" className="text-underline">
+                  https://revoke.cash/
+                </a>{" "}
+                and try again.
+              </div>
+            );
+          } else {
+            handleWalletError(error, showError);
+          }
+        } else {
+          showError("Impossible to perform the operation. Reload the application and try again.");
+        }
+      });
+    }
+  }, [unlockLoading, unlockButtonDisabled, approveValid, showError, approve]);
+
+  const transferValid = useCallback(() => {
+    if (!chain?.id) {
+      showError("Please connect wallet");
+    } else if (chain?.id !== fromToken?.chainId) {
+      showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
+    } else if (
+      tokenLimits &&
+      (fromAmount.gt(tokenLimits.remainingLimit) || tokenLimits.remainingLimit.lt(tokenLimits.minPerTx))
+    ) {
+      showError("Daily limit reached. Please try again tomorrow or with a lower amount");
+    } else if (tokenLimits && fromAmount.lt(tokenLimits.minPerTx)) {
+      showError(`Please specify amount more than ${formatValue(tokenLimits.minPerTx, fromToken.decimals)}`);
+    } else if (tokenLimits && fromAmount.gt(tokenLimits.maxPerTx)) {
+      showError(`Please specify amount less than ${formatValue(tokenLimits.maxPerTx, fromToken.decimals)}`);
+    } else if (fromBalance.lt(fromAmount)) {
+      showError("Not enough balance");
+    } else if (receiver && !ethers.utils.isAddress(receiver)) {
+      showError(`Please specify a valid recipient address`);
+    } else {
+      return true;
+    }
+    return false;
+  }, [chain, tokenLimits, fromToken, fromAmount, fromBalance, receiver, account, showError]);
+
+  const onTransfer = useCallback(() => {
+    if (transferButtonEnabled && transferValid()) {
+      transfer().catch((error: any) => handleWalletError(error, showError));
+    }
+  }, [transferButtonEnabled, transferValid, transfer]);
 
   return (
     <PageWrapper>
@@ -194,13 +382,15 @@ const Bridge: NextPage = () => {
                   <select
                     id="currency"
                     name="currency"
+                    value={percent}
+                    onChange={(e) => setPercent(+e.target.value)}
                     className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
                   >
-                    <option>MAX</option>
-                    <option>10%</option>
-                    <option>25%</option>
-                    <option>50%</option>
-                    <option>75%</option>
+                    {percents.map((val, idx) => (
+                      <option key={idx} value={idx}>
+                        {val}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -230,7 +420,7 @@ const Bridge: NextPage = () => {
           >
             <div className="mt-8">
               <div className="text-center text-2xl text-slate-400">
-                {returnAmount} {toToken?.symbol}
+                {returnAmount} {bridgeToToken?.symbol}
               </div>
             </div>
           </CryptoCard>

@@ -10,9 +10,11 @@ import { SWRConfig } from "swr";
 
 import "react-toastify/dist/ReactToastify.css";
 
+import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
-import { persistor, useAppDispatch, useStore } from "state";
+import { useAccountEventListener } from "hooks/useAccountEventListener";
+import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
 import { client } from "utils/wagmi";
 
@@ -23,7 +25,6 @@ import UserSidebar from "../components/UserSidebar";
 import HeaderMobile from "../components/navigation/HeaderMobile";
 import NavigationDesktop from "../components/navigation/NavigationDesktop";
 import NavigationMobile from "../components/navigation/NavigationMobile";
-import { useAccountEventListener } from "hooks/useAccountEventListener";
 
 function GlobalHooks() {
   usePollBlockNumber();
@@ -42,34 +43,36 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
       <Provider store={store}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <TokenPriceContextProvider>
-            <SWRConfig>
-              <GlobalHooks />
-              <PersistGate loading={null} persistor={persistor}>
-                <div
-                  className={clsx(
-                    router?.pathname === "/" && "home",
-                    "relative min-h-screen bg-gradient-to-b from-white to-gray-200 dark:bg-gradient-to-tr dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
-                  )}
-                >
-                  <div className="flex h-full">
-                    <NavigationDesktop />
-                    <NavigationMobile />
-                    <UserSidebar />
+            <BridgeProvider>
+              <SWRConfig>
+                <GlobalHooks />
+                <PersistGate loading={null} persistor={persistor}>
+                  <div
+                    className={clsx(
+                      router?.pathname === "/" && "home",
+                      "relative min-h-screen bg-gradient-to-b from-white to-gray-200 dark:bg-gradient-to-tr dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                    )}
+                  >
+                    <div className="flex h-full">
+                      <NavigationDesktop />
+                      <NavigationMobile />
+                      <UserSidebar />
 
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <HeaderMobile />
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <HeaderMobile />
 
-                      <LazyMotion features={domAnimation}>
-                        <AnimatePresence exitBeforeEnter>
-                          <Component {...pageProps} key={router.pathname} />
-                        </AnimatePresence>
-                      </LazyMotion>
+                        <LazyMotion features={domAnimation}>
+                          <AnimatePresence exitBeforeEnter>
+                            <Component {...pageProps} key={router.pathname} />
+                          </AnimatePresence>
+                        </LazyMotion>
+                      </div>
+                      <ToastContainer />
                     </div>
-                    <ToastContainer />
                   </div>
-                </div>
-              </PersistGate>
-            </SWRConfig>
+                </PersistGate>
+              </SWRConfig>
+            </BridgeProvider>
           </TokenPriceContextProvider>
         </ThemeProvider>
       </Provider>

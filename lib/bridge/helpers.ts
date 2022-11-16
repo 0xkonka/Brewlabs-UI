@@ -1,4 +1,5 @@
 import { ChainId } from "@brewlabs/sdk";
+import { utils } from "ethers";
 import { Connector } from "wagmi";
 import { bridgeConfigs } from "config/constants/bridge";
 import { CHAIN_LABLES } from "config/constants/networks";
@@ -53,3 +54,18 @@ export const withTimeout = (ms: number, promise: any) =>
         reject(error);
       });
   });
+
+  
+export const formatValue = (num: any, dec: any) => {
+  const str = utils.formatUnits(num, dec);
+  const splitStr = str.split('.');
+  const beforeDecimal = splitStr[0];
+  const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
+
+  const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
+
+  return finalNum.toLocaleString('en-US', {
+    maximumFractionDigits: 4,
+    minimumFractionDigits: 1,
+  });
+};

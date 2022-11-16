@@ -12,7 +12,7 @@ export const useMediatorInfo = () => {
   const { chainId: providerChainId } = useActiveChainId();
 
   const { homeChainId, homeMediatorAddress, foreignChainId, foreignMediatorAddress } = useBridgeDirection();
-  const [currentDay, setCurrentDay] = useState();
+  const [currentDay, setCurrentDay] = useState<string>();
   const [homeFeeManagerAddress, setHomeFeeManagerAddress] = useState<string>();
   const [foreignFeeManagerAddress, setForeignFeeManagerAddress] = useState<string>();
   const [fetching, setFetching] = useState(false);
