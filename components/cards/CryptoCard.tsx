@@ -8,6 +8,7 @@ type CryptoCardProps = {
   title?: string;
   active?: boolean;
   children: ReactNode;
+  tokenPrice: number;
   modal: {
     disableAutoCloseOnClick?: boolean
     openModal?: boolean;
@@ -18,7 +19,7 @@ type CryptoCardProps = {
   };
 };
 
-const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => {
+const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCardProps) => {
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -64,7 +65,7 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
 
             {children}
 
-            <h5 className="mt-6 text-center dark:text-gray-500">Current price: 0.056</h5>
+            <h5 className="mt-6 text-center dark:text-gray-500">Current price: {tokenPrice}</h5>
           </div>
         </div>
       </motion.div>

@@ -27,9 +27,9 @@ export const fetchAllowance = async ({ mediator, address }: BridgeToken, account
   return BigNumber.from(0);
 };
 
-const fetchMode = async (token: BridgeToken) => {
+const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
   const ethersProvider = await provider({ chainId: token.chainId });
-  const mediatorAddress = getMediatorAddress(token.chainId);
+  const mediatorAddress = getMediatorAddress(bridgeDirectionId, token.chainId);
   const abi = ["function nativeTokenAddress(address) view returns (address)"];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
   const nativeTokenAddress = await mediatorContract.nativeTokenAddress(token.address);
@@ -105,11 +105,11 @@ const fetchTokenDetailsFromContract = async (token: BridgeToken) => {
   return details;
 };
 
-export const fetchTokenDetails = async (token: BridgeToken) => {
-  const mediatorAddress = getMediatorAddress(token.chainId);
+export const fetchTokenDetails = async (bridgeDirectionId: number, token: BridgeToken) => {
+  const mediatorAddress = getMediatorAddress(bridgeDirectionId, token.chainId);
   const [{ name, symbol, decimals }, mode]: any = await Promise.all([
     fetchTokenDetailsFromContract(token),
-    fetchMode(token),
+    fetchMode(bridgeDirectionId, token),
   ]);
 
   // replace xDai in token names with GC

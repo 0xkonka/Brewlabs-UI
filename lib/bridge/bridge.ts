@@ -15,11 +15,11 @@ const getToName = async (fromToken: BridgeToken, toChainId: ChainId, toAddress: 
   return fetchTokenName({ chainId: toChainId, address: toAddress });
 };
 
-const fetchToTokenDetails = async (fromToken: BridgeToken, toChainId: ChainId) => {
+const fetchToTokenDetails = async (bridgeDirectionId: number, fromToken: BridgeToken, toChainId: ChainId) => {
   const { chainId: fromChainId, address: fromAddress } = fromToken;
 
-  const fromMediatorAddress = getMediatorAddress(fromChainId);
-  const toMediatorAddress = getMediatorAddress(toChainId);
+  const fromMediatorAddress = getMediatorAddress(bridgeDirectionId, fromChainId);
+  const toMediatorAddress = getMediatorAddress(bridgeDirectionId, toChainId);
 
   const fromEthersProvider = await provider({ chainId: fromChainId });
   const toEthersProvider = await provider({ chainId: toChainId });
@@ -57,8 +57,8 @@ const fetchToTokenDetails = async (fromToken: BridgeToken, toChainId: ChainId) =
   };
 };
 
-export const fetchToToken = async (fromToken: BridgeToken, toChainId: ChainId) => {
-  const toToken = await fetchToTokenDetails(fromToken, toChainId);
+export const fetchToToken = async (bridgeDirectionId: number, fromToken: BridgeToken, toChainId: ChainId) => {
+  const toToken = await fetchToTokenDetails(bridgeDirectionId, fromToken, toChainId);
   return toToken;
 };
 
@@ -134,8 +134,13 @@ const getDefaultTokenLimits = async (decimals: number, mediatorContract: Contrac
   };
 };
 
-export const fetchTokenLimits = async (fromToken: BridgeToken, toToken: BridgeToken, currentDay: number) => {
-  const isDedicatedMediatorToken = fromToken.mediator !== getMediatorAddress(fromToken.chainId);
+export const fetchTokenLimits = async (
+  bridgeDirectionId: number,
+  fromToken: BridgeToken,
+  toToken: BridgeToken,
+  currentDay: number
+) => {
+  const isDedicatedMediatorToken = fromToken.mediator !== getMediatorAddress(bridgeDirectionId, fromToken.chainId);
 
   const abi = isDedicatedMediatorToken
     ? [

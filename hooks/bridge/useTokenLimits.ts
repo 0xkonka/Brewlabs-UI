@@ -6,7 +6,7 @@ const { useState, useCallback, useEffect } = require("react");
 
 export const useTokenLimits = () => {
   const { fromToken, toToken, currentDay }: any = useBridgeContext();
-  const { homeChainId, foreignChainId } = useBridgeDirection();
+  const { bridgeDirectionId, homeChainId, foreignChainId } = useBridgeDirection();
   const [tokenLimits, setTokenLimits] = useState();
   const [fetching, setFetching] = useState(false);
 
@@ -22,7 +22,7 @@ export const useTokenLimits = () => {
       currentDay
     ) {
       setFetching(true);
-      const limits = await fetchTokenLimits(fromToken, toToken, currentDay);
+      const limits = await fetchTokenLimits(bridgeDirectionId, fromToken, toToken, currentDay);
       setTokenLimits(limits);
       setFetching(false);
     }

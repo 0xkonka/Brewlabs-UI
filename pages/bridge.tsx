@@ -1,12 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
+import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
+import { toast } from "react-toastify";
+import { useAccount, useNetwork } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
 import { BridgeToken } from "config/constants/types";
-import { useSupportedNetworks } from "hooks/useSupportedNetworks";
+import { useApproval } from "hooks/bridge/useApproval";
+import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
 import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
+import { useSupportedNetworks } from "hooks/useSupportedNetworks";
+import { useTokenLimits } from "hooks/bridge/useTokenLimits";
+import { useTokenPrices } from "hooks/useTokenPrice";
+import { isRevertedError } from "lib/bridge/amb";
 import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { fetchTokenBalance } from "lib/bridge/token";
 
 import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
@@ -21,16 +30,6 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
-import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
-import { useTokenLimits } from "hooks/bridge/useTokenLimits";
-import { useApproval } from "hooks/bridge/useApproval";
-import { useTokenPrices } from "hooks/useTokenPrice";
-import { useAccount, useNetwork } from "wagmi";
-import { fetchTokenBalance } from "lib/bridge/token";
-import { BigNumber, ethers } from "ethers";
-import { toast } from "react-toastify";
-import { isRevertedError } from "lib/bridge/amb";
-import Link from "next/link";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -117,7 +116,7 @@ const Bridge: NextPage = () => {
     if (bridgeFromToken?.chainId !== fromChainId) {
       setBridgeFromToken(supportedFromTokens[0]);
     }
-  }, [fromChainId, bridgeFromToken, supportedFromTokens]);
+  }, [fromChainId, bridgeFromToken, supportedFromTokens, setBridgeFromToken]);
 
   useEffect(() => {
     const chainIds = bridgeConfigs
@@ -219,7 +218,7 @@ const Bridge: NextPage = () => {
     (msg: any) => {
       if (msg) toast.error(msg);
     },
-    [toast]
+    []
   );
 
   const fromTokenSelected = (e: any) => {
@@ -308,7 +307,7 @@ const Bridge: NextPage = () => {
       return true;
     }
     return false;
-  }, [chain, tokenLimits, fromToken, fromAmount, fromBalance, receiver, account, showError]);
+  }, [chain, tokenLimits, fromToken, fromAmount, fromBalance, receiver, showError]);
 
   const onTransfer = useCallback(() => {
     if (transferButtonEnabled && transferValid()) {
@@ -332,6 +331,7 @@ const Bridge: NextPage = () => {
           <CryptoCard
             title="Bridge from"
             id="bridge_card_from"
+            tokenPrice={tokenPrices[`c${bridgeFromToken?.chainId}_t${bridgeFromToken?.address?.toLowerCase()}`] ?? 0}
             modal={{
               buttonText: getNetworkLabel(+networkFrom),
               disableAutoCloseOnClick: true,
@@ -402,6 +402,7 @@ const Bridge: NextPage = () => {
           <CryptoCard
             title="Bridge to"
             id="bridge_card_to"
+            tokenPrice={tokenPrices[`c${bridgeToToken?.chainId}_t${bridgeToToken?.address?.toLowerCase()}`] ?? 0}
             active={locking}
             modal={{
               buttonText: getNetworkLabel(+networkTo),

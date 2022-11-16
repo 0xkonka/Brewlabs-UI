@@ -24,9 +24,10 @@ export const getNetworkLabel = (chainId: ChainId) => {
   return CHAIN_LABLES[chainId] ?? "No Network Selected";
 };
 
-export const getMediatorAddress = (chainId: ChainId) => {
-  const direction = bridgeConfigs.find((direction) => direction.homeChainId === chainId) ?? bridgeConfigs[0];
-  return direction.homeMediatorAddress;
+export const getMediatorAddress = (bridgeDirectionId: number, chainId: ChainId) => {
+  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } =
+    bridgeConfigs.find((direction) => direction.bridgeDirectionId === bridgeDirectionId) ?? bridgeConfigs[0];
+  return homeChainId === chainId ? homeMediatorAddress.toLowerCase() : foreignMediatorAddress.toLowerCase();
 };
 
 export const addTokenToMetamask = async (conector: Connector, { address, symbol, decimals }: BridgeToken) => {
@@ -55,16 +56,15 @@ export const withTimeout = (ms: number, promise: any) =>
       });
   });
 
-  
 export const formatValue = (num: any, dec: any) => {
   const str = utils.formatUnits(num, dec);
-  const splitStr = str.split('.');
+  const splitStr = str.split(".");
   const beforeDecimal = splitStr[0];
-  const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
+  const afterDecimal = `${(splitStr[1] ?? "").slice(0, 4)}0000`;
 
   const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
 
-  return finalNum.toLocaleString('en-US', {
+  return finalNum.toLocaleString("en-US", {
     maximumFractionDigits: 4,
     minimumFractionDigits: 1,
   });

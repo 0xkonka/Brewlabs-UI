@@ -179,9 +179,10 @@ export const BridgeProvider = ({ children }: any) => {
       if (!tokenWithoutMode) return false;
       try {
         const [token, gotToToken] = await Promise.all([
-          fetchTokenDetails(tokenWithoutMode),
-          fetchToToken(tokenWithoutMode, getBridgeChainId(tokenWithoutMode.chainId)),
+          fetchTokenDetails(bridgeDirectionId, tokenWithoutMode),
+          fetchToToken(bridgeDirectionId, tokenWithoutMode, getBridgeChainId(tokenWithoutMode.chainId)),
         ]);
+
         setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
         return true;
       } catch (tokenDetailsError) {
