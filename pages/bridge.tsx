@@ -73,7 +73,6 @@ const Bridge: NextPage = () => {
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [toBalanceLoading, setToBalanceLoading] = useState(false);
 
-  const { homeChainId, foreignChainId, getBridgeChainId, getTotalConfirms } = useBridgeDirection();
   const {
     txHash,
     fromToken,
@@ -273,7 +272,7 @@ const Bridge: NextPage = () => {
         if (error && error.message) {
           if (
             isRevertedError(error) ||
-            (error.data && (error.data.includes("Bad instruction fe") || error.data.includes("Reverted")))
+            (error.data && (error.data.includes("Bad instruction fee") || error.data.includes("Reverted")))
           ) {
             showError(
               <div>
