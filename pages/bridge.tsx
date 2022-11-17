@@ -60,8 +60,7 @@ const Bridge: NextPage = () => {
   const { theme } = useTheme();
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
-  const { address: account, isConnected } = useAccount();
-  const { chain } = useNetwork();
+  const { address: account } = useAccount();
 
   const [networkFrom, setNetworkFrom] = useGlobalState("userBridgeFrom");
   const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
@@ -75,7 +74,6 @@ const Bridge: NextPage = () => {
   const [percent, setPercent] = useState(0);
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
-  const [openToChainModal, setOpenToChainModal] = useState(false);
 
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [toBalanceLoading, setToBalanceLoading] = useState(false);
@@ -91,21 +89,16 @@ const Bridge: NextPage = () => {
     amountInput,
     setAmountInput,
 
-    receiver,
     toToken,
     toBalance,
     toAmount,
     toAmountLoading,
     setToBalance,
-
-    loading,
-    transfer,
   }: BridgeContextState = useBridgeContext();
   const tokenPrices = useTokenPrices();
-  const { tokenLimits } = useTokenLimits();
-  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash);
 
   useEffect(() => {
+    if(fromChainId <= 0) return
     const tmpTokens = [];
     tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
     tmpTokens.push(
@@ -228,20 +221,11 @@ const Bridge: NextPage = () => {
 
   const updateAmount = useCallback(() => setAmount(amountInput), [amountInput, setAmount]);
   const delayedSetAmount = useDelay(updateAmount, 500);
-  const showError = useCallback((msg: any) => {
-    if (msg) toast.error(msg);
-  }, []);
 
   const fromTokenSelected = (e: any) => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
     setToken(supportedFromTokens.find((token) => token.address === e.target.value)!);
   };
-
-  const unlockButtonDisabled =
-    !fromToken || allowed || toAmountLoading || !(isConnected && chain?.id === fromToken?.chainId);
-
-  const transferButtonEnabled =
-    !!fromToken && allowed && !loading && !toAmountLoading && isConnected && chain?.id === fromToken?.chainId;
 
   const onPercentSelected = (index: number) => {
     const realPercentages = [100, 10, 25, 50, 75];
@@ -255,84 +239,6 @@ const Bridge: NextPage = () => {
     }
     setPercent(index);
   };
-
-  const approveValid = useCallback(() => {
-    if (!chain?.id) {
-      showError("Please connect wallet");
-      return false;
-    }
-    if (chain?.id !== fromToken?.chainId) {
-      showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
-      return false;
-    }
-    if (fromAmount.lte(0)) {
-      showError("Please specify amount");
-      return false;
-    }
-    if (fromBalance.lt(fromAmount)) {
-      showError("Not enough balance");
-      return false;
-    }
-    return true;
-  }, [chain, fromToken?.chainId, fromAmount, fromBalance, showError]);
-
-  const onApprove = useCallback(() => {
-    if (!unlockLoading && !unlockButtonDisabled && approveValid()) {
-      approve().catch((error) => {
-        console.log(error);
-        if (error && error.message) {
-          if (
-            isRevertedError(error) ||
-            (error.data && (error.data.includes("Bad instruction fee") || error.data.includes("Reverted")))
-          ) {
-            showError(
-              <div>
-                There is problem with the token unlock. Try to revoke previous approval if any on{" "}
-                <a href="https://revoke.cash" className="text-underline">
-                  https://revoke.cash/
-                </a>{" "}
-                and try again.
-              </div>
-            );
-          } else {
-            handleWalletError(error, showError);
-          }
-        } else {
-          showError("Impossible to perform the operation. Reload the application and try again.");
-        }
-      });
-    }
-  }, [unlockLoading, unlockButtonDisabled, approveValid, showError, approve]);
-
-  const transferValid = useCallback(() => {
-    if (!chain?.id) {
-      showError("Please connect wallet");
-    } else if (chain?.id !== fromToken?.chainId) {
-      showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
-    } else if (
-      tokenLimits &&
-      (fromAmount.gt(tokenLimits.remainingLimit) || tokenLimits.remainingLimit.lt(tokenLimits.minPerTx))
-    ) {
-      showError("Daily limit reached. Please try again tomorrow or with a lower amount");
-    } else if (tokenLimits && fromAmount.lt(tokenLimits.minPerTx)) {
-      showError(`Please specify amount more than ${formatValue(tokenLimits.minPerTx, fromToken.decimals)}`);
-    } else if (tokenLimits && fromAmount.gt(tokenLimits.maxPerTx)) {
-      showError(`Please specify amount less than ${formatValue(tokenLimits.maxPerTx, fromToken.decimals)}`);
-    } else if (fromBalance.lt(fromAmount)) {
-      showError("Not enough balance");
-    } else if (receiver && !ethers.utils.isAddress(receiver)) {
-      showError(`Please specify a valid recipient address`);
-    } else {
-      return true;
-    }
-    return false;
-  }, [chain, tokenLimits, fromToken, fromAmount, fromBalance, receiver, showError]);
-
-  const onTransfer = useCallback(() => {
-    if (transferButtonEnabled && transferValid()) {
-      transfer().catch((error: any) => handleWalletError(error, showError));
-    }
-  }, [transferButtonEnabled, transferValid, transfer, showError]);
 
   return (
     <PageWrapper>

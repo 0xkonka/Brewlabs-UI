@@ -36,6 +36,8 @@ export const BridgeLoader = ({
   const showConfirmations = confirmations < totalConfirms;
   const displayConfirms = showConfirmations ? confirmations : totalConfirms;
 
+  if (!loadingText) return <></>;
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog open={loading ?? false} className="relative z-50" onClose={() => {}}>
@@ -107,7 +109,7 @@ const BridgeLoadingModal = () => {
   const { fromToken, loading, txHash } = useBridgeContext();
 
   const [message, setMessage] = useState<any>();
-  
+
   const totalConfirms = getTotalConfirms(chain?.id!);
   const { loadingText, needsConfirmation, setNeedsConfirmation, confirmations } = useTransactionStatus(setMessage);
 

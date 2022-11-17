@@ -15,6 +15,8 @@ type LoadingModalProps = {
 const LoadingModal = ({ loadingText, txHash, chainId }: LoadingModalProps) => {
   const { chain } = useNetwork();
 
+  if (!loadingText) return <></>;
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog open className="relative z-50" onClose={() => {}}>
