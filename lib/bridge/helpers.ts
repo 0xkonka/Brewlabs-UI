@@ -17,6 +17,10 @@ export const handleWalletError = (error: any, showError: (msg: string) => void) 
     showError(error.message);
   } else if (error?.message && error?.message.toLowerCase().includes("transaction was replaced")) {
     showError(TRANSACTION_REPLACED_ERROR);
+  } else if(error?.data?.message){
+    showError(error?.data?.message)
+  } else if(error?.message && error?.message.length > 120) {
+    showError(error.message.split("(")[0])
   } else {
     showError(IMPOSSIBLE_ERROR);
   }

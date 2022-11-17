@@ -5,11 +5,10 @@ import { BridgeToken } from "config/constants/types";
 import { approveToken, fetchAllowance } from "lib/bridge/token";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHash: string) => {
+export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHash?: string) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
-
   const [allowance, setAllowance] = useState(BigNumber.from(0));
   const [allowed, setAllowed] = useState(true);
 

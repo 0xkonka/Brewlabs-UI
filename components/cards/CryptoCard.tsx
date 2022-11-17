@@ -30,11 +30,9 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCa
   };
 
   useEffect(() => {
-    if (modal?.openModal) {
-      setSelected(true);
-    }
+    setSelected(!!modal?.openModal);
   }, [modal?.openModal]);
-
+  
   return (
     <>
       <motion.div
@@ -52,7 +50,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCa
             <header className="text-center text-gray-700 dark:text-gray-500">
               <h4 className="text-2xl">{title}</h4>
 
-              {modal?.buttonText && (
+              {modal?.buttonText !== undefined && (
                 <button
                   className="rounded-md border border-dashed border-gray-500 py-1 px-2"
                   onClick={() => {

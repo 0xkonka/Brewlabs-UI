@@ -7,13 +7,14 @@ import type { NextPage } from "next";
 import { useTheme } from "next-themes";
 import { useAccount, useNetwork } from "wagmi";
 
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import { bridgeConfigs } from "config/constants/bridge";
 import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
 import { useApproval } from "hooks/bridge/useApproval";
-import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { useFromChainId } from "hooks/bridge/useBridgeDirection";
 
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
@@ -74,6 +75,7 @@ const Bridge: NextPage = () => {
   const [percent, setPercent] = useState(0);
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
+  const [openToChainModal, setOpenToChainModal] = useState(false);
 
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [toBalanceLoading, setToBalanceLoading] = useState(false);
@@ -101,7 +103,7 @@ const Bridge: NextPage = () => {
   }: BridgeContextState = useBridgeContext();
   const tokenPrices = useTokenPrices();
   const { tokenLimits } = useTokenLimits();
-  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash!);
+  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash);
 
   useEffect(() => {
     const tmpTokens = [];
@@ -162,7 +164,7 @@ const Bridge: NextPage = () => {
     } else {
       setBridgeToToken(config?.homeToken);
     }
-  }, [fromChainId, bridgeFromToken, setNetworkTo]);
+  }, [fromChainId, bridgeFromToken, networkTo.id, setNetworkTo]);
 
   useEffect(() => {
     if (locked) {
@@ -181,6 +183,10 @@ const Bridge: NextPage = () => {
       setLocked(false);
     }
   }, [locked, setLocked, locking]);
+
+  useEffect(() => {
+    AOS.init();
+  }, []);
 
   useEffect(() => {
     if (fromToken && account) {
@@ -326,7 +332,7 @@ const Bridge: NextPage = () => {
     if (transferButtonEnabled && transferValid()) {
       transfer().catch((error: any) => handleWalletError(error, showError));
     }
-  }, [transferButtonEnabled, transferValid, transfer]);
+  }, [transferButtonEnabled, transferValid, transfer, showError]);
 
   return (
     <PageWrapper>
@@ -366,7 +372,7 @@ const Bridge: NextPage = () => {
               }}
             >
               <div className="mx-auto mt-4 max-w-md">
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <label htmlFor="price" className="block text-sm font-medium text-gray-400">
                     Token and Amount
                   </label>
@@ -458,10 +464,14 @@ const Bridge: NextPage = () => {
               active={locking}
               modal={{
                 buttonText: networkTo.name,
-                onClose: () => setLocked(false),
                 openModal: locked,
+                onClose: () => {
+                  setLocking(false);
+                  setLocked(false);
+                },
+                disableAutoCloseOnClick: locked,
                 modalContent: locked ? (
-                  <ConfirmBridgeMessage />
+                  <ConfirmBridgeMessage onClose={() => setOpenFromChainModal(false)} />
                 ) : (
                   <ChainSelector
                     networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
@@ -471,8 +481,8 @@ const Bridge: NextPage = () => {
                 ),
               }}
             >
-              <div className="mt-8">
-                <div className="flex justify-center text-2xl">
+              <div className="mx-auto mt-4 max-w-md">
+                <div className="flex justify-center text-2xl text-slate-400">
                   {toAmountLoading ? (
                     <Skeleton
                       width={100}
