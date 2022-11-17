@@ -38,25 +38,25 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
         layoutId={id}
         whileHover={{ scale: 1.05 }}
         className={clsx(
-          "relative col-span-4 max-w-screen-md rounded-3xl border-2 border-transparent font-brand focus-within:border-amber-300 hover:border-amber-300",
+          "max-w-sm rounded-3xl border-2 border-transparent font-brand focus-within:border-amber-300 hover:border-amber-300 sm:relative sm:max-w-screen-md",
           active && "shake"
         )}
       >
-        <div className="h-72 rounded-3xl border-t border-slate-100 bg-slate-300 bg-opacity-60 shadow-lg dark:border-slate-600 dark:bg-zinc-900 dark:bg-opacity-60">
+        <div
+          className={`h-72 rounded-3xl border-t border-slate-100 bg-gray-50 shadow-lg shadow-indigo-500/50 dark:border-slate-600 dark:bg-zinc-900`}
+        >
           <div className="p-10">
-            <header className="text-center">
+            <header className="text-center text-gray-700 dark:text-gray-500">
               <h4 className="text-2xl">{title}</h4>
 
-              {modal?.buttonText && (
-                <button
-                  className="underline"
-                  onClick={() => {
-                    setSelected(true);
-                  }}
-                >
-                  {modal.buttonText}
-                </button>
-              )}
+              <button
+                className="rounded-md border border-dashed border-gray-500 py-1 px-2"
+                onClick={() => {
+                  setSelected(true);
+                }}
+              >
+                {modal.buttonText === "" ? "No network selected" : modal.buttonText}
+              </button>
             </header>
 
             {children}

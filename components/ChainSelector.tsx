@@ -2,9 +2,9 @@ import React from "react";
 import { NetworkConfig } from "config/constants/types";
 
 type ChainSelectorProps = {
-  networks: NetworkConfig[];
-  selectFn: (selectedValue: string) => void;
   onDismiss?: () => void;
+  networks: NetworkConfig[];
+  selectFn: (selectedNetwork: NetworkConfig) => void;
 };
 
 const ChainSelector = ({ networks, selectFn, onDismiss }: ChainSelectorProps) => {
@@ -18,10 +18,10 @@ const ChainSelector = ({ networks, selectFn, onDismiss }: ChainSelectorProps) =>
           <li key={network.name}>
             <button
               onClick={() => {
-                selectFn(network.name);
+                selectFn(network);
                 if (onDismiss) onDismiss();
               }}
-              className="flex w-full  py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
+              className="flex w-full py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
             >
               <img className="h-10 w-10 rounded-full" src={network.image} alt={network.name} />
               <div className="ml-4 flex-col text-left">
