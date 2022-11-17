@@ -1,5 +1,3 @@
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { TOKENS } from "config/constants/tokens";
 import Card from "../../views/Swap/components/Card";
 import NumericalInput from "./NumericalInput";
 
@@ -29,9 +27,12 @@ const CurrencyInputPanel = ({ label }: CurrencyInputPanelProps) => {
                   <option className="text-gray-500">BREW</option>
                   <option className="text-gray-500">GROVE</option>
                 </select>
-                <div className="flex items-center ml-4">
-                  <div className="mr-2 text-xs">24.21 ETH</div>
-                  <img src="/images/explorer/etherscan.png" alt="" className="w-2 h-2" />
+                <div className="ml-4">
+                  <div className="flex items-center">
+                    <div className="mr-2 text-xs opacity-40">24.21 ETH</div>
+                    <img src="/images/explorer/etherscan.png" alt="" className="w-2 h-2" />
+                  </div>
+                  <button className="px-6 text-xs border rounded-lg border-amber-300">Max</button>
                 </div>
               </div>
             </div>

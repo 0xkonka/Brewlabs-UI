@@ -14,10 +14,10 @@ export default function Swap() {
       <PageHeader
         title={
           <>
-            Discover the power of <WordHighlight content="farming" /> staked liquidity.
+            Exchange Tokens at the <WordHighlight content="best" /> rate on the market.
           </>
         }
-        summary="Stake liquidity tokens in our Brewlabs farming platform for passive income."
+        summary="Exchange Tokens at the best rate on the market."
       />
 
       <Container>

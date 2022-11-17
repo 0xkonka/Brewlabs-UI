@@ -1,14 +1,14 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import Button from "components/Button";
 
 const SwitchIconButton = () => {
   return (
-    <div className="flex justify-center" style={{ marginTop: "-18px", marginBottom: "-18px", zIndex: "1" }}>
-      <div className="w-2">
-        <Button>
-          <ChevronDownIcon className="h-5 w-5" />
-        </Button>
-      </div>
+    <div className="flex justify-center" style={{ zIndex: "1" }}>
+      <button
+        className="px-2 rounded-lg"
+        style={{ marginTop: "-12px", marginBottom: "-12px", backgroundColor: "rgb(252 211 77)" }}
+      >
+        <ChevronDownIcon className="w-6 h-6" />
+      </button>
     </div>
   );
 };
