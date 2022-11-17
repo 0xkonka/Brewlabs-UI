@@ -116,7 +116,12 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
 
   const onTransfer = useCallback(() => {
     if (transferButtonEnabled && transferValid()) {
-      transfer().catch((error: any) => handleWalletError(error, showError));
+      transfer()
+        .then(() => {
+          setLocked(false);
+          onClose();
+        })
+        .catch((error: any) => handleWalletError(error, showError));
     }
   }, [transferButtonEnabled, transferValid, transfer]);
 
@@ -151,14 +156,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
     }
 
     return (
-      <Button
-        onClick={() => {
-          onTransfer();
-          setLocked(false);
-          onClose();
-        }}
-        disabled={!transferButtonEnabled}
-      >
+      <Button onClick={onTransfer} disabled={!transferButtonEnabled}>
         <div className="flex items-center">
           <div className="mr-2">{loading ? "Confirming" : "Confirm"}</div>
           {loading && (

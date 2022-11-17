@@ -47,7 +47,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
               className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-700"
               role="alert"
             >
-              <strong className="font-bold"></strong>
+              <strong className="font-bold">Unable to switch network. Please try it on your wallet</strong>
             </div>
           )}
 

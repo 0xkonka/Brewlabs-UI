@@ -98,7 +98,7 @@ const Bridge: NextPage = () => {
   const tokenPrices = useTokenPrices();
 
   useEffect(() => {
-    if(fromChainId <= 0) return
+    if (fromChainId <= 0) return;
     const tmpTokens = [];
     tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
     tmpTokens.push(
@@ -377,7 +377,12 @@ const Bridge: NextPage = () => {
                 },
                 disableAutoCloseOnClick: locked,
                 modalContent: locked ? (
-                  <ConfirmBridgeMessage onClose={() => setOpenFromChainModal(false)} />
+                  <ConfirmBridgeMessage
+                    onClose={() => {
+                      setOpenFromChainModal(false);
+                      setLocking(false);
+                    }}
+                  />
                 ) : (
                   <ChainSelector
                     networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
