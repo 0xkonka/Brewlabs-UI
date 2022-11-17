@@ -2,21 +2,22 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import Modal from "../MotionModal";
+import { NetworkConfig } from "config/constants/types";
 
 type CryptoCardProps = {
   id: string;
   title?: string;
   active?: boolean;
   children: ReactNode;
+  network: NetworkConfig;
   modal: {
     openModal?: boolean;
     onClose?: any;
-    buttonText: string;
     modalContent: ReactElement;
   };
 };
 
-const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => {
+const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardProps) => {
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -42,20 +43,26 @@ const CryptoCard = ({ id, title, modal, active, children }: CryptoCardProps) => 
           active && "shake"
         )}
       >
-        <div
-          className={`h-72 rounded-3xl border-t border-slate-100 bg-gray-50 shadow-lg shadow-indigo-500/50 dark:border-slate-600 dark:bg-zinc-900`}
-        >
+        <div className="h-72 rounded-3xl border-t border-slate-100 bg-gray-50 shadow-lg shadow-indigo-500/20 dark:border-slate-600 dark:bg-zinc-900">
           <div className="p-10">
             <header className="text-center text-gray-700 dark:text-gray-500">
               <h4 className="text-2xl">{title}</h4>
 
               <button
-                className="rounded-md border border-dashed border-gray-500 py-1 px-2"
+                className="mx-auto mt-4 flex items-center gap-2 rounded-full border border-gray-700"
                 onClick={() => {
                   setSelected(true);
                 }}
               >
-                {modal.buttonText === "" ? "No network selected" : modal.buttonText}
+                {network.image !== "" && (
+                  <div
+                    className="-mr-4 h-6 w-6 overflow-hidden rounded-full bg-cover bg-no-repeat dark:bg-slate-800"
+                    style={{
+                      backgroundImage: `url('${network.image}')`,
+                    }}
+                  ></div>
+                )}
+                <span className="px-4">{network.name === "" ? "No network selected" : network.name}</span>
               </button>
             </header>
 
