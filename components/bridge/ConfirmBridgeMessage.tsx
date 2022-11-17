@@ -23,9 +23,9 @@ const ConfirmBridgeMessage = (): ReactElement => {
           <p className="text-sm text-gray-500">
             You are about to send{" "}
             <span className="font-bolder text-brand">
-              {amountInput} {fromToken?.symbol} from the {getNetworkLabel(networkFrom)}
+              {amountInput} {fromToken?.symbol} from the {networkFrom.name}
             </span>{" "}
-            network to the <span className="font-bolder text-brand">{getNetworkLabel(networkTo)}</span> network.
+            network to the <span className="font-bolder text-brand">{networkTo.name}</span> network.
           </p>
         </div>
       </div>

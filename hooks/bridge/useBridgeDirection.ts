@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useNetwork } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
-import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useReplaceQueryParams } from "hooks/useReplaceQueryParams";
 import { setGlobalState, useGlobalState } from "state";
@@ -13,23 +13,23 @@ import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";
 
 export const useBridgeDirection = () => {
-  const [fromChainId] = useGlobalState("userBridgeFrom");
-  const [toChainId] = useGlobalState("userBridgeTo");
+  const [fromChain] = useGlobalState("userBridgeFrom");
+  const [toChain] = useGlobalState("userBridgeTo");
   const [fromToken] = useGlobalState("userBridgeFromToken");
 
   const bridgeConfig = useMemo(() => {
     const config = bridgeConfigs.find(
       (c) =>
-        (c.homeChainId === fromChainId &&
+        (c.homeChainId === fromChain.id &&
           c.homeToken.address === fromToken?.address &&
-          c.foreignChainId === toChainId) ||
-        (c.foreignChainId === fromChainId &&
+          c.foreignChainId === toChain.id) ||
+        (c.foreignChainId === fromChain.id &&
           c.foreignToken.address === fromToken?.address &&
-          c.homeChainId === toChainId)
+          c.homeChainId === toChain.id)
     );
 
     return config ?? bridgeConfigs[0];
-  }, [fromChainId, fromToken?.address, toChainId]);
+  }, [fromChain, fromToken?.address, toChain]);
 
   const { homeChainId, foreignChainId, homeGraphName, foreignGraphName, homeAmbAddress, foreignAmbAddress } =
     bridgeConfig;
@@ -90,16 +90,16 @@ export const useFromChainId = () => {
 
   const [networkFrom] = useGlobalState("userBridgeFrom");
 
-  let fromChainId = +(query.chainId ?? (+networkFrom > 0 ? networkFrom : chainId));
+  let fromChainId = +(query.chainId ?? (networkFrom.id > 0 ? networkFrom.id : chainId));
 
   useEffect(() => {
     if (!PAGE_SUPPORTED_CHAINS["bridge"].includes(chain?.id ?? 0)) {
-      fromChainId = +networkFrom > 0 ? +networkFrom : PAGE_SUPPORTED_CHAINS["bridge"][0];
+      fromChainId = networkFrom.id > 0 ? networkFrom.id : PAGE_SUPPORTED_CHAINS["bridge"][0];
       replaceQueryParams("chainId", fromChainId.toString());
-      setGlobalState("userBridgeFrom", fromChainId);
+      setGlobalState("userBridgeFrom", NetworkOptions.find(n => n.id === fromChainId)!);
       setGlobalState("sessionChainId", fromChainId.toString());
-    } else if (fromChainId !== +networkFrom) {
-      setGlobalState("userBridgeFrom", fromChainId);
+    } else if (fromChainId !== networkFrom.id) {
+      setGlobalState("userBridgeFrom", NetworkOptions.find(n => n.id === fromChainId)!);
     }
   }, [chain, fromChainId, networkFrom]);
 
