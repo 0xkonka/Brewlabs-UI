@@ -12,6 +12,9 @@ import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
 import { useApproval } from "hooks/bridge/useApproval";
 import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { useTokenPrices } from "hooks/useTokenPrice";
@@ -32,6 +35,7 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import BridgeDragButton from "components/bridge/BridgeDragButton";
 import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
 
 const useDelay = (fn: any, ms: number) => {
@@ -337,13 +341,14 @@ const Bridge: NextPage = () => {
       <BridgeLoadingModal />
 
       <Container>
-        <div className="relative sm:grid sm:grid-cols-11 sm:items-center">
+        <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
+        <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
           <CryptoCard
             title="Bridge from"
             id="bridge_card_from"
             tokenPrice={tokenPrices[`c${bridgeFromToken?.chainId}_t${bridgeFromToken?.address?.toLowerCase()}`] ?? 0}
             modal={{
-              buttonText: getNetworkLabel(+networkFrom),
+              buttonText: networkFrom.name,
               disableAutoCloseOnClick: true,
               openModal: openFromChainModal,
               onOpen: () => setOpenFromChainModal(true),
@@ -361,7 +366,7 @@ const Bridge: NextPage = () => {
           >
             <div className="mx-auto mt-4 max-w-md">
               <div className="flex items-center justify-between">
-                <label htmlFor="price" className="text-sm font-medium text-gray-400">
+                <label htmlFor="price" className="block text-sm font-medium text-gray-400">
                   Token and Amount
                 </label>
                 {balanceLoading ? (
@@ -371,7 +376,7 @@ const Bridge: NextPage = () => {
                     highlightColor={theme === "dark" ? "#686363" : "#747c87"}
                   />
                 ) : (
-                  <label className="text-sm font-medium text-gray-400">
+                  <label className="block text-sm font-medium text-gray-400">
                     {formatValue(fromBalance, fromToken?.decimals)}
                   </label>
                 )}
@@ -435,18 +440,22 @@ const Bridge: NextPage = () => {
                   </select>
                 </div>
               </div>
-            </div>
-          </CryptoCard>
+            </CryptoCard>
+            <p className="mt-4 block text-center text-xs text-slate-900 dark:text-gray-500 sm:hidden">
+              Scroll down to choose network to send to
+            </p>
+          </div>
 
           <BridgeDragTrack setLockingFn={setLocking} />
 
+          <div className="sticky top-48 h-80 sm:col-span-4">
           <CryptoCard
             title="Bridge to"
             id="bridge_card_to"
             tokenPrice={tokenPrices[`c${bridgeToToken?.chainId}_t${bridgeToToken?.address?.toLowerCase()}`] ?? 0}
             active={locking}
             modal={{
-              buttonText: getNetworkLabel(+networkTo),
+              buttonText: networkTo.name,
               onClose: () => setLocked(false),
               openModal: locked,
               modalContent: locked ? (
@@ -461,7 +470,7 @@ const Bridge: NextPage = () => {
             }}
           >
             <div className="mt-8">
-              <div className="flex justify-center text-2xl text-slate-400">
+              <div className="flex justify-center text-2xl">
                 {toAmountLoading ? (
                   <Skeleton
                     width={100}
@@ -476,6 +485,8 @@ const Bridge: NextPage = () => {
             </div>
           </CryptoCard>
         </div>
+
+        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocking} />}
 
         <TransactionHistory />
       </Container>

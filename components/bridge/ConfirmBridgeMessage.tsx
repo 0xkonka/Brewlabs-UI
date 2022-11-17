@@ -29,7 +29,7 @@ const ConfirmBridgeMessage = (): ReactElement => {
           </p>
         </div>
       </div>
-      <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+      <div className="mt-5 grid grid-flow-row-dense grid-cols-2 gap-3 sm:mt-6">
         <Button onClick={() => setLocked(false)}>Confirm</Button>
         <Button onClick={() => setLocked(false)}>Cancel</Button>
       </div>

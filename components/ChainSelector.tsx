@@ -5,13 +5,14 @@ import { toast } from "react-toastify";
 import { NetworkConfig } from "config/constants/types";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import { NetworkOptions } from "config/constants/networks";
 
 type ChainSelectorProps = {
+  onDismiss?: () => void;
   networks: NetworkConfig[];
   currentChainId: ChainId;
   bSwitchChain?: boolean;
-  selectFn: (selectedValue: string) => void;
-  onDismiss?: () => void;
+  selectFn: (selectedNetwork: NetworkConfig) => void;
 };
 
 const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDismiss }: ChainSelectorProps) => {
@@ -27,7 +28,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
 
   useEffect(() => {
     if (isSuccess) {
-      if (pendingChainId) selectFn(pendingChainId?.toString());
+      if (pendingChainId) selectFn(NetworkOptions.find(c => c.id === pendingChainId)!);
 
       if (onDismiss) onDismiss();
       toast.success(`Switched to ${networks.find((network) => network.id === pendingChainId)?.name}`);
@@ -74,12 +75,12 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
                 if (bSwitchChain) {
                   if (network.id !== currentChainId) switchNetwork(network.id);
                 } else {
-                  selectFn(network.id.toString());
+                  selectFn(network);
                   if (onDismiss) onDismiss();
                 }
               }}
               disabled={isLoading || !canSwitch}
-              className="flex w-full  py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
+              className="flex w-full py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
             >
               <img className="h-10 w-10 rounded-full" src={network.image} alt={network.name} />
               <div className="ml-4 flex-col text-left">
