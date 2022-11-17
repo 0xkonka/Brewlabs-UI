@@ -4,6 +4,7 @@ import { createGlobalState } from "react-hooks-global-state";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { NetworkConfig } from "config/constants/types";
 
 import { updateVersion } from "./global/actions";
 
@@ -91,17 +92,22 @@ export function useStore(initialState: any) {
   return useMemo(() => initializeStore(initialState), [initialState]);
 }
 
+const userBridgeNetworkInitial = {
+  id: 0,
+  name: "",
+  image: "",
+};
 const userState: {
   userPoolsStakeOnly: boolean;
-  userBridgeTo: number;
-  userBridgeFrom: number;
+  userBridgeTo: NetworkConfig;
+  userBridgeFrom: NetworkConfig;
   userBridgeFromToken: BridgeToken | undefined;
   userBridgeLocked: boolean;
   userBridgeAmount: number;
 } = {
   userPoolsStakeOnly: false,
-  userBridgeTo: 0,
-  userBridgeFrom: 0,
+  userBridgeTo: userBridgeNetworkInitial,
+  userBridgeFrom: userBridgeNetworkInitial,
   userBridgeFromToken: undefined,
   userBridgeLocked: false,
   userBridgeAmount: 0,
@@ -110,7 +116,7 @@ const userState: {
 // Create a single global state object
 const initialState1 = {
   ...userState,
-  showBackdrop: false,
+  modalIsOpen: false,
   mobileNavOpen: false,
   userSidebarOpen: false,
   sessionChainId: undefined as any,

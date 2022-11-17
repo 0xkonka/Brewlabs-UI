@@ -7,6 +7,8 @@ module.exports = {
       colors: {
         dark: "#0F2131",
         brand: "#FFDE0D",
+        eth: "#5D78DE",
+        bsc: "#E4B00A",
       },
     },
     fontFamily: {

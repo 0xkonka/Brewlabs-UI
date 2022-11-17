@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useConnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 
 import { bsc } from "contexts/wagmi";
@@ -25,7 +25,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const supportedNetworks = useSupportedNetworks();
   const { chainId, isWrongNetwork } = useActiveChainId();
 
-  const { disconnect } = useDisconnect();
   const { switchNetwork } = useSwitchNetwork();
 
   const [mounted, setMounted] = useState(false);
@@ -79,10 +78,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           </div>
         </button>
       ) : (
-        <button
-          onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect)}
-          className="group block w-full flex-shrink-0"
-        >
+        <div className="group block w-full flex-shrink-0">
           <div className="flex items-center">
             <div
               onClick={(e) => {
@@ -101,34 +97,25 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               />
             </div>
 
-            <div className="ml-3 overflow-hidden" onClick={() => allowDisconnect && disconnect()}>
+            <button
+              className="ml-3 overflow-hidden"
+              onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect)}
+            >
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
               </p>
-              <p
-                className="text-left text-xs font-medium"
-                onClick={(e) => {
-                  if (supportedNetworks.length > 1 && !allowDisconnect) {
-                    e.stopPropagation();
-                    setOpenSwitchNetworkModal(true);
-                  }
-                }}
-              >
-                {allowDisconnect ? (
-                  `Disconnect`
-                ) : (
-                  <span
-                    className={`text-${isWrongNetwork ? "red" : "green"}-500 hover:text-${
-                      isWrongNetwork ? "red" : "green"
-                    }-400`}
-                  >
-                    {chain?.name}
-                  </span>
-                )}
+              <p className="text-left text-xs font-medium">
+                <span
+                  className={`text-${isWrongNetwork ? "red" : "green"}-500 hover:text-${
+                    isWrongNetwork ? "red" : "green"
+                  }-400`}
+                >
+                  {chain?.name}
+                </span>
               </p>
-            </div>
+            </button>
           </div>
-        </button>
+        </div>
       )}
     </div>
   );

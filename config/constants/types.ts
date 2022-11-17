@@ -152,7 +152,7 @@ export type PageMeta = {
 };
 
 export type NetworkConfig = {
-  id: ChainId;
+  id: ChainId | 0;
   name: string;
   image: string;
 };

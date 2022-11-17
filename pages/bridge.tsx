@@ -1,17 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import { toast } from "react-toastify";
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
-import Skeleton from "react-loading-skeleton";
-import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
 import { BridgeToken } from "config/constants/types";
-import { useApproval } from "hooks/bridge/useApproval";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
+import { useApproval } from "hooks/bridge/useApproval";
 import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { useTokenPrices } from "hooks/useTokenPrice";
@@ -32,6 +35,9 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import BridgeDragButton from "components/bridge/BridgeDragButton";
+import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
+import { NetworkOptions } from "config/constants/networks";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -69,10 +75,9 @@ const Bridge: NextPage = () => {
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
 
-  const [balanceLoading, setBalanceLoading] = useState(true);
-  const [toBalanceLoading, setToBalanceLoading] = useState(true);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [toBalanceLoading, setToBalanceLoading] = useState(false);
 
-  const { homeChainId, foreignChainId, getBridgeChainId, getTotalConfirms } = useBridgeDirection();
   const {
     txHash,
     fromToken,
@@ -110,7 +115,7 @@ const Bridge: NextPage = () => {
       return 0;
     });
 
-    setNetworkFrom(fromChainId);
+    setNetworkFrom(NetworkOptions.find((c) => c.id === fromChainId)!);
     setSupportedFromTokens(tmpTokens);
   }, [fromChainId, setNetworkFrom]);
 
@@ -135,10 +140,10 @@ const Bridge: NextPage = () => {
       return;
     }
     // set toChain
-    let _toChainId = +networkTo;
-    if (!chainIds.includes(+networkTo)) {
+    let _toChainId = networkTo.id;
+    if (!chainIds.includes(_toChainId)) {
       _toChainId = chainIds[0];
-      setNetworkTo(chainIds[0]);
+      setNetworkTo(NetworkOptions.find((c) => c.id === _toChainId)!);
     }
 
     // set toToken
@@ -223,7 +228,7 @@ const Bridge: NextPage = () => {
 
   const fromTokenSelected = (e: any) => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
-    setToken(supportedFromTokens.find((token) => token.address === e.target.value)!)
+    setToken(supportedFromTokens.find((token) => token.address === e.target.value)!);
   };
 
   const unlockButtonDisabled =
@@ -272,7 +277,7 @@ const Bridge: NextPage = () => {
         if (error && error.message) {
           if (
             isRevertedError(error) ||
-            (error.data && (error.data.includes("Bad instruction fe") || error.data.includes("Reverted")))
+            (error.data && (error.data.includes("Bad instruction fee") || error.data.includes("Reverted")))
           ) {
             showError(
               <div>
@@ -334,146 +339,157 @@ const Bridge: NextPage = () => {
         summary="Easily transfer tokens with confidence."
       />
 
-      <Container>
-        <div className="relative sm:grid sm:grid-cols-11 sm:items-center">
-          <CryptoCard
-            title="Bridge from"
-            id="bridge_card_from"
-            tokenPrice={tokenPrices[`c${bridgeFromToken?.chainId}_t${bridgeFromToken?.address?.toLowerCase()}`] ?? 0}
-            modal={{
-              buttonText: getNetworkLabel(+networkFrom),
-              disableAutoCloseOnClick: true,
-              openModal: openFromChainModal,
-              onOpen: () => setOpenFromChainModal(true),
-              onClose: () => setOpenFromChainModal(false),
-              modalContent: (
-                <ChainSelector
-                  bSwitchChain
-                  networks={supportedNetworks}
-                  currentChainId={networkFrom}
-                  onDismiss={() => setOpenFromChainModal(false)}
-                  selectFn={(selectedValue) => setGlobalState("userBridgeFrom", +selectedValue)}
-                />
-              ),
-            }}
-          >
-            <div className="mx-auto mt-4 max-w-md">
-              <div className="flex items-center justify-between">
-                <label htmlFor="price" className="text-sm font-medium text-gray-400">
-                  Token and Amount
-                </label>
-                {balanceLoading ? (
-                  <Skeleton
-                    width={80}
-                    baseColor={theme === "dark" ? "#3e3e3e" : "#bac3cf"}
-                    highlightColor={theme === "dark" ? "#686363" : "#747c87"}
-                  />
-                ) : (
-                  <label className="text-sm font-medium text-gray-400">
-                    {formatValue(fromBalance, fromToken?.decimals)}
-                  </label>
-                )}
-              </div>
-              <div className="relative mt-1 rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 flex items-center">
-                  <label htmlFor="currency" className="sr-only">
-                    Currency
-                  </label>
-                  <select
-                    id="currency"
-                    name="currency"
-                    value={bridgeFromToken?.address}
-                    onChange={fromTokenSelected}
-                    className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
-                  >
-                    {supportedFromTokens.map((token) => (
-                      <option key={`${token.chainId}-${token.address}`} value={token.address}>
-                        {token.symbol}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+      <BridgeLoadingModal />
 
-                <InputNumber
-                  name="bridge_amount"
-                  placeholder={"0.0"}
-                  value={amountInput}
-                  onKeyPress={(e: any) => {
-                    if (e.key === ".") {
-                      if (e.target.value.includes(".")) {
+      <Container>
+        <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
+          <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
+            <CryptoCard
+              title="Bridge from"
+              id="bridge_card_from"
+              tokenPrice={tokenPrices[`c${bridgeFromToken?.chainId}_t${bridgeFromToken?.address?.toLowerCase()}`] ?? 0}
+              modal={{
+                buttonText: networkFrom.name,
+                disableAutoCloseOnClick: true,
+                openModal: openFromChainModal,
+                onOpen: () => setOpenFromChainModal(true),
+                onClose: () => setOpenFromChainModal(false),
+                modalContent: (
+                  <ChainSelector
+                    bSwitchChain
+                    networks={supportedNetworks}
+                    currentChainId={networkFrom.id}
+                    onDismiss={() => setOpenFromChainModal(false)}
+                    selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)}
+                  />
+                ),
+              }}
+            >
+              <div className="mx-auto mt-4 max-w-md">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="price" className="block text-sm font-medium text-gray-400">
+                    Token and Amount
+                  </label>
+                  {balanceLoading ? (
+                    <Skeleton
+                      width={80}
+                      baseColor={theme === "dark" ? "#3e3e3e" : "#bac3cf"}
+                      highlightColor={theme === "dark" ? "#686363" : "#747c87"}
+                    />
+                  ) : (
+                    <label className="block text-sm font-medium text-gray-400">
+                      {formatValue(fromBalance, fromToken?.decimals)}
+                    </label>
+                  )}
+                </div>
+                <div className="relative mt-1 rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 flex items-center">
+                    <label htmlFor="currency" className="sr-only">
+                      Currency
+                    </label>
+                    <select
+                      id="currency"
+                      name="currency"
+                      value={bridgeFromToken?.address}
+                      onChange={fromTokenSelected}
+                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
+                    >
+                      {supportedFromTokens.map((token) => (
+                        <option key={`${token.chainId}-${token.address}`} value={token.address}>
+                          {token.symbol}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <InputNumber
+                    name="bridge_amount"
+                    placeholder={"0.0"}
+                    value={amountInput}
+                    onKeyPress={(e: any) => {
+                      if (e.key === ".") {
+                        if (e.target.value.includes(".")) {
+                          e.preventDefault();
+                        }
+                      } else if (Number.isNaN(Number(e.key))) {
                         e.preventDefault();
                       }
-                    } else if (Number.isNaN(Number(e.key))) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onKeyUp={delayedSetAmount}
-                  onChange={(event) => {
-                    setPercent(0);
-                    setAmountInput(event.target.value);
-                  }}
-                />
+                    }}
+                    onKeyUp={delayedSetAmount}
+                    onChange={(event) => {
+                      setPercent(0);
+                      setAmountInput(event.target.value);
+                    }}
+                  />
 
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <label htmlFor="currency" className="sr-only">
-                    Currency
-                  </label>
-                  <select
-                    id="currency"
-                    name="currency"
-                    value={percent}
-                    onChange={(e) => onPercentSelected(+e.target.value)}
-                    className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
-                  >
-                    {percents.map((val, idx) => (
-                      <option key={idx} value={idx}>
-                        {val}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center">
+                    <label htmlFor="currency" className="sr-only">
+                      Currency
+                    </label>
+                    <select
+                      id="currency"
+                      name="currency"
+                      value={percent}
+                      onChange={(e) => onPercentSelected(+e.target.value)}
+                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
+                    >
+                      {percents.map((val, idx) => (
+                        <option key={idx} value={idx}>
+                          {val}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CryptoCard>
+            </CryptoCard>
+            <p className="mt-4 block text-center text-xs text-slate-900 dark:text-gray-500 sm:hidden">
+              Scroll down to choose network to send to
+            </p>
+          </div>
 
           <BridgeDragTrack setLockingFn={setLocking} />
 
-          <CryptoCard
-            title="Bridge to"
-            id="bridge_card_to"
-            tokenPrice={tokenPrices[`c${bridgeToToken?.chainId}_t${bridgeToToken?.address?.toLowerCase()}`] ?? 0}
-            active={locking}
-            modal={{
-              buttonText: getNetworkLabel(+networkTo),
-              onClose: () => setLocked(false),
-              openModal: locked,
-              modalContent: locked ? (
-                <ConfirmBridgeMessage />
-              ) : (
-                <ChainSelector
-                  networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
-                  currentChainId={networkTo}
-                  selectFn={(selectedValue) => setGlobalState("userBridgeTo", +selectedValue)}
-                />
-              ),
-            }}
-          >
-            <div className="mt-8">
-              <div className="flex justify-center text-2xl text-slate-400">
-                {toAmountLoading ? (
-                  <Skeleton
-                    width={100}
-                    baseColor={theme === "dark" ? "#3e3e3e" : "#bac3cf"}
-                    highlightColor={theme === "dark" ? "#686363" : "#747c87"}
-                  />
+          <div className="sticky top-48 h-80 sm:col-span-4">
+            <CryptoCard
+              title="Bridge to"
+              id="bridge_card_to"
+              tokenPrice={tokenPrices[`c${bridgeToToken?.chainId}_t${bridgeToToken?.address?.toLowerCase()}`] ?? 0}
+              active={locking}
+              modal={{
+                buttonText: networkTo.name,
+                onClose: () => setLocked(false),
+                openModal: locked,
+                modalContent: locked ? (
+                  <ConfirmBridgeMessage />
                 ) : (
-                  <span>{formatValue(toAmount, bridgeToToken?.decimals)}</span>
-                )}
-                <span className="ml-1"> {bridgeToToken?.symbol}</span>
+                  <ChainSelector
+                    networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
+                    currentChainId={networkTo.id}
+                    selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)}
+                  />
+                ),
+              }}
+            >
+              <div className="mt-8">
+                <div className="flex justify-center text-2xl">
+                  {toAmountLoading ? (
+                    <Skeleton
+                      width={100}
+                      baseColor={theme === "dark" ? "#3e3e3e" : "#bac3cf"}
+                      highlightColor={theme === "dark" ? "#686363" : "#747c87"}
+                    />
+                  ) : (
+                    <span>{formatValue(toAmount, bridgeToToken?.decimals)}</span>
+                  )}
+                  <span className="ml-1"> {bridgeToToken?.symbol}</span>
+                </div>
               </div>
-            </div>
-          </CryptoCard>
+            </CryptoCard>
+          </div>
         </div>
+
+        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocking} />}
 
         <TransactionHistory />
       </Container>

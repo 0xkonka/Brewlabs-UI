@@ -23,13 +23,13 @@ const ConfirmBridgeMessage = (): ReactElement => {
           <p className="text-sm text-gray-500">
             You are about to send{" "}
             <span className="font-bolder text-brand">
-              {amountInput} {fromToken?.symbol} from the {getNetworkLabel(networkFrom)}
+              {amountInput} {fromToken?.symbol} from the {networkFrom.name}
             </span>{" "}
-            network to the <span className="font-bolder text-brand">{getNetworkLabel(networkTo)}</span> network.
+            network to the <span className="font-bolder text-brand">{networkTo.name}</span> network.
           </p>
         </div>
       </div>
-      <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+      <div className="mt-5 grid grid-flow-row-dense grid-cols-2 gap-3 sm:mt-6">
         <Button onClick={() => setLocked(false)}>Confirm</Button>
         <Button onClick={() => setLocked(false)}>Cancel</Button>
       </div>
