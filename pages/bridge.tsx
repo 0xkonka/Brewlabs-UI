@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import type { NextPage } from "next";
 
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 
 import PageHeader from "../components/layout/PageHeader";
@@ -16,9 +19,10 @@ import { useGlobalState, setGlobalState } from "../state";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import BridgeDragButton from "components/bridge/BridgeDragButton";
 
 const Bridge: NextPage = () => {
-  const supportedNetworks = useSupportedNetworks()
+  const supportedNetworks = useSupportedNetworks();
 
   const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
@@ -46,6 +50,10 @@ const Bridge: NextPage = () => {
     }
   }, [locked, setLocked, locking]);
 
+  useEffect(() => {
+    AOS.init();
+  }, []);
+
   const calculateReturn = (inputAmount: number) => {
     setAmount(inputAmount);
     // Do some stuff, this is placeholder logic
@@ -64,81 +72,96 @@ const Bridge: NextPage = () => {
       />
 
       <Container>
-        <div className="relative sm:grid sm:grid-cols-11 sm:items-center">
-          <CryptoCard
-            title="Bridge from"
-            id="bridge_card_from"
-            modal={{
-              buttonText: networkFrom,
-              modalContent: (
-                <ChainSelector networks={supportedNetworks} selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)} />
-              ),
-            }}
-          >
-            <div className="mx-auto mt-4 max-w-md">
-              <label htmlFor="price" className="block text-sm font-medium text-gray-400">
-                Token and Amount
-              </label>
-              <div className="relative mt-1 rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 flex items-center">
-                  <label htmlFor="currency" className="sr-only">
-                    Currency
-                  </label>
-                  <select
-                    id="currency"
-                    name="currency"
-                    className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
-                  >
-                    <option>BREW</option>
-                    <option>GROVE</option>
-                    <option>ETH</option>
-                  </select>
-                </div>
+        <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
+          <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
+            <CryptoCard
+              title="Bridge from"
+              id="bridge_card_from"
+              modal={{
+                buttonText: networkFrom.name,
+                modalContent: (
+                  <ChainSelector
+                    networks={supportedNetworks}
+                    selectFn={(selectedValue) => setGlobalState("userBridgeFrom", selectedValue)}
+                  />
+                ),
+              }}
+            >
+              <div className="mx-auto mt-4 max-w-md">
+                <label htmlFor="price" className="block text-sm font-medium text-gray-400">
+                  Token and Amount
+                </label>
+                <div className="relative mt-1 rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 flex items-center">
+                    <label htmlFor="currency" className="sr-only">
+                      Currency
+                    </label>
+                    <select
+                      id="currency"
+                      name="currency"
+                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
+                    >
+                      <option>BREW</option>
+                      <option>GROVE</option>
+                      <option>ETH</option>
+                    </select>
+                  </div>
 
-                <InputNumber value={0.0} name="bridge_amount" onBlurFn={calculateReturn} />
+                  <InputNumber value={0.0} name="bridge_amount" onBlurFn={calculateReturn} />
 
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <label htmlFor="currency" className="sr-only">
-                    Currency
-                  </label>
-                  <select
-                    id="currency"
-                    name="currency"
-                    className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
-                  >
-                    <option>MAX</option>
-                    <option>10%</option>
-                    <option>25%</option>
-                    <option>50%</option>
-                    <option>75%</option>
-                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center">
+                    <label htmlFor="currency" className="sr-only">
+                      Currency
+                    </label>
+                    <select
+                      id="currency"
+                      name="currency"
+                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
+                    >
+                      <option>MAX</option>
+                      <option>10%</option>
+                      <option>25%</option>
+                      <option>50%</option>
+                      <option>75%</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CryptoCard>
+            </CryptoCard>
+            <p className="mt-4 block text-center text-xs text-slate-900 dark:text-gray-500 sm:hidden">
+              Scroll down to choose network to send to
+            </p>
+          </div>
 
           <BridgeDragTrack setLockingFn={setLocking} />
 
-          <CryptoCard
-            title="Bridge to"
-            id="bridge_card_to"
-            active={locking}
-            modal={{
-              buttonText: networkTo,
-              onClose: () => setLocking(false),
-              openModal: locked,
-              modalContent: locked ? (
-                <ConfirmBridgeMessage />
-              ) : (
-                <ChainSelector networks={supportedNetworks} selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)} />
-              ),
-            }}
-          >
-            <div className="mt-8">
-              <div className="text-center text-2xl">{returnAmount}</div>
-            </div>
-          </CryptoCard>
+          <div className="sticky top-48 h-80 sm:col-span-4">
+            <CryptoCard
+              title="Bridge to"
+              id="bridge_card_to"
+              active={locking}
+              modal={{
+                buttonText: networkTo.name,
+                onClose: () => setLocking(false),
+                openModal: locked,
+                modalContent: locked ? (
+                  <ConfirmBridgeMessage />
+                ) : (
+                  <ChainSelector
+                    networks={supportedNetworks}
+                    selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)}
+                  />
+                ),
+              }}
+            >
+              <div className="mx-auto mt-4 max-w-md">
+                <div className="text-center text-2xl">{returnAmount}</div>
+              </div>
+            </CryptoCard>
+          </div>
         </div>
+
+        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocking} />}
 
         <TransactionHistory />
       </Container>
