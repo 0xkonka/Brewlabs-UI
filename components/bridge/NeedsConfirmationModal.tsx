@@ -29,22 +29,26 @@ const NeedsConfirmationModal = ({ setNeedsConfirmation, setMessage }: NeedsConfi
   return (
     <Modal open={isOpen} onClose={onClose}>
       <div className="p-4 font-brand">
-        <h5 className="mb-2 text-2xl dark:text-slate-400">Claim Your Tokens</h5>
-        <p className="flex py-3 dark:text-gray-500">
-          Please switch the network in your wallet to
-          <div
-            onClick={() => {
-              if (canSwitch) switchNetwork(foreignChainId);
-            }}
-          >
-            <strong>{getNetworkLabel(foreignChainId)}</strong>
+        <div className="mt-3 text-center sm:mt-5">
+          <h3 className="text-lg font-medium leading-6 text-gray-900">Claim Your Tokens</h3>
+          <div className="mx-auto mt-2 max-w-sm">
+            <p className="text-sm text-gray-500">
+              Please switch the network in your wallet to
+              <div
+                onClick={() => {
+                  if (canSwitch) switchNetwork(foreignChainId);
+                }}
+              >
+                <strong>{getNetworkLabel(foreignChainId)}</strong>
+              </div>
+              {!canSwitch && <>Unable to switch network. Please try it on your wallet</>}
+            </p>
+            <p className="text-sm text-gray-500">
+              After you switch networks, you will complete a second transaction on {getNetworkLabel(foreignChainId)} to
+              claim your {toUnit} tokens.
+            </p>
           </div>
-          {!canSwitch && <>Unable to switch network. Please try it on your wallet</>}
-        </p>
-        <p>
-          After you switch networks, you will complete a second transaction on {getNetworkLabel(foreignChainId)} to
-          claim your {toUnit} tokens.
-        </p>
+        </div>
       </div>
     </Modal>
   );

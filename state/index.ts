@@ -1,13 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useMemo } from "react";
-import { createGlobalState } from "react-hooks-global-state";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import { createGlobalState } from "react-hooks-global-state";
 import { NetworkConfig } from "config/constants/types";
 
 import { updateVersion } from "./global/actions";
 
+import storage from "./storage";
 import farmsReducer from "./farms";
 import multicall from "./multicall/reducer";
 import { BridgeToken } from "config/constants/types";

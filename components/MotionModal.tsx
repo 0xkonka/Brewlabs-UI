@@ -61,7 +61,7 @@ const AnimationModal = ({ closeFn, layoutId, children, disableAutoCloseOnClick }
               className="absolute top-4 right-4 rounded-full bg-white p-2 dark:bg-zinc-900 sm:-top-2 sm:-right-2 sm:dark:bg-zinc-800"
             >
               <span className="sr-only">Close</span>
-              <XMarkIcon className="h-6 w-6" />
+              <XMarkIcon className="h-6 w-6 dark:text-slate-400" />
             </motion.button>
           </motion.div>
         </motion.div>
