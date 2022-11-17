@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Head from "next/head";
-import Image from "next/future/image";
+
 import { useRouter } from "next/router";
 import { ChainId } from "@brewlabs/sdk";
 
@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 import { DEFAULT_META, getCustomMeta } from "config/constants/meta";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useBrewsCoingeckoPrice, useBrewsUsdPrice } from "hooks/useUsdPrice";
-import Bubbles from "../animations/Bubbles";
 
 export const PageMeta: React.FC = () => {
   const { pathname } = useRouter();
@@ -17,14 +16,14 @@ export const PageMeta: React.FC = () => {
   const brewsPriceCoingecko = useBrewsCoingeckoPrice();
   const brewsPriceUsd = useBrewsUsdPrice();
 
-  let brewsPriceUsdDisplay = brewsPriceUsd ? `$${brewsPriceUsd.toFixed(4)}` : '...'
-  if(chainId !== ChainId.BSC_MAINNET || !brewsPriceUsd) {
-    brewsPriceUsdDisplay = brewsPriceCoingecko ? `$${brewsPriceCoingecko.toFixed(4)}` : '...'
+  let brewsPriceUsdDisplay = brewsPriceUsd ? `$${brewsPriceUsd.toFixed(4)}` : "...";
+  if (chainId !== ChainId.BSC_MAINNET || !brewsPriceUsd) {
+    brewsPriceUsdDisplay = brewsPriceCoingecko ? `$${brewsPriceCoingecko.toFixed(4)}` : "...";
   }
 
   const pageMeta = getCustomMeta(pathname) || {};
   const { title, description, image } = { ...DEFAULT_META, ...pageMeta };
-  let pageTitle = brewsPriceUsdDisplay ? [title, brewsPriceUsdDisplay].join(' | ') : title
+  let pageTitle = brewsPriceUsdDisplay ? [title, brewsPriceUsdDisplay].join(" | ") : title;
 
   return (
     <Head>
@@ -42,28 +41,34 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
   const variants = {
     hidden: {
       opacity: 0,
-      x: 0,
       y: 500,
-      scale: 1.1,
+      transition: {
+        y: { duration: 0.5 },
+        default: { ease: [0.6, -0.05, 0.01, 0.99] },
+      },
     },
     enter: {
       opacity: 1,
-      x: 0,
       y: 0,
-      scale: 1,
+      transition: {
+        y: { duration: 0.5 },
+        default: { ease: [0.6, -0.05, 0.01, 0.99] },
+      },
     },
     exit: {
-      opacity: 0,
-      x: 0,
+      opacity: 0.25,
       y: -500,
-      scale: 0.95,
+      transition: {
+        y: { duration: 0.75 },
+        default: { ease: [0.6, -0.05, 0.01, 0.99] },
+      },
     },
   };
 
   const variantsHome = {
-    hidden: { opacity: 0, x: 0, y: 0 },
-    enter: { opacity: 1, x: 0, y: 0 },
-    exit: { opacity: 0, x: 0, y: 0 },
+    hidden: { opacity: 0, y: 0 },
+    enter: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 0 },
   };
 
   return (
@@ -75,19 +80,10 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
         animate="enter"
         exit="exit"
         variants={router.pathname === "/" ? variantsHome : variants}
-        className="relative z-0 flex-1 focus:outline-none xl:order-last"
+        onAnimationStart={() => document.body.classList.add("overflow-hidden")}
+        onAnimationComplete={() => document.body.classList.remove("overflow-hidden")}
+        className="relative z-0 min-h-screen w-full flex-1 overflow-x-hidden xl:order-last"
       >
-        <Bubbles />
-
-        <Image
-          className="fixed top-0 -right-44 opacity-50"
-          src="./images/blur-indigo.png"
-          alt=""
-          width={567}
-          height={567}
-          unoptimized
-          priority
-        />
         {children}
       </motion.div>
     </>
