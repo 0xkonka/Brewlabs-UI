@@ -74,6 +74,7 @@ const Bridge: NextPage = () => {
   const [percent, setPercent] = useState(0);
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
+  const [openToChainModal, setOpenToChainModal] = useState(false);
 
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [toBalanceLoading, setToBalanceLoading] = useState(false);
@@ -101,7 +102,7 @@ const Bridge: NextPage = () => {
   }: BridgeContextState = useBridgeContext();
   const tokenPrices = useTokenPrices();
   const { tokenLimits } = useTokenLimits();
-  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash!);
+  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash);
 
   useEffect(() => {
     const tmpTokens = [];
@@ -343,8 +344,6 @@ const Bridge: NextPage = () => {
         summary="Easily transfer tokens with confidence."
       />
 
-      <BridgeLoadingModal />
-
       <Container>
         <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
           <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
@@ -370,7 +369,7 @@ const Bridge: NextPage = () => {
               }}
             >
               <div className="mx-auto mt-4 max-w-md">
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <label htmlFor="price" className="block text-sm font-medium text-gray-400">
                     Token and Amount
                   </label>
@@ -462,13 +461,14 @@ const Bridge: NextPage = () => {
               active={locking}
               modal={{
                 buttonText: networkTo.name,
+                openModal: locked,
                 onClose: () => {
                   setLocking(false);
                   setLocked(false);
                 },
-                openModal: locked,
+                disableAutoCloseOnClick: locked,
                 modalContent: locked ? (
-                  <ConfirmBridgeMessage />
+                  <ConfirmBridgeMessage onClose={() => setOpenFromChainModal(false)} />
                 ) : (
                   <ChainSelector
                     networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
@@ -478,7 +478,7 @@ const Bridge: NextPage = () => {
                 ),
               }}
             >
-              <div className="mt-8">
+              <div className="mx-auto mt-4 max-w-md">
                 <div className="flex justify-center text-2xl text-slate-400">
                   {toAmountLoading ? (
                     <Skeleton

@@ -25,13 +25,17 @@ const ClaimTokensModal = () => {
 
   return (
     <Modal open={isOpen} onClose={onClose}>
-      <div className="p-4 font-brand">
-        <h5 className="mb-2 text-2xl dark:text-slate-400">Claim Your Tokens</h5>
-        <p className="py-3 dark:text-gray-500">
-          {`You have `}
-          <b>{transfers ? transfers.length : 0}</b>
-          {` not claimed transactions `}
-        </p>
+      <div className="p-8">
+        <div className="mt-3 text-center sm:mt-5">
+          <h3 className="text-lg font-medium leading-6 text-gray-900">Claim Your Tokens</h3>
+          <div className="mx-auto mt-2 max-w-sm">
+            <p className="text-sm text-gray-500">
+              {`You have `}
+              <b>{transfers ? transfers.length : 0}</b>
+              {` not claimed transactions `}
+            </p>
+          </div>
+        </div>
         <div className="mt-3 text-center">
           <button
             className="ml-auto mr-3 rounded border border-gray-500 bg-transparent py-2 px-4 outline-none hover:border-transparent hover:bg-gray-500 hover:text-white dark:text-gray-500 dark:hover:text-white"
