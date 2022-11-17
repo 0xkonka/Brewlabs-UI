@@ -4,6 +4,7 @@ import Link from "next/link";
 import Modal from "components/Modal";
 import { useClaimableTransfers } from "hooks/bridge/useClaimableTransfers";
 import LoadingModal from "./LoadingModal";
+import Button from "components/Button";
 
 const DONT_SHOW_CLAIMS = "dont-show-claims";
 
@@ -37,21 +38,15 @@ const ClaimTokensModal = () => {
           </div>
         </div>
         <div className="mt-3 text-center">
-          <button
-            className="ml-auto mr-3 rounded border border-gray-500 bg-transparent py-2 px-4 outline-none hover:border-transparent hover:bg-gray-500 hover:text-white dark:text-gray-500 dark:hover:text-white"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
+          <Button onClick={onClose}>Cancel</Button>
           <Link
-            href="/history"
+            href={"/history"}
             onClick={() => {
               window.localStorage.setItem("dont-show-claims", "false");
             }}
+            passHref
           >
-            <button className="rounded border border-blue-500 bg-transparent py-2 px-5 outline-none hover:border-transparent hover:bg-blue-500 hover:text-white dark:text-gray-500 dark:hover:text-white">
-              Claim
-            </button>
+            <Button>Claim</Button>
           </Link>
         </div>
       </div>

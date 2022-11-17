@@ -7,13 +7,14 @@ import type { NextPage } from "next";
 import { useTheme } from "next-themes";
 import { useAccount, useNetwork } from "wagmi";
 
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import { bridgeConfigs } from "config/constants/bridge";
 import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
 import { useApproval } from "hooks/bridge/useApproval";
-import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { useFromChainId } from "hooks/bridge/useBridgeDirection";
 
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
@@ -163,7 +164,7 @@ const Bridge: NextPage = () => {
     } else {
       setBridgeToToken(config?.homeToken);
     }
-  }, [fromChainId, bridgeFromToken, setNetworkTo]);
+  }, [fromChainId, bridgeFromToken, networkTo.id, setNetworkTo]);
 
   useEffect(() => {
     if (locked) {
@@ -331,7 +332,7 @@ const Bridge: NextPage = () => {
     if (transferButtonEnabled && transferValid()) {
       transfer().catch((error: any) => handleWalletError(error, showError));
     }
-  }, [transferButtonEnabled, transferValid, transfer]);
+  }, [transferButtonEnabled, transferValid, transfer, showError]);
 
   return (
     <PageWrapper>
@@ -343,6 +344,8 @@ const Bridge: NextPage = () => {
         }
         summary="Easily transfer tokens with confidence."
       />
+
+      <BridgeLoadingModal />
 
       <Container>
         <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
