@@ -30,12 +30,13 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
       onDismiss();
       toast.success(`Switched to ${networks.find((network) => network.id === pendingChainId)?.name}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess]);
 
   return (
     <Modal open={open} onClose={onDismiss}>
       <div className="p-4 font-brand">
-        <h5 className="mb-2 text-2xl">Switch Network</h5>
+        <h5 className="mb-2 text-2xl dark:text-slate-400">Switch Network</h5>
         <p className="dark:text-gray-500">Select a network</p>
 
         {!canSwitch && (

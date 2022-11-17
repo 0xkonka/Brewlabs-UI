@@ -6,8 +6,10 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, R
 import storage from "redux-persist/lib/storage";
 import { NetworkConfig } from "config/constants/types";
 
-import farmsReducer from "./farms";
 import { updateVersion } from "./global/actions";
+
+import farmsReducer from "./farms";
+import multicall from './multicall/reducer'
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -23,6 +25,7 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     farms: farmsReducer,
+    multicall,
   })
 );
 
@@ -116,6 +119,7 @@ const initialState1 = {
   modalIsOpen: false,
   mobileNavOpen: false,
   userSidebarOpen: false,
+  sessionChainId: undefined as any,
 };
 
 const { useGlobalState, setGlobalState } = createGlobalState(initialState1);

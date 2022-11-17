@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { motion } from "framer-motion";
 import { useGlobalState } from "../../state";
-import { NetworkOptions } from "../../config/constants/networks";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAction<boolean>> }) => {

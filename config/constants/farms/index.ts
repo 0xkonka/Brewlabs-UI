@@ -2,6 +2,9 @@ import { ChainId } from "@brewlabs/sdk";
 import { serializeTokens } from "../tokens";
 import { SerializedFarmConfig, Version } from "../types";
 
+export * from "./pancake";
+export * from "./priceHelperLps"
+
 const farms: SerializedFarmConfig[] = [
   /**
    * These 2 farms (PID 0, 1) should always be at the top of the file.

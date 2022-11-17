@@ -80,7 +80,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
       ) : (
         <div className="group block w-full flex-shrink-0">
           <div className="flex items-center">
-            <button
+            <div
               onClick={(e) => {
                 if (supportedNetworks.length > 1 && !allowDisconnect) {
                   e.stopPropagation();
@@ -95,7 +95,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                   backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
                 }}
               />
-            </button>
+            </div>
 
             <button
               className="ml-3 overflow-hidden"

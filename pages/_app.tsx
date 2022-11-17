@@ -11,7 +11,7 @@ import { SWRConfig } from "swr";
 import "react-toastify/dist/ReactToastify.css";
 
 import { WagmiProvider } from "contexts/wagmi";
-// import { useAccountEventListener } from "hooks/useAccountEventListener";
+import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { persistor, useAppDispatch, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
 import { client } from "utils/wagmi";
@@ -42,34 +42,36 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
     <WagmiProvider client={client}>
       <Provider store={store}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <SWRConfig>
-            <GlobalHooks />
-            <PersistGate loading={null} persistor={persistor}>
-              <div
-                className={clsx(
-                  router?.pathname === "/" && "home",
-                  "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
-                )}
-              >
-                <div className="flex h-full">
-                  <NavigationDesktop />
-                  <NavigationMobile />
-                  <UserSidebar />
+          <TokenPriceContextProvider>
+            <SWRConfig>
+              <GlobalHooks />
+              <PersistGate loading={null} persistor={persistor}>
+                <div
+                  className={clsx(
+                    router?.pathname === "/" && "home",
+                    "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                  )}
+                >
+                  <div className="flex h-full">
+                    <NavigationDesktop />
+                    <NavigationMobile />
+                    <UserSidebar />
 
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <HeaderMobile />
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <HeaderMobile />
 
-                    <LazyMotion features={domAnimation}>
-                      <AnimatePresence exitBeforeEnter>
-                        <Component {...pageProps} key={router.pathname} />
-                      </AnimatePresence>
-                    </LazyMotion>
+                      <LazyMotion features={domAnimation}>
+                        <AnimatePresence exitBeforeEnter>
+                          <Component {...pageProps} key={router.pathname} />
+                        </AnimatePresence>
+                      </LazyMotion>
+                    </div>
+                    <ToastContainer />
                   </div>
-                  <ToastContainer />
                 </div>
-              </div>
-            </PersistGate>
-          </SWRConfig>
+              </PersistGate>
+            </SWRConfig>
+          </TokenPriceContextProvider>
         </ThemeProvider>
       </Provider>
     </WagmiProvider>

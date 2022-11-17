@@ -29,10 +29,10 @@ export enum Version {
 }
 
 export enum AppId {
-  PANCAKESWAP = "pancakeswap",
-  APESWAP = "apeswap",
-  KNIGHT = "knight",
-  SUSHISWAP = "sushiswap",
+  PANCAKESWAP = 'pancakeswap',
+  APESWAP = 'apeswap',
+  // KNIGHT = 'knight',
+  SUSHISWAP = 'sushiswap',
 }
 
 export enum Chef {
@@ -41,26 +41,26 @@ export enum Chef {
 }
 
 interface FarmConfigBaseProps {
-  pid: number;
-  farmId?: number;
-  poolId?: number;
-  v1pid?: number;
-  chainId?: ChainId;
-  version?: Version;
-  lpSymbol: string;
-  lpDecimals?: number;
-  lpAddress: string;
-  contractAddress?: string;
-  multiplier?: string;
-  isCommunity?: boolean;
-  lpManager?: string;
-  enableEmergencyWithdraw?: boolean;
-  isServiceFee?: boolean;
-  compound?: boolean;
-  compoundRelection?: boolean;
-  unverified?: boolean;
-  featured?: boolean;
-  isFinished?: boolean;
+  pid: number | null
+  farmId?: number
+  poolId?: number
+  v1pid?: number
+  chainId?: ChainId
+  version?: Version
+  lpSymbol: string
+  lpDecimals?: number
+  lpAddress: string
+  contractAddress?: string
+  multiplier?: string
+  isCommunity?: boolean
+  lpManager?: string
+  enableEmergencyWithdraw?: boolean
+  isServiceFee?: boolean
+  compound?: boolean
+  compoundRelection?: boolean
+  unverified?: boolean
+  featured?: boolean
+  isFinished?: boolean
   dual?: {
     rewardPerBlock: number;
     earnLabel: string;
