@@ -183,6 +183,10 @@ const Bridge: NextPage = () => {
   }, [locked, setLocked, locking]);
 
   useEffect(() => {
+    AOS.init();
+  }, []);
+
+  useEffect(() => {
     if (fromToken && account) {
       (async () => {
         try {
@@ -458,7 +462,10 @@ const Bridge: NextPage = () => {
               active={locking}
               modal={{
                 buttonText: networkTo.name,
-                onClose: () => setLocked(false),
+                onClose: () => {
+                  setLocking(false);
+                  setLocked(false);
+                },
                 openModal: locked,
                 modalContent: locked ? (
                   <ConfirmBridgeMessage />
@@ -472,7 +479,7 @@ const Bridge: NextPage = () => {
               }}
             >
               <div className="mt-8">
-                <div className="flex justify-center text-2xl">
+                <div className="flex justify-center text-2xl text-slate-400">
                   {toAmountLoading ? (
                     <Skeleton
                       width={100}
