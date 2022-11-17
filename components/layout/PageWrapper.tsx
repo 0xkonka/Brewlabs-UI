@@ -67,6 +67,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
         className="relative z-0 flex-1 focus:outline-none xl:order-last"
       >
         <Bubbles />
+
         <Image
           className="fixed top-0 -right-44 opacity-50"
           src="./images/blur-indigo.png"

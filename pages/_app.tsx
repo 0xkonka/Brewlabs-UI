@@ -16,10 +16,11 @@ import { persistor, useAppDispatch, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
 import { client } from "utils/wagmi";
 
+import "animate.css";
 import "../styles/globals.css";
 import "../styles/animations.scss";
 
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../components/dashboard/UserSidebar";
 import HeaderMobile from "../components/navigation/HeaderMobile";
 import NavigationDesktop from "../components/navigation/NavigationDesktop";
 import NavigationMobile from "../components/navigation/NavigationMobile";
@@ -47,7 +48,7 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
               <div
                 className={clsx(
                   router?.pathname === "/" && "home",
-                  "relative min-h-screen bg-gradient-to-b from-white to-gray-200 dark:bg-gradient-to-tr dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                  "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
                 )}
               >
                 <div className="flex h-full">
