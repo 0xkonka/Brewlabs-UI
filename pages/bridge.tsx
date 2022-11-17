@@ -1,44 +1,39 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import { toast } from "react-toastify";
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 import { bridgeConfigs } from "config/constants/bridge";
+import { NetworkOptions } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
-import { useApproval } from "hooks/bridge/useApproval";
 import { useFromChainId } from "hooks/bridge/useBridgeDirection";
-
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
-import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { useTokenPrices } from "hooks/useTokenPrice";
-import { isRevertedError } from "lib/bridge/amb";
-import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { formatValue } from "lib/bridge/helpers";
 import { fetchTokenBalance } from "lib/bridge/token";
 
-import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
+import PageHeader from "../components/layout/PageHeader";
 import PageWrapper from "../components/layout/PageWrapper";
+import ChainSelector from "../components/ChainSelector";
 import CryptoCard from "../components/cards/CryptoCard";
 import InputNumber from "../components/inputs/InputNumber";
-import ChainSelector from "../components/ChainSelector";
 import WordHighlight from "../components/text/WordHighlight";
 
 import { useGlobalState, setGlobalState } from "../state";
 
+import BridgeDragButton from "../components/bridge/BridgeDragButton";
+import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
-import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
-import BridgeDragButton from "components/bridge/BridgeDragButton";
-import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
-import { NetworkOptions } from "config/constants/networks";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
