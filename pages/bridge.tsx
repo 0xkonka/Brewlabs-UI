@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import type { NextPage } from "next";
-
-import AOS from "aos";
-import "aos/dist/aos.css";
+import clsx from "clsx";
 
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 
@@ -22,9 +20,9 @@ import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
 import BridgeDragButton from "components/bridge/BridgeDragButton";
 
 const Bridge: NextPage = () => {
+  const scrollRef = useRef(null);
+  const [isStuck, setIsStuck] = useState(false);
   const supportedNetworks = useSupportedNetworks();
-
-  // const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
 
   const [networkTo] = useGlobalState("userBridgeTo");
@@ -32,27 +30,25 @@ const Bridge: NextPage = () => {
   const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
 
-  // useEffect(() => {
-  //   if (locked) {
-  //     return;
-  //   }
-
-  //   if (locking) {
-  //     const timer = setTimeout(() => {
-  //       setLocked(true);
-  //     }, 2000);
-
-  //     return () => clearTimeout(timer);
-  //   }
-
-  //   if (!locking) {
-  //     setLocked(false);
-  //   }
-  // }, [locked, setLocked, locking]);
-
-  useEffect(() => {
-    AOS.init();
+  useLayoutEffect(() => {
+    watchScroll();
   }, []);
+
+  const watchScroll = () => {
+    const observer = new IntersectionObserver(
+      ([e]) =>
+        () =>
+          setIsStuck(e.intersectionRatio < 1),
+      {
+        threshold: 1,
+        rootMargin: "0px 0px 500px 0px",
+      }
+    );
+
+    if (scrollRef.current) {
+      observer.observe(scrollRef.current);
+    }
+  };
 
   const calculateReturn = (inputAmount: number) => {
     setAmount(inputAmount);
@@ -72,8 +68,8 @@ const Bridge: NextPage = () => {
       />
 
       <Container>
-        <div className="grid justify-center pb-64 sm:relative sm:h-auto sm:grid-cols-11">
-          <div className="sticky top-20 mb-48 sm:col-span-4 sm:mb-0">
+        <div className="relative grid justify-center pb-64 sm:h-auto sm:grid-cols-11">
+          <div className="sticky top-28 mb-48 sm:col-span-4 sm:mb-0">
             <CryptoCard
               title="Bridge from"
               id="bridge_card_from"
@@ -135,7 +131,7 @@ const Bridge: NextPage = () => {
 
           <BridgeDragTrack setLockingFn={setLocked} />
 
-          <div className="sticky top-52 h-80 sm:col-span-4">
+          <div ref={scrollRef} className={clsx(isStuck && "bg-red-500", "sticky top-32 sm:col-span-4")}>
             <CryptoCard
               title="Bridge to"
               id="bridge_card_to"
