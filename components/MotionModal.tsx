@@ -50,7 +50,7 @@ const AnimationModal = ({ closeFn, layoutId, children, disableAutoCloseOnClick }
             layout
             layoutId={layoutId}
             onClick={(e) => disableAutoCloseOnClick && e.stopPropagation()}
-            className="fixed inset-x-0 top-0 m-auto h-fit w-full sm:top-32 sm:w-7/12 md:w-2/6"
+            className="fixed inset-x-0 top-0 m-auto h-fit w-full sm:top-32 sm:w-7/12 md:w-2/6 md:min-w-[400px]"
           >
             <div className="overflow-hidden bg-white pt-12 dark:bg-zinc-900 sm:rounded-xl sm:border-2 sm:border-amber-300 sm:pt-0">
               {children}
