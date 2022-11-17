@@ -32,7 +32,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, children }: CryptoCa
   useEffect(() => {
     setSelected(!!modal?.openModal);
   }, [modal?.openModal]);
-  console.log("#############", modal?.buttonText, modal.buttonText === "" ? "No network selected" : modal.buttonText);
+  
   return (
     <>
       <motion.div
