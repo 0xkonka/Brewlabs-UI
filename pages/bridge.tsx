@@ -24,7 +24,7 @@ import BridgeDragButton from "components/bridge/BridgeDragButton";
 const Bridge: NextPage = () => {
   const supportedNetworks = useSupportedNetworks();
 
-  const [locking, setLocking] = useState(false);
+  // const [locking, setLocking] = useState(false);
   const [returnAmount, setReturnAmount] = useState(0.0);
 
   const [networkTo] = useGlobalState("userBridgeTo");
@@ -32,23 +32,23 @@ const Bridge: NextPage = () => {
   const [amount, setAmount] = useGlobalState("userBridgeAmount");
   const [locked, setLocked] = useGlobalState("userBridgeLocked");
 
-  useEffect(() => {
-    if (locked) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (locked) {
+  //     return;
+  //   }
 
-    if (locking) {
-      const timer = setTimeout(() => {
-        setLocked(true);
-      }, 2000);
+  //   if (locking) {
+  //     const timer = setTimeout(() => {
+  //       setLocked(true);
+  //     }, 2000);
 
-      return () => clearTimeout(timer);
-    }
+  //     return () => clearTimeout(timer);
+  //   }
 
-    if (!locking) {
-      setLocked(false);
-    }
-  }, [locked, setLocked, locking]);
+  //   if (!locking) {
+  //     setLocked(false);
+  //   }
+  // }, [locked, setLocked, locking]);
 
   useEffect(() => {
     AOS.init();
@@ -72,13 +72,13 @@ const Bridge: NextPage = () => {
       />
 
       <Container>
-        <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
-          <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
+        <div className="grid justify-center pb-64 sm:relative sm:h-auto sm:grid-cols-11">
+          <div className="sticky top-20 mb-48 sm:col-span-4 sm:mb-0">
             <CryptoCard
               title="Bridge from"
               id="bridge_card_from"
+              network={networkFrom}
               modal={{
-                buttonText: networkFrom.name,
                 modalContent: (
                   <ChainSelector
                     networks={supportedNetworks}
@@ -133,16 +133,16 @@ const Bridge: NextPage = () => {
             </p>
           </div>
 
-          <BridgeDragTrack setLockingFn={setLocking} />
+          <BridgeDragTrack setLockingFn={setLocked} />
 
-          <div className="sticky top-48 h-80 sm:col-span-4">
+          <div className="sticky top-52 h-80 sm:col-span-4">
             <CryptoCard
               title="Bridge to"
               id="bridge_card_to"
-              active={locking}
+              active={locked}
+              network={networkTo}
               modal={{
-                buttonText: networkTo.name,
-                onClose: () => setLocking(false),
+                onClose: () => setLocked(false),
                 openModal: locked,
                 modalContent: locked ? (
                   <ConfirmBridgeMessage />
@@ -161,9 +161,9 @@ const Bridge: NextPage = () => {
           </div>
         </div>
 
-        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocking} />}
+        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
 
-        <TransactionHistory />
+        {/* <TransactionHistory /> */}
       </Container>
     </PageWrapper>
   );
