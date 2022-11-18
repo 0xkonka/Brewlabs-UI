@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Skeleton from "react-loading-skeleton";
-import { ChainId } from "@brewlabs/sdk";
-import { BigNumber, ethers } from "ethers";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
+import { ChainId } from "@brewlabs/sdk";
+import clsx from "clsx";
+import { BigNumber, ethers } from "ethers";
+import Skeleton from "react-loading-skeleton";
 import { useAccount } from "wagmi";
 
 import AOS from "aos";
@@ -56,6 +57,9 @@ const Bridge: NextPage = () => {
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
   const { address: account } = useAccount();
+
+  const scrollRef = useRef(null);
+  const [isStuck, setIsStuck] = useState(false);
 
   const [networkFrom, setNetworkFrom] = useGlobalState("userBridgeFrom");
   const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
@@ -154,26 +158,8 @@ const Bridge: NextPage = () => {
     }
   }, [fromChainId, bridgeFromToken, networkTo.id, setNetworkTo]);
 
-  useEffect(() => {
-    if (locked) {
-      return;
-    }
-
-    if (locking) {
-      const timer = setTimeout(() => {
-        setLocked(true);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-
-    if (!locking) {
-      setLocked(false);
-    }
-  }, [locked, setLocked, locking]);
-
-  useEffect(() => {
-    AOS.init();
+  useLayoutEffect(() => {
+    watchScroll();
   }, []);
 
   useEffect(() => {
@@ -234,6 +220,16 @@ const Bridge: NextPage = () => {
     }
     setPercent(index);
   };
+  const watchScroll = () => {
+    const observer = new IntersectionObserver(([e]) => setIsStuck(e.intersectionRatio < 1), {
+      threshold: 1,
+      rootMargin: "-112px 0px 0px 0px",
+    });
+
+    if (scrollRef.current) {
+      observer.observe(scrollRef.current);
+    }
+  };
 
   return (
     <PageWrapper>
@@ -249,11 +245,12 @@ const Bridge: NextPage = () => {
       <BridgeLoadingModal />
 
       <Container>
-        <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
-          <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
+        <div className="relative grid justify-center pb-64 sm:h-auto sm:grid-cols-11">
+          <div ref={scrollRef} className="sticky top-28 mb-48 sm:col-span-4 sm:mb-0">
             <CryptoCard
               title="Bridge from"
               id="bridge_card_from"
+              network={networkFrom}
               tokenPrice={tokenPrices[`c${bridgeFromToken?.chainId}_t${bridgeFromToken?.address?.toLowerCase()}`] ?? 0}
               modal={{
                 buttonText: networkFrom.name,
@@ -355,16 +352,18 @@ const Bridge: NextPage = () => {
             </p>
           </div>
 
-          <BridgeDragTrack setLockingFn={setLocking} />
+          <BridgeDragTrack setLockingFn={setLocked} />
 
-          <div className="sticky top-48 h-80 sm:col-span-4">
+          <div className="sticky top-32 sm:col-span-4">
             <CryptoCard
               title="Bridge to"
               id="bridge_card_to"
               tokenPrice={tokenPrices[`c${bridgeToToken?.chainId}_t${bridgeToToken?.address?.toLowerCase()}`] ?? 0}
-              active={locking}
+              active={isStuck}
+              network={networkTo}
               modal={{
                 buttonText: networkTo.name,
+
                 openModal: locked,
                 onClose: () => {
                   setLocking(false);
@@ -405,9 +404,9 @@ const Bridge: NextPage = () => {
           </div>
         </div>
 
-        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocking} />}
+        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
 
-        <TransactionHistory />
+        {/* <TransactionHistory /> */}
       </Container>
     </PageWrapper>
   );
