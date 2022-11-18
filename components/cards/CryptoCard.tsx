@@ -1,8 +1,8 @@
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import Modal from "../MotionModal";
 import { NetworkConfig } from "config/constants/types";
+import Modal from "../MotionModal";
 
 type CryptoCardProps = {
   id: string;

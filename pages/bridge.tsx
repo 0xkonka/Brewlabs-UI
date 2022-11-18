@@ -2,13 +2,9 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
 import { ChainId } from "@brewlabs/sdk";
-import clsx from "clsx";
 import { BigNumber, ethers } from "ethers";
 import Skeleton from "react-loading-skeleton";
 import { useAccount } from "wagmi";
-
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 import { bridgeConfigs } from "config/constants/bridge";
 import { NetworkOptions } from "config/constants/networks";
