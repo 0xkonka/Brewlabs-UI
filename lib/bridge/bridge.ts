@@ -235,7 +235,6 @@ export const relayTokens = async (
   token: BridgeToken,
   receiver: string,
   amount: BigNumber,
-  { shouldReceiveNativeCur, foreignChainId }: any
 ) => {
   const { mode, mediator, address, helperContractAddress } = token;
   switch (mode) {
@@ -244,16 +243,6 @@ export const relayTokens = async (
       const helperContract = new Contract(helperContractAddress ?? ethers.constants.AddressZero, abi, signer);
       return helperContract.wrapAndRelayTokens(receiver, { value: amount });
     }
-    // case 'erc677': {
-    //   const abi = ['function transferAndCall(address, uint256, bytes)'];
-    //   const tokenContract = new Contract(address, abi, signer);
-    //   const foreignHelperContract = getHelperContract(foreignChainId);
-    //   const bytesData =
-    //     shouldReceiveNativeCur && foreignHelperContract
-    //       ? `${foreignHelperContract}${receiver.replace('0x', '')}`
-    //       : receiver;
-    //   return tokenContract.transferAndCall(mediator, amount, bytesData);
-    // }
     case "dedicated-erc20": {
       const abi = ["function relayTokens(address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
@@ -263,6 +252,7 @@ export const relayTokens = async (
     default: {
       const abi = ["function relayTokens(address, address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+
       return mediatorContract.relayTokens(address, receiver, amount);
     }
   }

@@ -1,44 +1,36 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Skeleton from "react-loading-skeleton";
-import { toast } from "react-toastify";
-import { ChainId } from "@brewlabs/sdk";
-import { BigNumber, ethers } from "ethers";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
-import { useAccount, useNetwork } from "wagmi";
-
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { ChainId } from "@brewlabs/sdk";
+import { BigNumber, ethers } from "ethers";
+import Skeleton from "react-loading-skeleton";
+import { useAccount } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
+import { NetworkOptions } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
-import { useApproval } from "hooks/bridge/useApproval";
 import { useFromChainId } from "hooks/bridge/useBridgeDirection";
-
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
-import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { useTokenPrices } from "hooks/useTokenPrice";
-import { isRevertedError } from "lib/bridge/amb";
-import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { formatValue } from "lib/bridge/helpers";
 import { fetchTokenBalance } from "lib/bridge/token";
 
-import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
+import PageHeader from "../components/layout/PageHeader";
 import PageWrapper from "../components/layout/PageWrapper";
+import ChainSelector from "../components/ChainSelector";
 import CryptoCard from "../components/cards/CryptoCard";
 import InputNumber from "../components/inputs/InputNumber";
-import ChainSelector from "../components/ChainSelector";
 import WordHighlight from "../components/text/WordHighlight";
 
 import { useGlobalState, setGlobalState } from "../state";
 
+import BridgeDragButton from "../components/bridge/BridgeDragButton";
+import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
+import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
-import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
-import BridgeDragButton from "components/bridge/BridgeDragButton";
-import BridgeLoadingModal from "../components/bridge/BridgeLoadingModal";
-import { NetworkOptions } from "config/constants/networks";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -60,8 +52,10 @@ const Bridge: NextPage = () => {
   const { theme } = useTheme();
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
-  const { address: account, isConnected } = useAccount();
-  const { chain } = useNetwork();
+  const { address: account } = useAccount();
+
+  const scrollRef = useRef(null);
+  const [isStuck, setIsStuck] = useState(false);
 
   const [networkFrom, setNetworkFrom] = useGlobalState("userBridgeFrom");
   const [networkTo, setNetworkTo] = useGlobalState("userBridgeTo");
@@ -75,7 +69,6 @@ const Bridge: NextPage = () => {
   const [percent, setPercent] = useState(0);
 
   const [openFromChainModal, setOpenFromChainModal] = useState(false);
-  const [openToChainModal, setOpenToChainModal] = useState(false);
 
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [toBalanceLoading, setToBalanceLoading] = useState(false);
@@ -91,21 +84,16 @@ const Bridge: NextPage = () => {
     amountInput,
     setAmountInput,
 
-    receiver,
     toToken,
     toBalance,
     toAmount,
     toAmountLoading,
     setToBalance,
-
-    loading,
-    transfer,
   }: BridgeContextState = useBridgeContext();
   const tokenPrices = useTokenPrices();
-  const { tokenLimits } = useTokenLimits();
-  const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash);
 
   useEffect(() => {
+    if (fromChainId <= 0) return;
     const tmpTokens = [];
     tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
     tmpTokens.push(
@@ -166,26 +154,8 @@ const Bridge: NextPage = () => {
     }
   }, [fromChainId, bridgeFromToken, networkTo.id, setNetworkTo]);
 
-  useEffect(() => {
-    if (locked) {
-      return;
-    }
-
-    if (locking) {
-      const timer = setTimeout(() => {
-        setLocked(true);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-
-    if (!locking) {
-      setLocked(false);
-    }
-  }, [locked, setLocked, locking]);
-
-  useEffect(() => {
-    AOS.init();
+  useLayoutEffect(() => {
+    watchScroll();
   }, []);
 
   useEffect(() => {
@@ -228,20 +198,11 @@ const Bridge: NextPage = () => {
 
   const updateAmount = useCallback(() => setAmount(amountInput), [amountInput, setAmount]);
   const delayedSetAmount = useDelay(updateAmount, 500);
-  const showError = useCallback((msg: any) => {
-    if (msg) toast.error(msg);
-  }, []);
 
   const fromTokenSelected = (e: any) => {
     setBridgeFromToken(supportedFromTokens.find((token) => token.address === e.target.value));
     setToken(supportedFromTokens.find((token) => token.address === e.target.value)!);
   };
-
-  const unlockButtonDisabled =
-    !fromToken || allowed || toAmountLoading || !(isConnected && chain?.id === fromToken?.chainId);
-
-  const transferButtonEnabled =
-    !!fromToken && allowed && !loading && !toAmountLoading && isConnected && chain?.id === fromToken?.chainId;
 
   const onPercentSelected = (index: number) => {
     const realPercentages = [100, 10, 25, 50, 75];
@@ -255,84 +216,16 @@ const Bridge: NextPage = () => {
     }
     setPercent(index);
   };
+  const watchScroll = () => {
+    const observer = new IntersectionObserver(([e]) => setIsStuck(e.intersectionRatio < 1), {
+      threshold: 1,
+      rootMargin: "-112px 0px 0px 0px",
+    });
 
-  const approveValid = useCallback(() => {
-    if (!chain?.id) {
-      showError("Please connect wallet");
-      return false;
+    if (scrollRef.current) {
+      observer.observe(scrollRef.current);
     }
-    if (chain?.id !== fromToken?.chainId) {
-      showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
-      return false;
-    }
-    if (fromAmount.lte(0)) {
-      showError("Please specify amount");
-      return false;
-    }
-    if (fromBalance.lt(fromAmount)) {
-      showError("Not enough balance");
-      return false;
-    }
-    return true;
-  }, [chain, fromToken?.chainId, fromAmount, fromBalance, showError]);
-
-  const onApprove = useCallback(() => {
-    if (!unlockLoading && !unlockButtonDisabled && approveValid()) {
-      approve().catch((error) => {
-        console.log(error);
-        if (error && error.message) {
-          if (
-            isRevertedError(error) ||
-            (error.data && (error.data.includes("Bad instruction fee") || error.data.includes("Reverted")))
-          ) {
-            showError(
-              <div>
-                There is problem with the token unlock. Try to revoke previous approval if any on{" "}
-                <a href="https://revoke.cash" className="text-underline">
-                  https://revoke.cash/
-                </a>{" "}
-                and try again.
-              </div>
-            );
-          } else {
-            handleWalletError(error, showError);
-          }
-        } else {
-          showError("Impossible to perform the operation. Reload the application and try again.");
-        }
-      });
-    }
-  }, [unlockLoading, unlockButtonDisabled, approveValid, showError, approve]);
-
-  const transferValid = useCallback(() => {
-    if (!chain?.id) {
-      showError("Please connect wallet");
-    } else if (chain?.id !== fromToken?.chainId) {
-      showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
-    } else if (
-      tokenLimits &&
-      (fromAmount.gt(tokenLimits.remainingLimit) || tokenLimits.remainingLimit.lt(tokenLimits.minPerTx))
-    ) {
-      showError("Daily limit reached. Please try again tomorrow or with a lower amount");
-    } else if (tokenLimits && fromAmount.lt(tokenLimits.minPerTx)) {
-      showError(`Please specify amount more than ${formatValue(tokenLimits.minPerTx, fromToken.decimals)}`);
-    } else if (tokenLimits && fromAmount.gt(tokenLimits.maxPerTx)) {
-      showError(`Please specify amount less than ${formatValue(tokenLimits.maxPerTx, fromToken.decimals)}`);
-    } else if (fromBalance.lt(fromAmount)) {
-      showError("Not enough balance");
-    } else if (receiver && !ethers.utils.isAddress(receiver)) {
-      showError(`Please specify a valid recipient address`);
-    } else {
-      return true;
-    }
-    return false;
-  }, [chain, tokenLimits, fromToken, fromAmount, fromBalance, receiver, showError]);
-
-  const onTransfer = useCallback(() => {
-    if (transferButtonEnabled && transferValid()) {
-      transfer().catch((error: any) => handleWalletError(error, showError));
-    }
-  }, [transferButtonEnabled, transferValid, transfer, showError]);
+  };
 
   return (
     <PageWrapper>
@@ -348,11 +241,12 @@ const Bridge: NextPage = () => {
       <BridgeLoadingModal />
 
       <Container>
-        <div className="grid justify-center sm:relative sm:h-auto sm:grid-cols-11 sm:items-center">
-          <div className="sticky top-48 mb-48 sm:col-span-4 sm:mb-0">
+        <div className="relative grid justify-center pb-64 sm:h-auto sm:grid-cols-11">
+          <div ref={scrollRef} className="sticky top-28 mb-48 sm:col-span-4 sm:mb-0">
             <CryptoCard
               title="Bridge from"
               id="bridge_card_from"
+              network={networkFrom}
               tokenPrice={tokenPrices[`c${bridgeFromToken?.chainId}_t${bridgeFromToken?.address?.toLowerCase()}`] ?? 0}
               modal={{
                 buttonText: networkFrom.name,
@@ -454,16 +348,18 @@ const Bridge: NextPage = () => {
             </p>
           </div>
 
-          <BridgeDragTrack setLockingFn={setLocking} />
+          <BridgeDragTrack setLockingFn={setLocked} />
 
-          <div className="sticky top-48 h-80 sm:col-span-4">
+          <div className="sticky top-32 sm:col-span-4">
             <CryptoCard
               title="Bridge to"
               id="bridge_card_to"
               tokenPrice={tokenPrices[`c${bridgeToToken?.chainId}_t${bridgeToToken?.address?.toLowerCase()}`] ?? 0}
-              active={locking}
+              active={isStuck}
+              network={networkTo}
               modal={{
                 buttonText: networkTo.name,
+
                 openModal: locked,
                 onClose: () => {
                   setLocking(false);
@@ -471,7 +367,12 @@ const Bridge: NextPage = () => {
                 },
                 disableAutoCloseOnClick: locked,
                 modalContent: locked ? (
-                  <ConfirmBridgeMessage onClose={() => setOpenFromChainModal(false)} />
+                  <ConfirmBridgeMessage
+                    onClose={() => {
+                      setOpenFromChainModal(false);
+                      setLocking(false);
+                    }}
+                  />
                 ) : (
                   <ChainSelector
                     networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
@@ -499,9 +400,9 @@ const Bridge: NextPage = () => {
           </div>
         </div>
 
-        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocking} />}
+        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
 
-        <TransactionHistory />
+        {/* <TransactionHistory /> */}
       </Container>
     </PageWrapper>
   );

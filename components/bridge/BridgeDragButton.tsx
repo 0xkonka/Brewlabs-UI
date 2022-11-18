@@ -16,9 +16,9 @@ const BridgeDragButton = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAct
     }
   };
 
-  const handleDragEnd = () => {
-    setLockingFn(false);
-  };
+  // const handleDragEnd = () => {
+  //   setLockingFn(false);
+  // };
 
   return (
     <div className="animate__animated animate__fadeInUp fixed bottom-0 left-0 right-0 mx-auto mt-4 flex w-full max-w-sm items-center justify-between rounded-full bg-zinc-900 p-1 sm:hidden">
@@ -27,7 +27,7 @@ const BridgeDragButton = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAct
         whileDrag={{ scale: 1.2, zIndex: 90 }}
         whileHover={{ scale: 1.2 }}
         dragSnapToOrigin
-        onDragEnd={() => handleDragEnd()}
+        // onDragEnd={() => handleDragEnd()}
         onDrag={(event, info) => handleDrag(info)}
         dragConstraints={{ left: 0, right: 200 }}
         className="rounded-ful h-12 w-12 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
@@ -36,7 +36,7 @@ const BridgeDragButton = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAct
         }}
       ></motion.button>
 
-      <span>Swipe to swap</span>
+      <span className="relative mb-1">Swipe to complete transfer</span>
       <div className="slide-x absolute left-14">
         <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500" />
       </div>
