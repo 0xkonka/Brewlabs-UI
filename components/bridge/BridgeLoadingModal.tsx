@@ -9,7 +9,7 @@ import { useBridgeContext } from "contexts/BridgeContext";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useTransactionStatus } from "hooks/bridge/useTransactionStatus";
 import { getExplorerLink } from "lib/bridge/helpers";
-import { trancateHash } from "utils";
+import { truncateHash } from "utils";
 
 import { ProgressRing } from "./ProgressRing";
 import ClaimTransferModal from "./ClaimTransferModal";
@@ -35,6 +35,8 @@ export const BridgeLoader = ({
 }: BridgeLoaderProps) => {
   const showConfirmations = confirmations < totalConfirms;
   const displayConfirms = showConfirmations ? confirmations : totalConfirms;
+
+  if (!loadingText) return <></>;
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -82,7 +84,7 @@ export const BridgeLoader = ({
                               rel="noreferrer noopener"
                               className="underline outline-none"
                             >
-                              {trancateHash(txHash!)}
+                              {truncateHash(txHash!)}
                             </a>
                           </p>
                         </div>
@@ -107,7 +109,7 @@ const BridgeLoadingModal = () => {
   const { fromToken, loading, txHash } = useBridgeContext();
 
   const [message, setMessage] = useState<any>();
-  
+
   const totalConfirms = getTotalConfirms(chain?.id!);
   const { loadingText, needsConfirmation, setNeedsConfirmation, confirmations } = useTransactionStatus(setMessage);
 

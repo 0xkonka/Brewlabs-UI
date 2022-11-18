@@ -37,8 +37,8 @@ export interface BridgeContextState {
   txHash: string | undefined;
   setTxHash: React.Dispatch<React.SetStateAction<string | undefined>>;
   // misc
-  receiver: string;
-  setReceiver: React.Dispatch<React.SetStateAction<string>>;
+  receiver: string | undefined;
+  setReceiver: React.Dispatch<React.SetStateAction<string | undefined>>;
   shouldReceiveNativeCur: boolean;
   setShouldReceiveNativeCur: React.Dispatch<React.SetStateAction<boolean>>;
   currentDay: string | undefined;
@@ -69,8 +69,8 @@ export const BridgeContext = React.createContext<BridgeContextState>({
   txHash: undefined,
   setTxHash: () => undefined,
   // misc
-  receiver: "",
-  setReceiver: () => "",
+  receiver: undefined,
+  setReceiver: () => undefined,
   shouldReceiveNativeCur: false,
   setShouldReceiveNativeCur: () => false,
   currentDay: undefined,
@@ -85,7 +85,7 @@ export const BridgeProvider = ({ children }: any) => {
   const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId, homeToken, foreignToken } =
     useBridgeDirection();
 
-  const [receiver, setReceiver] = useState("");
+  const [receiver, setReceiver] = useState<string>();
   const [amountInput, setAmountInput] = useState("");
   const [{ fromToken, toToken }, setTokens] = useState<{ fromToken: BridgeToken | null; toToken: BridgeToken | null }>({
     fromToken: null,
@@ -208,11 +208,8 @@ export const BridgeProvider = ({ children }: any) => {
     try {
       setLoading(true);
       setTxHash(undefined);
-      const tx = await relayTokens(signer, fromToken, receiver ?? account, fromAmount, {
-        shouldReceiveNativeCur:
-          shouldReceiveNativeCur && toToken?.address === ethers.constants.AddressZero && toToken?.mode === "NATIVE",
-        foreignChainId,
-      });
+
+      const tx = await relayTokens(signer, fromToken, (receiver ?? account)!, fromAmount);
       setTxHash(tx.hash);
       setAmountInput("0");
       setAmount("0");

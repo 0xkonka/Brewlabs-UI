@@ -19,6 +19,7 @@ export const useQueryChainId = () => {
     const page = router.pathname.split("/")[1];
     if (query.chainId === undefined) setQueryChainId(-1);
     if (typeof query.chainId !== "string") return;
+    if (!PAGE_SUPPORTED_CHAINS[page]) return;
 
     if (!PAGE_SUPPORTED_CHAINS[page].includes(+query.chainId)) {
       replaceQueryParams("chainId", PAGE_SUPPORTED_CHAINS[page][0]);

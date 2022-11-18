@@ -1,26 +1,27 @@
 import { ReactElement, useCallback } from "react";
-import { useBridgeContext } from "contexts/BridgeContext";
-import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
-import { useGlobalState } from "../../state";
-import CrossChainIcons from "../CrossChainIcons";
-import Button from "../Button";
-import { useApproval } from "hooks/bridge/useApproval";
-import { useAccount, useNetwork } from "wagmi";
-import { toast } from "react-toastify";
-import { isRevertedError } from "lib/bridge/amb";
-import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
+import { useAccount, useNetwork } from "wagmi";
+
+import { useBridgeContext } from "contexts/BridgeContext";
+import { useApproval } from "hooks/bridge/useApproval";
+import { useTokenLimits } from "hooks/bridge/useTokenLimits";
+import { isRevertedError } from "lib/bridge/amb";
+import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+
+import { useGlobalState } from "../../state";
+import Button from "../Button";
+import CrossChainIcons from "../CrossChainIcons";
 
 const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElement => {
   const { chain } = useNetwork();
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const {
     amountInput,
     fromAmount,
     fromToken,
     fromBalance,
     receiver,
-    toToken,
     txHash,
     toAmountLoading,
     loading,
@@ -33,7 +34,6 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
     !fromToken || allowed || toAmountLoading || !(isConnected && chain?.id === fromToken?.chainId);
   const transferButtonEnabled = !!fromToken && allowed && !loading && isConnected && chain?.id === fromToken?.chainId;
 
-  const [amount] = useGlobalState("userBridgeAmount");
   const [networkTo] = useGlobalState("userBridgeTo");
   const [networkFrom] = useGlobalState("userBridgeFrom");
   const [, setLocked] = useGlobalState("userBridgeLocked");
@@ -116,7 +116,12 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
 
   const onTransfer = useCallback(() => {
     if (transferButtonEnabled && transferValid()) {
-      transfer().catch((error: any) => handleWalletError(error, showError));
+      transfer()
+        .then(() => {
+          setLocked(false);
+          onClose();
+        })
+        .catch((error: any) => handleWalletError(error, showError));
     }
   }, [transferButtonEnabled, transferValid, transfer]);
 
@@ -151,14 +156,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
     }
 
     return (
-      <Button
-        onClick={() => {
-          onTransfer();
-          setLocked(false);
-          onClose();
-        }}
-        disabled={!transferButtonEnabled}
-      >
+      <Button onClick={onTransfer} disabled={!transferButtonEnabled}>
         <div className="flex items-center">
           <div className="mr-2">{loading ? "Confirming" : "Confirm"}</div>
           {loading && (

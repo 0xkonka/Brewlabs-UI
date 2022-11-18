@@ -9,14 +9,14 @@ import { getNetworkLabel } from "lib/bridge/helpers";
 type ClaimErrorModalProps = {
   open: boolean;
   token?: BridgeToken;
-  onDismiss: () => void;
+  onClose: () => void;
 };
 
-const ClaimErrorModal = ({ open, token, onDismiss }: ClaimErrorModalProps) => {
+const ClaimErrorModal = ({ open, token, onClose }: ClaimErrorModalProps) => {
   const { foreignChainId } = useBridgeDirection();
 
   return (
-    <Modal open={open} onClose={onDismiss}>
+    <Modal open={open} onClose={onClose}>
       <div className="p-8">
         <div className="mt-3 text-center sm:mt-5">
           <h3 className="text-lg font-medium leading-6 text-gray-900">Transfer done already</h3>
@@ -29,7 +29,7 @@ const ClaimErrorModal = ({ open, token, onDismiss }: ClaimErrorModalProps) => {
           </div>
         </div>
         <div className="mt-5 text-center">
-          <Button onClick={onDismiss}>Understand</Button>
+          <Button onClick={onClose}>Understand</Button>
         </div>
       </div>
     </Modal>
