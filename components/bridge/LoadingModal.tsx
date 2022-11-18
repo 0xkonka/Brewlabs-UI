@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { useNetwork } from "wagmi";
 
 import { getExplorerLink } from "lib/bridge/helpers";
-import { trancateHash } from "utils";
+import { truncateHash } from "utils";
 
 type LoadingModalProps = {
   loadingText?: string;
@@ -37,7 +37,7 @@ const LoadingModal = ({ loadingText, txHash, chainId }: LoadingModalProps) => {
                             rel="noreferrer noopener"
                             className="underline outline-none"
                           >
-                            {trancateHash(txHash!)}
+                            {truncateHash(txHash!)}
                           </a>
                         </p>
                       </div>

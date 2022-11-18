@@ -9,7 +9,7 @@ import { useBridgeContext } from "contexts/BridgeContext";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useTransactionStatus } from "hooks/bridge/useTransactionStatus";
 import { getExplorerLink } from "lib/bridge/helpers";
-import { trancateHash } from "utils";
+import { truncateHash } from "utils";
 
 import { ProgressRing } from "./ProgressRing";
 import ClaimTransferModal from "./ClaimTransferModal";
@@ -84,7 +84,7 @@ export const BridgeLoader = ({
                               rel="noreferrer noopener"
                               className="underline outline-none"
                             >
-                              {trancateHash(txHash!)}
+                              {truncateHash(txHash!)}
                             </a>
                           </p>
                         </div>
