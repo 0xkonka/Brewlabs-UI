@@ -35,15 +35,10 @@ const Bridge: NextPage = () => {
   }, []);
 
   const watchScroll = () => {
-    const observer = new IntersectionObserver(
-      ([e]) =>
-        () =>
-          setIsStuck(e.intersectionRatio < 1),
-      {
-        threshold: 1,
-        rootMargin: "0px 0px 500px 0px",
-      }
-    );
+    const observer = new IntersectionObserver(([e]) => setIsStuck(e.intersectionRatio < 1), {
+      threshold: 1,
+      rootMargin: "-112px 0px 0px 0px",
+    });
 
     if (scrollRef.current) {
       observer.observe(scrollRef.current);
@@ -69,7 +64,7 @@ const Bridge: NextPage = () => {
 
       <Container>
         <div className="relative grid justify-center pb-64 sm:h-auto sm:grid-cols-11">
-          <div className="sticky top-28 mb-48 sm:col-span-4 sm:mb-0">
+          <div ref={scrollRef} className="sticky top-28 mb-48 sm:col-span-4 sm:mb-0">
             <CryptoCard
               title="Bridge from"
               id="bridge_card_from"
@@ -131,11 +126,11 @@ const Bridge: NextPage = () => {
 
           <BridgeDragTrack setLockingFn={setLocked} />
 
-          <div ref={scrollRef} className={clsx(isStuck && "bg-red-500", "sticky top-32 sm:col-span-4")}>
+          <div className="sticky top-32 sm:col-span-4">
             <CryptoCard
               title="Bridge to"
               id="bridge_card_to"
-              active={locked}
+              active={isStuck}
               network={networkTo}
               modal={{
                 onClose: () => setLocked(false),
