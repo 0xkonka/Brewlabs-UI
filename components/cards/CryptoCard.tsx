@@ -37,10 +37,9 @@ const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardP
     <>
       <motion.div
         layoutId={id}
-        whileHover={{ scale: 1.05 }}
         className={clsx(
           "max-w-sm rounded-3xl border-2 border-transparent font-brand focus-within:border-amber-300 hover:border-amber-300 sm:relative sm:max-w-screen-md",
-          active && "shake"
+          active && "shadow-xl shadow-indigo-400/60"
         )}
       >
         <div className="h-72 rounded-3xl border-t border-slate-100 bg-gray-50 shadow-lg shadow-indigo-500/20 dark:border-slate-600 dark:bg-zinc-900">
