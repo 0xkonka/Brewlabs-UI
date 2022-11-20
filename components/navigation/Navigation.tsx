@@ -33,6 +33,8 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.05 }}
                   data-tip={item.name}
+                  target={item.external ? "_blank" : "_self"}
+                  rel={item.external ? "noopener noreferrer" : ""}
                   className={clsx(
                     item.href === router.pathname
                       ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"

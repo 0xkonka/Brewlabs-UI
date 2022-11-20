@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import clsx from "clsx";
 import Image from "next/future/image";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
@@ -11,6 +12,11 @@ import { SWRConfig } from "swr";
 
 import "react-toastify/dist/ReactToastify.css";
 
+import UserSidebar from "../components/dashboard/UserSidebar";
+import HeaderMobile from "../components/navigation/HeaderMobile";
+import NavigationDesktop from "../components/navigation/NavigationDesktop";
+import NavigationMobile from "../components/navigation/NavigationMobile";
+
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { persistor, useStore } from "state";
@@ -21,12 +27,9 @@ import "animate.css";
 import "../styles/globals.css";
 import "../styles/animations.scss";
 
-import Bubbles from "../components/animations/Bubbles";
-import UserSidebar from "../components/dashboard/UserSidebar";
-import HeaderMobile from "../components/navigation/HeaderMobile";
-import NavigationDesktop from "../components/navigation/NavigationDesktop";
-import NavigationMobile from "../components/navigation/NavigationMobile";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
+
+const Bubbles = lazy(() => import("../components/animations/Bubbles"));
 
 function GlobalHooks() {
   usePollBlockNumber();
@@ -53,7 +56,9 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
                     "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
                   )}
                 >
-                  <Bubbles />
+                  <Suspense>
+                    <Bubbles />
+                  </Suspense>
 
                   <Image
                     className="fixed top-0 -right-44 opacity-50"
