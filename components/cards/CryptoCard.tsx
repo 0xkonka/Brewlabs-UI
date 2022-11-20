@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import Modal from "../MotionModal";
 import { NetworkConfig } from "config/constants/types";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 type CryptoCardProps = {
   id: string;
@@ -61,7 +62,8 @@ const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardP
                     }}
                   ></div>
                 )}
-                <span className="px-4">{network.name === "" ? "No network selected" : network.name}</span>
+                <span className="pl-4 pr-1">{network.name === "" ? "Choose a network" : network.name}</span>
+                <ChevronDownIcon className="h-6 w-6 pr-2" />
               </button>
             </header>
 
