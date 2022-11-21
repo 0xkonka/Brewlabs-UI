@@ -26,6 +26,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
         dragSnapToOrigin
         onDrag={(event, info) => handleDrag(info)}
         dragConstraints={{ left: 0, right: 200 }}
+        dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
         className="rounded-ful relative h-16 w-16 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
         style={{
           backgroundImage: `url('${networkFrom.image}')`,

@@ -16,20 +16,16 @@ const BridgeDragButton = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAct
     }
   };
 
-  // const handleDragEnd = () => {
-  //   setLockingFn(false);
-  // };
-
   return (
-    <div className="animate__animated animate__fadeInUp fixed bottom-0 left-0 right-0 mx-auto mt-4 flex w-full max-w-sm items-center justify-between rounded-full bg-zinc-900 p-1 sm:hidden">
+    <div className="animate__animated animate__fadeInUp fixed bottom-0 left-0 right-0 mx-auto mt-4 flex w-full max-w-sm items-center justify-between rounded-full border-t border-slate-800 bg-zinc-900 p-1 sm:hidden">
       <motion.button
         drag="x"
         whileDrag={{ scale: 1.2, zIndex: 90 }}
         whileHover={{ scale: 1.2 }}
         dragSnapToOrigin
-        // onDragEnd={() => handleDragEnd()}
         onDrag={(event, info) => handleDrag(info)}
         dragConstraints={{ left: 0, right: 200 }}
+        dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
         className="rounded-ful h-12 w-12 shrink-0 overflow-hidden bg-cover bg-no-repeat hover:cursor-grab"
         style={{
           backgroundImage: `url('${networkFrom.image}')`,
