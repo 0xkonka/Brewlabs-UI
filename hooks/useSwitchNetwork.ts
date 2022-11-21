@@ -1,13 +1,12 @@
 /* eslint-disable consistent-return */
-import { ChainId } from "@brewlabs/sdk";
 import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from "wagmi";
 
 import { ConnectorNames } from "config/constants/wallets";
-import { setGlobalState } from "state";
-import { useRouter } from "next/router";
 import replaceBrowserHistory from "utils/replaceBrowserHistory";
+import { setGlobalState } from "state";
 
 export function useSwitchNetworkLocal() {
   const {query} = useRouter();
