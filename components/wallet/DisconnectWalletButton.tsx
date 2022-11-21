@@ -12,7 +12,7 @@ const DisconnectWalletButton = () => {
         disconnect(), setIsOpen(false);
       }}
     >
-      Disconnect
+      Disconnect wallet
     </button>
   );
 };
