@@ -1,6 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, Contract, ethers, Signer } from "ethers";
-import { BridgeToken } from "config/constants/types";
+import { BridgeToken, Version } from "config/constants/types";
 import { bridgeConfigs } from "config/constants/bridge";
 import { provider } from "utils/wagmi";
 import { fetchTokenName } from "./token";
@@ -235,6 +235,7 @@ export const relayTokens = async (
   token: BridgeToken,
   receiver: string,
   amount: BigNumber,
+  version?: Version,
   performanceFee?: string
 ) => {
   const { mode, mediator, address, helperContractAddress } = token;
@@ -242,11 +243,17 @@ export const relayTokens = async (
     case "NATIVE": {
       const abi = ["function wrapAndRelayTokens(address _receiver) public payable"];
       const helperContract = new Contract(helperContractAddress ?? ethers.constants.AddressZero, abi, signer);
-      return helperContract.wrapAndRelayTokens(receiver, { value: amount });
+      return helperContract.wrapAndRelayTokens(receiver, { value: amount.add(performanceFee ?? "0") });
     }
     case "dedicated-erc20": {
+      if (version && version > Version.V1) {
+        const abi = ["function relayTokens(address, uint256) public payable"];
+        const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+        return mediatorContract.relayTokens(receiver, amount, { value: performanceFee });
+      }
+
       const abi = performanceFee
-        ? ["function relayTokensWithFee(address, address, uint256) public payable"]
+        ? [`function relayTokensWithFee(address, address, uint256) public payable`]
         : ["function relayTokens(address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
 
@@ -257,6 +264,12 @@ export const relayTokens = async (
     }
     case "erc20":
     default: {
+      if (version && version > Version.V1) {
+        const abi = ["function relayTokens(address, address, uint256) public payable"];
+        const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+        return mediatorContract.relayTokens(address, receiver, amount, { value: performanceFee });
+      }
+
       const abi = performanceFee
         ? ["function relayTokensWithFee(address, address, uint256) public payable"]
         : ["function relayTokens(address, address, uint256)"];
