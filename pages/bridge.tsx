@@ -1,9 +1,6 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import type { NextPage } from "next";
-import clsx from "clsx";
-
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
-
 import PageHeader from "../components/layout/PageHeader";
 import Container from "../components/layout/Container";
 import PageWrapper from "../components/layout/PageWrapper";
@@ -11,9 +8,7 @@ import CryptoCard from "../components/cards/CryptoCard";
 import InputNumber from "../components/inputs/InputNumber";
 import ChainSelector from "../components/ChainSelector";
 import WordHighlight from "../components/text/WordHighlight";
-
 import { useGlobalState, setGlobalState } from "../state";
-
 import ConfirmBridgeMessage from "../components/bridge/ConfirmBridgeMessage";
 import TransactionHistory from "../components/bridge/TransactionHistory";
 import BridgeDragTrack from "../components/bridge/BridgeDragTrack";
