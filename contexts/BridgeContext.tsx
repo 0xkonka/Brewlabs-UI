@@ -266,7 +266,7 @@ export const BridgeProvider = ({ children }: any) => {
         await setToken(token);
       }
     },
-    [setToken, fromToken]
+    [setToken, fromToken, bridgeDirectionId]
   );
 
   useEffect(() => {
@@ -293,6 +293,7 @@ export const BridgeProvider = ({ children }: any) => {
     setToken,
     fromToken,
     toToken,
+    bridgeDirectionId,
     homeChainId,
     foreignChainId,
     providerChainId,

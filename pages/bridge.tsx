@@ -112,6 +112,7 @@ const Bridge: NextPage = () => {
   useEffect(() => {
     if (bridgeFromToken?.chainId !== fromChainId) {
       setBridgeFromToken(supportedFromTokens[0]);
+      setToken(supportedFromTokens[0]);
     }
   }, [fromChainId, bridgeFromToken, supportedFromTokens, setBridgeFromToken]);
 
