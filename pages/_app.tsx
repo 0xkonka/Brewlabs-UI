@@ -13,6 +13,7 @@ import { SWRConfig } from "swr";
 import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
 
+
 import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
@@ -62,15 +63,14 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
                       <Bubbles />
                     </Suspense>
 
-                    <Image
-                      className="fixed top-0 -right-44 opacity-50"
-                      src="./images/blur-indigo.png"
-                      alt="background blur"
-                      width={567}
-                      height={567}
-                      unoptimized
-                      priority
-                    />
+                  <Image
+                    className="fixed top-0 -right-44 opacity-50"
+                    src="/images/blur-indigo.png"
+                    alt="background blur"
+                    width={567}
+                    height={567}
+                    unoptimized={false}
+                  />
 
                     <div className="flex h-full">
                       <NavigationDesktop />
