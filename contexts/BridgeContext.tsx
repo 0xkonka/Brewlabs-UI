@@ -81,8 +81,16 @@ export const BridgeProvider = ({ children }: any) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { data: signer } = useSigner();
 
-  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId, homeToken, foreignToken } =
-    useBridgeDirection();
+  const {
+    bridgeDirectionId,
+    getBridgeChainId,
+    homeChainId,
+    foreignChainId,
+    homeToken,
+    foreignToken,
+    foreignPerformanceFee,
+    homePerformanceFee,
+  } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState<string>();
   const [amountInput, setAmountInput] = useState("");
@@ -220,7 +228,13 @@ export const BridgeProvider = ({ children }: any) => {
       setLoading(true);
       setTxHash(undefined);
 
-      const tx = await relayTokens(signer, fromToken, (receiver ?? account)!, fromAmount);
+      const tx = await relayTokens(
+        signer,
+        fromToken,
+        (receiver ?? account)!,
+        fromAmount,
+        fromToken.chainId === foreignChainId ? foreignPerformanceFee : homePerformanceFee
+      );
       setTxHash(tx.hash);
       setAmountInput("0");
       setAmount("0");

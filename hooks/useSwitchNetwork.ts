@@ -9,13 +9,13 @@ import replaceBrowserHistory from "utils/replaceBrowserHistory";
 import { setGlobalState } from "state";
 
 export function useSwitchNetworkLocal() {
-  const {query} = useRouter();
+  const { query } = useRouter();
 
   return useCallback((chainId: number) => {
-    if(+(query?.chainId ?? 0) === chainId) return;
+    if (+(query?.chainId ?? 0) === chainId) return;
     setGlobalState("sessionChainId", chainId);
     replaceBrowserHistory("chainId", chainId);
-    window.location.reload()
+    window.location.reload();
   }, []);
 }
 

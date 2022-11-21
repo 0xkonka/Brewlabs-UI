@@ -1,4 +1,5 @@
 import { ChainId } from "@brewlabs/sdk";
+import { ethers } from "ethers";
 import { serializeTokens } from "./tokens";
 import { BridgeDirectionConfig, Version } from "./types";
 
@@ -24,6 +25,8 @@ export const bridgeConfigs: BridgeDirectionConfig[] = [
     homeGraphName: "brainstormk/goerli-brewlabs-bridge",
     claimDisabled: false,
     tokensClaimDisabled: [],
+    homePerformanceFee: ethers.utils.parseEther("0.00089").toString(),
+    foreignPerformanceFee: ethers.utils.parseEther("0.00089").toString(),
   },
   {
     bridgeDirectionId: 2,

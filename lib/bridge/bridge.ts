@@ -235,6 +235,7 @@ export const relayTokens = async (
   token: BridgeToken,
   receiver: string,
   amount: BigNumber,
+  performanceFee?: string
 ) => {
   const { mode, mediator, address, helperContractAddress } = token;
   switch (mode) {
@@ -244,15 +245,26 @@ export const relayTokens = async (
       return helperContract.wrapAndRelayTokens(receiver, { value: amount });
     }
     case "dedicated-erc20": {
-      const abi = ["function relayTokens(address, uint256)"];
+      const abi = performanceFee
+        ? ["function relayTokensWithFee(address, address, uint256) public payable"]
+        : ["function relayTokens(address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+
+      if (performanceFee) {
+        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee });
+      }
       return mediatorContract.relayTokens(receiver, amount);
     }
     case "erc20":
     default: {
-      const abi = ["function relayTokens(address, address, uint256)"];
+      const abi = performanceFee
+        ? ["function relayTokensWithFee(address, address, uint256) public payable"]
+        : ["function relayTokens(address, address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
 
+      if (performanceFee) {
+        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee });
+      }
       return mediatorContract.relayTokens(address, receiver, amount);
     }
   }
