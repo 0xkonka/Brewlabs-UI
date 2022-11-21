@@ -5,7 +5,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalState, setGlobalState } from "../../state";
 import ConnectWallet from "../wallet/ConnectWallet";
 import LogoIcon from "../LogoIcon";
-import WalletData from "../WalletData";
+import WalletData from "./UserData";
 import DisconnectWalletButton from "components/wallet/DisconnectWalletButton";
 
 const UserSidebar = () => {
@@ -46,7 +46,7 @@ const UserSidebar = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="absolute top-0 right-0 pt-2 sm:-mr-12">
+                <div className="absolute top-0 right-0 z-10 pt-2 sm:-mr-12">
                   <button
                     type="button"
                     className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-inset focus:ring-white sm:focus:ring-2"
@@ -58,14 +58,16 @@ const UserSidebar = () => {
                 </div>
               </Transition.Child>
 
-              <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
+              <div className="relative h-0 flex-1 overflow-y-auto pt-5 pb-4">
                 <div className="flex flex-shrink-0 items-center px-4">
                   <LogoIcon classNames="w-12 text-dark dark:text-brand" />
                 </div>
 
                 <div className="mt-6 w-full p-4">
                   <WalletData />
+                </div>
 
+                <div className="absolute bottom-0 p-4">
                   <DisconnectWalletButton />
                 </div>
               </div>

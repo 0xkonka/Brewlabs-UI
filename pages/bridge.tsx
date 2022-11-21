@@ -56,7 +56,7 @@ const Bridge: NextPage = () => {
       <PageHeader
         title={
           <>
-            Send funds <WordHighlight content="cross-chain" /> with our bridge.
+            Transfer tokens <WordHighlight content="cross-chain" /> with our bridge.
           </>
         }
         summary="Easily transfer tokens with confidence."

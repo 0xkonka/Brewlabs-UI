@@ -9,11 +9,7 @@ const NavigationMobile = () => {
   const [isOpen] = useGlobalState("mobileNavOpen");
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-40"
-        onClose={() => setGlobalState("mobileNavOpen", false)}
-      >
+      <Dialog as="div" className="relative z-40" onClose={() => setGlobalState("mobileNavOpen", false)}>
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"
@@ -46,17 +42,14 @@ const NavigationMobile = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="absolute top-0 right-0 sm:-mr-12 pt-2">
+                <div className="absolute top-0 right-0 pt-2 sm:-mr-12">
                   <button
                     type="button"
-                    className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none sm:focus:ring-2 focus:ring-inset focus:ring-white"
+                    className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-inset focus:ring-white sm:focus:ring-2"
                     onClick={() => setGlobalState("mobileNavOpen", false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
+                    <XMarkIcon className="text-whites h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
               </Transition.Child>
