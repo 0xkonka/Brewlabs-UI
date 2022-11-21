@@ -1,24 +1,28 @@
 import { ReactElement, ReactNode, useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import clsx from "clsx";
-import Modal from "../MotionModal";
-import { NetworkConfig } from "config/constants/types";
+import { motion } from "framer-motion";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { NetworkConfig } from "config/constants/types";
+import Modal from "../MotionModal";
 
 type CryptoCardProps = {
   id: string;
   title?: string;
   active?: boolean;
+  tokenPrice: number;
   children: ReactNode;
   network: NetworkConfig;
   modal: {
+    disableAutoCloseOnClick?: boolean;
     openModal?: boolean;
-    onClose?: any;
+    onOpen?: () => void;
+    onClose?: () => void;
+    buttonText: string;
     modalContent: ReactElement;
   };
 };
 
-const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardProps) => {
+const CryptoCard = ({ id, title, tokenPrice, modal, active, network, children }: CryptoCardProps) => {
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -29,11 +33,9 @@ const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardP
   };
 
   useEffect(() => {
-    if (modal?.openModal) {
-      setSelected(true);
-    }
+    setSelected(!!modal?.openModal);
   }, [modal?.openModal]);
-
+  
   return (
     <>
       <motion.div
@@ -52,6 +54,7 @@ const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardP
                 className="mx-auto mt-4 flex items-center gap-2 rounded-full border border-gray-700"
                 onClick={() => {
                   setSelected(true);
+                  if (modal.onOpen) modal.onOpen();
                 }}
               >
                 {network.image !== "" && (
@@ -69,13 +72,13 @@ const CryptoCard = ({ id, title, modal, active, network, children }: CryptoCardP
 
             {children}
 
-            <h5 className="mt-6 text-center dark:text-gray-500">Current price: 0.056</h5>
+            <h5 className="mt-6 text-center dark:text-gray-500">Current price: {tokenPrice}</h5>
           </div>
         </div>
       </motion.div>
 
-      {selected && modal && (
-        <Modal closeFn={closeSelected} layoutId={id}>
+      {selected && modal && (id === "bridge_card_to" || modal.openModal) && (
+        <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
           {modal.modalContent}
         </Modal>
       )}

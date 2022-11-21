@@ -1,73 +1,74 @@
 /* eslint-disable consistent-return */
-import { ChainId } from '@brewlabs/sdk'
-import { useCallback, useMemo, useState } from 'react'
-import { toast } from 'react-toastify';
-import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from 'wagmi'
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
+import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from "wagmi";
 
-import { ConnectorNames } from 'config/constants/wallets';
-import replaceBrowserHistory from 'utils/replaceBrowserHistory'
-import { setGlobalState } from 'state';
+import { ConnectorNames } from "config/constants/wallets";
+import replaceBrowserHistory from "utils/replaceBrowserHistory";
+import { setGlobalState } from "state";
 
 export function useSwitchNetworkLocal() {
-  return useCallback(
-    (chainId: number) => {
-      setGlobalState("sessionChainId", chainId)
-      replaceBrowserHistory('chainId', chainId === ChainId.BSC_MAINNET ? null : chainId)
-    },
-    [],
-  )
+  const { query } = useRouter();
+
+  return useCallback((chainId: number) => {
+    if (+(query?.chainId ?? 0) === chainId) return;
+    setGlobalState("sessionChainId", chainId);
+    replaceBrowserHistory("chainId", chainId);
+    window.location.reload();
+  }, []);
 }
 
 export function useSwitchNetwork() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const {
     switchNetworkAsync: _switchNetworkAsync,
     isLoading: _isLoading,
     switchNetwork: _switchNetwork,
     ...switchNetworkArgs
-  } = useSwitchNetworkWallet()
+  } = useSwitchNetworkWallet();
 
-  const { isConnected, connector } = useAccount()
+  const { isConnected, connector } = useAccount();
 
-  const switchNetworkLocal = useSwitchNetworkLocal()
-  const isLoading = _isLoading || loading
+  const switchNetworkLocal = useSwitchNetworkLocal();
+  const isLoading = _isLoading || loading;
 
   const switchNetworkAsync = useCallback(
     async (chainId: number) => {
-      if (isConnected && typeof _switchNetworkAsync === 'function') {
-        if (isLoading) return
-        setLoading(true)
+      if (isConnected && typeof _switchNetworkAsync === "function") {
+        if (isLoading) return;
+        setLoading(true);
         return _switchNetworkAsync(chainId)
           .then((c) => {
             // well token pocket
             if (window.ethereum?.isTokenPocket === true) {
-              switchNetworkLocal(chainId)
-              window.location.reload()
+              switchNetworkLocal(chainId);
+              window.location.reload();
             }
-            return c
+            return c;
           })
           .catch(() => {
             // TODO: review the error
-            toast.error('Error connecting, please retry and confirm in wallet!')
+            toast.error("Error connecting, please retry and confirm in wallet!");
           })
-          .finally(() => setLoading(false))
+          .finally(() => setLoading(false));
       }
       return new Promise(() => {
-        switchNetworkLocal(chainId)
-      })
+        switchNetworkLocal(chainId);
+      });
     },
-    [isConnected, _switchNetworkAsync, isLoading, setLoading, switchNetworkLocal],
-  )
+    [isConnected, _switchNetworkAsync, isLoading, setLoading, switchNetworkLocal]
+  );
 
   const switchNetwork = useCallback(
     (chainId: number) => {
-      if (isConnected && typeof _switchNetwork === 'function') {
-        return _switchNetwork(chainId)
+      if (isConnected && typeof _switchNetwork === "function") {
+        return _switchNetwork(chainId);
       }
-      return switchNetworkLocal(chainId)
+      return switchNetworkLocal(chainId);
     },
-    [_switchNetwork, isConnected, switchNetworkLocal],
-  )
+    [_switchNetwork, isConnected, switchNetworkLocal]
+  );
 
   const canSwitch = useMemo(
     () =>
@@ -75,13 +76,13 @@ export function useSwitchNetwork() {
         ? !!_switchNetworkAsync &&
           connector?.id !== ConnectorNames.WalletConnect &&
           !(
-            typeof window !== 'undefined' &&
+            typeof window !== "undefined" &&
             // @ts-ignore // TODO: add type later
             (window.ethereum?.isSafePal || window.ethereum?.isMathWallet)
           )
         : true,
-    [_switchNetworkAsync, isConnected, connector],
-  )
+    [_switchNetworkAsync, isConnected, connector]
+  );
 
   return {
     ...switchNetworkArgs,
@@ -89,5 +90,5 @@ export function useSwitchNetwork() {
     switchNetworkAsync,
     isLoading,
     canSwitch,
-  }
+  };
 }

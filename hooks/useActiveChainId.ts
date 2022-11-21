@@ -1,19 +1,30 @@
 import { useRouter } from "next/router";
-import { useDeferredValue, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { useNetwork } from "wagmi";
 
 import { bsc } from "contexts/wagmi";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useGlobalState } from "state";
 import { isChainSupported } from "utils/wagmi";
+import { useReplaceQueryParams } from "./useReplaceQueryParams";
 
 export const useQueryChainId = () => {
   const [queryChainId, setQueryChainId] = useState(-1);
-  const { query } = useRouter();
+  const router = useRouter();
+  const { replaceQueryParams } = useReplaceQueryParams();
+  const { query } = router;
 
   useEffect(() => {
-    if (query.chainId === undefined) setQueryChainId(-1);
-    if (typeof query.chainId === "string") setQueryChainId(+query.chainId);
+    const page = router.pathname.split("/")[1];
+    if (query.chainId === undefined) {return};
+    if (typeof query.chainId !== "string") return;
+    if (!PAGE_SUPPORTED_CHAINS[page]) return;
+
+    if (!PAGE_SUPPORTED_CHAINS[page].includes(+query.chainId)) {
+      replaceQueryParams("chainId", PAGE_SUPPORTED_CHAINS[page][0]);
+    }
+    setQueryChainId(+query.chainId);
   }, [query.chainId]);
 
   return queryChainId;
@@ -31,14 +42,14 @@ export function useLocalNetworkChain() {
   return undefined;
 }
 
-export const useActiveChainId = (): {chainId: ChainId, isWrongNetwork: any, isNotMatched: any} => {
+export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isNotMatched: any } => {
   const localChainId = useLocalNetworkChain();
   const queryChainId = useQueryChainId();
 
   const { chain } = useNetwork();
   const chainId = localChainId ?? chain?.id ?? (queryChainId >= 0 ? bsc.id : -1);
 
-  const isNotMatched = useDeferredValue(chain && localChainId && chain.id !== localChainId);
+  const isNotMatched = useMemo(() => chain && localChainId && chain.id !== localChainId, [chain, localChainId]);
 
   return {
     chainId,
