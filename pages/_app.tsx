@@ -62,12 +62,11 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
 
                   <Image
                     className="fixed top-0 -right-44 opacity-50"
-                    src="./images/blur-indigo.png"
+                    src="/images/blur-indigo.png"
                     alt="background blur"
                     width={567}
                     height={567}
-                    unoptimized
-                    priority
+                    unoptimized={false}
                   />
 
                   <div className="flex h-full">
