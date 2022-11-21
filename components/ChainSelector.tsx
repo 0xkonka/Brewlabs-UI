@@ -28,7 +28,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
 
   useEffect(() => {
     if (isSuccess) {
-      if (pendingChainId) selectFn(NetworkOptions.find(c => c.id === pendingChainId)!);
+      if (pendingChainId) selectFn(NetworkOptions.find((c) => c.id === pendingChainId)!);
 
       if (onDismiss) onDismiss();
       toast.success(`Switched to ${networks.find((network) => network.id === pendingChainId)?.name}`);

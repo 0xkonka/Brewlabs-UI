@@ -1,17 +1,16 @@
-import { BigNumber, ethers, utils } from "ethers";
-
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { BigNumber, ethers, utils } from "ethers";
+import { ChainId } from "@brewlabs/sdk";
 import { toast } from "react-toastify";
 import { useAccount, useSigner } from "wagmi";
-import { bridgeConfigs } from "config/constants/bridge";
+
+import { BridgeToken } from "config/constants/types";
+import { useActiveChainId } from "hooks/useActiveChainId";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useMediatorInfo } from "hooks/bridge/useMediatorInfo";
 import { fetchToAmount, fetchToToken, relayTokens } from "lib/bridge/bridge";
 import { fetchTokenDetails } from "lib/bridge/token";
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { BridgeToken } from "config/constants/types";
-import { ChainId } from "@brewlabs/sdk";
 
 export interface BridgeContextState {
   amountInput: string;
@@ -143,7 +142,13 @@ export const BridgeProvider = ({ children }: any) => {
       setToAmountLoading(true);
       const amount = utils.parseUnits(inputAmount === "" ? "0" : inputAmount, fromToken.decimals);
       const gotToAmount = await getToAmount(amount);
-      setAmounts({ fromAmount: amount, toAmount: gotToAmount });
+      const toTokenDecimals = fromToken.chainId === homeChainId ? foreignToken.decimals : homeToken.decimals;
+      setAmounts({
+        fromAmount: amount,
+        toAmount: gotToAmount
+          .mul(BigNumber.from(10).pow(36 - fromToken.decimals))
+          .div(BigNumber.from(10).pow(36 - toTokenDecimals)),
+      });
       setToAmountLoading(false);
     },
     [fromToken, toToken, getToAmount]
@@ -184,7 +189,13 @@ export const BridgeProvider = ({ children }: any) => {
           fetchToToken(bridgeDirectionId, tokenWithoutMode, getBridgeChainId(tokenWithoutMode.chainId)),
         ]);
 
-        setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
+        setTokens({
+          fromToken: token,
+          toToken: {
+            ...token,
+            ...gotToToken,
+          },
+        });
         return true;
       } catch (tokenDetailsError) {
         toast.error(
