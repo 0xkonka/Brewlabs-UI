@@ -113,7 +113,7 @@ const Bridge: NextPage = () => {
       setBridgeFromToken(supportedFromTokens[0]);
       setToken(supportedFromTokens[0]);
     }
-  }, [fromChainId, bridgeFromToken, supportedFromTokens, setBridgeFromToken]);
+  }, [fromChainId, bridgeFromToken, supportedFromTokens, setBridgeFromToken, setToken]);
 
   useEffect(() => {
     const chainIds = bridgeConfigs
