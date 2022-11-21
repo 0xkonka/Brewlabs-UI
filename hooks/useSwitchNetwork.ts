@@ -6,13 +6,17 @@ import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from "wagmi";
 
 import { ConnectorNames } from "config/constants/wallets";
 import { setGlobalState } from "state";
-import { useReplaceQueryParams } from "./useReplaceQueryParams";
+import { useRouter } from "next/router";
+import replaceBrowserHistory from "utils/replaceBrowserHistory";
 
 export function useSwitchNetworkLocal() {
-  const { replaceQueryParams } = useReplaceQueryParams();
+  const {query} = useRouter();
+
   return useCallback((chainId: number) => {
+    if(+(query?.chainId ?? 0) === chainId) return;
     setGlobalState("sessionChainId", chainId);
-    replaceQueryParams("chainId", chainId === ChainId.BSC_MAINNET ? null : chainId);
+    replaceBrowserHistory("chainId", chainId);
+    window.location.reload()
   }, []);
 }
 
