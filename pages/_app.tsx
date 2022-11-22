@@ -59,15 +59,15 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
                   <Suspense>
                     <Bubbles />
                   </Suspense>
-
+                  {/* 
                   <Image
-                    className="fixed top-0 -right-44 opacity-50"
+                    className="fixed top-0 -right-44 dark:opacity-50"
                     src="/images/blur-indigo.png"
                     alt="background blur"
                     width={567}
                     height={567}
                     unoptimized={false}
-                  />
+                  /> */}
 
                   <div className="flex h-full">
                     <NavigationDesktop />
