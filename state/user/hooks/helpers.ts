@@ -1,6 +1,5 @@
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { SerializedToken } from "config/constants/types";
-import { ethers } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 
 export function serializeToken(token: Currency | any): SerializedToken {
@@ -17,13 +16,13 @@ export function serializeToken(token: Currency | any): SerializedToken {
 }
 
 export function deserializeToken(serializedToken: SerializedToken): Currency {
-  if (serializedToken?.isNative) {
+  if (serializedToken?.isNative || !serializedToken?.address) {
     return NATIVE_CURRENCIES[serializedToken.chainId];
   }
 
   return new Token(
     serializedToken.chainId,
-    serializedToken?.address ?? ethers.constants.AddressZero,
+    serializedToken.address,
     serializedToken.decimals,
     serializedToken.symbol,
     serializedToken.name,

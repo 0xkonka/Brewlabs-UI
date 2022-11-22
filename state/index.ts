@@ -1,15 +1,16 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useMemo } from "react";
-import { createGlobalState } from "react-hooks-global-state";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import { createGlobalState } from "react-hooks-global-state";
 import { NetworkConfig } from "config/constants/types";
 
 import { updateVersion } from "./global/actions";
 
+import storage from "./storage";
 import farmsReducer from "./farms";
-import multicall from './multicall/reducer'
+import multicall from "./multicall/reducer";
+import { BridgeToken } from "config/constants/types";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -91,24 +92,23 @@ export function useStore(initialState: any) {
   return useMemo(() => initializeStore(initialState), [initialState]);
 }
 
-type userStateTypes = {
-  userPoolsStakeOnly: boolean;
-  userBridgeTo: NetworkConfig;
-  userBridgeFrom: NetworkConfig;
-  userBridgeLocked: boolean;
-  userBridgeAmount: number;
-};
-
 const userBridgeNetworkInitial = {
   id: 0,
   name: "",
   image: "",
 };
-
-const userState: userStateTypes = {
+const userState: {
+  userPoolsStakeOnly: boolean;
+  userBridgeTo: NetworkConfig;
+  userBridgeFrom: NetworkConfig;
+  userBridgeFromToken: BridgeToken | undefined;
+  userBridgeLocked: boolean;
+  userBridgeAmount: number;
+} = {
   userPoolsStakeOnly: false,
   userBridgeTo: userBridgeNetworkInitial,
   userBridgeFrom: userBridgeNetworkInitial,
+  userBridgeFromToken: undefined,
   userBridgeLocked: false,
   userBridgeAmount: 0,
 };

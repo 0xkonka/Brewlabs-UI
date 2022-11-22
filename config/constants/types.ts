@@ -1,4 +1,4 @@
-import { ChainId, Currency } from "@brewlabs/sdk";
+import { ChainId, Currency, Token } from "@brewlabs/sdk";
 
 export interface SerializedToken {
   chainId: ChainId;
@@ -6,8 +6,8 @@ export interface SerializedToken {
   isToken: boolean;
   address?: string;
   decimals: number;
-  symbol?: string;
-  name?: string;
+  symbol: string;
+  name: string;
   projectLink?: string;
 }
 
@@ -29,10 +29,10 @@ export enum Version {
 }
 
 export enum AppId {
-  PANCAKESWAP = 'pancakeswap',
-  APESWAP = 'apeswap',
+  PANCAKESWAP = "pancakeswap",
+  APESWAP = "apeswap",
   // KNIGHT = 'knight',
-  SUSHISWAP = 'sushiswap',
+  SUSHISWAP = "sushiswap",
 }
 
 export enum Chef {
@@ -41,26 +41,26 @@ export enum Chef {
 }
 
 interface FarmConfigBaseProps {
-  pid: number | null
-  farmId?: number
-  poolId?: number
-  v1pid?: number
-  chainId?: ChainId
-  version?: Version
-  lpSymbol: string
-  lpDecimals?: number
-  lpAddress: string
-  contractAddress?: string
-  multiplier?: string
-  isCommunity?: boolean
-  lpManager?: string
-  enableEmergencyWithdraw?: boolean
-  isServiceFee?: boolean
-  compound?: boolean
-  compoundRelection?: boolean
-  unverified?: boolean
-  featured?: boolean
-  isFinished?: boolean
+  pid: number | null;
+  farmId?: number;
+  poolId?: number;
+  v1pid?: number;
+  chainId?: ChainId;
+  version?: Version;
+  lpSymbol: string;
+  lpDecimals?: number;
+  lpAddress: string;
+  contractAddress?: string;
+  multiplier?: string;
+  isCommunity?: boolean;
+  lpManager?: string;
+  enableEmergencyWithdraw?: boolean;
+  isServiceFee?: boolean;
+  compound?: boolean;
+  compoundRelection?: boolean;
+  unverified?: boolean;
+  featured?: boolean;
+  isFinished?: boolean;
   dual?: {
     rewardPerBlock: number;
     earnLabel: string;
@@ -118,6 +118,33 @@ export interface DeserializedPoolConfig extends PoolConfigBaseProps {
   earningToken: Currency;
   stakingToken: Currency;
   reflectionTokens?: Currency[];
+}
+
+export interface BridgeToken extends SerializedToken {
+  mode?: string;
+  mediator?: string;
+  helperContractAddress?: string;
+}
+export interface BridgeDirectionConfig {
+  bridgeDirectionId: number;
+  version?: Version;
+  homeChainId: ChainId;
+  foreignChainId: ChainId;
+  homeToken: BridgeToken;
+  foreignToken: BridgeToken;
+  enableForeignCurrencyBridge: boolean;
+  homeWrappedForeignCurrencyAddress: string | null;
+  wrappedForeignCurrencyAddress: string | null;
+  foreignMediatorAddress: string;
+  homeMediatorAddress: string;
+  foreignAmbAddress: string;
+  homeAmbAddress: string;
+  foreignGraphName: string;
+  homeGraphName: string;
+  claimDisabled: false;
+  tokensClaimDisabled: any[];
+  homePerformanceFee?: string;
+  foreignPerformanceFee?: string;
 }
 
 export type PageMeta = {

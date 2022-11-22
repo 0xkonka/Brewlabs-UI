@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { motion } from "framer-motion";
-import { useGlobalState } from "../../state";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { useGlobalState } from "../../state";
 
 const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAction<boolean>> }) => {
   // Retrieve global state

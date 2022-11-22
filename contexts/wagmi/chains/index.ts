@@ -135,7 +135,7 @@ export const bscTest: Chain = {
   },
   rpcUrls: {
     public: 'https://data-seed-prebsc-1-s2.binance.org:8545/',
-    default: 'https://data-seed-prebsc-1-s2.binance.org:8545/',
+    default: 'https://rpc.ankr.com/bsc_testnet_chapel',
   },
   blockExplorers: {
     default: { name: 'BscScan', url: 'https://testnet.bscscan.com' },
