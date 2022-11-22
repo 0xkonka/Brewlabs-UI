@@ -243,7 +243,7 @@ export const relayTokens = async (
     case "NATIVE": {
       const abi = ["function wrapAndRelayTokens(address _receiver) public payable"];
       const helperContract = new Contract(helperContractAddress ?? ethers.constants.AddressZero, abi, signer);
-      return helperContract.wrapAndRelayTokens(receiver, { value: amount });
+      return helperContract.wrapAndRelayTokens(receiver, { value: amount.add(performanceFee ?? "0") });
     }
     case "dedicated-erc20": {
       if (version) {
@@ -253,7 +253,7 @@ export const relayTokens = async (
       }
 
       const abi = performanceFee
-        ? ["function relayTokensWithFee(address, address, uint256) public payable"]
+        ? [`function relayTokensWithFee(address, address, uint256) public payable`]
         : ["function relayTokens(address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
 

@@ -83,6 +83,7 @@ export const BridgeProvider = ({ children }: any) => {
 
   const {
     bridgeDirectionId,
+    version,
     getBridgeChainId,
     homeChainId,
     foreignChainId,
@@ -233,6 +234,7 @@ export const BridgeProvider = ({ children }: any) => {
         fromToken,
         (receiver ?? account)!,
         fromAmount,
+        version,
         fromToken.chainId === foreignChainId ? foreignPerformanceFee : homePerformanceFee
       );
       setTxHash(tx.hash);
