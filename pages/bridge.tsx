@@ -296,7 +296,7 @@ const Bridge: NextPage = () => {
                     >
                       {supportedFromTokens.map((token) => (
                         <option key={`${token.chainId}-${token.address}`} value={token.address}>
-                          {token.symbol}
+                          {token.symbol === "BREWLABS" ? "BREWS" : token.symbol}
                         </option>
                       ))}
                     </select>

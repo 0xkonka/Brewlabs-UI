@@ -22,7 +22,7 @@ const tokens = {
   ),
   brews: new Token(
     ETHEREUM,
-    "0xe745d88A390e89E6562B29F6aC17ec03804050Ad",
+    "0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba",
     9,
     "BREWLABS",
     "Brewlabs",

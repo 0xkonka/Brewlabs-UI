@@ -72,7 +72,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, network, children }:
 
             {children}
 
-            <h5 className="mt-6 text-center dark:text-gray-500">Current price: {tokenPrice}</h5>
+            <h5 className="mt-6 text-center dark:text-gray-500">Current price: ${tokenPrice.toFixed(6)}</h5>
           </div>
         </div>
       </motion.div>
