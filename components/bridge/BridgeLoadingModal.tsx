@@ -73,7 +73,7 @@ export const BridgeLoader = ({
                           </>
                         )}
                         <div className="ml-3 text-left">
-                          <p className="text-2xl dark:text-slate-400">
+                          <p className="text-xl font-medium  text-gray-900">
                             {`${loadingText || "Waiting for Block Confirmations"}...`}
                           </p>
                           <p className="text-sm">
