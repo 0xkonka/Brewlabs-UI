@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { BigNumber, ethers, utils } from "ethers";
 import { ChainId } from "@brewlabs/sdk";
 import { toast } from "react-toastify";
@@ -76,7 +76,7 @@ export const BridgeContext = React.createContext<BridgeContextState>({
 });
 export const useBridgeContext = () => useContext(BridgeContext);
 
-export const BridgeProvider = ({ children }: any) => {
+export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const { address: account, isConnected } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
   const { data: signer } = useSigner();

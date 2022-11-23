@@ -90,7 +90,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               className="rounded-full border-2"
             >
               <div
-                className="h-12 w-12 overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
+                className="h-12 w-12 overflow-hidden cursor-pointer rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
                 style={{
                   backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
                 }}
