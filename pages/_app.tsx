@@ -1,11 +1,11 @@
-import { lazy, Suspense, useEffect } from "react";
+import { Fragment, lazy, Suspense, useEffect } from "react";
 import clsx from "clsx";
-import Image from "next/future/image";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
+import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import { ThemeProvider } from "next-themes";
 import { DefaultSeo } from "next-seo";
+import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -32,6 +32,7 @@ import UserSidebar from "../components/dashboard/UserSidebar";
 import HeaderMobile from "../components/navigation/HeaderMobile";
 import NavigationDesktop from "../components/navigation/NavigationDesktop";
 import NavigationMobile from "../components/navigation/NavigationMobile";
+import { Updaters } from "index";
 
 const Bubbles = lazy(() => import("../components/animations/Bubbles"));
 
@@ -42,7 +43,8 @@ function GlobalHooks() {
 }
 
 // TODO: Better name MyApp
-function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
+function MyApp(props: AppProps<{ initialReduxState: any }>) {
+  const { pageProps } = props;
   const store = useStore(pageProps.initialReduxState);
 
   const router = useRouter();
@@ -72,6 +74,8 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
                   <GlobalHooks />
                   <PersistGate loading={null} persistor={persistor}>
                     <DefaultSeo {...SEO} />
+                    <Updaters />
+
                     <div
                       className={clsx(
                         router?.pathname === "/" && "home",
@@ -92,7 +96,7 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
 
                           <LazyMotion features={domAnimation}>
                             <AnimatePresence exitBeforeEnter>
-                              <Component {...pageProps} key={router.pathname} />
+                              <App {...props} />
                             </AnimatePresence>
                           </LazyMotion>
                         </div>
@@ -125,5 +129,40 @@ function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
     </>
   );
 }
+
+type NextPageWithLayout = NextPage & {
+  Layout?: React.FC<React.PropsWithChildren<unknown>>;
+  /** render component without all layouts */
+  pure?: true;
+  /**
+   * allow chain per page, empty array bypass chain block modal
+   * @default [ChainId.BSC]
+   * */
+  chains?: number[];
+  isShowScrollToTopButton?: true;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+  if (Component.pure) {
+    return <Component {...pageProps} />;
+  }
+
+  // Use the layout defined at the page level, if available
+  const Layout = Component.Layout || Fragment;
+  const isShowScrollToTopButton = Component.isShowScrollToTopButton || true;
+
+  return (
+    <>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+      {/* <NetworkModal pageSupportedChains={Component.chains} /> */}
+    </>
+  );
+};
 
 export default MyApp;

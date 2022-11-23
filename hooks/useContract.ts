@@ -1,4 +1,22 @@
 import { useMemo } from "react";
+// Imports below migrated from Exchange useContract.ts
+import { Contract } from "@ethersproject/contracts";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { useAccount, useSigner } from "wagmi";
+
+import ENS_PUBLIC_RESOLVER_ABI from "config/abi/ens-public-resolver.json";
+import ENS_ABI from "config/abi/ens-registrar.json";
+import { ERC20_BYTES32_ABI } from "config/abi/erc20";
+import ERC20_ABI from "config/abi/erc20.json";
+import WETH_ABI from "config/abi/weth.json";
+import LpTokenAbi from "config/abi/lpToken.json";
+import multiCallAbi from "config/abi/Multicall.json";
+import ConstructorABI from "config/abi/tokenTransfer.json";
+import ExternalMasterChefABI from "config/abi/externalMasterchef.json";
+
+// import { useAppId } from 'state/zap/hooks'
+import { Chef } from "config/constants/types";
+
 import {
   getBep20Contract,
   getMasterchefContract,
@@ -14,22 +32,7 @@ import {
   getTokenTransferAddress,
 } from "utils/addressHelpers";
 
-// Imports below migrated from Exchange useContract.ts
-import { Contract } from "@ethersproject/contracts";
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
-import { abi as IUniswapV2PairABI } from "@uniswap/v2-core/build/IUniswapV2Pair.json";
-import ENS_PUBLIC_RESOLVER_ABI from "config/abi/ens-public-resolver.json";
-import ENS_ABI from "config/abi/ens-registrar.json";
-import { ERC20_BYTES32_ABI } from "config/abi/erc20";
-import ERC20_ABI from "config/abi/erc20.json";
-import WETH_ABI from "config/abi/weth.json";
-import multiCallAbi from "config/abi/Multicall.json";
-import ConstructorABI from "config/abi/tokenTransfer.json";
-import ExternalMasterChefABI from "config/abi/externalMasterchef.json";
-// import { useAppId } from 'state/zap/hooks'
-import { Chef } from "config/constants/types";
 import { useActiveChainId } from "./useActiveChainId";
-import { useAccount, useSigner } from "wagmi";
 
 /**
  * Helper hooks to get specific contracts (by ABI)
@@ -76,7 +79,7 @@ export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
 // returns null on errors
 export function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { address: account } = useAccount();
-  const { chainId} = useActiveChainId()
+  const { chainId } = useActiveChainId();
   const { data: signer } = useSigner();
 
   return useMemo(() => {
@@ -124,7 +127,7 @@ export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossi
 }
 
 export function usePairContract(pairAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(pairAddress, IUniswapV2PairABI, withSignerIfPossible);
+  return useContract(pairAddress, LpTokenAbi, withSignerIfPossible);
 }
 
 export function useMulticallContract(): Contract | null {
