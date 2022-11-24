@@ -48,16 +48,16 @@ export const BridgeLoader = ({
                 <div className="m-2 overflow-hidden rounded-full border-2 border-amber-300 bg-white dark:bg-zinc-900">
                   <div className="p-2 px-4 font-brand">
                     {loadingText ? (
-                      <div className="flex items-center">
+                      <div className="flex items-center p-1">
                         {showConfirmations ? (
                           <div className="flex items-center">
                             <ProgressRing
                               radius={33.5}
-                              stroke={5}
+                              stroke={6}
                               progress={displayConfirms}
                               totalProgress={totalConfirms}
                             />
-                            <span className="absolute ml-4 text-xl dark:text-gray-500">
+                            <span className="absolute ml-4 text-2xl dark:text-gray-500">
                               {displayConfirms}/{totalConfirms}
                             </span>
                           </div>
@@ -65,7 +65,7 @@ export const BridgeLoader = ({
                           <>
                             <ProgressRing
                               radius={33.5}
-                              stroke={5}
+                              stroke={6}
                               progress={totalConfirms}
                               totalProgress={totalConfirms}
                             />
