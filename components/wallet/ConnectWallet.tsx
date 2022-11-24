@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { useAccount, useConnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BeakerIcon } from "@heroicons/react/24/outline";
+import { useAccount, useConnect, useNetwork } from "wagmi";
 
-import { bsc } from "contexts/wagmi";
+import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-import Modal from "../Modal";
+import { setGlobalState } from "../../state";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
-import { setGlobalState } from "../../state";
+import Modal from "../Modal";
 import WalletSelector from "./WalletSelector";
-import { NetworkOptions } from "../../config/constants/networks";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -25,8 +24,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const supportedNetworks = useSupportedNetworks();
   const { chainId, isWrongNetwork } = useActiveChainId();
 
-  const { switchNetwork } = useSwitchNetwork();
-
   const [mounted, setMounted] = useState(false);
 
   const [openWalletModal, setOpenWalletModal] = useState(false);
@@ -35,11 +32,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
   useEffect(() => setMounted(true), []);
-  useEffect(() => {
-    if (chain?.unsupported && switchNetwork) {
-      switchNetwork(bsc.id);
-    }
-  }, [chain?.unsupported, switchNetwork]);
 
   if (!mounted) return null;
 
@@ -54,8 +46,8 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
       <WrongNetworkModal
-        open={!!isWrongNetwork}
-        currentChain={supportedNetworks.find((network) => network.id === chainId)}
+        open={!!isWrongNetwork || !supportedNetworks.map((n) => n.id).includes(chainId)}
+        currentChain={supportedNetworks.find((network) => network.id === chainId) ?? supportedNetworks[0]}
       />
 
       {!isConnected ? (
@@ -90,7 +82,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               className="rounded-full border-2"
             >
               <div
-                className="h-12 w-12 overflow-hidden cursor-pointer rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
+                className="h-12 w-12 cursor-pointer overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
                 style={{
                   backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
                 }}

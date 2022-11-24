@@ -7,7 +7,7 @@ import Skeleton from "react-loading-skeleton";
 import { useAccount } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
-import { NetworkOptions } from "config/constants/networks";
+import { NetworkOptions, SUPPORTED_CHAIN_IDS } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
 import { useFromChainId } from "hooks/bridge/useBridgeDirection";
@@ -92,7 +92,7 @@ const Bridge: NextPage = () => {
   const tokenPrices = useTokenPrices();
 
   useEffect(() => {
-    if (fromChainId <= 0) return;
+    if (fromChainId <= 0 || !SUPPORTED_CHAIN_IDS.includes(fromChainId)) return;
     const tmpTokens = [];
     tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
     tmpTokens.push(
