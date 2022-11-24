@@ -235,7 +235,7 @@ export const relayTokens = async (
   token: BridgeToken,
   receiver: string,
   amount: BigNumber,
-  version?:Version,
+  version?: Version,
   performanceFee?: string
 ) => {
   const { mode, mediator, address, helperContractAddress } = token;
@@ -249,6 +249,9 @@ export const relayTokens = async (
       if (version) {
         const abi = ["function relayTokens(address, uint256) public payable"];
         const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+
+        let gasLimit = await mediatorContract.estimateGas.relayTokens(receiver, amount, { value: performanceFee });
+        gasLimit = gasLimit.mul(1200).div(1000);
         return mediatorContract.relayTokens(receiver, amount, { value: performanceFee });
       }
 
@@ -258,16 +261,28 @@ export const relayTokens = async (
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
 
       if (performanceFee) {
-        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee });
+        let gasLimit = await mediatorContract.estimateGas.relayTokensWithFee(address, receiver, amount, {
+          value: performanceFee,
+        });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee, gasLimit });
       }
-      return mediatorContract.relayTokens(receiver, amount);
+
+      let gasLimit = await mediatorContract.estimateGas.relayTokens(receiver, amount);
+      gasLimit = gasLimit.mul(1200).div(1000);
+      return mediatorContract.relayTokens(receiver, amount, { gasLimit });
     }
     case "erc20":
     default: {
       if (version) {
         const abi = ["function relayTokens(address, address, uint256) public payable"];
         const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
-        return mediatorContract.relayTokens(address, receiver, amount, { value: performanceFee });
+
+        let gasLimit = await mediatorContract.estimateGas.relayTokens(address, receiver, amount, {
+          value: performanceFee,
+        });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokens(address, receiver, amount, { value: performanceFee, gasLimit });
       }
 
       const abi = performanceFee
@@ -276,9 +291,16 @@ export const relayTokens = async (
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
 
       if (performanceFee) {
-        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee });
+        let gasLimit = await mediatorContract.estimateGas.relayTokensWithFee(address, receiver, amount, {
+          value: performanceFee,
+        });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee, gasLimit });
       }
-      return mediatorContract.relayTokens(address, receiver, amount);
+
+      let gasLimit = await mediatorContract.estimateGas.relayTokens(address, receiver, amount);
+      gasLimit = gasLimit.mul(1200).div(1000);
+      return mediatorContract.relayTokens(address, receiver, amount, { gasLimit });
     }
   }
 };
