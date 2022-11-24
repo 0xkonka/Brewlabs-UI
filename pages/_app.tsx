@@ -1,10 +1,12 @@
-import { lazy, Suspense } from "react";
+import { Fragment, lazy, Suspense, useEffect } from "react";
 import clsx from "clsx";
-import Image from "next/future/image";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
+import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
+import Script from "next/script";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
@@ -24,11 +26,13 @@ import { client } from "utils/wagmi";
 import "animate.css";
 import "../styles/globals.css";
 import "../styles/animations.scss";
+import SEO from "../next-seo.config.mjs";
 
 import UserSidebar from "../components/dashboard/UserSidebar";
 import HeaderMobile from "../components/navigation/HeaderMobile";
 import NavigationDesktop from "../components/navigation/NavigationDesktop";
 import NavigationMobile from "../components/navigation/NavigationMobile";
+import { Updaters } from "index";
 
 const Bubbles = lazy(() => import("../components/animations/Bubbles"));
 
@@ -39,54 +43,126 @@ function GlobalHooks() {
 }
 
 // TODO: Better name MyApp
-function MyApp({ Component, pageProps }: AppProps<{ initialReduxState: any }>) {
-  const router = useRouter();
+function MyApp(props: AppProps<{ initialReduxState: any }>) {
+  const { pageProps } = props;
   const store = useStore(pageProps.initialReduxState);
 
+  const router = useRouter();
+  useEffect(() => {
+    const handler = (page: any) => {
+      window.dataLayer.push({
+        event: "pageview",
+        page,
+      });
+    };
+    router.events.on("routeChangeComplete", handler);
+    router.events.on("hashChangeComplete", handler);
+    return () => {
+      router.events.off("routeChangeComplete", handler);
+      router.events.off("hashChangeComplete", handler);
+    };
+  }, [router.events]);
+
   return (
-    <WagmiProvider client={client}>
-      <Provider store={store}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <TokenPriceContextProvider>
-            <BridgeProvider>
-              <SWRConfig>
-                <GlobalHooks />
-                <PersistGate loading={null} persistor={persistor}>
-                  <div
-                    className={clsx(
-                      router?.pathname === "/" && "home",
-                      "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
-                    )}
-                  >
-                    <Suspense>
-                      <Bubbles />
-                    </Suspense>
+    <>
+      <WagmiProvider client={client}>
+        <Provider store={store}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            <TokenPriceContextProvider>
+              <BridgeProvider>
+                <SWRConfig>
+                  <GlobalHooks />
+                  <PersistGate loading={null} persistor={persistor}>
+                    <DefaultSeo {...SEO} />
+                    <Updaters />
 
-                    <div className="flex h-full">
-                      <NavigationDesktop />
-                      <NavigationMobile />
-                      <UserSidebar />
+                    <div
+                      className={clsx(
+                        router?.pathname === "/" && "home",
+                        "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                      )}
+                    >
+                      <Suspense>
+                        <Bubbles />
+                      </Suspense>
 
-                      <div className="flex flex-1 flex-col">
-                        <HeaderMobile />
+                      <div className="flex h-full">
+                        <NavigationDesktop />
+                        <NavigationMobile />
+                        <UserSidebar />
 
-                        <LazyMotion features={domAnimation}>
-                          <AnimatePresence exitBeforeEnter>
-                            <Component {...pageProps} key={router.pathname} />
-                          </AnimatePresence>
-                        </LazyMotion>
+                        <div className="flex flex-1 flex-col">
+                          <HeaderMobile />
+
+                          <LazyMotion features={domAnimation}>
+                            <AnimatePresence exitBeforeEnter>
+                              <App {...props} />
+                            </AnimatePresence>
+                          </LazyMotion>
+                        </div>
+                        <ToastContainer />
                       </div>
-                      <ToastContainer />
                     </div>
-                  </div>
-                </PersistGate>
-              </SWRConfig>
-            </BridgeProvider>
-          </TokenPriceContextProvider>
-        </ThemeProvider>
-      </Provider>
-    </WagmiProvider>
+                  </PersistGate>
+                </SWRConfig>
+              </BridgeProvider>
+            </TokenPriceContextProvider>
+          </ThemeProvider>
+        </Provider>
+      </WagmiProvider>
+
+      <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=G-4YPVGE70E1`} />
+      <Script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-4YPVGE70E1', {
+            page_path: window.location.pathname,
+          });
+        `,
+        }}
+      />
+    </>
   );
 }
+
+type NextPageWithLayout = NextPage & {
+  Layout?: React.FC<React.PropsWithChildren<unknown>>;
+  /** render component without all layouts */
+  pure?: true;
+  /**
+   * allow chain per page, empty array bypass chain block modal
+   * @default [ChainId.BSC]
+   * */
+  chains?: number[];
+  isShowScrollToTopButton?: true;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+  if (Component.pure) {
+    return <Component {...pageProps} />;
+  }
+
+  // Use the layout defined at the page level, if available
+  const Layout = Component.Layout || Fragment;
+  const isShowScrollToTopButton = Component.isShowScrollToTopButton || true;
+
+  return (
+    <>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+      {/* <NetworkModal pageSupportedChains={Component.chains} /> */}
+    </>
+  );
+};
 
 export default MyApp;

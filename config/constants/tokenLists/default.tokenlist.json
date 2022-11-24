@@ -1579,6 +1579,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x10f44a834097469AC340592d28c479c442E99bFe/logo.png"
     },
     {
+      "name": "Grow Crop Corp",
+      "symbol": "GCC",
+      "address": "0xAfbB5DafaceA3cFe1001357449e2ea268e50F368",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xAfbB5DafaceA3cFe1001357449e2ea268e50F368/logo.png"
+    },
+    {
       "name": "MetaMerce Token",
       "symbol": "MMTKN",
       "address": "0x48a58Fdf91Ab56B5700D853733b860b4cDE08b26",

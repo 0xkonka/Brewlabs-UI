@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { ChainId } from "@brewlabs/sdk";
+import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
 import { useNetwork } from "wagmi";
 
 import { NetworkOptions } from "config/constants/networks";
@@ -8,7 +10,6 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 
 import Modal from "components/Modal";
 import Button from "components/Button";
-import { toast } from "react-toastify";
 
 type WrongNetworkModalProps = {
   open: boolean;
@@ -19,38 +20,50 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
   const { canSwitch, switchNetwork, isLoading, error } = useSwitchNetwork();
   const { chain } = useNetwork();
 
-  const [errorMsg, setErrorMsg] = useState("");
-
   useEffect(() => {
     if (error) {
       toast.error(error?.message ?? "");
-    } 
+    }
   }, [error]);
 
   return (
     <Modal open={open} onClose={() => {}}>
       <div className="p-8">
+        <div className="flex items-center justify-center">
+          <div
+            className="-mr-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
+            style={{
+              backgroundImage: `url('${
+                NetworkOptions.find((n) => n.id === chain?.id)?.image ?? "/images/networks/unkown.png"
+              }')`,
+            }}
+          />
+
+          <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden rounded-full bg-white text-gray-900" />
+
+          <div
+            className="-ml-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
+            style={{
+              backgroundImage: `url('${currentChain?.image ?? "/images/networks/unkown.png"}')`,
+            }}
+          />
+        </div>
+
         <div className="mt-3 text-center sm:mt-5">
           <h3 className="text-xl font-medium leading-6 text-gray-900">You are in wrong network</h3>
           <div className="mx-auto my-3 max-w-sm">
-            <p className="text-sm text-gray-500">{`This page is located for ${currentChain?.name}.`}</p>
             <p className="text-sm text-gray-500">
-              {`You are under ${chain?.name ?? ""} now, please switch the network to continue.`}
+              This page is located for <span className="font-bolder text-brand">{currentChain?.name}.</span>
+            </p>
+            <p className="text-sm text-gray-500">
+              You are under <span className="font-bolder text-brand">{chain?.name ?? ""}</span> now, please switch the
+              network to continue.
             </p>
           </div>
         </div>
-        <div className="mt-5 text-center sm:mt-6 sm:grid">
-          <div className="mb-3 flex items-center text-center">
-            <img
-              className="ml-auto mr-3 h-10 w-10 rounded-full"
-              src={NetworkOptions.find((n) => n.id === chain?.id)?.image}
-              alt=""
-            />
-            <span className="dark:text-slate-400">{"=>"}</span>
-            <img className="ml-3 mr-auto h-10 w-10 rounded-full" src={currentChain?.image} alt="" />
-          </div>
 
-          <div className="m-auto mt-5 sm:mt-6">
+        <div className="mt-5 text-center sm:mt-6 sm:grid">
+          <div className="m-auto">
             {canSwitch ? (
               <Button disabled={isLoading} onClick={() => switchNetwork(currentChain?.id || ChainId.BSC_MAINNET)}>
                 <div>Switch to {currentChain?.name}</div>
@@ -78,7 +91,7 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
               </Button>
             ) : (
               <div
-                className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-700"
+                className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-600"
                 role="alert"
               >
                 <strong className="font-bold">Unable to switch network. Please try it on your wallet</strong>
