@@ -1,6 +1,7 @@
 import { Fragment, lazy, Suspense, useEffect } from "react";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
+import Image from "next/future/image";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
@@ -48,6 +49,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
   const store = useStore(pageProps.initialReduxState);
 
   const router = useRouter();
+
   useEffect(() => {
     const handler = (page: any) => {
       window.dataLayer.push({
@@ -85,6 +87,15 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                       <Suspense>
                         <Bubbles />
                       </Suspense>
+
+                      <Image
+                        className="fixed top-0 -right-44 dark:opacity-50"
+                        src="/images/blur-indigo.png"
+                        alt="background blur"
+                        width={567}
+                        height={567}
+                        unoptimized={false}
+                      />
 
                       <div className="flex h-full">
                         <NavigationDesktop />
