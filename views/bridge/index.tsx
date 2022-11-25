@@ -29,6 +29,7 @@ import BridgeDragButton from "components/bridge/BridgeDragButton";
 import BridgeDragTrack from "components/bridge/BridgeDragTrack";
 import BridgeLoadingModal from "components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "components/bridge/ConfirmBridgeMessage";
+import WalletSelector from "components/WalletSelector";
 import TransactionHistory from "components/bridge/TransactionHistory";
 
 const useDelay = (fn: any, ms: number) => {
@@ -51,7 +52,7 @@ const Bridge: NextPage = () => {
   const { theme } = useTheme();
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
-  const { address: account } = useAccount();
+  const { address: account, isConnected } = useAccount();
 
   const scrollRef = useRef(null);
   const [isStuck, setIsStuck] = useState(false);
@@ -367,12 +368,21 @@ const Bridge: NextPage = () => {
                 },
                 disableAutoCloseOnClick: locked,
                 modalContent: locked ? (
-                  <ConfirmBridgeMessage
-                    onClose={() => {
-                      setOpenFromChainModal(false);
-                      setLocking(false);
-                    }}
-                  />
+                  isConnected ? (
+                    <ConfirmBridgeMessage
+                      onClose={() => {
+                        setOpenFromChainModal(false);
+                        setLocking(false);
+                      }}
+                    />
+                  ) : (
+                    <WalletSelector
+                      onDismiss={() => {
+                        setOpenFromChainModal(false);
+                        setLocking(false);
+                      }}
+                    />
+                  )
                 ) : (
                   <ChainSelector
                     networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
