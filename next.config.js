@@ -4,15 +4,6 @@ const nextConfig = {
   images: {
     domains: ["img.youtube.com"],
   },
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "https://brewlabs.info",
-        permanent: true,
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;
