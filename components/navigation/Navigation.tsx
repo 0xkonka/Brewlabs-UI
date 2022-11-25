@@ -59,7 +59,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
         </nav>
       </div>
 
-      {!slim && <ThemeSwitcher />}
+      {/* {!slim && <ThemeSwitcher />} */}
       {!slim && <ConnectWallet />}
     </div>
   );
