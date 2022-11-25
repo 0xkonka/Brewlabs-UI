@@ -63,7 +63,7 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
         </div>
 
         <div className="mt-5 text-center sm:mt-6 sm:grid">
-          <div className="m-auto">
+          <div className="flex justify-center">
             {canSwitch ? (
               <Button disabled={isLoading} onClick={() => switchNetwork(currentChain?.id || ChainId.BSC_MAINNET)}>
                 <div>Switch to {currentChain?.name}</div>

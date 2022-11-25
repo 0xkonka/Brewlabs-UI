@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 
@@ -97,13 +98,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 {isLoading ? "..." : address}
               </p>
               <p className="text-left text-xs font-medium">
-                <span
-                  className={`text-${isWrongNetwork ? "red" : "green"}-500 hover:text-${
-                    isWrongNetwork ? "red" : "green"
-                  }-400`}
-                >
-                  {chain?.name}
-                </span>
+                <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
               </p>
             </button>
           </div>
