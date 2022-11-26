@@ -1,9 +1,8 @@
 import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import { NetworkConfig } from "config/constants/types";
 
 type CrossChainIconsProps = {
-  chainOne: NetworkConfig;
-  chainTwo: NetworkConfig;
+  chainOne: string;
+  chainTwo: string;
 };
 
 const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
@@ -12,7 +11,7 @@ const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
       <div
         className="-mr-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
         style={{
-          backgroundImage: `url('${chainOne.image}')`,
+          backgroundImage: `url('${chainOne}')`,
         }}
       />
 
@@ -21,7 +20,7 @@ const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
       <div
         className="-ml-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
         style={{
-          backgroundImage: `url('${chainTwo.image}')`,
+          backgroundImage: `url('${chainTwo}')`,
         }}
       />
     </div>

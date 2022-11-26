@@ -402,7 +402,7 @@ const Bridge: NextPage = () => {
 
         {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
 
-        {/* <TransactionHistory /> */}
+        <TransactionHistory />
       </Container>
     </PageWrapper>
   );

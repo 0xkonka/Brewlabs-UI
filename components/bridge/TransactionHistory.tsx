@@ -3,6 +3,7 @@ import { useUserHistory } from "hooks/bridge/useUserHistory";
 import { useCallback, useState } from "react";
 import TransactionCard from "../cards/TransactionCard";
 import ClaimErrorModal from "./ClaimErrorModal";
+import History from "./TransactionHistoryTable";
 
 const TOTAL_PER_PAGE = 15;
 
@@ -41,17 +42,19 @@ const TransactionHistory = () => {
 
   return (
     <div className="my-20">
-      <ClaimErrorModal open={claimErrorShow} token={claimErrorToken} onClose={handleModalClose} />
-      <h2 className="font-brand text-3xl text-slate-600 dark:text-slate-400">Personal history</h2>
+      {/* <ClaimErrorModal open={claimErrorShow} token={claimErrorToken} onClose={handleModalClose} /> */}
+      {/* <h2 className="font-brand text-3xl text-slate-600 dark:text-slate-400">Personal history</h2> */}
 
+      <History historyData={displayAllHistory} />
+      {/* 
       <div className="no-scrollbar -ml-8 overflow-x-auto p-8">
         <div className="flex flex-row-reverse justify-end">
           {displayPersonalHistory.map((item) => (
             <TransactionCard key={item.message.messageId} {...item} />
           ))}
         </div>
-      </div>
-
+      </div> */}
+      {/* 
       <h2 className="font-brand text-3xl text-slate-600 dark:text-slate-400">Transaction history</h2>
       <div className="no-scrollbar -ml-8 overflow-x-auto p-8">
         <div className="flex flex-row-reverse justify-end">
@@ -59,7 +62,7 @@ const TransactionHistory = () => {
             <TransactionCard key={item.message.messageId} {...item} />
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
