@@ -25,7 +25,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
     if (isConnected && onDismiss) {
       onDismiss();
     }
-  }, [isConnected, onDismiss]);
+  }, [isConnected]);
 
   useEffect(() => {
     if (error) {

@@ -68,7 +68,7 @@ const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) =>
     if (!executing && !claiming && executionTx) {
       onClose();
     }
-  }, [executing, claiming, executionTx, onClose]);
+  }, [executing, claiming, executionTx]);
 
   if (claiming || executing)
     return <LoadingModal loadingText="Waiting for Execution" chainId={homeChainId} txHash={txHash} />;

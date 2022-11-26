@@ -28,7 +28,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
       setGlobalState("sessionChainId", chain?.unsupported ? chainId : chain?.id);
       onDismiss();
     }
-  }, [isConnected, chain, onDismiss]);
+  }, [isConnected, chain]);
 
   useEffect(() => {
     if (error) {
