@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { NetworkConfig } from "config/constants/types";
 import Modal from "../MotionModal";
 
@@ -35,7 +35,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, network, children }:
   useEffect(() => {
     setSelected(!!modal?.openModal);
   }, [modal?.openModal]);
-  
+
   return (
     <>
       <motion.div
@@ -49,25 +49,29 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, network, children }:
           <div className="p-10">
             <header className="text-center text-gray-700 dark:text-gray-500">
               <h4 className="text-2xl">{title}</h4>
-
-              <button
-                className="mx-auto mt-4 flex items-center gap-2 rounded-full border border-gray-700"
-                onClick={() => {
-                  setSelected(true);
-                  if (modal.onOpen) modal.onOpen();
-                }}
-              >
-                {network.image !== "" && (
-                  <div
-                    className="-mr-4 h-6 w-6 overflow-hidden rounded-full bg-cover bg-no-repeat dark:bg-slate-800"
-                    style={{
-                      backgroundImage: `url('${network.image}')`,
-                    }}
-                  ></div>
-                )}
-                <span className="pl-4 pr-1">{network.name === "" ? "Choose a network" : network.name}</span>
-                <ChevronDownIcon className="h-6 w-6 pr-2" />
-              </button>
+              <div className="mx-auto mt-4 flex items-center justify-center">
+                <button
+                  className="flex items-center gap-2 rounded-full border border-gray-700"
+                  onClick={() => {
+                    setSelected(true);
+                    if (modal.onOpen) modal.onOpen();
+                  }}
+                >
+                  {network.image !== "" && (
+                    <div
+                      className="-mr-4 h-6 w-6 overflow-hidden rounded-full bg-cover bg-no-repeat dark:bg-slate-800"
+                      style={{
+                        backgroundImage: `url('${network.image}')`,
+                      }}
+                    ></div>
+                  )}
+                  <span className="pl-4 pr-1">{network.name === "" ? "Choose a network" : network.name}</span>
+                  <ChevronDownIcon className="h-6 w-6 pr-2" />
+                </button>
+                <div className="tooltip" data-tip="Transfer fee: 0.10%">
+                <InformationCircleIcon className="ml-1 h-6 w-6 cursor-pointer" />
+                </div>
+              </div>
             </header>
 
             {children}
