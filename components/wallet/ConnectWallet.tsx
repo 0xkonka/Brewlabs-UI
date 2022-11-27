@@ -47,7 +47,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
       <WrongNetworkModal
-        open={!!isWrongNetwork || !supportedNetworks.map((n) => n.id).includes(chainId)}
+        open={!!isWrongNetwork}
         currentChain={supportedNetworks.find((network) => network.id === chainId) ?? supportedNetworks[0]}
       />
 
