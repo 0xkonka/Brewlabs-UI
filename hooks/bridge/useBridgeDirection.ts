@@ -88,8 +88,7 @@ export const useFromChainId = () => {
 
   const [networkFrom] = useGlobalState("userBridgeFrom");
 
-  let fromChainId = +(query.chainId ?? (networkFrom.id > 0 ? networkFrom.id : chainId));
-
+  let fromChainId = +(query.chainId ?? chainId);
   useEffect(() => {
     if (!PAGE_SUPPORTED_CHAINS["bridge"].includes(fromChainId ?? 0)) {
       fromChainId = networkFrom.id > 0 ? networkFrom.id : PAGE_SUPPORTED_CHAINS["bridge"][0];

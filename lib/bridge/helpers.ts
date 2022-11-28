@@ -12,15 +12,19 @@ const IMPOSSIBLE_ERROR = "Unable to perform the operation. Reload the applicatio
 const TRANSACTION_REPLACED_ERROR =
   "Transaction was replaced by another. Reload the application and find the transaction in the history page.";
 
-export const handleWalletError = (error: any, showError: (msg: string) => void) => {
+export const handleWalletError = (error: any, showError: (msg: string) => void, nativeSymbol: string = "BNB") => {
   if (error?.message && error?.message.length <= 120) {
-    showError(error.message);
+    if (error?.data?.message?.includes("insufficient")) {
+      showError(`Not enough ${nativeSymbol}`);
+    } else {
+      showError(error?.data?.message ?? error.message);
+    }
   } else if (error?.message && error?.message.toLowerCase().includes("transaction was replaced")) {
     showError(TRANSACTION_REPLACED_ERROR);
-  } else if(error?.data?.message){
-    showError(error?.data?.message)
-  } else if(error?.message && error?.message.length > 120) {
-    showError(error.message.split("(")[0])
+  } else if (error?.data?.message) {
+    showError(error?.data?.message);
+  } else if (error?.message && error?.message.length > 120) {
+    showError(error.reason.split(":").splice(-1)[0] ?? error.message.split("(")[0]);
   } else {
     showError(IMPOSSIBLE_ERROR);
   }
@@ -28,6 +32,10 @@ export const handleWalletError = (error: any, showError: (msg: string) => void) 
 
 export const getNetworkLabel = (chainId: ChainId) => {
   return CHAIN_LABLES[chainId] ?? "No Network Selected";
+};
+
+export const getNativeSybmol = (chainId: ChainId) => {
+  return SupportedChains.find((n) => n.id === chainId)?.nativeCurrency?.symbol ?? bsc.nativeCurrency?.symbol;
 };
 
 export const getExplorerLink = (chainId: ChainId, type: string, addressOrHash: string) => {
