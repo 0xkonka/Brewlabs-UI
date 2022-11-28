@@ -16,7 +16,7 @@ const HeaderMobile = (): ReactElement => {
         "fixed top-0 left-0 flex w-full items-center justify-between bg-gradient-to-b from-slate-800 via-slate-800 to-transparent px-4 py-2 lg:hidden"
       )}
     >
-      <LogoIcon classNames="w-12 text-dark dark:text-brand dark:home:text-dark" />
+      <LogoIcon classNames="w-12 text-dark dark:text-brand" />
 
       <button
         type="button"
