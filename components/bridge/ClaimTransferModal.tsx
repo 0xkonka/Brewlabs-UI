@@ -8,7 +8,7 @@ import { useBridgeContext } from "contexts/BridgeContext";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useClaim } from "hooks/bridge/useClaim";
 import { isRevertedError, TOKENS_CLAIMED } from "lib/bridge/amb";
-import { getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { messageCallStatus } from "lib/bridge/message";
 import LoadingModal from "./LoadingModal";
 
@@ -57,7 +57,7 @@ const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) =>
       if (claimError.message === TOKENS_CLAIMED || isRevertedError(claimError)) {
         setExecuted(true);
       } else {
-        handleWalletError(claimError, showError);
+        handleWalletError(claimError, showError, getNativeSybmol(foreignChainId));
       }
     } finally {
       setClaiming(false);
