@@ -3,21 +3,21 @@ import Card from "./Card";
 
 const SubNav = () => {
   return (
-    <div className="flex justify-between">
+    <div className="grid sm:mr-2 sm:flex">
       <Card>
-        <div className="flex cursor-pointer">
+        <div className="flex justify-between cursor-pointer">
           BrewSwap
           <img src="/images/logo-vector.svg" className="ml-3" alt="" />
         </div>
       </Card>
       <Card>
-        <div className="flex cursor-pointer">
+        <div className="flex justify-between cursor-pointer">
           Add Liquidity
           <img src="/images/logo-vector.svg" className="ml-3" alt="" />
         </div>
       </Card>
       <Card>
-        <div className="flex cursor-pointer">
+        <div className="flex justify-between cursor-pointer">
           Convert
           <img src="/images/logo-vector.svg" className="ml-3" alt="" />
         </div>

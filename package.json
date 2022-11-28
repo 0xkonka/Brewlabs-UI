@@ -17,6 +17,7 @@
     "@sushiswap-core/sdk": "^3.0.3-beta.1",
     "@types/aos": "^3.0.4",
     "@types/react-portal": "^4.0.4",
+    "@web3-react/core": "^6.1.9",
     "animate.css": "^4.1.1",
     "aos": "^2.3.4",
     "bignumber.js": "^9.1.0",

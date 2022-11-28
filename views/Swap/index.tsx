@@ -21,7 +21,7 @@ export default function Swap() {
       />
 
       <Container>
-        <div className="mx-auto" style={{ maxWidth: "500px" }}>
+        <div className="mx-auto mb-4" style={{ maxWidth: "500px" }}>
           <div className="grid auto-rows-auto" style={{ gap: "4px" }}>
             <SubNav />
             <ChainSelect />
