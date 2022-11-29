@@ -41,7 +41,7 @@ export const usdToken = {
 };
 
 export const brewsToken = {
-  [ChainId.ETHEREUM]: tokens[ChainId.ETHEREUM].uni,
+  [ChainId.ETHEREUM]: tokens[ChainId.ETHEREUM].brews,
   [ChainId.GOERLI]: tokens[ChainId.GOERLI].test,
   [ChainId.BSC_MAINNET]: tokens[ChainId.BSC_MAINNET].brews,
   [ChainId.BSC_TESTNET]: tokens[ChainId.BSC_TESTNET].test,

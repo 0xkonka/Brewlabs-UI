@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { ChainId } from "@brewlabs/sdk";
+import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
 import { NetworkConfig } from "config/constants/types";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { CheckIcon } from "@heroicons/react/24/outline";
 import { NetworkOptions } from "config/constants/networks";
+import { useTokenPrices } from "hooks/useTokenPrice";
+import getCurrencyId from "utils/getCurrencyId";
 
 type ChainSelectorProps = {
   onDismiss?: () => void;
@@ -17,6 +19,7 @@ type ChainSelectorProps = {
 
 const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDismiss }: ChainSelectorProps) => {
   const { canSwitch, switchNetwork, isLoading, isSuccess, error, pendingChainId } = useSwitchNetwork();
+  const tokenPrices = useTokenPrices();
 
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -28,7 +31,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
 
   useEffect(() => {
     if (isSuccess) {
-      if (pendingChainId) selectFn(NetworkOptions.find(c => c.id === pendingChainId)!);
+      if (pendingChainId) selectFn(NetworkOptions.find((c) => c.id === pendingChainId)!);
 
       if (onDismiss) onDismiss();
       toast.success(`Switched to ${networks.find((network) => network.id === pendingChainId)?.name}`);
@@ -43,7 +46,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
 
       {!canSwitch && bSwitchChain && (
         <div
-          className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-700"
+          className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-600"
           role="alert"
         >
           <strong className="font-bold">Unable to switch network. Please try it on your wallet</strong>
@@ -85,7 +88,15 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
               <img className="h-10 w-10 rounded-full" src={network.image} alt={network.name} />
               <div className="ml-4 flex-col text-left">
                 <p className="text-sm font-medium text-gray-900">{network.name}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-500">Current price: 0.000</p>
+                <p className="text-sm text-gray-600 dark:text-gray-500">
+                  Current price: {` $`}
+                  {tokenPrices[
+                    getCurrencyId(
+                      network.id,
+                      NATIVE_CURRENCIES[network.id === 0 ? ChainId.BSC_MAINNET : network.id].wrapped.address
+                    )
+                  ].toFixed(5) ?? "0.000"}
+                </p>
               </div>
 
               <div className="ml-auto">

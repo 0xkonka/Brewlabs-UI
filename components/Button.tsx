@@ -17,7 +17,7 @@ const Button = ({
         href={externalLink}
         target="_blank"
         rel="noreferrer"
-        className="flex items-center justify-center rounded-md bg-dark px-4 py-2 text-base font-bold tracking-wider text-brand shadow-sm transition hover:bg-brand hover:text-dark"
+        className="flex items-center justify-center rounded-md outline-none bg-dark px-4 py-2 text-base font-bold tracking-wider text-brand shadow-sm transition hover:bg-brand hover:text-dark"
       >
         {children}
       </a>
@@ -26,7 +26,7 @@ const Button = ({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className="flex items-center justify-center rounded-md bg-dark px-4 py-2 text-base font-bold tracking-wider text-brand shadow-sm transition hover:bg-brand hover:text-dark"
+        className="flex items-center justify-center rounded-md outline-none bg-dark px-4 py-2 text-base font-bold tracking-wider text-brand shadow-sm transition hover:bg-brand hover:text-dark"
       >
         {children}
       </button>

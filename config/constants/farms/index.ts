@@ -3,7 +3,7 @@ import { serializeTokens } from "../tokens";
 import { SerializedFarmConfig, Version } from "../types";
 
 export * from "./pancake";
-export * from "./priceHelperLps"
+export * from "./priceHelperLps";
 
 const farms: SerializedFarmConfig[] = [
   /**
@@ -426,6 +426,21 @@ const farms: SerializedFarmConfig[] = [
     token: serializeTokens(ChainId.ETHEREUM).met,
     quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
     earningToken: serializeTokens(ChainId.ETHEREUM).met,
+    isServiceFee: true,
+  },
+  {
+    pid: 30,
+    farmId: 30,
+    poolId: 0,
+    chainId: ChainId.ETHEREUM,
+    version: Version.V3,
+    lpSymbol: "GCC-ETH LP",
+    lpAddress: "0xFD6BC48f68136E7Bf4aE1FB4b0C2e6911A50E18b",
+    contractAddress: "0x282582628e94b0C1C4179e753d4226eaBF6Df952",
+    lpManager: "Pancakeswap",
+    token: serializeTokens(ChainId.ETHEREUM).gcc,
+    quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
+    earningToken: serializeTokens(ChainId.ETHEREUM).gcc,
     isServiceFee: true,
   },
 ];

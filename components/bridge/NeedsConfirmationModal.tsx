@@ -35,6 +35,7 @@ const NeedsConfirmationModal = ({ setNeedsConfirmation, setMessage }: NeedsConfi
             <p className="text-sm text-gray-500">
               Please switch the network in your wallet to
               <div
+                className="cursor-pointer text-brand"
                 onClick={() => {
                   if (canSwitch) switchNetwork(foreignChainId);
                 }}

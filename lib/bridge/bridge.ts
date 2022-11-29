@@ -1,6 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, Contract, ethers, Signer } from "ethers";
-import { BridgeToken } from "config/constants/types";
+import { BridgeToken, Version } from "config/constants/types";
 import { bridgeConfigs } from "config/constants/bridge";
 import { provider } from "utils/wagmi";
 import { fetchTokenName } from "./token";
@@ -235,25 +235,72 @@ export const relayTokens = async (
   token: BridgeToken,
   receiver: string,
   amount: BigNumber,
+  version?: Version,
+  performanceFee?: string
 ) => {
   const { mode, mediator, address, helperContractAddress } = token;
   switch (mode) {
     case "NATIVE": {
       const abi = ["function wrapAndRelayTokens(address _receiver) public payable"];
       const helperContract = new Contract(helperContractAddress ?? ethers.constants.AddressZero, abi, signer);
-      return helperContract.wrapAndRelayTokens(receiver, { value: amount });
+      return helperContract.wrapAndRelayTokens(receiver, { value: amount.add(performanceFee ?? "0") });
     }
     case "dedicated-erc20": {
-      const abi = ["function relayTokens(address, uint256)"];
+      if (version) {
+        const abi = ["function relayTokens(address, uint256) public payable"];
+        const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+
+        let gasLimit = await mediatorContract.estimateGas.relayTokens(receiver, amount, { value: performanceFee });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokens(receiver, amount, { value: performanceFee });
+      }
+
+      const abi = performanceFee
+        ? [`function relayTokensWithFee(address, address, uint256) public payable`]
+        : ["function relayTokens(address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
-      return mediatorContract.relayTokens(receiver, amount);
+
+      if (performanceFee) {
+        let gasLimit = await mediatorContract.estimateGas.relayTokensWithFee(address, receiver, amount, {
+          value: performanceFee,
+        });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee, gasLimit });
+      }
+
+      let gasLimit = await mediatorContract.estimateGas.relayTokens(receiver, amount);
+      gasLimit = gasLimit.mul(1200).div(1000);
+      return mediatorContract.relayTokens(receiver, amount, { gasLimit });
     }
     case "erc20":
     default: {
-      const abi = ["function relayTokens(address, address, uint256)"];
+      if (version) {
+        const abi = ["function relayTokens(address, address, uint256) public payable"];
+        const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
+
+        let gasLimit = await mediatorContract.estimateGas.relayTokens(address, receiver, amount, {
+          value: performanceFee,
+        });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokens(address, receiver, amount, { value: performanceFee, gasLimit });
+      }
+
+      const abi = performanceFee
+        ? ["function relayTokensWithFee(address, address, uint256) public payable"]
+        : ["function relayTokens(address, address, uint256)"];
       const mediatorContract = new Contract(mediator ?? ethers.constants.AddressZero, abi, signer);
 
-      return mediatorContract.relayTokens(address, receiver, amount);
+      if (performanceFee) {
+        let gasLimit = await mediatorContract.estimateGas.relayTokensWithFee(address, receiver, amount, {
+          value: performanceFee,
+        });
+        gasLimit = gasLimit.mul(1200).div(1000);
+        return mediatorContract.relayTokensWithFee(address, receiver, amount, { value: performanceFee, gasLimit });
+      }
+
+      let gasLimit = await mediatorContract.estimateGas.relayTokens(address, receiver, amount);
+      gasLimit = gasLimit.mul(1200).div(1000);
+      return mediatorContract.relayTokens(address, receiver, amount, { gasLimit });
     }
   }
 };

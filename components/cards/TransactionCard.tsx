@@ -8,7 +8,7 @@ import { getExplorerLink } from "lib/bridge/helpers";
 import { truncateHash } from "utils";
 import { CHAIN_ICONS } from "config/constants/networks";
 import Image from "next/image";
-import Button from "components/Button";
+
 type TransactionCardProps = {
   chainId: ChainId;
   fromToken: SerializedToken;
