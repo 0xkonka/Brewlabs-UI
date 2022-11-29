@@ -174,16 +174,8 @@ export const fetchTokenLimits = async (
       await provider({ chainId: toToken.chainId })
     );
 
-    const { wrappedForeignCurrencyAddress } = bridgeConfigs[0];
-
-    const fromTokenAddress =
-      fromToken.address === ethers.constants.AddressZero && fromToken.mode === "NATIVE"
-        ? wrappedForeignCurrencyAddress
-        : fromToken.address;
-    const toTokenAddress =
-      toToken.address === ethers.constants.AddressZero && toToken.mode === "NATIVE"
-        ? wrappedForeignCurrencyAddress
-        : toToken.address;
+    const fromTokenAddress = fromToken.address;
+    const toTokenAddress = toToken.address;
 
     if (toTokenAddress === ethers.constants.AddressZero || fromTokenAddress === ethers.constants.AddressZero)
       return getDefaultTokenLimits(fromToken.decimals, fromMediatorContract, toMediatorContract);
