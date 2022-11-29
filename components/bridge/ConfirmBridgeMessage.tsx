@@ -123,6 +123,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
         })
         .catch((error: any) => handleWalletError(error, showError, getNativeSybmol(fromToken?.chainId)));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transferButtonEnabled, fromToken?.chainId, transferValid, transfer]);
 
   const renderActions = () => {

@@ -29,7 +29,7 @@ import BridgeDragButton from "components/bridge/BridgeDragButton";
 import BridgeDragTrack from "components/bridge/BridgeDragTrack";
 import BridgeLoadingModal from "components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "components/bridge/ConfirmBridgeMessage";
-import WalletSelector from "components/WalletSelector";
+import WalletSelector from "components/wallet/WalletSelector";
 import TransactionHistory from "components/bridge/TransactionHistory";
 
 const useDelay = (fn: any, ms: number) => {

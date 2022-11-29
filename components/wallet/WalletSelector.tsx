@@ -28,7 +28,8 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
       setGlobalState("sessionChainId", chain?.unsupported ? chainId : chain?.id);
       onDismiss();
     }
-  }, [isConnected, chain]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, chain, chainId]);
 
   useEffect(() => {
     if (error) {
