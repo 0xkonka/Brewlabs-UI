@@ -5,7 +5,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import LogoIcon from "../LogoIcon";
 import ConnectWallet from "../wallet/ConnectWallet";
-import ThemeSwitcher from "../ThemeSwitcher";
+// import ThemeSwitcher from "../ThemeSwitcher";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
 import { navigationData } from "../../config/constants/navigation";
@@ -59,7 +59,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
         </nav>
       </div>
 
-      {!slim && <ThemeSwitcher />}
+      {/* {!slim && <ThemeSwitcher />} */}
       {!slim && <ConnectWallet />}
     </div>
   );

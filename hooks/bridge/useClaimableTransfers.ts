@@ -7,7 +7,6 @@ import { useBridgeDirection } from "./useBridgeDirection";
 
 export const useClaimableTransfers = () => {
   const { address: account } = useAccount();
-  const { chainId: providerChainId } = useActiveChainId();
   const { homeChainId, foreignChainId, getGraphEndpoint } = useBridgeDirection();
   const { txHash }: any = useBridgeContext();
   const [transfers, setTransfers] = useState<any[]>();
@@ -22,7 +21,7 @@ export const useClaimableTransfers = () => {
       setTransfers([]);
       if (!account) return;
 
-      const { requests } = await getRequests(account, getGraphEndpoint(homeChainId));
+      const { requests } = await getRequests(getGraphEndpoint(homeChainId), account);
       const { executions } = await getExecutions(getGraphEndpoint(foreignChainId), requests);
       const homeTransfers = combineRequestsWithExecutions(requests, executions, homeChainId, foreignChainId)
         .sort((a, b) => b.timestamp - a.timestamp)

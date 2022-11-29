@@ -1,6 +1,7 @@
 import { Fragment, lazy, Suspense, useEffect } from "react";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
+import Image from "next/future/image";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
@@ -49,6 +50,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
   const store = useStore(pageProps.initialReduxState);
 
   const router = useRouter();
+
   useEffect(() => {
     const handler = (page: any) => {
       window.dataLayer.push({
@@ -69,40 +71,46 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
       <WagmiProvider client={client}>
         <Provider store={store}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <LanguageProvider>
-              <TokenPriceContextProvider>
-                <BridgeProvider>
-                  <SWRConfig>
-                    <GlobalHooks />
-                    <PersistGate loading={null} persistor={persistor}>
-                      <DefaultSeo {...SEO} />
-                      <Updaters />
+            <TokenPriceContextProvider>
+              <BridgeProvider>
+                <SWRConfig>
+                  <GlobalHooks />
+                  <PersistGate loading={null} persistor={persistor}>
+                    <DefaultSeo {...SEO} />
+                    <Updaters />
 
-                      <div
-                        className={clsx(
-                          router?.pathname === "/" && "home",
-                          "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
-                        )}
-                      >
-                        <Suspense>
-                          <Bubbles />
-                        </Suspense>
+                    <div
+                      className={clsx(
+                        router?.pathname === "/" && "home",
+                        "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                      )}
+                    >
+                      <Suspense>
+                        <Bubbles />
+                      </Suspense>
 
-                        <div className="flex h-full">
-                          <NavigationDesktop />
-                          <NavigationMobile />
-                          <UserSidebar />
+                      <Image
+                        className="fixed top-0 -right-44 dark:opacity-50"
+                        src="/images/blur-indigo.png"
+                        alt="background blur"
+                        width={567}
+                        height={567}
+                        unoptimized={false}
+                      />
 
-                          <div className="flex flex-1 flex-col">
-                            <HeaderMobile />
+                      <div className="flex h-full">
+                        <NavigationDesktop />
+                        <NavigationMobile />
+                        <UserSidebar />
 
-                            <LazyMotion features={domAnimation}>
-                              <AnimatePresence exitBeforeEnter>
-                                <App {...props} />
-                              </AnimatePresence>
-                            </LazyMotion>
-                          </div>
-                          <ToastContainer />
+                        <div className="flex flex-1 flex-col">
+                          <HeaderMobile />
+
+                          <LazyMotion features={domAnimation}>
+                            <AnimatePresence exitBeforeEnter>
+                              <App {...props} />
+                            </AnimatePresence>
+                          </LazyMotion>
                         </div>
                       </div>
                     </PersistGate>

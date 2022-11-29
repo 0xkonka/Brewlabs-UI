@@ -56,14 +56,14 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
               This page is located for <span className="font-bolder text-brand">{currentChain?.name}.</span>
             </p>
             <p className="text-sm text-gray-500">
-              You are under <span className="font-bolder text-brand">{chain?.name ?? ""}</span> now, please switch the
+              You are on <span className="font-bolder text-brand">{chain?.name ?? ""}</span> now, please switch the
               network to continue.
             </p>
           </div>
         </div>
 
         <div className="mt-5 text-center sm:mt-6 sm:grid">
-          <div className="m-auto">
+          <div className="flex justify-center">
             {canSwitch ? (
               <Button disabled={isLoading} onClick={() => switchNetwork(currentChain?.id || ChainId.BSC_MAINNET)}>
                 <div>Switch to {currentChain?.name}</div>

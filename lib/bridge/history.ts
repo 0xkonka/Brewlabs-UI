@@ -6,7 +6,13 @@ const pageSize = 1000;
 
 const requestsUserQuery = gql`
   query getRequests($user: String!, $first: Int!, $skip: Int!) {
-    requests: userRequests(where: { user: $user }, orderBy: txHash, orderDirection: desc, first: $first, skip: $skip) {
+    requests: userRequests(
+      where: { user: $user }
+      orderBy: timestamp
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
       user: recipient
       txHash
       messageId
@@ -29,11 +35,54 @@ const requestsRecipientQuery = gql`
   query getRequests($user: String!, $first: Int!, $skip: Int!) {
     requests: userRequests(
       where: { user_not: $user, recipient: $user }
-      orderBy: txHash
+      orderBy: timestamp
       orderDirection: desc
       first: $first
       skip: $skip
     ) {
+      user: recipient
+      txHash
+      messageId
+      timestamp
+      amount
+      token
+      decimals
+      symbol
+      message {
+        txHash
+        messageId: msgId
+        messageData: msgData
+        signatures
+      }
+    }
+  }
+`;
+
+const requestsAllQuery = gql`
+  query getRequests($first: Int!, $skip: Int!) {
+    requests: userRequests(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
+      user
+      recipient
+      txHash
+      messageId
+      timestamp
+      amount
+      token
+      decimals
+      symbol
+      message {
+        txHash
+        messageId: msgId
+        messageData: msgData
+        signatures
+      }
+    }
+  }
+`;
+
+const requestsRecipientAllQuery = gql`
+  query getRequests($first: Int!, $skip: Int!) {
+    requests: userRequests(where:{symbol: "1"} orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
       user: recipient
       txHash
       messageId
@@ -98,7 +147,7 @@ export const getExecutions = async (graphEndpoint: string, requests: any[]) => {
   return { executions };
 };
 
-const getRequestsWithQuery = async (user: string, graphEndpoint: string, query: any) => {
+const getRequestsWithQuery = async (graphEndpoint: string, query: any, user?: string) => {
   let requests: any[] = [];
   let page = 0;
   const first = pageSize;
@@ -115,6 +164,8 @@ const getRequestsWithQuery = async (user: string, graphEndpoint: string, query: 
       if (data) {
         requests = data.requests.concat(requests);
       }
+
+      if (!user) break;
       if (!data || data.requests.length < pageSize) break;
       page += 1;
     } catch (graphUserRequestsError) {
@@ -126,10 +177,10 @@ const getRequestsWithQuery = async (user: string, graphEndpoint: string, query: 
   return { requests };
 };
 
-export const getRequests = async (user: string, graphEndpoint: string) => {
+export const getRequests = async (graphEndpoint: string, user?: string) => {
   const [userRequests, recipientRequests] = await Promise.all([
-    getRequestsWithQuery(user, graphEndpoint, requestsUserQuery),
-    getRequestsWithQuery(user, graphEndpoint, requestsRecipientQuery),
+    getRequestsWithQuery(graphEndpoint, user ? requestsUserQuery : requestsAllQuery, user),
+    getRequestsWithQuery(graphEndpoint, user ? requestsRecipientQuery : requestsRecipientAllQuery, user),
   ]);
   return {
     requests: [...userRequests.requests, ...recipientRequests.requests],

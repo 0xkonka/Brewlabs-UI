@@ -25,7 +25,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
     if (isConnected && onDismiss) {
       onDismiss();
     }
-  }, [isConnected, onDismiss]);
+  }, [isConnected]);
 
   useEffect(() => {
     if (error) {
@@ -35,7 +35,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
 
   return (
     <div className="p-4 font-brand">
-      <h5 className="mb-2 text-2xl">Connect Wallet</h5>
+      <h5 className="mb-2 text-2xl dark:text-slate-400">Connect Wallet</h5>
       <p className="dark:text-gray-500">Connect your wallet to interact</p>
       {errorMsg && (
         <div className="relative mt-2 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700" role="alert">
