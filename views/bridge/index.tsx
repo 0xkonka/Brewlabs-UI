@@ -29,8 +29,7 @@ import BridgeDragButton from "components/bridge/BridgeDragButton";
 import BridgeDragTrack from "components/bridge/BridgeDragTrack";
 import BridgeLoadingModal from "components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "components/bridge/ConfirmBridgeMessage";
-import WalletSelector from "components/WalletSelector";
-import TransactionHistory from "components/bridge/TransactionHistory";
+import History from "components/bridge/TransactionHistoryTable";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -52,7 +51,7 @@ const Bridge: NextPage = () => {
   const { theme } = useTheme();
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
-  const { address: account, isConnected } = useAccount();
+  const { address: account } = useAccount();
 
   const scrollRef = useRef(null);
   const [isStuck, setIsStuck] = useState(false);
@@ -217,6 +216,7 @@ const Bridge: NextPage = () => {
     }
     setPercent(index);
   };
+
   const watchScroll = () => {
     const observer = new IntersectionObserver(([e]) => setIsStuck(e.intersectionRatio < 1), {
       threshold: 1,
@@ -233,7 +233,7 @@ const Bridge: NextPage = () => {
       <PageHeader
         title={
           <>
-            Transfer tokens <WordHighlight content="cross-chain" /> with bridge.
+            Transfer tokens <WordHighlight content="cross-chain" /> with our bridge.
           </>
         }
         summary="Easily transfer tokens with confidence."
@@ -242,8 +242,8 @@ const Bridge: NextPage = () => {
       <BridgeLoadingModal />
 
       <Container>
-        <div className="relative grid justify-center pb-64 sm:h-auto sm:grid-cols-11">
-          <div ref={scrollRef} className="sticky top-28 mb-48 sm:col-span-4 sm:mb-0">
+        <div className="relative grid justify-center pb-64 md:h-auto md:grid-cols-11">
+          <div ref={scrollRef} className="sticky top-28 mb-48 md:relative md:top-0 md:col-span-4 md:mb-0">
             <CryptoCard
               title="Bridge from"
               id="bridge_card_from"
@@ -293,7 +293,7 @@ const Bridge: NextPage = () => {
                       name="currency"
                       value={bridgeFromToken?.address}
                       onChange={fromTokenSelected}
-                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
+                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 md:text-sm"
                     >
                       {supportedFromTokens.map((token) => (
                         <option key={`${token.chainId}-${token.address}`} value={token.address}>
@@ -332,7 +332,7 @@ const Bridge: NextPage = () => {
                       name="currency"
                       value={percent}
                       onChange={(e) => onPercentSelected(+e.target.value)}
-                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 sm:text-sm"
+                      className="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-amber-300 focus:ring-amber-300 md:text-sm"
                     >
                       {percents.map((val, idx) => (
                         <option key={idx} value={idx}>
@@ -344,14 +344,14 @@ const Bridge: NextPage = () => {
                 </div>
               </div>
             </CryptoCard>
-            <p className="mt-4 block text-center text-xs text-slate-900 dark:text-gray-500 sm:hidden">
+            <p className="mt-4 block text-center text-xs text-slate-900 dark:text-gray-500 md:hidden">
               Scroll down to choose network to send to
             </p>
           </div>
 
           <BridgeDragTrack setLockingFn={setLocked} />
 
-          <div className="sticky top-32 sm:col-span-4">
+          <div className="sticky top-32 md:relative md:top-0 md:col-span-4">
             <CryptoCard
               title="Bridge to"
               id="bridge_card_to"
@@ -368,21 +368,12 @@ const Bridge: NextPage = () => {
                 },
                 disableAutoCloseOnClick: locked,
                 modalContent: locked ? (
-                  isConnected ? (
-                    <ConfirmBridgeMessage
-                      onClose={() => {
-                        setOpenFromChainModal(false);
-                        setLocking(false);
-                      }}
-                    />
-                  ) : (
-                    <WalletSelector
-                      onDismiss={() => {
-                        setOpenFromChainModal(false);
-                        setLocking(false);
-                      }}
-                    />
-                  )
+                  <ConfirmBridgeMessage
+                    onClose={() => {
+                      setOpenFromChainModal(false);
+                      setLocking(false);
+                    }}
+                  />
                 ) : (
                   <ChainSelector
                     networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
@@ -412,7 +403,7 @@ const Bridge: NextPage = () => {
 
         {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
 
-        <TransactionHistory />
+        <History />
       </Container>
     </PageWrapper>
   );
