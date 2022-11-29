@@ -4,6 +4,15 @@ const nextConfig = {
   images: {
     domains: ["img.youtube.com"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/bridge",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

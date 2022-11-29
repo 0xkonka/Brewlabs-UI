@@ -27,6 +27,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   stables: [],
 };
 

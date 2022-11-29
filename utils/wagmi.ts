@@ -36,7 +36,7 @@ export const coinbaseConnector = new CoinbaseWalletConnector({
   chains,
   options: {
     appName: "Brewlabs Earn",
-    appLogoUrl: "https://earn.brewlabs.info/logo.png",
+    appLogoUrl: "https://bridge.brewlabs.info/logo.png",
   },
 });
 

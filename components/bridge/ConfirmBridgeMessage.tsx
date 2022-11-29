@@ -7,7 +7,7 @@ import { useBridgeContext } from "contexts/BridgeContext";
 import { useApproval } from "hooks/bridge/useApproval";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { isRevertedError } from "lib/bridge/amb";
-import { formatValue, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { formatValue, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 
 import { useGlobalState } from "../../state";
 import Button from "../Button";
@@ -121,9 +121,9 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
           setLocked(false);
           onClose();
         })
-        .catch((error: any) => handleWalletError(error, showError));
+        .catch((error: any) => handleWalletError(error, showError, getNativeSybmol(fromToken?.chainId)));
     }
-  }, [transferButtonEnabled, transferValid, transfer]);
+  }, [transferButtonEnabled, fromToken?.chainId, transferValid, transfer]);
 
   const renderActions = () => {
     if (!allowed) {

@@ -25,7 +25,7 @@ export const bridgeConfigs: BridgeDirectionConfig[] = [
     homeGraphName: "brainstormk/brewlabs-bridge-mainet-bsc",
     claimDisabled: false,
     tokensClaimDisabled: [],
-    homePerformanceFee: ethers.utils.parseEther("0.005").toString(),
-    foreignPerformanceFee: ethers.utils.parseEther("0.03").toString(),
+    homePerformanceFee: ethers.utils.parseEther("0.01").toString(),
+    foreignPerformanceFee: ethers.utils.parseEther("0.04").toString(),
   },
 ];

@@ -5,7 +5,7 @@ export const DEFAULT_META: PageMeta = {
   title: "Brewlabs Earn",
   description:
     "Stake your tokens on the Brewlabs staking platform to earn passive income, compound or  harvest your rewards and reflections anytime!",
-  image: "https://earn.brewlabs.info/images/brewlabs-earn-poster.jpg",
+  image: "https://bridge.brewlabs.info/images/brewlabs-earn-poster.jpg",
 };
 
 interface PathList {
