@@ -132,9 +132,6 @@ export interface BridgeDirectionConfig {
   foreignChainId: ChainId;
   homeToken: BridgeToken;
   foreignToken: BridgeToken;
-  enableForeignCurrencyBridge: boolean;
-  homeWrappedForeignCurrencyAddress: string | null;
-  wrappedForeignCurrencyAddress: string | null;
   foreignMediatorAddress: string;
   homeMediatorAddress: string;
   foreignAmbAddress: string;
