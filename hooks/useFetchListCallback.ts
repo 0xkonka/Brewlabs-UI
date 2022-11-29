@@ -3,16 +3,14 @@ import { ChainId } from '@brewlabs/sdk'
 import { TokenList } from '@uniswap/token-lists'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { AppDispatch } from '../state'
 import { fetchTokenList } from '../state/lists/actions'
 import getTokenList from 'utils/getTokenList'
 import resolveENSContentHash from 'utils/ENS/resolveENSContentHash'
-import useWeb3Provider from './useActiveWeb3React'
+import useActiveWeb3React from './useActiveWeb3React'
 
 function useFetchListCallback(): (listUrl: string, sendDispatch?: boolean) => Promise<TokenList> {
-  const { library } = useWeb3Provider()
-  const { chainId } = useActiveWeb3React()
+  const { chainId, library } = useActiveWeb3React()
   const dispatch = useDispatch<AppDispatch>()
 
   const ensResolver = useCallback(
