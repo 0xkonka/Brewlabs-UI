@@ -2,7 +2,7 @@ import { ChainId } from "@brewlabs/sdk";
 import { ethers } from "ethers";
 import { gql, request } from "graphql-request";
 
-const pageSize = 1000;
+const pageSize = 100;
 
 const requestsUserQuery = gql`
   query getRequests($user: String!, $first: Int!, $skip: Int!) {
@@ -82,7 +82,13 @@ const requestsAllQuery = gql`
 
 const requestsRecipientAllQuery = gql`
   query getRequests($first: Int!, $skip: Int!) {
-    requests: userRequests(where:{symbol: "1"} orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
+    requests: userRequests(
+      where: { symbol: "1" }
+      orderBy: timestamp
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
       user: recipient
       txHash
       messageId
