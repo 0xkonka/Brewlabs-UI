@@ -9,6 +9,9 @@ import { updateVersion } from "./global/actions";
 
 import storage from "./storage";
 import farmsReducer from "./farms";
+import user from './user/reducer';
+import swap from './swap/reducer';
+import lists from './lists/reducer';
 import multicall from "./multicall/reducer";
 import { BridgeToken } from "config/constants/types";
 
@@ -26,7 +29,10 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     farms: farmsReducer,
+    user,
+    swap,
     multicall,
+    lists
   })
 );
 

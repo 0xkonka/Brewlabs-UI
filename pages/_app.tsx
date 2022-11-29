@@ -19,6 +19,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
+import { LanguageProvider } from "contexts/Localization";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
@@ -111,13 +112,12 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                             </AnimatePresence>
                           </LazyMotion>
                         </div>
-                        <ToastContainer />
                       </div>
-                    </div>
-                  </PersistGate>
-                </SWRConfig>
-              </BridgeProvider>
-            </TokenPriceContextProvider>
+                    </PersistGate>
+                  </SWRConfig>
+                </BridgeProvider>
+              </TokenPriceContextProvider>
+            </LanguageProvider>
           </ThemeProvider>
         </Provider>
       </WagmiProvider>
