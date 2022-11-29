@@ -1,6 +1,7 @@
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 
 import { useTranslation } from "contexts/Localization";
+import { useDefaultsFromURLSearch } from "state/swap/hooks";
 
 import PageHeader from "../../components/layout/PageHeader";
 import Container from "../../components/layout/Container";
@@ -15,7 +16,8 @@ import SwitchIconButton from "./components/SwitchIconButton";
 export default function Swap() {
   const { account, library, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
-  // const { isMobile } = useMatchBreakpoints()
+
+  useDefaultsFromURLSearch()
 
   return (
     <PageWrapper>

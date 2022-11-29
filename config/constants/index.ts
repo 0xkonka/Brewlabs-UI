@@ -1,6 +1,8 @@
-import { ChainId } from "@brewlabs/sdk"
+import { ChainId, Currency, JSBI, Percent, Token } from '@brewlabs/sdk'
 import BigNumber from "bignumber.js"
+
 import { BIG_TEN } from "utils/bigNumber"
+import { tokens } from './tokens'
 
 export const FAST_INTERVAL = 10000
 export const SLOW_INTERVAL = 60000
@@ -113,6 +115,95 @@ export const BLOCK_TIMES = {
   [ChainId.BRISE]: 15,
 }
 
+// a list of tokens by chain
+type ChainTokenList = {
+  readonly [chainId in ChainId]?: Currency[]
+}
+
+// used to construct intermediary pairs for trading
+export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
+  [ChainId.ETHEREUM]: [
+    tokens[ChainId.ETHEREUM].weth,
+    // tokens[ChainId.ETHEREUM].usdt,
+  ],
+  [ChainId.BSC_MAINNET]: [
+    tokens[ChainId.BSC_MAINNET].wbnb,
+    tokens[ChainId.BSC_MAINNET].brews,
+    tokens[ChainId.BSC_MAINNET].busd,
+    tokens[ChainId.BSC_MAINNET].usdt,
+    tokens[ChainId.BSC_MAINNET].btcb,
+    tokens[ChainId.BSC_MAINNET].ust,
+    tokens[ChainId.BSC_MAINNET].eth,
+    tokens[ChainId.BSC_MAINNET].usdc,
+  ],
+  [ChainId.BSC_TESTNET]: [tokens[ChainId.BSC_TESTNET].wbnb, tokens[ChainId.BSC_TESTNET].busd],
+  [ChainId.POLYGON]: [tokens[ChainId.POLYGON].wmatic, tokens[ChainId.POLYGON].usdc],
+  [ChainId.FANTOM]: [tokens[ChainId.FANTOM].wftm, tokens[ChainId.FANTOM].eth, tokens[ChainId.FANTOM].usdc],
+  [ChainId.AVALANCHE]: [tokens[ChainId.AVALANCHE].wavax, tokens[ChainId.AVALANCHE].usdc],
+  [ChainId.CRONOS]: [tokens[ChainId.CRONOS].wcro, tokens[ChainId.CRONOS].usdc],
+  [ChainId.BRISE]: [tokens[ChainId.BRISE].wbrise, tokens[ChainId.BRISE].usdt, tokens[ChainId.BRISE].usdc],
+}
+
+/**
+ * Addittional bases for specific tokens
+ * @example { [WBTC.address]: [renBTC], [renBTC.address]: [WBTC] }
+ */
+export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
+  [ChainId.ETHEREUM]: {},
+  [ChainId.BSC_MAINNET]: {},
+  [ChainId.POLYGON]: {},
+  [ChainId.FANTOM]: {},
+  [ChainId.AVALANCHE]: {},
+  [ChainId.CRONOS]: {},
+  [ChainId.BRISE]: {},
+}
+
+/**
+ * Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these
+ * tokens.
+ * @example [AMPL.address]: [DAI, WETH[ChainId.BSC_MAINNET]]
+ */
+export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
+  [ChainId.ETHEREUM]: {},
+  [ChainId.BSC_MAINNET]: {},
+  [ChainId.POLYGON]: {},
+  [ChainId.FANTOM]: {},
+  [ChainId.AVALANCHE]: {},
+  [ChainId.CRONOS]: {},
+  [ChainId.BRISE]: {},
+}
+
+// used to construct the list of all pairs we consider by default in the frontend
+export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
+  [ChainId.ETHEREUM]: [tokens[ChainId.ETHEREUM].weth, tokens[ChainId.ETHEREUM].usdt],
+  [ChainId.BSC_MAINNET]: [
+    tokens[ChainId.BSC_MAINNET].wbnb,
+    tokens[ChainId.BSC_MAINNET].brews,
+    tokens[ChainId.BSC_MAINNET].dai,
+    tokens[ChainId.BSC_MAINNET].busd,
+    tokens[ChainId.BSC_MAINNET].usdt,
+  ],
+  [ChainId.BSC_TESTNET]: [tokens[ChainId.BSC_TESTNET].wbnb, tokens[ChainId.BSC_TESTNET].busd],
+  [ChainId.POLYGON]: [tokens[ChainId.POLYGON].wmatic, tokens[ChainId.POLYGON].usdc],
+  [ChainId.FANTOM]: [tokens[ChainId.FANTOM].wftm, tokens[ChainId.FANTOM].usdc],
+  [ChainId.AVALANCHE]: [tokens[ChainId.AVALANCHE].wavax, tokens[ChainId.AVALANCHE].usdc],
+  [ChainId.CRONOS]: [tokens[ChainId.CRONOS].wcro, tokens[ChainId.CRONOS].usdc],
+  [ChainId.BRISE]: [tokens[ChainId.BRISE].wbrise, tokens[ChainId.BRISE].usdt, tokens[ChainId.BRISE].usdc],
+}
+
+export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
+  [ChainId.BSC_MAINNET]: [
+    [tokens[ChainId.BSC_MAINNET].brews, tokens[ChainId.BSC_MAINNET].wbnb],
+    [tokens[ChainId.BSC_MAINNET].busd, tokens[ChainId.BSC_MAINNET].usdt],
+    [tokens[ChainId.BSC_MAINNET].dai, tokens[ChainId.BSC_MAINNET].usdt],
+  ],
+}
+
+// default allowed slippage, in bips
+export const INITIAL_ALLOWED_SLIPPAGE = 50
+// 20 minutes, denominated in seconds
+export const DEFAULT_DEADLINE_FROM_NOW = 60 * 20
+
 export const SECONDS_PER_YEAR = 365 * 86400 // 10512000
 export const BASE_URL = 'https://earn.brewlabs.info'
 
@@ -124,3 +215,22 @@ export const BLOCKS_PER_YEAR = new BigNumber(10512000)
 export const BANANA_PER_YEAR = BANANA_PER_BLOCK.times(BLOCKS_PER_YEAR)
 
 export const DEFAULT_CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID || '56', 10)
+
+// one basis point
+export const ONE_BIPS = new Percent(JSBI.BigInt(1), JSBI.BigInt(10000))
+export const BIPS_BASE = JSBI.BigInt(10000)
+
+// used for warning states
+export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), BIPS_BASE) // 1%
+export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE) // 3%
+export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(JSBI.BigInt(500), BIPS_BASE) // 5%
+
+// for non expert mode disable swaps above this
+export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(JSBI.BigInt(1500), BIPS_BASE) // 15%
+
+// used to ensure the user doesn't send so much BNB so they end up with <.02
+export const MIN_BNB: JSBI = JSBI.multiply(JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), JSBI.BigInt(2)) // .02 BNB
+export const BETTER_TRADE_LESS_HOPS_THRESHOLD = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000))
+
+export const ZERO_PERCENT = new Percent('0')
+export const ONE_HUNDRED_PERCENT = new Percent('1')
