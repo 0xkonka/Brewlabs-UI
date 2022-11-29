@@ -8,7 +8,7 @@ import { getExplorerLink } from "lib/bridge/helpers";
 import { truncateHash } from "utils";
 import { CHAIN_ICONS } from "config/constants/networks";
 import Image from "next/image";
-import Button from "components/Button";
+
 type TransactionCardProps = {
   chainId: ChainId;
   fromToken: SerializedToken;
@@ -80,6 +80,7 @@ const TransactionCard = ({
               href={getExplorerLink(fromToken.chainId, "transaction", sendingTx)}
               className="dark:text-gray-500"
               target="_blank"
+              rel="noreferrer"
             >
               {truncateHash(sendingTx)}
             </a>
@@ -92,6 +93,7 @@ const TransactionCard = ({
                   href={getExplorerLink(toToken.chainId, "transaction", receivingTx ?? "")}
                   className="dark:text-gray-500"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   {truncateHash(receivingTx ?? "")}
                 </a>

@@ -22,7 +22,7 @@ const tokens = {
   ),
   brews: new Token(
     ETHEREUM,
-    "0xe745d88A390e89E6562B29F6aC17ec03804050Ad",
+    "0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba",
     9,
     "BREWLABS",
     "Brewlabs",
@@ -240,6 +240,7 @@ const tokens = {
     "Alcazar",
     "https://alcazartoken.io/"
   ),
+  gcc: new Token(ETHEREUM, "0xAfbB5DafaceA3cFe1001357449e2ea268e50F368", 18, "GCC", "Grow Crop Corp"),
   dai: new Token(ETHEREUM, "0x6B175474E89094C44Da98b954EedeAC495271d0F", 18, "DAI", "Dai Stablecoin"),
   wbtc: new Token(ETHEREUM, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", 8, "WBTC", "Wrapped BTC"),
   rune: new Token(ETHEREUM, "0x3155BA85D5F96b2d030a4966AF206230e46849cb", 18, "RUNE", "RUNE.ETH"),

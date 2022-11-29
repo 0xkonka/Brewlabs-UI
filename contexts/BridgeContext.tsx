@@ -1,17 +1,16 @@
+import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { BigNumber, ethers, utils } from "ethers";
-
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { ChainId } from "@brewlabs/sdk";
 import { toast } from "react-toastify";
 import { useAccount, useSigner } from "wagmi";
-import { bridgeConfigs } from "config/constants/bridge";
+
+import { BridgeToken } from "config/constants/types";
+import { useActiveChainId } from "hooks/useActiveChainId";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useMediatorInfo } from "hooks/bridge/useMediatorInfo";
 import { fetchToAmount, fetchToToken, relayTokens } from "lib/bridge/bridge";
 import { fetchTokenDetails } from "lib/bridge/token";
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { BridgeToken } from "config/constants/types";
-import { ChainId } from "@brewlabs/sdk";
 
 export interface BridgeContextState {
   amountInput: string;
@@ -77,13 +76,22 @@ export const BridgeContext = React.createContext<BridgeContextState>({
 });
 export const useBridgeContext = () => useContext(BridgeContext);
 
-export const BridgeProvider = ({ children }: any) => {
+export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const { address: account, isConnected } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
   const { data: signer } = useSigner();
 
-  const { bridgeDirectionId, getBridgeChainId, homeChainId, foreignChainId, homeToken, foreignToken } =
-    useBridgeDirection();
+  const {
+    bridgeDirectionId,
+    version,
+    getBridgeChainId,
+    homeChainId,
+    foreignChainId,
+    homeToken,
+    foreignToken,
+    foreignPerformanceFee,
+    homePerformanceFee,
+  } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState<string>();
   const [amountInput, setAmountInput] = useState("");
@@ -143,7 +151,13 @@ export const BridgeProvider = ({ children }: any) => {
       setToAmountLoading(true);
       const amount = utils.parseUnits(inputAmount === "" ? "0" : inputAmount, fromToken.decimals);
       const gotToAmount = await getToAmount(amount);
-      setAmounts({ fromAmount: amount, toAmount: gotToAmount });
+      const toTokenDecimals = fromToken.chainId === homeChainId ? foreignToken.decimals : homeToken.decimals;
+      setAmounts({
+        fromAmount: amount,
+        toAmount: gotToAmount
+          .mul(BigNumber.from(10).pow(36 - fromToken.decimals))
+          .div(BigNumber.from(10).pow(36 - toTokenDecimals)),
+      });
       setToAmountLoading(false);
     },
     [fromToken, toToken, getToAmount]
@@ -184,7 +198,13 @@ export const BridgeProvider = ({ children }: any) => {
           fetchToToken(bridgeDirectionId, tokenWithoutMode, getBridgeChainId(tokenWithoutMode.chainId)),
         ]);
 
-        setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
+        setTokens({
+          fromToken: token,
+          toToken: {
+            ...token,
+            ...gotToToken,
+          },
+        });
         return true;
       } catch (tokenDetailsError) {
         toast.error(
@@ -209,7 +229,14 @@ export const BridgeProvider = ({ children }: any) => {
       setLoading(true);
       setTxHash(undefined);
 
-      const tx = await relayTokens(signer, fromToken, (receiver ?? account)!, fromAmount);
+      const tx = await relayTokens(
+        signer,
+        fromToken,
+        (receiver ?? account)!,
+        fromAmount,
+        version,
+        fromToken.chainId === foreignChainId ? foreignPerformanceFee : homePerformanceFee
+      );
       setTxHash(tx.hash);
       setAmountInput("0");
       setAmount("0");
@@ -255,7 +282,7 @@ export const BridgeProvider = ({ children }: any) => {
         await setToken(token);
       }
     },
-    [setToken, fromToken]
+    [setToken, fromToken, bridgeDirectionId]
   );
 
   useEffect(() => {
@@ -282,6 +309,7 @@ export const BridgeProvider = ({ children }: any) => {
     setToken,
     fromToken,
     toToken,
+    bridgeDirectionId,
     homeChainId,
     foreignChainId,
     providerChainId,

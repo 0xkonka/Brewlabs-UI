@@ -11,14 +11,14 @@ export const ProgressRing = ({
   progress: number;
   totalProgress: number;
 }) => {
-  const normalizedRadius = radius - stroke * 2;
+  const normalizedRadius = radius - stroke;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / totalProgress) * circumference;
 
   return (
     <svg height={radius * 2} width={radius * 2}>
       <circle
-        stroke="#b8b9bb"
+        stroke="#d6d6d6"
         fill="transparent"
         strokeWidth={stroke}
         style={{ strokeDashoffset }}
@@ -27,11 +27,13 @@ export const ProgressRing = ({
         cy={radius}
       />
       <circle
-        stroke="#03a9f4"
+        stroke="#00cf52"
         fill="transparent"
         strokeWidth={stroke}
         strokeDasharray={`${circumference} ${circumference}`}
+        strokeLinecap={"round"}
         style={{ strokeDashoffset}}
+        transform={`rotate(-90 ${radius} ${radius})`}
         r={normalizedRadius}
         cx={radius}
         cy={radius}

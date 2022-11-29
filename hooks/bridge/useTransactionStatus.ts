@@ -33,7 +33,7 @@ export const useTransactionStatus = (setMessage: any) => {
     setLoadingText(undefined);
     setConfirmations(0);
     toast.success(
-      "The Grove token has been successfully transferred. After a while it will appear in the history table."
+      `The token has been successfully transferred. After a while it will appear in the history table.`
     );
   }, [setLoading, setTxHash]);
 
@@ -41,7 +41,7 @@ export const useTransactionStatus = (setMessage: any) => {
     setLoading(false);
     setLoadingText(undefined);
     setConfirmations(0);
-    toast.success("GVR claim was failed");
+    toast.success("Claim was failed");
   }, [setLoading]);
 
   useEffect(() => {

@@ -6,7 +6,6 @@ import { useNetwork } from "wagmi";
 import { bridgeConfigs } from "config/constants/bridge";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useReplaceQueryParams } from "hooks/useReplaceQueryParams";
 import { setGlobalState, useGlobalState } from "state";
 import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
@@ -86,16 +85,15 @@ export const useFromChainId = () => {
   const { chain } = useNetwork();
   const { chainId } = useActiveChainId();
   const { query } = useRouter();
-  const { replaceQueryParams } = useReplaceQueryParams();
 
   const [networkFrom] = useGlobalState("userBridgeFrom");
 
   let fromChainId = +(query.chainId ?? (networkFrom.id > 0 ? networkFrom.id : chainId));
 
   useEffect(() => {
-    if (!PAGE_SUPPORTED_CHAINS["bridge"].includes(chain?.id ?? 0)) {
+    if (!PAGE_SUPPORTED_CHAINS["bridge"].includes(fromChainId ?? 0)) {
       fromChainId = networkFrom.id > 0 ? networkFrom.id : PAGE_SUPPORTED_CHAINS["bridge"][0];
-      replaceQueryParams("chainId", fromChainId.toString());
+      // replaceQueryParams("chainId", fromChainId.toString());
       setGlobalState("userBridgeFrom", NetworkOptions.find(n => n.id === fromChainId)!);
       setGlobalState("sessionChainId", fromChainId.toString());
     } else if (fromChainId !== networkFrom.id) {

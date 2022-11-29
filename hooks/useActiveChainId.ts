@@ -17,7 +17,7 @@ export const useQueryChainId = () => {
 
   useEffect(() => {
     const page = router.pathname.split("/")[1];
-    if (query.chainId === undefined) setQueryChainId(-1);
+    if (query.chainId === undefined) {return};
     if (typeof query.chainId !== "string") return;
     if (!PAGE_SUPPORTED_CHAINS[page]) return;
 

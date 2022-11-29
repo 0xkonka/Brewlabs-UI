@@ -143,6 +143,8 @@ export interface BridgeDirectionConfig {
   homeGraphName: string;
   claimDisabled: false;
   tokensClaimDisabled: any[];
+  homePerformanceFee?: string;
+  foreignPerformanceFee?: string;
 }
 
 export type PageMeta = {
