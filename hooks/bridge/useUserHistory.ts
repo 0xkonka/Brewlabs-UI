@@ -60,7 +60,7 @@ export const useUserHistory = () => {
         foreignChainId,
         homeChainId
       );
-      const allTransfers = [...homeTransfers, ...foreignTransfers].sort((a, b) => a.timestamp - b.timestamp);
+      const allTransfers = [...homeTransfers, ...foreignTransfers].sort((a, b) => b.timestamp - a.timestamp);
       if (isSubscribed) {
         setAllTransfers(allTransfers);
         setLoading(false);
