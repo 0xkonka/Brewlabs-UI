@@ -19,7 +19,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
-import { LanguageProvider } from "contexts/Localization";
+import { LanguageProvider } from "contexts/localization";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
