@@ -62,12 +62,13 @@ const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) =>
     } finally {
       setClaiming(false);
     }
-  }, [claim, txHash, showError, message]);
+  }, [claim, showError, foreignChainId, txHash, message]);
 
   useEffect(() => {
     if (!executing && !claiming && executionTx) {
       onClose();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [executing, claiming, executionTx]);
 
   if (claiming || executing)

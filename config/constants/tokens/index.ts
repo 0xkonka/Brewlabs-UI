@@ -17,10 +17,10 @@ interface SerializedTokenList {
 }
 
 export const tokens = {
-  [ChainId.ETHEREUM]: ethTokens,
   [ChainId.GOERLI]: goerliTokens,
-  [ChainId.BSC_MAINNET]: bscTokens,
   [ChainId.BSC_TESTNET]: bscTestTokens,
+  [ChainId.ETHEREUM]: ethTokens,
+  [ChainId.BSC_MAINNET]: bscTokens,
   [ChainId.POLYGON]: polygonTokens,
   [ChainId.FANTOM]: fantomTokens,
   [ChainId.AVALANCHE]: avalancheTokens,
@@ -29,10 +29,10 @@ export const tokens = {
 };
 
 export const usdToken = {
-  [ChainId.ETHEREUM]: tokens[ChainId.ETHEREUM].usdt,
   [ChainId.GOERLI]: tokens[ChainId.GOERLI].usdc,
-  [ChainId.BSC_MAINNET]: tokens[ChainId.BSC_MAINNET].busd,
   [ChainId.BSC_TESTNET]: tokens[ChainId.BSC_TESTNET].busd,
+  [ChainId.ETHEREUM]: tokens[ChainId.ETHEREUM].usdt,
+  [ChainId.BSC_MAINNET]: tokens[ChainId.BSC_MAINNET].busd,
   [ChainId.POLYGON]: tokens[ChainId.POLYGON].usdc,
   [ChainId.FANTOM]: tokens[ChainId.FANTOM].usdc,
   [ChainId.AVALANCHE]: tokens[ChainId.AVALANCHE].usdc,
@@ -41,10 +41,10 @@ export const usdToken = {
 };
 
 export const brewsToken = {
-  [ChainId.ETHEREUM]: tokens[ChainId.ETHEREUM].brews,
   [ChainId.GOERLI]: tokens[ChainId.GOERLI].test,
-  [ChainId.BSC_MAINNET]: tokens[ChainId.BSC_MAINNET].brews,
   [ChainId.BSC_TESTNET]: tokens[ChainId.BSC_TESTNET].test,
+  [ChainId.ETHEREUM]: tokens[ChainId.ETHEREUM].brews,
+  [ChainId.BSC_MAINNET]: tokens[ChainId.BSC_MAINNET].brews,
   [ChainId.POLYGON]: tokens[ChainId.POLYGON].usdc,
   [ChainId.FANTOM]: tokens[ChainId.FANTOM].usdc,
   [ChainId.AVALANCHE]: tokens[ChainId.AVALANCHE].usdc,
@@ -67,7 +67,7 @@ export const quoteTokens = {
   ],
 };
 export const serializeTokens = (chainId: ChainId): SerializedTokenList => {
-  const unserializedTokens: {[key: string]: Currency} = tokens[chainId];
+  const unserializedTokens: { [key: string]: Currency } = tokens[chainId];
   const serializedTokens = Object.keys(unserializedTokens).reduce((accum, key) => {
     return { ...accum, [key]: serializeToken(unserializedTokens[key]) };
   }, {} as any);

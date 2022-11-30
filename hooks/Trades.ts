@@ -24,7 +24,7 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency, isExterna
     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
     : [undefined, undefined]
 
-  const bases: Token[] = useMemo(() => {
+  const bases: Currency[] = useMemo(() => {
     if (!chainId) return []
 
     const common = BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? []
@@ -34,25 +34,25 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency, isExterna
     return [...common, ...additionalA, ...additionalB]
   }, [chainId, tokenA, tokenB])
 
-  const basePairs: [Token, Token][] = useMemo(
-    () => flatMap(bases, (base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])),
+  const basePairs: [Currency, Currency][] = useMemo(
+    () => flatMap(bases, (base): [Currency, Currency][] => bases.map((otherBase) => [base, otherBase])),
     [bases],
   )
 
-  const allPairCombinations: [Token, Token][] = useMemo(
+  const allPairCombinations: [Currency, Currency][] = useMemo(
     () =>
       tokenA && tokenB
         ? [
           // the direct pair
           [tokenA, tokenB],
           // token A against all bases
-          ...bases.map((base): [Token, Token] => [tokenA, base]),
+          ...bases.map((base): [Currency, Currency] => [tokenA, base]),
           // token B against all bases
-          ...bases.map((base): [Token, Token] => [tokenB, base]),
+          ...bases.map((base): [Currency, Currency] => [tokenB, base]),
           // each base against all bases
           ...basePairs,
         ]
-          .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
+          .filter((tokens): tokens is [Currency, Currency] => Boolean(tokens[0] && tokens[1]))
           .filter(([t0, t1]) => t0.address !== t1.address)
           .filter(([tokenA_, tokenB_]) => {
             if (!chainId) return true
