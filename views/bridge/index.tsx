@@ -30,6 +30,7 @@ import BridgeDragTrack from "components/bridge/BridgeDragTrack";
 import BridgeLoadingModal from "components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "components/bridge/ConfirmBridgeMessage";
 import History from "components/bridge/TransactionHistoryTable";
+import clsx from "clsx";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -399,9 +400,9 @@ const Bridge: NextPage = () => {
               </div>
             </CryptoCard>
           </div>
-        </div>
 
-        {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
+          {networkFrom.id !== 0 && networkTo.id !== 0 && <BridgeDragButton setLockingFn={setLocked} />}
+        </div>
 
         <History />
       </Container>

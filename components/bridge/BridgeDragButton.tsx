@@ -17,7 +17,7 @@ const BridgeDragButton = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateAct
   };
 
   return (
-    <div className="animate__animated animate__fadeInUp fixed bottom-0 left-0 right-0  w-full bg-gradient-to-t from-slate-800 to-transparent">
+    <div className="animate__animated animate__fadeInUp fixed bottom-0 left-0 right-0 w-full bg-gradient-to-t from-slate-800 to-transparent">
       <div className="mx-auto mt-4 flex w-full max-w-sm items-center justify-between rounded-full border-t border-slate-800 bg-zinc-900 p-1 md:hidden">
         <motion.button
           drag="x"

@@ -6,6 +6,7 @@ import { truncateHash } from "utils";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { useUserHistory } from "hooks/bridge/useUserHistory";
 import CrossChainIcons from "../CrossChainIcons";
+import Button from "components/Button";
 
 type TransactionCardProps = {
   chainId: ChainId;
@@ -41,7 +42,7 @@ const History = () => {
   }
 
   return (
-    <section className="pb-8">
+    <section className="mb-32 pb-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h2 className="font-brand text-3xl text-slate-600 dark:text-slate-400">Transaction history</h2>
@@ -181,6 +182,10 @@ const History = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-16 flex justify-center">
+        <Button>Load more transactions</Button>
       </div>
     </section>
   );

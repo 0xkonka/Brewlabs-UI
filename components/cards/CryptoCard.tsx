@@ -46,7 +46,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, network, children }:
         )}
       >
         <div className="h-72 rounded-3xl border-t border-slate-100 bg-gray-50 shadow-lg shadow-indigo-500/20 dark:border-slate-600 dark:bg-zinc-900">
-          <div className="p-6">
+          <div className="p-10">
             <header className="text-center text-gray-700 dark:text-gray-500">
               <h4 className="text-2xl">{title}</h4>
               <div className="mx-auto mt-4 flex items-center justify-center">
