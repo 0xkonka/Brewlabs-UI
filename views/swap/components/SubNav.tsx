@@ -3,7 +3,7 @@ import Card from "./Card";
 
 const SubNav = () => {
   return (
-    <div className="grid sm:mr-2 sm:flex">
+    <div className="grid sm:flex justify-between">
       <Card>
         <div className="flex justify-between cursor-pointer">
           BrewSwap

@@ -265,6 +265,144 @@ export default function Swap() {
     }
   }
 
+  const handleApprove = async () => {
+    setAttemptingTxn(true)
+    try {
+      await approveCallback()
+    } catch (err: any) {
+      if (err?.code === 4001) {
+        toast.error(t('Transaction rejected.'))
+      } else {
+        toast.error(t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+      }
+    } finally {
+      setAttemptingTxn(false)
+      // onDismissApproveModal()
+    }
+  }
+
+  const handleSwap = async () => {
+    setAttemptingTxn(true)
+    try {
+      if (!currencies[Field.INPUT].isNative) {
+        const tokenContract = getBep20Contract(chainId, currencies[Field.INPUT].address, library?.getSigner())
+        const allowance = await tokenContract.allowance(account, aggregatorAddress)
+        if (allowance.lt(parsedAmount)) {
+          const tx = await tokenContract.approve(aggregatorAddress, MaxUint256)
+          const receipt = await tx.wait()
+          if (!receipt.status) console.error('Failed to approve token')
+        }
+      }
+
+      const swapTransaction = await swap(
+        chainId,
+        currencies[Field.INPUT],
+        currencies[Field.OUTPUT],
+        parsedAmount,
+        account,
+        autoMode ? slippage / 100 : userSlippageTolerance / 100,
+      )
+      const txData = swapTransaction.tx
+      let estimatedGasLimit: BigNumber
+      let args: any[]
+      let tx: TxResponse = null
+      const inter = new ethers.utils.Interface(AggregaionRouterV2Abi)
+      const decodedInput = inter.parseTransaction({ data: txData.data, value: txData.value })
+      const aggregatorContract = getAggregatorContract(chainId, library?.getSigner())
+      const feeAmount = await aggregatorContract.feeAmount()
+      const value = decodedInput.value.add(feeAmount)
+
+      if (decodedInput.name === 'swap') {
+        args = [
+          decodedInput.args.caller,
+          decodedInput.args.desc,
+          decodedInput.args.data,
+        ]
+        estimatedGasLimit = await aggregatorContract.estimateGas.swap(...args, { value })
+        tx = await aggregatorContract.swap(...args, {
+          value,
+          gasLimit: calculateTotalGas(estimatedGasLimit)
+        })
+      } else if (decodedInput.name === 'unoswap') {
+        args = [
+          decodedInput.args.srcToken,
+          currencies[Field.OUTPUT].address ?? ETHER_ADDRESS,
+          decodedInput.args.amount,
+          decodedInput.args.minReturn,
+          decodedInput.args.pools,
+        ]
+        estimatedGasLimit = await aggregatorContract.estimateGas.unoswap(...args, { value })
+        tx = await aggregatorContract.unoswap(...args, {
+          value,
+          gasLimit: calculateTotalGas(estimatedGasLimit)
+        })
+      } else {
+        args = [
+          currencies[Field.INPUT].address ?? ETHER_ADDRESS,
+          account,
+          decodedInput.args.amount,
+          decodedInput.args.minReturn,
+          decodedInput.args.pools,
+        ]
+        estimatedGasLimit = await aggregatorContract.estimateGas.uniswapV3SwapTo(...args, { value })
+        tx = await aggregatorContract.uniswapV3SwapTo(...args, {
+          value,
+          gasLimit: calculateTotalGas(estimatedGasLimit)
+        })
+      }
+      const receipt = await tx.wait()
+      if (receipt?.status) {
+        toast.success(t('Token has been sent to your wallet!'))
+      }
+    } catch (err: any) {
+      if (err?.code === 4001) {
+        toast.error(t('Transaction rejected.'))
+      } else {
+        toast.error(t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+      }
+    } finally {
+      setAttemptingTxn(false)
+      // onDismissSwapModal()
+      onUserInput(Field.INPUT, '')
+    }
+  }
+
+  // const [onPresentApproveModal, onDismissApproveModal] = useModal(
+  //   <TransactionConfirmationModal
+  //     title={t('You will approve')}
+  //     customOnDismiss={handleDismissConfirmation}
+  //     attemptingTxn={attemptingTxn}
+  //     hash={txHash}
+  //     content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={approveModalBottom} />}
+  //     pendingText={pendingText}
+  //   />,
+  //   true,
+  //   true,
+  //   'approveModal',
+  // )
+
+  // const [onPresentSwapModal, onDismissSwapModal] = useModal(
+  //   <TransactionConfirmationModal
+  //     title={t('You will exchange')}
+  //     customOnDismiss={handleDismissConfirmation}
+  //     attemptingTxn={attemptingTxn}
+  //     hash={txHash}
+  //     content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={swapModalBottom} />}
+  //     pendingText={pendingText}
+  //   />,
+  //   true,
+  //   true,
+  //   'swapModal',
+  // )
+
+  const handleDismissConfirmation = useCallback(() => {
+    // if there was a tx hash, we want to clear the input
+    if (txHash) {
+      onUserInput(Field.INPUT, '')
+    }
+    setTxHash('')
+  }, [onUserInput, txHash])
+
   return (
     <PageWrapper>
       <PageHeader
