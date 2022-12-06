@@ -34,8 +34,9 @@ const dateToString = (timestamp: string) => {
   });
 };
 
+const PAGE_SIZE = 25;
 const History = () => {
-  const { allTransfers, loadMoreTransfers } = useUserHistory();
+  const { allTransfers, curPage, loadMoreTransfers } = useUserHistory();
 
   if (!allTransfers.length) {
     return null;
@@ -53,7 +54,7 @@ const History = () => {
       </div>
 
       <div className="mt-4 block md:hidden">
-        {allTransfers.map((entry: TransactionCardProps) => (
+        {allTransfers.slice(0, PAGE_SIZE * curPage).map((entry: TransactionCardProps) => (
           <div key={entry.timestamp} className="ml-8 border-l border-brand py-6 xs:ml-16">
             <div className="-ml-4 flex items-end gap-x-2">
               <CrossChainIcons
@@ -130,7 +131,7 @@ const History = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-zinc-800 dark:bg-zinc-900 dark:bg-opacity-80">
-                  {allTransfers.map((entry: TransactionCardProps) => (
+                  {allTransfers.slice(0, PAGE_SIZE * curPage).map((entry: TransactionCardProps) => (
                     <tr key={entry.timestamp}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 ">
                         <CrossChainIcons
@@ -185,7 +186,9 @@ const History = () => {
       </div>
 
       <div className="mt-16 flex justify-center">
-        <Button onClick={loadMoreTransfers}>Load more transactions</Button>
+        {allTransfers.length > PAGE_SIZE * curPage && (
+          <Button onClick={loadMoreTransfers}>Load more transactions</Button>
+        )}
       </div>
     </section>
   );
