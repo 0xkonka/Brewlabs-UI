@@ -52,7 +52,7 @@ const History = () => {
         </div>
       </div>
 
-      <div className="mt-4 block md:hidden">
+      <div className="mt-4 block dark:text-gray-400 md:hidden">
         {allTransfers.map((entry: TransactionCardProps) => (
           <div key={entry.timestamp} className="ml-8 border-l border-brand py-6 xs:ml-16">
             <div className="-ml-4 flex items-end gap-x-2">
@@ -80,7 +80,7 @@ const History = () => {
                   <span className="font-bold">Sending Tx: </span>
                   <a
                     href={getExplorerLink(entry.fromToken.chainId, "transaction", entry.sendingTx)}
-                    className="dark:text-gray-500"
+                    className="text-gray-500 dark:text-gray-500"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -105,7 +105,7 @@ const History = () => {
         ))}
       </div>
 
-      <div className="mt-8 hidden flex-col md:flex">
+      <div className="mt-8 hidden flex-col dark:text-gray-400 md:flex">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
