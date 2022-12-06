@@ -20,7 +20,7 @@ const CrossChainIcons = ({ chainOne, chainTwo, slim }: CrossChainIconsProps) => 
         }}
       />
 
-      {/* <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden rounded-full bg-white text-gray-900" /> */}
+      {!slim && <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden rounded-full bg-white text-gray-900" />}
 
       <div
         className={clsx(

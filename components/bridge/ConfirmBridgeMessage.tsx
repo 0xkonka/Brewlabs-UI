@@ -176,7 +176,9 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
 
   return (
     <div className="p-8">
-      <CrossChainIcons chainOne={networkFrom.image} chainTwo={networkTo.image} />
+      <div className="mx-auto w-fit">
+        <CrossChainIcons chainOne={networkFrom.image} chainTwo={networkTo.image} />
+      </div>
 
       <div className="mt-3 text-center sm:mt-5">
         <h3 className="text-lg font-medium leading-6 text-gray-900">Please confirm swap</h3>
