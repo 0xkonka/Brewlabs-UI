@@ -75,5 +75,9 @@ export const useUserHistory = () => {
     };
   }, [homeChainId, foreignChainId, account, getGraphEndpoint]);
 
-  return { transfers, allTransfers, loading };
+  const loadMoreTransfers = () => {
+    window.alert("Load next page");
+  };
+
+  return { transfers, loadMoreTransfers, allTransfers, loading };
 };

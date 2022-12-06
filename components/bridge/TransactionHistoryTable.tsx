@@ -35,10 +35,10 @@ const dateToString = (timestamp: string) => {
 };
 
 const History = () => {
-  const { allTransfers } = useUserHistory();
+  const { allTransfers, loadMoreTransfers } = useUserHistory();
 
   if (!allTransfers.length) {
-    return <div>No Transactions</div>;
+    return null;
   }
 
   return (
@@ -185,7 +185,7 @@ const History = () => {
       </div>
 
       <div className="mt-16 flex justify-center">
-        <Button>Load more transactions</Button>
+        <Button onClick={loadMoreTransfers}>Load more transactions</Button>
       </div>
     </section>
   );
