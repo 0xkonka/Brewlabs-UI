@@ -10,6 +10,7 @@ export const useUserHistory = () => {
 
   const [transfers, setTransfers] = useState<any[]>([]);
   const [allTransfers, setAllTransfers] = useState<any[]>([]);
+  const [curPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useFastRefreshEffect(() => {
@@ -76,8 +77,8 @@ export const useUserHistory = () => {
   }, [homeChainId, foreignChainId, account, getGraphEndpoint]);
 
   const loadMoreTransfers = () => {
-    window.alert("Load next page");
+    setCurrentPage(curPage + 1);
   };
 
-  return { transfers, loadMoreTransfers, allTransfers, loading };
+  return { transfers, loadMoreTransfers, allTransfers, curPage, loading };
 };
