@@ -82,7 +82,13 @@ const requestsAllQuery = gql`
 
 const requestsRecipientAllQuery = gql`
   query getRequests($first: Int!, $skip: Int!) {
-    requests: userRequests(where:{symbol: "1"} orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
+    requests: userRequests(
+      where: { symbol: "1" }
+      orderBy: timestamp
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
       user: recipient
       txHash
       messageId

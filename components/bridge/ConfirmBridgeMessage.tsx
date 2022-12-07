@@ -16,17 +16,8 @@ import CrossChainIcons from "../CrossChainIcons";
 const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElement => {
   const { chain } = useNetwork();
   const { isConnected } = useAccount();
-  const {
-    amountInput,
-    fromAmount,
-    fromToken,
-    fromBalance,
-    receiver,
-    txHash,
-    toAmountLoading,
-    loading,
-    transfer,
-  } = useBridgeContext();
+  const { amountInput, fromAmount, fromToken, fromBalance, receiver, txHash, toAmountLoading, loading, transfer } =
+    useBridgeContext();
   const { tokenLimits } = useTokenLimits();
   const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash);
 
@@ -123,8 +114,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
         })
         .catch((error: any) => handleWalletError(error, showError, getNativeSybmol(fromToken?.chainId)));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transferButtonEnabled, fromToken?.chainId, transferValid, transfer]);
+  }, [transferButtonEnabled, transferValid, transfer, setLocked, onClose, showError, fromToken?.chainId]);
 
   const renderActions = () => {
     if (!allowed) {
@@ -186,7 +176,9 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
 
   return (
     <div className="p-8">
-      <CrossChainIcons chainOne={networkFrom} chainTwo={networkTo} />
+      <div className="mx-auto w-fit">
+        <CrossChainIcons chainOne={networkFrom.image} chainTwo={networkTo.image} />
+      </div>
 
       <div className="mt-3 text-center sm:mt-5">
         <h3 className="text-lg font-medium leading-6 text-gray-900">Please confirm swap</h3>
