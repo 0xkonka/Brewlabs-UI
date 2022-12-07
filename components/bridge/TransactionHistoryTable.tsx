@@ -53,7 +53,7 @@ const History = () => {
         </div>
       </div>
 
-      <div className="mt-4 block font-brand dark:text-gray-400 md:hidden">
+      <div className="mt-4 block font-brand dark:text-gray-500 md:hidden">
         {allTransfers.slice(0, PAGE_SIZE * curPage).map((entry: TransactionCardProps) => (
           <div key={entry.timestamp} className="ml-8 border-l border-brand py-6 xs:ml-16">
             <div className="-ml-4 flex items-end gap-x-2">
@@ -106,7 +106,7 @@ const History = () => {
         ))}
       </div>
 
-      <div className="mt-8 hidden flex-col dark:text-gray-400 md:flex">
+      <div className="mt-8 hidden flex-col dark:text-gray-500 md:flex">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -133,29 +133,25 @@ const History = () => {
                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-zinc-800 dark:bg-zinc-900 dark:bg-opacity-80">
                   {allTransfers.slice(0, PAGE_SIZE * curPage).map((entry: TransactionCardProps) => (
                     <tr key={entry.timestamp}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 ">
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium">
                         <CrossChainIcons
                           slim
                           chainOne={CHAIN_ICONS[entry.fromToken.chainId]}
                           chainTwo={CHAIN_ICONS[entry.toToken.chainId]}
                         />
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-4 text-sm">
                         {ethers.utils.formatUnits(entry.amount, entry.fromToken.decimals).toString()}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {truncateHash(entry.user ?? "")}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {dateToString(entry.timestamp)}
-                      </td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
+                      <td className="whitespace-nowrap px-3 py-4 text-sm">{truncateHash(entry.user ?? "")}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm">{dateToString(entry.timestamp)}</td>
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm sm:pr-6">
                         <ul>
                           <li>
                             Sending Tx:{" "}
                             <a
                               href={getExplorerLink(entry.fromToken.chainId, "transaction", entry.sendingTx)}
-                              className="dark:text-gray-500"
+                              className="underline dark:text-gray-500"
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -167,7 +163,7 @@ const History = () => {
                             Receiving Tx:{" "}
                             <a
                               href={getExplorerLink(entry.toToken.chainId, "transaction", entry.receivingTx ?? "")}
-                              className="dark:text-gray-500"
+                              className="underline dark:text-gray-500"
                               target="_blank"
                               rel="noreferrer"
                             >
