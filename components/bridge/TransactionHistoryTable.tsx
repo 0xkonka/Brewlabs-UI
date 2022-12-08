@@ -34,7 +34,7 @@ const dateToString = (timestamp: string) => {
   });
 };
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 10;
 const History = () => {
   const { allTransfers, curPage, loadMoreTransfers } = useUserHistory();
 
