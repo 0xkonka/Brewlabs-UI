@@ -126,7 +126,7 @@ const History = () => {
                       Date
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left">
-                      Tax 0.1%
+                      Details
                     </th>
                   </tr>
                 </thead>

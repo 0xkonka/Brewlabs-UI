@@ -68,3 +68,7 @@ html.dark h3 {
 .shadow-right {
   box-shadow: 15px 0 15px -5px rgba(0, 0, 0, 0.85);
 }
+
+.max-w-md {
+  max-width: 30rem;
+}
