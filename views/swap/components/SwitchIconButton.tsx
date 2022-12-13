@@ -1,13 +1,17 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-const SwitchIconButton = () => {
+type SwitchIconButtonType = {
+  onSwitch: () => void;
+};
+const SwitchIconButton = ({ onSwitch }: SwitchIconButtonType) => {
   return (
     <div className="flex justify-center" style={{ zIndex: "1" }}>
       <button
-        className="px-2 rounded-lg"
-        style={{ marginTop: "-12px", marginBottom: "-12px", backgroundColor: "rgb(252 211 77)" }}
+        className="rounded-lg bg-primary px-1 hover:bg-primary/75"
+        style={{ marginTop: "-12px", marginBottom: "-12px" }}
+        onClick={onSwitch}
       >
-        <ChevronDownIcon className="w-6 h-6" />
+        <ChevronDownIcon className="h-6 w-6" />
       </button>
     </div>
   );

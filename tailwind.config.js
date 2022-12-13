@@ -9,12 +9,15 @@ module.exports = {
         brand: "#FFDE0D",
         eth: "#5D78DE",
         bsc: "#E4B00A",
+        primary: "#EEBB19",
+        warning: "#D9563A",
+        green: "#2FD35D"
       },
     },
     fontFamily: {
       script: ['"Caveat"'],
       brand: ['"Questrial"'],
-    },
+    }
   },
   plugins: [
     require("daisyui"),
