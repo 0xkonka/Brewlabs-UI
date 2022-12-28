@@ -84,3 +84,8 @@ export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   name: CHAIN_LABLES[chainId],
   image: CHAIN_ICONS[chainId],
 }));
+
+export const MORALIS_CHAIN_NAME = {
+  [ChainId.ETHEREUM]: "mainnet",
+  [ChainId.BSC_MAINNET]: "bsc",
+};

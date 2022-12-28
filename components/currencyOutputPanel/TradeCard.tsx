@@ -22,8 +22,6 @@ interface TradeCardProps {
   data: any;
   slippage: number;
   price: any;
-  basePrice: any;
-  quotePrice: any;
   buyTax?: number;
   sellTax?: number;
   verified: boolean;
@@ -33,8 +31,6 @@ const TradeCard: React.FC<TradeCardProps> = ({
   data,
   slippage,
   price,
-  basePrice,
-  quotePrice,
   buyTax,
   sellTax,
   verified,
@@ -56,74 +52,6 @@ const TradeCard: React.FC<TradeCardProps> = ({
   useEffect(() => {
     if (!price) setTradePanelToggled(undefined);
   }, [price]);
-
-  // const { targetRef, tooltip, tooltipVisible } = useTooltip(
-  //   <div>
-  //     {isMobile
-  //       ? <RowBetween>
-  //         <Text fontSize="14px" bold>
-  //           {t('Router')}
-  //         </Text>
-  //         <Text fontSize="14px">
-  //           {t(data.protocols[0][0][0].name.split('_')[0])}
-  //         </Text>
-  //       </RowBetween>
-  //       : null
-  //     }
-  //     <RowBetween>
-  //       <Text fontSize="14px" bold style={{ marginRight: '4px' }}>
-  //         {t('Minimum Received')}
-  //       </Text>
-  //       <Text fontSize="14px">
-  //         {minimumReceived > 1 ? Math.floor(minimumReceived) : minCurrencyAmount?.toSignificant()}&nbsp;{data.toToken.symbol}
-  //       </Text>
-  //     </RowBetween>
-  //     <RowBetween>
-  //       <Text fontSize="14px" bold>
-  //         {t('Slippage default')}
-  //       </Text>
-  //       <Text fontSize="14px">
-  //         2%
-  //       </Text>
-  //     </RowBetween>
-  //     <RowBetween>
-  //       <Text fontSize="14px" bold>
-  //         {t('Buy tax')}
-  //       </Text>
-  //       <Text fontSize="14px">
-  //         {buyTax ? `${buyTax}%` : '-'}
-  //       </Text>
-  //     </RowBetween>
-  //     <RowBetween>
-  //       <Text fontSize="14px" bold>
-  //         {t('Sell tax')}
-  //       </Text>
-  //       <Text fontSize="14px">
-  //         {sellTax ? `${sellTax}%` : '-'}
-  //       </Text>
-  //     </RowBetween>
-  //     <RowBetween>
-  //       <Text fontSize="14px" bold>
-  //         {data.fromToken.symbol} Price
-  //       </Text>
-  //       <Text fontSize="14px">
-  //         {basePrice?.toSignificant() ?? '-'}
-  //       </Text>
-  //     </RowBetween>
-  //     <RowBetween>
-  //       <Text fontSize="14px" bold>
-  //         {data.toToken.symbol} Price
-  //       </Text>
-  //       <Text fontSize="14px">
-  //         {quotePrice?.toSignificant() ?? '-'}
-  //       </Text>
-  //     </RowBetween>
-  //   </div>,
-  //   {
-  //     placement: 'top-start',
-  //     tooltipOffset: [-20, 10],
-  //   },
-  // )
 
   const formattedPrice = formatDecimals(price?.toSignificant(6) ?? "0.0");
   const formattedInvertedPrice = formatDecimals(price?.invert()?.toSignificant(6) ?? "0.0");
@@ -178,7 +106,7 @@ const TradeCard: React.FC<TradeCardProps> = ({
           </div>
           {tradePanelToggled ? (
             <div className="mt-1 flex justify-between">
-              <div className="min-w-[170px]">
+              <div className="min-w-[190px]">
                 {customConditionMatched ? (
                   <span className="mb-2 flex max-w-fit items-center gap-1 rounded-2xl border border-green px-2">
                     <BoltIcon className="h-3 w-3 dark:text-green" />
@@ -206,7 +134,10 @@ const TradeCard: React.FC<TradeCardProps> = ({
                   <span className="flex justify-between">
                     <p className="text-[11px]">{t("Minimum Received")}</p>
                     <p className="text-[11px]">
-                      {minimumReceived > 1 ? Math.floor(minimumReceived) : minCurrencyAmount?.toSignificant()}&nbsp;
+                      {minimumReceived > 1
+                        ? formatDecimals(Math.floor(minimumReceived).toString())
+                        : formatDecimals(minCurrencyAmount?.toSignificant())}
+                      &nbsp;
                       {data.toToken.symbol}
                     </p>
                   </span>

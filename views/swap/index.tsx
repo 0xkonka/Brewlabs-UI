@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
-import { CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
+import { Currency, CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
 import { ethers, BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { MaxUint256 } from "@ethersproject/constants";
@@ -34,18 +34,23 @@ import { BIG_ONE } from "utils/bigNumber";
 import { getTokenInfo } from "utils/getTokenInfo";
 import { getAggregatorContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
 
+import CurrencySelect from "./CurrencySelect";
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
+import Modal from "components/Modal";
+import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
 import SubNav from "./components/SubNav";
 import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
+import ApproveModal from "./components/modal/ApproveModal";
 import { useSigner } from "wagmi";
+import { motion } from "framer-motion";
 
 type TxResponse = TransactionResponse | null;
 
@@ -56,6 +61,8 @@ export default function Swap() {
   const { t } = useTranslation();
 
   useDefaultsFromURLSearch();
+
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false);
 
   const [quoteData, setQuoteData] = useState({});
   const [outputAmount, setOutputAmount] = useState<CurrencyAmount>();
@@ -109,6 +116,9 @@ export default function Swap() {
   const aggregatorAddress = getAggregatorAddress(chainId);
   const [approval, approveCallback] = useApproveCallback(inputAmount, AggregationRouterV4[chainId]);
 
+  const [inputCurrencySelect, setInputCurrencySelect] = useState(false);
+  const [outputCurrencySelect, setOutputCurrencySelect] = useState(false);
+
   const price = useMemo(() => {
     if (
       !inputAmount ||
@@ -131,7 +141,6 @@ export default function Swap() {
       }
 
       const data = await quote(chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount);
-      console.log(data);
       if (data) {
         if (!data.statusCode) {
           setQuoteData(data);
@@ -217,7 +226,6 @@ export default function Swap() {
           const baseTokenInfo = await getTokenInfo(chainId, currencies[Field.INPUT]);
           const tokenInfo = await getTokenInfo(chainId, currencies[Field.OUTPUT]);
 
-          console.log(baseTokenInfo, tokenInfo);
           setBuyTax(tokenInfo?.BuyTax ?? 0);
           setSellTax(tokenInfo?.SellTax ?? 0);
           const totalTax =
@@ -308,7 +316,6 @@ export default function Swap() {
       }
     } finally {
       setAttemptingTxn(false);
-      // onDismissApproveModal()
     }
   };
 
@@ -342,7 +349,6 @@ export default function Swap() {
       const decodedInput = inter.parseTransaction({ data: txData.data, value: txData.value });
       const aggregatorContract = getAggregatorContract(chainId, signer);
       const feeAmount = await aggregatorContract.feeAmount();
-      console.log(feeAmount.toString());
       const value = decodedInput.value.add(feeAmount);
 
       if (decodedInput.name === "swap") {
@@ -391,38 +397,9 @@ export default function Swap() {
       }
     } finally {
       setAttemptingTxn(false);
-      // onDismissSwapModal()
       onUserInput(Field.INPUT, "");
     }
   };
-
-  // const [onPresentApproveModal, onDismissApproveModal] = useModal(
-  //   <TransactionConfirmationModal
-  //     title={t('You will approve')}
-  //     customOnDismiss={handleDismissConfirmation}
-  //     attemptingTxn={attemptingTxn}
-  //     hash={txHash}
-  //     content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={approveModalBottom} />}
-  //     pendingText={pendingText}
-  //   />,
-  //   true,
-  //   true,
-  //   'approveModal',
-  // )
-
-  // const [onPresentSwapModal, onDismissSwapModal] = useModal(
-  //   <TransactionConfirmationModal
-  //     title={t('You will exchange')}
-  //     customOnDismiss={handleDismissConfirmation}
-  //     attemptingTxn={attemptingTxn}
-  //     hash={txHash}
-  //     content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={swapModalBottom} />}
-  //     pendingText={pendingText}
-  //   />,
-  //   true,
-  //   true,
-  //   'swapModal',
-  // )
 
   const handleDismissConfirmation = useCallback(() => {
     // if there was a tx hash, we want to clear the input
@@ -432,106 +409,120 @@ export default function Swap() {
     setTxHash("");
   }, [onUserInput, txHash]);
 
+  const swapBoxLayoutId = "curreny-selection";
+
   return (
     <PageWrapper>
-      <PageHeader
-        title={
-          <>
-            Exchange Tokens at the <WordHighlight content="best" /> rate on the market.
-          </>
-        }
-        summary="Exchange Tokens at the best rate on the market."
+      {inputCurrencySelect || outputCurrencySelect ? (
+        <>
+          <div className="pt-20"></div>
+          <CurrencySelect
+            layoutId={swapBoxLayoutId}
+            onCurrencySelect={inputCurrencySelect ? handleInputSelect : handleOutputSelect}
+            onDismiss={() => (inputCurrencySelect ? setInputCurrencySelect(false) : setOutputCurrencySelect(false))}
+            selectedCurrency={inputCurrencySelect ? currencies[Field.INPUT] : currencies[Field.OUTPUT]}
+          />
+        </>
+      ) : (
+        <>
+          <PageHeader
+            title={
+              <>
+                Exchange Tokens at the <WordHighlight content="best" /> rate on the market.
+              </>
+            }
+            summary="Exchange Tokens at the best rate on the market."
+          />
+          <motion.div layoutId={swapBoxLayoutId}>
+            <Container>
+              <div className="mx-auto mb-4 flex flex-col gap-1" style={{ maxWidth: "500px" }}>
+                {/* <div className="grid auto-rows-auto" style={{ gap: "4px" }}> */}
+                  <SubNav />
+                  <ChainSelect id={"chain-select"} />
+                  <CurrencyInputPanel
+                    label={t("Sell")}
+                    value={typedValue}
+                    onUserInput={handleTypeInput}
+                    onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
+                    onOpenCurrencySelect={() => setInputCurrencySelect(true)}
+                    showMaxButton={!atMaxAmount}
+                    currency={currencies[Field.INPUT]}
+                    balance={currencyBalances[Field.INPUT]}
+                  />
+                  <SwitchIconButton
+                    onSwitch={() => {
+                      onSwitchTokens();
+                      onUserInput(Field.INPUT, "");
+                    }}
+                  />
+                  <CurrencyOutputPanel
+                    label={t("Buy")}
+                    value={outputAmount?.toSignificant(6) ?? "0.0"}
+                    onUserInput={() => null}
+                    onOpenCurrencySelect={() => setOutputCurrencySelect(true)}
+                    currency={currencies[Field.OUTPUT]}
+                    balance={currencyBalances[Field.OUTPUT]}
+                    data={quoteData}
+                    slippage={autoMode ? slippage : userSlippageTolerance}
+                    price={price}
+                    buyTax={buyTax}
+                    sellTax={sellTax}
+                    verified={verified}
+                  />
+                  {account &&
+                    (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
+                      <>
+                        {/* {inputError ? (
+                          <Button disabled={true}>{t(inputError)}</Button>
+                        ) : currencyBalances[Field.INPUT] === undefined ? (
+                          <Button disabled={true}>{t("Loading")}</Button>
+                        ) :  */}
+                        { true || approval <= ApprovalState.PENDING ? (
+                          <PrimarySolidButton
+                            onClick={() => {
+                              if (expertMode) {
+                                approveCallback();
+                              } else {
+                                setApprovalModalOpen(true);
+                              }
+                            }}
+                          >
+                            {approval === ApprovalState.PENDING ? (
+                              <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                            ) : approval === ApprovalState.UNKNOWN ? (
+                              <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                            ) : (
+                              t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                            )}
+                          </PrimarySolidButton>
+                        ) : (
+                          <PrimarySolidButton
+                            onClick={() => {
+                              handleSwap();
+                            }}
+                            disabled={attemptingTxn || !outputAmount}
+                          >
+                            {t("Swap")}
+                          </PrimarySolidButton>
+                        )}
+                      </>
+                    ) : (
+                      <Button disabled={!0}>{t("Comming Soon")}</Button>
+                    ))}
+                  <History />
+                </div>
+              {/* </div> */}
+            </Container>
+          </motion.div>
+        </>
+      )}
+      <ApproveModal
+        open={approvalModalOpen}
+        onApprove={approveCallback}
+        onClose={() => {
+          setApprovalModalOpen(false);
+        }}
       />
-
-      <Container>
-        <div className="mx-auto mb-4" style={{ maxWidth: "500px" }}>
-          <div className="grid auto-rows-auto" style={{ gap: "4px" }}>
-            <SubNav />
-            <ChainSelect id="chain_select" />
-            <CurrencyInputPanel
-              label={t("Sell")}
-              value={typedValue}
-              onUserInput={handleTypeInput}
-              onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
-              onCurrencySelect={handleInputSelect}
-              showMaxButton={!atMaxAmount}
-              currency={currencies[Field.INPUT]}
-              balance={currencyBalances[Field.INPUT]}
-              id="swap-currency-input"
-              showCommonBases
-            />
-            <SwitchIconButton
-              onSwitch={() => {
-                onSwitchTokens();
-                onUserInput(Field.INPUT, "");
-              }}
-            />
-            <CurrencyOutputPanel
-              label={t("Buy")}
-              value={outputAmount?.toSignificant(6) ?? "0.0"}
-              onUserInput={() => null}
-              onCurrencySelect={handleOutputSelect}
-              currency={currencies[Field.OUTPUT]}
-              balance={currencyBalances[Field.OUTPUT]}
-              id="swap-currency-output"
-              showCommonBases
-              data={quoteData}
-              slippage={autoMode ? slippage : userSlippageTolerance}
-              price={price}
-              basePrice={basePrice}
-              quotePrice={quotePrice}
-              buyTax={buyTax}
-              sellTax={sellTax}
-              verified={verified}
-            />
-            {account &&
-              (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
-                <>
-                  {inputError ? (
-                    <Button disabled={true}>{t(inputError)}</Button>
-                  ) : currencyBalances[Field.INPUT] === undefined ? (
-                    <Button disabled={true}>{t("Loading")}</Button>
-                  ) : approval <= ApprovalState.PENDING ? (
-                    <Button
-                      onClick={() => {
-                        if (expertMode) {
-                          approveCallback();
-                        } else {
-                          // onPresentApproveModal();
-                        }
-                      }}
-                    >
-                      {approval === ApprovalState.PENDING ? (
-                        <span>{t("Enable %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                      ) : approval === ApprovalState.UNKNOWN ? (
-                        <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                      ) : (
-                        t("Enable %asset%", { asset: currencies[Field.INPUT]?.symbol })
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        if (expertMode) {
-                          handleSwap();
-                        } else {
-                          // onPresentSwapModal();
-                          handleSwap();
-                        }
-                      }}
-                      disabled={attemptingTxn || !outputAmount}
-                    >
-                      {t("Swap")}
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <Button disabled={!0}>{t("Comming Soon")}</Button>
-              ))}
-            <History />
-          </div>
-        </div>
-      </Container>
     </PageWrapper>
   );
 }

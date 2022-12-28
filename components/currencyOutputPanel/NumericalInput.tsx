@@ -39,7 +39,8 @@ const NumericalInput = ({
       inputMode="decimal"
       placeholder={placeholder || "0.0"}
       pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
-      className="w-full bg-transparent text-4xl outline-0"
+      className="w-full bg-transparent text-4xl outline-0 max-w-[250px] truncate"
+      maxLength={79}
     />
   );
 };

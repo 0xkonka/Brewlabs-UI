@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 
-const Button = ({
+const PrimarySolidButton = ({
   children,
   onClick,
   externalLink,
@@ -17,7 +17,7 @@ const Button = ({
         href={externalLink}
         target="_blank"
         rel="noreferrer"
-        className="flex items-center justify-center rounded-md outline-none bg-dark px-4 py-2 text-base font-bold tracking-wider text-brand shadow-sm transition hover:bg-brand hover:text-dark font-brand"
+        className="flex items-center justify-center rounded-lg bg-primary px-7 py-1 font-brand font-bold text-lg tracking-wider text-dark shadow-sm outline-none transition hover:bg-opacity-60"
       >
         {children}
       </a>
@@ -26,7 +26,7 @@ const Button = ({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className="flex items-center justify-center rounded-md outline-none bg-dark px-4 py-2 text-base font-bold tracking-wider text-brand shadow-sm transition hover:bg-brand hover:text-dark font-brand"
+        className="flex items-center justify-center rounded-lg bg-primary px-7 py-1 font-brand font-bold text-lg tracking-wider text-dark shadow-sm outline-none transition hover:bg-opacity-60"
       >
         {children}
       </button>
@@ -34,4 +34,4 @@ const Button = ({
   </>
 );
 
-export default Button;
+export default PrimarySolidButton;

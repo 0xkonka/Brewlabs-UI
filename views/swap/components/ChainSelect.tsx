@@ -31,10 +31,7 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
 
   return (
     <>
-      <motion.div
-        layoutId={id}
-        className="px-4 py-2 text-gray-400 bg-opacity-60 font-brand dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white max-w-sm rounded-lg border-2 border-transparent font-brand focus-within:border-amber-300 hover:border-amber-300 sm:relative sm:max-w-screen-md"
-      >
+      <motion.div className="max-w-sm rounded-lg border-2 border-transparent bg-opacity-60 px-4 py-2 font-brand font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white sm:relative sm:max-w-screen-md">
         <button
           className="flex w-full items-center justify-between"
           onClick={() => {
@@ -56,7 +53,7 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
         </button>
       </motion.div>
       {selected && (
-        <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
+        <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
           <ChainSelector
             bSwitchChain
             networks={supportedNetworks}
