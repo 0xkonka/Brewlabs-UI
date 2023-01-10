@@ -82,7 +82,7 @@ const CryptoCard = ({ id, title, tokenPrice, modal, active, network, children }:
       </motion.div>
 
       {selected && modal && (id === "bridge_card_to" || modal.openModal) && (
-        <Modal closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
+        <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={modal.disableAutoCloseOnClick}>
           {modal.modalContent}
         </Modal>
       )}

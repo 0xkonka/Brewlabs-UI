@@ -1,11 +1,12 @@
 import { Currency, CurrencyAmount, Pair, Price, TokenAmount } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
-import { AppId } from "config/constants/types";
 import { useTranslation } from "contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenPrice from "hooks/useTokenPrice";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+
+import { EXPLORER_URLS } from "config/constants/networks";
 import Card from "../../views/swap/components/Card";
 import NumericalInput from "./NumericalInput";
 import { CurrencyLogo } from "../logo";
@@ -70,20 +71,12 @@ const CurrencyInputPanel = ({
                 <div className="ml-1">
                   <div className="flex items-center justify-end">
                     <div className="mr-2 cursor-pointer text-sm opacity-40 hover:opacity-80" onClick={onMax}>
-                      Balance: {balance ? balance.toFixed(2) : "0.00"}
+                      Balance: {balance ? balance.toSignificant(6) : "0.00"}
                     </div>
-                    <a href="#">
+                    <a href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`} target="_blank" rel="noreferrer">
                       <img src="/images/explorer/etherscan.png" alt="" className="h-2.5 w-2.5" />
                     </a>
                   </div>
-                  {/* <div className="flex justify-end">
-                      <button
-                        className="rounded-lg border border-amber-300 px-6 text-xs hover:opacity-60"
-                        onClick={onMax}
-                      >
-                        Max
-                      </button>
-                    </div> */}
                 </div>
               )}
             </div>

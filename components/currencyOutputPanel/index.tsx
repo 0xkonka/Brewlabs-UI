@@ -1,15 +1,19 @@
 import { Currency, CurrencyAmount, Pair } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
 import { useTranslation } from "contexts/localization";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenPrice from "hooks/useTokenPrice";
+import useCoingeckoTokenId from "hooks/useCoingeckoTokenId";
+import useTokenMarketChart from "hooks/useTokenMarketChart";
 
 import { ChevronDownIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
+
+import { EXPLORER_URLS } from "config/constants/networks";
+
 import Card from "../../views/swap/components/Card";
 import NumericalInput from "./NumericalInput";
 import TradeCard from "./TradeCard";
 import { CurrencyLogo } from "../logo";
-import useCoingeckoTokenId from "hooks/useCoingeckoTokenId";
-import useTokenPriceChange from "hooks/useTokenPriceChange";
 
 interface CurrencyOutputPanelProps {
   value: string;
@@ -40,9 +44,9 @@ const CurrencyOutputPanel = ({
   sellTax,
   verified,
 }: CurrencyOutputPanelProps) => {
-  const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
+  const { chainId } = useActiveWeb3React();
   const coingeckoId = useCoingeckoTokenId(currency?.symbol);
-  const priceChange24h = useTokenPriceChange(coingeckoId);
+  const { priceChange24h, tokenPrice } = useTokenMarketChart(coingeckoId);
 
   return (
     <Card>
@@ -57,7 +61,7 @@ const CurrencyOutputPanel = ({
               }}
               decimals={currency?.decimals}
             />
-            <div className="flex cursor-pointer justify-end items-center" onClick={onOpenCurrencySelect}>
+            <div className="flex cursor-pointer items-center justify-end" onClick={onOpenCurrencySelect}>
               {currency ? (
                 <span className="flex items-center justify-between text-2xl">
                   <CurrencyLogo currency={currency} size="24px" style={{ marginRight: "8px" }} />
@@ -79,7 +83,7 @@ const CurrencyOutputPanel = ({
               <div className="ml-1">
                 <div className="flex items-center justify-end">
                   <div className="mr-2 text-sm opacity-40">Balance: {balance ? balance.toSignificant(6) : "0.00"}</div>
-                  <a href="#">
+                  <a href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`} target="_blank" rel="noreferrer">
                     <img src="/images/explorer/etherscan.png" alt="" className="h-2.5 w-2.5" />
                   </a>
                 </div>

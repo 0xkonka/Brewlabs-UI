@@ -55,6 +55,11 @@ export const EXPLORER_NAMES = {
   [ChainId.BRISE]: "BriseScan",
 };
 
+export const EXPLORER_URLS = {
+  [ChainId.ETHEREUM]: "https://etherscan.io",
+  [ChainId.BSC_MAINNET]: "https://bscscan.com"
+}
+
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
   [ChainId.GOERLI]: "Goerli",

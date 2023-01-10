@@ -1,45 +1,46 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 import { useUserHistory } from "hooks/bridge/useUserHistory";
+import { useSwapHistory } from "hooks/swap/useSwapHIstory";
+import { useCurrency } from "hooks/Tokens";
 import useCollapse from "react-collapsed";
 import Card from "./Card";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { ETH_ADDRESSES } from "config/constants";
+import { EXPLORER_URLS } from "config/constants/networks";
+
+
+
+const Row = (data: any) => {
+  const { data: {id, caller, srcToken, dstToken, spentAmount, returnAmount, transactionHash} } = data;
+  const inputCurrency = useCurrency(ETH_ADDRESSES.includes(srcToken) ? "ETH" : srcToken);
+  const outputCurrency = useCurrency(ETH_ADDRESSES.includes(dstToken) ? "ETH" : dstToken);
+
+  const amount = formatUnits(BigNumber.from(returnAmount), outputCurrency?.decimals);
+  const {chainId} = useActiveWeb3React();
+
+  return (
+    <div className="flex items-center justify-between">
+      <p className="flex">
+        {inputCurrency?.symbol}&nbsp;<span className="dark:text-primary">SWAP</span>&nbsp;{outputCurrency?.symbol}
+      </p>
+      <p className="flex items-center justify-between gap-2">
+        <span className="opacity-40">
+          {amount}&nbsp;{outputCurrency?.symbol}
+        </span>
+        <a href={`${EXPLORER_URLS[chainId]}/tx/${transactionHash}`} target="_blank" rel="noreferrer"><img src="/images/explorer/etherscan.png" alt="" className="h-3 w-3" /></a>
+      </p>
+    </div>
+  );
+};
 
 const History = () => {
-  const { getCollapseProps, getToggleProps, isExpanded } = useCollapse()
+  const {chainId} = useActiveWeb3React();
+  const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
+  const { account } = useActiveWeb3React();
 
-  const { transfers, allTransfers } = useUserHistory();
-
-  const transactions = [
-    {
-      inputCurrency: "ETH",
-      outputCurrency: "IXP",
-      amount: 125487,
-    },
-    {
-      inputCurrency: "ETH",
-      outputCurrency: "IXP",
-      amount: 125487,
-    },
-    {
-      inputCurrency: "ETH",
-      outputCurrency: "IXP",
-      amount: 125487,
-    },
-    {
-      inputCurrency: "ETH",
-      outputCurrency: "IXP",
-      amount: 125487,
-    },
-    {
-      inputCurrency: "ETH",
-      outputCurrency: "IXP",
-      amount: 125487,
-    },
-    {
-      inputCurrency: "ETH",
-      outputCurrency: "IXP",
-      amount: 125487,
-    },
-  ];
+  const logs = useSwapHistory();
 
   return (
     <Card>
@@ -50,26 +51,13 @@ const History = () => {
       </div>
       <div className="px-1" {...getCollapseProps()}>
         <div className="mt-2">
-          {transactions.map((txn, index) => {
-            const { inputCurrency, outputCurrency, amount } = txn;
-            return (
-              <div className="flex items-center justify-between" key={index}>
-                <p className="flex">
-                  {inputCurrency}&nbsp;<span className="dark:text-primary">SWAP</span>&nbsp;{outputCurrency}
-                </p>
-                <p className="flex items-center justify-between gap-2">
-                  <span className="opacity-40">
-                    {amount}&nbsp;{outputCurrency}
-                  </span>
-                  <img src="/images/explorer/etherscan.png" alt="" className="h-3 w-3" />
-                </p>
-              </div>
-            );
+          {logs.map((data, index) => {
+            return <Row data={data} key={index} />;
           })}
         </div>
         <div className="flex items-center justify-center gap-2">
           <img src="/images/explorer/etherscan.png" alt="" className="h-4 w-4" />
-          <button className="text-base">Visit Wallet</button>
+          <a href={`${EXPLORER_URLS[chainId]}/address/${account}`} target="_blank" rel="noreferrer" className="text-base">Visit Wallet</a>
         </div>
       </div>
     </Card>

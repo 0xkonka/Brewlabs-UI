@@ -13,6 +13,9 @@ module.exports = {
         warning: "#D9563A",
         green: "#2FD35D"
       },
+      boxShadow: {
+        'inner': 'inset 0px 0px 6px #000000'
+      }
     },
     fontFamily: {
       script: ['"Caveat"'],

@@ -52,17 +52,15 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
           <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
         </button>
       </motion.div>
-      {selected && (
-        <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
-          <ChainSelector
-            bSwitchChain
-            networks={supportedNetworks}
-            currentChainId={chain?.id}
-            onDismiss={() => setSelected(false)}
-            selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
-          />
-        </Modal>
-      )}
+      <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
+        <ChainSelector
+          bSwitchChain
+          networks={supportedNetworks}
+          currentChainId={chain?.id}
+          onDismiss={() => setSelected(false)}
+          selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
+        />
+      </Modal>
     </>
   );
 };

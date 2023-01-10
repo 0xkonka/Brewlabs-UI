@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const useTokenPriceChange = (tokenId: string | undefined) => {
+const useTokenMarketChart = (tokenId: string | undefined) => {
   const [priceChange24h, setPriceChange24h] = useState(undefined);
+  const [tokenPrice, setTokenPriceUsd] = useState(Number);
 
   useEffect(() => {
     if (!tokenId) return;
@@ -14,11 +15,12 @@ const useTokenPriceChange = (tokenId: string | undefined) => {
         const _24hPastPrice = historicalPrices[0][1];
 
         setPriceChange24h(((_currentPrice - _24hPastPrice) / _24hPastPrice) * 100);
+        setTokenPriceUsd(_currentPrice);
       }
     });
   }, [tokenId]);
 
-  return priceChange24h;
+  return {priceChange24h, tokenPrice};
 };
 
-export default useTokenPriceChange;
+export default useTokenMarketChart;

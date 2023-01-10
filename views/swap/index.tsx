@@ -11,10 +11,10 @@ import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 
 import { useTranslation } from "contexts/localization";
 
-import { AggregationRouterV4, slippageWithTVL, slippageDefault } from "config/constants";
+import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
 import contracts from "config/constants/contracts";
 import { usdToken } from "config/constants/tokens";
-import AggregaionRouterV2Abi from "config/abi/AggregationRouterV4.json";
+import AggregaionRouterV2Abi from "config/abi/AggregationRouterV5.json";
 
 import { Field } from "state/swap/actions";
 import {
@@ -28,7 +28,7 @@ import { useUserSlippageTolerance, useIsExpertMode } from "state/user/hooks";
 
 import { calculateTotalGas } from "utils";
 import maxAmountSpend from "utils/maxAmountSpend";
-import { getAggregatorAddress } from "utils/addressHelpers";
+import { getBrewlabsAggregationRouterAddress, addressWithout0x } from "utils/addressHelpers";
 import { quote, swap, ETHER_ADDRESS } from "utils/aggregator";
 import { BIG_ONE } from "utils/bigNumber";
 import { getTokenInfo } from "utils/getTokenInfo";
@@ -49,8 +49,13 @@ import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ApproveModal from "./components/modal/ApproveModal";
-import { useSigner } from "wagmi";
+import { ContractMethodNoResultError, useSigner } from "wagmi";
 import { motion } from "framer-motion";
+import SettingModal from "./components/modal/SettingModal";
+import { getBrewlabsAggregationRouterContract } from "../../utils/contractHelpers";
+import { NodeNextRequest } from "next/dist/server/base-http/node";
+import ProgressBar from "../../components/ProgressBar";
+import { EXPLORER_URLS } from "config/constants/networks";
 
 type TxResponse = TransactionResponse | null;
 
@@ -62,7 +67,7 @@ export default function Swap() {
 
   useDefaultsFromURLSearch();
 
-  const [approvalModalOpen, setApprovalModalOpen] = useState(false);
+  const [openSettingModal, setOpenSettingModal] = useState<boolean>(false);
 
   const [quoteData, setQuoteData] = useState({});
   const [outputAmount, setOutputAmount] = useState<CurrencyAmount>();
@@ -113,8 +118,8 @@ export default function Swap() {
   const maxAmounts = maxAmountSpend(currencyBalances[Field.INPUT]);
   const atMaxAmount = maxAmounts?.equalTo(inputAmount ?? "0");
 
-  const aggregatorAddress = getAggregatorAddress(chainId);
-  const [approval, approveCallback] = useApproveCallback(inputAmount, AggregationRouterV4[chainId]);
+  const aggregatorAddress = getBrewlabsAggregationRouterAddress(chainId);
+  const [approval, approveCallback] = useApproveCallback(inputAmount, AggregationRouterV5[chainId]);
 
   const [inputCurrencySelect, setInputCurrencySelect] = useState(false);
   const [outputCurrencySelect, setOutputCurrencySelect] = useState(false);
@@ -319,6 +324,53 @@ export default function Swap() {
     }
   };
 
+  const showNotify = (type, tx) => {
+    if (type === "confirming") {
+      toast.success(
+        <div className="toast__custom-layout">
+          <div className="message">
+            <span className="msg-text">Confirming Transaction</span>
+          </div>
+          <div className="link">
+            <img src="/images/explorer/etherscan.png" alt="" />
+            <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
+              View Transaction Hash
+            </a>
+          </div>
+        </div>,
+        {
+          className: "toast__background-primary",
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" />,
+          autoClose: 15000,
+          closeButton: false,
+          hideProgressBar: true,
+        }
+      );
+    }
+
+    if (type === "confirmed") {
+      toast.success(
+        <div className="toast__custom-layout">
+          <div className="message">
+            <span className="msg-text">Transaction Confirmed</span>
+          </div>
+          <div className="link">
+            <img src="/images/explorer/etherscan.png" alt="" />
+            <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
+              View Transaction Hash
+            </a>
+          </div>
+        </div>,
+        {
+          icon: false,
+          className: "toast__background-primary",
+          autoClose: 2000,
+          closeButton: false,
+        }
+      );
+    }
+  }
+  
   const handleSwap = async () => {
     setAttemptingTxn(true);
     try {
@@ -332,11 +384,17 @@ export default function Swap() {
         }
       }
 
+      const aggregatorContract = getBrewlabsAggregationRouterContract(chainId, signer);
+      const treasuryFee = await aggregatorContract.treasuryFee();
+      const strategyFeeNumerator = await aggregatorContract.strategyFeeNumerator();
+      const strategyFeeDenominator = await aggregatorContract.strategyFeeDenominator();
+      const strategyFee = parsedAmount.mul(strategyFeeNumerator).div(strategyFeeDenominator);
+
       const swapTransaction = await swap(
         chainId,
         currencies[Field.INPUT],
         currencies[Field.OUTPUT],
-        parsedAmount,
+        parsedAmount.sub(strategyFee),
         account,
         autoMode ? slippage / 100 : userSlippageTolerance / 100
       );
@@ -347,14 +405,14 @@ export default function Swap() {
       let tx: TxResponse = null;
       const inter = new ethers.utils.Interface(AggregaionRouterV2Abi);
       const decodedInput = inter.parseTransaction({ data: txData.data, value: txData.value });
-      const aggregatorContract = getAggregatorContract(chainId, signer);
-      const feeAmount = await aggregatorContract.feeAmount();
-      const value = decodedInput.value.add(feeAmount);
+      const value = currencies[Field.INPUT].isNative ? parsedAmount.add(treasuryFee) : treasuryFee;
 
       if (decodedInput.name === "swap") {
-        args = [decodedInput.args.caller, decodedInput.args.desc, decodedInput.args.data];
-        estimatedGasLimit = await aggregatorContract.estimateGas.swap(...args, { value });
-        tx = await aggregatorContract.swap(...args, {
+        let callData = decodedInput.args.data.replace(addressWithout0x(AggregationRouterV5[chainId]), addressWithout0x(aggregatorAddress));
+        args = [decodedInput.args.caller, decodedInput.args.desc, decodedInput.args.permit, callData, parsedAmount];
+
+        estimatedGasLimit = await aggregatorContract.estimateGas.swapAggregateCall(...args, { value });
+        tx = await aggregatorContract.swapAggregateCall(...args, {
           value,
           gasLimit: calculateTotalGas(estimatedGasLimit),
         });
@@ -362,35 +420,39 @@ export default function Swap() {
         args = [
           decodedInput.args.srcToken,
           currencies[Field.OUTPUT].address ?? ETHER_ADDRESS,
-          decodedInput.args.amount,
-          decodedInput.args.minReturn,
+          parsedAmount,
+          0,
           decodedInput.args.pools,
         ];
-        estimatedGasLimit = await aggregatorContract.estimateGas.unoswap(...args, { value });
-        tx = await aggregatorContract.unoswap(...args, {
+
+        estimatedGasLimit = await aggregatorContract.estimateGas.unoswapAggregateCall(...args, { value });
+        tx = await aggregatorContract.unoswapAggregateCall(...args, {
           value,
           gasLimit: calculateTotalGas(estimatedGasLimit),
         });
       } else {
         args = [
           currencies[Field.INPUT].address ?? ETHER_ADDRESS,
+          currencies[Field.OUTPUT].address ?? ETHER_ADDRESS,
           account,
-          decodedInput.args.amount,
-          decodedInput.args.minReturn,
+          parsedAmount,
+          0,
           decodedInput.args.pools,
         ];
-        estimatedGasLimit = await aggregatorContract.estimateGas.uniswapV3SwapTo(...args, { value });
-        tx = await aggregatorContract.uniswapV3SwapTo(...args, {
+
+        estimatedGasLimit = await aggregatorContract.estimateGas.uniswapV3SwapAggregateCall(...args, { value });
+        tx = await aggregatorContract.uniswapV3SwapAggregateCall(...args, {
           value,
           gasLimit: calculateTotalGas(estimatedGasLimit),
         });
       }
+      showNotify("confirming", tx);
       const receipt = await tx.wait();
       if (receipt?.status) {
-        toast.success(t("Token has been sent to your wallet!"));
+        showNotify("confirmed", tx);
       }
     } catch (err: any) {
-      if (err?.code === 4001) {
+      if (err?.code === "ACTION_REJECTED") {
         toast.error(t("Transaction rejected."));
       } else {
         toast.error(t("Please try again. Confirm the transaction and make sure you are paying enough gas!"));
@@ -436,91 +498,95 @@ export default function Swap() {
           <motion.div layoutId={swapBoxLayoutId}>
             <Container>
               <div className="mx-auto mb-4 flex flex-col gap-1" style={{ maxWidth: "500px" }}>
-                {/* <div className="grid auto-rows-auto" style={{ gap: "4px" }}> */}
-                  <SubNav />
-                  <ChainSelect id={"chain-select"} />
-                  <CurrencyInputPanel
-                    label={t("Sell")}
-                    value={typedValue}
-                    onUserInput={handleTypeInput}
-                    onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
-                    onOpenCurrencySelect={() => setInputCurrencySelect(true)}
-                    showMaxButton={!atMaxAmount}
-                    currency={currencies[Field.INPUT]}
-                    balance={currencyBalances[Field.INPUT]}
-                  />
-                  <SwitchIconButton
-                    onSwitch={() => {
-                      onSwitchTokens();
-                      onUserInput(Field.INPUT, "");
-                    }}
-                  />
-                  <CurrencyOutputPanel
-                    label={t("Buy")}
-                    value={outputAmount?.toSignificant(6) ?? "0.0"}
-                    onUserInput={() => null}
-                    onOpenCurrencySelect={() => setOutputCurrencySelect(true)}
-                    currency={currencies[Field.OUTPUT]}
-                    balance={currencyBalances[Field.OUTPUT]}
-                    data={quoteData}
-                    slippage={autoMode ? slippage : userSlippageTolerance}
-                    price={price}
-                    buyTax={buyTax}
-                    sellTax={sellTax}
-                    verified={verified}
-                  />
-                  {account &&
-                    (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
-                      <>
-                        {/* {inputError ? (
-                          <Button disabled={true}>{t(inputError)}</Button>
-                        ) : currencyBalances[Field.INPUT] === undefined ? (
-                          <Button disabled={true}>{t("Loading")}</Button>
-                        ) :  */}
-                        { true || approval <= ApprovalState.PENDING ? (
-                          <PrimarySolidButton
-                            onClick={() => {
-                              if (expertMode) {
-                                approveCallback();
-                              } else {
-                                setApprovalModalOpen(true);
-                              }
-                            }}
-                          >
-                            {approval === ApprovalState.PENDING ? (
-                              <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                            ) : approval === ApprovalState.UNKNOWN ? (
-                              <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                            ) : (
-                              t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
-                            )}
-                          </PrimarySolidButton>
-                        ) : (
-                          <PrimarySolidButton
-                            onClick={() => {
-                              handleSwap();
-                            }}
-                            disabled={attemptingTxn || !outputAmount}
-                          >
-                            {t("Swap")}
-                          </PrimarySolidButton>
-                        )}
-                      </>
-                    ) : (
-                      <Button disabled={!0}>{t("Comming Soon")}</Button>
-                    ))}
-                  <History />
-                </div>
-              {/* </div> */}
+                <SubNav openSettingModal={() => setOpenSettingModal(true)} />
+                <ChainSelect id={"chain-select"} />
+                <CurrencyInputPanel
+                  label={t("Sell")}
+                  value={typedValue}
+                  onUserInput={handleTypeInput}
+                  onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
+                  onOpenCurrencySelect={() => setInputCurrencySelect(true)}
+                  showMaxButton={!atMaxAmount}
+                  currency={currencies[Field.INPUT]}
+                  balance={currencyBalances[Field.INPUT]}
+                />
+                <SwitchIconButton
+                  onSwitch={() => {
+                    onSwitchTokens();
+                    onUserInput(Field.INPUT, "");
+                  }}
+                />
+                <CurrencyOutputPanel
+                  label={t("Buy")}
+                  value={outputAmount?.toSignificant(6) ?? "0.0"}
+                  onUserInput={() => null}
+                  onOpenCurrencySelect={() => setOutputCurrencySelect(true)}
+                  currency={currencies[Field.OUTPUT]}
+                  balance={currencyBalances[Field.OUTPUT]}
+                  data={quoteData}
+                  slippage={autoMode ? slippage : userSlippageTolerance}
+                  price={price}
+                  buyTax={buyTax}
+                  sellTax={sellTax}
+                  verified={verified}
+                />
+                {account &&
+                  (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
+                    <>
+                      {inputError ? (
+                        <Button disabled={true}>{t(inputError)}</Button>
+                      ) : currencyBalances[Field.INPUT] === undefined ? (
+                        <Button disabled={true}>{t("Loading")}</Button>
+                      ) : approval <= ApprovalState.PENDING ? (
+                        <PrimarySolidButton
+                          onClick={() => {
+                            handleApprove();
+                          }}
+                        >
+                          {approval === ApprovalState.PENDING ? (
+                            <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                          ) : approval === ApprovalState.UNKNOWN ? (
+                            <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                          ) : (
+                            t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                          )}
+                        </PrimarySolidButton>
+                      ) : (
+                        <PrimarySolidButton
+                          onClick={() => {
+                            handleSwap();
+                          }}
+                          disabled={attemptingTxn || !outputAmount}
+                        >
+                          {t("Swap")}
+                        </PrimarySolidButton>
+                      )}
+                    </>
+                  ) : (
+                    <Button disabled={!0}>{t("Comming Soon")}</Button>
+                  ))}
+                <History />
+              </div>
             </Container>
           </motion.div>
         </>
       )}
-      <ApproveModal
+      {/* <ApproveModal
         open={approvalModalOpen}
         onApprove={approveCallback}
         onClose={() => {
           setApprovalModalOpen(false);
+        }}
+      /> */}
+      <SettingModal
+        open={openSettingModal}
+        autoMode={autoMode}
+        setAutoMode={setAutoMode}
+        slippage={slippage}
+        slippageInput={slippageInput}
+        parseCustomSlippage={parseCustomSlippage}
+        onClose={() => {
+          setOpenSettingModal(false);
         }}
       />
     </PageWrapper>

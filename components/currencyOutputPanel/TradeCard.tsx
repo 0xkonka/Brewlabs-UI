@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 
 import {
@@ -10,13 +11,12 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
+
+import { ETH_ADDRESSES } from "config/constants";
 import { useCurrency } from "hooks/Tokens";
 import { tryParseAmount } from "state/swap/hooks";
-import { BigNumber } from "ethers";
 import { useTranslation } from "contexts/localization";
 import { formatDecimals } from "utils/formatBalance";
-
-const ETHER_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 interface TradeCardProps {
   data: any;
@@ -27,27 +27,24 @@ interface TradeCardProps {
   verified: boolean;
 }
 
-const TradeCard: React.FC<TradeCardProps> = ({
-  data,
-  slippage,
-  price,
-  buyTax,
-  sellTax,
-  verified,
-}) => {
+const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax, verified }) => {
   const { t } = useTranslation();
 
   const [priceInverted, setPriceInverted] = useState<boolean>(false);
   const [tradePanelToggled, setTradePanelToggled] = useState<boolean>(undefined);
   const customConditionMatched = useMemo(() => verified && slippage, [verified, slippage]);
 
-  const currency = useCurrency(data.toToken.address === ETHER_ADDRESS ? "ETH" : data.toToken.address);
+  const currency = useCurrency(ETH_ADDRESSES.includes(data.toToken.address) ? "ETH" : data.toToken.address);
   const minAmount = BigNumber.from(data.toTokenAmount)
     .mul(10000 - slippage)
     .div(10000);
   const formattedMinAmount = formatUnits(minAmount, data.toToken.decimals);
   const minCurrencyAmount = tryParseAmount(formattedMinAmount, currency);
   const minimumReceived = Number(minCurrencyAmount?.toExact());
+  const formattedMiniumReceived =
+    minimumReceived > 1
+      ? formatDecimals(Math.floor(minimumReceived).toString())
+      : formatDecimals(minCurrencyAmount?.toSignificant());
 
   useEffect(() => {
     if (!price) setTradePanelToggled(undefined);
@@ -134,9 +131,21 @@ const TradeCard: React.FC<TradeCardProps> = ({
                   <span className="flex justify-between">
                     <p className="text-[11px]">{t("Minimum Received")}</p>
                     <p className="text-[11px]">
-                      {minimumReceived > 1
-                        ? formatDecimals(Math.floor(minimumReceived).toString())
-                        : formatDecimals(minCurrencyAmount?.toSignificant())}
+                      {formattedMiniumReceived.includes("sub") ? (
+                        <>
+                          0.0
+                          <span style={{ fontSize: "9px" }}>
+                            <sub>
+                              {formattedMiniumReceived[3] === "0"
+                                ? formattedMiniumReceived[9]
+                                : formattedMiniumReceived.slice(8, 10)}
+                            </sub>
+                          </span>
+                          {formattedMiniumReceived.slice(16)}
+                        </>
+                      ) : (
+                        formattedMiniumReceived
+                      )}
                       &nbsp;
                       {data.toToken.symbol}
                     </p>

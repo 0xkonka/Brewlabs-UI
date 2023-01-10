@@ -59,4 +59,7 @@ export default {
   nativeWrapped: {
     56: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
   },
+  brewlabsAggregationRouter: {
+    1: "0x6419c300aDB2C25a725111cE8D35a3994B782257",
+  }
 }

@@ -1,4 +1,5 @@
 import React, { KeyboardEvent, useCallback, useState, useMemo, useEffect } from "react";
+import BigNumber from "bignumber.js";
 import { Currency, currencyEquals, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import {
   XMarkIcon,
@@ -9,24 +10,22 @@ import {
   ArrowTrendingUpIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
 
 import { MORALIS_CHAIN_NAME } from "config/constants/networks";
 import factoryTokens from "config/constants/factoryTokens.json";
-import { CurrencyLogo } from "components/logo";
-import { PrimaryOutlinedButton } from "components/button/index";
+import { isAddress } from "utils";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
-import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
-import useTokenPriceChange from "hooks/useTokenPriceChange";
+import useTokenMarketChart from "hooks/useTokenMarketChart";
 import useCoingeckoTokenId from "hooks/useCoingeckoTokenId";
-import useTokenPrice from "hooks/useTokenPrice";
-import { isAddress } from "utils";
-import { motion } from "framer-motion";
-import { useCurrencyBalance } from "state/wallet/hooks";
-import BigNumber from "bignumber.js";
 import useWalletTokens from "hooks/useWalletTokens";
+import { CurrencyLogo } from "components/logo";
+import { PrimaryOutlinedButton } from "components/button/index";
+import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
+import { useCurrencyBalance } from "state/wallet/hooks";
 
 interface CurrencySelectProps {
   onDismiss: () => void;
@@ -40,8 +39,7 @@ interface CurrencySelectProps {
 const CurrencyRow = ({ currency, onSelect }: { currency: Currency; onSelect: (currency: Currency) => void }) => {
   const { account } = useActiveWeb3React();
   const coingeckoId = useCoingeckoTokenId(currency?.symbol);
-  const priceChange24h = useTokenPriceChange(coingeckoId);
-  const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
+  const {priceChange24h, tokenPrice} = useTokenMarketChart(coingeckoId);
   const balance = useCurrencyBalance(account, currency);
 
   return (
@@ -83,7 +81,7 @@ const CurrencyRow = ({ currency, onSelect }: { currency: Currency; onSelect: (cu
           )}
         </div>
         <button
-          className="flex min-w-[60px] items-center justify-center rounded-lg hover:opacity-60 dark:bg-primary dark:text-black"
+          className="flex min-w-[60px] items-center justify-center rounded-lg active:shadow-inner dark:bg-primary dark:text-black"
           onClick={() => onSelect(currency)}
         >
           <ChevronDoubleRightIcon className="h-7 w-7" />

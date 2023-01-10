@@ -14,7 +14,7 @@ export const quote = async (chainId: number, fromToken: Currency, toToken: Curre
     gasPrice
   }
 
-  const response = await fetch(`https://api.1inch.io/v4.0/${chainId}/quote?${qs.stringify({ ...params })}`)
+  const response = await fetch(`https://api.1inch.io/v5.0/${chainId}/quote?${qs.stringify({ ...params })}`)
   const data = await response.json()
 
   return data
@@ -28,7 +28,7 @@ export const getAllowance = async (chainId: number, fromToken: Currency, account
     walletAddress: account
   }
 
-  const response = await fetch(`https://api.1inch.io/v4.0/${chainId}/approve/allowance?${qs.stringify({ ...params })}`)
+  const response = await fetch(`https://api.1inch.io/v5.0/${chainId}/approve/allowance?${qs.stringify({ ...params })}`)
   const data = await response.json()
 
   return data
@@ -42,7 +42,7 @@ export const approve = async (chainId: number, fromToken: Currency, amount: BigN
     amount: amount.toString()
   }
 
-  const response = await fetch(`https://api.1inch.io/v4.0/${chainId}/approve/transaction?${qs.stringify({ ...params })}`)
+  const response = await fetch(`https://api.1inch.io/v5.0/${chainId}/approve/transaction?${qs.stringify({ ...params })}`)
   const data = await response.json()
 
   return data
@@ -55,12 +55,13 @@ export const swap = async (chainId: number, fromToken: Currency, toToken: Curren
     fromTokenAddress: fromToken.isNative ? ETHER_ADDRESS : fromToken.address,
     toTokenAddress: toToken.isNative ? ETHER_ADDRESS : toToken.address,
     amount: amount.toString(),
+    disableEstimate: true,
     fromAddress: account,
     slippage,
     gasPrice
   }
 
-  const response = await fetch(`https://api.1inch.io/v4.0/${chainId}/swap?${qs.stringify({ ...params })}`)
+  const response = await fetch(`https://api.1inch.io/v5.0/${chainId}/swap?${qs.stringify({ ...params })}`)
   const data = await response.json()
 
   return data
