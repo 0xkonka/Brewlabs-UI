@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     screens: {
       xs: "380px",
+      xmd: "520px",
       ...defaultTheme.screens,
     },
     extend: {
@@ -14,11 +15,17 @@ module.exports = {
         brand: "#FFDE0D",
         eth: "#5D78DE",
         bsc: "#E4B00A",
+        yellow: "#ffde00",
+        portfolio: "#efbb19",
+        grey: "#CFCFCF",
+        success: "#2FD35D",
+        danger: "#D9563A",
       },
     },
     fontFamily: {
       script: ['"Caveat"'],
       brand: ['"Questrial"'],
+      dash: ['"Roboto"'],
     },
   },
   plugins: [
