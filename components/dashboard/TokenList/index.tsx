@@ -15,16 +15,20 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
   const [archives, setArchives] = useState<any>([]);
   const [listType, setListType] = useState(0);
 
+  const formartBalance = (data: any) => {
+    return data.balance / Math.pow(10, data.decimals);
+  };
+
   const sortData = (data: any) => {
     for (let i = 0; i < data.length - 1; i++)
       for (let j = i + 1; j < data.length; j++) {
         if (
           filterType === 1
-            ? data[i].balance < data[j].balance
+            ? formartBalance(data[i]) < formartBalance(data[j])
             : filterType === 2
             ? data[i].price < data[j].price
             : filterType === 3
-            ? data[i].value < data[j].value
+            ? formartBalance(data[i]) * data[i].price < formartBalance(data[j]) * data[j].price
             : filterType === 4
             ? data[i].reward.totalReward < data[j].reward.totalReward
             : data[i].reward.pendingReward < data[j].reward.pendingReward
@@ -103,17 +107,17 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
         listType={listType}
         setListType={setListType}
       />
-      <div className={"mt-1"}>
+      <div className={"mt-3"}>
         {showData.map((data: any, i: number) => {
           return (
             <div
               key={i}
               className={`mb-2.5 flex items-center justify-between text-[8px] font-semibold ${
-                data.isPriceUp ? "text-success" : "text-danger"
+                data.priceList[data.priceList.length - 1] >= data.priceList[0] ? "text-success" : "text-danger"
               }`}
             >
               <div className="flex w-[100px] items-center xmd:w-[160px]">
-                <div className={`h-2.5 w-5 cursor-pointer text-yellow`}>
+                <div className={`min-w-[10px] max-w-[10px] cursor-pointer text-yellow`}>
                   {listType === 0 ? (
                     !favourites.includes(data.name) ? (
                       <StarOutlineIcon
@@ -138,20 +142,24 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
                     ""
                   )}
                 </div>
-                <img src={data.logo} alt={""} className={"mx-2.5 hidden xmd:block"} />
-                <div>
+                <img src={data.logo} alt={""} className={"mx-2.5 hidden h-[15px] w-[15px] xmd:block"} />
+                <StyledDiv>
                   <div className={"flex items-center text-white"}>
-                    <div>{data.name}</div>
-                    {data.isVerified ? <CheckCircleIcon className="ml-1 h-2 w-2 text-success" /> : ""}
+                    <div className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</div>
+                    {data.isVerified ? (
+                      <CheckCircleIcon className="ml-1 max-h-[7.5px] min-h-[7.5px] min-w-[7.5px] max-w-[7.5px] text-success" />
+                    ) : (
+                      ""
+                    )}
                   </div>
                   {fullOpen ? (
-                    <div className={"text-white opacity-25"}>
-                      {data.balance} {data.symbol}
+                    <div className={"overflow-hidden text-ellipsis whitespace-nowrap text-white opacity-25"}>
+                      {formartBalance(data).toFixed(2)} {data.symbol}
                     </div>
                   ) : (
                     ""
                   )}
-                </div>
+                </StyledDiv>
               </div>
               <div className={`${fullOpen ? "min-w-[8px]" : "min-w-[45px]"} text-center`}>
                 {fullOpen ? (
@@ -167,11 +175,11 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
                     ""
                   )
                 ) : (
-                  data.balance
+                  formartBalance(data).toFixed(2)
                 )}
               </div>
-              <div className={"min-w-[28px] text-center"}>${data.price}</div>
-              <div className={"min-w-[40px] text-center"}>{data.value}</div>
+              <div className={"min-w-[28px] text-center"}>${data.price.toFixed(3)}</div>
+              <div className={"min-w-[40px] text-center"}>{(formartBalance(data) * data.price).toFixed(2)}</div>
               <div className={"flex min-w-[60px] justify-center"}>
                 {data.isReward ? (
                   `${data.reward.totalRewards} ${data.reward.symbol}`
@@ -203,11 +211,21 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
   );
 };
 
+const StyledDiv = styled.div`
+  width: calc(100% - 40px);
+  @media screen and (max-width: 520px) {
+    width: calc(100% - 20px);
+    margin-left: 4px;
+  }
+  @media screen and (max-width: 370px) {
+    width: calc(100vw - 280px);
+  }
+`;
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
-  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100% - 500px)" : `${count * 40 + 29}px`)};
+  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100% - 500px)" : `${count * 30 + 37}px`)};
   transition: all 0.15s;
   @media screen and (max-width: 520px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100% - 500px)" : `${count * 28 + 29}px`)};
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100% - 500px)" : `${count * 28 + 37}px`)};
   }
 `;
 export default TokenList;

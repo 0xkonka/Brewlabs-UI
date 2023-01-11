@@ -3,8 +3,8 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 
-const DropDown = ({ value, setValue, showType }: { setValue?: any; value: number; showType?: number }) => {
-  const values = [showType === 0 ? "Wallet" : "Market", "Archive"];
+const DropDown = ({ value, setValue }: { setValue?: any; value: number }) => {
+  const values = ["Wallet", "Archive"];
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
 

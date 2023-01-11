@@ -5,9 +5,19 @@ import styled from "styled-components";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const PerformanceChart = ({ pricehistory }: { pricehistory?: any }) => {
+const PerformanceChart = ({ tokens }: any) => {
+  if (!tokens.length) return <></>;
+  let pricehistory: any = [];
+  for (let i = 0; i < tokens[0].priceList.length; i++) {
+    pricehistory[i] = 0;
+    for (let j = 0; j < tokens.length; j++) {
+      pricehistory[i] += (tokens[j].priceList[i] * tokens[j].balance) / Math.pow(10, tokens[j].decimals);
+    }
+  }
+  console.log(pricehistory);
   const priceChange = pricehistory[pricehistory.length - 1] - pricehistory[0];
-  const priceChangePercent = (priceChange / pricehistory[0]) * 100;
+  let priceChangePercent = (priceChange / pricehistory[0]) * 100;
+  priceChangePercent = priceChangePercent < 0 ? -priceChangePercent : priceChangePercent;
   const chartData: any = {
     series: [
       {
@@ -100,7 +110,7 @@ const PerformanceChart = ({ pricehistory }: { pricehistory?: any }) => {
             <div className={"text-2xl font-bold"}>{pricehistory[pricehistory.length - 1].toFixed(2)}</div>
             <div className={"flex items-center"}>
               <StyledColor down={(priceChange < 0).toString()} className={"mr-1"}>
-                ${priceChange}
+                ${(priceChange < 0 ? -priceChange : priceChange).toFixed(2)}
               </StyledColor>
               <img src={priceChange > 0 ? "/images/dashboard/up.svg" : "/images/dashboard/down.svg"} alt={""} />
             </div>

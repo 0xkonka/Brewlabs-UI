@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -12,116 +12,18 @@ import PerformanceChart from "./PerformanceChart";
 import SwitchButton from "./SwitchButton";
 import TokenList from "./TokenList";
 import FullOpenVector from "./FullOpenVector";
+import { DashboardContext } from "contexts/DashboardContext";
+
+const TokenInfo = (token: any) => {
+  useEffect(() => {});
+};
 
 const UserSidebar = () => {
   const [isOpen] = useGlobalState("userSidebarOpen");
   const [showType, setShowType] = useState(0);
   const [fullOpen, setFullOpen] = useState(false);
+  const { tokens } = useContext(DashboardContext);
 
-  const tokens = [
-    {
-      name: "Brewlabs",
-      symbol: "BREWLABS",
-      isVerified: true,
-      balance: 8282810.22,
-      price: 0.044,
-      value: 42422.22,
-      isReward: true,
-      isPriceUp: true,
-      isScam: false,
-      logo: "/images/dashboard/tokens/brewlabs.svg",
-      reward: {
-        totalRewards: 422.22,
-        pendingRewards: 20.22,
-        symbol: "BUSD",
-      },
-    },
-    {
-      name: "BNB",
-      symbol: "BNB",
-      isVerified: true,
-      balance: 9282810.22,
-      price: 0.044,
-      value: 32442.22,
-      isReward: false,
-      isPriceUp: true,
-      isScam: false,
-      logo: "/images/dashboard/tokens/brewlabs.svg",
-      reward: {
-        totalRewards: 0,
-        pendingRewards: 0,
-        symbol: "",
-      },
-    },
-    {
-      name: "Sky Token",
-      symbol: "TICKER",
-      isVerified: false,
-      balance: 8282810.22,
-      price: 0.044,
-      value: 32442.22,
-      isReward: true,
-      isPriceUp: false,
-      isScam: false,
-      logo: "/images/dashboard/tokens/brewlabs.svg",
-      reward: {
-        totalRewards: 2923,
-        pendingRewards: 5,
-        symbol: "SKY",
-      },
-    },
-    {
-      name: "I'm a scam token",
-      symbol: "TICKER",
-      isVerified: false,
-      balance: 325612.22,
-      price: 0.13,
-      value: 4432.22,
-      isReward: true,
-      isPriceUp: false,
-      isScam: true,
-      logo: "/images/dashboard/tokens/brewlabs.svg",
-      reward: {
-        totalRewards: 1,
-        pendingRewards: 532,
-        symbol: "TICKER",
-      },
-    },
-    {
-      name: "Scam token",
-      symbol: "TICKER",
-      isVerified: false,
-      balance: 325612.22,
-      price: 0.13,
-      value: 4432.22,
-      isReward: true,
-      isPriceUp: false,
-      isScam: true,
-      logo: "/images/dashboard/tokens/brewlabs.svg",
-      reward: {
-        totalRewards: 1,
-        pendingRewards: 532,
-        symbol: "TICKER",
-      },
-    },
-    {
-      name: "Another Scam token",
-      symbol: "TICKER",
-      isVerified: false,
-      balance: 325612.22,
-      price: 0.13,
-      value: 32.22,
-      isReward: true,
-      isPriceUp: false,
-      isScam: true,
-      logo: "/images/dashboard/tokens/brewlabs.svg",
-      reward: {
-        totalRewards: 1,
-        pendingRewards: 56,
-        symbol: "TICKER",
-      },
-    },
-  ];
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-40" onClose={() => setGlobalState("userSidebarOpen", false)}>
@@ -160,7 +62,7 @@ const UserSidebar = () => {
                   </div>
 
                   <div className={"mt-10"}>
-                    <PerformanceChart pricehistory={[10000, 20000, 50000, 60000, 20000, 30224.22]} />
+                    <PerformanceChart tokens={tokens} />
                   </div>
 
                   <div className={"flex w-full justify-center"}>

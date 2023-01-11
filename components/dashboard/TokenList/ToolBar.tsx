@@ -21,7 +21,7 @@ const ToolBar = ({
   return (
     <div className={"flex items-center justify-between"}>
       <div className={"w-[100px] xmd:w-[160px]"}>
-        <DropDown value={listType} setValue={setListType} showType={showType} />
+        <DropDown value={listType} setValue={setListType} />
       </div>
       <StyledOption
         className={`${fullOpen ? "min-w-[8px]" : "min-w-[45px]"} font-semibold`}
