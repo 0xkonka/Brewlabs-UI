@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const SwitchButton = ({ setValue, value }: { setValue?: any; value: number }) => {
   return (
-    <StyledContainer value={value} className={"flex rounded bg-portfolio text-[8px] font-semibold"}>
+    <StyledContainer value={value} className={"flex rounded bg-portfolio text-xxs font-semibold"}>
       <div onClick={() => setValue(0)}>My Wallet</div>
       <div onClick={() => setValue(1)}>Total Market</div>
     </StyledContainer>
@@ -28,4 +28,5 @@ const StyledContainer = styled.div<{ value: number }>`
     color: white;
     border: 1px solid #efbb19;
   }
+  margin-top: -20px;
 `;

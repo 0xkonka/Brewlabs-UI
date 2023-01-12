@@ -108,7 +108,7 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
           return (
             <StyledTable
               key={i}
-              className={`mb-2.5 flex items-center justify-between text-[8px] font-semibold ${
+              className={`mb-2.5 flex items-center justify-between text-xxs font-semibold ${
                 data.isPriceUp ? "text-success" : "text-danger"
               }`}
             >

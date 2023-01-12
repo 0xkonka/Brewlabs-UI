@@ -23,6 +23,12 @@ const UserSidebar = () => {
   const [showType, setShowType] = useState(0);
   const [fullOpen, setFullOpen] = useState(false);
   const { tokens } = useContext(DashboardContext);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(0);
+
+  useEffect(() => {
+    setItemsPerPage(Math.floor((window.innerHeight - 640) / 35));
+  }, [fullOpen]);
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -54,7 +60,7 @@ const UserSidebar = () => {
                 <div className="relative mr-1.5 flex w-full max-w-lg flex-col  pt-16 pb-3">
                   <div className="flex w-full items-center border-b border-yellow pb-4">
                     <LogoIcon classNames="w-14 text-dark dark:text-brand" />
-                    <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
+                    <div className={"text-2xl ml-5 font-semibold text-yellow"}>Dashboard</div>
                   </div>
 
                   <div className={"mt-3 h-[25px] w-40"}>
@@ -62,17 +68,30 @@ const UserSidebar = () => {
                   </div>
 
                   <div className={"mt-10"}>
-                    <PerformanceChart tokens={tokens} />
+                    <PerformanceChart tokens={tokens} showType={showType} />
                   </div>
 
-                  <div className={"flex w-full justify-center"}>
+                  <div className={"relative z-10 flex w-full justify-center"}>
                     <SwitchButton value={showType} setValue={setShowType} />
                   </div>
                 </div>
-                <TokenList tokens={tokens} showType={showType} fullOpen={fullOpen} />
+                <TokenList
+                  tokens={tokens}
+                  showType={showType}
+                  fullOpen={fullOpen}
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  itemsPerPage={itemsPerPage}
+                />
 
                 <div className={"mb-3 w-full max-w-[512px]"}>
-                  <FullOpenVector open={fullOpen} setOpen={setFullOpen} />
+                  <FullOpenVector
+                    open={fullOpen}
+                    setOpen={setFullOpen}
+                    pageIndex={pageIndex}
+                    setPageIndex={setPageIndex}
+                    maxPage={Math.ceil(tokens.length / itemsPerPage)}
+                  />
                 </div>
               </div>
               <ConnectWallet allowDisconnect />

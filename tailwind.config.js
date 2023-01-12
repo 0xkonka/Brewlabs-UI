@@ -9,6 +9,9 @@ module.exports = {
       xmd: "520px",
       ...defaultTheme.screens,
     },
+    fontSize: {
+      xxs: "8px",
+    },
     extend: {
       colors: {
         dark: "#0F2131",

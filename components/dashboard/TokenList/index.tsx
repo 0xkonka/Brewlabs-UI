@@ -8,7 +8,21 @@ import styled from "styled-components";
 import { NoneSVG } from "../assets/svgs";
 import { isArray } from "lodash";
 
-const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: number; fullOpen: boolean }) => {
+const TokenList = ({
+  tokens,
+  showType,
+  fullOpen,
+  pageIndex,
+  itemsPerPage,
+  setPageIndex,
+}: {
+  tokens?: any;
+  showType?: number;
+  fullOpen: boolean;
+  pageIndex: number;
+  itemsPerPage: number;
+  setPageIndex: any;
+}) => {
   const [filterType, setFilterType] = useState(0);
   const [showData, setShowData] = useState([]);
   const [favourites, setFavourites] = useState<any>([]);
@@ -90,12 +104,17 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
         }
         _showData = sortData(_showData);
       }
+      setShowData(_showData);
     } else {
       _showData = sortData(favouritesItems);
       _showData = [..._showData, ...sortData(unFavouritesItems)];
+      let paginationData: any = [];
+      for (let i = itemsPerPage * pageIndex; i < Math.min(itemsPerPage * (pageIndex + 1), _showData.length); i++)
+        paginationData.push(_showData[i]);
+      console.log("PAGINATION DATA", paginationData, pageIndex, itemsPerPage, _showData);
+      setShowData(paginationData);
     }
-    setShowData(_showData);
-  }, [tokens, favourites, archives, fullOpen, filterType, showType, listType]);
+  }, [tokens, favourites, archives, fullOpen, filterType, showType, listType, itemsPerPage, pageIndex]);
 
   return (
     <StyledContainer className={`ml-1.5 mt-8 w-full max-w-[524px]`} fullOpen={fullOpen} count={showData.length}>
@@ -112,7 +131,7 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
           return (
             <div
               key={i}
-              className={`mb-2.5 flex items-center justify-between text-[8px] font-semibold ${
+              className={`mb-2.5 flex items-center justify-between text-xxs font-semibold ${
                 data.priceList[data.priceList.length - 1] >= data.priceList[0] ? "text-success" : "text-danger"
               }`}
             >
@@ -179,7 +198,7 @@ const TokenList = ({ tokens, showType, fullOpen }: { tokens?: any; showType?: nu
                 )}
               </div>
               <div className={"min-w-[28px] text-center"}>${data.price.toFixed(3)}</div>
-              <div className={"min-w-[40px] text-center"}>{(formartBalance(data) * data.price).toFixed(2)}</div>
+              <div className={"min-w-[40px] text-center"}>${(formartBalance(data) * data.price).toFixed(2)}</div>
               <div className={"flex min-w-[60px] justify-center"}>
                 {data.isReward ? (
                   `${data.reward.totalRewards} ${data.reward.symbol}`
@@ -222,10 +241,10 @@ const StyledDiv = styled.div`
   }
 `;
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
-  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100% - 500px)" : `${count * 30 + 37}px`)};
+  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 600px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
   @media screen and (max-width: 520px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100% - 500px)" : `${count * 28 + 37}px`)};
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 600px)" : `${count * 28 + 27}px`)};
   }
 `;
 export default TokenList;

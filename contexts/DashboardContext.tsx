@@ -9,10 +9,11 @@ import { getMulticallContract } from "utils/contractHelpers";
 import ERC20ABI from "../config/abi/erc20.json";
 
 import { ethers } from "ethers";
-import { filter } from "lodash";
+import { filter, initial } from "lodash";
 
 const DashboardContext = React.createContext({
   tokens: [],
+  marketHistory: [],
 });
 
 const API_KEY: any = {
@@ -30,8 +31,16 @@ const SCAN_URI: any = {
   56: "api.bscscan.com",
 };
 
+const apiKeyList = [
+  "82fc55c0-9833-4d12-82bb-48ae9748bead",
+  "10760947-8c9a-4a18-b20f-2be694baf496",
+  "4853da0a-f79f-4714-a915-d683b8168e1e",
+  "4f616412-ca6d-4876-9a94-dac14e142b12",
+];
+
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
+  const [marketHistory, setMarketHistory] = useState([]);
   const [tokenlist, setTokenList] = useState([]);
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
@@ -110,14 +119,25 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   };
 
-  const fetchTokenInfos = async (tokens: []) => {
-    const data = await Promise.all(
-      tokens.map(async (data) => {
-        const tokenInfo: any = await fetchTokenInfo(data);
-        const serializedToken = { ...tokenInfo };
-        return serializedToken;
-      })
-    );
+  const fetchTokenInfos = async (tokens: [], initial: boolean) => {
+    let data;
+    console.log("Initial", initial);
+    if (initial)
+      data = await Promise.all(
+        tokens.map(async (data) => {
+          const tokenInfo: any = await fetchTokenInfo(data);
+          const serializedToken = { ...tokenInfo };
+          return serializedToken;
+        })
+      );
+    else {
+      let temp = [];
+      for (let i = 0; i < tokens.length; i++) {
+        const tokenInfo: any = await fetchTokenInfo(tokens[i]);
+        temp.push(tokenInfo);
+      }
+      data = temp;
+    }
     return data;
   };
 
@@ -144,12 +164,7 @@ const DashboardContextProvider = ({ children }: any) => {
       for (let i = 0; i < tokenListCalls.length; i++) {
         if (result[i][0] / 1 > 0) {
           const filters: any = tokenlist.filter((data: any) => data.address === tokenListCalls[i].address);
-          // if (filters.length) {
-          // console.log(filters[0].name);
           _tokens.push({
-            // name: filters[0].name,
-            // symbol: filters[0].symbol,
-            // decimals: filters[0].decimals,
             balance: result[i][0],
             isReward: true,
             isScam: false,
@@ -161,10 +176,9 @@ const DashboardContextProvider = ({ children }: any) => {
               symbol: "",
             },
           });
-          // }
         }
       }
-      let tokenInfos: any = await fetchTokenInfos(_tokens);
+      let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
       console.log(tokenInfos);
       setTokens(tokenInfos);
     } catch (error) {
@@ -181,10 +195,46 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   }
 
+  async function fetchMarketInfo() {
+    try {
+      let i;
+      for (i = 0; i < apiKeyList.length; i++) {
+        const response = await fetch(new Request("https://api.livecoinwatch.com/overview/history"), {
+          method: "POST",
+          headers: new Headers({
+            "content-type": "application/json",
+            "x-api-key": apiKeyList[i],
+          }),
+          body: JSON.stringify({
+            currency: "USD",
+            start: Date.now() - 1000 * 3600 * 24,
+            end: Date.now(),
+          }),
+        });
+        let result = await response.json();
+
+        let temp: any = [];
+        for (let i = 0; i < result.length; i++) {
+          temp.push(result[i].cap);
+        }
+        setMarketHistory(temp);
+        break;
+      }
+      if (i === apiKeyList.length) {
+        setMarketHistory([]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useSlowRefreshEffect(() => {
     if (!(chainId === 56 || chainId === 1) || !address || !tokenlist.length) {
       setTokens([]);
-    } else fetchTokens();
+    } else {
+      fetchMarketInfo();
+      fetchTokens();
+    }
   }, [chainId, address, tokenlist]);
 
   useDailyRefreshEffect(() => {
@@ -194,7 +244,7 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   }, [chainId]);
 
-  return <DashboardContext.Provider value={{ tokens }}>{children}</DashboardContext.Provider>;
+  return <DashboardContext.Provider value={{ tokens, marketHistory }}>{children}</DashboardContext.Provider>;
 };
 
 export { DashboardContext, DashboardContextProvider };

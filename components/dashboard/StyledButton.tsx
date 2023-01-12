@@ -16,7 +16,7 @@ const StyledButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="portfolio-shadow flex h-full w-full items-center justify-center rounded bg-danger text-[8px] font-semibold text-black transition"
+      className="portfolio-shadow flex h-full w-full items-center justify-center rounded bg-danger text-xxs font-semibold text-black transition "
     >
       {children}
     </button>
@@ -25,7 +25,7 @@ const StyledButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="portfolio-shadow flex h-full w-full items-center justify-center rounded bg-portfolio text-[8px] font-semibold text-black transition hover:bg-dark hover:text-brand"
+      className="portfolio-shadow disabled:ursor-not-allowed flex h-full w-full items-center justify-center rounded bg-portfolio text-xxs font-semibold text-black transition hover:bg-dark hover:text-brand disabled:bg-transparent disabled:text-white"
     >
       {children}
     </button>

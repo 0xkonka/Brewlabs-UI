@@ -1,23 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
+import { DashboardContext } from "contexts/DashboardContext";
+import { upSVG, downSVG } from "./assets/svgs";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const PerformanceChart = ({ tokens }: any) => {
-  if (!tokens.length) return <></>;
+const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number }) => {
   let pricehistory: any = [];
-  for (let i = 0; i < tokens[0].priceList.length; i++) {
-    pricehistory[i] = 0;
-    for (let j = 0; j < tokens.length; j++) {
-      pricehistory[i] += (tokens[j].priceList[i] * tokens[j].balance) / Math.pow(10, tokens[j].decimals);
+  const { marketHistory } = useContext(DashboardContext);
+
+  if (showType === 1) {
+    if (!marketHistory.length) return <></>;
+    pricehistory = marketHistory;
+  } else {
+    if (!tokens.length) return <></>;
+    for (let i = 0; i < tokens[0].priceList.length; i++) {
+      pricehistory[i] = 0;
+      for (let j = 0; j < tokens.length; j++) {
+        if (!tokens[j].priceList) continue;
+        pricehistory[i] += (tokens[j].priceList[i] * tokens[j].balance) / Math.pow(10, tokens[j].decimals);
+      }
     }
   }
-  console.log(pricehistory);
   const priceChange = pricehistory[pricehistory.length - 1] - pricehistory[0];
   let priceChangePercent = (priceChange / pricehistory[0]) * 100;
   priceChangePercent = priceChangePercent < 0 ? -priceChangePercent : priceChangePercent;
+
   const chartData: any = {
     series: [
       {
@@ -89,7 +99,7 @@ const PerformanceChart = ({ tokens }: any) => {
         y: {
           format: "",
           formatter: (value: any) => {
-            return "$" + Number(value).toFixed(2);
+            return "$" + BigNumberFormat(value);
           },
         },
       },
@@ -101,18 +111,32 @@ const PerformanceChart = ({ tokens }: any) => {
       },
     },
   };
+
+  const price = pricehistory[pricehistory.length - 1];
+
+  function numberWithCommas(x: any) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  const BigNumberFormat = (str: any) => {
+    if (Number(str) >= 10000000000) return `${numberWithCommas((str / 1000000000).toFixed(2))}B`;
+    else if (Number(str) >= 10000000) return `${numberWithCommas((str / 1000000).toFixed(2))}M`;
+    else if (Number(str) >= 10000) return `${numberWithCommas((str / 1000).toFixed(2))}K`;
+    else return `${numberWithCommas(str.toFixed(2))}`;
+  };
+
   return (
     <StyledContainer down={(priceChange < 0).toString()}>
       <div className={"flex items-center justify-between font-semibold text-white"}>
         <div className={"flex items-center"}>
-          <div className={"ml-4 w-[140px] text-sm sm:ml-16 sm:w-[180px]"}>
+          <div className={"text-sm ml-4 w-[140px] sm:ml-16 sm:w-[180px]"}>
             <div>Performance</div>
-            <div className={"text-2xl font-bold"}>{pricehistory[pricehistory.length - 1].toFixed(2)}</div>
+            <div className={"text-2xl font-bold"}>${BigNumberFormat(price)}</div>
             <div className={"flex items-center"}>
               <StyledColor down={(priceChange < 0).toString()} className={"mr-1"}>
-                ${(priceChange < 0 ? -priceChange : priceChange).toFixed(2)}
+                ${priceChange < 0 ? BigNumberFormat(-priceChange) : BigNumberFormat(priceChange)}
               </StyledColor>
-              <img src={priceChange > 0 ? "/images/dashboard/up.svg" : "/images/dashboard/down.svg"} alt={""} />
+              <StyledColor down={(priceChange < 0).toString()}>{priceChange >= 0 ? upSVG : downSVG}</StyledColor>
             </div>
           </div>
           <div className={"text-grey opacity-70"}>24hrs</div>
