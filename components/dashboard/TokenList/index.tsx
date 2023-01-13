@@ -12,11 +12,10 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
 
-const emptyLogos = {
-  1: "/images/dashboard/tokens/empty-token-eth.webp",
-  56: "/images/dashboard/tokens/empty-token-bsc.webp",
+const CHAIN_SYMBOL = {
+  1: "ETH",
+  56: "BNB",
 };
-
 const TokenList = ({
   tokens,
   showType,
@@ -218,12 +217,7 @@ const TokenList = ({
                     </div>
                   </div>
 
-                  <img
-                    src={data.logo}
-                    alt={""}
-                    className={"mx-2.5 h-[15px] w-[15px]"}
-                    onError={(e: any) => (e.target.src = emptyLogos[chainId])}
-                  />
+                  <img src={data.logo} alt={""} className={"mx-2.5 h-[15px] w-[15px]"} />
 
                   <div>
                     <div className={"flex items-center text-white"}>
@@ -270,7 +264,9 @@ const TokenList = ({
                   <div className={"min-w-[45px] text-center"}>${(formartBalance(data) * data.price).toFixed(2)}</div>
                   <div className={"flex min-w-[60px] justify-center"}>
                     {data.isReward ? (
-                      `${data.reward.totalRewards.toFixed(2)} ${data.reward.symbol}`
+                      `${data.reward.totalRewards.toFixed(2)} ${
+                        data.name.toLowerCase() === "brewlabs" ? CHAIN_SYMBOL[chainId] : data.reward.symbol
+                      }`
                     ) : (
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
@@ -350,6 +346,7 @@ const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
 `;
 
 const StyledDiv = styled.div`
+  width: 96px;
   @media screen and (max-width: 520px) {
     width: 38px;
   }

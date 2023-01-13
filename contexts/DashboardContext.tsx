@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useBigSlowRefreshEffect, useDailyRefreshEffect } from "hooks/useRefreshEffect";
+import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { erc20ABI, useAccount, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import {
@@ -26,9 +26,9 @@ const API_KEY: any = {
   1: "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX",
 };
 
-const tokenList_URI: any = {
-  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
-  1: "https://tokens.coingecko.com/ethereum/all.json",
+const emptyLogos = {
+  1: "/images/dashboard/tokens/empty-token-eth.webp",
+  56: "/images/dashboard/tokens/empty-token-bsc.webp",
 };
 
 const SCAN_URI: any = {
@@ -39,16 +39,6 @@ const SCAN_URI: any = {
 const WETH_ADDR: any = {
   1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-};
-
-const CHAIN_LOGO: any = {
-  1: "/images/dashboard/tokens/ETH.png",
-  56: "/images/dashboard/tokens/BNB.png",
-};
-
-const CHAIN_NAME: any = {
-  1: "ETH",
-  56: "BNB",
 };
 
 const apiKeyList = [
@@ -137,6 +127,14 @@ const DashboardContextProvider = ({ children }: any) => {
     return result[0][0];
   };
 
+  function imageExists(url: any) {
+    return new Promise((resolve) => {
+      var img = new Image();
+      img.addEventListener("load", () => resolve(true));
+      img.addEventListener("error", () => resolve(false));
+      img.src = url;
+    });
+  }
   const fetchTokenInfo = async (token: any) => {
     try {
       const to = Math.floor(Date.now() / 1000);
@@ -179,7 +177,7 @@ const DashboardContextProvider = ({ children }: any) => {
             decimals: 18,
           };
         }
-        if (rewardToken.address === "0x0") {
+        if (rewardToken.address === "0x0" || token.name.toLowerCase() === "brewlabs") {
           totalRewards = await fetchEthBalance(dividendTracker);
         } else {
           totalRewards = await fetchTokenBalance(rewardToken.address, dividendTracker);
@@ -202,8 +200,14 @@ const DashboardContextProvider = ({ children }: any) => {
       } catch (error) {
         isScam = true;
       }
+
+      let logoExist;
+      try {
+        logoExist = await imageExists(token.logo);
+      } catch (e) {}
       return {
         ...token,
+        logo: logoExist ? token.logo : emptyLogos[chainId],
         priceList: result.data.c,
         price: result.data.c[result.data.c.length - 1],
         isVerified: isVerifiedResult.data.message === "NOTOK" ? false : true,
@@ -240,7 +244,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchTokens() {
     try {
-      console.log("asdfasdfasdf");
+      console.log("Fetch Start");
       const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
       const covalReponse: any = await axios.get(covalUrl);
       const items = covalReponse.data.data.items;
@@ -301,8 +305,8 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   }
 
-  useBigSlowRefreshEffect(() => {
-    if (!(chainId === 56 || !signer || chainId === 1)) {
+  useSlowRefreshEffect(() => {
+    if (!(chainId === 56 || chainId === 1) || !signer) {
       setTokens([]);
     } else {
       fetchMarketInfo();
