@@ -20,7 +20,7 @@ module.exports = {
     fontFamily: {
       script: ['"Caveat"'],
       brand: ['"Questrial"'],
-      robot: ['"Roboto"'],
+      roboto: ['"Roboto"'],
     }
   },
   plugins: [

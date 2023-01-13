@@ -9,18 +9,19 @@ import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/24/outl
 import Card from "./Card";
 import Modal from "components/MotionModal";
 import ChainSelector from "components/ChainSelector";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 type ChainSelectProps = {
   id: string;
 };
 
 const ChainSelect = ({ id }: ChainSelectProps) => {
-  const { chain } = useNetwork();
+  const { chainId } = useActiveChainId();
   const supportedNetworks = useSupportedNetworks();
   const { switchNetwork } = useSwitchNetwork();
   const network = useMemo(() => {
-    return supportedNetworks.find((network) => network.id === chain?.id) || supportedNetworks[0];
-  }, [chain, supportedNetworks]);
+    return supportedNetworks.find((network) => network.id === chainId) || supportedNetworks[0];
+  }, [chainId, supportedNetworks]);
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -56,7 +57,7 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
         <ChainSelector
           bSwitchChain
           networks={supportedNetworks}
-          currentChainId={chain?.id}
+          currentChainId={chainId}
           onDismiss={() => setSelected(false)}
           selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
         />

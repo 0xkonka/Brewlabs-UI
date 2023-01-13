@@ -47,7 +47,7 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
   const queryChainId = useQueryChainId();
 
   const { chain } = useNetwork();
-  const chainId = localChainId ?? chain?.id ?? (queryChainId >= 0 ? bsc.id : undefined);
+  const chainId = localChainId ?? chain?.id ?? (queryChainId <= 0 ? bsc.id : queryChainId);
 
   const isNotMatched = useMemo(() => chain && localChainId && chain.id !== localChainId, [chain, localChainId]);
 
