@@ -1,26 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
-const useTokenMarketChart = (tokenId: string | undefined) => {
-  const [priceChange24h, setPriceChange24h] = useState(undefined);
-  const [tokenPrice, setTokenPriceUsd] = useState(Number);
+import { CG_API, CG_PRO_API } from "config/constants/endpoints";
+import CG_ASSET_PLATFORMS from "config/constants/CGAssetPlatforms.json";
+import { ChainId } from "@brewlabs/sdk";
+
+export interface TokenMarketData {
+  [address: string]: {
+    usd: number;
+    usd_24h_change: number | null;
+  };
+}
+
+export const defaultMarketData = {
+  usd: 0,
+  usd_24h_change: null,
+};
+
+const useTokenMarketChart = (tokenAddresses: string[], chainId: ChainId): TokenMarketData => {
+  const assetPlatformId = CG_ASSET_PLATFORMS.find((platform) => platform.chain_identifier === chainId)?.id;
+  const [data, setData] = useState(
+    Object.assign({}, ...tokenAddresses.map((address) => ({ [address]: defaultMarketData })))
+  );
 
   useEffect(() => {
-    if (!tokenId) return;
-    axios.get(`https://api.coingecko.com/api/v3/coins/${tokenId}/market_chart?vs_currency=usd&days=1`).then((res) => {
-      if (res.data) {
-        const { prices: historicalPrices } = res.data;
+    if (!assetPlatformId || tokenAddresses.length === 0) return;
+    axios
+      .get(
+        `${CG_API}/simple/token_price/${assetPlatformId}?contract_addresses=${tokenAddresses.join(
+          ","
+        )}&vs_currencies=usd&include_24hr_change=true`
+      )
+      .then((res) => {
+        if (res.data) {
+          setData(res.data);
+        }
+      });
+  }, [assetPlatformId, JSON.stringify(tokenAddresses)]);
 
-        const _currentPrice = historicalPrices[historicalPrices.length - 1][1];
-        const _24hPastPrice = historicalPrices[0][1];
-
-        setPriceChange24h(((_currentPrice - _24hPastPrice) / _24hPastPrice) * 100);
-        setTokenPriceUsd(_currentPrice);
-      }
-    });
-  }, [tokenId]);
-
-  return {priceChange24h, tokenPrice};
+  return data;
 };
 
 export default useTokenMarketChart;

@@ -27,7 +27,7 @@ const AnimationModal = ({
   const [modalIsOpen, setModalIsOpen] = useGlobalState("modalIsOpen");
 
   useEffect(() => {
-    setModalIsOpen(true);
+    setModalIsOpen(false);
     // Function to close on Esc
     const handleEscClose = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -38,7 +38,7 @@ const AnimationModal = ({
     document.addEventListener("keydown", handleEscClose, false);
 
     return () => {
-      setModalIsOpen(false);
+      setModalIsOpen(true);
       // Remove event listener for keydown
       window.removeEventListener("keydown", handleEscClose);
     };

@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 import Card from "./Card";
 
@@ -6,6 +8,7 @@ type Props = {
 };
 
 const SubNav = ({ openSettingModal }: Props) => {
+  const [hoverSetting, setHoverSetting] = useState(false);
   return (
     <div className="grid grid-cols-2 justify-between gap-1 sm:flex">
       <Card>
@@ -33,8 +36,19 @@ const SubNav = ({ openSettingModal }: Props) => {
         </div>
       </Card>
       <Card>
-        <div className="flex justify-center" onClick={openSettingModal}>
-          <Cog8ToothIcon className="h-6 w-6 cursor-pointer dark:text-primary" />
+        <div
+          className="flex justify-center"
+          onClick={openSettingModal}
+          onMouseOver={() => setHoverSetting(true)}
+          onMouseOut={() => setHoverSetting(false)}
+        >
+          {hoverSetting ? (
+            <motion.div animate={{ rotate: 360 }} transition={{ ease: "linear", duration: 2, repeat: Infinity }}>
+              <Cog8ToothIcon className="h-6 w-6 cursor-pointer dark:text-primary" />
+            </motion.div>
+          ) : (
+            <Cog8ToothIcon className="h-6 w-6 cursor-pointer dark:text-primary" />
+          )}
         </div>
       </Card>
     </div>

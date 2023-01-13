@@ -18,10 +18,8 @@ const PrimaryOutlinedButton = ({
         target="_blank"
         rel="noreferrer"
         className={`${
-          disabled
-            ? "cursor-not-allowed border-gray-700 text-gray-700"
-            : "border-primary text-primary hover:bg-primary hover:text-dark"
-        } flex items-center justify-center rounded-lg border bg-transparent px-8 py-1 text-lg tracking-wider shadow-sm outline-none transition`}
+          disabled ? "cursor-not-allowed border-gray-700 text-gray-700" : "border-primary bg-primary text-black"
+        } flex items-center justify-center rounded-md border bg-transparent px-12 py-1 font-robot text-sm font-bold tracking-wider shadow-sm outline-none transition active:shadow-inner`}
       >
         {children}
       </a>
@@ -31,10 +29,8 @@ const PrimaryOutlinedButton = ({
         onClick={onClick}
         disabled={disabled}
         className={`${
-          disabled
-            ? "cursor-not-allowed border-gray-700 text-gray-700"
-            : "border-primary text-primary hover:bg-primary hover:text-dark"
-        } flex items-center justify-center rounded-lg border bg-transparent px-8 py-1 text-lg tracking-wider shadow-sm outline-none transition`}
+          disabled ? "cursor-not-allowed border-gray-700 text-gray-700" : "border-primary bg-primary text-black"
+        } flex items-center justify-center rounded-md border bg-transparent px-12 py-1 font-robot text-sm font-bold tracking-wider shadow-sm outline-none transition active:shadow-inner`}
       >
         {children}
       </button>

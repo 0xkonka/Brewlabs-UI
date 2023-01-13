@@ -23,7 +23,7 @@ export enum ApprovalState {
 export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
-): [ApprovalState, () => Promise<void>] {
+): [ApprovalState, () => Promise<TransactionResponse>] {
   const { account, chainId, library } = useActiveWeb3React()
   const token = amountToApprove && !amountToApprove?.currency.isNative ? amountToApprove.currency : undefined
   const currentAllowance = useTokenAllowance(token, account ?? undefined, spender)
@@ -47,7 +47,7 @@ export function useApproveCallback(
   const tokenContract = useTokenContract(token?.address)
   const addTransaction = useTransactionAdder()
 
-  const approve = useCallback(async (): Promise<void> => {
+  const approve = useCallback(async (): Promise<TransactionResponse> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily')
       return
@@ -83,21 +83,20 @@ export function useApproveCallback(
 
 
     // eslint-disable-next-line consistent-return
-    return tokenContract
-      .approve(spender, useExact ? amountToApprove.raw.toString() : MaxUint256, {
+    const response: TransactionResponse = await tokenContract.approve(
+      spender,
+      useExact ? amountToApprove.raw.toString() : MaxUint256,
+      {
         gasPrice,
         gasLimit: calculateGasMargin(estimatedGas),
-      })
-      .then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: `Approve ${amountToApprove.currency.symbol}`,
-          approval: { tokenAddress: token.address, spender },
-        })
-      })
-      .catch((error: Error) => {
-        console.error('Failed to approve token', error)
-        throw error
-      })
+      }
+    );
+    addTransaction(response, {
+      summary: `Approve ${amountToApprove.currency.symbol}`,
+      approval: { tokenAddress: token.address, spender },
+    });
+
+    return response;
   }, [approvalState, token, tokenContract, amountToApprove, spender, addTransaction, chainId, library])
 
   return [approvalState, approve]

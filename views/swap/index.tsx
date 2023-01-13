@@ -50,7 +50,7 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ApproveModal from "./components/modal/ApproveModal";
 import { ContractMethodNoResultError, useSigner } from "wagmi";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import SettingModal from "./components/modal/SettingModal";
 import { getBrewlabsAggregationRouterContract } from "../../utils/contractHelpers";
 import { NodeNextRequest } from "next/dist/server/base-http/node";
@@ -87,7 +87,7 @@ export default function Swap() {
   // swap state
   const { typedValue } = useSwapState();
   const { currencies, currencyBalances, parsedAmount: inputAmount, inputError } = useDerivedSwapInfo();
-
+  const [quoteError, setQuoteError] = useState<string | undefined>();
   const { onUserInput, onCurrencySelection, onSwitchTokens } = useSwapActionHandlers();
 
   // modal and loading
@@ -148,12 +148,13 @@ export default function Swap() {
       const data = await quote(chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount);
       if (data) {
         if (!data.statusCode) {
+          setQuoteError(undefined);
           setQuoteData(data);
           const formattedAmount = formatUnits(data.toTokenAmount, data.toToken.decimals);
           const _outputAmount = tryParseAmount(formattedAmount, currencies[Field.OUTPUT]);
           setOutputAmount(_outputAmount);
         } else {
-          toast.error(data.description);
+          setQuoteError(data.description);
           setQuoteData({});
           const _outputAmount = tryParseAmount("0", currencies[Field.OUTPUT]);
           setOutputAmount(_outputAmount);
@@ -179,6 +180,7 @@ export default function Swap() {
         const fetchData = async () => {
           const data = await quote(chainId, currencies[Field.INPUT], usdToken[chainId], oneEther);
           if (!data.statusCode) {
+            setQuoteError(undefined);
             const _price = new Price(
               currencies[Field.INPUT],
               usdToken[chainId],
@@ -186,6 +188,8 @@ export default function Swap() {
               data.toTokenAmount
             );
             setBasePrice(_price);
+          } else {
+            setQuoteError(data.description);
           }
         };
         fetchData();
@@ -209,6 +213,7 @@ export default function Swap() {
         const fetchData = async () => {
           const data = await quote(chainId, currencies[Field.OUTPUT], usdToken[chainId], oneEther);
           if (!data.statusCode) {
+            setQuoteError(undefined);
             const _price = new Price(
               currencies[Field.OUTPUT],
               usdToken[chainId],
@@ -216,6 +221,8 @@ export default function Swap() {
               data.toTokenAmount
             );
             setQuotePrice(_price);
+          } else {
+            setQuoteError(data.description);
           }
         };
         fetchData();
@@ -236,7 +243,7 @@ export default function Swap() {
           const totalTax =
             (Math.max(baseTokenInfo.BuyTax, baseTokenInfo.SellTax) + Math.max(tokenInfo.BuyTax, tokenInfo.SellTax)) *
             100;
-          setSlippage(totalTax + (totalTax ? slippageWithTVL : slippageDefault));
+          setSlippage(Math.floor(totalTax + (totalTax ? slippageWithTVL : slippageDefault)));
         } catch (err) {
           console.error(err);
           setSlippage(slippageDefault);
@@ -312,7 +319,10 @@ export default function Swap() {
   const handleApprove = async () => {
     setAttemptingTxn(true);
     try {
-      await approveCallback();
+      const tx = await approveCallback();
+      showNotify("confirming", tx);
+      await tx.wait();
+      showNotify("confirmed", tx);
     } catch (err: any) {
       if (err?.code === 4001) {
         toast.error(t("Transaction rejected."));
@@ -341,7 +351,7 @@ export default function Swap() {
         {
           className: "toast__background-primary",
           icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" />,
-          autoClose: 15000,
+          autoClose: 12000,
           closeButton: false,
           hideProgressBar: true,
         }
@@ -362,15 +372,15 @@ export default function Swap() {
           </div>
         </div>,
         {
-          icon: false,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" />,
           className: "toast__background-primary",
-          autoClose: 2000,
+          autoClose: 6000,
           closeButton: false,
         }
       );
     }
-  }
-  
+  };
+
   const handleSwap = async () => {
     setAttemptingTxn(true);
     try {
@@ -406,10 +416,12 @@ export default function Swap() {
       const inter = new ethers.utils.Interface(AggregaionRouterV2Abi);
       const decodedInput = inter.parseTransaction({ data: txData.data, value: txData.value });
       const value = currencies[Field.INPUT].isNative ? parsedAmount.add(treasuryFee) : treasuryFee;
-
       if (decodedInput.name === "swap") {
-        let callData = decodedInput.args.data.replace(addressWithout0x(AggregationRouterV5[chainId]), addressWithout0x(aggregatorAddress));
-        args = [decodedInput.args.caller, decodedInput.args.desc, decodedInput.args.permit, callData, parsedAmount];
+        let callData = decodedInput.args.data.replace(
+          addressWithout0x(AggregationRouterV5[chainId]),
+          addressWithout0x(aggregatorAddress)
+        );
+        args = [decodedInput.args.executor, decodedInput.args.desc, decodedInput.args.permit, callData, parsedAmount];
 
         estimatedGasLimit = await aggregatorContract.estimateGas.swapAggregateCall(...args, { value });
         tx = await aggregatorContract.swapAggregateCall(...args, {
@@ -475,27 +487,29 @@ export default function Swap() {
 
   return (
     <PageWrapper>
-      {inputCurrencySelect || outputCurrencySelect ? (
-        <>
-          <div className="pt-20"></div>
-          <CurrencySelect
-            layoutId={swapBoxLayoutId}
-            onCurrencySelect={inputCurrencySelect ? handleInputSelect : handleOutputSelect}
-            onDismiss={() => (inputCurrencySelect ? setInputCurrencySelect(false) : setOutputCurrencySelect(false))}
-            selectedCurrency={inputCurrencySelect ? currencies[Field.INPUT] : currencies[Field.OUTPUT]}
-          />
-        </>
-      ) : (
-        <>
-          <PageHeader
-            title={
-              <>
-                Exchange Tokens at the <WordHighlight content="best" /> rate on the market.
-              </>
-            }
-            summary="Exchange Tokens at the best rate on the market."
-          />
-          <motion.div layoutId={swapBoxLayoutId}>
+      <CurrencySelect
+        open={inputCurrencySelect || outputCurrencySelect}
+        layoutId={swapBoxLayoutId}
+        onCurrencySelect={inputCurrencySelect ? handleInputSelect : handleOutputSelect}
+        onDismiss={() => (inputCurrencySelect ? setInputCurrencySelect(false) : setOutputCurrencySelect(false))}
+        selectedCurrency={inputCurrencySelect ? currencies[Field.INPUT] : currencies[Field.OUTPUT]}
+      />
+      <AnimatePresence>
+        {!inputCurrencySelect && !outputCurrencySelect && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <PageHeader
+              title={
+                <>
+                  Exchange Tokens at the <WordHighlight content="best" /> rate on the market.
+                </>
+              }
+              summary="Exchange Tokens at the best rate on the market."
+            />
             <Container>
               <div className="mx-auto mb-4 flex flex-col gap-1" style={{ maxWidth: "500px" }}>
                 <SubNav openSettingModal={() => setOpenSettingModal(true)} />
@@ -533,7 +547,9 @@ export default function Swap() {
                 {account &&
                   (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
                     <>
-                      {inputError ? (
+                      {quoteError ? (
+                        <Button disabled={true}>{t(quoteError)}</Button>
+                      ) : inputError ? (
                         <Button disabled={true}>{t(inputError)}</Button>
                       ) : currencyBalances[Field.INPUT] === undefined ? (
                         <Button disabled={true}>{t("Loading")}</Button>
@@ -569,8 +585,8 @@ export default function Swap() {
               </div>
             </Container>
           </motion.div>
-        </>
-      )}
+        )}
+      </AnimatePresence>
       {/* <ApproveModal
         open={approvalModalOpen}
         onApprove={approveCallback}

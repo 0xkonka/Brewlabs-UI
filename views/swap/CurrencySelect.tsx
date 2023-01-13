@@ -1,16 +1,13 @@
 import React, { KeyboardEvent, useCallback, useState, useMemo, useEffect } from "react";
 import BigNumber from "bignumber.js";
-import { Currency, currencyEquals, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
+import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import {
   XMarkIcon,
-  CheckCircleIcon,
-  BeakerIcon,
-  ShoppingCartIcon,
   ArrowTrendingDownIcon,
   ArrowTrendingUpIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { MORALIS_CHAIN_NAME } from "config/constants/networks";
 import factoryTokens from "config/constants/factoryTokens.json";
@@ -19,16 +16,17 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
-import useTokenMarketChart from "hooks/useTokenMarketChart";
+import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 import useCoingeckoTokenId from "hooks/useCoingeckoTokenId";
 import useWalletTokens from "hooks/useWalletTokens";
 import { CurrencyLogo } from "components/logo";
 import { PrimaryOutlinedButton } from "components/button/index";
 import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
-import { useCurrencyBalance } from "state/wallet/hooks";
+import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 
 interface CurrencySelectProps {
   onDismiss: () => void;
+  open: boolean;
   selectedCurrency?: Currency | null;
   onCurrencySelect: (currency: Currency) => void;
   otherSelectedCurrency?: Currency | null;
@@ -36,10 +34,17 @@ interface CurrencySelectProps {
   layoutId: string;
 }
 
-const CurrencyRow = ({ currency, onSelect }: { currency: Currency; onSelect: (currency: Currency) => void }) => {
+const CurrencyRow = ({
+  currency,
+  marketData,
+  onSelect,
+}: {
+  currency: Currency;
+  marketData: any;
+  onSelect: (currency: Currency) => void;
+}) => {
   const { account } = useActiveWeb3React();
-  const coingeckoId = useCoingeckoTokenId(currency?.symbol);
-  const {priceChange24h, tokenPrice} = useTokenMarketChart(coingeckoId);
+  const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
 
   return (
@@ -67,7 +72,7 @@ const CurrencyRow = ({ currency, onSelect }: { currency: Currency; onSelect: (cu
                 <span className="text-primary">24HR</span>
               </p>
               <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-warning"} text-[10px]`}>
-                {tokenPrice.toFixed(2)} USD = 1.00 {currency?.symbol}
+                {tokenPrice} USD = 1.00 {currency?.symbol}
               </p>
             </div>
           </div>
@@ -93,9 +98,8 @@ const CurrencyRow = ({ currency, onSelect }: { currency: Currency; onSelect: (cu
 
 const CurrencySelect = ({
   onDismiss = () => null,
+  open,
   onCurrencySelect,
-  selectedCurrency,
-  otherSelectedCurrency,
   filteredCurrencies,
   layoutId,
 }: CurrencySelectProps) => {
@@ -175,6 +179,7 @@ const CurrencySelect = ({
 
   const walletTokens = useWalletTokens(account, MORALIS_CHAIN_NAME[chainId]);
   const itemData: (Currency | undefined)[] = useMemo(() => {
+    if (!chainId) return [];
     let formatted: (Currency | undefined)[] = showETH ? [NATIVE_CURRENCIES[chainId], ...currencies] : currencies;
     return formatted;
   }, [currencies, showETH, chainId]);
@@ -188,13 +193,25 @@ const CurrencySelect = ({
     setPage(0);
   };
 
+  const ethBalance = useNativeBalances([account])[account];
   const listingTokens: (Currency | undefined)[] = useMemo(() => {
     if (tab === 0) return itemData;
     if (tab === 1)
-      return itemData.filter((_token) => walletTokens.find((__token) => _token?.symbol === __token.symbol));
+      return itemData.filter(
+        (_token) =>
+          (_token?.isNative && ethBalance?.greaterThan(0)) ||
+          walletTokens.find((__token) => _token?.symbol === __token.symbol)
+      );
     if (tab === 2)
-      return itemData.filter((_token) => factoryTokens.find((__token) => _token?.symbol === __token.symbol));
+      return itemData.filter((_token) => factoryTokens.find((__token) => _token?.symbol === __token?.symbol));
   }, [itemData, tab]);
+
+  const tokenMarketData = useTokenMarketChart(
+    listingTokens
+      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      .map((currency) => currency?.wrapped?.address),
+    chainId
+  );
 
   const totalPages = useMemo(() => Math.ceil(listingTokens.length / rowsPerPage), [listingTokens, rowsPerPage]);
 
@@ -206,71 +223,136 @@ const CurrencySelect = ({
   };
 
   return (
-    <motion.div layoutId={layoutId}>
-      <div className="mx-auto mb-4 font-brand" style={{ maxWidth: "500px" }}>
-        <div className="flex items-center justify-between rounded-lg px-4 py-3 shadow-lg dark:bg-[#180404]/[.2]">
-          <p className="text-2xl">Token Select</p>
-          <XMarkIcon className="h-6 w-6 cursor-pointer dark:text-slate-400" onClick={onDismiss} />
+    <AnimatePresence exitBeforeEnter>
+      {open && (
+        <div className="absolute left-2/4 -translate-x-1/2 w-full">
+          <div className="pt-20"></div>
+          <motion.div className="mt-3 px-2" initial={{ opacity: 0, scale: 0}} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} transition={{duration: 0.3}}>
+            <div className="mx-auto mb-4 font-brand" style={{ maxWidth: "500px" }}>
+              <div className="flex items-center justify-between rounded-lg px-4 py-3 shadow-lg dark:bg-[#180404]/[.2]">
+                <p className="text-2xl">Token Select</p>
+                <XMarkIcon className="h-6 w-6 cursor-pointer dark:text-slate-400" onClick={onDismiss} />
+              </div>
+              <motion.div className="mt-1 rounded-lg px-9 py-4 shadow-lg dark:bg-[#180404]/[.2]">
+                <div className="mt-2">
+                  <input
+                    onChange={onInputAddress}
+                    onKeyDown={onInputEnter}
+                    inputMode="decimal"
+                    placeholder="Enter contract address..."
+                    className="w-full rounded-lg border bg-transparent px-2 py-1 text-2xl placeholder-primary outline-0 dark:border-primary dark:text-primary"
+                  />
+                </div>
+                <div className="my-3 grid grid-cols-2 justify-between gap-1 sm:flex">
+                  <div
+                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
+                    onClick={() => switchTab(0)}
+                  >
+                    <span className="font-roboto text-[13px] font-bold">Popular</span>
+                    {tab === 0 ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="absolute right-3 h-5 w-3 sm:right-2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                      </svg>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div
+                    className="relative mx-2 flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
+                    onClick={() => switchTab(1)}
+                  >
+                    <span className="font-roboto text-[13px] font-bold">My Wallet</span>
+                    {tab === 1 ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="absolute right-3 h-5 w-3 sm:right-2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                      </svg>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div
+                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3 "
+                    onClick={() => switchTab(2)}
+                  >
+                    <span className="font-roboto text-[13px] font-bold">Brewlabs Factory</span>
+                    {tab === 2 ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="absolute right-3 h-5 w-3 sm:right-2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                      </svg>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+                <div className="mt-3 px-2">
+                  <motion.div
+                    key={tab}
+                    initial={{ x: 10, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -10, opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    {tab === 2 ? (
+                      <p className="my-10 flex justify-center text-2xl dark:text-primary">Coming soon</p>
+                    ) : listingTokens.length > 0 ? (
+                      listingTokens
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((currency, index) => {
+                          const tokenAddress = currency?.wrapped?.address?.toLowerCase();
+                          return (
+                            <CurrencyRow
+                              currency={currency}
+                              marketData={tokenMarketData[tokenAddress] || defaultMarketData}
+                              onSelect={handleCurrencySelect}
+                              key={index}
+                            />
+                          );
+                        })
+                    ) : (
+                      <>
+                        <img className="m-auto" src="/images/Brewlabs--no-results-found-transparent.gif" />
+                        <p className="my-7 flex justify-center text-2xl dark:text-primary">No Result Found</p>
+                      </>
+                    )}
+                  </motion.div>
+                </div>
+                {listingTokens.length > 0 && (
+                  <div className="mt-3 mb-2 flex justify-center gap-5">
+                    <PrimaryOutlinedButton disabled={page === 0} onClick={prevPage}>
+                      Back
+                    </PrimaryOutlinedButton>
+                    <PrimaryOutlinedButton disabled={page === totalPages - 1} onClick={nextPage}>
+                      Next
+                    </PrimaryOutlinedButton>
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
-        <div className="mt-1 rounded-lg px-9 py-4 shadow-lg dark:bg-[#180404]/[.2]">
-          <div className="mt-2">
-            <input
-              onChange={onInputAddress}
-              onKeyDown={onInputEnter}
-              inputMode="decimal"
-              placeholder="Enter contract address..."
-              className="w-full rounded-lg border bg-transparent px-2 py-1 text-2xl placeholder-primary outline-0 dark:border-primary dark:text-primary"
-            />
-          </div>
-          <div className="my-3 grid grid-cols-2 justify-between gap-1 sm:flex">
-            <div
-              className="flex cursor-pointer items-center justify-start gap-2 rounded-lg border px-3 py-1 dark:border-green dark:text-green"
-              onClick={() => switchTab(0)}
-            >
-              <CheckCircleIcon className="h-5 w-5" />
-              <span className="text-lg">Popular</span>
-            </div>
-            <div
-              className="flex cursor-pointer items-center justify-start gap-2 rounded-lg border px-3 py-1"
-              onClick={() => switchTab(1)}
-            >
-              <p>
-                <ShoppingCartIcon className="h-5 w-5" />
-              </p>
-              <p className="text-lg">My Wallet</p>
-            </div>
-            <div
-              className="flex cursor-pointer items-center justify-start gap-2 rounded-lg border px-3 py-1 dark:border-primary dark:text-primary"
-              onClick={() => switchTab(2)}
-            >
-              <BeakerIcon className="h-5 w-5" />
-              <span className="text-lg">Factory</span>
-            </div>
-          </div>
-          <div className="mt-3 px-2">
-            {tab === 2 ? (
-              <p className="my-7 flex justify-center text-2xl dark:text-primary">Coming soon</p>
-            ) : listingTokens.length > 0 ? (
-              listingTokens.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((currency, index) => {
-                return <CurrencyRow currency={currency} onSelect={handleCurrencySelect} key={index} />;
-              })
-            ) : (
-              <p className="my-7 flex justify-center text-2xl dark:text-primary">No Result Found</p>
-            )}
-          </div>
-          {listingTokens.length > 0 && (
-            <div className="mt-3 mb-2 flex justify-center gap-5">
-              <PrimaryOutlinedButton disabled={page === 0} onClick={prevPage}>
-                Back
-              </PrimaryOutlinedButton>
-              <PrimaryOutlinedButton disabled={page === totalPages - 1} onClick={nextPage}>
-                Next
-              </PrimaryOutlinedButton>
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

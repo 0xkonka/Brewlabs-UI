@@ -90,13 +90,13 @@ const SettingModal = ({
                       ></motion.div>
                       <span
                         onClick={() => setAutoMode(true)}
-                        className="z-10 flex cursor-pointer justify-center px-4 dark:text-white"
+                        className="z-10 flex cursor-pointer justify-center px-4 py-2 dark:text-white"
                       >
                         Auto
                       </span>
                       <span
                         onClick={() => setAutoMode(false)}
-                        className="z-10 flex cursor-pointer justify-center px-4 dark:text-white"
+                        className="z-10 flex cursor-pointer justify-center px-4 py-2 dark:text-white"
                       >
                         Custom
                       </span>
@@ -118,7 +118,7 @@ const SettingModal = ({
                       onBlur={() => parseCustomSlippage((userSlippageTolerance / 100).toFixed(2))}
                       onChange={(e) => parseCustomSlippage(e.target.value)}
                       placeholder={(autoMode ? slippage / 100 : userSlippageTolerance / 100).toFixed(2)}
-                      className="foucus:outline-none max-w-[180px] rounded-xl bg-transparent text-end text-white outline-0 dark:border-primary"
+                      className={`foucus:outline-none max-w-[180px] rounded-xl bg-transparent text-end text-white outline-0 dark:border-primary ${ autoMode ? 'opacity-25' : '' }`}
                       disabled={autoMode}
                     ></input>
                   </div>

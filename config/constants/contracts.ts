@@ -61,5 +61,6 @@ export default {
   },
   brewlabsAggregationRouter: {
     1: "0x6419c300aDB2C25a725111cE8D35a3994B782257",
+    56: "0x4E0ee5a50e39f7e42d971dE53736129e52a5b0Ab"
   }
 }

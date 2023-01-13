@@ -1,10 +1,7 @@
 import { Currency, CurrencyAmount, Pair } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
-import { useTranslation } from "contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import useTokenPrice from "hooks/useTokenPrice";
-import useCoingeckoTokenId from "hooks/useCoingeckoTokenId";
-import useTokenMarketChart from "hooks/useTokenMarketChart";
+import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 
 import { ChevronDownIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 
@@ -45,8 +42,9 @@ const CurrencyOutputPanel = ({
   verified,
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
-  const coingeckoId = useCoingeckoTokenId(currency?.symbol);
-  const { priceChange24h, tokenPrice } = useTokenMarketChart(coingeckoId);
+  const tokenAddress = currency?.wrapped?.address?.toLowerCase();
+  const tokenMarketData = useTokenMarketChart([tokenAddress], chainId);
+  const { usd: tokenPrice, usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
 
   return (
     <Card>
@@ -83,7 +81,11 @@ const CurrencyOutputPanel = ({
               <div className="ml-1">
                 <div className="flex items-center justify-end">
                   <div className="mr-2 text-sm opacity-40">Balance: {balance ? balance.toSignificant(6) : "0.00"}</div>
-                  <a href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`} target="_blank" rel="noreferrer">
+                  <a
+                    href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <img src="/images/explorer/etherscan.png" alt="" className="h-2.5 w-2.5" />
                   </a>
                 </div>

@@ -35,7 +35,7 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
       </motion.div>
 
       {selected && (
-        <Modal closeFn={closeSelected} layoutId={cardId}>
+        <Modal open={selected} closeFn={closeSelected} layoutId={cardId}>
           <iframe
             className="aspect-video w-full"
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1`}
