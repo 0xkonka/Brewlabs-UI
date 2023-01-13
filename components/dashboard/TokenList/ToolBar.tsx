@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { LogoPanel, ValuePanel } from ".";
 
 const ToolBar = ({
-  showType,
   filterType,
   setFilterType,
   fullOpen,
@@ -13,17 +12,14 @@ const ToolBar = ({
   setListType,
   curScroll,
   setCurScroll,
-  valueRef,
 }: {
   setFilterType?: any;
   filterType: number;
-  showType?: number;
   fullOpen: boolean;
   listType: number;
   setListType: any;
   curScroll: number;
   setCurScroll: any;
-  valueRef: any;
 }) => {
   const ref: any = useRef<HTMLDivElement>();
   useEffect(() => {

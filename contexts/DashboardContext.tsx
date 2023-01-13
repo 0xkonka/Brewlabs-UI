@@ -142,10 +142,15 @@ const DashboardContextProvider = ({ children }: any) => {
         chainId === 56 ? "bsc" : "eth"
       }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
       let result = await axios.get(url);
-
-      const isVerifiedResult = await axios.get(
-        `https://${SCAN_URI[chainId]}/api?module=contract&action=getabi&address=${token.address}&apikey=${API_KEY[chainId]}`
-      );
+      let isVerifiedResult: any = false;
+      try {
+        isVerifiedResult = await axios.get(
+          `https://${SCAN_URI[chainId]}/api?module=contract&action=getabi&address=${token.address}&apikey=${API_KEY[chainId]}`
+        );
+        isVerifiedResult.data.message === "NOTOK" ? false : true;
+      } catch (e) {
+        console.log(e);
+      }
 
       let reward = {
           pendingRewards: 0,
@@ -185,7 +190,8 @@ const DashboardContextProvider = ({ children }: any) => {
         const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
         pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
         reward.pendingRewards = pendingRewards / Math.pow(10, rewardToken.decimals);
-        reward.totalRewards = totalRewards / Math.pow(10, rewardToken.decimals);
+        reward.totalRewards =
+          totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.symbol = rewardToken.symbol;
         isReward = true;
       } catch (e) {
@@ -210,7 +216,7 @@ const DashboardContextProvider = ({ children }: any) => {
         logo: logoExist ? token.logo : emptyLogos[chainId],
         priceList: result.data.c,
         price: result.data.c[result.data.c.length - 1],
-        isVerified: isVerifiedResult.data.message === "NOTOK" ? false : true,
+        isVerified: isVerifiedResult,
         reward,
         isScam: isScam,
         isReward,
@@ -248,6 +254,7 @@ const DashboardContextProvider = ({ children }: any) => {
       const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
       const covalReponse: any = await axios.get(covalUrl);
       const items = covalReponse.data.data.items;
+      console.log(items);
       let _tokens: any = [];
       for (let i = 0; i < items.length; i++) {
         if (items[i].balance / 1 > 0)

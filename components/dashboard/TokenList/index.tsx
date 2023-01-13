@@ -181,7 +181,6 @@ const TokenList = ({
   return (
     <StyledContainer className={`ml-1.5 mt-8 w-full max-w-[524px]`} fullOpen={fullOpen} count={showData.length}>
       <ToolBar
-        showType={showType}
         setFilterType={setFilterType}
         filterType={filterType}
         fullOpen={fullOpen}
@@ -189,7 +188,6 @@ const TokenList = ({
         setListType={setListType}
         curScroll={curScroll}
         setCurScroll={setCurScroll}
-        valueRef={valueRef}
       />
       <div className={"flex items-center justify-between"}>
         <LogoPanel className={"pt-3"} showShadow={showBoxShadow.toString()}>
