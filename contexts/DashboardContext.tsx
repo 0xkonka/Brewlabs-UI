@@ -145,8 +145,6 @@ const DashboardContextProvider = ({ children }: any) => {
       }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
       let result = await axios.get(url);
 
-      const _infoResult = await fetchTokenBaseInfo(token.address);
-
       const isVerifiedResult = await axios.get(
         `https://${SCAN_URI[chainId]}/api?module=contract&action=getabi&address=${token.address}&apikey=${API_KEY[chainId]}`
       );
@@ -197,7 +195,7 @@ const DashboardContextProvider = ({ children }: any) => {
       }
       let isScam = false;
       try {
-        if (signer) {
+        if (signer && token.address !== WETH_ADDR[chainId]) {
           const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
           await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
         }
@@ -208,12 +206,9 @@ const DashboardContextProvider = ({ children }: any) => {
         ...token,
         priceList: result.data.c,
         price: result.data.c[result.data.c.length - 1],
-        name: token.logo === CHAIN_LOGO[chainId] ? CHAIN_NAME[chainId] : _infoResult[0][0],
-        symbol: token.logo === CHAIN_LOGO[chainId] ? CHAIN_NAME[chainId] : _infoResult[1][0],
-        decimals: _infoResult[2][0],
         isVerified: isVerifiedResult.data.message === "NOTOK" ? false : true,
         reward,
-        isScam: token.logo === CHAIN_LOGO[chainId] ? false : isScam,
+        isScam: isScam,
         isReward,
       };
     } catch (error) {
@@ -245,61 +240,29 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchTokens() {
     try {
-      let tokenTxs: any = await axios.get(
-        `https://${SCAN_URI[chainId]}/api?module=account&action=tokentx&address=${address}&page=1&offset=10000&sort=desc&apikey=${API_KEY[chainId]}`
-      );
-      tokenTxs = tokenTxs.data.result;
-      let tokenListCalls: any = [];
-      for (let i = 0; i < tokenTxs.length; i++) {
-        const filter = tokenListCalls.filter((data: any) => data.address === tokenTxs[i].contractAddress);
-        if (filter.length) continue;
-        if (tokenTxs[i].to === address?.toLowerCase()) {
-          tokenListCalls.push({
-            address: tokenTxs[i].contractAddress,
-            name: "balanceOf",
-            params: [address],
-          });
-        }
-      }
+      console.log("asdfasdfasdf");
+      const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
+      const covalReponse: any = await axios.get(covalUrl);
+      const items = covalReponse.data.data.items;
       let _tokens: any = [];
-      const result = await splitMulticall(ERC20ABI, tokenListCalls);
-
-      const ethBalance = await fetchEthBalance(address);
-      if (ethBalance / 1 > 0) {
-        console.log(ethBalance.toString());
-        _tokens.push({
-          balance: ethBalance,
-          logo: CHAIN_LOGO[chainId],
-          address: WETH_ADDR[chainId],
-        });
-      }
-
-      for (let i = 0; i < tokenListCalls.length; i++) {
-        if (result[i][0] / 1 > 0) {
-          const filters: any = tokenlist.filter((data: any) => data.address === tokenListCalls[i].address);
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].balance / 1 > 0)
           _tokens.push({
-            balance: result[i][0],
-            logo: filters.length
-              ? filters[0].logoURI
-              : chainId === 56
-              ? "/images/dashboard/tokens/empty-token-bsc.webp"
-              : "/images/dashboard/tokens/empty-token-eth.webp",
-            address: tokenListCalls[i].address,
+            balance: items[i].balance,
+            name: items[i].contract_name,
+            symbol: items[i].contract_ticker_symbol,
+            decimals: items[i].contract_decimals,
+            logo: items[i].logo_url,
+            address:
+              items[i].contract_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                ? WETH_ADDR[chainId]
+                : items[i].contract_address,
           });
-        }
       }
+      console.log(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
       console.log(tokenInfos);
       setTokens(tokenInfos);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function fetchTokenList() {
-    try {
-      const result = await axios.get(tokenList_URI[chainId]);
-      setTokenList(result.data.tokens);
     } catch (error) {
       console.log(error);
     }
@@ -339,20 +302,13 @@ const DashboardContextProvider = ({ children }: any) => {
   }
 
   useBigSlowRefreshEffect(() => {
-    if (!(chainId === 56 || !signer || chainId === 1) || !tokenlist.length) {
+    if (!(chainId === 56 || !signer || chainId === 1)) {
       setTokens([]);
     } else {
       fetchMarketInfo();
       fetchTokens();
     }
-  }, [chainId, signer, tokenlist]);
-
-  useDailyRefreshEffect(() => {
-    if (!(chainId === 56 || chainId === 1) || !address) setTokenList([]);
-    else {
-      fetchTokenList();
-    }
-  }, [chainId]);
+  }, [chainId, signer]);
 
   return (
     <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending }}>

@@ -12,6 +12,11 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
 
+const emptyLogos = {
+  1: "/images/dashboard/tokens/empty-token-eth.webp",
+  56: "/images/dashboard/tokens/empty-token-bsc.webp",
+};
+
 const TokenList = ({
   tokens,
   showType,
@@ -213,7 +218,12 @@ const TokenList = ({
                     </div>
                   </div>
 
-                  <img src={data.logo} alt={""} className={"mx-2.5 h-[15px] w-[15px]"} />
+                  <img
+                    src={data.logo}
+                    alt={""}
+                    className={"mx-2.5 h-[15px] w-[15px]"}
+                    onError={(e: any) => (e.target.src = emptyLogos[chainId])}
+                  />
 
                   <div>
                     <div className={"flex items-center text-white"}>
