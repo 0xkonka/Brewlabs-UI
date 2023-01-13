@@ -272,9 +272,9 @@ const DashboardContextProvider = ({ children }: any) => {
   }
 
   async function fetchMarketInfo() {
-    try {
-      let i;
-      for (i = 0; i < apiKeyList.length; i++) {
+    let i;
+    for (i = 0; i < apiKeyList.length; i++) {
+      try {
         const response = await fetch(new Request("https://api.livecoinwatch.com/overview/history"), {
           method: "POST",
           headers: new Headers({
@@ -288,19 +288,18 @@ const DashboardContextProvider = ({ children }: any) => {
           }),
         });
         let result = await response.json();
-
         let temp: any = [];
         for (let i = 0; i < result.length; i++) {
           temp.push(result[i].cap);
         }
         setMarketHistory(temp);
         break;
+      } catch (error) {
+        console.log(error);
       }
-      if (i === apiKeyList.length) {
-        setMarketHistory([]);
-      }
-    } catch (error) {
-      console.log(error);
+    }
+    if (i === apiKeyList.length) {
+      setMarketHistory([]);
     }
   }
 
