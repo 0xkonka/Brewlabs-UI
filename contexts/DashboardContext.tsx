@@ -263,7 +263,6 @@ const DashboardContextProvider = ({ children }: any) => {
                 : items[i].contract_address,
           });
       }
-      console.log(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
       console.log(tokenInfos);
       setTokens(tokenInfos);

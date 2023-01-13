@@ -60,8 +60,8 @@ const TokenList = ({
               : filterType === 3
               ? formartBalance(data[i]) * data[i].price < formartBalance(data[j]) * data[j].price
               : filterType === 4
-              ? data[i].reward.totalReward < data[j].reward.totalReward
-              : data[i].reward.pendingReward < data[j].reward.pendingReward
+              ? data[i].reward.totalRewards < data[j].reward.totalRewards
+              : data[i].reward.pendingRewards < data[j].reward.pendingRewards
           ) {
             let temp = data[i];
             data[i] = data[j];
@@ -346,9 +346,9 @@ const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
 `;
 
 const StyledDiv = styled.div`
-  width: 96px;
+  max-width: 96px;
   @media screen and (max-width: 520px) {
-    width: 38px;
+    max-width: 38px;
   }
 `;
 export default TokenList;
