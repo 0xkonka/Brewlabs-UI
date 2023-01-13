@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useSlowRefreshEffect, useDailyRefreshEffect } from "hooks/useRefreshEffect";
+import { useBigSlowRefreshEffect, useDailyRefreshEffect } from "hooks/useRefreshEffect";
 import { erc20ABI, useAccount, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import {
@@ -197,7 +197,9 @@ const DashboardContextProvider = ({ children }: any) => {
       }
       let isScam = false;
       try {
+        console.log("BBBB");
         if (signer) {
+          console.log("AAAA");
           const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
           await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
         }
@@ -222,7 +224,7 @@ const DashboardContextProvider = ({ children }: any) => {
   };
 
   const fetchTokenInfos = async (tokens: [], initial: boolean) => {
-    let data;
+    let data: any;
     console.log("Initial", initial);
     if (initial)
       data = await Promise.all(
@@ -288,8 +290,8 @@ const DashboardContextProvider = ({ children }: any) => {
           });
         }
       }
-      console.log(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
+      console.log(tokenInfos);
       setTokens(tokenInfos);
     } catch (error) {
       console.log(error);
@@ -338,7 +340,7 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   }
 
-  useSlowRefreshEffect(() => {
+  useBigSlowRefreshEffect(() => {
     if (!(chainId === 56 || chainId === 1) || !address || !tokenlist.length) {
       setTokens([]);
     } else {

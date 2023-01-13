@@ -93,7 +93,7 @@ const TokenList = ({
   useEffect(() => {
     getFavourites();
     getArchives();
-  }, []);
+  }, [chainId]);
 
   useEffect(() => {
     let _showData: any = [];
