@@ -19,12 +19,11 @@ const Loading = () => {
 const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number }) => {
   let pricehistory: any = [];
   const { marketHistory }: any = useContext(DashboardContext);
-  // return <Loading />;
   if (showType === 1) {
     if (!marketHistory.length) return <Loading />;
     pricehistory = marketHistory;
   } else {
-    if (!tokens.length) return <Loading />;
+    if (!tokens.length || !tokens[0].priceList) return <Loading />;
     for (let i = 0; i < tokens[0].priceList.length; i++) {
       pricehistory[i] = 0;
       for (let j = 0; j < tokens.length; j++) {
