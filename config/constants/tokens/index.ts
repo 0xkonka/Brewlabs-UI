@@ -67,7 +67,7 @@ export const quoteTokens = {
   ],
 };
 export const serializeTokens = (chainId: ChainId): SerializedTokenList => {
-  const unserializedTokens: {[key: string]: Currency} = tokens[chainId];
+  const unserializedTokens: { [key: string]: Currency } = tokens[chainId];
   const serializedTokens = Object.keys(unserializedTokens).reduce((accum, key) => {
     return { ...accum, [key]: serializeToken(unserializedTokens[key]) };
   }, {} as any);
