@@ -17,7 +17,6 @@ import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
-import useCoingeckoTokenId from "hooks/useCoingeckoTokenId";
 import useWalletTokens from "hooks/useWalletTokens";
 import { CurrencyLogo } from "components/logo";
 import { PrimaryOutlinedButton } from "components/button/index";
@@ -31,7 +30,6 @@ interface CurrencySelectProps {
   onCurrencySelect: (currency: Currency) => void;
   otherSelectedCurrency?: Currency | null;
   filteredCurrencies?: Currency[];
-  layoutId: string;
 }
 
 const CurrencyRow = ({
@@ -101,7 +99,6 @@ const CurrencySelect = ({
   open,
   onCurrencySelect,
   filteredCurrencies,
-  layoutId,
 }: CurrencySelectProps) => {
   const { chainId, account } = useActiveWeb3React();
 

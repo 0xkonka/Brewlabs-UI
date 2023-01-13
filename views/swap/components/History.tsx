@@ -10,8 +10,6 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ETH_ADDRESSES } from "config/constants";
 import { EXPLORER_URLS } from "config/constants/networks";
 
-
-
 const Row = (data: any) => {
   const { data: {id, caller, srcToken, dstToken, spentAmount, returnAmount, transactionHash} } = data;
   const inputCurrency = useCurrency(ETH_ADDRESSES.includes(srcToken) ? "ETH" : srcToken);

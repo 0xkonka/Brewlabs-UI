@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 
 import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 
-import Card from "./Card";
 import Modal from "components/MotionModal";
 import ChainSelector from "components/ChainSelector";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -27,8 +26,6 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
   const closeSelected = () => {
     setSelected(false);
   };
-
-  const active = false;
 
   return (
     <>

@@ -9,6 +9,7 @@ type Props = {
 
 const SubNav = ({ openSettingModal }: Props) => {
   const [hoverSetting, setHoverSetting] = useState(false);
+
   return (
     <div className="grid grid-cols-2 justify-between gap-1 sm:flex">
       <Card>

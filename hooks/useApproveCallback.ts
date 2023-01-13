@@ -91,6 +91,7 @@ export function useApproveCallback(
         gasLimit: calculateGasMargin(estimatedGas),
       }
     );
+    // add transaction detail to the global state store
     addTransaction(response, {
       summary: `Approve ${amountToApprove.currency.symbol}`,
       approval: { tokenAddress: token.address, spender },

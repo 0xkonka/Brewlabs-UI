@@ -1,16 +1,15 @@
 import { Currency, CurrencyAmount, Pair } from "@brewlabs/sdk";
+import { ChevronDownIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
+
+import { EXPLORER_URLS } from "config/constants/networks";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 
-import { ChevronDownIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
-
-import { EXPLORER_URLS } from "config/constants/networks";
-
+import { CurrencyLogo } from "../logo";
 import Card from "../../views/swap/components/Card";
 import NumericalInput from "./NumericalInput";
 import TradeCard from "./TradeCard";
-import { CurrencyLogo } from "../logo";
 
 interface CurrencyOutputPanelProps {
   value: string;

@@ -1,4 +1,3 @@
-import { useTranslation } from "contexts/localization";
 import { escapeRegExp } from '../../utils'
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." characters via in a non-capturing group
@@ -29,8 +28,6 @@ const NumericalInput = ({
       enforcer(e.target.value.replace(/,/g, '.'))
     }
   }
-
-  const { t } = useTranslation()
 
   return (
     <input

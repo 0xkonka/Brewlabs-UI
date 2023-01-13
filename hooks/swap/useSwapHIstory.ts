@@ -1,12 +1,11 @@
-import { useMemo, useState, useCallback } from "react";
-import { useAccount } from "wagmi";
+import { useState } from "react";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useFastRefreshEffect } from "hooks/useRefreshEffect";
 import { useGraphEndPoint } from "./useGraphEndPoint";
 import { getSwapLogs } from "lib/swap/history";
 
 export const useSwapHistory = () => {
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
 
   const [swapLogs, setSwapLogs] = useState<any[]>([]);
 

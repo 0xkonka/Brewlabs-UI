@@ -1,21 +1,23 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
-import { Currency, CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
+import { CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
+import { useSigner } from "wagmi";
 import { ethers, BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { MaxUint256 } from "@ethersproject/constants";
 import { TransactionResponse } from "@ethersproject/providers";
 
-import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 
 import { useTranslation } from "contexts/localization";
 
 import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
-import contracts from "config/constants/contracts";
 import { usdToken } from "config/constants/tokens";
+import contracts from "config/constants/contracts";
 import AggregaionRouterV2Abi from "config/abi/AggregationRouterV5.json";
 
+import { useUserSlippageTolerance, useIsExpertMode } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import {
   useSwapState,
@@ -24,15 +26,14 @@ import {
   tryParseAmount,
   useDefaultsFromURLSearch,
 } from "state/swap/hooks";
-import { useUserSlippageTolerance, useIsExpertMode } from "state/user/hooks";
 
 import { calculateTotalGas } from "utils";
-import maxAmountSpend from "utils/maxAmountSpend";
 import { getBrewlabsAggregationRouterAddress, addressWithout0x } from "utils/addressHelpers";
 import { quote, swap, ETHER_ADDRESS } from "utils/aggregator";
 import { BIG_ONE } from "utils/bigNumber";
 import { getTokenInfo } from "utils/getTokenInfo";
-import { getAggregatorContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
+import { getBrewlabsAggregationRouterContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
+import maxAmountSpend from "utils/maxAmountSpend";
 
 import CurrencySelect from "./CurrencySelect";
 import PageHeader from "components/layout/PageHeader";
@@ -41,7 +42,6 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
-import Modal from "components/Modal";
 import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
 import SubNav from "./components/SubNav";
@@ -49,12 +49,8 @@ import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ApproveModal from "./components/modal/ApproveModal";
-import { ContractMethodNoResultError, useSigner } from "wagmi";
 import { motion, AnimatePresence } from "framer-motion";
 import SettingModal from "./components/modal/SettingModal";
-import { getBrewlabsAggregationRouterContract } from "../../utils/contractHelpers";
-import { NodeNextRequest } from "next/dist/server/base-http/node";
-import ProgressBar from "../../components/ProgressBar";
 import { EXPLORER_URLS } from "config/constants/networks";
 
 type TxResponse = TransactionResponse | null;
@@ -277,13 +273,6 @@ export default function Swap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencies[Field.OUTPUT]]);
 
-  const pendingText = t("Exchanging %amountA% %symbolA% to %amountB% %symbolB%", {
-    amountA: inputAmount?.toSignificant(6) ?? "",
-    symbolA: currencies[Field.INPUT]?.symbol ?? "",
-    amountB: outputAmount?.toSignificant(6) ?? "",
-    symbolB: currencies[Field.OUTPUT]?.symbol ?? "",
-  });
-
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
@@ -475,21 +464,10 @@ export default function Swap() {
     }
   };
 
-  const handleDismissConfirmation = useCallback(() => {
-    // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onUserInput(Field.INPUT, "");
-    }
-    setTxHash("");
-  }, [onUserInput, txHash]);
-
-  const swapBoxLayoutId = "curreny-selection";
-
   return (
     <PageWrapper>
       <CurrencySelect
         open={inputCurrencySelect || outputCurrencySelect}
-        layoutId={swapBoxLayoutId}
         onCurrencySelect={inputCurrencySelect ? handleInputSelect : handleOutputSelect}
         onDismiss={() => (inputCurrencySelect ? setInputCurrencySelect(false) : setOutputCurrencySelect(false))}
         selectedCurrency={inputCurrencySelect ? currencies[Field.INPUT] : currencies[Field.OUTPUT]}

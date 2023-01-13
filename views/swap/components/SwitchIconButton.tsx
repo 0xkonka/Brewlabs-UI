@@ -3,6 +3,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 type SwitchIconButtonType = {
   onSwitch: () => void;
 };
+
 const SwitchIconButton = ({ onSwitch }: SwitchIconButtonType) => {
   return (
     <div className="flex justify-center" style={{ zIndex: "1" }}>

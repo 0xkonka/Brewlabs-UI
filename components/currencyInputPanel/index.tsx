@@ -1,12 +1,12 @@
 import { Currency, CurrencyAmount, Pair, Price, TokenAmount } from "@brewlabs/sdk";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
+
+import { EXPLORER_URLS } from "config/constants/networks";
 import { useTranslation } from "contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenPrice from "hooks/useTokenPrice";
 
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-
-import { EXPLORER_URLS } from "config/constants/networks";
 import Card from "../../views/swap/components/Card";
 import NumericalInput from "./NumericalInput";
 import { CurrencyLogo } from "../logo";
