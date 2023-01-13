@@ -197,9 +197,7 @@ const DashboardContextProvider = ({ children }: any) => {
       }
       let isScam = false;
       try {
-        console.log("BBBB");
         if (signer) {
-          console.log("AAAA");
           const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
           await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
         }
@@ -341,13 +339,13 @@ const DashboardContextProvider = ({ children }: any) => {
   }
 
   useBigSlowRefreshEffect(() => {
-    if (!(chainId === 56 || chainId === 1) || !address || !tokenlist.length) {
+    if (!(chainId === 56 || !signer || chainId === 1) || !tokenlist.length) {
       setTokens([]);
     } else {
       fetchMarketInfo();
       fetchTokens();
     }
-  }, [chainId, address, tokenlist]);
+  }, [chainId, signer, tokenlist]);
 
   useDailyRefreshEffect(() => {
     if (!(chainId === 56 || chainId === 1) || !address) setTokenList([]);
