@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { API_URL } from "config/constants";
 import { useSlowRefreshEffect, useDailyRefreshEffect } from "hooks/useRefreshEffect";
-import { balanceQuery } from "./queries";
-import { useAccount } from "wagmi";
+import { erc20ABI, useAccount, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { getMulticallContract } from "utils/contractHelpers";
+import {
+  getClaimableTokenContract,
+  getContract,
+  getDividendTrackerContract,
+  getMulticallContract,
+} from "utils/contractHelpers";
 import ERC20ABI from "../config/abi/erc20.json";
+import claimableTokenABI from "../config/abi/claimableToken.json";
 
 import { ethers } from "ethers";
-import { filter, initial } from "lodash";
 
-const DashboardContext = React.createContext({
+const DashboardContext: any = React.createContext({
   tokens: [],
   marketHistory: [],
+  pending: false,
+  setPending: () => {},
 });
 
 const API_KEY: any = {
@@ -31,6 +36,21 @@ const SCAN_URI: any = {
   56: "api.bscscan.com",
 };
 
+const WETH_ADDR: any = {
+  1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+};
+
+const CHAIN_LOGO: any = {
+  1: "/images/dashboard/tokens/ETH.png",
+  56: "/images/dashboard/tokens/BNB.png",
+};
+
+const CHAIN_NAME: any = {
+  1: "ETH",
+  56: "BNB",
+};
+
 const apiKeyList = [
   "82fc55c0-9833-4d12-82bb-48ae9748bead",
   "10760947-8c9a-4a18-b20f-2be694baf496",
@@ -41,9 +61,11 @@ const apiKeyList = [
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
+  const [pending, setPending] = useState(false);
   const [tokenlist, setTokenList] = useState([]);
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
+  const { data: signer }: any = useSigner();
 
   async function multicall(abi: any, calls: any) {
     try {
@@ -77,42 +99,122 @@ const DashboardContextProvider = ({ children }: any) => {
     return result;
   }
 
+  const fetchTokenBaseInfo = async (address: any) => {
+    const calls = [
+      {
+        address: address,
+        name: "name",
+      },
+      {
+        address: address,
+        name: "symbol",
+      },
+      {
+        address: address,
+        name: "decimals",
+      },
+    ];
+    const result = await multicall(erc20ABI, calls);
+    return result;
+  };
+
+  const fetchEthBalance = async (address: any) => {
+    const multicallContract = getMulticallContract(chainId);
+    const result = await multicallContract.getEthBalance(address);
+    return result;
+  };
+
+  const fetchTokenBalance = async (address: any, account: any) => {
+    const multicallContract = getMulticallContract(chainId);
+    const calls = [
+      {
+        name: "balanceOf",
+        params: [account],
+        address: address,
+      },
+    ];
+    const result = await multicall(ERC20ABI, calls);
+    return result[0][0];
+  };
+
   const fetchTokenInfo = async (token: any) => {
     try {
       const to = Math.floor(Date.now() / 1000);
-      let result = await axios.get(
-        `https://api.dex.guru/v1/tradingview/history?symbol=${token.address}-${
-          chainId === 56 ? "bsc" : "eth"
-        }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
-      );
-      const calls = [
-        {
-          address: token.address,
-          name: "name",
-        },
-        {
-          address: token.address,
-          name: "symbol",
-        },
-        {
-          address: token.address,
-          name: "decimals",
-        },
-      ];
-      const _infoResult = await multicall(ERC20ABI, calls);
+      const url = `https://api.dex.guru/v1/tradingview/history?symbol=${token.address}-${
+        chainId === 56 ? "bsc" : "eth"
+      }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
+      let result = await axios.get(url);
+
+      const _infoResult = await fetchTokenBaseInfo(token.address);
 
       const isVerifiedResult = await axios.get(
         `https://${SCAN_URI[chainId]}/api?module=contract&action=getabi&address=${token.address}&apikey=${API_KEY[chainId]}`
       );
 
+      let reward = {
+          pendingRewards: 0,
+          totalRewards: 0,
+          symbol: "",
+        },
+        isReward = false;
+      try {
+        const claimableContract = getClaimableTokenContract(chainId, token.address);
+        const dividendTracker = await claimableContract.dividendTracker();
+        let rewardToken,
+          pendingRewards = 0,
+          totalRewards = 0;
+        try {
+          // const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
+          const rewardTokenAddress = await claimableContract.dividendToken();
+          const rewardTokenBaseinfo = await fetchTokenBaseInfo(rewardTokenAddress);
+          rewardToken = {
+            address: rewardTokenAddress,
+            name: rewardTokenBaseinfo[0][0],
+            symbol: rewardTokenBaseinfo[1][0],
+            decimals: rewardTokenBaseinfo[2][0],
+          };
+        } catch (e) {
+          rewardToken = {
+            address: "0x0",
+            name: chainId === 56 ? "BNB" : "ETH",
+            symbol: chainId === 56 ? "BNB" : "ETH",
+            decimals: 18,
+          };
+        }
+        if (rewardToken.address === "0x0") {
+          totalRewards = await fetchEthBalance(dividendTracker);
+        } else {
+          totalRewards = await fetchTokenBalance(rewardToken.address, dividendTracker);
+        }
+        const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
+        pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
+        reward.pendingRewards = pendingRewards / Math.pow(10, rewardToken.decimals);
+        reward.totalRewards = totalRewards / Math.pow(10, rewardToken.decimals);
+        reward.symbol = rewardToken.symbol;
+        isReward = true;
+      } catch (e) {
+        // console.log(e);
+      }
+      let isScam = false;
+      try {
+        if (signer) {
+          const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
+          await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
+        }
+      } catch (error) {
+        isScam = true;
+      }
       return {
         ...token,
         priceList: result.data.c,
         price: result.data.c[result.data.c.length - 1],
-        name: _infoResult[0][0],
-        symbol: _infoResult[1][0],
+        name: token.logo === CHAIN_LOGO[chainId] ? CHAIN_NAME[chainId] : _infoResult[0][0],
+        symbol: token.logo === CHAIN_LOGO[chainId] ? CHAIN_NAME[chainId] : _infoResult[1][0],
         decimals: _infoResult[2][0],
         isVerified: isVerifiedResult.data.message === "NOTOK" ? false : true,
+        reward,
+        isScam: token.logo === CHAIN_LOGO[chainId] ? false : isScam,
+        isReward,
       };
     } catch (error) {
       console.log(error);
@@ -124,8 +226,8 @@ const DashboardContextProvider = ({ children }: any) => {
     console.log("Initial", initial);
     if (initial)
       data = await Promise.all(
-        tokens.map(async (data) => {
-          const tokenInfo: any = await fetchTokenInfo(data);
+        tokens.map(async (data: any) => {
+          const tokenInfo = await fetchTokenInfo(data);
           const serializedToken = { ...tokenInfo };
           return serializedToken;
         })
@@ -161,25 +263,33 @@ const DashboardContextProvider = ({ children }: any) => {
       }
       let _tokens: any = [];
       const result = await splitMulticall(ERC20ABI, tokenListCalls);
+
+      const ethBalance = await fetchEthBalance(address);
+      if (ethBalance / 1 > 0) {
+        console.log(ethBalance.toString());
+        _tokens.push({
+          balance: ethBalance,
+          logo: CHAIN_LOGO[chainId],
+          address: WETH_ADDR[chainId],
+        });
+      }
+
       for (let i = 0; i < tokenListCalls.length; i++) {
         if (result[i][0] / 1 > 0) {
           const filters: any = tokenlist.filter((data: any) => data.address === tokenListCalls[i].address);
           _tokens.push({
             balance: result[i][0],
-            isReward: true,
-            isScam: false,
-            logo: filters.length ? filters[0].logoURI : "/logo.png",
+            logo: filters.length
+              ? filters[0].logoURI
+              : chainId === 56
+              ? "/images/dashboard/tokens/empty-token-bsc.webp"
+              : "/images/dashboard/tokens/empty-token-eth.webp",
             address: tokenListCalls[i].address,
-            reward: {
-              totalRewards: 0,
-              pendingRewards: 0,
-              symbol: "",
-            },
           });
         }
       }
+      console.log(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
-      console.log(tokenInfos);
       setTokens(tokenInfos);
     } catch (error) {
       console.log(error);
@@ -244,7 +354,11 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   }, [chainId]);
 
-  return <DashboardContext.Provider value={{ tokens, marketHistory }}>{children}</DashboardContext.Provider>;
+  return (
+    <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending }}>
+      {children}
+    </DashboardContext.Provider>
+  );
 };
 
 export { DashboardContext, DashboardContextProvider };

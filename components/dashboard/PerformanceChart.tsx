@@ -4,23 +4,34 @@ import dynamic from "next/dynamic";
 import styled from "styled-components";
 import { DashboardContext } from "contexts/DashboardContext";
 import { upSVG, downSVG } from "./assets/svgs";
+import { TailSpin } from "react-loader-spinner";
+import { BigNumberFormat } from "utils/functions";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
+const Loading = () => {
+  return (
+    <div className={"flex h-[230px] w-full justify-center pt-10"}>
+      <TailSpin width={50} height={50} color={"rgba(255,255,255,0.5"} />
+    </div>
+  );
+};
 const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number }) => {
   let pricehistory: any = [];
-  const { marketHistory } = useContext(DashboardContext);
-
+  const { marketHistory }: any = useContext(DashboardContext);
+  // return <Loading />;
   if (showType === 1) {
-    if (!marketHistory.length) return <></>;
+    if (!marketHistory.length) return <Loading />;
     pricehistory = marketHistory;
   } else {
-    if (!tokens.length) return <></>;
+    if (!tokens.length) return <Loading />;
     for (let i = 0; i < tokens[0].priceList.length; i++) {
       pricehistory[i] = 0;
       for (let j = 0; j < tokens.length; j++) {
         if (!tokens[j].priceList) continue;
-        pricehistory[i] += (tokens[j].priceList[i] * tokens[j].balance) / Math.pow(10, tokens[j].decimals);
+        const price = (tokens[j].priceList[i] * tokens[j].balance) / Math.pow(10, tokens[j].decimals);
+        if (isNaN(price)) continue;
+        pricehistory[i] += price;
       }
     }
   }
@@ -114,17 +125,6 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
 
   const price = pricehistory[pricehistory.length - 1];
 
-  function numberWithCommas(x: any) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
-  const BigNumberFormat = (str: any) => {
-    if (Number(str) >= 10000000000) return `${numberWithCommas((str / 1000000000).toFixed(2))}B`;
-    else if (Number(str) >= 10000000) return `${numberWithCommas((str / 1000000).toFixed(2))}M`;
-    else if (Number(str) >= 10000) return `${numberWithCommas((str / 1000).toFixed(2))}K`;
-    else return `${numberWithCommas(str.toFixed(2))}`;
-  };
-
   return (
     <StyledContainer down={(priceChange < 0).toString()}>
       <div className={"flex items-center justify-between font-semibold text-white"}>
@@ -148,7 +148,7 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
       </div>
       <div>
         {typeof window !== "undefined" && (
-          <Chart options={chartData.options} series={chartData.series} type="area" height={165} />
+          <Chart options={chartData.options} series={chartData.series} type="area" height={200} />
         )}
       </div>
     </StyledContainer>
@@ -187,6 +187,7 @@ const StyledContainer = styled.div<{ down: String }>`
   }
   > div:nth-child(2) > div {
     min-height: unset !important;
-    margin-top: -20px;
+    margin-top: -35px;
   }
+  height: 230px;
 `;

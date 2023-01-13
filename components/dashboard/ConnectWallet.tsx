@@ -101,7 +101,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
               </p>
-              <p className="text-left text-xs font-medium">
+              <p className="text-left text-xs font-medium truncate">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
               </p>
             </MaxWidthButton>
