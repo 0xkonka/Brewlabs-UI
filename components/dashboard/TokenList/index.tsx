@@ -221,7 +221,7 @@ const TokenList = ({
                     <div className={"flex items-center text-white"}>
                       <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
                       <div className={data.isVerified ? "" : "hidden"}>
-                        <CheckCircleIcon className="ml-1 max-h-[7.5px] min-h-[7.5px] min-w-[7.5px] max-w-[7.5px] text-success" />
+                        <CheckCircleIcon className="ml-1 max-h-[7.5px] min-h-[7.5px] min-w-[7.5px] max-w-[7.5px] text-green" />
                       </div>
                     </div>
                     <StyledDiv className={fullOpen ? "" : "hidden"}>
@@ -244,7 +244,7 @@ const TokenList = ({
                   key={i}
                   className={`mb-2.5 flex ${
                     fullOpen ? "h-[24px]" : "h-[15px]"
-                  } items-center justify-between text-xxs font-semibold ${priceUp ? "text-success" : "text-danger"}`}
+                  } items-center justify-between text-xxs font-semibold ${priceUp ? "text-green" : "text-danger"}`}
                 >
                   <div className={`${fullOpen ? "min-w-[8px]" : "min-w-[45px]"} text-center`}>
                     {fullOpen ? (

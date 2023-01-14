@@ -20,7 +20,7 @@ import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
-import { LanguageProvider } from "contexts/Localization";
+import { LanguageProvider } from "contexts/localization";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
@@ -29,6 +29,7 @@ import { client } from "utils/wagmi";
 import "animate.css";
 import "../styles/globals.css";
 import "../styles/animations.scss";
+import "../styles/Toast.custom.scss";
 import SEO from "../next-seo.config.mjs";
 
 import UserSidebar from "../components/dashboard/UserSidebar";
@@ -116,6 +117,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                               </LazyMotion>
                             </div>
                           </div>
+                          <ToastContainer />
                         </div>
                       </PersistGate>
                     </SWRConfig>

@@ -10,6 +10,7 @@ import { updateVersion } from "./global/actions";
 import storage from "./storage";
 import farmsReducer from "./farms";
 import user from './user/reducer';
+import transactions from './transactions/reducer'
 import swap from './swap/reducer';
 import lists from './lists/reducer';
 import multicall from "./multicall/reducer";
@@ -30,6 +31,7 @@ const persistedReducer = persistReducer(
   combineReducers({
     farms: farmsReducer,
     user,
+    transactions,
     swap,
     multicall,
     lists

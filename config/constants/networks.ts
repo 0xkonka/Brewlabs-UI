@@ -55,6 +55,11 @@ export const EXPLORER_NAMES = {
   [ChainId.BRISE]: "BriseScan",
 };
 
+export const EXPLORER_URLS = {
+  [ChainId.ETHEREUM]: "https://etherscan.io",
+  [ChainId.BSC_MAINNET]: "https://bscscan.com"
+}
+
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
   [ChainId.GOERLI]: "Goerli",
@@ -84,3 +89,8 @@ export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   name: CHAIN_LABLES[chainId],
   image: CHAIN_ICONS[chainId],
 }));
+
+export const MORALIS_CHAIN_NAME = {
+  [ChainId.ETHEREUM]: "mainnet",
+  [ChainId.BSC_MAINNET]: "bsc",
+};

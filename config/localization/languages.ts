@@ -1,4 +1,4 @@
-import { Language } from '../../contexts/Localization/types'
+import { Language } from '../../contexts/localization/types'
 
 export const AR: Language = { locale: 'ar-SA', language: 'العربية', code: 'ar' }
 export const BN: Language = { locale: 'bn-BD', language: 'বাংলা', code: 'bn' }

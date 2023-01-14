@@ -25,6 +25,9 @@ export const getTokenTransferAddress = (chainId: ChainId) => {
 export const getAggregatorAddress = (chainId: ChainId) => {
   return getAddress(addresses.aggregator, chainId);
 };
+export const getBrewlabsAggregationRouterAddress = (chainId: ChainId) => {
+  return getAddress(addresses.brewlabsAggregationRouter, chainId);
+}
 export const getZapperAddress = (chainId: ChainId) => {
   return getAddress(addresses.zapper, chainId);
 };
@@ -49,3 +52,6 @@ export const getNativeWrappedAddress = (chainId: ChainId) => {
 export const getExternalMasterChefAddress = (appId: AppId, version = Chef.MASTERCHEF) => {
   return appId !== AppId.SUSHISWAP ? addresses.externalMasterChef[appId] : addresses.externalMasterChef[appId][version];
 };
+export const addressWithout0x = (address: string) => {
+  return address.replace("0x", "");
+}
