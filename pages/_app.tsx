@@ -19,7 +19,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
-import { LanguageProvider } from "contexts/localization";
+import { DashboardContextProvider } from "contexts/DashboardContext";
+import { LanguageProvider } from "contexts/Localization";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
@@ -72,8 +73,9 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
       <WagmiProvider client={client}>
         <Provider store={store}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <LanguageProvider>
-              <TokenPriceContextProvider>
+            <TokenPriceContextProvider>
+              <DashboardContextProvider>
+                <LanguageProvider>
                 <BridgeProvider>
                   <SWRConfig>
                     <GlobalHooks />
@@ -120,8 +122,9 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                     </PersistGate>
                   </SWRConfig>
                 </BridgeProvider>
-              </TokenPriceContextProvider>
-            </LanguageProvider>
+                </LanguageProvider>
+              </DashboardContextProvider>
+            </TokenPriceContextProvider>
           </ThemeProvider>
         </Provider>
       </WagmiProvider>

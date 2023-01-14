@@ -7,7 +7,11 @@ module.exports = {
     screens: {
       xs: "380px",
       xsm: "450px",
+      xmd: "520px",
       ...defaultTheme.screens,
+    },
+    fontSize: {
+      xxs: "8px",
     },
     extend: {
       colors: {
@@ -16,6 +20,11 @@ module.exports = {
         eth: "#5D78DE",
         bsc: "#E4B00A",
         primary: "#EEBB19",
+        yellow: "#ffde00",
+        portfolio: "#efbb19",
+        grey: "#CFCFCF",
+        success: "#2FD35D",
+        danger: "#D9563A",
         warning: "#D9563A",
         green: "#2FD35D"
       },
@@ -27,6 +36,7 @@ module.exports = {
       script: ['"Caveat"'],
       brand: ['"Questrial"'],
       roboto: ['"Roboto"'],
+      dash: ['"Roboto"'],
     }
   },
   plugins: [

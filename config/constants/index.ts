@@ -4,10 +4,12 @@ import BigNumber from "bignumber.js"
 import { BIG_TEN } from "utils/bigNumber"
 import { tokens } from './tokens'
 
-export const FAST_INTERVAL = 10000
-export const SLOW_INTERVAL = 60000
+export const FAST_INTERVAL = 10000;
+export const SLOW_INTERVAL = 60000;
+export const BIGSLOW_INTERVAL = 60000 * 2;
+export const DAY_INTERVAL = 60000 * 24 * 60;
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL
+export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const ETH_ADDRESSES = [
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
