@@ -18,10 +18,11 @@ import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 import useWalletTokens from "hooks/useWalletTokens";
+import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
+
 import { CurrencyLogo } from "components/logo";
 import { PrimaryOutlinedButton } from "components/button/index";
 import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
-import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 
 interface CurrencySelectProps {
   onDismiss: () => void;
@@ -197,7 +198,7 @@ const CurrencySelect = ({
       return itemData.filter(
         (_token) =>
           (_token?.isNative && ethBalance?.greaterThan(0)) ||
-          walletTokens.find((__token) => _token?.symbol === __token.symbol)
+          walletTokens.find((__token) => _token?.symbol === __token?.symbol)
       );
     if (tab === 2)
       return itemData.filter((_token) => factoryTokens.find((__token) => _token?.symbol === __token?.symbol));
@@ -222,9 +223,15 @@ const CurrencySelect = ({
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (
-        <div className="absolute left-2/4 -translate-x-1/2 w-full">
+        <div className="absolute left-2/4 w-full -translate-x-1/2">
           <div className="pt-20"></div>
-          <motion.div className="mt-3 px-2" initial={{ opacity: 0, scale: 0}} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} transition={{duration: 0.3}}>
+          <motion.div
+            className="mt-3 px-2"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.3 }}
+          >
             <div className="mx-auto mb-4 font-brand" style={{ maxWidth: "500px" }}>
               <div className="flex items-center justify-between rounded-lg px-4 py-3 shadow-lg dark:bg-[#180404]/[.2]">
                 <p className="text-2xl">Token Select</p>
@@ -247,16 +254,7 @@ const CurrencySelect = ({
                   >
                     <span className="font-roboto text-[13px] font-bold">Popular</span>
                     {tab === 0 ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        className="absolute right-3 h-5 w-3 sm:right-2"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-                      </svg>
+                      <img src="/images/tab-selected.svg" className="absolute right-3 h-5 w-3 sm:right-2" />
                     ) : (
                       ""
                     )}
@@ -267,36 +265,18 @@ const CurrencySelect = ({
                   >
                     <span className="font-roboto text-[13px] font-bold">My Wallet</span>
                     {tab === 1 ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        className="absolute right-3 h-5 w-3 sm:right-2"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-                      </svg>
+                      <img src="/images/tab-selected.svg" className="absolute right-3 h-5 w-3 sm:right-2" />
                     ) : (
                       ""
                     )}
                   </div>
                   <div
-                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3 "
+                    className={`relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3`}
                     onClick={() => switchTab(2)}
                   >
                     <span className="font-roboto text-[13px] font-bold">Brewlabs Factory</span>
                     {tab === 2 ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        className="absolute right-3 h-5 w-3 sm:right-2"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-                      </svg>
+                      <img src="/images/tab-selected.svg" className="absolute right-3 h-5 w-3 sm:right-2" />
                     ) : (
                       ""
                     )}

@@ -29,7 +29,7 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
 
   return (
     <>
-      <motion.div className="max-w-sm rounded-lg border-2 border-transparent bg-opacity-60 px-4 py-2 font-brand font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white sm:relative sm:max-w-screen-md">
+      <motion.div className="rounded-lg border-2 border-transparent bg-opacity-60 px-4 py-2 font-brand font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white">
         <button
           className="flex w-full items-center justify-between"
           onClick={() => {

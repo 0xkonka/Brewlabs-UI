@@ -47,7 +47,7 @@ const CurrencyOutputPanel = ({
 
   return (
     <Card>
-      <div className="ml-6">
+      <div className="lg:ml-6 sm:ml-2">
         <div>{label}</div>
         <div className="mt-1 overflow-hidden">
           <div className="flex justify-between">
@@ -60,16 +60,16 @@ const CurrencyOutputPanel = ({
             />
             <div className="flex cursor-pointer items-center justify-end" onClick={onOpenCurrencySelect}>
               {currency ? (
-                <span className="flex items-center justify-between text-2xl">
+                <span className="flex items-center justify-between text-2xl xsm:pr-1 pr-8">
                   <CurrencyLogo currency={currency} size="24px" style={{ marginRight: "8px" }} />
                   {currency?.symbol}
                 </span>
               ) : (
-                <button className="h-full rounded-xl bg-primary px-2.5 py-1.5 text-black hover:bg-primary/75">
+                <button className="h-full w-32 rounded-xl bg-primary px-2.5 py-1.5 text-black hover:bg-primary/75">
                   Select Token
                 </button>
               )}
-              <ChevronDownIcon className="ml-2 mb-1 h-5 w-5 dark:text-primary" />
+              <ChevronDownIcon className="ml-2 mb-1 h-5 w-5 dark:text-primary hidden xsm:block" />
             </div>
           </div>
           <div className="flex justify-between">
