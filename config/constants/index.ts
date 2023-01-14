@@ -11,6 +11,38 @@ export const DAY_INTERVAL = 60000 * 24 * 60;
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export const ETH_ADDRESSES = [
+  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "0x0000000000000000000000000000000000000000"
+];
+
+export const ROUTER_ADDRESS = {
+  [ChainId.ETHEREUM]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+  [ChainId.BSC_MAINNET]: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
+  [ChainId.BSC_TESTNET]: '0x29edBC55A8a77Ff74b3a1D924351eEF5ECd4de33',
+  [ChainId.POLYGON]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
+  [ChainId.FANTOM]: '0xF491e7B69E4244ad4002BC14e878a34207E38c29',
+  [ChainId.AVALANCHE]: '0x60aE616a2155Ee3d9A68541Ba4544862310933d4',
+  [ChainId.CRONOS]: '0x145677FC4d9b8F19B5D56d1820c48e0443049a30',
+  [ChainId.BRISE]: '0xBb5e1777A331ED93E07cF043363e48d320eb96c4',
+}
+
+export const AggregationRouterV4 = {
+  [ChainId.ETHEREUM]: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
+  [ChainId.BSC_MAINNET]: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
+  [ChainId.POLYGON]: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
+  [ChainId.FANTOM]: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
+  [ChainId.AVALANCHE]: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
+}
+
+export const AggregationRouterV5 = {
+  [ChainId.ETHEREUM]: '0x1111111254eeb25477b68fb85ed929f73a960582',
+  [ChainId.BSC_MAINNET]: '0x1111111254eeb25477b68fb85ed929f73a960582',
+  [ChainId.POLYGON]: '0x1111111254eeb25477b68fb85ed929f73a960582',
+  [ChainId.FANTOM]: '0x1111111254eeb25477b68fb85ed929f73a960582',
+  [ChainId.AVALANCHE]: '0x1111111254eeb25477b68fb85ed929f73a960582',
+}
+
 export const EXCHANGE_URLS = {
   [ChainId.ETHEREUM]: 'https://app.uniswap.org/#',
   [ChainId.GOERLI]: 'https://app.uniswap.org/#',
@@ -236,3 +268,6 @@ export const BETTER_TRADE_LESS_HOPS_THRESHOLD = new Percent(JSBI.BigInt(50), JSB
 
 export const ZERO_PERCENT = new Percent('0')
 export const ONE_HUNDRED_PERCENT = new Percent('1')
+
+export const slippageWithTVL = 200
+export const slippageDefault = 50

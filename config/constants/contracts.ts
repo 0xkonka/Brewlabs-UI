@@ -26,8 +26,8 @@ export default {
     25: '0x5e954f5972EC6BFc7dECd75779F10d848230345F',
   },
   aggregator: {
-    1: '0xF1AE914C05463D2e9610a281DD8E3904A9b4C685',
-    56: '0x9F2C7e4277e7cc1e6ebb53B8eA949D0938a66730',
+    1: '0x9d14a2ca0fa173c0db039c6bcc638c2903382bf7',
+    56: '0xDfEf71D7d1C86E8F054C29cfb46EF1C307B197AF',
   },
   zapper: {
     1: '0x23C5bA2b826A45421DDd25DF8887623789F092da',
@@ -60,4 +60,8 @@ export default {
   nativeWrapped: {
     56: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
   },
+  brewlabsAggregationRouter: {
+    1: "0x6419c300aDB2C25a725111cE8D35a3994B782257",
+    56: "0x4E0ee5a50e39f7e42d971dE53736129e52a5b0Ab"
+  }
 }

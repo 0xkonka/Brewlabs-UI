@@ -17,7 +17,7 @@ import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
 import { isAddress } from 'utils'
 
 import { useBytes32TokenContract, useTokenContract } from './useContract'
-import { filterTokens } from 'components/SearchModal/filtering'
+import { filterTokens } from 'components/searchModal/filtering'
 
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
@@ -25,7 +25,7 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
   const userAddedTokens = useUserAddedTokens()
 
   return useMemo(() => {
-    if (!chainId) return {}
+    if (!chainId || Number(chainId) === -1) return {}
 
     // reduce to just tokens
     const mapWithoutUrls = Object.keys(tokenMap[chainId]).reduce<{ [address: string]: Token }>((newMap, address) => {

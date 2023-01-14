@@ -83,7 +83,7 @@ export function useContract(address: string | undefined, ABI: any, withSignerIfP
   const { data: signer } = useSigner();
 
   return useMemo(() => {
-    if (!address || !ABI || !signer) return null;
+    if (!address || !ABI || (withSignerIfPossible && !signer)) return null;
     try {
       return getContract(chainId, address, ABI, withSignerIfPossible ? signer : undefined);
     } catch (error) {
