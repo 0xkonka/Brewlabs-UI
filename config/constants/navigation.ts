@@ -46,7 +46,7 @@ export const navigationData = [
   },
   {
     name: "Swap",
-    href: "/swap",
+    href: "https://earn.brewlabs.info/swap",
     external: false,
     icon: "ArrowPathRoundedSquareIcon",
   },
