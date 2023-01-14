@@ -1,27 +1,34 @@
 import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import { NetworkConfig } from "config/constants/types";
+import clsx from "clsx";
 
 type CrossChainIconsProps = {
-  chainOne: NetworkConfig;
-  chainTwo: NetworkConfig;
+  chainOne: string;
+  chainTwo: string;
+  slim?: boolean;
 };
 
-const CrossChainIcons = ({ chainOne, chainTwo }: CrossChainIconsProps) => {
+const CrossChainIcons = ({ chainOne, chainTwo, slim }: CrossChainIconsProps) => {
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center ">
       <div
-        className="-mr-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
+        className={clsx(
+          slim ? "border-1 -mr-1 h-8 w-8" : "-mr-6 h-16 w-16 border-4",
+          "overflow-hidden rounded-full border-white bg-cover bg-no-repeat"
+        )}
         style={{
-          backgroundImage: `url('${chainOne.image}')`,
+          backgroundImage: `url('${chainOne}')`,
         }}
       />
 
-      <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden rounded-full bg-white text-gray-900" />
+      {!slim && <ArrowRightCircleIcon className="z-10 h-6 w-6 overflow-hidden rounded-full bg-white text-gray-900" />}
 
       <div
-        className="-ml-6 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-cover bg-no-repeat"
+        className={clsx(
+          slim ? "border-1 -ml-1 h-8 w-8" : "-ml-6 h-16 w-16 border-4",
+          "overflow-hidden rounded-full border-white bg-cover bg-no-repeat"
+        )}
         style={{
-          backgroundImage: `url('${chainTwo.image}')`,
+          backgroundImage: `url('${chainTwo}')`,
         }}
       />
     </div>

@@ -16,7 +16,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
   };
 
   return (
-    <div className="z-10 col-span-3 -my-6 hidden flex-col items-center justify-between sm:relative sm:-mx-6 sm:flex sm:flex-row">
+    <div className="z-10 col-span-3 -my-6 hidden flex-col items-center justify-between md:relative md:-mx-6 md:flex md:flex-row">
       <div className="absolute h-16 w-16 rounded-full border-2 border-dotted border-gray-400 bg-gray-200 dark:border-gray-700 dark:bg-slate-800"></div>
 
       <motion.div
