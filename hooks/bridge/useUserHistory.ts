@@ -10,6 +10,7 @@ export const useUserHistory = () => {
 
   const [transfers, setTransfers] = useState<any[]>([]);
   const [allTransfers, setAllTransfers] = useState<any[]>([]);
+  const [curPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useFastRefreshEffect(() => {
@@ -60,7 +61,7 @@ export const useUserHistory = () => {
         foreignChainId,
         homeChainId
       );
-      const allTransfers = [...homeTransfers, ...foreignTransfers].sort((a, b) => a.timestamp - b.timestamp);
+      const allTransfers = [...homeTransfers, ...foreignTransfers].sort((a, b) => b.timestamp - a.timestamp);
       if (isSubscribed) {
         setAllTransfers(allTransfers);
         setLoading(false);
@@ -75,5 +76,9 @@ export const useUserHistory = () => {
     };
   }, [homeChainId, foreignChainId, account, getGraphEndpoint]);
 
-  return { transfers, allTransfers, loading };
+  const loadMoreTransfers = () => {
+    setCurrentPage(curPage + 1);
+  };
+
+  return { transfers, loadMoreTransfers, allTransfers, curPage, loading };
 };
