@@ -18,6 +18,8 @@ import masterChef from "config/abi/masterchef.json";
 import masterChefV2 from "config/abi/masterchefV2.json";
 import MultiCallAbi from "config/abi/Multicall.json";
 import singleStaking from "config/abi/singlestaking.json";
+import claimableTokenAbi from "config/abi/claimableToken.json";
+import dividendTrackerAbi from "config/abi/dividendTracker.json";
 
 // Addresses
 import {
@@ -44,6 +46,23 @@ export const getContract = (
 export const getBrewsTokenContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, brewsToken[chainId].address, bep20Abi, signer);
 };
+
+export const getClaimableTokenContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, claimableTokenAbi, signer);
+};
+
+export const getDividendTrackerContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, dividendTrackerAbi, signer);
+};
+
 export const getBep20Contract = (
   chainId: ChainId,
   address: string,

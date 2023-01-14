@@ -100,7 +100,7 @@ const CurrencyOutputPanel = ({
               </>
             ) : (
               <>
-                {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="h-3 w-3 dark:text-warning" />
+                {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
               </>
             )}
             24HR

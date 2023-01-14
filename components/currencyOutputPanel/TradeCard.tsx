@@ -157,7 +157,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                     {verified ? (
                       <BeakerIcon className="h-3 w-3 dark:text-green" />
                     ) : (
-                      <ExclamationTriangleIcon className="h-3 w-3 dark:text-warning" />
+                      <ExclamationTriangleIcon className="h-3 w-3 dark:text-danger" />
                     )}
                     <p className="text-[11px]">Brewlabs Verified</p>
                   </span>

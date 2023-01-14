@@ -63,14 +63,14 @@ const CurrencyRow = ({
                     {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
                   </span>
                 ) : (
-                  <span className="flex items-center text-warning">
+                  <span className="flex items-center text-danger">
                     {Math.abs(priceChange24h).toFixed(3)}%{" "}
-                    <ArrowTrendingDownIcon className="h-3 w-3 dark:text-warning" />
+                    <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
                   </span>
                 )}
                 <span className="text-primary">24HR</span>
               </p>
-              <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-warning"} text-[10px]`}>
+              <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-danger"} text-[10px]`}>
                 {tokenPrice} USD = 1.00 {currency?.symbol}
               </p>
             </div>

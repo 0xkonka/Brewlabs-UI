@@ -15,16 +15,22 @@ const TokenPriceContextProvider = ({ children }: any) => {
   const [lpPrices, setLPPrices] = useState({});
 
   useSlowRefreshEffect(() => {
-    axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=brewlabs&vs_currencies=usd`).then((res) => {
-      setPrices(res.data);
-    });
+    axios
+      .get(`https://api.coingecko.com/api/v3/simple/price?ids=brewlabs&vs_currencies=usd`)
+      .then((res) => {
+        setPrices(res.data);
+      })
+      .catch((e) => console.log(e));
   }, []);
 
   useSlowRefreshEffect(() => {
-    axios.get(`${API_URL}/prices`).then((res) => {
-      if (res.data?.tokenPrices) setTokenPrices(res.data.tokenPrices);
-      if (res.data?.lpPrices) setLPPrices(res.data.lpPrices);
-    });
+    axios
+      .get(`${API_URL}/prices`)
+      .then((res) => {
+        if (res.data?.tokenPrices) setTokenPrices(res.data.tokenPrices);
+        if (res.data?.lpPrices) setLPPrices(res.data.lpPrices);
+      })
+      .catch((e) => console.log(e));
   }, []);
 
   return <TokenPriceContext.Provider value={{ prices, tokenPrices, lpPrices }}>{children}</TokenPriceContext.Provider>;

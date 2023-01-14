@@ -7,7 +7,12 @@ module.exports = {
     screens: {
       xs: "380px",
       xsm: "450px",
+      xmd: "520px",
       ...defaultTheme.screens,
+    },
+    fontSize: {
+      xxs: "8px",
+      ...defaultTheme.fontSize,
     },
     extend: {
       colors: {
@@ -16,8 +21,10 @@ module.exports = {
         eth: "#5D78DE",
         bsc: "#E4B00A",
         primary: "#EEBB19",
-        warning: "#D9563A",
-        green: "#2FD35D"
+        green: "#2FD35D",
+        yellow: "#ffde00",
+        grey: "#CFCFCF",
+        danger: "#D9563A",
       },
       boxShadow: {
         'inner': 'inset 0px 0px 6px #000000'
