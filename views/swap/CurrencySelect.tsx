@@ -133,7 +133,7 @@ const CurrencySelect = ({
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       onCurrencySelect(currency);
-      onDismiss();
+      closeWindow();
     },
     [onCurrencySelect]
   );
@@ -164,6 +164,10 @@ const CurrencySelect = ({
     [filteredSortedTokens, handleCurrencySelect, debouncedQuery, chainId]
   );
 
+  const closeWindow = () => {
+    onDismiss();
+    setSearchQuery("");
+  }
   // if no results on main list, show option to expand into inactive
   const inactiveTokens = useFoundOnInactiveList(debouncedQuery);
   const filteredInactiveTokens: Token[] = useSortedTokensByQuery(inactiveTokens, debouncedQuery);
@@ -235,7 +239,7 @@ const CurrencySelect = ({
             <div className="mx-auto mb-4 font-brand" style={{ maxWidth: "500px" }}>
               <div className="flex items-center justify-between rounded-lg px-4 py-3 shadow-lg dark:bg-[#180404]/[.2]">
                 <p className="text-2xl">Token Select</p>
-                <XMarkIcon className="h-6 w-6 cursor-pointer dark:text-slate-400" onClick={onDismiss} />
+                <XMarkIcon className="h-6 w-6 cursor-pointer dark:text-slate-400" onClick={closeWindow} />
               </div>
               <motion.div className="mt-1 rounded-lg px-9 py-4 shadow-lg dark:bg-[#180404]/[.2]">
                 <div className="mt-2">
