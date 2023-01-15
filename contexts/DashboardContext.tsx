@@ -48,8 +48,8 @@ const DashboardContextProvider = ({ children }: any) => {
   const [marketHistory, setMarketHistory] = useState([]);
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
-  // const { address } = useAccount();
-  const address = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
+  const { address } = useAccount();
+  // const address = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
   const { chainId } = useActiveChainId();
   const { data: signer }: any = useSigner();
 
