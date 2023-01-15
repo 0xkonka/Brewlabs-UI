@@ -147,7 +147,7 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
       </div>
       <div>
         {pricehistory.length && typeof window !== "undefined" ? (
-          <Chart options={chartData.options} series={chartData.series} type="area" height={200} />
+          <Chart options={chartData.options} series={chartData.series} type="area" height={220} />
         ) : (
           <Loading />
         )}
@@ -190,5 +190,5 @@ const StyledContainer = styled.div<{ down: String }>`
     min-height: unset !important;
     margin-top: -23px;
   }
-  height: 230px;
+  height: 250px;
 `;

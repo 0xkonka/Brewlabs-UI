@@ -18,7 +18,7 @@ const DropDown = ({ value, setValue }: { setValue?: any; value: number }) => {
 
   return (
     <StyledDropDown
-      className="portfolio-shadow relative z-10 flex h-[25px] w-full cursor-pointer items-center justify-center bg-primary text-xs text-black"
+      className="portfolio-shadow relative z-10 flex h-[30px] w-full cursor-pointer items-center justify-center bg-primary text-sm text-black"
       ref={dropRef}
       onClick={() => setOpen(!open)}
       open={open.toString()}
@@ -27,12 +27,12 @@ const DropDown = ({ value, setValue }: { setValue?: any; value: number }) => {
       <div className={"absolute right-1"}>
         {!open ? <ChevronDownIcon className={"h-3 w-6"} /> : <ChevronUpIcon className={"h-3 w-6"} />}
       </div>
-      <DropDownBody className={"absolute top-[25px] w-full rounded-b transition-all"} open={open.toString()}>
+      <DropDownBody className={"absolute top-[30px] w-full rounded-b transition-all"} open={open.toString()}>
         {values.map((data, i) => {
           return (
             <div
               key={i}
-              className="flex h-[25px] cursor-pointer items-center justify-center font-semibold transition-all hover:bg-[#ffde7c]"
+              className="flex h-[30px] cursor-pointer items-center justify-center font-semibold transition-all hover:bg-[#ffde7c]"
               onClick={() => setValue(i)}
             >
               {data}
@@ -53,7 +53,7 @@ const StyledDropDown = styled.div<{ open: String }>`
 `;
 
 const DropDownBody = styled.div<{ open: String }>`
-  height: ${({ open }) => (open === "true" ? "50px" : 0)};
+  height: ${({ open }) => (open === "true" ? "60px" : 0)};
   overflow: hidden;
   background: linear-gradient(180deg, #ffcc32, #e5cc7e);
 `;

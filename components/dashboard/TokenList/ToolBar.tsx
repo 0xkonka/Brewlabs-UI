@@ -33,7 +33,7 @@ const ToolBar = ({
       <ValuePanel ref={ref} onScroll={(e: any) => setCurScroll(e.target.scrollLeft)}>
         <div className="flex items-center justify-between">
           <StyledOption
-            className={`${fullOpen ? "min-w-[8px]" : "min-w-[50px]"} font-semibold`}
+            className={`${fullOpen ? "min-w-[8px]" : "min-w-[70px]"} font-semibold`}
             onClick={() => setFilterType(1)}
             active={filterType === 1}
           >
@@ -41,44 +41,44 @@ const ToolBar = ({
               ""
             ) : (
               <>
-                <div className="mr-px ml-2 text-xs text-white">Balance</div>
+                <div className="mr-px ml-2 text-sm text-white">Balance</div>
                 <img src={"/images/dashboard/updown.svg"} alt={""} />
               </>
             )}
           </StyledOption>
           <StyledOption
-            className={`min-w-[60px] font-semibold`}
+            className={`min-w-[75px] font-semibold`}
             onClick={() => setFilterType(2)}
             active={filterType === 2}
           >
-            <div className="mr-px text-xs text-white">Price</div>
+            <div className="mr-px text-sm text-white">Price</div>
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
           <StyledOption
-            className={`min-w-[60px] font-semibold`}
+            className={`min-w-[75px] font-semibold`}
             onClick={() => setFilterType(3)}
             active={filterType === 3}
           >
-            <div className="mr-px text-xs text-white">Value</div>
+            <div className="mr-px text-sm text-white">Value</div>
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
           <StyledOption
-            className={`min-w-[90px] font-semibold`}
+            className={`min-w-[100px] font-semibold`}
             onClick={() => setFilterType(4)}
             active={filterType === 4}
           >
-            <div className="mr-px text-xs text-white">Total Rewards</div>
+            <div className="mr-px text-sm text-white">Total Rewards</div>
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
           <StyledOption
-            className={`min-w-[105px] font-semibold`}
+            className={`min-w-[120px] font-semibold`}
             onClick={() => setFilterType(5)}
             active={filterType === 5}
           >
-            <div className="mr-px text-xs text-white">Pending Rewards</div>
+            <div className="mr-px text-sm text-white">Pending Rewards</div>
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
-          <div className={"w-[48px]"} />
+          <div className={"w-[52px]"} />
         </div>
       </ValuePanel>
     </div>

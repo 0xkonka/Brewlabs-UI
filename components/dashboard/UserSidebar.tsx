@@ -27,7 +27,7 @@ const UserSidebar = () => {
   const [itemsPerPage, setItemsPerPage] = useState(0);
 
   useEffect(() => {
-    setItemsPerPage(Math.max(Math.floor((window.innerHeight - 650) / 42), 7));
+    setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
   }, [fullOpen]);
 
   return (
@@ -55,7 +55,7 @@ const UserSidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex w-full max-w-[650px] flex-1 flex-col  items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900 xmd:px-2 xmd:px-4">
+            <Dialog.Panel className="relative flex w-full max-w-[700px] flex-1 flex-col  items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900 xmd:px-2 xmd:px-4">
               <div className="absolute top-0 right-0 z-10 pt-2 sm:-mr-12">
                 <button
                   type="button"
@@ -73,7 +73,7 @@ const UserSidebar = () => {
                     <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
                   </div>
 
-                  <div className={"mt-3 h-[25px] w-40"}>
+                  <div className={"mt-3 h-[30px] w-40"}>
                     <StyledButton onClick={() => {}}>Portfolio</StyledButton>
                   </div>
 

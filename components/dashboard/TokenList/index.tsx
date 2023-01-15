@@ -9,7 +9,7 @@ import { NoneSVG } from "../assets/svgs";
 import { isArray } from "lodash";
 import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useSigner } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat } from "utils/functions";
 
@@ -50,8 +50,10 @@ const TokenList = ({
   const [listType, setListType] = useState(0);
   const [showBoxShadow, setShowBoxShadow] = useState(false);
   const [curScroll, setCurScroll] = useState(0);
+  const [isHover, setIsHover] = useState([]);
 
   const { chainId } = useActiveChainId();
+  const { address } = useAccount();
   const { data: signer }: any = useSigner();
   const { pending, setPending, tokenList }: any = useContext(DashboardContext);
   const valueRef: any = useRef();
@@ -204,7 +206,7 @@ const TokenList = ({
   }, [listType]);
 
   return (
-    <StyledContainer className={`ml-1.5 mt-8 w-full`} fullOpen={fullOpen} count={showData.length}>
+    <StyledContainer className={`ml-1.5 mt-4 w-full`} fullOpen={fullOpen} count={showData.length}>
       <ToolBar
         setFilterType={setFilterType}
         filterType={filterType}
@@ -215,7 +217,7 @@ const TokenList = ({
         setCurScroll={setCurScroll}
       />
       <div className={"flex items-center justify-between"}>
-        <LogoPanel className={"pt-3"} showShadow={showBoxShadow.toString()}>
+        <LogoPanel className={"flex flex-col pt-1 "} showShadow={showBoxShadow.toString()}>
           {showData.map((data: any, i: number) => {
             const logoFilter: any = tokenList.filter(
               (logo: any) => logo.address.toLowerCase() === data.address.toLowerCase()
@@ -226,8 +228,30 @@ const TokenList = ({
                 : logoFilter.length
                 ? logoFilter[0].logoURI
                 : emptyLogos[chainId];
+            const isVerified = logoFilter.length || data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+            const link = `https://${chainId === 56 ? "bscscan.com" : "etherscan.io"}/token/${
+              data.address
+            }?a=${address}`;
             return (
-              <div key={i} className={`mb-2.5 w-full text-xs font-semibold`}>
+              <a
+                key={i}
+                className={`w-full cursor-pointer rounded-l py-[5px] text-sm font-semibold transition ${
+                  isHover[i] ? "bg-[rgba(0,0,0,0.5)]" : ""
+                }`}
+                target={"_blank"}
+                href={link}
+                rel="noreferrer"
+                onMouseEnter={() => {
+                  let temp = [];
+                  temp[i] = true;
+                  setIsHover(temp);
+                }}
+                onMouseLeave={() => {
+                  let temp = [];
+                  temp[i] = false;
+                  setIsHover(temp);
+                }}
+              >
                 <div className="flex items-center">
                   <div className={listType === 0 ? "" : "hidden"}>
                     <div className={`min-w-[10px] max-w-[10px] cursor-pointer text-yellow`}>
@@ -249,13 +273,13 @@ const TokenList = ({
                     </div>
                   </div>
 
-                  <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px]"} />
+                  <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"} />
 
                   <div>
                     <div className={"flex items-center text-white"}>
                       <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
-                      <div className={logoFilter.length ? "" : "hidden"}>
-                        <CheckCircleIcon className="ml-1 max-h-[7.5px] min-h-[7.5px] min-w-[7.5px] max-w-[7.5px] text-green" />
+                      <div className={isVerified ? "" : "hidden"}>
+                        <CheckCircleIcon className="ml-1 max-h-[9px] min-h-[9px] min-w-[9px] max-w-[9px] text-green" />
                       </div>
                     </div>
                     <StyledDiv className={fullOpen ? "" : "hidden"}>
@@ -265,22 +289,41 @@ const TokenList = ({
                     </StyledDiv>
                   </div>
                 </div>
-              </div>
+              </a>
             );
           })}
         </LogoPanel>
-        <ValuePanel className={"pt-3"} onScroll={(e: any) => setCurScroll(e.target.scrollLeft)} ref={valueRef}>
+        <ValuePanel className={"pt-1"} onScroll={(e: any) => setCurScroll(e.target.scrollLeft)} ref={valueRef}>
           <div>
             {showData.map((data: any, i: number) => {
               const priceUp = data.priceList[data.priceList.length - 1] >= data.priceList[0];
+              const link = `https://${chainId === 56 ? "bscscan.com" : "etherscan.io"}/token/${
+                data.address
+              }?a=${address}`;
               return (
-                <div
+                <StyledLink
                   key={i}
-                  className={`mb-2.5 flex ${
-                    fullOpen ? "h-[32px]" : "h-[16px]"
-                  } items-center justify-between text-xs font-semibold ${priceUp ? "text-green" : "text-danger"}`}
+                  href={link}
+                  target={"_blank"}
+                  priceUp={priceUp.toString()}
+                  className={`flex py-[5px] ${
+                    fullOpen ? "h-[50px]" : "h-[30px]"
+                  } items-center justify-between rounded-r text-sm font-semibold transition ${
+                    isHover[i] ? "bg-[rgba(0,0,0,0.5)]" : ""
+                  } cursor-pointer pl-2`}
+                  onMouseEnter={() => {
+                    let temp = [];
+                    temp[i] = true;
+                    setIsHover(temp);
+                  }}
+                  onMouseLeave={() => {
+                    let temp = [];
+                    temp[i] = false;
+                    setIsHover(temp);
+                  }}
+                  rel="noreferrer"
                 >
-                  <div className={`${fullOpen ? "min-w-[8px]" : "min-w-[50px]"} text-center`}>
+                  <div className={`${fullOpen ? "min-w-[8px]" : "min-w-[70px]"} text-center`}>
                     {fullOpen ? (
                       <div className="h-2 w-2">
                         <TrashIcon
@@ -294,9 +337,9 @@ const TokenList = ({
                       BigNumberFormat(data.balance)
                     )}
                   </div>
-                  <div className={"min-w-[60px] text-center"}>${BigNumberFormat(data.price, 3)}</div>
-                  <div className={"min-w-[60px] text-center"}>${BigNumberFormat(data.balance * data.price)}</div>
-                  <div className={"flex min-w-[90px] justify-center"}>
+                  <div className={"min-w-[75px] text-center"}>${BigNumberFormat(data.price, 3)}</div>
+                  <div className={"min-w-[75px] text-center"}>${BigNumberFormat(data.balance * data.price)}</div>
+                  <div className={"flex min-w-[100px] justify-center"}>
                     {data.isReward ? (
                       `${data.reward.totalRewards.toFixed(2)} ${
                         data.name.toLowerCase() === "brewlabs" ? CHAIN_SYMBOL[chainId] : data.reward.symbol
@@ -305,14 +348,14 @@ const TokenList = ({
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
-                  <div className={"flex min-w-[105px] justify-center"}>
+                  <div className={"flex min-w-[120px] justify-center"}>
                     {data.isReward ? (
                       `${data.reward.pendingRewards.toFixed(2)} ${data.reward.symbol}`
                     ) : (
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
-                  <div className={"h-[22px] w-[48px]"}>
+                  <div className={"h-[24px] w-[52px]"}>
                     {data.isScam ? (
                       <StyledButton type={"scam"}>Scam</StyledButton>
                     ) : data.isReward ? (
@@ -323,7 +366,7 @@ const TokenList = ({
                       ""
                     )}
                   </div>
-                </div>
+                </StyledLink>
               );
             })}
           </div>
@@ -333,13 +376,17 @@ const TokenList = ({
   );
 };
 
+const StyledLink = styled.a<{ priceUp: string }>`
+  color: ${({ priceUp }) => (priceUp === "true" ? "#2FD35D" : "#D9563A")}!important;
+`;
+
 export const LogoPanel = styled.div<{ showShadow?: string }>`
   width: 160px;
   position: relative;
-  @media screen and (max-width: 610px) {
-    width: 100px;
+  @media screen and (max-width: 630px) {
+    width: 130px;
   }
-  @media screen and (max-width: 550px) {
+  @media screen and (max-width: 600px) {
     ::before {
       box-shadow: inset 10px 0 8px -8px #00000070;
       position: absolute;
@@ -356,11 +403,11 @@ export const LogoPanel = styled.div<{ showShadow?: string }>`
 `;
 
 export const ValuePanel = styled.div`
-  width: calc(100% - 168px);
-  @media screen and (max-width: 610px) {
-    width: calc(100% - 108px);
+  width: calc(100% - 160px);
+  @media screen and (max-width: 630px) {
+    width: calc(100% - 130px);
   }
-  @media screen and (max-width: 550px) {
+  @media screen and (max-width: 600px) {
     > div {
       min-width: 430px;
     }
@@ -372,17 +419,17 @@ export const ValuePanel = styled.div`
 `;
 
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
-  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 603px)" : `${count * 30 + 27}px`)};
+  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
-  @media screen and (max-width: 610px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 603px)" : `${count * 28 + 27}px`)};
+  @media screen and (max-width: 630px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 28 + 27}px`)};
   }
 `;
 
 const StyledDiv = styled.div`
   max-width: 96px;
-  @media screen and (max-width: 610px) {
-    max-width: 38px;
+  @media screen and (max-width: 630px) {
+    max-width: 68px;
   }
 `;
 export default TokenList;
