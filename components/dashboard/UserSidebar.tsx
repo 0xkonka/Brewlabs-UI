@@ -63,7 +63,7 @@ const UserSidebar = () => {
                   onClick={() => setGlobalState("userSidebarOpen", false)}
                 >
                   <span className="sr-only">Close sidebar</span>
-                  <XMarkIcon className="text-whites h-6 w-6" aria-hidden="true" />
+                  <XMarkIcon className="text-white h-6 w-6" aria-hidden="true" />
                 </button>
               </div>
               <div className="flex h-full w-full flex-1 flex-col  items-center">
