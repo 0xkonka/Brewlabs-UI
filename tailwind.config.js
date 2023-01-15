@@ -7,11 +7,10 @@ module.exports = {
     screens: {
       xs: "380px",
       xsm: "450px",
-      xmd: "520px",
+      xmd: "610px",
       ...defaultTheme.screens,
     },
     fontSize: {
-      xxs: "8px",
       ...defaultTheme.fontSize,
     },
     extend: {

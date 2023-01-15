@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const SwitchButton = ({ setValue, value }: { setValue?: any; value: number }) => {
   return (
-    <StyledContainer value={value} className={"flex rounded bg-primary text-xxs font-semibold"}>
+    <StyledContainer value={value} className={"flex rounded bg-primary text-xs font-semibold text-black"}>
       <div onClick={() => setValue(0)}>My Wallet</div>
       <div onClick={() => setValue(1)}>Total Market</div>
     </StyledContainer>
@@ -21,8 +21,8 @@ const StyledContainer = styled.div<{ value: number }>`
     cursor: pointer;
     border-radius: 4px;
   }
-  width: 180px;
-  height: 18px;
+  width: 200px;
+  height: 22px;
   > div:nth-child(${({ value }) => (value + 1 === 1 ? 2 : 1)}) {
     background: #18171c;
     color: white;

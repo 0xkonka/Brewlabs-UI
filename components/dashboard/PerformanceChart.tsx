@@ -28,16 +28,18 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
       pricehistory[i] = 0;
       for (let j = 0; j < tokens.length; j++) {
         if (!tokens[j].priceList) continue;
-        const price = (tokens[j].priceList[i] * tokens[j].balance) / Math.pow(10, tokens[j].decimals);
+        const price = tokens[j].priceList[i] * tokens[j].balance;
         if (isNaN(price)) continue;
         pricehistory[i] += price;
       }
     }
   }
-  const priceChange = pricehistory[pricehistory.length - 1] - pricehistory[0];
-  let priceChangePercent = (priceChange / pricehistory[0]) * 100;
+
+  const priceChange = pricehistory.length ? pricehistory[pricehistory.length - 1] - pricehistory[0] : 0;
+  let priceChangePercent = pricehistory.length ? (priceChange / pricehistory[0]) * 100 : 0;
   priceChangePercent = priceChangePercent < 0 ? -priceChangePercent : priceChangePercent;
 
+  let totalPrice = pricehistory.length ? pricehistory[pricehistory.length - 1] : 0;
   const chartData: any = {
     series: [
       {
@@ -122,15 +124,13 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
     },
   };
 
-  const price = pricehistory[pricehistory.length - 1];
-
   return (
     <StyledContainer down={(priceChange < 0).toString()}>
       <div className={"flex items-center justify-between font-semibold text-white"}>
         <div className={"flex items-center"}>
-          <div className={"text-sm ml-4 w-[140px] sm:ml-16 sm:w-[180px]"}>
+          <div className={"ml-4 w-[140px] text-sm sm:ml-16 sm:w-[180px]"}>
             <div>Performance</div>
-            <div className={"text-2xl font-bold"}>${BigNumberFormat(price)}</div>
+            <div className={"text-2xl font-bold"}>${BigNumberFormat(totalPrice)}</div>
             <div className={"flex items-center"}>
               <StyledColor down={(priceChange < 0).toString()} className={"mr-1"}>
                 ${priceChange < 0 ? BigNumberFormat(-priceChange) : BigNumberFormat(priceChange)}
@@ -146,8 +146,10 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
         </StyledColor>
       </div>
       <div>
-        {typeof window !== "undefined" && (
+        {pricehistory.length && typeof window !== "undefined" ? (
           <Chart options={chartData.options} series={chartData.series} type="area" height={200} />
+        ) : (
+          <Loading />
         )}
       </div>
     </StyledContainer>
@@ -186,7 +188,7 @@ const StyledContainer = styled.div<{ down: String }>`
   }
   > div:nth-child(2) > div {
     min-height: unset !important;
-    margin-top: -35px;
+    margin-top: -23px;
   }
   height: 230px;
 `;

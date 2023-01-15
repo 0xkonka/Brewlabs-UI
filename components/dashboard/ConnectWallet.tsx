@@ -101,13 +101,13 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
               </p>
-              <p className="text-left text-xs font-medium truncate">
+              <p className="truncate text-left text-xs font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
               </p>
             </MaxWidthButton>
           </div>
           <div>
-            <div className={"h-[15px] w-[83px]"}>
+            <div className={"h-[18px] w-[90px]"}>
               <StyledButton onClick={() => disconnect()}>
                 <div className={"flex items-center"}>
                   {LinkSVG}
@@ -115,7 +115,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 </div>
               </StyledButton>
             </div>
-            <div className={"mt-2 flex h-[15px] w-[83px] items-center"}>
+            <div className={"mt-2 flex h-[18px] w-[90px] items-center"}>
               <StyledButton>
                 <div className={"flex items-center"}>
                   {NoneSVG}
