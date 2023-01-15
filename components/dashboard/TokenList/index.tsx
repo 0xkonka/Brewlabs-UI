@@ -281,10 +281,12 @@ const TokenList = ({
                   } items-center justify-between text-xs font-semibold ${priceUp ? "text-green" : "text-danger"}`}
                 >
                   <div className={`${fullOpen ? "min-w-[8px]" : "min-w-[50px]"} text-center`}>
-                    {fullOpen && !data.name.includes("_Tracker") ? (
-                      <div>
+                    {fullOpen ? (
+                      <div className="h-2 w-2">
                         <TrashIcon
-                          className="h-2 w-2 cursor-pointer text-danger"
+                          className={`h-full w-full cursor-pointer text-danger ${
+                            !data.name.includes("_Tracker") ? "" : "hidden"
+                          }`}
                           onClick={() => onArchive(data.address)}
                         />
                       </div>
