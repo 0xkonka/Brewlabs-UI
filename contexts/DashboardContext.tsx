@@ -43,9 +43,15 @@ const tokenList_URI: any = {
   1: "https://tokens.coingecko.com/ethereum/all.json",
 };
 
+const SCAN_API: any = {
+  56: "https://api.bscscan.com",
+  1: "https://api.etherscan.io",
+};
+
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
+  const [allowance, setAllowances] = useState([]);
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
@@ -97,7 +103,6 @@ const DashboardContextProvider = ({ children }: any) => {
   };
 
   const fetchTokenBalance = async (address: any, account: any) => {
-    const multicallContract = getMulticallContract(chainId);
     const calls = [
       {
         name: "balanceOf",
@@ -136,8 +141,8 @@ const DashboardContextProvider = ({ children }: any) => {
           rewardToken = {
             address: rewardTokenAddress,
             name: rewardTokenBaseinfo[0][0],
-            symbol: token.name.toLowerCase() === "brewlabs" ? CHAIN_NAME[chainId] : rewardTokenBaseinfo[1][0],
-            decimals: token.name.toLowerCase() === "brewlabs" ? 18 : rewardTokenBaseinfo[2][0],
+            symbol: rewardTokenBaseinfo[1][0],
+            decimals: rewardTokenBaseinfo[2][0],
           };
         } catch (e) {
           rewardToken = {
@@ -154,8 +159,10 @@ const DashboardContextProvider = ({ children }: any) => {
         }
         const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
         pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
-        reward.pendingRewards = pendingRewards / Math.pow(10, rewardToken.decimals);
-        reward.totalRewards = totalRewards / Math.pow(10, rewardToken.decimals);
+        reward.pendingRewards =
+          pendingRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
+        reward.totalRewards =
+          totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.symbol = rewardToken.symbol;
         isReward = true;
       } catch (e) {
@@ -224,7 +231,7 @@ const DashboardContextProvider = ({ children }: any) => {
           : items[i].contract_ticker_symbol === "BUSD" || items[i].contract_ticker_symbol === "USDC"
           ? 1
           : items[i].quote_rate / 1;
-        if (items[i].balance / 1 > 0)
+        if (items[i].balance / 1 > 0 || items[i].address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
           _tokens.push({
             balance: items[i].balance / Math.pow(10, items[i].contract_decimals),
             name: items[i].contract_name,
@@ -294,11 +301,19 @@ const DashboardContextProvider = ({ children }: any) => {
       console.log(error);
     }
   }
+  // async function fetchAllowances(){
+  //   try{}
+  //   catch(error){
+
+  //   }
+  // }
 
   useSlowRefreshEffect(() => {
     if (!(chainId === 56 || chainId === 1) || !signer) {
       setTokens([]);
+      setAllowances([]);
     } else {
+      // fetchAllowances();
       fetchMarketInfo();
       fetchTokens();
     }

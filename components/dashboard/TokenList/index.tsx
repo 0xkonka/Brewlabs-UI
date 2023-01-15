@@ -205,6 +205,8 @@ const TokenList = ({
     setPageIndex(0);
   }, [listType]);
 
+  let ethPrice = tokens.filter((data: any) => data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+  ethPrice = ethPrice.length ? ethPrice[0].price : 0;
   return (
     <StyledContainer className={`ml-1.5 mt-4 w-full`} fullOpen={fullOpen} count={showData.length}>
       <ToolBar
@@ -341,16 +343,22 @@ const TokenList = ({
                   <div className={"min-w-[75px] text-center"}>${BigNumberFormat(data.balance * data.price)}</div>
                   <div className={"flex min-w-[100px] justify-center"}>
                     {data.isReward ? (
-                      `${data.reward.totalRewards.toFixed(2)} ${
-                        data.name.toLowerCase() === "brewlabs" ? CHAIN_SYMBOL[chainId] : data.reward.symbol
-                      }`
+                      `${BigNumberFormat(
+                        data.name.toLowerCase() === "brewlabs"
+                          ? data.reward.totalRewards * ethPrice
+                          : data.reward.totalRewards
+                      )} ${data.reward.symbol}`
                     ) : (
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
                   <div className={"flex min-w-[120px] justify-center"}>
                     {data.isReward ? (
-                      `${data.reward.pendingRewards.toFixed(2)} ${data.reward.symbol}`
+                      `${BigNumberFormat(
+                        data.name.toLowerCase() === "brewlabs"
+                          ? data.reward.pendingRewards * ethPrice
+                          : data.reward.pendingRewards
+                      )} ${data.reward.symbol}`
                     ) : (
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}

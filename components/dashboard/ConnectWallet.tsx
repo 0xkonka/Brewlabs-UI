@@ -115,14 +115,14 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 </div>
               </StyledButton>
             </div>
-            <div className={"mt-2 flex h-[20px] w-[100px] items-center"}>
+            {/* <div className={"mt-2 flex h-[20px] w-[100px] items-center"}>
               <StyledButton>
                 <div className={"flex items-center"}>
                   {NoneSVG}
                   <div className={"ml-0.5"}>Revoke All</div>
                 </div>
               </StyledButton>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
