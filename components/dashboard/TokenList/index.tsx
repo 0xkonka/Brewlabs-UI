@@ -305,8 +305,8 @@ const TokenList = ({
               return (
                 <StyledLink
                   key={i}
-                  href={link}
-                  target={"_blank"}
+                  // href={link}
+                  // target={"_blank"}
                   priceUp={priceUp.toString()}
                   className={`flex py-[5px] ${
                     fullOpen ? "h-[50px]" : "h-[30px]"
