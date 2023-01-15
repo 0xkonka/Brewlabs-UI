@@ -3,7 +3,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
 
 import { EXPLORER_URLS } from "config/constants/networks";
-import { useTranslation } from "contexts/localization";
+import { useTranslation } from "../../contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenPrice from "hooks/useTokenPrice";
 
@@ -38,7 +38,7 @@ const CurrencyInputPanel = ({
   return (
     <>
       <Card>
-        <div className="lg:ml-6 sm:ml-2">
+        <div className="sm:ml-2 lg:ml-6">
           <div>{label}</div>
           <div className="mt-1 overflow-hidden">
             <div className="flex justify-between">
@@ -49,9 +49,9 @@ const CurrencyInputPanel = ({
                 }}
                 decimals={currency?.decimals}
               />
-              <div className="flex cursor-pointer justify-end items-center" onClick={onOpenCurrencySelect}>
+              <div className="flex cursor-pointer items-center justify-end" onClick={onOpenCurrencySelect}>
                 {currency ? (
-                  <span className="flex items-center justify-between text-2xl xsm:pr-1 pr-8">
+                  <span className="flex items-center justify-between pr-8 text-2xl xsm:pr-1">
                     <CurrencyLogo currency={currency} size="24px" style={{ marginRight: "8px" }} />
                     {currency?.symbol}
                   </span>
@@ -60,7 +60,7 @@ const CurrencyInputPanel = ({
                     Select Token
                   </button>
                 )}
-                <ChevronDownIcon className="ml-2 my-auto h-5 w-5 dark:text-primary hidden xsm:block" />
+                <ChevronDownIcon className="my-auto ml-2 hidden h-5 w-5 dark:text-primary xsm:block" />
               </div>
             </div>
             <div className="flex justify-between">
@@ -73,7 +73,11 @@ const CurrencyInputPanel = ({
                     <div className="mr-2 cursor-pointer text-sm opacity-40 hover:opacity-80" onClick={onMax}>
                       Balance: {balance ? balance.toSignificant(6) : "0.00"}
                     </div>
-                    <a href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`} target="_blank" rel="noreferrer">
+                    <a
+                      href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       <img src="/images/explorer/etherscan.png" alt="" className="h-2.5 w-2.5" />
                     </a>
                   </div>
