@@ -20,7 +20,7 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
         }}
         className="w-full overflow-hidden rounded-2xl border border-gray-200"
       >
-        <div className="relative h-52 overflow-hidden bg-gradient-to-t from-brand to-yellow-200">
+        <div className="relative h-64 overflow-hidden bg-gradient-to-t from-brand to-yellow-200">
           <div className="absolute bottom-0 w-full bg-white bg-opacity-70 p-4">
             <h5>Learn about staking</h5>
           </div>
