@@ -27,7 +27,7 @@ const UserSidebar = () => {
   const [itemsPerPage, setItemsPerPage] = useState(0);
 
   useEffect(() => {
-    setItemsPerPage(Math.floor((window.innerHeight - 650) / 35));
+    setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
   }, [fullOpen]);
 
   return (
@@ -55,7 +55,7 @@ const UserSidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex w-full max-w-[600px] flex-1 flex-col  items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900 xmd:px-3">
+            <Dialog.Panel className="relative flex w-full max-w-[700px] flex-1 flex-col  items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900 xmd:px-2 xmd:px-4">
               <div className="absolute top-0 right-0 z-10 pt-2 sm:-mr-12">
                 <button
                   type="button"
@@ -63,21 +63,21 @@ const UserSidebar = () => {
                   onClick={() => setGlobalState("userSidebarOpen", false)}
                 >
                   <span className="sr-only">Close sidebar</span>
-                  <XMarkIcon className="text-whites h-6 w-6" aria-hidden="true" />
+                  <XMarkIcon className="text-white h-6 w-6" aria-hidden="true" />
                 </button>
               </div>
               <div className="flex h-full w-full flex-1 flex-col  items-center">
-                <div className="relative mr-1.5 flex w-full max-w-lg flex-col  pt-16 pb-3">
+                <div className="relative mr-1.5 flex w-full  flex-col  pt-16 pb-3">
                   <div className="flex w-full items-center border-b border-yellow pb-4">
                     <LogoIcon classNames="w-14 text-dark dark:text-brand" />
-                    <div className={"text-2xl ml-5 font-semibold text-yellow"}>Dashboard</div>
+                    <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
                   </div>
 
-                  <div className={"mt-3 h-[25px] w-40"}>
+                  <div className={"mt-3 h-[30px] w-40"}>
                     <StyledButton onClick={() => {}}>Portfolio</StyledButton>
                   </div>
 
-                  <div className={"mt-10"}>
+                  <div className={"mt-7"}>
                     <PerformanceChart tokens={tokens} showType={showType} />
                   </div>
 
@@ -94,7 +94,7 @@ const UserSidebar = () => {
                   itemsPerPage={itemsPerPage}
                 />
 
-                <div className={"mb-3 w-full max-w-[512px]"}>
+                <div className={"mb-3 w-full"}>
                   <FullOpenVector
                     open={fullOpen}
                     setOpen={setFullOpen}
