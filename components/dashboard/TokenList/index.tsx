@@ -345,7 +345,7 @@ const TokenList = ({
                     {data.isScam ? (
                       <div className={"text-brand"} id={"app-title" + i}>
                         {warningSVG}
-                        <ReactTooltip anchorId={"app-title" + i} place="left" content="7 day average" />
+                        <ReactTooltip anchorId={"app-title" + i} place="left" content="Possible scam token" />
                       </div>
                     ) : data.isReward ? (
                       <StyledButton onClick={() => onClaim(data.address)} disabled={pending}>
