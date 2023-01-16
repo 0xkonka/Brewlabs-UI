@@ -89,7 +89,7 @@ const TokenList = ({
 
   const getFavourites = () => {
     try {
-      let _favourites: any = localStorage.getItem(`favourites${chainId}`);
+      let _favourites: any = localStorage.getItem(`favourites${chainId}${address}`);
       _favourites = JSON.parse(_favourites);
       setFavourites(isArray(_favourites) ? _favourites : []);
     } catch (error) {
@@ -99,7 +99,7 @@ const TokenList = ({
 
   const getArchives = () => {
     try {
-      let _archives: any = localStorage.getItem(`archives${chainId}`);
+      let _archives: any = localStorage.getItem(`archives${chainId}${address}`);
       _archives = JSON.parse(_archives);
       setArchives(isArray(_archives) ? _archives : []);
     } catch (error) {
@@ -110,21 +110,22 @@ const TokenList = ({
   useEffect(() => {
     getFavourites();
     getArchives();
-  }, [chainId]);
+  }, [chainId, address]);
 
   useEffect(() => {
-    let _archives: any = localStorage.getItem(`archives${chainId}`);
+    let _archives: any = localStorage.getItem(`archives${chainId}${address}`);
     _archives = JSON.parse(_archives);
+    _archives = isArray(_archives) ? _archives : [];
     let archiveTokens = [];
-    console.log(tokens);
     for (let i = 0; i < tokens.length; i++) {
       if (tokens[i].name && tokens[i].name.includes("_Tracker") && !_archives.includes(tokens[i].address)) {
         archiveTokens.push(tokens[i].address);
       }
     }
-    localStorage.setItem(`archives${chainId}`, JSON.stringify([..._archives, ...archiveTokens]));
+    localStorage.setItem(`archives${chainId}${address}`, JSON.stringify([..._archives, ...archiveTokens]));
     getArchives();
   }, [tokens]);
+
   useEffect(() => {
     let _showData: any = [];
     let filteredTokens: any = [];
@@ -177,24 +178,24 @@ const TokenList = ({
     setPending(false);
   };
 
-  const onFavourites = (address: string, type: number) => {
+  const onFavourites = (_address: string, type: number) => {
     if (type === 1) {
-      localStorage.setItem(`favourites${chainId}`, JSON.stringify([...favourites, address]));
+      localStorage.setItem(`favourites${chainId}${address}`, JSON.stringify([...favourites, _address]));
       getFavourites();
     }
     if (type === 2) {
       let temp = [...favourites];
-      temp.splice(favourites.indexOf(address), 1);
-      localStorage.setItem(`favourites${chainId}`, JSON.stringify(temp));
+      temp.splice(favourites.indexOf(_address), 1);
+      localStorage.setItem(`favourites${chainId}${address}`, JSON.stringify(temp));
       getFavourites();
     }
   };
-  const onArchive = (address: string) => {
+  const onArchive = (_address: string) => {
     if (listType === 1) {
       let temp = [...archives];
-      temp.splice(archives.indexOf(address), 1);
-      localStorage.setItem(`archives${chainId}`, JSON.stringify(temp));
-    } else localStorage.setItem(`archives${chainId}`, JSON.stringify([...archives, address]));
+      temp.splice(archives.indexOf(_address), 1);
+      localStorage.setItem(`archives${chainId}${address}`, JSON.stringify(temp));
+    } else localStorage.setItem(`archives${chainId}${address}`, JSON.stringify([...archives, _address]));
     getArchives();
   };
 
