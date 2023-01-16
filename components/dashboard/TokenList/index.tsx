@@ -108,8 +108,9 @@ const TokenList = ({
 
   useEffect(() => {
     let archiveTokens = [];
+    console.log(tokens);
     for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].name.includes("_Tracker") && !archives.includes(tokens[i].address)) {
+      if (tokens[i].name && tokens[i].name.includes("_Tracker") && !archives.includes(tokens[i].address)) {
         archiveTokens.push(tokens[i].address);
       }
     }

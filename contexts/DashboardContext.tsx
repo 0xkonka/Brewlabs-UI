@@ -51,7 +51,7 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
-  // const address = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
+  // const address = "0x53Ff4a10a30deb6d412f9b47caeec28af7f8e799";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
@@ -166,6 +166,7 @@ const DashboardContextProvider = ({ children }: any) => {
         isReward,
       };
     } catch (error) {
+      console.log(token.address);
       console.log(error);
     }
   };
@@ -198,7 +199,6 @@ const DashboardContextProvider = ({ children }: any) => {
       const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
       const covalReponse: any = await axios.get(covalUrl);
       const items = covalReponse.data.data.items;
-      console.log(items);
       let _tokens: any = [];
       console.log("PREVIOUS", tokens);
       for (let i = 0; i < items.length; i++) {
@@ -208,12 +208,18 @@ const DashboardContextProvider = ({ children }: any) => {
           : items[i].contract_ticker_symbol === "BUSD" || items[i].contract_ticker_symbol === "USDC"
           ? 1
           : items[i].quote_rate / 1;
-        if (items[i].balance / 1 > 0 || items[i].address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        const isLP = !items[i].contract_name;
+        let LPInfo;
+        if (isLP) {
+          LPInfo = await fetchTokenBaseInfo(items[i].contract_address);
+          console.log(LPInfo);
+        }
+        if (items[i].balance / 1 > 0 || items[i].contract_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
           _tokens.push({
-            balance: items[i].balance / Math.pow(10, items[i].contract_decimals),
-            name: items[i].contract_name,
-            symbol: items[i].contract_ticker_symbol,
-            decimals: items[i].contract_decimals,
+            balance: items[i].balance / Math.pow(10, isLP ? LPInfo[2] : items[i].contract_decimals),
+            name: isLP ? LPInfo[0] : items[i].contract_name,
+            symbol: isLP ? LPInfo[1] : items[i].contract_ticker_symbol,
+            decimals: isLP ? LPInfo[2] : items[i].contract_decimals,
             // logo: items[i].logo_url,
             address: items[i].contract_address.toLowerCase(),
             price,
@@ -227,6 +233,7 @@ const DashboardContextProvider = ({ children }: any) => {
             isReward: filter.length ? filter[0].isReward : false,
           });
       }
+      console.log(_tokens);
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
