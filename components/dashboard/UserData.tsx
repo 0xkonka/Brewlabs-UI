@@ -11,7 +11,7 @@ const WalletData = () => {
           <InformationCircleIcon className="h-6 w-6" />
           <div>
             <h3 className="font-bold">Stay tuned!</h3>
-            <div className="text-xs">We are developing a dashboard to help you makes sense of your investments.</div>
+            <div className="text-sm">We are developing a dashboard to help you makes sense of your investments.</div>
           </div>
         </div>
       </div>

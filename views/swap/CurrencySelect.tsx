@@ -57,7 +57,7 @@ const CurrencyRow = ({
             <CurrencyLogo currency={currency} size="36px" style={{ marginRight: "8px" }} />
             <div className="">
               <p className="text-lg">{currency?.symbol}</p>
-              <p className="flex items-center justify-start gap-1 text-xs">
+              <p className="flex items-center justify-start gap-1 text-sm">
                 {priceChange24h > 0 ? (
                   <span className="flex items-center text-green">
                     {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
@@ -78,7 +78,7 @@ const CurrencyRow = ({
           {balance && !balance.equalTo(0) && (
             <div className="text-end">
               <p>{balance.toFixed(3)}</p>
-              <p className="text-xs opacity-40">
+              <p className="text-sm opacity-40">
                 {new BigNumber(balance.toSignificant()).times(tokenPrice).toFixed(4)} USD
               </p>
             </div>

@@ -66,7 +66,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="text-sm font-medium text-gray-700 group-hover:text-gray-500">
                 {openWalletModal ? `Connecting wallet` : `Connect wallet`}
               </p>
-              <p className="text-xs font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
+              <p className="text-sm font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
             </div>
           </div>
         </button>
@@ -97,7 +97,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
               </p>
-              <p className="text-left text-xs font-medium">
+              <p className="text-left text-sm font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
               </p>
             </button>

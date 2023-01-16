@@ -343,7 +343,7 @@ const Bridge: NextPage = () => {
                 </div>
               </div>
             </CryptoCard>
-            <p className="mt-4 block text-center text-xs text-slate-900 dark:text-gray-500 md:hidden">
+            <p className="mt-4 block text-center text-sm text-slate-900 dark:text-gray-500 md:hidden">
               Scroll down to choose network to send to
             </p>
           </div>
