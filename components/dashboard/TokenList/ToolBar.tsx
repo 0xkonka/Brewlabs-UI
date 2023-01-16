@@ -31,9 +31,9 @@ const ToolBar = ({
         <DropDown value={listType} setValue={setListType} />
       </LogoPanel>
       <ValuePanel ref={ref} onScroll={(e: any) => setCurScroll(e.target.scrollLeft)}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pl-2">
           <StyledOption
-            className={`${fullOpen ? "min-w-[8px]" : "min-w-[70px]"} font-semibold`}
+            className={`${fullOpen ? "min-w-[14px]" : "min-w-[70px]"} font-semibold`}
             onClick={() => setFilterType(1)}
             active={filterType === 1}
           >
