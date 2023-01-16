@@ -213,6 +213,7 @@ const DashboardContextProvider = ({ children }: any) => {
         if (isLP) {
           LPInfo = await fetchTokenBaseInfo(items[i].contract_address);
           console.log(LPInfo);
+          if (!LPInfo[0]) continue;
         }
         if (items[i].balance / 1 > 0 || items[i].contract_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
           _tokens.push({

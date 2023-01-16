@@ -32,6 +32,10 @@ const TokenList = ({
   pageIndex,
   itemsPerPage,
   setPageIndex,
+  archives,
+  setArchives,
+  listType,
+  setListType,
 }: {
   tokens?: any;
   showType?: number;
@@ -39,12 +43,14 @@ const TokenList = ({
   pageIndex: number;
   itemsPerPage: number;
   setPageIndex: any;
+  archives: any;
+  setArchives: any;
+  listType: number;
+  setListType: any;
 }) => {
   const [filterType, setFilterType] = useState(3);
   const [showData, setShowData] = useState([]);
   const [favourites, setFavourites] = useState<any>([]);
-  const [archives, setArchives] = useState<any>([]);
-  const [listType, setListType] = useState(0);
   const [showBoxShadow, setShowBoxShadow] = useState(false);
   const [curScroll, setCurScroll] = useState(0);
   const [isHover, setIsHover] = useState(new Array(tokens.length).fill(false));
@@ -107,14 +113,16 @@ const TokenList = ({
   }, [chainId]);
 
   useEffect(() => {
+    let _archives: any = localStorage.getItem(`archives${chainId}`);
+    _archives = JSON.parse(_archives);
     let archiveTokens = [];
     console.log(tokens);
     for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].name && tokens[i].name.includes("_Tracker") && !archives.includes(tokens[i].address)) {
+      if (tokens[i].name && tokens[i].name.includes("_Tracker") && !_archives.includes(tokens[i].address)) {
         archiveTokens.push(tokens[i].address);
       }
     }
-    localStorage.setItem(`archives${chainId}`, JSON.stringify([...archives, ...archiveTokens]));
+    localStorage.setItem(`archives${chainId}`, JSON.stringify([..._archives, ...archiveTokens]));
     getArchives();
   }, [tokens]);
   useEffect(() => {

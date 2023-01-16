@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Fragment, useContext, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -5,18 +6,12 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalState, setGlobalState } from "../../state";
 import ConnectWallet from "./ConnectWallet";
 import LogoIcon from "../LogoIcon";
-import WalletData from "./UserData";
-import DisconnectWalletButton from "components/wallet/DisconnectWalletButton";
 import StyledButton from "./StyledButton";
 import PerformanceChart from "./PerformanceChart";
 import SwitchButton from "./SwitchButton";
 import TokenList from "./TokenList";
 import FullOpenVector from "./FullOpenVector";
 import { DashboardContext } from "contexts/DashboardContext";
-
-const TokenInfo = (token: any) => {
-  useEffect(() => {});
-};
 
 const UserSidebar = () => {
   const [isOpen] = useGlobalState("userSidebarOpen");
@@ -25,10 +20,23 @@ const UserSidebar = () => {
   const { tokens }: any = useContext(DashboardContext);
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(0);
+  const [archives, setArchives] = useState<any>([]);
+  const [listType, setListType] = useState(0);
+  const [maxPage, setMaxPage] = useState(0);
 
   useEffect(() => {
     setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
   }, [fullOpen]);
+
+  useEffect(() => {
+    let filteredTokens: any = [];
+    if (listType === 0) {
+      filteredTokens = tokens.filter((data: any) => !archives.includes(data.address));
+    } else {
+      filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
+    }
+    setMaxPage(Math.ceil(filteredTokens.length / itemsPerPage));
+  }, [listType, tokens, archives]);
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -92,6 +100,10 @@ const UserSidebar = () => {
                   pageIndex={pageIndex}
                   setPageIndex={setPageIndex}
                   itemsPerPage={itemsPerPage}
+                  archives={archives}
+                  setArchives={setArchives}
+                  listType={listType}
+                  setListType={setListType}
                 />
 
                 <div className={"mb-3 w-full"}>
@@ -100,7 +112,7 @@ const UserSidebar = () => {
                     setOpen={setFullOpen}
                     pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
-                    maxPage={Math.ceil(tokens.length / itemsPerPage)}
+                    maxPage={maxPage}
                   />
                 </div>
               </div>
