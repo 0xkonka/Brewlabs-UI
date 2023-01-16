@@ -10,8 +10,8 @@ type NavigationItem = {
 export const navigationData = [
   {
     name: "Home",
-    href: "https://brewlabs.info/",
-    external: true,
+    href: "/",
+    external: false,
     icon: "HomeIcon",
   },
   {
