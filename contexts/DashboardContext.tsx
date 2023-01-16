@@ -233,7 +233,6 @@ const DashboardContextProvider = ({ children }: any) => {
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       console.log("Tokens", tokenInfos);
-
       setTokens(tokenInfos);
     } catch (error) {
       console.log(error);
@@ -242,6 +241,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchMarketInfo() {
     let i;
+    console.log("FETCH MARKET PRICE");
     for (i = 0; i < apiKeyList.length; i++) {
       try {
         const response = await fetch(new Request("https://api.livecoinwatch.com/overview/history"), {
@@ -280,24 +280,23 @@ const DashboardContextProvider = ({ children }: any) => {
       console.log(error);
     }
   }
-  // async function fetchAllowances(){
-  //   try{}
-  //   catch(error){
-
-  //   }
-  // }
 
   useSlowRefreshEffect(() => {
     console.log("Step 2 chainID, signer, address = ", chainId, signer, address);
     if (!(chainId === 56 || chainId === 1) || !signer || !address) {
       setTokens([]);
-      setMarketHistory([]);
     } else {
-      // fetchAllowances();
-      fetchMarketInfo();
       fetchTokens();
     }
   }, [chainId, signer]);
+
+  useSlowRefreshEffect(() => {
+    if (!(chainId === 56 || chainId === 1)) {
+      setMarketHistory([]);
+    } else {
+      fetchMarketInfo();
+    }
+  }, [chainId]);
 
   useDailyRefreshEffect(() => {
     fetchTokenList();
