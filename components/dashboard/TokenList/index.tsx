@@ -5,18 +5,15 @@ import { StarIcon as StarOutlineIcon, CheckCircleIcon, TrashIcon } from "@heroic
 import { StarIcon } from "@heroicons/react/24/solid";
 import StyledButton from "../StyledButton";
 import styled from "styled-components";
-import { NoneSVG } from "../assets/svgs";
+import { NoneSVG, warningSVG } from "../assets/svgs";
 import { isArray } from "lodash";
 import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat } from "utils/functions";
-
-const CHAIN_SYMBOL = {
-  1: "ETH",
-  56: "BNB",
-};
+import "react-tooltip/dist/react-tooltip.css";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const emptyLogos = {
   1: "/images/dashboard/tokens/empty-token-eth.webp",
@@ -50,7 +47,7 @@ const TokenList = ({
   const [listType, setListType] = useState(0);
   const [showBoxShadow, setShowBoxShadow] = useState(false);
   const [curScroll, setCurScroll] = useState(0);
-  const [isHover, setIsHover] = useState([]);
+  const [isHover, setIsHover] = useState(new Array(tokens.length).fill(false));
 
   const { chainId } = useActiveChainId();
   const { address } = useAccount();
@@ -205,10 +202,17 @@ const TokenList = ({
     setPageIndex(0);
   }, [listType]);
 
+  const onHover = (i, type) => {
+    let temp = [];
+    temp[i] = type;
+    setIsHover(temp);
+  };
+
   let ethPrice = tokens.filter((data: any) => data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
   ethPrice = ethPrice.length ? ethPrice[0].price : 0;
+
   return (
-    <StyledContainer className={`ml-1.5 mt-4 w-full`} fullOpen={fullOpen} count={showData.length}>
+    <StyledContainer className={`mt-4 w-full`} fullOpen={fullOpen} count={showData.length}>
       <ToolBar
         setFilterType={setFilterType}
         filterType={filterType}
@@ -235,28 +239,17 @@ const TokenList = ({
               data.address
             }?a=${address}`;
             return (
-              <a
+              <StyledLink
                 key={i}
-                className={`w-full cursor-pointer rounded-l py-[5px] text-sm font-semibold transition ${
-                  isHover[i] ? "bg-[rgba(0,0,0,0.5)]" : ""
-                }`}
-                target={"_blank"}
-                href={link}
-                rel="noreferrer"
-                onMouseEnter={() => {
-                  let temp = [];
-                  temp[i] = true;
-                  setIsHover(temp);
-                }}
-                onMouseLeave={() => {
-                  let temp = [];
-                  temp[i] = false;
-                  setIsHover(temp);
-                }}
+                className={`w-full cursor-pointer py-[5px] text-sm font-semibold transition`}
+                left={"true"}
+                isHover={isHover[i] && isHover[i].toString()}
+                onMouseEnter={() => onHover(i, true)}
+                onMouseLeave={() => onHover(i, false)}
               >
                 <div className="flex items-center">
                   <div className={listType === 0 ? "" : "hidden"}>
-                    <div className={`min-w-[10px] max-w-[10px] cursor-pointer text-yellow`}>
+                    <div className={`min-w-[14px] max-w-[14px] cursor-pointer text-yellow`}>
                       {!favourites.includes(data.address) ? (
                         <StarOutlineIcon
                           className={"h-full w-full hover:opacity-70"}
@@ -274,24 +267,24 @@ const TokenList = ({
                       )}
                     </div>
                   </div>
-
-                  <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"} />
-
-                  <div>
-                    <div className={"flex items-center text-white"}>
-                      <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
-                      <div className={isVerified ? "" : "hidden"}>
-                        <CheckCircleIcon className="ml-1 max-h-[9px] min-h-[9px] min-w-[9px] max-w-[9px] text-green" />
+                  <a target={"_blank"} href={link} rel="noreferrer" className={"flex items-center"}>
+                    <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"} />
+                    <div>
+                      <div className={"flex items-center text-white"}>
+                        <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
+                        <div className={isVerified ? "" : "hidden"}>
+                          <CheckCircleIcon className="ml-1 max-h-[12px] min-h-[12px] min-w-[12px] max-w-[12px] text-green" />
+                        </div>
                       </div>
+                      <StyledDiv className={fullOpen ? "" : "hidden"}>
+                        <div className={"overflow-hidden text-ellipsis whitespace-nowrap text-white opacity-25"}>
+                          {BigNumberFormat(data.balance)} {data.symbol}
+                        </div>
+                      </StyledDiv>
                     </div>
-                    <StyledDiv className={fullOpen ? "" : "hidden"}>
-                      <div className={"overflow-hidden text-ellipsis whitespace-nowrap text-white opacity-25"}>
-                        {BigNumberFormat(data.balance)} {data.symbol}
-                      </div>
-                    </StyledDiv>
-                  </div>
+                  </a>
                 </div>
-              </a>
+              </StyledLink>
             );
           })}
         </LogoPanel>
@@ -299,35 +292,20 @@ const TokenList = ({
           <div>
             {showData.map((data: any, i: number) => {
               const priceUp = data.priceList[data.priceList.length - 1] >= data.priceList[0];
-              const link = `https://${chainId === 56 ? "bscscan.com" : "etherscan.io"}/token/${
-                data.address
-              }?a=${address}`;
               return (
-                <StyledLink
+                <ColoredLink
                   key={i}
-                  // href={link}
-                  // target={"_blank"}
-                  priceUp={priceUp.toString()}
                   className={`flex py-[5px] ${
                     fullOpen ? "h-[50px]" : "h-[30px]"
-                  } items-center justify-between rounded-r text-sm font-semibold transition ${
-                    isHover[i] ? "bg-[rgba(0,0,0,0.5)]" : ""
-                  } cursor-pointer pl-2`}
-                  onMouseEnter={() => {
-                    let temp = [];
-                    temp[i] = true;
-                    setIsHover(temp);
-                  }}
-                  onMouseLeave={() => {
-                    let temp = [];
-                    temp[i] = false;
-                    setIsHover(temp);
-                  }}
-                  rel="noreferrer"
+                  } cursor-pointer items-center justify-between pl-2 text-sm  font-semibold transition`}
+                  priceUp={priceUp.toString()}
+                  isHover={isHover[i] && isHover[i].toString()}
+                  onMouseEnter={() => onHover(i, true)}
+                  onMouseLeave={() => onHover(i, false)}
                 >
-                  <div className={`${fullOpen ? "min-w-[8px]" : "min-w-[70px]"} text-center`}>
+                  <div className={`${fullOpen ? "min-w-[14px]" : "min-w-[70px]"} text-center`}>
                     {fullOpen ? (
-                      <div className="h-2 w-2">
+                      <div className="h-3.5 w-3.5">
                         <TrashIcon
                           className={`h-full w-full cursor-pointer text-danger ${
                             !data.name.includes("_Tracker") ? "" : "hidden"
@@ -363,9 +341,12 @@ const TokenList = ({
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
-                  <div className={"h-[24px] w-[52px]"}>
+                  <div className={"flex h-[24px] w-[52px] justify-center"}>
                     {data.isScam ? (
-                      <StyledButton type={"scam"}>Scam</StyledButton>
+                      <div className={"text-brand"} id={"app-title" + i}>
+                        {warningSVG}
+                        <ReactTooltip anchorId={"app-title" + i} place="left" content="7 day average" />
+                      </div>
                     ) : data.isReward ? (
                       <StyledButton onClick={() => onClaim(data.address)} disabled={pending}>
                         Claim
@@ -374,7 +355,7 @@ const TokenList = ({
                       ""
                     )}
                   </div>
-                </StyledLink>
+                </ColoredLink>
               );
             })}
           </div>
@@ -384,17 +365,31 @@ const TokenList = ({
   );
 };
 
-const StyledLink = styled.a<{ priceUp: string }>`
+const StyledLink = styled.div<{ isHover: string; left?: string; right?: string }>`
+  position: relative;
+  ::after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: -12px;
+    width: ${({ left }) => (left === "true" ? "calc(100%)" : "calc(100% + 24px)")};
+    height: 100%;
+    z-index: -1;
+    background-color: ${({ isHover }) => (isHover === "true" ? "rgba(50,50,50,0.4)" : "")};
+    border-radius: ${({ left }) => (left === "true" ? "4px 0 0 4px" : "0 4px 4px 0")};
+  }
+`;
+const ColoredLink = styled(StyledLink)<{ priceUp: string }>`
   color: ${({ priceUp }) => (priceUp === "true" ? "#2FD35D" : "#D9563A")}!important;
 `;
 
 export const LogoPanel = styled.div<{ showShadow?: string }>`
   width: 160px;
   position: relative;
-  @media screen and (max-width: 630px) {
+  @media screen and (max-width: 650px) {
     width: 130px;
   }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 620px) {
     ::before {
       box-shadow: inset 10px 0 8px -8px #00000070;
       position: absolute;
@@ -412,12 +407,12 @@ export const LogoPanel = styled.div<{ showShadow?: string }>`
 
 export const ValuePanel = styled.div`
   width: calc(100% - 160px);
-  @media screen and (max-width: 630px) {
+  @media screen and (max-width: 650px) {
     width: calc(100% - 130px);
   }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 620px) {
     > div {
-      min-width: 430px;
+      min-width: 460px;
     }
     overflow-x: scroll;
     ::-webkit-scrollbar {
@@ -429,14 +424,14 @@ export const ValuePanel = styled.div`
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
   height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
-  @media screen and (max-width: 630px) {
+  @media screen and (max-width: 650px) {
     height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 28 + 27}px`)};
   }
 `;
 
 const StyledDiv = styled.div`
   max-width: 96px;
-  @media screen and (max-width: 630px) {
+  @media screen and (max-width: 650px) {
     max-width: 68px;
   }
 `;

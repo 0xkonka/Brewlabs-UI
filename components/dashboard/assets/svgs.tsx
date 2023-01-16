@@ -9,7 +9,7 @@ export const NoneSVG = (
   </svg>
 );
 export const LinkSVG = (
-  <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="12" height="12" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M2.875 1.625H1.625C1.45924 1.625 1.30027 1.69085 1.18306 1.80806C1.06585 1.92527 1 2.08424 1 2.25V5.375C1 5.54076 1.06585 5.69973 1.18306 5.81694C1.30027 5.93415 1.45924 6 1.625 6H4.75C4.91576 6 5.07473 5.93415 5.19194 5.81694C5.30915 5.69973 5.375 5.54076 5.375 5.375V4.125M4.125 1H6M6 1V2.875M6 1L2.875 4.125"
       stroke="currentColor"
@@ -76,5 +76,17 @@ export const fullOpenSVG = (
         <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_566" result="shape" />
       </filter>
     </defs>
+  </svg>
+);
+
+export const warningSVG = (
+  <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M9.99992 6.99999V8.99999M9.99992 13H10.0099M3.07192 17H16.9279C18.4679 17 19.4299 15.333 18.6599 14L11.7319 1.99999C10.9619 0.666994 9.03792 0.666994 8.26792 1.99999L1.33992 14C0.569924 15.333 1.53192 17 3.07192 17Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );

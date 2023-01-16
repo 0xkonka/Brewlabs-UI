@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
-import { erc20ABI, useAccount, useSigner } from "wagmi";
+import { erc20ABI, useAccount, useProvider, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import {
   getClaimableTokenContract,
@@ -43,11 +43,7 @@ const tokenList_URI: any = {
   1: "https://tokens.coingecko.com/ethereum/all.json",
 };
 
-const SCAN_API: any = {
-  56: "https://api.bscscan.com",
-  1: "https://api.etherscan.io",
-};
-
+let temp_addr, temp_id;
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
@@ -56,8 +52,11 @@ const DashboardContextProvider = ({ children }: any) => {
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
   // const address = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
+  temp_addr = address;
   const { chainId } = useActiveChainId();
+  temp_id = chainId;
   const { data: signer }: any = useSigner();
+  const ethersProvider = useProvider();
 
   async function multicall(abi: any, calls: any) {
     try {
@@ -94,24 +93,6 @@ const DashboardContextProvider = ({ children }: any) => {
     ];
     const result = await multicall(erc20ABI, calls);
     return result;
-  };
-
-  const fetchEthBalance = async (address: any) => {
-    const multicallContract = getMulticallContract(chainId);
-    const result = await multicallContract.getEthBalance(address);
-    return result;
-  };
-
-  const fetchTokenBalance = async (address: any, account: any) => {
-    const calls = [
-      {
-        name: "balanceOf",
-        params: [account],
-        address: address,
-      },
-    ];
-    const result = await multicall(ERC20ABI, calls);
-    return result[0][0];
   };
 
   const fetchTokenInfo = async (token: any) => {
@@ -152,13 +133,9 @@ const DashboardContextProvider = ({ children }: any) => {
             decimals: 18,
           };
         }
-        if (rewardToken.address === "0x0" || token.name.toLowerCase() === "brewlabs") {
-          totalRewards = await fetchEthBalance(dividendTracker);
-        } else {
-          totalRewards = await fetchTokenBalance(rewardToken.address, dividendTracker);
-        }
         const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
         pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
+        totalRewards = await dividendTrackerContract.withdrawnDividendOf(address);
         reward.pendingRewards =
           pendingRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.totalRewards =
@@ -250,10 +227,13 @@ const DashboardContextProvider = ({ children }: any) => {
             isReward: filter.length ? filter[0].isReward : false,
           });
       }
-      console.log(_tokens);
+
+      if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
-      console.log(tokenInfos);
+      if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
+      console.log("Tokens", tokenInfos);
+
       setTokens(tokenInfos);
     } catch (error) {
       console.log(error);
@@ -295,7 +275,6 @@ const DashboardContextProvider = ({ children }: any) => {
   async function fetchTokenList() {
     try {
       const result = await axios.get(tokenList_URI[chainId]);
-      console.log(result);
       setTokenList(result.data.tokens);
     } catch (error) {
       console.log(error);
@@ -309,9 +288,10 @@ const DashboardContextProvider = ({ children }: any) => {
   // }
 
   useSlowRefreshEffect(() => {
-    if (!(chainId === 56 || chainId === 1) || !signer) {
+    console.log("Step 2 chainID, signer, address = ", chainId, signer, address);
+    if (!(chainId === 56 || chainId === 1) || !signer || !address) {
       setTokens([]);
-      setAllowances([]);
+      setMarketHistory([]);
     } else {
       // fetchAllowances();
       fetchMarketInfo();
@@ -322,6 +302,10 @@ const DashboardContextProvider = ({ children }: any) => {
   useDailyRefreshEffect(() => {
     fetchTokenList();
   }, [chainId]);
+
+  useEffect(() => {
+    setTokens([]);
+  }, [chainId, address]);
 
   return (
     <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList }}>
