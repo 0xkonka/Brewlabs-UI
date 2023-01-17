@@ -34,6 +34,7 @@ const useExecution = () => {
       });
       return result;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [showError]
   );
 
@@ -77,6 +78,7 @@ const useExecution = () => {
         setExecuting(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [signer, foreignChainId, foreignAmbVersion, foreignAmbAddress, showError, switchChain, isRightNetwork]
   );
 

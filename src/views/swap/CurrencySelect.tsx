@@ -136,6 +136,7 @@ const CurrencySelect = ({
       onCurrencySelect(currency);
       closeWindow();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onCurrencySelect]
   );
   const onInputAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +208,7 @@ const CurrencySelect = ({
       );
     if (tab === 2)
       return itemData.filter((_token) => factoryTokens.find((__token) => _token?.symbol === __token?.symbol));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemData, tab]);
 
   const tokenMarketData = useTokenMarketChart(

@@ -90,6 +90,7 @@ export function useContract(address: string | undefined, ABI: any, withSignerIfP
       console.error("Failed to get contract", error);
       return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, ABI, signer, withSignerIfPossible, account]);
 }
 

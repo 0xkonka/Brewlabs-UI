@@ -98,7 +98,7 @@ export const useFromChainId = () => {
     } else if (fromChainId !== networkFrom.id) {
       setGlobalState("userBridgeFrom", NetworkOptions.find(n => n.id === fromChainId)!);
     }
-    // react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain, fromChainId, networkFrom]);
 
   return fromChainId;

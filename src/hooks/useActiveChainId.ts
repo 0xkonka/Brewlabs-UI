@@ -25,6 +25,7 @@ export const useQueryChainId = () => {
       replaceQueryParams("chainId", PAGE_SUPPORTED_CHAINS[page][0]);
     }
     setQueryChainId(+query.chainId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.chainId]);
 
   return queryChainId;

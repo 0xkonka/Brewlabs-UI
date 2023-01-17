@@ -35,5 +35,6 @@ export const useAccountEventListener = () => {
       }
     }
     return undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, chainId, dispatch, connector])
 }

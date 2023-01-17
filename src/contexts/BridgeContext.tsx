@@ -134,6 +134,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
             amount,
             (isHome ? homeFeeManagerAddress : foreignFeeManagerAddress) ?? ""
           ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [bridgeDirectionId, fromToken, toToken, isRewardAddress, homeFeeManagerAddress, foreignFeeManagerAddress, feeType]
   );
 
@@ -160,6 +161,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
       });
       setToAmountLoading(false);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fromToken, toToken, getToAmount]
   );
 
@@ -216,6 +218,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
         return false;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [getBridgeChainId]
   );
 
@@ -251,6 +254,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
       });
       throw transferError;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromToken, toToken, account, receiver, signer, fromAmount, setAmount, shouldReceiveNativeCur, foreignChainId]);
 
   const switchTokens = useCallback(() => {
@@ -282,6 +286,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
         await setToken(token);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setToken, fromToken, bridgeDirectionId]
   );
 

@@ -26,6 +26,7 @@ export const useTokenLimits = () => {
       setTokenLimits(limits);
       setFetching(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromToken, toToken, homeChainId, foreignChainId, currentDay]);
 
   useEffect(() => {

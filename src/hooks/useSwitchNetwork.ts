@@ -16,6 +16,7 @@ export function useSwitchNetworkLocal() {
     setGlobalState("sessionChainId", chainId);
     replaceBrowserHistory("chainId", chainId);
     window.location.reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
 

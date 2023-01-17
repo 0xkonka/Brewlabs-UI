@@ -110,6 +110,7 @@ export const useMediatorInfo = () => {
       }
     };
     processMediatorData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeMediatorAddress, homeChainId, calculateFees, checkRewardAddress]);
 
   return {
