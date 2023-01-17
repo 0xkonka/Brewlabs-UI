@@ -14,12 +14,14 @@ const Loading = () => {
   const { address } = useAccount();
   const innerHeight = window && window.innerHeight ? window.innerHeight : 0;
   return (
-    <div className={`flex ${innerHeight < 725 ? "h-[200px]" : "h-[250px]"} w-full justify-center pt-10`}>
-      {address ? (
-        <TailSpin width={50} height={50} color={"rgba(255,255,255,0.5"} />
-      ) : (
-        <div className={"pt-5 text-2xl text-brand"}>No Wallet Connected</div>
-      )}
+    <div className={`flex ${innerHeight < 725 ? "h-[200px]" : "h-[250px]"} w-full items-center justify-center pt-10`}>
+      <div style={{ marginTop: "-92px" }}>
+        {address ? (
+          <TailSpin width={50} height={50} color={"rgba(255,255,255,0.5"} />
+        ) : (
+          <div className={"text-2xl text-brand"}>No Wallet Connected</div>
+        )}
+      </div>
     </div>
   );
 };
