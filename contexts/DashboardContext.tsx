@@ -200,7 +200,7 @@ const DashboardContextProvider = ({ children }: any) => {
       const covalReponse: any = await axios.get(covalUrl);
       const items = covalReponse.data.data.items;
       let _tokens: any = [];
-      console.log("PREVIOUS", tokens);
+
       for (let i = 0; i < items.length; i++) {
         const filter = tokens.filter((data) => data.address.toLowerCase() === items[i].contract_address.toLowerCase());
         const price = filter.length
@@ -212,7 +212,6 @@ const DashboardContextProvider = ({ children }: any) => {
         let LPInfo;
         if (isLP) {
           LPInfo = await fetchTokenBaseInfo(items[i].contract_address);
-          console.log(LPInfo);
           if (!LPInfo[0]) continue;
         }
         if (items[i].balance / 1 > 0 || items[i].contract_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
@@ -234,13 +233,12 @@ const DashboardContextProvider = ({ children }: any) => {
             isReward: filter.length ? filter[0].isReward : false,
           });
       }
-      console.log(_tokens);
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
-      console.log("Tokens", tokenInfos);
+
       setTokens(tokenInfos);
     } catch (error) {
       console.log(error);
@@ -290,7 +288,6 @@ const DashboardContextProvider = ({ children }: any) => {
   }
 
   useSlowRefreshEffect(() => {
-    console.log("Step 2 chainID, signer, address = ", chainId, signer, address);
     if (!(chainId === 56 || chainId === 1) || !signer || !address) {
       setTokens([]);
     } else {
