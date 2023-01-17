@@ -255,7 +255,7 @@ const CurrencySelect = ({
                 </div>
                 <div className="my-3 grid grid-cols-2 justify-between gap-1 sm:flex">
                   <div
-                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1.5 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
+                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded border px-3 py-1.5 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
                     onClick={() => switchTab(0)}
                   >
                     <span className="font-roboto text-[10px] font-bold">Popular</span>
@@ -266,7 +266,7 @@ const CurrencySelect = ({
                     )}
                   </div>
                   <div
-                    className="relative mx-2 flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1.5 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
+                    className="relative mx-2 flex cursor-pointer items-center justify-center gap-2 rounded border px-3 py-1.5 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
                     onClick={() => switchTab(1)}
                   >
                     <span className="font-roboto text-[10px] font-bold">My Wallet</span>
@@ -277,7 +277,7 @@ const CurrencySelect = ({
                     )}
                   </div>
                   <div
-                    className={`relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1.5 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3`}
+                    className={`relative flex cursor-pointer items-center justify-center gap-2 rounded border px-3 py-1.5 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3`}
                     onClick={() => switchTab(2)}
                   >
                     <span className="font-roboto text-[10px] font-bold">Brewlabs Factory</span>
