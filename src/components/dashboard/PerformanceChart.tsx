@@ -14,7 +14,7 @@ const Loading = () => {
   const { address } = useAccount();
   const innerHeight = window && window.innerHeight ? window.innerHeight : 0;
   return (
-    <div className={`flex ${innerHeight < 725 ? "h-[205px]" : "h-[230px]"} w-full justify-center pt-10`}>
+    <div className={`flex ${innerHeight < 725 ? "h-[205px]" : "h-[240px]"} w-full justify-center pt-10`}>
       {address ? (
         <TailSpin width={50} height={50} color={"rgba(255,255,255,0.5"} />
       ) : (
