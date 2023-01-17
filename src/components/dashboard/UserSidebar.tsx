@@ -12,6 +12,7 @@ import SwitchButton from "./SwitchButton";
 import TokenList from "./TokenList";
 import FullOpenVector from "./FullOpenVector";
 import { DashboardContext } from "contexts/DashboardContext";
+import styled from "styled-components";
 
 const UserSidebar = () => {
   const [isOpen] = useGlobalState("userSidebarOpen");
@@ -24,8 +25,11 @@ const UserSidebar = () => {
   const [listType, setListType] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
 
+  const innerHeight = window && window.innerHeight ? window.innerHeight : 0;
+
   useEffect(() => {
-    setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
+    const _itemsPerPage = Math.min(Math.floor((innerHeight - (innerHeight < 725 ? 550 : 670)) / 50), 7);
+    setItemsPerPage(_itemsPerPage);
   }, [fullOpen]);
 
   useEffect(() => {
@@ -75,7 +79,7 @@ const UserSidebar = () => {
                 </button>
               </div>
               <div className="flex h-full w-full flex-1 flex-col  items-center ">
-                <div className="relative mr-1.5 flex w-full  flex-col  pt-16 pb-3">
+                <StyledContainer className="relative mr-1.5 flex w-full  flex-col pt-16 pb-3">
                   <div className="flex w-full items-center border-b border-yellow pb-4">
                     <LogoIcon classNames="w-14 text-dark dark:text-brand" />
                     <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
@@ -92,7 +96,7 @@ const UserSidebar = () => {
                   <div className={"relative z-10 flex w-full justify-center"}>
                     <SwitchButton value={showType} setValue={setShowType} />
                   </div>
-                </div>
+                </StyledContainer>
                 <TokenList
                   tokens={tokens}
                   showType={showType}
@@ -125,4 +129,10 @@ const UserSidebar = () => {
   );
 };
 
+const StyledContainer = styled.div`
+  @media screen and (max-height: 725px) {
+    padding-top: 36px;
+    padding-bottom: 0;
+  }
+`;
 export default UserSidebar;

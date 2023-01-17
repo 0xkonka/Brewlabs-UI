@@ -236,7 +236,7 @@ const TokenList = ({
         <LogoPanel className={"flex flex-col pt-1 "} showShadow={showBoxShadow.toString()}>
           {showData.map((data: any, i: number) => {
             const logoFilter: any = tokenList.filter(
-              (logo: any) => logo.address.toLowerCase() === data.address.toLowerCase()
+              (logo: any) => data.address && logo.address.toLowerCase() === data.address.toLowerCase()
             );
             const logo =
               data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
@@ -387,6 +387,9 @@ const StyledLink = styled.div<{ isHover: string; left?: string; right?: string }
     z-index: -1;
     background-color: ${({ isHover }) => (isHover === "true" ? "rgba(50,50,50,0.4)" : "")};
     border-radius: ${({ left }) => (left === "true" ? "4px 0 0 4px" : "0 4px 4px 0")};
+    @media screen and (max-width: 620px) {
+      left: 0;
+    }
   }
 `;
 const ColoredLink = styled(StyledLink)<{ priceUp: string }>`
@@ -436,6 +439,12 @@ const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
   transition: all 0.15s;
   @media screen and (max-width: 650px) {
     height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 28 + 27}px`)};
+  }
+  @media screen and (max-height: 725px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 530px)" : `${count * 30 + 27}px`)};
+    @media screen and (max-width: 650px) {
+      height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 530px)" : `${count * 28 + 27}px`)};
+    }
   }
 `;
 
