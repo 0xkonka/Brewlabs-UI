@@ -55,7 +55,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
   return (
     <>
       {price ? (
-        <div className="rounded-xl border border-amber-300 px-2 py-1">
+        <div className="rounded-xl border border-amber-300 px-2 py-1 select-none">
           <div className="mr-2 flex cursor-pointer justify-between">
             <div className="flex items-center gap-1" style={{ marginRight: "4px" }}>
               <ExclamationCircleIcon className="h-5 w-5 dark:text-primary" data-tooltip-target="tooltip-default" />
