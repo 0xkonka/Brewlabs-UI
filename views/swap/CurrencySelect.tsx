@@ -247,7 +247,7 @@ const CurrencySelect = ({
                     onChange={onInputAddress}
                     onKeyDown={onInputEnter}
                     inputMode="decimal"
-                    placeholder="Enter contract address..."
+                    placeholder="Search by symbol or address"
                     className="w-full rounded-lg border bg-transparent px-2 py-1 text-2xl placeholder-primary outline-0 dark:border-primary dark:text-primary"
                   />
                 </div>
