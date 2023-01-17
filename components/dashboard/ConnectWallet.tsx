@@ -107,7 +107,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
             </MaxWidthButton>
           </div>
           <div>
-            <div className={"h-[20px] w-[100px]"}>
+            <div className={"h-[24px] w-[120px]"}>
               <StyledButton onClick={() => disconnect()}>
                 <div className={"flex items-center"}>
                   {LinkSVG}

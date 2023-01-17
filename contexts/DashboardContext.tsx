@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
-import { erc20ABI, useAccount, useSigner } from "wagmi";
+import { erc20ABI, useAccount, useProvider, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import {
   getClaimableTokenContract,
@@ -43,11 +43,7 @@ const tokenList_URI: any = {
   1: "https://tokens.coingecko.com/ethereum/all.json",
 };
 
-const SCAN_API: any = {
-  56: "https://api.bscscan.com",
-  1: "https://api.etherscan.io",
-};
-
+let temp_addr, temp_id;
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
@@ -55,9 +51,12 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
-  // const address = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
+  // const address = "0x53Ff4a10a30deb6d412f9b47caeec28af7f8e799";
+  temp_addr = address;
   const { chainId } = useActiveChainId();
+  temp_id = chainId;
   const { data: signer }: any = useSigner();
+  const ethersProvider = useProvider();
 
   async function multicall(abi: any, calls: any) {
     try {
@@ -94,24 +93,6 @@ const DashboardContextProvider = ({ children }: any) => {
     ];
     const result = await multicall(erc20ABI, calls);
     return result;
-  };
-
-  const fetchEthBalance = async (address: any) => {
-    const multicallContract = getMulticallContract(chainId);
-    const result = await multicallContract.getEthBalance(address);
-    return result;
-  };
-
-  const fetchTokenBalance = async (address: any, account: any) => {
-    const calls = [
-      {
-        name: "balanceOf",
-        params: [account],
-        address: address,
-      },
-    ];
-    const result = await multicall(ERC20ABI, calls);
-    return result[0][0];
   };
 
   const fetchTokenInfo = async (token: any) => {
@@ -152,13 +133,9 @@ const DashboardContextProvider = ({ children }: any) => {
             decimals: 18,
           };
         }
-        if (rewardToken.address === "0x0" || token.name.toLowerCase() === "brewlabs") {
-          totalRewards = await fetchEthBalance(dividendTracker);
-        } else {
-          totalRewards = await fetchTokenBalance(rewardToken.address, dividendTracker);
-        }
         const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
         pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
+        totalRewards = await dividendTrackerContract.withdrawnDividendOf(address);
         reward.pendingRewards =
           pendingRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.totalRewards =
@@ -189,6 +166,7 @@ const DashboardContextProvider = ({ children }: any) => {
         isReward,
       };
     } catch (error) {
+      console.log(token.address);
       console.log(error);
     }
   };
@@ -221,9 +199,8 @@ const DashboardContextProvider = ({ children }: any) => {
       const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
       const covalReponse: any = await axios.get(covalUrl);
       const items = covalReponse.data.data.items;
-      console.log(items);
       let _tokens: any = [];
-      console.log("PREVIOUS", tokens);
+
       for (let i = 0; i < items.length; i++) {
         const filter = tokens.filter((data) => data.address.toLowerCase() === items[i].contract_address.toLowerCase());
         const price = filter.length
@@ -231,12 +208,18 @@ const DashboardContextProvider = ({ children }: any) => {
           : items[i].contract_ticker_symbol === "BUSD" || items[i].contract_ticker_symbol === "USDC"
           ? 1
           : items[i].quote_rate / 1;
-        if (items[i].balance / 1 > 0 || items[i].address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        const isLP = !items[i].contract_name;
+        let LPInfo;
+        if (isLP) {
+          LPInfo = await fetchTokenBaseInfo(items[i].contract_address);
+          if (!LPInfo[0]) continue;
+        }
+        if (items[i].balance / 1 > 0 || items[i].contract_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
           _tokens.push({
-            balance: items[i].balance / Math.pow(10, items[i].contract_decimals),
-            name: items[i].contract_name,
-            symbol: items[i].contract_ticker_symbol,
-            decimals: items[i].contract_decimals,
+            balance: items[i].balance / Math.pow(10, isLP ? LPInfo[2] : items[i].contract_decimals),
+            name: isLP ? LPInfo[0] : items[i].contract_name,
+            symbol: isLP ? LPInfo[1] : items[i].contract_ticker_symbol,
+            decimals: isLP ? LPInfo[2] : items[i].contract_decimals,
             // logo: items[i].logo_url,
             address: items[i].contract_address.toLowerCase(),
             price,
@@ -250,10 +233,12 @@ const DashboardContextProvider = ({ children }: any) => {
             isReward: filter.length ? filter[0].isReward : false,
           });
       }
-      console.log(_tokens);
+
+      if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
-      console.log(tokenInfos);
+      if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
+
       setTokens(tokenInfos);
     } catch (error) {
       console.log(error);
@@ -262,6 +247,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchMarketInfo() {
     let i;
+    console.log("FETCH MARKET PRICE");
     for (i = 0; i < apiKeyList.length; i++) {
       try {
         const response = await fetch(new Request("https://api.livecoinwatch.com/overview/history"), {
@@ -295,33 +281,35 @@ const DashboardContextProvider = ({ children }: any) => {
   async function fetchTokenList() {
     try {
       const result = await axios.get(tokenList_URI[chainId]);
-      console.log(result);
       setTokenList(result.data.tokens);
     } catch (error) {
       console.log(error);
     }
   }
-  // async function fetchAllowances(){
-  //   try{}
-  //   catch(error){
-
-  //   }
-  // }
 
   useSlowRefreshEffect(() => {
-    if (!(chainId === 56 || chainId === 1) || !signer) {
+    if (!(chainId === 56 || chainId === 1) || !signer || !address) {
       setTokens([]);
-      setAllowances([]);
     } else {
-      // fetchAllowances();
-      fetchMarketInfo();
       fetchTokens();
     }
   }, [chainId, signer]);
 
+  useSlowRefreshEffect(() => {
+    if (!(chainId === 56 || chainId === 1)) {
+      setMarketHistory([]);
+    } else {
+      fetchMarketInfo();
+    }
+  }, [chainId]);
+
   useDailyRefreshEffect(() => {
     fetchTokenList();
   }, [chainId]);
+
+  useEffect(() => {
+    setTokens([]);
+  }, [chainId, address]);
 
   return (
     <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList }}>
