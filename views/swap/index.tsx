@@ -489,7 +489,7 @@ export default function Swap() {
               summary="Exchange Tokens at the best rate on the market."
             />
             <Container>
-              <div className="mx-auto mb-4 flex flex-col gap-1" style={{ maxWidth: "500px" }}>
+              <div className="mx-auto mb-4 flex flex-col gap-1 md:mx-0" style={{ maxWidth: "500px" }}>
                 <SubNav openSettingModal={() => setOpenSettingModal(true)} />
                 <ChainSelect id={"chain-select"} />
                 <CurrencyInputPanel

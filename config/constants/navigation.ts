@@ -26,12 +26,12 @@ export const navigationData = [
     external: true,
     icon: "ArrowTrendingUpIcon",
   },
-  {
-    name: "Stables",
-    href: "/stables",
-    external: true,
-    icon: "BanknotesIcon",
-  },
+  // {
+  //   name: "Stables",
+  //   href: "/stables",
+  //   external: true,
+  //   icon: "BanknotesIcon",
+  // },
   {
     name: "Bridge",
     href: "/bridge",
@@ -46,7 +46,7 @@ export const navigationData = [
   },
   {
     name: "Swap",
-    href: "https://earn.brewlabs.info/swap",
+    href: "/swap",
     external: false,
     icon: "ArrowPathRoundedSquareIcon",
   },
