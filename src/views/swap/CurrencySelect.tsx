@@ -260,7 +260,7 @@ const CurrencySelect = ({
                   >
                     <span className="font-roboto text-[10px] font-bold">Popular</span>
                     {tab === 0 ? (
-                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" />
+                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" alt="tab selected" />
                     ) : (
                       ""
                     )}
@@ -271,7 +271,7 @@ const CurrencySelect = ({
                   >
                     <span className="font-roboto text-[10px] font-bold">My Wallet</span>
                     {tab === 1 ? (
-                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" />
+                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" alt="tab selected"/>
                     ) : (
                       ""
                     )}
@@ -282,7 +282,7 @@ const CurrencySelect = ({
                   >
                     <span className="font-roboto text-[10px] font-bold">Brewlabs Factory</span>
                     {tab === 2 ? (
-                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" />
+                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" alt="tab selected"/>
                     ) : (
                       ""
                     )}
@@ -315,7 +315,7 @@ const CurrencySelect = ({
                         })
                     ) : (
                       <>
-                        <img className="m-auto" src="/images/Brewlabs--no-results-found-transparent.gif" />
+                        <img className="m-auto" src="/images/Brewlabs--no-results-found-transparent.gif" alt="no result"/>
                         <p className="my-7 flex justify-center text-2xl dark:text-primary">No Result Found</p>
                       </>
                     )}

@@ -1,5 +1,6 @@
 import { AppId, Chef } from "./types";
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   masterChef: {
     97: '0x98b27B9E4C11611B282c4ED9f8d48e876DBd2bE1',

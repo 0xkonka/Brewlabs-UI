@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
-import Container from "../components/layout/Container";
-import PageWrapper from "../components/layout/PageWrapper";
-import PageHeader from "../components/layout/PageHeader";
-import WordHighlight from "../components/text/WordHighlight";
-import Filters from "../components/Filters";
-import ExpandableRow from "../components/ExpandableRow";
+import Container from "components/layout/Container";
+import PageWrapper from "components/layout/PageWrapper";
+import PageHeader from "components/layout/PageHeader";
+import WordHighlight from "components/text/WordHighlight";
+import Filters from "components/Filters";
+import ExpandableRow from "components/ExpandableRow";
 
 const mockPoolData = [
   {

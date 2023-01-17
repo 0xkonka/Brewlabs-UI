@@ -1,6 +1,6 @@
 import { SupportedChains } from "config/constants/networks";
 import { ethers } from "ethers";
-
+// import/no-anonymous-default-export
 export const simpleRpcProvider = (chainId: number) =>
   new ethers.providers.JsonRpcProvider(
     chainId === 1

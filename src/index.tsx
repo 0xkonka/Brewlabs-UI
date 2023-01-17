@@ -1,5 +1,4 @@
-import MulticallUpdater from "./state/multicall/updater";
-import Head from "next/head";
+import MulticallUpdater from "state/multicall/updater";
 
 export function Updaters() {
   return (

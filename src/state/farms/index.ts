@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import farmsConfig from 'config/constants/farms'
 import { resetUserState } from "state/global/actions";
-import { SerializedFarmsState, SerializedFarm } from "./types";
+import { SerializedFarmsState } from "./types";
 
 const noAccountFarmConfig = farmsConfig.map((farm) => ({
   ...farm,
@@ -33,7 +33,6 @@ export const farmsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(resetUserState, (state) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       state.data = state.data.map((farm: any) => {
         return {
           ...farm,

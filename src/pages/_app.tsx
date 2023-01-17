@@ -30,15 +30,16 @@ import "animate.css";
 import "../styles/globals.css";
 import "../styles/animations.scss";
 import "../styles/Toast.custom.scss";
-import SEO from "../next-seo.config.mjs";
+import SEO from "../../next-seo.config.mjs";
 
-import UserSidebar from "../components/dashboard/UserSidebar";
-import HeaderMobile from "../components/navigation/HeaderMobile";
-import NavigationDesktop from "../components/navigation/NavigationDesktop";
-import NavigationMobile from "../components/navigation/NavigationMobile";
-import { Updaters } from "index";
+import UserSidebar from "components/dashboard/UserSidebar";
+import HeaderMobile from "components/navigation/HeaderMobile";
+import NavigationDesktop from "components/navigation/NavigationDesktop";
+import NavigationMobile from "components/navigation/NavigationMobile";
+import { Updaters } from "../index";
 
-const Bubbles = lazy(() => import("../components/animations/Bubbles"));
+
+const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
   usePollBlockNumber();

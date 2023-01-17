@@ -339,7 +339,7 @@ export default function Swap() {
         </div>,
         {
           className: "toast__background-primary",
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" />,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" alt=""/>,
           autoClose: 12000,
           closeButton: false,
           hideProgressBar: true,
@@ -361,7 +361,7 @@ export default function Swap() {
           </div>
         </div>,
         {
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" />,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" alt=""/>,
           className: "toast__background-primary",
           autoClose: 6000,
           closeButton: false,

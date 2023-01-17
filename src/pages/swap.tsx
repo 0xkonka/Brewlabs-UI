@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
-import Swap from "../views/swap";
+import Swap from "views/swap";
 
 const SwapPage: NextPage = () => {
-  return <Swap />
+  return <Swap />;
 };
 
 export default SwapPage;

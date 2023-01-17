@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
-import CardVideo from "../components/cards/CardVideo";
-import Footer from "../components/layout/Footer";
-import Container from "../components/layout/Container";
-import PageWrapper from "../components/layout/PageWrapper";
-import PageHero from "../components/layout/PageHero";
+import CardVideo from "components/cards/CardVideo";
+import Footer from "components/layout/Footer";
+import Container from "components/layout/Container";
+import PageWrapper from "components/layout/PageWrapper";
+import PageHero from "components/layout/PageHero";
 
 const Home: NextPage = () => (
   <PageWrapper>

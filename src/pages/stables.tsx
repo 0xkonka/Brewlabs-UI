@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
-import PageHeader from "../components/layout/PageHeader";
-import Container from "../components/layout/Container";
-import PageWrapper from "../components/layout/PageWrapper";
-import WordHighlight from "../components/text/WordHighlight";
+import PageHeader from "components/layout/PageHeader";
+import Container from "components/layout/Container";
+import PageWrapper from "components/layout/PageWrapper";
+import WordHighlight from "components/text/WordHighlight";
 
 const Stables: NextPage = () => {
   return (

@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
-import PageHeader from "../components/layout/PageHeader";
-import Container from "../components/layout/Container";
-import PageWrapper from "../components/layout/PageWrapper";
-import WordHighlight from "../components/text/WordHighlight";
+import PageHeader from "components/layout/PageHeader";
+import Container from "components/layout/Container";
+import PageWrapper from "components/layout/PageWrapper";
+import WordHighlight from "components/text/WordHighlight";
 
-const Farms: NextPage = () => {
+const Zapper: NextPage = () => {
   return (
     <PageWrapper>
       <PageHeader
@@ -18,11 +18,11 @@ const Farms: NextPage = () => {
 
       <Container>
         <div className="-mt-8 flex h-80 w-full items-center justify-center rounded-lg border bg-zinc-900 shadow-lg dark:border-gray-900">
-          <h3 className="font-brand text-xl">Farms go here</h3>
+          <h3 className="font-brand text-xl">Zapper go here</h3>
         </div>
       </Container>
     </PageWrapper>
   );
 };
 
-export default Farms;
+export default Zapper;
