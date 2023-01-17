@@ -23,6 +23,7 @@ import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { CurrencyLogo } from "components/logo";
 import { PrimaryOutlinedButton } from "components/button/index";
 import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 interface CurrencySelectProps {
   onDismiss: () => void;
@@ -50,7 +51,7 @@ const CurrencyRow = ({
     <>
       <div className="mb-2 flex justify-between gap-2">
         <div
-          className="flex w-full cursor-pointer justify-between rounded-lg px-4 py-4 hover:border hover:border-brand dark:bg-[#180404]/[.23]"
+          className="flex w-full cursor-pointer justify-between rounded-lg border border-transparent px-4 py-4 hover:border hover:border-brand dark:bg-[#180404]/[.23]"
           onClick={() => onSelect(currency)}
         >
           <div className="flex items-center justify-between">
@@ -167,7 +168,7 @@ const CurrencySelect = ({
   const closeWindow = () => {
     onDismiss();
     setSearchQuery("");
-  }
+  };
   // if no results on main list, show option to expand into inactive
   const inactiveTokens = useFoundOnInactiveList(debouncedQuery);
   const filteredInactiveTokens: Token[] = useSortedTokensByQuery(inactiveTokens, debouncedQuery);
@@ -236,57 +237,59 @@ const CurrencySelect = ({
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="mx-auto mb-4 font-brand" style={{ maxWidth: "500px" }}>
-              <div className="flex items-center justify-between rounded-lg px-4 py-3 shadow-lg dark:bg-[#180404]/[.2]">
+            <div className="mx-auto mb-4 font-brand" style={{ maxWidth: "450px" }}>
+              <div className="flex items-center justify-between rounded-lg px-4 pt-4 pb-3 shadow-lg dark:bg-[#180404]/[.2]">
                 <p className="text-2xl">Token Select</p>
                 <XMarkIcon className="h-6 w-6 cursor-pointer dark:text-slate-400" onClick={closeWindow} />
               </div>
-              <motion.div className="mt-1 rounded-lg px-9 py-4 shadow-lg dark:bg-[#180404]/[.2]">
-                <div className="mt-2">
+              <motion.div className="mt-2 rounded-lg px-9 py-4 shadow-lg dark:bg-[#180404]/[.2]">
+                <div className="mt-2 flex  items-center rounded-[6px] border-[1.5px] pr-6 pt-4 pb-3.5 pl-8 dark:border-primary">
                   <input
                     onChange={onInputAddress}
                     onKeyDown={onInputEnter}
                     inputMode="decimal"
                     placeholder="Search by symbol or address"
-                    className="w-full rounded-lg border bg-transparent px-2 py-1 text-2xl placeholder-primary outline-0 dark:border-primary dark:text-primary"
+                    className="flex-1 bg-transparent text-[14px] placeholder-[#FFFFFF80] outline-0 dark:text-white"
                   />
+                  <MagnifyingGlassIcon className="h-4 w-4 text-[#FFFFFF80]" />
                 </div>
                 <div className="my-3 grid grid-cols-2 justify-between gap-1 sm:flex">
                   <div
-                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
+                    className="relative flex cursor-pointer items-center justify-center gap-2 rounded border px-3 py-1.5 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
                     onClick={() => switchTab(0)}
                   >
-                    <span className="font-roboto text-[13px] font-bold">Popular</span>
+                    <span className="font-roboto text-[10px] font-bold">Popular</span>
                     {tab === 0 ? (
-                      <img src="/images/tab-selected.svg" className="absolute right-3 h-5 w-3 sm:right-2" />
+                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" />
                     ) : (
                       ""
                     )}
                   </div>
                   <div
-                    className="relative mx-2 flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
+                    className="relative mx-2 flex cursor-pointer items-center justify-center gap-2 rounded border px-3 py-1.5 active:shadow-inner dark:border-primary dark:bg-primary sm:w-1/2 lg:w-1/3"
                     onClick={() => switchTab(1)}
                   >
-                    <span className="font-roboto text-[13px] font-bold">My Wallet</span>
+                    <span className="font-roboto text-[10px] font-bold">My Wallet</span>
                     {tab === 1 ? (
-                      <img src="/images/tab-selected.svg" className="absolute right-3 h-5 w-3 sm:right-2" />
+                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" />
                     ) : (
                       ""
                     )}
                   </div>
                   <div
-                    className={`relative flex cursor-pointer items-center justify-center gap-2 rounded-md border px-3 py-1 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3`}
+                    className={`relative flex cursor-pointer items-center justify-center gap-2 rounded border px-3 py-1.5 active:shadow-inner dark:border-primary  dark:bg-primary sm:w-1/2 lg:w-1/3`}
                     onClick={() => switchTab(2)}
                   >
-                    <span className="font-roboto text-[13px] font-bold">Brewlabs Factory</span>
+                    <span className="font-roboto text-[10px] font-bold">Brewlabs Factory</span>
                     {tab === 2 ? (
-                      <img src="/images/tab-selected.svg" className="absolute right-3 h-5 w-3 sm:right-2" />
+                      <img src="/images/tab-selected.svg" className="absolute right-3 w-2 sm:right-2" />
                     ) : (
                       ""
                     )}
                   </div>
                 </div>
-                <div className="mt-3 px-2">
+                <div className="mt-4 mb-3 w-full border border-[#FFFFFF80]" />
+                <div className="px-2">
                   <motion.div
                     key={tab}
                     initial={{ x: 10, opacity: 0 }}
