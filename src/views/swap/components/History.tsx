@@ -22,7 +22,7 @@ const Row = (data: any) => {
   const { chainId } = useActiveWeb3React();
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between select-none">
       <p className="flex">
         {inputCurrency?.symbol}&nbsp;<span className="dark:text-primary">SWAP</span>&nbsp;{outputCurrency?.symbol}
       </p>

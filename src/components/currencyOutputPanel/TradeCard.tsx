@@ -55,7 +55,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
   return (
     <>
       {price ? (
-        <div className="rounded-xl border border-amber-300 px-2 py-1">
+        <div className="rounded-xl border border-amber-300 px-2 py-1 select-none">
           <div className="mr-2 flex cursor-pointer justify-between">
             <div className="flex items-center gap-1" style={{ marginRight: "4px" }}>
               <ExclamationCircleIcon className="h-5 w-5 dark:text-primary" data-tooltip-target="tooltip-default" />
@@ -94,7 +94,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
               className="flex items-center gap-2 hover:opacity-70"
               onClick={() => setTradePanelToggled(!tradePanelToggled)}
             >
-              <button className="hidden rounded rounded-2xl bg-primary px-3 text-xs text-black sm:block">
+              <button className="hidden rounded rounded-2xl bg-primary px-3 text-xs text-black sm:block btn-protocol-shadow">
                 {data.protocols[0][0][0].name.split("_")[0]}
               </button>
               <ChevronDownIcon className="h-4 w-4 dark:text-primary" />
