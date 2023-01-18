@@ -6,13 +6,22 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { upSVG, downSVG } from "./assets/svgs";
 import { TailSpin } from "react-loader-spinner";
 import { BigNumberFormat } from "utils/functions";
+import { useAccount } from "wagmi";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const Loading = () => {
+  const { address } = useAccount();
+  const innerHeight = window && window.innerHeight ? window.innerHeight : 0;
   return (
-    <div className={"flex h-[230px] w-full justify-center pt-10"}>
-      <TailSpin width={50} height={50} color={"rgba(255,255,255,0.5"} />
+    <div className={`flex ${innerHeight < 725 ? "h-[200px]" : "h-[250px]"} w-full items-center justify-center pt-10`}>
+      <div style={{ marginTop: "-92px" }}>
+        {address ? (
+          <TailSpin width={50} height={50} color={"rgba(255,255,255,0.5"} />
+        ) : (
+          <div className={"text-2xl text-brand"}>No Wallet Connected</div>
+        )}
+      </div>
     </div>
   );
 };
@@ -37,6 +46,7 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
 
   const priceChange = pricehistory.length ? pricehistory[pricehistory.length - 1] - pricehistory[0] : 0;
   let priceChangePercent = pricehistory.length ? (priceChange / pricehistory[0]) * 100 : 0;
+  priceChangePercent = isNaN(priceChangePercent) ? 0 : priceChangePercent;
   priceChangePercent = priceChangePercent < 0 ? -priceChangePercent : priceChangePercent;
 
   let totalPrice = pricehistory.length ? pricehistory[pricehistory.length - 1] : 0;
@@ -124,6 +134,8 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
     },
   };
 
+  const innerHeight = window && window.innerHeight ? window.innerHeight : 0;
+
   return (
     <StyledContainer down={(priceChange < 0).toString()}>
       <div className={"flex items-center justify-between font-semibold text-white"}>
@@ -147,7 +159,12 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
       </div>
       <div>
         {pricehistory.length && typeof window !== "undefined" ? (
-          <Chart options={chartData.options} series={chartData.series} type="area" height={220} />
+          <Chart
+            options={chartData.options}
+            series={chartData.series}
+            type="area"
+            height={innerHeight < 725 ? 170 : 220}
+          />
         ) : (
           <Loading />
         )}
@@ -191,4 +208,7 @@ const StyledContainer = styled.div<{ down: String }>`
     margin-top: -23px;
   }
   height: 250px;
+  @media screen and (max-height: 725px) {
+    height: 200px;
+  }
 `;
