@@ -218,7 +218,7 @@ const TokenList = ({
     setIsHover(temp);
   };
 
-  let ethPrice = tokens.filter((data: any) => data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+  let ethPrice = tokens.filter((data: any) => data && data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
   ethPrice = ethPrice.length ? ethPrice[0].price : 0;
 
   return (

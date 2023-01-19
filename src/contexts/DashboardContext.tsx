@@ -51,7 +51,7 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
-  // const address = "0x53Ff4a10a30deb6d412f9b47caeec28af7f8e799";
+  // const address = "0xe3c42372a5777682c33e8808cd39f412d9af2d07";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
@@ -168,6 +168,7 @@ const DashboardContextProvider = ({ children }: any) => {
     } catch (error) {
       console.log(token.address);
       console.log(error);
+      return token;
     }
   };
 
