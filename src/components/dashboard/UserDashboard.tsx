@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
 import LogoIcon from "../LogoIcon";
-import StyledButton from "./StyledButton";
 import PerformanceChart from "./PerformanceChart";
 import SwitchButton from "./SwitchButton";
 import TokenList from "./TokenList";
@@ -40,10 +39,6 @@ const UserDashboard = () => {
           <LogoIcon classNames="w-14 text-dark dark:text-brand" />
           <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
         </div>
-
-        {/* <div className={"mt-3 h-[30px] w-40"}>
-          <StyledButton>Portfolio</StyledButton>
-        </div> */}
 
         <div className={"mt-7"}>
           <PerformanceChart tokens={tokens} showType={showType} />
