@@ -37,7 +37,7 @@ const ClaimTokensModal = () => {
             </p>
           </div>
         </div>
-        <div className="flex mt-3 justify-center">
+        <div className="mt-3 flex justify-center">
           <Button onClick={onClose}>Cancel</Button>
           <Link
             href={"/history"}
