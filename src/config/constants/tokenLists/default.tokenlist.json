@@ -12,6 +12,14 @@
   "tokens": [
     {
       "chainId": 1,
+      "address": "0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba",
+      "name": "BREWLABS",
+      "symbol": "BREWLABS",
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"
+    },
+    {
+      "chainId": 1,
       "address": "0x111111111117dC0aa78b770fA6A738034120C302",
       "name": "1inch",
       "symbol": "1INCH",
@@ -1593,6 +1601,22 @@
       "chainId": 1,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x48a58Fdf91Ab56B5700D853733b860b4cDE08b26/logo.png"
+    },
+    {
+      "name": "ReVeR",
+      "symbol": "RVR",
+      "address": "0xb8b4b66852275355d591B90E5B75f84cAeffF392",
+      "chainId": 1,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xb8b4b66852275355d591B90E5B75f84cAeffF392/logo.png"
+    },
+    {
+      "name": "Funicular Token",
+      "symbol": "FUNICULAR",
+      "address": "0x90A1Dd7f8dAD69FD1000A2d185D29BfddCe970F6",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x90A1Dd7f8dAD69FD1000A2d185D29BfddCe970F6/logo.png"
     },
     {
       "name": "WBNB Token",
