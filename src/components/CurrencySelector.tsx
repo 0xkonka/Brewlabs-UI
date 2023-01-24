@@ -1,16 +1,11 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo, useEffect } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo } from "react";
 import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
-import {
-  XMarkIcon,
-  ArrowTrendingDownIcon,
-  ArrowTrendingUpIcon,
-  ChevronDoubleRightIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 
 import { MORALIS_CHAIN_NAME } from "config/constants/networks";
-import factoryTokens from "config/constants/factoryTokens.json";
+import factoryTokens from "config/constants/tokens/factoryTokens.json";
 import { isAddress } from "utils";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useDebounce from "hooks/useDebounce";
