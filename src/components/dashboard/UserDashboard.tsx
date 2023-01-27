@@ -50,8 +50,8 @@ const UserDashboard = () => {
       </div>
       <TokenList
         tokens={tokens}
-        showType={showType}
         fullOpen={fullOpen}
+        showType={showType}
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}
         itemsPerPage={itemsPerPage}

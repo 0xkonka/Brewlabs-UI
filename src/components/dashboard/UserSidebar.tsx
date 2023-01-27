@@ -11,14 +11,7 @@ const UserSidebar = () => {
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        onClose={() => {
-          setIsOpen(false);
-          setSidebarContent(<UserDashboard />);
-        }}
-        className="relative z-40"
-      >
+      <Dialog as="div" onClose={() => setIsOpen(false)} className="relative z-40">
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"
