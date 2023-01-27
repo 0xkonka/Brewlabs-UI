@@ -280,7 +280,7 @@ const TokenList = ({
                   <a target={"_blank"} href={link} rel="noreferrer" className={"flex items-center"}>
                     <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"} />
                     <div>
-                      <div className={"flex items-center text-white"}>
+                      <div className="flex items-center text-white">
                         <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
                         <div className={isVerified ? "" : "hidden"}>
                           <CheckCircleIcon className="ml-1 max-h-[12px] min-h-[12px] min-w-[12px] max-w-[12px] text-green" />
