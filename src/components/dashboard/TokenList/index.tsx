@@ -277,8 +277,8 @@ const TokenList = ({
                       )}
                     </div>
                   </div>
-                  <a target={"_blank"} href={link} rel="noreferrer" className={"flex items-center"}>
-                    <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"} />
+                  <a target={"_blank"} href={link} rel="noreferrer" className="flex items-center">
+                    <img src={logo} alt="" className="mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full" />
                     <div>
                       <div className="flex items-center text-white">
                         <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
