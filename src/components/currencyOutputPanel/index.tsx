@@ -4,9 +4,11 @@ import BigNumber from "bignumber.js";
 import { EXPLORER_URLS } from "config/constants/networks";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
+import { getBlockExplorerLogo } from "utils/functions";
+
+import CurrencySelectButton from "components/CurrencySelectButton";
 import NumericalInput from "./NumericalInput";
 import TradeCard from "./TradeCard";
-import CurrencySelectButton from "components/CurrencySelectButton";
 
 interface CurrencyOutputPanelProps {
   value: string;
@@ -68,7 +70,7 @@ const CurrencyOutputPanel = ({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <img src="/images/explorer/etherscan.png" alt="" className="h-2.5 w-2.5" />
+                    <img src={getBlockExplorerLogo(chainId)} alt="" className="h-2.5 w-2.5" />
                   </a>
                 </div>
               </div>

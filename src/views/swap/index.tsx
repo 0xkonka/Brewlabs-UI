@@ -6,6 +6,7 @@ import { ethers, BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { MaxUint256 } from "@ethersproject/constants";
 import { TransactionResponse } from "@ethersproject/providers";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -35,6 +36,7 @@ import { getTokenInfo } from "utils/getTokenInfo";
 import { getBrewlabsAggregationRouterContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
 import maxAmountSpend from "utils/maxAmountSpend";
 
+import { EXPLORER_URLS } from "config/constants/networks";
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -48,9 +50,8 @@ import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import SettingModal from "./components/modal/SettingModal";
-import { EXPLORER_URLS } from "config/constants/networks";
 
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { getBlockExplorerLogo } from "utils/functions";
 
 type TxResponse = TransactionResponse | null;
 
@@ -315,7 +316,7 @@ export default function Swap() {
             <span className="msg-text">Confirming Transaction</span>
           </div>
           <div className="link">
-            <img src="/images/explorer/etherscan.png" alt="" />
+            <img src={getBlockExplorerLogo(chainId)} alt="" />
             <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
               View Transaction Hash
             </a>
@@ -338,7 +339,7 @@ export default function Swap() {
             <span className="msg-text">Transaction Confirmed</span>
           </div>
           <div className="link">
-            <img src="/images/explorer/etherscan.png" alt="" />
+            <img src={getBlockExplorerLogo(chainId)} alt="" />
             <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
               View Transaction Hash
             </a>

@@ -3,8 +3,10 @@ import BigNumber from "bignumber.js";
 import { EXPLORER_URLS } from "config/constants/networks";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenPrice from "hooks/useTokenPrice";
-import NumericalInput from "./NumericalInput";
+import { getBlockExplorerLogo } from "utils/functions";
+
 import CurrencySelectButton from "components/CurrencySelectButton";
+import NumericalInput from "./NumericalInput";
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -49,7 +51,7 @@ const CurrencyInputPanel = ({ value, onUserInput, onMax, label, currency, balanc
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <img src="/images/explorer/etherscan.png" alt="Ether scan logo" className="h-2.5 w-2.5" />
+                  <img src={getBlockExplorerLogo(chainId)} alt="Ether scan logo" className="h-2.5 w-2.5" />
                 </a>
               </div>
             </div>

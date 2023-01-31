@@ -5,10 +5,12 @@ import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { useSwapHistory } from "hooks/swap/useSwapHIstory";
 import { useCurrency } from "hooks/Tokens";
-import Card from "./Card";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ETH_ADDRESSES } from "config/constants";
 import { EXPLORER_URLS } from "config/constants/networks";
+import { getBlockExplorerLogo } from "utils/functions";
+
+import Card from "./Card";
 
 const Row = (data: any) => {
   const {
@@ -30,7 +32,7 @@ const Row = (data: any) => {
           {amount}&nbsp;{outputCurrency?.symbol}
         </span>
         <a href={`${EXPLORER_URLS[chainId]}/tx/${transactionHash}`} target="_blank" rel="noreferrer">
-          <img src="/images/explorer/etherscan.png" alt="" className="h-3 w-3" />
+          <img src={getBlockExplorerLogo(chainId)} alt="" className="h-3 w-3" />
         </a>
       </p>
     </div>
@@ -56,7 +58,7 @@ const History = () => {
             })}
           </div>
           <div className="flex items-center justify-center gap-2">
-            <img src="/images/explorer/etherscan.png" alt="Ether scan logo" className="h-4 w-4" />
+            <img src={getBlockExplorerLogo(chainId)} alt="Ether scan logo" className="h-4 w-4" />
             <a
               href={`${EXPLORER_URLS[chainId]}/address/${account}`}
               target="_blank"
