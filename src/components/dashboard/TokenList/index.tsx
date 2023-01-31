@@ -11,7 +11,7 @@ import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
-import { BigNumberFormat } from "utils/functions";
+import { BigNumberFormat, getBlockExplorerLink } from "utils/functions";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
@@ -245,9 +245,7 @@ const TokenList = ({
                 ? logoFilter[0].logoURI
                 : emptyLogos[chainId];
             const isVerified = logoFilter.length || data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-            const link = `https://${chainId === 56 ? "bscscan.com" : "etherscan.io"}/token/${
-              data.address
-            }?a=${address}`;
+            const link = `${getBlockExplorerLink(data.address, "token", chainId)}?a=${address}`;
             return (
               <StyledLink
                 key={i}

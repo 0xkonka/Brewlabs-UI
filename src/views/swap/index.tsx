@@ -34,9 +34,9 @@ import { quote, swap, ETHER_ADDRESS } from "utils/aggregator";
 import { BIG_ONE } from "utils/bigNumber";
 import { getTokenInfo } from "utils/getTokenInfo";
 import { getBrewlabsAggregationRouterContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
+import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 import maxAmountSpend from "utils/maxAmountSpend";
 
-import { EXPLORER_URLS } from "config/constants/networks";
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -51,7 +51,6 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import SettingModal from "./components/modal/SettingModal";
 
-import { getBlockExplorerLogo } from "utils/functions";
 
 type TxResponse = TransactionResponse | null;
 
@@ -317,7 +316,7 @@ export default function Swap() {
           </div>
           <div className="link">
             <img src={getBlockExplorerLogo(chainId)} alt="" />
-            <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
+            <a href={getBlockExplorerLink(tx?.hash, "transaction", chainId)} className="down-text">
               View Transaction Hash
             </a>
           </div>
@@ -340,7 +339,7 @@ export default function Swap() {
           </div>
           <div className="link">
             <img src={getBlockExplorerLogo(chainId)} alt="" />
-            <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
+            <a href={getBlockExplorerLink(tx?.hash, 'transaction', chainId)} className="down-text">
               View Transaction Hash
             </a>
           </div>

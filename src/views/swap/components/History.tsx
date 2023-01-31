@@ -7,8 +7,7 @@ import { useSwapHistory } from "hooks/swap/useSwapHIstory";
 import { useCurrency } from "hooks/Tokens";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ETH_ADDRESSES } from "config/constants";
-import { EXPLORER_URLS } from "config/constants/networks";
-import { getBlockExplorerLogo } from "utils/functions";
+import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import Card from "./Card";
 
@@ -31,7 +30,7 @@ const Row = (data: any) => {
         <span className="opacity-40">
           {amount}&nbsp;{outputCurrency?.symbol}
         </span>
-        <a href={`${EXPLORER_URLS[chainId]}/tx/${transactionHash}`} target="_blank" rel="noreferrer">
+        <a href={getBlockExplorerLink(transactionHash, 'transaction', chainId)} target="_blank" rel="noreferrer">
           <img src={getBlockExplorerLogo(chainId)} alt="" className="h-3 w-3" />
         </a>
       </p>
@@ -60,7 +59,7 @@ const History = () => {
           <div className="flex items-center justify-center gap-2">
             <img src={getBlockExplorerLogo(chainId)} alt="Ether scan logo" className="h-4 w-4" />
             <a
-              href={`${EXPLORER_URLS[chainId]}/address/${account}`}
+              href={getBlockExplorerLink(account, 'address', chainId)}
               target="_blank"
               rel="noreferrer"
               className="text-base"

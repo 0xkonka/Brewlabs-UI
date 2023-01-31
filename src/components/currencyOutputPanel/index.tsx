@@ -1,10 +1,9 @@
 import { Currency, CurrencyAmount } from "@brewlabs/sdk";
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
-import { EXPLORER_URLS } from "config/constants/networks";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
-import { getBlockExplorerLogo } from "utils/functions";
+import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import CurrencySelectButton from "components/CurrencySelectButton";
 import NumericalInput from "./NumericalInput";
@@ -66,7 +65,7 @@ const CurrencyOutputPanel = ({
                 <div className="flex items-center justify-end">
                   <div className="mr-2 text-sm opacity-40">Balance: {balance ? balance.toSignificant(6) : "0.00"}</div>
                   <a
-                    href={`${EXPLORER_URLS[chainId]}/token/${currency?.wrapped?.address}`}
+                    href={getBlockExplorerLink(currency?.wrapped?.address, "token", chainId)}
                     target="_blank"
                     rel="noreferrer"
                   >
