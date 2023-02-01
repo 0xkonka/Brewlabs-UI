@@ -8,7 +8,10 @@ const DropDown = ({ value, setValue }: { setValue?: any; value: number }) => {
 
   return (
     <div className="dropdown w-28" onClick={() => setOpen(!open)}>
-      <label tabIndex={0} className="btn-primary btn-sm btn m-1 w-full active:bg-brand">
+      <label
+        tabIndex={0}
+        className="btn-sm btn m-1 w-full bg-amber-400 active:bg-brand dark:text-zinc-800 dark:hover:bg-dark dark:hover:text-brand"
+      >
         {values[value]}
         {!open ? <ChevronDownIcon className="h-3 w-6" /> : <ChevronUpIcon className="h-3 w-6" />}
       </label>
