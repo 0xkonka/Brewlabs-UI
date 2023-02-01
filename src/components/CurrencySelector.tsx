@@ -128,7 +128,6 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
     }
   };
 
-  // TODO: pretty sure this is broken
   const onInputEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
@@ -229,7 +228,7 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
               setActiveTab(index);
             }}
             className={clsx(
-              index === activeTab ? "bg-gray-700 text-brand" : "bg-gray-800 text-gray-500 hover:text-gray-700",
+              index === activeTab ? "bg-gray-700 text-brand" : "bg-gray-800 text-gray-500 hover:text-gray-400",
               "rounded-2xl px-4 py-2 text-sm"
             )}
           >

@@ -45,6 +45,7 @@ import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import SettingModal from "./components/modal/SettingModal";
+import Modal from "components/Modal";
 
 type TxResponse = TransactionResponse | null;
 
@@ -537,17 +538,22 @@ export default function Swap() {
         </div>
       </Container>
 
-      <SettingModal
-        open={openSettingModal}
-        autoMode={autoMode}
-        setAutoMode={setAutoMode}
-        slippage={slippage}
-        slippageInput={slippageInput}
-        parseCustomSlippage={parseCustomSlippage}
-        onClose={() => {
-          setOpenSettingModal(false);
-        }}
-      />
+      {openSettingModal && (
+        <Modal
+          open={openSettingModal}
+          onClose={() => {
+            setOpenSettingModal(false);
+          }}
+        >
+          <SettingModal
+            autoMode={autoMode}
+            setAutoMode={setAutoMode}
+            slippage={slippage}
+            slippageInput={slippageInput}
+            parseCustomSlippage={parseCustomSlippage}
+          />
+        </Modal>
+      )}
     </PageWrapper>
   );
 }

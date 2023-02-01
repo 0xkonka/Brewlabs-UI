@@ -14,7 +14,6 @@ import Modal from "../Modal";
 import WalletSelector from "../wallet/WalletSelector";
 import StyledButton from "./StyledButton";
 import { NoneSVG, LinkSVG } from "./assets/svgs";
-import styled from "styled-components";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -75,7 +74,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           </div>
         </button>
       ) : (
-        <div className="group block flex w-full flex-shrink-0 items-center justify-between">
+        <div className="group flex w-full flex-shrink-0 items-center justify-between">
           <div className="flex items-center">
             <div
               onClick={(e) => {
@@ -94,7 +93,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               />
             </div>
 
-            <MaxWidthButton
+            <button
               className="ml-3 overflow-hidden"
               onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect)}
             >
@@ -104,7 +103,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="truncate text-left text-sm font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
               </p>
-            </MaxWidthButton>
+            </button>
           </div>
           <div>
             <div className={"h-[24px] w-[120px]"}>
@@ -115,23 +114,11 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 </div>
               </StyledButton>
             </div>
-            {/* <div className={"mt-2 flex h-[20px] w-[100px] items-center"}>
-              <StyledButton>
-                <div className={"flex items-center"}>
-                  {NoneSVG}
-                  <div className={"ml-0.5"}>Revoke All</div>
-                </div>
-              </StyledButton>
-            </div> */}
           </div>
         </div>
       )}
     </div>
   );
 };
-
-const MaxWidthButton = styled.button`
-  max-width: calc(100vw - 250px);
-`;
 
 export default ConnectWallet;
