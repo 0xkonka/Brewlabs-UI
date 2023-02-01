@@ -1,10 +1,9 @@
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { useNetwork } from "wagmi";
 import { motion } from "framer-motion";
 
-import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import Modal from "components/MotionModal";
 import ChainSelector from "components/ChainSelector";
@@ -29,7 +28,7 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
 
   return (
     <>
-      <motion.div className="rounded-lg border-2 border-transparent bg-opacity-60 px-4 py-2 font-brand font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white">
+      <motion.div className="mb-4 rounded-full border border-gray-600 border-transparent bg-opacity-60 py-2 pl-2 pr-4 font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white">
         <button
           className="flex w-full items-center justify-between"
           onClick={() => {
@@ -50,15 +49,17 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
           <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
         </button>
       </motion.div>
-      <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
-        <ChainSelector
-          bSwitchChain
-          networks={supportedNetworks}
-          currentChainId={chainId}
-          onDismiss={() => setSelected(false)}
-          selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
-        />
-      </Modal>
+      {selected && (
+        <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
+          <ChainSelector
+            bSwitchChain
+            networks={supportedNetworks}
+            currentChainId={chainId}
+            onDismiss={() => setSelected(false)}
+            selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
+          />
+        </Modal>
+      )}
     </>
   );
 };

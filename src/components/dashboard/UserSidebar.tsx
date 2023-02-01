@@ -1,50 +1,18 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment } from "react";
+import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
-import { useGlobalState, setGlobalState } from "../../state";
 import ConnectWallet from "./ConnectWallet";
-import LogoIcon from "../LogoIcon";
-import StyledButton from "./StyledButton";
-import PerformanceChart from "./PerformanceChart";
-import SwitchButton from "./SwitchButton";
-import TokenList from "./TokenList";
-import FullOpenVector from "./FullOpenVector";
-import { DashboardContext } from "contexts/DashboardContext";
-import styled from "styled-components";
+import UserDashboard from "components/dashboard/UserDashboard";
+import { useGlobalState } from "../../state";
 
 const UserSidebar = () => {
-  const [isOpen] = useGlobalState("userSidebarOpen");
-  const [showType, setShowType] = useState(0);
-  const [fullOpen, setFullOpen] = useState(false);
-  const { tokens }: any = useContext(DashboardContext);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(0);
-  const [archives, setArchives] = useState<any>([]);
-  const [listType, setListType] = useState(0);
-  const [maxPage, setMaxPage] = useState(0);
-
-  const innerHeight = window && window.innerHeight ? window.innerHeight : 0;
-
-  useEffect(() => {
-    const _itemsPerPage = Math.min(Math.floor((innerHeight - (innerHeight < 725 ? 550 : 670)) / 50), 7);
-    setItemsPerPage(_itemsPerPage);
-  }, [fullOpen]);
-
-  useEffect(() => {
-    let filteredTokens: any = [];
-    if (listType === 0) {
-      filteredTokens = tokens.filter((data: any) => !archives.includes(data.address));
-    } else {
-      filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
-    }
-    setMaxPage(Math.ceil(filteredTokens.length / itemsPerPage));
-  }, [listType, tokens, archives]);
+  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
+  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-40" onClose={() => setGlobalState("userSidebarOpen", false)}>
+      <Dialog as="div" onClose={() => setIsOpen(false)} className="relative z-40">
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"
@@ -67,58 +35,26 @@ const UserSidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex w-full max-w-[750px] flex-1 flex-col  items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900 xmd:px-2 xmd:px-4">
-              <div className="absolute top-0 right-0 z-10 pt-2 sm:-mr-12">
+            <Dialog.Panel className="relative flex w-full max-w-[750px] flex-1 flex-col items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900">
+              <div
+                className={clsx(
+                  "absolute top-0 right-0 z-10 pt-2 sm:-mr-12",
+                  isOpen ? "animate__animated animate__fadeInLeft animate__delay-1s" : "hidden"
+                )}
+              >
                 <button
                   type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
                   className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-inset focus:ring-white sm:focus:ring-2"
-                  onClick={() => setGlobalState("userSidebarOpen", false)}
                 >
                   <span className="sr-only">Close sidebar</span>
                   <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                 </button>
               </div>
-              <div className="flex h-full w-full flex-1 flex-col  items-center ">
-                <StyledContainer className="relative mr-1.5 flex w-full  flex-col pt-16 pb-3">
-                  <div className="flex w-full items-center border-b border-yellow pb-4">
-                    <LogoIcon classNames="w-14 text-dark dark:text-brand" />
-                    <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
-                  </div>
-
-                  <div className={"mt-3 h-[30px] w-40"}>
-                    <StyledButton onClick={() => {}}>Portfolio</StyledButton>
-                  </div>
-
-                  <div className={"mt-7"}>
-                    <PerformanceChart tokens={tokens} showType={showType} />
-                  </div>
-
-                  <div className={"relative z-10 flex w-full justify-center"}>
-                    <SwitchButton value={showType} setValue={setShowType} />
-                  </div>
-                </StyledContainer>
-                <TokenList
-                  tokens={tokens}
-                  showType={showType}
-                  fullOpen={fullOpen}
-                  pageIndex={pageIndex}
-                  setPageIndex={setPageIndex}
-                  itemsPerPage={itemsPerPage}
-                  archives={archives}
-                  setArchives={setArchives}
-                  listType={listType}
-                  setListType={setListType}
-                />
-
-                <div className={"mb-3 w-full"}>
-                  <FullOpenVector
-                    open={fullOpen}
-                    setOpen={setFullOpen}
-                    pageIndex={pageIndex}
-                    setPageIndex={setPageIndex}
-                    maxPage={maxPage}
-                  />
-                </div>
+              <div className="flex h-full w-full flex-1 flex-col items-center px-6 py-6">
+                {sidebarContent ?? <UserDashboard />}
               </div>
               <ConnectWallet allowDisconnect />
             </Dialog.Panel>
@@ -129,10 +65,4 @@ const UserSidebar = () => {
   );
 };
 
-const StyledContainer = styled.div`
-  @media screen and (max-height: 725px) {
-    padding-top: 36px;
-    padding-bottom: 0;
-  }
-`;
 export default UserSidebar;

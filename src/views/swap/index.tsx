@@ -6,17 +6,13 @@ import { ethers, BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { MaxUint256 } from "@ethersproject/constants";
 import { TransactionResponse } from "@ethersproject/providers";
-
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-
 import { useTranslation } from "contexts/localization";
-
 import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
 import { usdToken } from "config/constants/tokens";
 import contracts from "config/constants/contracts";
 import AggregaionRouterV2Abi from "config/abi/AggregationRouterV5.json";
-
 import { useUserSlippageTolerance, useIsExpertMode } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import {
@@ -33,9 +29,9 @@ import { quote, swap, ETHER_ADDRESS } from "utils/aggregator";
 import { BIG_ONE } from "utils/bigNumber";
 import { getTokenInfo } from "utils/getTokenInfo";
 import { getBrewlabsAggregationRouterContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
+import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 import maxAmountSpend from "utils/maxAmountSpend";
 
-import CurrencySelect from "./CurrencySelect";
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -48,10 +44,8 @@ import SubNav from "./components/SubNav";
 import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
-import ApproveModal from "./components/modal/ApproveModal";
-import { motion, AnimatePresence } from "framer-motion";
 import SettingModal from "./components/modal/SettingModal";
-import { EXPLORER_URLS } from "config/constants/networks";
+import Modal from "components/Modal";
 
 type TxResponse = TransactionResponse | null;
 
@@ -63,22 +57,20 @@ export default function Swap() {
 
   useDefaultsFromURLSearch();
 
-  const [openSettingModal, setOpenSettingModal] = useState<boolean>(false);
+  const [openSettingModal, setOpenSettingModal] = useState(false);
 
   const [quoteData, setQuoteData] = useState({});
   const [outputAmount, setOutputAmount] = useState<CurrencyAmount>();
   const [slippageInput, setSlippageInput] = useState("");
-  const [autoMode, setAutoMode] = useState<boolean>(true);
+  const [autoMode, setAutoMode] = useState(true);
   const [basePrice, setBasePrice] = useState<Price>();
   const [quotePrice, setQuotePrice] = useState<Price>();
-  const [onTyping, setTyping] = useState<boolean>(false);
+  const [onTyping, setTyping] = useState(false);
   const [parsedAmount, setParsedAmount] = useState<BigNumber>();
-  const [buyTax, setBuyTax] = useState<number>(0);
-  const [sellTax, setSellTax] = useState<number>(0);
-  const [slippage, setSlippage] = useState<number>(50);
-  const [verified, setVerified] = useState<boolean>(false);
-
-  const expertMode = useIsExpertMode();
+  const [buyTax, setBuyTax] = useState(0);
+  const [sellTax, setSellTax] = useState(0);
+  const [slippage, setSlippage] = useState(50);
+  const [verified, setVerified] = useState(false);
 
   // swap state
   const { typedValue } = useSwapState();
@@ -116,9 +108,6 @@ export default function Swap() {
 
   const aggregatorAddress = getBrewlabsAggregationRouterAddress(chainId);
   const [approval, approveCallback] = useApproveCallback(inputAmount, AggregationRouterV5[chainId]);
-
-  const [inputCurrencySelect, setInputCurrencySelect] = useState(false);
-  const [outputCurrencySelect, setOutputCurrencySelect] = useState(false);
 
   const price = useMemo(() => {
     if (
@@ -279,19 +268,6 @@ export default function Swap() {
     },
     [onUserInput]
   );
-  const handleInputSelect = useCallback(
-    (inputCurrency) => {
-      onCurrencySelection(Field.INPUT, inputCurrency);
-      onUserInput(Field.INPUT, "");
-    },
-    [onCurrencySelection, onUserInput]
-  );
-  const handleOutputSelect = useCallback(
-    (outputCurrency) => {
-      onCurrencySelection(Field.OUTPUT, outputCurrency);
-    },
-    [onCurrencySelection]
-  );
 
   const parseCustomSlippage = (value: string) => {
     setSlippageInput(value);
@@ -331,15 +307,15 @@ export default function Swap() {
             <span className="msg-text">Confirming Transaction</span>
           </div>
           <div className="link">
-            <img src="/images/explorer/etherscan.png" alt="" />
-            <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
+            <img src={getBlockExplorerLogo(chainId)} alt="" />
+            <a href={getBlockExplorerLink(tx?.hash, "transaction", chainId)} className="down-text">
               View Transaction Hash
             </a>
           </div>
         </div>,
         {
           className: "toast__background-primary",
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" alt=""/>,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" alt="" />,
           autoClose: 12000,
           closeButton: false,
           hideProgressBar: true,
@@ -354,14 +330,14 @@ export default function Swap() {
             <span className="msg-text">Transaction Confirmed</span>
           </div>
           <div className="link">
-            <img src="/images/explorer/etherscan.png" alt="" />
-            <a href={`${EXPLORER_URLS[chainId]}/tx/${tx?.hash}`} className="down-text">
+            <img src={getBlockExplorerLogo(chainId)} alt="" />
+            <a href={getBlockExplorerLink(tx?.hash, "transaction", chainId)} className="down-text">
               View Transaction Hash
             </a>
           </div>
         </div>,
         {
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" alt=""/>,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" alt="" />,
           className: "toast__background-primary",
           autoClose: 6000,
           closeButton: false,
@@ -466,123 +442,118 @@ export default function Swap() {
 
   return (
     <PageWrapper>
-      <CurrencySelect
-        open={inputCurrencySelect || outputCurrencySelect}
-        onCurrencySelect={inputCurrencySelect ? handleInputSelect : handleOutputSelect}
-        onDismiss={() => (inputCurrencySelect ? setInputCurrencySelect(false) : setOutputCurrencySelect(false))}
-        selectedCurrency={inputCurrencySelect ? currencies[Field.INPUT] : currencies[Field.OUTPUT]}
+      <PageHeader
+        title={
+          <>
+            Exchange tokens at the <WordHighlight content="best" /> rate on the market.
+          </>
+        }
       />
-      <AnimatePresence>
-        {!inputCurrencySelect && !outputCurrencySelect && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <PageHeader
-              title={
-                <>
-                  Exchange Tokens at the <WordHighlight content="best" /> rate on the market.
-                </>
-              }
-              summary="Exchange Tokens at the best rate on the market."
+
+      <Container>
+        <div className="relative mx-auto mb-4 flex w-fit max-w-xl flex-col gap-1 rounded-3xl border-t px-4 pb-10 pt-4 dark:border-slate-600 dark:bg-zinc-900 sm:px-10 md:mx-0">
+          <SubNav openSettingModal={() => setOpenSettingModal(true)} />
+
+          <ChainSelect id="chain-select" />
+
+          <div className="rounded-2xl border border-gray-600">
+            <CurrencyInputPanel
+              label={t("Sell")}
+              value={typedValue}
+              onUserInput={handleTypeInput}
+              onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
+              showMaxButton={!atMaxAmount}
+              currency={currencies[Field.INPUT]}
+              balance={currencyBalances[Field.INPUT]}
             />
-            <Container>
-              <div className="mx-auto mb-4 flex flex-col gap-1 md:mx-0" style={{ maxWidth: "500px" }}>
-                <SubNav openSettingModal={() => setOpenSettingModal(true)} />
-                <ChainSelect id={"chain-select"} />
-                <CurrencyInputPanel
-                  label={t("Sell")}
-                  value={typedValue}
-                  onUserInput={handleTypeInput}
-                  onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
-                  onOpenCurrencySelect={() => setInputCurrencySelect(true)}
-                  showMaxButton={!atMaxAmount}
-                  currency={currencies[Field.INPUT]}
-                  balance={currencyBalances[Field.INPUT]}
-                />
-                <SwitchIconButton
-                  onSwitch={() => {
-                    onSwitchTokens();
-                    onUserInput(Field.INPUT, "");
-                  }}
-                />
-                <CurrencyOutputPanel
-                  label={t("Buy")}
-                  value={outputAmount?.toSignificant(6) ?? "0.0"}
-                  onUserInput={() => null}
-                  onOpenCurrencySelect={() => setOutputCurrencySelect(true)}
-                  currency={currencies[Field.OUTPUT]}
-                  balance={currencyBalances[Field.OUTPUT]}
-                  data={quoteData}
-                  slippage={autoMode ? slippage : userSlippageTolerance}
-                  price={price}
-                  buyTax={buyTax}
-                  sellTax={sellTax}
-                  verified={verified}
-                />
-                {account &&
-                  (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
-                    <>
-                      {quoteError ? (
-                        <Button disabled={true}>{t(quoteError)}</Button>
-                      ) : inputError ? (
-                        <Button disabled={true}>{t(inputError)}</Button>
-                      ) : currencyBalances[Field.INPUT] === undefined ? (
-                        <Button disabled={true}>{t("Loading")}</Button>
-                      ) : approval <= ApprovalState.PENDING ? (
-                        <PrimarySolidButton
-                          onClick={() => {
-                            handleApprove();
-                          }}
-                        >
-                          {approval === ApprovalState.PENDING ? (
-                            <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                          ) : approval === ApprovalState.UNKNOWN ? (
-                            <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                          ) : (
-                            t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
-                          )}
-                        </PrimarySolidButton>
-                      ) : (
-                        <PrimarySolidButton
-                          onClick={() => {
-                            handleSwap();
-                          }}
-                          disabled={attemptingTxn || !outputAmount}
-                        >
-                          {t("Swap")}
-                        </PrimarySolidButton>
-                      )}
-                    </>
-                  ) : (
-                    <Button disabled={!0}>{t("Comming Soon")}</Button>
-                  ))}
-                <History />
-              </div>
-            </Container>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {/* <ApproveModal
-        open={approvalModalOpen}
-        onApprove={approveCallback}
-        onClose={() => {
-          setApprovalModalOpen(false);
-        }}
-      /> */}
-      <SettingModal
-        open={openSettingModal}
-        autoMode={autoMode}
-        setAutoMode={setAutoMode}
-        slippage={slippage}
-        slippageInput={slippageInput}
-        parseCustomSlippage={parseCustomSlippage}
-        onClose={() => {
-          setOpenSettingModal(false);
-        }}
-      />
+          </div>
+
+          <SwitchIconButton
+            onSwitch={() => {
+              onSwitchTokens();
+              onUserInput(Field.INPUT, "");
+            }}
+          />
+
+          <div className="mb-6 rounded-2xl border border-dashed border-gray-600">
+            <CurrencyOutputPanel
+              label={t("Buy")}
+              value={outputAmount?.toSignificant(6) ?? "0.0"}
+              onUserInput={() => null}
+              currency={currencies[Field.OUTPUT]}
+              balance={currencyBalances[Field.OUTPUT]}
+              data={quoteData}
+              slippage={autoMode ? slippage : userSlippageTolerance}
+              price={price}
+              buyTax={buyTax}
+              sellTax={sellTax}
+              verified={verified}
+            />
+          </div>
+          {account &&
+            (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
+              <>
+                {quoteError ? (
+                  <button className="btn-outline btn" disabled={true}>
+                    {t(quoteError)}
+                  </button>
+                ) : inputError ? (
+                  <button className="btn-outline btn" disabled={true}>
+                    {t(inputError)}
+                  </button>
+                ) : currencyBalances[Field.INPUT] === undefined ? (
+                  <button className="btn-outline btn" disabled={true}>
+                    {t("Loading")}
+                  </button>
+                ) : approval <= ApprovalState.PENDING ? (
+                  <PrimarySolidButton
+                    onClick={() => {
+                      handleApprove();
+                    }}
+                  >
+                    {approval === ApprovalState.PENDING ? (
+                      <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                    ) : approval === ApprovalState.UNKNOWN ? (
+                      <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                    ) : (
+                      t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                    )}
+                  </PrimarySolidButton>
+                ) : (
+                  <PrimarySolidButton
+                    onClick={() => {
+                      handleSwap();
+                    }}
+                    disabled={attemptingTxn || !outputAmount}
+                  >
+                    {t("Swap")}
+                  </PrimarySolidButton>
+                )}
+              </>
+            ) : (
+              <Button disabled={!0}>{t("Coming Soon")}</Button>
+            ))}
+
+          <History />
+        </div>
+      </Container>
+
+      {openSettingModal && (
+        <Modal
+          open={openSettingModal}
+          onClose={() => {
+            setOpenSettingModal(false);
+          }}
+        >
+          <SettingModal
+            autoMode={autoMode}
+            setAutoMode={setAutoMode}
+            slippage={slippage}
+            slippageInput={slippageInput}
+            parseCustomSlippage={parseCustomSlippage}
+          />
+        </Modal>
+      )}
     </PageWrapper>
   );
 }

@@ -11,7 +11,7 @@ import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
-import { BigNumberFormat } from "utils/functions";
+import { BigNumberFormat, getBlockExplorerLink } from "utils/functions";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
@@ -245,9 +245,7 @@ const TokenList = ({
                 ? logoFilter[0].logoURI
                 : emptyLogos[chainId];
             const isVerified = logoFilter.length || data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-            const link = `https://${chainId === 56 ? "bscscan.com" : "etherscan.io"}/token/${
-              data.address
-            }?a=${address}`;
+            const link = `${getBlockExplorerLink(data.address, "token", chainId)}?a=${address}`;
             return (
               <StyledLink
                 key={i}
@@ -277,10 +275,10 @@ const TokenList = ({
                       )}
                     </div>
                   </div>
-                  <a target={"_blank"} href={link} rel="noreferrer" className={"flex items-center"}>
-                    <img src={logo} alt={""} className={"mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"} />
+                  <a target={"_blank"} href={link} rel="noreferrer" className="flex items-center">
+                    <img src={logo} alt="" className="mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full" />
                     <div>
-                      <div className={"flex items-center text-white"}>
+                      <div className="flex items-center text-white">
                         <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
                         <div className={isVerified ? "" : "hidden"}>
                           <CheckCircleIcon className="ml-1 max-h-[12px] min-h-[12px] min-w-[12px] max-w-[12px] text-green" />
