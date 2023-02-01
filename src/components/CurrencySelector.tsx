@@ -254,7 +254,6 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
       <input
         onChange={onInputAddress}
         onKeyDown={onInputEnter}
-        inputMode="decimal"
         type="text"
         placeholder="Search by contract address..."
         className="input-bordered input w-full"
