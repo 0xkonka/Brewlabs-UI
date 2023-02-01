@@ -45,10 +45,9 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                   <DynamicHeroIcon
                     icon={item.icon as IconName}
                     className={clsx(
-                      item.href === router.pathname
-                        ? "text-gray-500 dark:text-gray-400"
-                        : "text-gray-600 group-hover:text-gray-500 dark:text-gray-500",
-                      slim ? "h-5 w-5" : "mr-3 h-6 w-6"
+                      slim
+                        ? "h-5 w-5 text-gray-500 dark:text-gray-400"
+                        : "mr-3 h-7 w-7 text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
                     )}
                   />
                   <span className={clsx(slim && "sr-only")}>{item.name}</span>

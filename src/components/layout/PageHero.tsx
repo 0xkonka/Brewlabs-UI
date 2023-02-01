@@ -1,10 +1,9 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import PhoneFrame from "@components/PhoneFrame";
-
 import { PlayCircleIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 const PageHero = () => (
-  <div className="relative flex flex-col justify-center bg-gradient-to-bl from-slate-300 to-gray-200 pt-10 md:justify-end lg:overflow-hidden">
+  <div className="relative flex flex-col justify-center bg-gradient-to-bl from-amber-200 to-amber-500 pt-10 md:justify-end lg:overflow-hidden">
     <div className="mx-20 lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
       <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none xl:col-span-6">
         <header className="mt-4 mb-4 font-brand text-dark sm:mt-5 lg:mt-6">
@@ -33,9 +32,9 @@ const PageHero = () => (
       </div>
 
       <div className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6">
-        <div className="-mx-4 h-[448px] px-9 [mask-image:linear-gradient(to_bottom,white_60%,transparent)] sm:mx-0 lg:absolute lg:-inset-x-10 lg:-top-10 lg:-bottom-20 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
+        <div className="-mx-4 h-[550px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 lg:absolute lg:-inset-x-10 lg:-top-10 lg:-bottom-20 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
           <PhoneFrame className="mx-auto max-w-[366px]" priority>
-            <div className="flex items-center justify-center">Content is coming.</div>
+            <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute top-2 left-0" />
           </PhoneFrame>
         </div>
       </div>
