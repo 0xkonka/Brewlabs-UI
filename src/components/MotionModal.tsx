@@ -27,7 +27,7 @@ const AnimationModal = ({
   const [modalIsOpen, setModalIsOpen] = useGlobalState("modalIsOpen");
 
   useEffect(() => {
-    setModalIsOpen(false);
+    setModalIsOpen(true);
     // Function to close on Esc
     const handleEscClose = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -38,7 +38,7 @@ const AnimationModal = ({
     document.addEventListener("keydown", handleEscClose, false);
 
     return () => {
-      setModalIsOpen(true);
+      setModalIsOpen(false);
       // Remove event listener for keydown
       window.removeEventListener("keydown", handleEscClose);
     };
@@ -52,7 +52,7 @@ const AnimationModal = ({
             onClick={closeFn}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{opacity: 0}}
+            exit={{ opacity: 0 }}
             className="absolute top-0 left-0 z-50 h-full w-full bg-gray-300 bg-opacity-90 dark:bg-zinc-900 sm:dark:bg-opacity-90"
           >
             <motion.div

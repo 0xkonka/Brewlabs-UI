@@ -1,10 +1,9 @@
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { useNetwork } from "wagmi";
 import { motion } from "framer-motion";
 
-import { ChevronDownIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import Modal from "components/MotionModal";
 import ChainSelector from "components/ChainSelector";
@@ -50,15 +49,17 @@ const ChainSelect = ({ id }: ChainSelectProps) => {
           <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
         </button>
       </motion.div>
-      <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
-        <ChainSelector
-          bSwitchChain
-          networks={supportedNetworks}
-          currentChainId={chainId}
-          onDismiss={() => setSelected(false)}
-          selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
-        />
-      </Modal>
+      {selected && (
+        <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
+          <ChainSelector
+            bSwitchChain
+            networks={supportedNetworks}
+            currentChainId={chainId}
+            onDismiss={() => setSelected(false)}
+            selectFn={(selectedValue) => switchNetwork(selectedValue.id)}
+          />
+        </Modal>
+      )}
     </>
   );
 };

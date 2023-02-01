@@ -6,18 +6,13 @@ import { ethers, BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { MaxUint256 } from "@ethersproject/constants";
 import { TransactionResponse } from "@ethersproject/providers";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-
 import { useTranslation } from "contexts/localization";
-
 import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
 import { usdToken } from "config/constants/tokens";
 import contracts from "config/constants/contracts";
 import AggregaionRouterV2Abi from "config/abi/AggregationRouterV5.json";
-
 import { useUserSlippageTolerance, useIsExpertMode } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import {
@@ -50,7 +45,6 @@ import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import SettingModal from "./components/modal/SettingModal";
-
 
 type TxResponse = TransactionResponse | null;
 
@@ -113,9 +107,6 @@ export default function Swap() {
 
   const aggregatorAddress = getBrewlabsAggregationRouterAddress(chainId);
   const [approval, approveCallback] = useApproveCallback(inputAmount, AggregationRouterV5[chainId]);
-
-  const [inputCurrencySelect, setInputCurrencySelect] = useState(false);
-  const [outputCurrencySelect, setOutputCurrencySelect] = useState(false);
 
   const price = useMemo(() => {
     if (
@@ -323,7 +314,7 @@ export default function Swap() {
         </div>,
         {
           className: "toast__background-primary",
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" alt=""/>,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" alt="" />,
           autoClose: 12000,
           closeButton: false,
           hideProgressBar: true,
@@ -339,13 +330,13 @@ export default function Swap() {
           </div>
           <div className="link">
             <img src={getBlockExplorerLogo(chainId)} alt="" />
-            <a href={getBlockExplorerLink(tx?.hash, 'transaction', chainId)} className="down-text">
+            <a href={getBlockExplorerLink(tx?.hash, "transaction", chainId)} className="down-text">
               View Transaction Hash
             </a>
           </div>
         </div>,
         {
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" alt=""/>,
+          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" alt="" />,
           className: "toast__background-primary",
           autoClose: 6000,
           closeButton: false,
@@ -542,12 +533,8 @@ export default function Swap() {
               <Button disabled={!0}>{t("Coming Soon")}</Button>
             ))}
 
-          <div className="mt-6 flex flex-wrap justify-center">
-            <p className="w-full text-center text-sm dark:text-gray-500">Scroll down to see history</p>
-            <ChevronDownIcon className="mt-2 h-4 w-4 dark:text-gray-500" />
-          </div>
+          <History />
         </div>
-        {/* <History /> */}
       </Container>
 
       <SettingModal
