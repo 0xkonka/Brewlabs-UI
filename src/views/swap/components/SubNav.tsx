@@ -11,10 +11,10 @@ const SubNav = ({ openSettingModal }: Props) => (
         <span className="dark:text-primary">Brew</span>Swap
         <img src="/images/logo-vector.svg" className="ml-3" alt="Brew swap" />
       </button>
-      <button className="tab ">
+      <button className="tab hidden sm:block">
         Add liquidity<div className="badge badge-sm ml-2 bg-amber-300 dark:text-zinc-700">Soon</div>
       </button>
-      <button className="tab ">
+      <button className="tab hidden sm:block">
         Convert<div className="badge badge-sm ml-2 bg-amber-300 dark:text-zinc-700">Soon</div>
       </button>
     </div>
