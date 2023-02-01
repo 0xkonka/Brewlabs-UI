@@ -22,7 +22,7 @@ const Row = (data: any) => {
   const { chainId } = useActiveWeb3React();
 
   return (
-    <div className="flex items-center justify-between select-none">
+    <div className="flex select-none items-center justify-between">
       <p className="flex">
         {inputCurrency?.symbol}&nbsp;<span className="dark:text-primary">SWAP</span>&nbsp;{outputCurrency?.symbol}
       </p>
@@ -30,7 +30,7 @@ const Row = (data: any) => {
         <span className="opacity-40">
           {amount}&nbsp;{outputCurrency?.symbol}
         </span>
-        <a href={getBlockExplorerLink(transactionHash, 'transaction', chainId)} target="_blank" rel="noreferrer">
+        <a href={getBlockExplorerLink(transactionHash, "transaction", chainId)} target="_blank" rel="noreferrer">
           <img src={getBlockExplorerLogo(chainId)} alt="" className="h-3 w-3" />
         </a>
       </p>
@@ -44,13 +44,16 @@ const History = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card>
-      <button onClick={() => setIsExpanded(!isExpanded)} className="flex w-full items-center justify-between px-1">
-        <span className="text-lg">Show History</span>
-        <ChevronUpIcon className={clsx("h-5 w-5 transition-all dark:text-primary", !isExpanded && "rotate-180")} />
+    <div className="mt-6">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="mx-auto flex w-fit items-center justify-between gap-2 px-1"
+      >
+        <span className="text-lg dark:text-gray-500">Show History</span>
+        <ChevronUpIcon className={clsx("h-4 w-4 transition-all dark:text-gray-500", !isExpanded && "rotate-180")} />
       </button>
       {isExpanded && (
-        <div className="px-1">
+        <div className="mt-4 w-full rounded-xl border border-gray-700 p-3">
           <div className="mt-2">
             {logs.map((data, index) => {
               return <Row data={data} key={index} />;
@@ -59,7 +62,7 @@ const History = () => {
           <div className="flex items-center justify-center gap-2">
             <img src={getBlockExplorerLogo(chainId)} alt="Ether scan logo" className="h-4 w-4" />
             <a
-              href={getBlockExplorerLink(account, 'address', chainId)}
+              href={getBlockExplorerLink(account, "address", chainId)}
               target="_blank"
               rel="noreferrer"
               className="text-base"
@@ -69,7 +72,7 @@ const History = () => {
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 
