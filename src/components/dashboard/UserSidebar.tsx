@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ConnectWallet from "./ConnectWallet";
@@ -34,8 +35,13 @@ const UserSidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative flex w-full max-w-[750px] flex-1 flex-col  items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900">
-              <div className="absolute top-0 right-0 z-10 pt-2 sm:-mr-12">
+            <Dialog.Panel className="relative flex w-full max-w-[750px] flex-1 flex-col items-center bg-white px-2 focus:outline-none dark:border-gray-800 dark:bg-zinc-900">
+              <div
+                className={clsx(
+                  "absolute top-0 right-0 z-10 pt-2 sm:-mr-12",
+                  isOpen ? "animate__animated animate__fadeInLeft animate__delay-1s" : "hidden"
+                )}
+              >
                 <button
                   type="button"
                   onClick={() => {
