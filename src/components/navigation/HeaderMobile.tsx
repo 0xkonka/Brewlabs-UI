@@ -1,9 +1,8 @@
 import { ReactElement } from "react";
+import clsx from "clsx";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import LogoIcon from "../LogoIcon";
-
 import { setGlobalState, useGlobalState } from "../../state";
-import clsx from "clsx";
 
 const HeaderMobile = (): ReactElement => {
   // Retrieve global state
@@ -17,7 +16,6 @@ const HeaderMobile = (): ReactElement => {
       )}
     >
       <LogoIcon classNames="w-12 text-dark dark:text-brand" />
-
       <button
         type="button"
         className="-mr-3 inline-flex h-12 w-12 items-center justify-center rounded-md text-dark hover:text-gray-900 dark:text-brand"

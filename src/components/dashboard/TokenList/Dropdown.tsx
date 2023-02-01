@@ -1,59 +1,36 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+import clsx from "clsx";
+import { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import styled from "styled-components";
-import { useState, useEffect, useRef } from "react";
 
 const DropDown = ({ value, setValue }: { setValue?: any; value: number }) => {
   const values = ["Wallet", "Archive"];
   const [open, setOpen] = useState(false);
-  const dropRef: any = useRef();
-
-  useEffect(() => {
-    document.addEventListener("mouseup", function (event) {
-      if (dropRef.current && !dropRef.current.contains(event.target)) {
-        setOpen(false);
-      }
-    });
-  }, []);
 
   return (
-    <StyledDropDown
-      className="portfolio-shadow relative z-10 flex h-[30px] w-full cursor-pointer items-center justify-center bg-primary text-sm text-black"
-      ref={dropRef}
-      onClick={() => setOpen(!open)}
-      open={open.toString()}
-    >
-      <div className={"font-semibold"}>{values[value]}</div>
-      <div className={"absolute right-1"}>
-        {!open ? <ChevronDownIcon className={"h-3 w-6"} /> : <ChevronUpIcon className={"h-3 w-6"} />}
-      </div>
-      <DropDownBody className={"absolute top-[30px] w-full rounded-b transition-all"} open={open.toString()}>
+    <div className="dropdown w-28" onClick={() => setOpen(!open)}>
+      <label
+        tabIndex={0}
+        className="btn-sm btn m-1 w-full bg-amber-400 active:bg-brand dark:text-zinc-800 dark:hover:bg-dark dark:hover:text-brand"
+      >
+        {values[value]}
+        {!open ? <ChevronDownIcon className="h-3 w-6" /> : <ChevronUpIcon className="h-3 w-6" />}
+      </label>
+      <ul
+        tabIndex={0}
+        className={clsx("dropdown-content menu rounded-box w-full bg-base-100 shadow", !open && "hidden")}
+      >
         {values.map((data, i) => {
           return (
-            <div
-              key={i}
-              className="flex h-[30px] cursor-pointer items-center justify-center font-semibold transition-all hover:bg-[#ffde7c]"
-              onClick={() => setValue(i)}
-            >
-              {data}
-            </div>
+            <li key={i}>
+              <button className="p-2" onClick={() => setValue(i)}>
+                {data}
+              </button>
+            </li>
           );
         })}
-      </DropDownBody>
-    </StyledDropDown>
+      </ul>
+    </div>
   );
 };
 
 export default DropDown;
-
-const StyledDropDown = styled.div<{ open: String }>`
-  border-radius: 4px;
-  border-bottom-left-radius: ${({ open }) => (open === "true" ? 0 : "4px")};
-  border-bottom-right-radius: ${({ open }) => (open === "true" ? 0 : "4px")};
-`;
-
-const DropDownBody = styled.div<{ open: String }>`
-  height: ${({ open }) => (open === "true" ? "60px" : 0)};
-  overflow: hidden;
-  background: linear-gradient(180deg, #ffcc32, #e5cc7e);
-`;
