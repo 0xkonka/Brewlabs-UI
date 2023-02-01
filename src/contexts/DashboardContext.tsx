@@ -172,25 +172,16 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   };
 
-  const fetchTokenInfos = async (tokens: [], initial: boolean) => {
+  const fetchTokenInfos = async (tokens: []) => {
     let data: any;
-    console.log("Initial", initial);
-    if (initial)
-      data = await Promise.all(
-        tokens.map(async (data: any) => {
-          const tokenInfo = await fetchTokenInfo(data);
-          const serializedToken = { ...tokenInfo };
-          return serializedToken;
-        })
-      );
-    else {
-      let temp = [];
-      for (let i = 0; i < tokens.length; i++) {
-        const tokenInfo: any = await fetchTokenInfo(tokens[i]);
-        temp.push(tokenInfo);
-      }
-      data = temp;
+
+    let temp = [];
+    for (let i = 0; i < tokens.length; i++) {
+      const tokenInfo: any = await fetchTokenInfo(tokens[i]);
+      temp.push(tokenInfo);
     }
+    data = temp;
+
     return data;
   };
 
@@ -237,7 +228,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
-      let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
+      let tokenInfos: any = await fetchTokenInfos(_tokens);
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
 
       setTokens(tokenInfos);
