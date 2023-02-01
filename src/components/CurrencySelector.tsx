@@ -5,15 +5,13 @@ import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 
 import { MORALIS_CHAIN_NAME } from "config/constants/networks";
-import factoryTokens from "config/constants/tokens/factoryTokens.json";
-import { isAddress } from "utils";
+import { factoryTokens, popularTokens } from "config/constants/tokens";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 import useWalletTokens from "hooks/useWalletTokens";
-import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 
 import { CurrencyLogo } from "components/logo";
 import { PrimaryOutlinedButton } from "components/button/index";
@@ -23,6 +21,8 @@ import { useGlobalState } from "state";
 
 import { Field } from "state/swap/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
+import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
+import { isAddress } from "utils";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -30,6 +30,21 @@ interface CurrencySelectorProps {
   otherSelectedCurrency?: Currency | null;
   filteredCurrencies?: Currency[];
 }
+
+const tabs = [
+  {
+    name: "All",
+  },
+  {
+    name: "Popular",
+  },
+  {
+    name: "Wallet",
+  },
+  {
+    name: "Brewlabs factory",
+  },
+];
 
 const CurrencyRow = ({
   currency,
@@ -172,17 +187,28 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
   const ethBalance = useNativeBalances([account])[account];
 
   const listingTokens: (Currency | undefined)[] = useMemo(() => {
-    if (activeTab === 0) return itemData;
-
-    if (activeTab === 1)
-      return itemData.filter(
-        (_token) =>
-          (_token?.isNative && ethBalance?.greaterThan(0)) ||
-          walletTokens.find((__token) => _token?.symbol === __token?.symbol)
-      );
-
-    if (activeTab === 2)
-      return itemData.filter((_token) => factoryTokens.find((__token) => _token?.symbol === __token?.symbol));
+    switch (activeTab) {
+      case 0:
+        return itemData;
+      case 1:
+        if (!popularTokens[chainId]) return [];
+        return itemData.filter((_token) =>
+          popularTokens[chainId].find((__token) => _token?.address === __token?.address)
+        );
+      case 2:
+        return itemData.filter(
+          (_token) =>
+            (_token?.isNative && ethBalance?.greaterThan(0)) ||
+            walletTokens.find((__token) => _token?.symbol === __token?.symbol)
+        );
+      case 3:
+        if (!factoryTokens[chainId]) return [];
+        return itemData.filter((_token) =>
+          factoryTokens[chainId].find((__token) => _token?.address === __token?.address)
+        );
+      default:
+        return [];
+    }
   }, [activeTab, itemData, ethBalance, walletTokens]);
 
   const tokenMarketData = useTokenMarketChart(
@@ -200,18 +226,6 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
   const prevPage = () => {
     setPage((page - 1) % totalPages);
   };
-
-  const tabs = [
-    {
-      name: "Popular",
-    },
-    {
-      name: "Wallet",
-    },
-    {
-      name: "Brewlabs factory",
-    },
-  ];
 
   return (
     <div className="relative w-full">
@@ -248,9 +262,7 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
 
       <div className="mt-3 px-2">
         <div>
-          {activeTab === 2 ? (
-            <p className="my-10 flex justify-center text-2xl dark:text-primary">Coming soon</p>
-          ) : listingTokens.length > 0 ? (
+          {listingTokens.length > 0 ? (
             listingTokens.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((currency, index) => {
               const tokenAddress = currency?.wrapped?.address?.toLowerCase();
               return (
