@@ -2,11 +2,16 @@ const plugin = require("tailwindcss/plugin");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./views/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  content: ["./src/pages/**/*.{js,ts,jsx,tsx}", "./src/views/**/*.{js,ts,jsx,tsx}", "./src/components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     screens: {
       xs: "380px",
+      xsm: "450px",
+      xmd: "610px",
       ...defaultTheme.screens,
+    },
+    fontSize: {
+      ...defaultTheme.fontSize,
     },
     extend: {
       colors: {
@@ -14,11 +19,21 @@ module.exports = {
         brand: "#FFDE0D",
         eth: "#5D78DE",
         bsc: "#E4B00A",
+        primary: "#EEBB19",
+        green: "#2FD35D",
+        yellow: "#ffde00",
+        grey: "#CFCFCF",
+        danger: "#D9563A",
+      },
+      boxShadow: {
+        inner: "inset 0px 0px 6px #000000",
       },
     },
     fontFamily: {
       script: ['"Caveat"'],
       brand: ['"Questrial"'],
+      roboto: ['"Roboto"'],
+      dash: ['"Roboto"'],
     },
   },
   plugins: [
@@ -29,4 +44,17 @@ module.exports = {
     }),
   ],
   darkMode: "class",
+  daisyui: {
+    themes: [
+      {
+        dark: {
+          ...require("daisyui/src/colors/themes")["[data-theme=dark]"],
+          primary: "#4b5563",
+          "primary-focus": "#3f3f46",
+          accent: "#fb923c",
+          "accent-focus": "#3f3f46",
+        },
+      },
+    ],
+  },
 };
