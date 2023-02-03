@@ -1,10 +1,27 @@
+import { useState } from "react";
 import styled from "styled-components";
-import { numberWithCommas } from "utils/functions";
+import { makeSkeletonComponent, numberWithCommas } from "utils/functions";
 
-const PoolCard = ({ data, index, setSelectPoolDetail }: { data: any; index: number; setSelectPoolDetail: any }) => {
+const PoolCard = ({
+  data,
+  index,
+  setSelectPoolDetail,
+  setCurPool,
+}: {
+  data: any;
+  index: number;
+  setSelectPoolDetail: any;
+  setCurPool: any;
+}) => {
   const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Indexes", 4: "Zapper Pools" };
   return (
-    <StyledContainer index={index} onClick={() => setSelectPoolDetail(true)}>
+    <StyledContainer
+      index={index}
+      onClick={() => {
+        setSelectPoolDetail(true);
+        setCurPool(index);
+      }}
+    >
       <div className="flex items-center justify-between">
         <div className="min-w-[80px] pl-4">
           <img src={data.chainLogo} alt={""} className="w-9" />
@@ -16,16 +33,32 @@ const PoolCard = ({ data, index, setSelectPoolDetail }: { data: any; index: numb
               <span className="text-primary">Earn</span> {data.earningToken.symbol}
             </div>
             <div className="text-xs">
-              {poolNames[data.type]} - {data.duration} day lock
+              {poolNames[data.type]} - {data.duration === 0 ? "Flexible" : `${data.duration} day lock`}
             </div>
           </div>
         </div>
-        <div className="min-w-[70px]">${data.tvl}</div>
-        <div className="min-w-[160px]">{data.stakedAddresses}</div>
-        <div className="min-w-[250px]">
-          {numberWithCommas(data.totalStaked)} {data.stakingToken.symbol}
+        <div className="min-w-[70px]">
+          {data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : makeSkeletonComponent()}
         </div>
-        <div className="min-w-[70px]">{data.type !== 3 ? `${data.apr}%` : "N/A"}</div>
+        <div className="min-w-[160px]">
+          {data.stakedAddresses !== undefined ? data.stakedAddresses : makeSkeletonComponent()}
+        </div>
+        <div className="min-w-[250px]">
+          {data.totalStaked !== undefined
+            ? `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
+            : makeSkeletonComponent()}
+        </div>
+        <div className="min-w-[80px]">
+          {data.type !== 3 ? (
+            data.apr !== undefined ? (
+              `${data.apr}%`
+            ) : (
+              <div className="mr-2">{makeSkeletonComponent()}</div>
+            )
+          ) : (
+            "N/A"
+          )}
+        </div>
       </div>
       <div className="flex hidden flex-col px-6">
         <div className="flex  items-center justify-between ">
@@ -35,23 +68,42 @@ const PoolCard = ({ data, index, setSelectPoolDetail }: { data: any; index: numb
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
               </div>
-              <div className="text-xs">Staking Pool - {data.duration} day lock</div>
+              <div className="text-xs">
+                {poolNames[data.type]} - {data.duration === 0 ? "Flexible" : `${data.duration} day lock`}
+              </div>
             </div>
           </div>
           <img src={data.chainLogo} alt={""} className="w-9" />
         </div>
         <div className="mt-6 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
-          <div className="text-2xl">APR: {data.type !== 3 ? `${data.apr}%` : "N/A"}</div>
+          <div className="flex text-2xl">
+            APR:&nbsp;
+            {data.type !== 3 ? (
+              data.apr !== undefined ? (
+                `${data.apr}%`
+              ) : (
+                <div className="mr-2">{makeSkeletonComponent()}</div>
+              )
+            ) : (
+              "N/A"
+            )}
+          </div>
           <div>
             <div className="text-left xsm:text-right">Total supply staked</div>
             <div className="text-left text-sm xsm:text-right">
-              {numberWithCommas(data.totalStaked)} {data.stakingToken.symbol}
+              {data.totalStaked !== undefined
+                ? `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
+                : makeSkeletonComponent()}
             </div>
           </div>
         </div>
         <div className="mt-3 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
-          <div>TVL: ${data.tvl}</div>
-          <div>Staked Address: {data.stakedAddresses}</div>
+          <div className="flex">
+            TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : makeSkeletonComponent()}
+          </div>
+          <div className="flex">
+            Staked Address:&nbsp;{data.stakedAddresses !== undefined ? data.stakedAddresses : makeSkeletonComponent()}
+          </div>
         </div>
       </div>
     </StyledContainer>

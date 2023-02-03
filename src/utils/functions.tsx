@@ -1,3 +1,5 @@
+import Skeleton from "react-loading-skeleton";
+
 export function numberWithCommas(x: any) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -7,4 +9,14 @@ export const BigNumberFormat = (str: any, decimals: number = 2) => {
   else if (Number(str) >= 10000000) return `${numberWithCommas((str / 1000000).toFixed(decimals))}M`;
   else if (Number(str) >= 10000) return `${numberWithCommas((str / 1000).toFixed(decimals))}K`;
   else return `${numberWithCommas(str.toFixed(decimals))}`;
+};
+
+export const makeSkeletonComponent = () => {
+  return (
+    <Skeleton
+      style={{ width: "100%", maxWidth: "100px", minWidth: "50px" }}
+      baseColor={"#3e3e3e"}
+      highlightColor={"#686363"}
+    />
+  );
 };

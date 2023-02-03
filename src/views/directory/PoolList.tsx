@@ -2,7 +2,15 @@ import { useRef, useState } from "react";
 import styled from "styled-components";
 import PoolCard from "./PoolCard";
 
-const PoolList = ({ pools, setSelectPoolDetail }: { pools: any; setSelectPoolDetail: any }) => {
+const PoolList = ({
+  pools,
+  setSelectPoolDetail,
+  setCurPool,
+}: {
+  pools: any;
+  setSelectPoolDetail: any;
+  setCurPool: any;
+}) => {
   return (
     <StyledContainer>
       <PoolHeader>
@@ -11,12 +19,14 @@ const PoolList = ({ pools, setSelectPoolDetail }: { pools: any; setSelectPoolDet
         <div className="min-w-[70px]">TVL</div>
         <div className="min-w-[160px]">Staked addresses</div>
         <div className="min-w-[250px]">Total supply staked</div>
-        <div className="min-w-[70px]">APR</div>
+        <div className="min-w-[80px]">APR</div>
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
         {pools.map((data: any, i: number) => {
-          return <PoolCard data={data} key={i} index={i} setSelectPoolDetail={setSelectPoolDetail} />;
+          return (
+            <PoolCard data={data} key={i} index={i} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
+          );
         })}
       </PoolPanel>
     </StyledContainer>

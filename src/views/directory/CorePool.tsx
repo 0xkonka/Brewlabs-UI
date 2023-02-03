@@ -2,31 +2,47 @@ import LogoIcon from "components/LogoIcon";
 import styled from "styled-components";
 import StyledButton from "./StyledButton";
 import { upSVG } from "components/dashboard/assets/svgs";
+import { makeSkeletonComponent } from "utils/functions";
+import { useContext } from "react";
+import { PoolContext } from "contexts/PoolContext";
 
-const CorePool = () => {
+const CorePool = ({
+  setSelectPoolDetail,
+  index,
+  setCurPool,
+}: {
+  setSelectPoolDetail: any;
+  index: number;
+  setCurPool: any;
+}) => {
+  const { data: pools }: any = useContext(PoolContext);
+  const data = pools[index];
+
   const CreatePoolInfoPanel = (type: string) => {
     return (
       <PoolInfoPanel type={type}>
         <div className="w-full text-xs text-[#FFFFFF80]">
           <div className="flex flex-wrap justify-between">
             <div className="text-xl text-[#FFFFFFBF]">
-              Core Pool: <span className="text-primary">BREWLABS</span>
+              Core Pool: <span className="text-primary">{data.earningToken.symbol}</span>
             </div>
-            <div className="text-xl text-primary">
-              <span className="text-[#FFFFFFBF]">APR:</span> 25.24%
+            <div className="flex text-xl text-primary">
+              <span className="text-[#FFFFFFBF]">APR:</span>&nbsp;
+              {data.apr !== undefined ? `${data.apr}%` : makeSkeletonComponent()}
             </div>
           </div>
           <div className="flex flex-wrap justify-between text-base">
             <div>
-              Stake <span className="text-primary">BREWLABS</span> earn <span className="text-primary">BREWLABS</span>
+              Stake <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
+              <span className="text-primary">{data.earningToken.symbol}</span>
             </div>
-            <div className="text-primary">Flexible</div>
+            <div className="text-primary">{data.duration === 0 ? "Flexible" : `${data.duration} day lock`}</div>
           </div>
           <div className="flex flex-wrap items-start justify-between">
             <div>
-              <div>Deposit Fee 0.10%</div>
-              <div>Withdrawal Fee 0.10%</div>
-              <div>Performance Fee 0.0035 BNB</div>
+              <div>Deposit Fee {data.depositFee.toFixed(2)}%</div>
+              <div>Withdrawal Fee {data.withdrawFee.toFixed(2)}%</div>
+              <div>Performance Fee {data.performanceFee} BNB</div>
             </div>
             <div className="flex items-center text-primary">
               {upSVG}
@@ -43,11 +59,24 @@ const CorePool = () => {
         <LogoIcon classNames="w-24 min-w-[96px] text-dark dark:text-brand sm:ml-6 ml-0" />
         {CreatePoolInfoPanel("pc")}
         <div className="w-[50%] max-w-[200px] md:w-[340px] md:max-w-full">
-          <div className="h-[50px]">
-            <StyledButton>Get BREWLABS</StyledButton>
-          </div>
+          <a
+            href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+            target={"_blank"}
+            rel="noreferrer"
+          >
+            <div className="h-[50px]">
+              <StyledButton>Get {data.stakingToken.symbol}</StyledButton>
+            </div>
+          </a>
           <div className="mt-2 h-[50px]">
-            <StyledButton>Deposit BREWLABS</StyledButton>
+            <StyledButton
+              onClick={() => {
+                setSelectPoolDetail(true);
+                setCurPool(0);
+              }}
+            >
+              Deposit {data.stakingToken.symbol}
+            </StyledButton>
           </div>
         </div>
       </div>

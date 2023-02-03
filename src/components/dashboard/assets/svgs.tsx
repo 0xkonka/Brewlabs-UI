@@ -90,3 +90,15 @@ export const warningSVG = (
     />
   </svg>
 );
+
+export const chevronLeftSVG = (
+  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ height: "16px" }}>
+    <path
+      d="M7.5 9.5L4 6L7.5 2.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
