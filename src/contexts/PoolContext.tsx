@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import { useFastRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useAccount } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getMulticallContract } from "utils/contractHelpers";
@@ -8,6 +8,7 @@ import UnLockABI from "config/abi/brewlabsUnLockup.json";
 
 import { ethers } from "ethers";
 import axios from "axios";
+import { ERC20_ABI } from "config/abi/erc20";
 
 const WETH_ADDR: any = {
   1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -20,10 +21,11 @@ const PoolContext: any = React.createContext({
 });
 
 const PoolContextProvider = ({ children }: any) => {
-  const { address } = useAccount();
+  // const { address } = useAccount();
+  const address = "0x16ba08046a9bbec7ba7a0e6fd5fbd7b097f549bf";
   const { chainId } = useActiveChainId();
   const [data, setData] = useState(pools);
-  const [accountData, setAccountData] = useState([]);
+  const [accountData, setAccountData] = useState(pools);
 
   async function multicall(abi: any, calls: any) {
     try {
@@ -57,7 +59,7 @@ const PoolContextProvider = ({ children }: any) => {
     const priceResult = await axios.get(priceUrl);
     const price = priceResult.data.c[priceResult.data.c.length - 1];
 
-    let calls = [
+    let calls: any = [
       {
         name: "rewardPerBlock",
         address: data.address,
@@ -73,6 +75,14 @@ const PoolContextProvider = ({ children }: any) => {
       {
         address: data.address,
         name: "lastRewardBlock",
+      },
+      {
+        address: data.address,
+        name: "availableDividendTokens",
+      },
+      {
+        address: data.address,
+        name: "availableRewardTokens",
       },
     ];
 
@@ -90,9 +100,9 @@ const PoolContextProvider = ({ children }: any) => {
       c = 0,
       totalFee = 0,
       dayHistory = [{ timeStamp: 0, value: 0 }],
-      tempStaked = 0;
-
-    let _sHistory = sHistoryResult.data.result.map((history: any) => {
+      tempStaked = 0,
+      sHistory: any = [];
+    sHistoryResult.data.result.map((history: any) => {
       if (history.functionName.includes("deposit(")) {
         const iface = new ethers.utils.Interface(["function deposit(uint256 _amount)"]);
         const decodeResult = iface.decodeFunctionData("deposit", history.input);
@@ -102,9 +112,15 @@ const PoolContextProvider = ({ children }: any) => {
 
         tempStaked += decodeResult._amount / Math.pow(10, data.stakingToken.decimals);
         dayHistory.push({ value: tempStaked, timeStamp: history.timeStamp });
-
+        sHistory.push({
+          value: tempStaked,
+          blockNumber: history.blockNumber,
+          timeRemaining: 0,
+          symbol: data.stakingToken.symbol,
+          address: history.from,
+        });
         if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000)
-          totalFee += decodeResult._amount * data.depositFee;
+          totalFee += (decodeResult._amount * data.depositFee) / 100;
       }
       if (history.functionName.includes("withdraw(")) {
         const iface = new ethers.utils.Interface(["function withdraw(uint256 _amount)"]);
@@ -117,7 +133,7 @@ const PoolContextProvider = ({ children }: any) => {
         dayHistory.push({ value: tempStaked, timeStamp: history.timeStamp });
 
         if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000)
-          totalFee += decodeResult._amount * data.withdrawFee;
+          totalFee += (decodeResult._amount * data.withdrawFee) / 100;
       }
       const functions = [
         "deposit(",
@@ -138,25 +154,25 @@ const PoolContextProvider = ({ children }: any) => {
       if (sAmounts[data] >= BigInt(0)) c++;
     });
 
-    _sHistory = _sHistory.filter((data: any) => data !== undefined);
-    console.log(dayHistory);
+    let _dayHistory = [];
+    for (let i = 0; i < dayHistory.length; i++)
+      if (dayHistory[i].timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000) _dayHistory.push(dayHistory[i].value);
+    _dayHistory.push(totalStaked);
 
-    // let _dayHistory = dayHistory.map((data) => {
-    //   if (data.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000) return data.value;
-    // });
-    // console.log(_dayHistory);
     return {
-      history: _sHistory,
+      history: sHistory,
       endBlock,
       totalStaked: Math.round(totalStaked),
       remainingBlock,
       apr: apr.toFixed(2),
       price,
       tvl,
-      totalPerformanceFee: txCount * data.performanceFee,
+      totalPerformanceFee: (txCount * data.performanceFee) / Math.pow(10, 18),
       totalFee: totalFee / Math.pow(10, data.stakingToken.decimals),
       stakedAddresses: c,
-      dayHistory: undefined,
+      dayHistory: _dayHistory,
+      totalReflection: callResult[4][0] / Math.pow(10, data.reflectionToken.decimals),
+      totalReward: callResult[5][0] / Math.pow(10, data.earningToken.decimals),
     };
   }
 
@@ -171,16 +187,81 @@ const PoolContextProvider = ({ children }: any) => {
           return serializedToken;
         })
       );
-      console.log(temp);
       setData(temp);
     } catch (error) {
       console.log(error);
     }
   }
 
+  async function fetchAccountPoolData(data: any) {
+    try {
+      let calls = [
+        {
+          address: data.address,
+          name: "pendingReward",
+          params: [address],
+        },
+        {
+          address: data.address,
+          name: "pendingDividends",
+          params: [address],
+        },
+        {
+          address: data.address,
+          name: "userInfo",
+          params: [address],
+        },
+      ];
+      const result = await multicall(UnLockABI, calls);
+      calls = [
+        {
+          address: data.stakingToken.address,
+          name: "balanceOf",
+          params: [address],
+        },
+        {
+          address: data.stakingToken.address,
+          name: "allowance",
+          params: [address, data.address],
+        },
+      ];
+      const balanceResult = await multicall(ERC20_ABI, calls);
+      return {
+        pendingReward: result[0][0] / Math.pow(10, data.earningToken.decimals),
+        pendingReflection: result[1][0] / Math.pow(10, data.reflectionToken.decimals),
+        stakedAmount: result[2][0],
+        available: result[2][1],
+        balance: balanceResult[0][0],
+        allowance: balanceResult[1][0] > "10000",
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function fetchAccountPoolDatas() {
+    try {
+      const _data = pools.filter((data) => data.chainID === chainId);
+      let temp = await Promise.all(
+        _data.map(async (data: any) => {
+          const accountInfo: any = await fetchAccountPoolData(data);
+          const serializedToken = { ...accountInfo };
+          return serializedToken;
+        })
+      );
+      console.log(temp);
+      setAccountData(temp);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useSlowRefreshEffect(() => {
     fetchPoolDatas();
-  }, [chainId, address]);
+  }, [chainId]);
+
+  useFastRefreshEffect(() => {
+    fetchAccountPoolDatas();
+  }, [address, chainId]);
 
   return <PoolContext.Provider value={{ data, accountData }}>{children}</PoolContext.Provider>;
 };

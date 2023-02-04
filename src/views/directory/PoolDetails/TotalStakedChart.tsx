@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
-import { makeSkeletonComponent } from "utils/functions";
+import { BigNumberFormat, makeSkeletonComponent, numberWithCommas } from "utils/functions";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const TotalStakedChart = ({ data, symbol }: { data: any; symbol: string }) => {
+const TotalStakedChart = ({ data, symbol, price }: { data: any; symbol: string; price: number }) => {
   const chartData: any = {
     series: [
       {
@@ -64,7 +64,7 @@ const TotalStakedChart = ({ data, symbol }: { data: any; symbol: string }) => {
         y: {
           format: "",
           formatter: (value: any) => {
-            return value;
+            return "$" + BigNumberFormat(value * price);
           },
         },
       },
@@ -80,13 +80,13 @@ const TotalStakedChart = ({ data, symbol }: { data: any; symbol: string }) => {
     <StyledContainer>
       <div className="text-xl text-[#FFFFFFBF]">Total Staked Value</div>
       <div className="leading-none text-[#FFFFFF80]">
-        {data !== undefined ? `$${data[data.length - 1]}` : makeSkeletonComponent()}
+        {data !== undefined ? `$${BigNumberFormat(data[data.length - 1] * price)}` : makeSkeletonComponent()}
         <br />
         <span className="flex text-primary">
-          {data !== undefined ? data[data.length - 1] : makeSkeletonComponent()}&nbsp;{symbol}
+          {data !== undefined ? numberWithCommas(data[data.length - 1].toFixed(0)) : makeSkeletonComponent()}&nbsp;
+          {symbol}
         </span>
-        <br />
-        <span className="text-[#B9B8B8]">{new Date().toLocaleDateString()}</span>
+        <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>
       </div>
       <div className="-mt-12">
         <Chart options={chartData.options} series={chartData.series} type="area" height={280} />

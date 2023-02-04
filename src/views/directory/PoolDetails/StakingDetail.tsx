@@ -12,19 +12,121 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "../Modals/StakingModal";
 import { useContext, useState } from "react";
-import ApproveModal from "views/swap/components/modal/ApproveModal";
 import { makeSkeletonComponent, numberWithCommas } from "utils/functions";
-import { useAccount } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { PoolContext } from "contexts/PoolContext";
+import { DashboardContext } from "contexts/DashboardContext";
+import { getUnLockStakingContract } from "utils/contractHelpers";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; index: number }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
 
   const { address } = useAccount();
-  const { data: pools }: any = useContext(PoolContext);
+  const { data: signer }: any = useSigner();
+  const { chainId } = useActiveChainId();
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
   const data = pools[index];
+  const accountData = accountPools[index];
 
+  const onCompoundReward = async () => {
+    setPending(true);
+    try {
+      console.log("onCompoundReward");
+
+      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
+      const estimateGas: any = await poolContract.estimateGas.compoundReward({
+        value: data.performanceFee,
+      });
+
+      const tx = {
+        gasLimit: Math.ceil(estimateGas * 1.2),
+        value: data.performanceFee,
+      };
+      const harvestTx = await poolContract.compoundReward(tx);
+      await harvestTx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+    setPending(false);
+  };
+
+  const onCompoundReflection = async () => {
+    setPending(true);
+    try {
+      let ttx, estimateGas;
+
+      console.log("onCompoundReflection");
+
+      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
+      estimateGas = await poolContract.estimateGas.compoundDividend({
+        value: data.performanceFee,
+      });
+
+      const tx = {
+        gasLimit: Math.ceil(estimateGas * 1.2),
+        value: data.performanceFee,
+      };
+      ttx = await poolContract.compoundDividend(tx);
+      await ttx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+    setPending(false);
+  };
+
+  const onHarvestReward = async () => {
+    setPending(true);
+    try {
+      let harvestTx, estimateGas;
+
+      console.log("HarvestReward");
+
+      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
+      estimateGas = await poolContract.estimateGas.claimReward({
+        value: data.performanceFee,
+      });
+
+      const tx = {
+        gasLimit: Math.ceil(estimateGas * 1.2),
+        value: data.performanceFee,
+      };
+      harvestTx = await poolContract.claimReward(tx);
+      await harvestTx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+    setPending(false);
+  };
+
+  const onHarvestReflection = async () => {
+    setPending(true);
+    try {
+      let harvestTx, estimateGas;
+
+      console.log("onHarvestReflection");
+
+      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
+      estimateGas = await poolContract.estimateGas.claimDividend({
+        value: data.performanceFee,
+      });
+
+      const tx = {
+        gasLimit: Math.ceil(estimateGas * 1.2),
+        value: data.performanceFee,
+      };
+      harvestTx = await poolContract.claimDividend(tx);
+      await harvestTx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+    setPending(false);
+  };
+
+  const history =
+    data.history && address ? data.history.filter((data: any) => data.address === "0x16ba08046a9bbec7ba7a0e6fd5fbd7b097f549bf".toLowerCase()) : [];
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (
@@ -35,7 +137,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
           transition={{ duration: 0.3 }}
         >
           <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
-            <StakingModal open={stakingModalOpen} setOpen={setStakingModalOpen} type={curType} data={data} />
+            <StakingModal open={stakingModalOpen} setOpen={setStakingModalOpen} type={curType} index={index} />
             <PageHeader
               title={
                 <div className="text-[40px]">
@@ -102,7 +204,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                       <br />
                       Withdraw Fee {data.withdrawFee.toFixed(2)}%
                       <br />
-                      Peformance Fee {data.performanceFee} BNB
+                      Peformance Fee {data.performanceFee / Math.pow(10, 18)} BNB
                     </div>
                   </InfoPanel>
 
@@ -124,8 +226,8 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                       <div className="mt-2 flex text-primary">
                         {!address
                           ? "0.00"
-                          : data.pendingReward !== undefined
-                          ? data.pendingReward.toFixed(0)
+                          : accountData.pendingReward !== undefined
+                          ? accountData.pendingReward.toFixed(0)
                           : makeSkeletonComponent()}
                         &nbsp;
                         {data.earningToken.symbol}
@@ -133,8 +235,8 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                       <div className="flex text-primary">
                         {!address
                           ? "0.00"
-                          : data.pendingReflection !== undefined
-                          ? data.pendingReflection.toFixed(2)
+                          : accountData.pendingReflection !== undefined
+                          ? accountData.pendingReflection.toFixed(2)
                           : makeSkeletonComponent()}
                         &nbsp;
                         {data.reflectionToken.symbol}
@@ -160,7 +262,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
               </div>
               <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                 <div className="w-full md:w-[40%]">
-                  <TotalStakedChart data={data.dayHistory} symbol={data.stakingToken.symbol} />
+                  <TotalStakedChart data={data.dayHistory} symbol={data.stakingToken.symbol} price={data.price} />
                   <InfoPanel className="mt-20 flex justify-between" type={"secondary"} boxShadow={"primary"}>
                     <div>Total Staked Value</div>
                     <div className="flex">
@@ -200,26 +302,34 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                     <div className="mr-0 flex-1 xsm:mr-[14px]">
                       <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
                       <div className="mt-1.5 h-[56px] w-full">
-                        <StyledButton type="teritary">
+                        <StyledButton
+                          type="teritary"
+                          disabled={!accountData.pendingReward || !address || pending}
+                          onClick={() => onCompoundReward()}
+                        >
                           <div className="flex">
                             Compound&nbsp;
                             {!address
                               ? 0
-                              : data.pendingReward !== undefined
-                              ? data.pendingReward.toFixed(0)
+                              : accountData.pendingReward !== undefined
+                              ? accountData.pendingReward.toFixed(0)
                               : makeSkeletonComponent()}
                             <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
                           </div>
                         </StyledButton>
                       </div>
                       <div className="mt-2 h-[56px] w-full">
-                        <StyledButton type="teritary">
+                        <StyledButton
+                          type="teritary"
+                          disabled={!accountData.pendingReward || !address || pending}
+                          onClick={() => onHarvestReward()}
+                        >
                           <div className="flex">
                             Harvest&nbsp;
                             {!address
                               ? 0
-                              : data.pendingReward !== undefined
-                              ? data.pendingReward.toFixed(0)
+                              : accountData.pendingReward !== undefined
+                              ? accountData.pendingReward.toFixed(0)
                               : makeSkeletonComponent()}
                             <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
                           </div>
@@ -229,23 +339,31 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                     <div className="mt-5 flex-1 xsm:mt-0">
                       <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
                       <div className="mt-1.5 h-[56px] w-full">
-                        <StyledButton type="teritary">
+                        <StyledButton
+                          type="teritary"
+                          disabled={!accountData.pendingReflection || !address || pending}
+                          onClick={() => onCompoundReflection()}
+                        >
                           Compound&nbsp;
                           {!address
                             ? "0.00"
-                            : data.pendingReflection !== undefined
-                            ? data.pendingReflection.toFixed(2)
+                            : accountData.pendingReflection !== undefined
+                            ? accountData.pendingReflection.toFixed(2)
                             : makeSkeletonComponent()}
                           <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
                         </StyledButton>
                       </div>
                       <div className="mt-2 h-[56px] w-full">
-                        <StyledButton type="teritary">
+                        <StyledButton
+                          type="teritary"
+                          disabled={!accountData.pendingReflection || !address || pending}
+                          onClick={() => onHarvestReflection()}
+                        >
                           Harvest&nbsp;
                           {!address
                             ? "0.00"
-                            : data.pendingReflection !== undefined
-                            ? data.pendingReflection.toFixed(2)
+                            : accountData.pendingReflection !== undefined
+                            ? accountData.pendingReflection.toFixed(2)
                             : makeSkeletonComponent()}
                           <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
                         </StyledButton>
@@ -253,16 +371,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                     </div>
                   </div>
                   <div className="mt-7">
-                    <StakingHistory
-                      history={[
-                        {
-                          stakedAmount: "1020322",
-                          symbol: "BREWLABS",
-                          block: 248712,
-                          timeRemaining: 2000000000000,
-                        },
-                      ]}
-                    />
+                    <StakingHistory history={history} />
                   </div>
                   <div className="flex h-12">
                     <div className="mr-5 flex-1">
@@ -271,6 +380,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                           setStakingModalOpen(true);
                           setCurType("deposit");
                         }}
+                        disabled={pending || !address}
                       >
                         Deposit {data.stakingToken.symbol}
                       </StyledButton>
@@ -282,6 +392,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                           setStakingModalOpen(true);
                           setCurType("withdraw");
                         }}
+                        disabled={pending || !address}
                       >
                         <div className="text-[#FFFFFFBF]">
                           Withdraw <span className="text-primary">{data.stakingToken.symbol}</span>

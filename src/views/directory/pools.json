@@ -28,7 +28,7 @@
     "duration": 0,
     "depositFee": 0.3,
     "withdrawFee": 1,
-    "performanceFee": 0.0035,
+    "performanceFee": "3500000000000000",
     "website": "https://brewlabs.info/"
   }
 ]

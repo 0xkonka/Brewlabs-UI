@@ -42,7 +42,7 @@ const CorePool = ({
             <div>
               <div>Deposit Fee {data.depositFee.toFixed(2)}%</div>
               <div>Withdrawal Fee {data.withdrawFee.toFixed(2)}%</div>
-              <div>Performance Fee {data.performanceFee} BNB</div>
+              <div>Performance Fee {data.performanceFee / Math.pow(10, 18)} BNB</div>
             </div>
             <div className="flex items-center text-primary">
               {upSVG}

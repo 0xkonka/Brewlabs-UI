@@ -1,13 +1,94 @@
-import { ReactElement, ReactNode } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
 import StyledButton from "../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
-import { numberWithCommas } from "utils/functions";
+import { makeBigNumber, numberWithCommas } from "utils/functions";
+import { PoolContext } from "contexts/PoolContext";
+import { DashboardContext } from "contexts/DashboardContext";
+import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
+import { useSigner } from "wagmi";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { ethers } from "ethers";
 
-const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: any; type: string; data: any }) => {
+const StakingModal = ({ open, setOpen, type, index }: { open: boolean; setOpen: any; type: string; index: number }) => {
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { data: signer }: any = useSigner();
+  const { chainId } = useActiveChainId();
+  const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
+
+  const data = pools[index];
+  const accountData = accountPools[index];
+  const [amount, setAmount] = useState("");
+  const [insufficient, setInsufficient] = useState(false);
+  const [maxPressed, setMaxPressed] = useState(false);
+
+  const balance: any =
+    (type === "deposit" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
+
+  useEffect(() => {
+    if (Number(amount) > balance && !maxPressed) setInsufficient(true);
+    else setInsufficient(false);
+  }, [amount, maxPressed]);
+
+  const onApprove = async () => {
+    setPending(true);
+    try {
+      const tokenContract = getBep20Contract(chainId, data.stakingToken.address, signer);
+      const estimateGas = await tokenContract.estimateGas.approve(data.address, ethers.constants.MaxUint256);
+      const tx = {
+        gasLimit: estimateGas.toString(),
+      };
+      const approvetx = await tokenContract.approve(data.address, ethers.constants.MaxUint256, tx);
+      await approvetx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+    setPending(false);
+  };
+
+  const onConfirm = async () => {
+    setPending(true);
+    try {
+      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
+      let ttx;
+      if (type === "deposit") {
+        const _amount = maxPressed ? accountData.balance : makeBigNumber(amount, data.stakingToken.decimals);
+        console.log("Lock type = ", type);
+        console.log("Amount = ", _amount.toString());
+        const estimateGas: any = await poolContract.estimateGas.deposit(_amount, {
+          value: data.performanceFee,
+        });
+        console.log("EstimateGas = ", estimateGas.toString());
+        const tx = {
+          value: data.performanceFee,
+          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
+        };
+        ttx = await poolContract.deposit(_amount, tx);
+      } else {
+        const _amount = maxPressed ? accountData.stakedAmount : makeBigNumber(amount, data.stakingToken.decimals);
+        console.log("Lock type = ", type);
+        console.log("Amount = ", _amount.toString());
+        const estimateGas: any = await poolContract.estimateGas.withdraw(_amount, {
+          value: data.performanceFee,
+        });
+        console.log("EstimateGas = ", estimateGas.toString());
+        const tx = {
+          value: data.performanceFee,
+          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
+        };
+        ttx = await poolContract.withdraw(_amount, tx);
+      }
+      await ttx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+    setPending(false);
+  };
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog
@@ -54,7 +135,7 @@ const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: a
                 </div>
                 <a
                   className="flex-1"
-                  href={`https://bridge.brewlabs.info/swap?outputCurrency=`}
+                  href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
                   target={"_blank"}
                   rel="noreferrer"
                 >
@@ -69,29 +150,56 @@ const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: a
                 </a>
               </div>
               <div className="mt-[30px]">
-                <StyledInput placeholder={`Enter amount ${data.stakingToken.symbol}...`} />
+                <StyledInput
+                  placeholder={`Enter amount ${data.stakingToken.symbol}...`}
+                  value={amount}
+                  onChange={(e) => {
+                    setAmount(e.target.value);
+                    setMaxPressed(false);
+                  }}
+                />
               </div>
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
                   {type === "deposit" ? "My" : "Staked"}{" "}
                   <span className="text-primary">{data.stakingToken.symbol}</span>:{" "}
-                  {numberWithCommas((4531245).toFixed(2))}
+                  {numberWithCommas((balance ? balance : 0).toFixed(2))}
                 </div>
-                <div className="text-[#FFFFFF80]">$4,531.00 USD</div>
+                <div className="text-[#FFFFFF80]">
+                  ${(data.price && balance ? data.price * balance : 0).toFixed(2)} USD
+                </div>
               </div>
               <div className="my-[18px] h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[400px]">
                 <div className="h-12">
-                  <StyledButton type="secondary">
+                  <StyledButton
+                    type="secondary"
+                    onClick={() => {
+                      setMaxPressed(true);
+                      setAmount(balance);
+                    }}
+                  >
                     <div className="text-[#FFFFFFBF]">
                       Select maximum <span className="text-primary">{data.stakingToken.symbol}</span>
                     </div>
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  <StyledButton type="primary">
-                    {type === "deposit" ? "Deposit" : "Withdraw"} {data.stakingToken.symbol}
-                  </StyledButton>
+                  {accountData.allowance ? (
+                    <StyledButton
+                      type="primary"
+                      disabled={!amount || insufficient || pending}
+                      onClick={() => onConfirm()}
+                    >
+                      {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"}{" "}
+                      {data.stakingToken.symbol}
+                    </StyledButton>
+                  ) : (
+                    <StyledButton type="primary" onClick={() => onApprove()} disabled={pending}>
+                      Approve&nbsp;
+                      {data.stakingToken.symbol}
+                    </StyledButton>
+                  )}
                 </div>
               </div>
               <button
