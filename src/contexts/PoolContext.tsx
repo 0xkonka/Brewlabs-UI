@@ -21,8 +21,8 @@ const PoolContext: any = React.createContext({
 });
 
 const PoolContextProvider = ({ children }: any) => {
-  // const { address } = useAccount();
-  const address = "0x16ba08046a9bbec7ba7a0e6fd5fbd7b097f549bf";
+  const { address } = useAccount();
+  // const address = "0x16ba08046a9bbec7ba7a0e6fd5fbd7b097f549bf";
   const { chainId } = useActiveChainId();
   const [data, setData] = useState(pools);
   const [accountData, setAccountData] = useState(pools);

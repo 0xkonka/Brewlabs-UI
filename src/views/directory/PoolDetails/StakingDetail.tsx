@@ -126,7 +126,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
   };
 
   const history =
-    data.history && address ? data.history.filter((data: any) => data.address === "0x16ba08046a9bbec7ba7a0e6fd5fbd7b097f549bf".toLowerCase()) : [];
+    data && data.history && address ? data.history.filter((data: any) => data.address === address.toLowerCase()) : [];
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (

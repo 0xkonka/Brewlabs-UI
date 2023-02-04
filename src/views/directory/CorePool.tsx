@@ -53,6 +53,12 @@ const CorePool = ({
       </PoolInfoPanel>
     );
   };
+  if (!data)
+    return (
+      <div className="flex justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 text-xl text-brand sm:px-5">
+        No Pool
+      </div>
+    );
   return (
     <div className="rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 sm:px-5">
       <div className="flex max-w-[1120px] items-center justify-between">
