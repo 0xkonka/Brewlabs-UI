@@ -89,14 +89,7 @@ const PoolContextProvider = ({ children }: any) => {
         address: data.address,
         name: "lastRewardBlock",
       },
-      {
-        address: data.address,
-        name: "availableDividendTokens",
-      },
-      {
-        address: data.address,
-        name: "availableRewardTokens",
-      },
+
       {
         address: data.address,
         name: "startBlock",
@@ -106,8 +99,8 @@ const PoolContextProvider = ({ children }: any) => {
     const callResult = await multicall(UnLockABI, calls);
 
     const apr = (callResult[0][0] / callResult[1][0]) * 28800 * 36500;
-    const endBlock = callResult[2][0] / 1 - callResult[6][0] / 1;
-    const remainingBlock = callResult[3][0] / 1 - callResult[6][0] / 1;
+    const endBlock = callResult[2][0] / 1 - callResult[4][0] / 1;
+    const remainingBlock = callResult[3][0] / 1 - callResult[4][0] / 1;
     const totalStaked = callResult[1][0] / Math.pow(10, data.stakingToken.decimals);
     const tvl = Math.round(totalStaked * price);
 
@@ -194,8 +187,6 @@ const PoolContextProvider = ({ children }: any) => {
       totalFee: totalFee / Math.pow(10, data.stakingToken.decimals),
       stakedAddresses: c,
       graphData: [_totalStakedHistory, _tokenFeeHistory, _performanceFeeHistory],
-      totalReflection: callResult[4][0] / Math.pow(10, data.reflectionToken.decimals),
-      totalReward: callResult[5][0] / Math.pow(10, data.earningToken.decimals),
     };
   }
 
@@ -253,9 +244,11 @@ const PoolContextProvider = ({ children }: any) => {
         pendingReward: result[0][0] / Math.pow(10, data.earningToken.decimals),
         pendingReflection: result[1][0] / Math.pow(10, data.reflectionToken.decimals),
         stakedAmount: result[2][0],
-        available: result[2][1],
+        available: result[2].amount,
         balance: balanceResult[0][0],
         allowance: balanceResult[1][0] > "10000",
+        totalReward: result[2].rewardDebt / Math.pow(10, data.earningToken.decimals),
+        totalReflection: result[2].reflectionDebt / Math.pow(10, data.reflectionToken.decimals),
       };
     } catch (error) {
       console.log(error);

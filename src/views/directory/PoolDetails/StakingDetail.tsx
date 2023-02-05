@@ -245,7 +245,7 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                         {!address
                           ? "0.00"
                           : accountData.pendingReflection !== undefined
-                          ? accountData.pendingReflection.toFixed(2)
+                          ? accountData.pendingReflection.toFixed(0)
                           : makeSkeletonComponent()}
                         &nbsp;
                         {data.reflectionToken.symbol}
@@ -254,11 +254,20 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                     <div className="mt-2">
                       <div className="text-xl">Total</div>
                       <div className="mt-2 flex text-primary">
-                        {data.totalReward !== undefined ? data.totalReward.toFixed(0) : makeSkeletonComponent()}&nbsp;
+                        {!address
+                          ? "0.00"
+                          : accountData.totalReward !== undefined
+                          ? accountData.totalReward.toFixed(2)
+                          : makeSkeletonComponent()}
+                        &nbsp;
                         {data.earningToken.symbol}
                       </div>
                       <div className="flex text-primary">
-                        {data.totalReflection !== undefined ? data.totalReflection.toFixed(2) : makeSkeletonComponent()}
+                        {!address
+                          ? "0.00"
+                          : accountData.totalReflection !== undefined
+                          ? accountData.totalReflection.toFixed(2)
+                          : makeSkeletonComponent()}
                         &nbsp;
                         {data.reflectionToken.symbol}
                       </div>
