@@ -8,7 +8,7 @@ const StakingHistory = ({ history }: { history: any }) => {
       <div className="flex justify-between text-xl">
         <div className="min-w-[150px]">Stake</div>
         <div className="min-w-[60px]">Block</div>
-        <div className="min-w-[80px]">Lock</div>
+        <div className="min-w-[80px] text-right">Lock</div>
       </div>
       <div className="mt-2 h-[1px] w-full bg-[#FFFFFF80]" />
       <div>
@@ -21,7 +21,7 @@ const StakingHistory = ({ history }: { history: any }) => {
               <div className="min-w-[60px]">{data.blockNumber}</div>
               <div className="min-w-[80px] text-right">
                 <CountDown time={data.timeRemaining} />
-                Remaining
+                {data.timeRemaining ? "Remaining" : ""}
               </div>
             </div>
           );

@@ -18,6 +18,7 @@ const WETH_ADDR: any = {
 const PoolContext: any = React.createContext({
   data: [],
   accountData: [],
+  ethPrice: 0,
 });
 
 const PoolContextProvider = ({ children }: any) => {
@@ -26,6 +27,7 @@ const PoolContextProvider = ({ children }: any) => {
   const { chainId } = useActiveChainId();
   const [data, setData] = useState(pools);
   const [accountData, setAccountData] = useState(pools);
+  const [ethPrice, setETHPrice] = useState(0);
 
   async function multicall(abi: any, calls: any) {
     try {
@@ -50,6 +52,17 @@ const PoolContextProvider = ({ children }: any) => {
 
     const to = Math.floor(Date.now() / 1000);
 
+    //Fetching ETH Price
+    axios
+      .get(
+        `https://api.dex.guru/v1/tradingview/history?symbol=${WETH_ADDR[chainId]}-${
+          chainId === 56 ? "bsc" : "eth"
+        }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
+      )
+      .then((result) => setETHPrice(result.data.c[result.data.c.length - 1]))
+      .catch((e) => console.log(e));
+
+    //Fetching Staking Token Price
     const priceUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${
       data.stakingToken.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         ? WETH_ADDR[chainId]
@@ -84,13 +97,17 @@ const PoolContextProvider = ({ children }: any) => {
         address: data.address,
         name: "availableRewardTokens",
       },
+      {
+        address: data.address,
+        name: "startBlock",
+      },
     ];
 
     const callResult = await multicall(UnLockABI, calls);
 
     const apr = (callResult[0][0] / callResult[1][0]) * 28800 * 36500;
-    const endBlock = callResult[2][0] / 1;
-    const remainingBlock = callResult[2][0] / 1 - callResult[3][0] / 1;
+    const endBlock = callResult[2][0] / 1 - callResult[6][0] / 1;
+    const remainingBlock = callResult[3][0] / 1 - callResult[6][0] / 1;
     const totalStaked = callResult[1][0] / Math.pow(10, data.stakingToken.decimals);
     const tvl = Math.round(totalStaked * price);
 
@@ -99,9 +116,12 @@ const PoolContextProvider = ({ children }: any) => {
       sAmounts = {},
       c = 0,
       totalFee = 0,
-      dayHistory = [{ timeStamp: 0, value: 0 }],
       tempStaked = 0,
-      sHistory: any = [];
+      sHistory: any = [],
+      _totalStakedHistory = [],
+      _tokenFeeHistory = [],
+      _performanceFeeHistory = [];
+
     sHistoryResult.data.result.map((history: any) => {
       if (history.functionName.includes("deposit(")) {
         const iface = new ethers.utils.Interface(["function deposit(uint256 _amount)"]);
@@ -111,16 +131,18 @@ const PoolContextProvider = ({ children }: any) => {
         sAmounts[history.from] += BigInt(decodeResult._amount);
 
         tempStaked += decodeResult._amount / Math.pow(10, data.stakingToken.decimals);
-        dayHistory.push({ value: tempStaked, timeStamp: history.timeStamp });
+        _totalStakedHistory.push(tempStaked);
         sHistory.push({
-          value: tempStaked,
+          value: decodeResult._amount / Math.pow(10, data.stakingToken.decimals),
           blockNumber: history.blockNumber,
           timeRemaining: 0,
           symbol: data.stakingToken.symbol,
           address: history.from,
         });
-        if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000)
+        if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000) {
           totalFee += (decodeResult._amount * data.depositFee) / 100;
+          _tokenFeeHistory.push(totalFee / Math.pow(10, data.stakingToken.decimals));
+        }
       }
       if (history.functionName.includes("withdraw(")) {
         const iface = new ethers.utils.Interface(["function withdraw(uint256 _amount)"]);
@@ -130,10 +152,12 @@ const PoolContextProvider = ({ children }: any) => {
         sAmounts[history.from] -= BigInt(decodeResult._amount);
 
         tempStaked -= decodeResult._amount / Math.pow(10, data.stakingToken.decimals);
-        dayHistory.push({ value: tempStaked, timeStamp: history.timeStamp });
+        _totalStakedHistory.push(tempStaked);
 
-        if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000)
+        if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000) {
           totalFee += (decodeResult._amount * data.withdrawFee) / 100;
+          _tokenFeeHistory.push(totalFee / Math.pow(10, data.stakingToken.decimals));
+        }
       }
       const functions = [
         "deposit(",
@@ -147,6 +171,7 @@ const PoolContextProvider = ({ children }: any) => {
         for (let j = 0; j < functions.length; j++)
           if (history.functionName.includes(functions[j])) {
             txCount++;
+            _performanceFeeHistory.push((txCount * data.performanceFee) / Math.pow(10, 18));
             break;
           }
     });
@@ -154,11 +179,9 @@ const PoolContextProvider = ({ children }: any) => {
       if (sAmounts[data] >= BigInt(0)) c++;
     });
 
-    let _dayHistory = [];
-    for (let i = 0; i < dayHistory.length; i++)
-      if (dayHistory[i].timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000) _dayHistory.push(dayHistory[i].value);
-    _dayHistory.push(totalStaked);
+    _totalStakedHistory.push(totalStaked);
 
+    console.log(sHistory);
     return {
       history: sHistory,
       endBlock,
@@ -170,7 +193,7 @@ const PoolContextProvider = ({ children }: any) => {
       totalPerformanceFee: (txCount * data.performanceFee) / Math.pow(10, 18),
       totalFee: totalFee / Math.pow(10, data.stakingToken.decimals),
       stakedAddresses: c,
-      dayHistory: _dayHistory,
+      graphData: [_totalStakedHistory, _tokenFeeHistory, _performanceFeeHistory],
       totalReflection: callResult[4][0] / Math.pow(10, data.reflectionToken.decimals),
       totalReward: callResult[5][0] / Math.pow(10, data.earningToken.decimals),
     };
@@ -263,7 +286,7 @@ const PoolContextProvider = ({ children }: any) => {
     fetchAccountPoolDatas();
   }, [address, chainId]);
 
-  return <PoolContext.Provider value={{ data, accountData }}>{children}</PoolContext.Provider>;
+  return <PoolContext.Provider value={{ data, accountData, ethPrice }}>{children}</PoolContext.Provider>;
 };
 
 export { PoolContext, PoolContextProvider };

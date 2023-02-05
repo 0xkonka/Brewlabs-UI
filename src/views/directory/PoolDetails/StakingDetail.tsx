@@ -19,15 +19,21 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { getUnLockStakingContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
+const CHAIN_SYMBOL = {
+  1: "ETH",
+  56: "BNB",
+};
+
 const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; index: number }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
+  const [curGraph, setCurGraph] = useState(0);
 
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
+  const { data: pools, accountData: accountPools, ethPrice }: any = useContext(PoolContext);
   const data = pools[index];
   const accountData = accountPools[index];
 
@@ -180,7 +186,10 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                   <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
                 </div>
                 <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
-                  <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[470px] ">
+                  <InfoPanel
+                    padding={"14px 25px 8px 25px"}
+                    className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                  >
                     <div className="flex justify-between text-xl">
                       <div>
                         Pool: <span className="text-primary">{data.earningToken.symbol}</span>
@@ -209,8 +218,8 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                   </InfoPanel>
 
                   <InfoPanel
-                    padding={"6px 12px 15px 21px"}
-                    className="ml-0 mt-4 flex max-w-full flex-wrap justify-between sm:flex-nowrap md:ml-[30px] md:max-w-[470px]"
+                    padding={"14px 25px 8px 25px"}
+                    className="ml-0 mt-4 flex max-w-full flex-wrap justify-between md:ml-[30px] md:max-w-[520px]"
                   >
                     <div className="mt-2">
                       <div className="text-xl">Pool Rewards</div>
@@ -262,18 +271,31 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
               </div>
               <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                 <div className="w-full md:w-[40%]">
-                  <TotalStakedChart data={data.dayHistory} symbol={data.stakingToken.symbol} price={data.price} />
-                  <InfoPanel className="mt-20 flex justify-between" type={"secondary"} boxShadow={"primary"}>
+                  <TotalStakedChart
+                    data={data.graphData === undefined ? [] : data.graphData[curGraph]}
+                    symbol={curGraph !== 2 ? data.stakingToken.symbol : CHAIN_SYMBOL[chainId]}
+                    price={curGraph !== 2 ? data.price : ethPrice}
+                    curGraph={curGraph}
+                  />
+                  <InfoPanel
+                    className="mt-20 flex cursor-pointer justify-between"
+                    type={"secondary"}
+                    boxShadow={curGraph === 0 ? "primary" : null}
+                    onClick={() => setCurGraph(0)}
+                  >
                     <div>Total Staked Value</div>
                     <div className="flex">
-                      {data.totalStaked !== undefined
-                        ? numberWithCommas(data.totalStaked.toFixed(0))
+                      {data.totalStaked !== undefined && data.price !== undefined
+                        ? `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
                         : makeSkeletonComponent()}
-                      &nbsp;
-                      <span className="text-primary">{data.stakingToken.symbol}</span>
                     </div>
                   </InfoPanel>
-                  <InfoPanel className="mt-2.5 flex justify-between" type={"secondary"}>
+                  <InfoPanel
+                    className="mt-2.5 flex cursor-pointer justify-between"
+                    type={"secondary"}
+                    boxShadow={curGraph === 1 ? "primary" : null}
+                    onClick={() => setCurGraph(1)}
+                  >
                     <div>
                       Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                     </div>
@@ -285,7 +307,12 @@ const StakingDetail = ({ open, setOpen, index }: { open: boolean; setOpen: any; 
                       <span className="text-primary">{data.stakingToken.symbol}</span>
                     </div>
                   </InfoPanel>
-                  <InfoPanel className="mt-2.5 flex justify-between" type={"secondary"}>
+                  <InfoPanel
+                    className="mt-2.5 flex cursor-pointer justify-between"
+                    type={"secondary"}
+                    boxShadow={curGraph === 2 ? "primary" : null}
+                    onClick={() => setCurGraph(2)}
+                  >
                     <div>
                       Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                     </div>
@@ -420,5 +447,9 @@ const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: stri
   width: 100%;
   color: #ffffffbf;
   box-shadow: ${({ boxShadow }) =>
-    boxShadow === "primary" ? "0px 1px 1px #EEBB19" : boxShadow === "secondary" ? "0px 1px 4px #EEBB19" : ""};
+    boxShadow === "primary" ? "0px 2px 4px #EEBB19" : boxShadow === "secondary" ? "0px 1px 4px #EEBB19" : ""};
+  :hover {
+    border-color: ${({ type, boxShadow }) =>
+      type === "secondary" && !boxShadow ? "#EEBB19" : "rgba(255, 255, 255, 0.5)"};
+  }
 `;

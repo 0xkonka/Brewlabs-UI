@@ -6,7 +6,35 @@ import { BigNumberFormat, makeSkeletonComponent, numberWithCommas } from "utils/
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const TotalStakedChart = ({ data, symbol, price }: { data: any; symbol: string; price: number }) => {
+const TotalStakedChart = ({
+  data,
+  symbol,
+  price,
+  curGraph,
+}: {
+  data: any;
+  symbol: string;
+  price: number;
+  curGraph: number;
+}) => {
+  const getTitle = (type: number) => {
+    if (type === 0) {
+      return "Total Staked Value";
+    } else if (type === 1) {
+      return (
+        <div>
+          Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    } else if (type === 2) {
+      return (
+        <div>
+          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    }
+  };
+
   const chartData: any = {
     series: [
       {
@@ -78,12 +106,17 @@ const TotalStakedChart = ({ data, symbol, price }: { data: any; symbol: string; 
   };
   return (
     <StyledContainer>
-      <div className="text-xl text-[#FFFFFFBF]">Total Staked Value</div>
+      <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        {data !== undefined ? `$${BigNumberFormat(data[data.length - 1] * price)}` : makeSkeletonComponent()}
+        {data !== undefined && data.length
+          ? `$${BigNumberFormat(data[data.length - 1] * price)}`
+          : makeSkeletonComponent()}
         <br />
         <span className="flex text-primary">
-          {data !== undefined ? numberWithCommas(data[data.length - 1].toFixed(0)) : makeSkeletonComponent()}&nbsp;
+          {data !== undefined && data.length
+            ? numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))
+            : makeSkeletonComponent()}
+          &nbsp;
           {symbol}
         </span>
         <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>

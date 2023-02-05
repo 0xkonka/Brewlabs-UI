@@ -8,7 +8,7 @@ const CountDown = ({ time }: { time: number }) => {
   const formatTime = () => {
     const _time = Math.floor((time - Date.now()) / 1000);
     if (_time <= 0) {
-      setTimeText("0:0:0:0");
+      setTimeText("Unstake");
       return;
     }
     let d = Math.floor(_time / 3600 / 24);
