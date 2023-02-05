@@ -15,6 +15,11 @@ const WETH_ADDR: any = {
   56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
 };
 
+const API_KEY = {
+  1: "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX",
+  56: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
+};
+
 const PoolContext: any = React.createContext({
   data: [],
   accountData: [],
@@ -23,11 +28,22 @@ const PoolContext: any = React.createContext({
 
 const PoolContextProvider = ({ children }: any) => {
   const { address } = useAccount();
-  // const address = "0x16ba08046a9bbec7ba7a0e6fd5fbd7b097f549bf";
+  // const address = "0xc6c6602743b17c8fd3014cf5012120fc3cec2cb7";
   const { chainId } = useActiveChainId();
   const [data, setData] = useState(pools);
   const [accountData, setAccountData] = useState(pools);
   const [ethPrice, setETHPrice] = useState(0);
+
+  function getEarningAmount(data, decimals) {
+    let sum = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].to === address.toLowerCase()) {
+        sum += data[i].value / Math.pow(10, decimals);
+      }
+    }
+    return sum;
+  }
 
   async function multicall(abi: any, calls: any) {
     try {
@@ -105,6 +121,7 @@ const PoolContextProvider = ({ children }: any) => {
     const tvl = Math.round(totalStaked * price);
 
     const sHistoryResult = await axios.get(url);
+
     let txCount = 0,
       sAmounts = {},
       c = 0,
@@ -174,7 +191,6 @@ const PoolContextProvider = ({ children }: any) => {
 
     _totalStakedHistory.push(totalStaked);
 
-    console.log(sHistory);
     return {
       history: sHistory,
       endBlock,
@@ -240,6 +256,13 @@ const PoolContextProvider = ({ children }: any) => {
         },
       ];
       const balanceResult = await multicall(ERC20_ABI, calls);
+
+      const rewardUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=${data.earningToken.address}&address=${data.address}&sort=asc&apikey=${API_KEY[chainId]}`;
+      const rewardResult = await axios.get(rewardUrl);
+
+      const reflectionUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=${data.reflectionToken.address}&address=${data.address}&sort=asc&apikey=${API_KEY[chainId]}`;
+      const reflectionResult = await axios.get(reflectionUrl);
+
       return {
         pendingReward: result[0][0] / Math.pow(10, data.earningToken.decimals),
         pendingReflection: result[1][0] / Math.pow(10, data.reflectionToken.decimals),
@@ -247,8 +270,8 @@ const PoolContextProvider = ({ children }: any) => {
         available: result[2].amount,
         balance: balanceResult[0][0],
         allowance: balanceResult[1][0] > "10000",
-        totalReward: result[2].rewardDebt / Math.pow(10, data.earningToken.decimals),
-        totalReflection: result[2].reflectionDebt / Math.pow(10, data.reflectionToken.decimals),
+        totalReward: getEarningAmount(rewardResult.data.result, data.earningToken.decimals),
+        totalReflection: getEarningAmount(reflectionResult.data.result, data.reflectionToken.decimals),
       };
     } catch (error) {
       console.log(error);
@@ -265,7 +288,6 @@ const PoolContextProvider = ({ children }: any) => {
           return serializedToken;
         })
       );
-      console.log(temp);
       setAccountData(temp);
     } catch (error) {
       console.log(error);
