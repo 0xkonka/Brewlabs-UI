@@ -53,6 +53,8 @@ const IndexDetail = ({
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
 
+  const { rate }: any = useContext(IndexContext);
+
   const aprTexts = ["YTD", "30D", "7D", "24hrs"];
 
   const graphData = [
@@ -155,7 +157,7 @@ const IndexDetail = ({
                         <div className="mr-4 whitespace-nowrap">Index: OGN-OGV</div>
                         <div className="flex items-center">
                           Performance:&nbsp;
-                          <span className="text-green">25.24%</span>
+                          <span className={rate >= 0 ? "text-green" : "text-danger"}>{rate.toFixed(2)}%</span>
                           <div className="ml-1 w-[60px]">
                             <DropDown value={curAPR} setValue={setCurAPR} data={aprTexts} />
                           </div>
