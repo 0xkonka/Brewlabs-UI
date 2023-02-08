@@ -128,7 +128,7 @@ const TotalStakedChart = ({
         <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>
       </div>
       <div className="-mt-2">
-        <Chart options={chartData.options} series={chartData.series} type="area" height={280} />
+        <Chart options={chartData.options} series={chartData.series} type="area" height={250} />
       </div>
     </StyledContainer>
   );
