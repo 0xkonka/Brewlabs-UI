@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { makeSkeletonComponent } from "utils/functions";
+import { SkeletonComponent } from "components/SkeletonComponent";
 
 const ProgressBar = ({ endBlock, remaining }: { endBlock: number; remaining: number }) => {
   const [percent, setPercent] = useState(0);
@@ -14,7 +14,7 @@ const ProgressBar = ({ endBlock, remaining }: { endBlock: number; remaining: num
         <div className="text-[#FFFFFFBF]">Pool Duration</div>
         <div className="flex text-base text-[#FFFFFF80]">
           Blocks Remaining:&nbsp;
-          <span className="text-primary">{remaining !== undefined ? remaining : makeSkeletonComponent()}</span>
+          <span className="text-primary">{remaining !== undefined ? remaining : <SkeletonComponent />}</span>
         </div>
       </div>
       <StyledProgressBar percent={percent}>

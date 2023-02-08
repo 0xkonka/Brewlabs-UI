@@ -12,7 +12,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "../Modals/StakingModal";
 import { useContext, useState } from "react";
-import { makeSkeletonComponent, numberWithCommas } from "utils/functions";
+import { numberWithCommas } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
 import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -20,6 +20,7 @@ import { getUnLockStakingContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { IndexContext } from "contexts/directory/IndexContext";
+import { SkeletonComponent } from "components/SkeletonComponent";
 
 const CHAIN_SYMBOL = {
   1: "ETH",
@@ -250,7 +251,7 @@ const StakingDetail = ({
                         <div className="flex">
                           APR:&nbsp;
                           <span className="text-primary">
-                            {data.apr !== undefined ? `${data.apr}%` : makeSkeletonComponent()}
+                            {data.apr !== undefined ? `${data.apr}%` : <SkeletonComponent />}
                           </span>
                         </div>
                       </div>
@@ -286,20 +287,24 @@ const StakingDetail = ({
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
                         <div className=" flex text-primary">
-                          {!address
-                            ? "0.00"
-                            : accountData.pendingReward !== undefined
-                            ? accountData.pendingReward.toFixed(0)
-                            : makeSkeletonComponent()}
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.pendingReward !== undefined ? (
+                            accountData.pendingReward.toFixed(0)
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
                         <div className="flex text-primary">
-                          {!address
-                            ? "0.00"
-                            : accountData.pendingReflection !== undefined
-                            ? accountData.pendingReflection.toFixed(0)
-                            : makeSkeletonComponent()}
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.pendingReflection !== undefined ? (
+                            accountData.pendingReflection.toFixed(0)
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                           &nbsp;
                           {data.reflectionToken.symbol}
                         </div>
@@ -307,20 +312,24 @@ const StakingDetail = ({
                       <div className="mt-2">
                         <div className="text-xl">Total</div>
                         <div className=" flex text-primary">
-                          {!address
-                            ? "0.00"
-                            : accountData.totalReward !== undefined
-                            ? accountData.totalReward.toFixed(2)
-                            : makeSkeletonComponent()}
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.totalReward !== undefined ? (
+                            accountData.totalReward.toFixed(2)
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
                         <div className="flex text-primary">
-                          {!address
-                            ? "0.00"
-                            : accountData.totalReflection !== undefined
-                            ? accountData.totalReflection.toFixed(2)
-                            : makeSkeletonComponent()}
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.totalReflection !== undefined ? (
+                            accountData.totalReflection.toFixed(2)
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                           &nbsp;
                           {data.reflectionToken.symbol}
                         </div>
@@ -347,9 +356,11 @@ const StakingDetail = ({
                     >
                       <div>Total Staked Value</div>
                       <div className="flex">
-                        {data.totalStaked !== undefined && data.price !== undefined
-                          ? `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
-                          : makeSkeletonComponent()}
+                        {data.totalStaked !== undefined && data.price !== undefined ? (
+                          `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -362,9 +373,11 @@ const StakingDetail = ({
                         Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalFee !== undefined
-                          ? numberWithCommas(data.totalFee.toFixed(2))
-                          : makeSkeletonComponent()}
+                        {data.totalFee !== undefined ? (
+                          numberWithCommas(data.totalFee.toFixed(2))
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                         &nbsp;
                         <span className="text-primary">{data.stakingToken.symbol}</span>
                       </div>
@@ -379,9 +392,11 @@ const StakingDetail = ({
                         Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalPerformanceFee !== undefined
-                          ? numberWithCommas(data.totalPerformanceFee.toFixed(2))
-                          : makeSkeletonComponent()}
+                        {data.totalPerformanceFee !== undefined ? (
+                          numberWithCommas(data.totalPerformanceFee.toFixed(2))
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                         &nbsp;<span className="text-primary">BNB</span>
                       </div>
                     </InfoPanel>
@@ -396,9 +411,11 @@ const StakingDetail = ({
                         Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalStakedAddresses !== undefined
-                          ? numberWithCommas(data.totalStakedAddresses)
-                          : makeSkeletonComponent()}
+                        {data.totalStakedAddresses !== undefined ? (
+                          numberWithCommas(data.totalStakedAddresses)
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
                   </div>
@@ -415,11 +432,13 @@ const StakingDetail = ({
                           >
                             <div className="flex">
                               Compound&nbsp;
-                              {!address
-                                ? 0
-                                : accountData.pendingReward !== undefined
-                                ? accountData.pendingReward.toFixed(0)
-                                : makeSkeletonComponent()}
+                              {!address ? (
+                                0
+                              ) : accountData.pendingReward !== undefined ? (
+                                accountData.pendingReward.toFixed(0)
+                              ) : (
+                                <SkeletonComponent />
+                              )}
                               <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
                             </div>
                           </StyledButton>
@@ -433,11 +452,13 @@ const StakingDetail = ({
                           >
                             <div className="flex">
                               Harvest&nbsp;
-                              {!address
-                                ? 0
-                                : accountData.pendingReward !== undefined
-                                ? accountData.pendingReward.toFixed(0)
-                                : makeSkeletonComponent()}
+                              {!address ? (
+                                0
+                              ) : accountData.pendingReward !== undefined ? (
+                                accountData.pendingReward.toFixed(0)
+                              ) : (
+                                <SkeletonComponent />
+                              )}
                               <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
                             </div>
                           </StyledButton>
@@ -453,11 +474,13 @@ const StakingDetail = ({
                             onClick={() => onCompoundReflection()}
                           >
                             Compound&nbsp;
-                            {!address
-                              ? "0.00"
-                              : accountData.pendingReflection !== undefined
-                              ? accountData.pendingReflection.toFixed(2)
-                              : makeSkeletonComponent()}
+                            {!address ? (
+                              "0.00"
+                            ) : accountData.pendingReflection !== undefined ? (
+                              accountData.pendingReflection.toFixed(2)
+                            ) : (
+                              <SkeletonComponent />
+                            )}
                             <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
                           </StyledButton>
                         </div>
@@ -469,11 +492,13 @@ const StakingDetail = ({
                             onClick={() => onHarvestReflection()}
                           >
                             Harvest&nbsp;
-                            {!address
-                              ? "0.00"
-                              : accountData.pendingReflection !== undefined
-                              ? accountData.pendingReflection.toFixed(2)
-                              : makeSkeletonComponent()}
+                            {!address ? (
+                              "0.00"
+                            ) : accountData.pendingReflection !== undefined ? (
+                              accountData.pendingReflection.toFixed(2)
+                            ) : (
+                              <SkeletonComponent />
+                            )}
                             <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
                           </StyledButton>
                         </div>

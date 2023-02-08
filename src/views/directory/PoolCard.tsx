@@ -1,8 +1,9 @@
+import { SkeletonComponent } from "components/SkeletonComponent";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { PoolContext } from "contexts/directory/PoolContext";
 import { useContext, useState } from "react";
 import styled from "styled-components";
-import { makeSkeletonComponent, numberWithCommas } from "utils/functions";
+import { numberWithCommas } from "utils/functions";
 
 const PoolCard = ({
   data,
@@ -54,19 +55,21 @@ const PoolCard = ({
           </div>
         </div>
         <div className="min-w-[70px]">
-          {data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : makeSkeletonComponent()}
+          {data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : <SkeletonComponent />}
         </div>
         <div className="min-w-[250px]">
-          {data.totalStaked !== undefined
-            ? `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
-            : makeSkeletonComponent()}
+          {data.totalStaked !== undefined ? (
+            `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
+          ) : (
+            <SkeletonComponent />
+          )}
         </div>
         <div className="min-w-[80px]">
           {data.type !== 3 ? (
             data.apr !== undefined ? (
               `${data.apr}%`
             ) : (
-              <div className="mr-2">{makeSkeletonComponent()}</div>
+              <div className="mr-2">{<SkeletonComponent />}</div>
             )
           ) : (
             "N/A"
@@ -95,7 +98,7 @@ const PoolCard = ({
               data.apr !== undefined ? (
                 `${data.apr}%`
               ) : (
-                <div className="mr-2">{makeSkeletonComponent()}</div>
+                <div className="mr-2">{<SkeletonComponent />}</div>
               )
             ) : (
               "N/A"
@@ -104,15 +107,17 @@ const PoolCard = ({
           <div>
             <div className="text-left xsm:text-right">Total supply staked</div>
             <div className="text-left text-sm xsm:text-right">
-              {data.totalStaked !== undefined
-                ? `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
-                : makeSkeletonComponent()}
+              {data.totalStaked !== undefined ? (
+                `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
+              ) : (
+                <SkeletonComponent />
+              )}
             </div>
           </div>
         </div>
         <div className="mt-3 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
           <div className="flex">
-            TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : makeSkeletonComponent()}
+            TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : <SkeletonComponent />}
           </div>
         </div>
       </div>

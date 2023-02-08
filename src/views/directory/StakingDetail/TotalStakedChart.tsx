@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
-import { BigNumberFormat, makeSkeletonComponent, numberWithCommas } from "utils/functions";
+import { BigNumberFormat, numberWithCommas } from "utils/functions";
+import { SkeletonComponent } from "components/SkeletonComponent";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -32,8 +33,7 @@ const TotalStakedChart = ({
           Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
         </div>
       );
-    }
-    else if (type === 3) {
+    } else if (type === 3) {
       return (
         <div>
           Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
@@ -99,7 +99,7 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            return (curGraph !== 3 ? "$" : '') + (BigNumberFormat(value * price, curGraph !== 3 ? 2 : 0));
+            return (curGraph !== 3 ? "$" : "") + BigNumberFormat(value * price, curGraph !== 3 ? 2 : 0);
           },
         },
       },
@@ -115,16 +115,24 @@ const TotalStakedChart = ({
     <StyledContainer>
       <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        {curGraph !== 3 ? <span >
-          {data !== undefined && data.length
-            ? `$${BigNumberFormat(data[data.length - 1] * price)}`
-            : makeSkeletonComponent()}
-          <br />
-        </span> : ''}
+        {curGraph !== 3 ? (
+          <span>
+            {data !== undefined && data.length ? (
+              `$${BigNumberFormat(data[data.length - 1] * price)}`
+            ) : (
+              <SkeletonComponent />
+            )}
+            <br />
+          </span>
+        ) : (
+          ""
+        )}
         <span className="flex text-primary">
-          {data !== undefined && data.length
-            ? numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))
-            : makeSkeletonComponent()}
+          {data !== undefined && data.length ? (
+            numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))
+          ) : (
+            <SkeletonComponent />
+          )}
           &nbsp;
           {symbol}
         </span>

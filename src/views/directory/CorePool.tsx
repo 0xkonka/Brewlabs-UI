@@ -2,9 +2,9 @@ import LogoIcon from "components/LogoIcon";
 import styled from "styled-components";
 import StyledButton from "./StyledButton";
 import { upSVG } from "components/dashboard/assets/svgs";
-import { makeSkeletonComponent } from "utils/functions";
 import { useContext } from "react";
 import { PoolContext } from "contexts/directory/PoolContext";
+import { SkeletonComponent } from "components/SkeletonComponent";
 
 const CorePool = ({
   setSelectPoolDetail,
@@ -28,7 +28,7 @@ const CorePool = ({
             </div>
             <div className="flex text-xl text-primary">
               <span className="text-[#FFFFFFBF]">APR:</span>&nbsp;
-              {data.apr !== undefined ? `${data.apr}%` : makeSkeletonComponent()}
+              {data.apr !== undefined ? `${data.apr}%` : <SkeletonComponent />}
             </div>
           </div>
           <div className="flex flex-wrap justify-between text-base">
