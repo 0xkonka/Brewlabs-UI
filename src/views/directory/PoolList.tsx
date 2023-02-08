@@ -17,7 +17,6 @@ const PoolList = ({
         <div className="min-w-[80px]">Network</div>
         <div className="min-w-[210px] pl-10">Pool</div>
         <div className="min-w-[70px]">TVL</div>
-        <div className="min-w-[160px]">Staked addresses</div>
         <div className="min-w-[250px]">Total supply staked</div>
         <div className="min-w-[80px]">APR</div>
       </PoolHeader>
@@ -40,16 +39,7 @@ const PoolHeader = styled.div`
   padding: 8px 0;
   font-size: 18px;
   color: #ffffff80;
-  @media screen and (max-width: 1280px) {
-    > div:nth-child(4) {
-      display: none;
-    }
-  }
-  @media screen and (max-width: 1024px) {
-    > div:nth-child(4) {
-      display: unset;
-    }
-  }
+  
   @media screen and (max-width: 1080px) {
     display: none;
   }

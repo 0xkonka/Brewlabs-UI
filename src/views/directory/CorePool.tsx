@@ -4,7 +4,7 @@ import StyledButton from "./StyledButton";
 import { upSVG } from "components/dashboard/assets/svgs";
 import { makeSkeletonComponent } from "utils/functions";
 import { useContext } from "react";
-import { PoolContext } from "contexts/PoolContext";
+import { PoolContext } from "contexts/directory/PoolContext";
 
 const CorePool = ({
   setSelectPoolDetail,

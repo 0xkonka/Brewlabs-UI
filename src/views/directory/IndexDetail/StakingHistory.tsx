@@ -4,7 +4,7 @@ import CountDown from "./CountDown";
 
 const StakingHistory = ({ history }: { history: any }) => {
   return (
-    <div className="h-[300px] overflow-x-scroll text-[#FFFFFFBF]">
+    <div className="h-[330px] overflow-x-scroll text-[#FFFFFFBF]">
       <div className="flex justify-between text-xl">
         <div className="min-w-[150px]">Stake</div>
         <div className="min-w-[60px]">Block</div>

@@ -33,6 +33,13 @@ const TotalStakedChart = ({
         </div>
       );
     }
+    else if (type === 3) {
+      return (
+        <div>
+          Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    }
   };
 
   const chartData: any = {
@@ -92,7 +99,7 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            return "$" + BigNumberFormat(value * price);
+            return (curGraph !== 3 ? "$" : '') + (BigNumberFormat(value * price, curGraph !== 3 ? 2 : 0));
           },
         },
       },
@@ -108,10 +115,12 @@ const TotalStakedChart = ({
     <StyledContainer>
       <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        {data !== undefined && data.length
-          ? `$${BigNumberFormat(data[data.length - 1] * price)}`
-          : makeSkeletonComponent()}
-        <br />
+        {curGraph !== 3 ? <span >
+          {data !== undefined && data.length
+            ? `$${BigNumberFormat(data[data.length - 1] * price)}`
+            : makeSkeletonComponent()}
+          <br />
+        </span> : ''}
         <span className="flex text-primary">
           {data !== undefined && data.length
             ? numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))

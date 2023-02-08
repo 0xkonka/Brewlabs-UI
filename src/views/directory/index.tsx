@@ -8,8 +8,10 @@ import SelectionPanel from "./SelectionPanel";
 import PoolList from "./PoolList";
 import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import StakingDetail from "./PoolDetails/StakingDetail";
-import { PoolContext } from "contexts/PoolContext";
+import StakingDetail from "./StakingDetail";
+import IndexDetail from "./IndexDetail";
+import { PoolContext } from "contexts/directory/PoolContext";
+import { IndexContext } from "contexts/directory/IndexContext";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -18,23 +20,41 @@ const Directory = ({ page }: { page: number }) => {
   const [curPool, setCurPool] = useState(0);
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
-  const { data: pools }: any = useContext(PoolContext);
+  const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
+  const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
+
+  const allPools = [...pools, ...indexes],
+    allAccountDatas = [...accountPoolDatas, accountIndexDatas];
 
   useEffect(() => {
-    const filtered = pools.filter(
+    const filtered = allPools.filter(
       (data: any) =>
         data.stakingToken.name.toLowerCase().includes(criteria.toLowerCase()) ||
         data.stakingToken.symbol.toLowerCase().includes(criteria.toLowerCase()) ||
         data.earningToken.name.toLowerCase().includes(criteria.toLowerCase()) ||
         data.earningToken.symbol.toLowerCase().includes(criteria.toLowerCase())
     );
-    if (curFilter === 0) setFilteredData(filtered);
+    if (curFilter === 0) setFilteredData(allPools);
     else setFilteredData(filtered.filter((data: any) => data.type === curFilter));
-  }, [curFilter, criteria, pools]);
+  }, [curFilter, criteria, pools, indexes]);
 
   return (
     <PageWrapper>
-      <StakingDetail open={selectPoolDetail} setOpen={setSelectPoolDetail} index={curPool} />
+      {allPools[curPool].type === 1 ? (
+        <StakingDetail
+          open={selectPoolDetail}
+          setOpen={setSelectPoolDetail}
+          data={allPools[curPool]}
+          accountData={allAccountDatas[curPool]}
+        />
+      ) : (
+        <IndexDetail
+          open={selectPoolDetail}
+          setOpen={setSelectPoolDetail}
+          data={allPools[curPool]}
+          accountData={allAccountDatas[curPool]}
+        />
+      )}
       <AnimatePresence>
         {!selectPoolDetail && (
           <motion.div
@@ -57,7 +77,7 @@ const Directory = ({ page }: { page: number }) => {
                 <CorePool setSelectPoolDetail={setSelectPoolDetail} index={0} setCurPool={setCurPool} />
                 <div className="mt-8">
                   <SelectionPanel
-                    pools={pools}
+                    pools={allPools}
                     curFilter={curFilter}
                     setCurFilter={setCurFilter}
                     criteria={criteria}

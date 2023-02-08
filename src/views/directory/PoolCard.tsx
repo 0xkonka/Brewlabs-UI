@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { IndexContext } from "contexts/directory/IndexContext";
+import { PoolContext } from "contexts/directory/PoolContext";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { makeSkeletonComponent, numberWithCommas } from "utils/functions";
 
@@ -13,13 +15,23 @@ const PoolCard = ({
   setSelectPoolDetail: any;
   setCurPool: any;
 }) => {
-  const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Indexes", 4: "Zapper Pools" };
+  const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Brewlabs Index", 4: "Zapper Pools" };
+  const { data: pools }: any = useContext(PoolContext);
+  const { data: indexes }: any = useContext(IndexContext);
+
+  const allPools = [...pools, ...indexes];
+
+  const getIndex = () => {
+    for (let i = 0; i < allPools.length; i++) if (allPools[i] === data) return i;
+    return -1;
+  };
+
   return (
     <StyledContainer
       index={index}
       onClick={() => {
         setSelectPoolDetail(true);
-        setCurPool(index);
+        setCurPool(getIndex());
       }}
     >
       <div className="flex items-center justify-between">
@@ -29,9 +41,13 @@ const PoolCard = ({
         <div className="flex min-w-[210px] items-center">
           <img src={data.earningToken.logo} alt={""} className="mr-3 w-7 rounded-full" />
           <div>
-            <div className="leading-none">
-              <span className="text-primary">Earn</span> {data.earningToken.symbol}
-            </div>
+            {data.type === 1 ? (
+              <div className="leading-none">
+                <span className="text-primary">Earn</span> {data.earningToken.symbol}
+              </div>
+            ) : (
+              <div className="leading-none">{data.stakingToken.symbol}</div>
+            )}
             <div className="text-xs">
               {poolNames[data.type]} - {data.duration === 0 ? "Flexible" : `${data.duration} day lock`}
             </div>
@@ -39,9 +55,6 @@ const PoolCard = ({
         </div>
         <div className="min-w-[70px]">
           {data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : makeSkeletonComponent()}
-        </div>
-        <div className="min-w-[160px]">
-          {data.stakedAddresses !== undefined ? data.stakedAddresses : makeSkeletonComponent()}
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined
@@ -101,9 +114,6 @@ const PoolCard = ({
           <div className="flex">
             TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : makeSkeletonComponent()}
           </div>
-          <div className="flex">
-            Staked Address:&nbsp;{data.stakedAddresses !== undefined ? data.stakedAddresses : makeSkeletonComponent()}
-          </div>
         </div>
       </div>
     </StyledContainer>
@@ -123,16 +133,7 @@ const StyledContainer = styled.div<{ index: number }>`
     border-color: #ffde0d;
   }
   cursor: pointer;
-  @media screen and (max-width: 1280px) {
-    > div:nth-child(1) > div:nth-child(4) {
-      display: none;
-    }
-  }
-  @media screen and (max-width: 1024px) {
-    > div:nth-child(1) > div:nth-child(4) {
-      display: unset;
-    }
-  }
+
   @media screen and (max-width: 1080px) {
     padding: 24px 0;
     > div:nth-child(1) {

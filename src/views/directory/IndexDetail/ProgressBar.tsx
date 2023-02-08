@@ -7,7 +7,7 @@ const ProgressBar = ({ endBlock, remaining }: { endBlock: number; remaining: num
   const [percent, setPercent] = useState(0);
   useEffect(() => {
     setPercent(remaining ? Math.min((remaining / endBlock) * 100, 100) : 0);
-  }, []);
+  }, [endBlock, remaining]);
   return (
     <div>
       <div className="mb-2 flex flex-col items-end text-xl leading-none">

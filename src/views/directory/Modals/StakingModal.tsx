@@ -7,21 +7,31 @@ import StyledButton from "../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
 import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { PoolContext } from "contexts/PoolContext";
+import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
 import { useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { ethers } from "ethers";
 
-const StakingModal = ({ open, setOpen, type, index }: { open: boolean; setOpen: any; type: string; index: number }) => {
+const StakingModal = ({
+  open,
+  setOpen,
+  type,
+  data,
+  accountData,
+}: {
+  open: boolean;
+  setOpen: any;
+  type: string;
+  data: any;
+  accountData: any;
+}) => {
   const { pending, setPending }: any = useContext(DashboardContext);
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
   const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
 
-  const data = pools[index];
-  const accountData = accountPools[index];
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
