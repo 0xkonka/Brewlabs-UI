@@ -40,20 +40,24 @@ const Directory = ({ page }: { page: number }) => {
 
   return (
     <PageWrapper>
-      {allPools[curPool].type === 1 ? (
-        <StakingDetail
-          open={selectPoolDetail}
-          setOpen={setSelectPoolDetail}
-          data={allPools[curPool]}
-          accountData={allAccountDatas[curPool]}
-        />
+      {allPools[curPool] ? (
+        allPools[curPool].type === 1 ? (
+          <StakingDetail
+            open={selectPoolDetail}
+            setOpen={setSelectPoolDetail}
+            data={allPools[curPool]}
+            accountData={allAccountDatas[curPool]}
+          />
+        ) : (
+          <IndexDetail
+            open={selectPoolDetail}
+            setOpen={setSelectPoolDetail}
+            data={allPools[curPool]}
+            accountData={allAccountDatas[curPool]}
+          />
+        )
       ) : (
-        <IndexDetail
-          open={selectPoolDetail}
-          setOpen={setSelectPoolDetail}
-          data={allPools[curPool]}
-          accountData={allAccountDatas[curPool]}
-        />
+        ""
       )}
       <AnimatePresence>
         {!selectPoolDetail && (
@@ -74,7 +78,12 @@ const Directory = ({ page }: { page: number }) => {
                 summary="Words to go here..."
               />
               <Container className="font-brand">
-                <CorePool setSelectPoolDetail={setSelectPoolDetail} index={0} setCurPool={setCurPool} />
+                <CorePool
+                  setSelectPoolDetail={setSelectPoolDetail}
+                  index={0}
+                  setCurPool={setCurPool}
+                  pools={allPools}
+                />
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}

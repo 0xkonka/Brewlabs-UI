@@ -10,7 +10,7 @@ import styled from "styled-components";
 import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
-import StakingModal from "../Modals/StakingModal";
+import StakingModal from "./Modals/StakingModal";
 import { useContext, useState } from "react";
 import { numberWithCommas } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
@@ -419,7 +419,7 @@ const StakingDetail = ({
                       </div>
                     </InfoPanel>
                   </div>
-                  <div className="mt-10 w-full md:mt-0 md:w-[57%]">
+                  <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
@@ -507,7 +507,7 @@ const StakingDetail = ({
                     <div className="mt-7">
                       <StakingHistory history={history} />
                     </div>
-                    <div className="flex h-12">
+                    <div className="absolute bottom-0 left-0 flex h-12 w-full">
                       <div className="mr-5 flex-1">
                         <StyledButton
                           onClick={() => {

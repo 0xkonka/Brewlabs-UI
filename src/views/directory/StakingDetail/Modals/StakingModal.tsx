@@ -3,7 +3,7 @@ import { ReactElement, ReactNode, useContext, useEffect, useState } from "react"
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../StyledButton";
+import StyledButton from "../../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
 import { makeBigNumber, numberWithCommas } from "utils/functions";

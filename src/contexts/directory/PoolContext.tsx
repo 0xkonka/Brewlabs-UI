@@ -3,7 +3,7 @@ import { useFastRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffe
 import { useAccount } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getMulticallContract } from "utils/contractHelpers";
-import pools from "../../config/constants/directory/pools.json";
+import allPools from "../../config/constants/directory/pools.json";
 import UnLockABI from "config/abi/brewlabsUnLockup.json";
 
 import { ethers } from "ethers";
@@ -31,6 +31,7 @@ const PoolContextProvider = ({ children }: any) => {
   const { address } = useAccount();
   // const address = "0xc6c6602743b17c8fd3014cf5012120fc3cec2cb7";
   const { chainId } = useActiveChainId();
+  const pools = allPools.filter((data) => data.chainID === chainId);
   const [data, setData] = useState(pools);
   const [accountData, setAccountData] = useState(pools);
 
