@@ -13,8 +13,8 @@ import { navigationData } from "../../config/constants/navigation";
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
 
+  // Close the mobile navigation when navigating
   useEffect(() => {
-    // Close the mobile navigation when navigating
     router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
   }, [router.events]);
 

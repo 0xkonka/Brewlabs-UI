@@ -26,15 +26,15 @@ module.exports = {
         danger: "#D9563A",
       },
       boxShadow: {
-        'inner': 'inset 0px 0px 6px #000000'
-      }
+        inner: "inset 0px 0px 6px #000000",
+      },
     },
     fontFamily: {
       script: ['"Caveat"'],
       brand: ['"Questrial"'],
       roboto: ['"Roboto"'],
       dash: ['"Roboto"'],
-    }
+    },
   },
   plugins: [
     require("daisyui"),
@@ -44,4 +44,17 @@ module.exports = {
     }),
   ],
   darkMode: "class",
+  daisyui: {
+    themes: [
+      {
+        dark: {
+          ...require("daisyui/src/colors/themes")["[data-theme=dark]"],
+          primary: "#4b5563",
+          "primary-focus": "#3f3f46",
+          accent: "#fb923c",
+          "accent-focus": "#3f3f46",
+        },
+      },
+    ],
+  },
 };

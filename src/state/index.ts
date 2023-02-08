@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { useMemo } from "react";
+import { useMemo, ReactNode } from "react";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import { createGlobalState } from "react-hooks-global-state";
@@ -9,10 +9,10 @@ import { updateVersion } from "./global/actions";
 
 import storage from "./storage";
 import farmsReducer from "./farms";
-import user from './user/reducer';
-import transactions from './transactions/reducer'
-import swap from './swap/reducer';
-import lists from './lists/reducer';
+import user from "./user/reducer";
+import transactions from "./transactions/reducer";
+import swap from "./swap/reducer";
+import lists from "./lists/reducer";
 import multicall from "./multicall/reducer";
 import { BridgeToken } from "config/constants/types";
 
@@ -34,7 +34,7 @@ const persistedReducer = persistReducer(
     transactions,
     swap,
     multicall,
-    lists
+    lists,
   })
 );
 
@@ -105,6 +105,7 @@ const userBridgeNetworkInitial = {
   name: "",
   image: "",
 };
+
 const userState: {
   userPoolsStakeOnly: boolean;
   userBridgeTo: NetworkConfig;
@@ -127,6 +128,7 @@ const initialState1 = {
   modalIsOpen: false,
   mobileNavOpen: false,
   userSidebarOpen: false,
+  userSidebarContent: null,
   sessionChainId: undefined as any,
 };
 

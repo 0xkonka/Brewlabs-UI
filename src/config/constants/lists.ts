@@ -1,5 +1,6 @@
 const PANCAKE_EXTENDED = 'https://tokens.pancakeswap.finance/pancakeswap-extended.json'
 const PANCAKE_TOP100 = 'https://tokens.pancakeswap.finance/pancakeswap-top-100.json'
+const UNISWAP_DEFAULT = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
 // const BA_LIST = 'https://raw.githubusercontent.com/The-Blockchain-Association/sec-notice-list/master/ba-sec-list.json'
 
 export const UNSUPPORTED_LIST_URLS: string[] = []
@@ -8,6 +9,7 @@ export const UNSUPPORTED_LIST_URLS: string[] = []
 export const DEFAULT_LIST_OF_LISTS: string[] = [
   PANCAKE_TOP100,
   PANCAKE_EXTENDED,
+  UNISWAP_DEFAULT,
   ...UNSUPPORTED_LIST_URLS, // need to load unsupported tokens as well
 ]
 // default lists to be 'active' aka searched across

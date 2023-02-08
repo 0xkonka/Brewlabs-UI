@@ -66,6 +66,7 @@ export const quoteTokens = {
     tokens[ChainId.BSC_MAINNET].brews,
   ],
 };
+
 export const serializeTokens = (chainId: ChainId): SerializedTokenList => {
   const unserializedTokens: { [key: string]: Currency } = tokens[chainId];
   const serializedTokens = Object.keys(unserializedTokens).reduce((accum, key) => {
@@ -73,4 +74,14 @@ export const serializeTokens = (chainId: ChainId): SerializedTokenList => {
   }, {} as any);
 
   return serializedTokens;
+};
+
+export const factoryTokens = {
+  [ChainId.ETHEREUM]: [ethTokens.brews],
+  [ChainId.BSC_MAINNET]: [bscTokens.brews],
+};
+
+export const popularTokens = {
+  [ChainId.ETHEREUM]: [ethTokens.brews, ethTokens.eth, ethTokens.usdc, ethTokens.usdt],
+  [ChainId.BSC_MAINNET]: [bscTokens.brews, bscTokens.bnb, bscTokens.busd, bscTokens.usdt],
 };

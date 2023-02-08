@@ -7,11 +7,12 @@ import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-import { setGlobalState } from "../../state";
+import { useGlobalState } from "../../state";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
 import Modal from "../Modal";
 import WalletSelector from "./WalletSelector";
+import UserDashboard from "components/dashboard/UserDashboard";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -26,6 +27,9 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { chainId, isWrongNetwork } = useActiveChainId();
 
   const [mounted, setMounted] = useState(false);
+
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
+  const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
 
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
@@ -92,7 +96,10 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
             <button
               className="ml-3 overflow-hidden"
-              onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect)}
+              onClick={() => {
+                setUserSidebarOpen(!allowDisconnect);
+                setUserSidebarContent(<UserDashboard />);
+              }}
             >
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
