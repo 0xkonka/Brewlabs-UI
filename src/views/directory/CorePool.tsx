@@ -10,12 +10,13 @@ const CorePool = ({
   setSelectPoolDetail,
   index,
   setCurPool,
+  pools,
 }: {
   setSelectPoolDetail: any;
   index: number;
   setCurPool: any;
+  pools: any;
 }) => {
-  const { data: pools }: any = useContext(PoolContext);
   const data = pools[index];
 
   const CreatePoolInfoPanel = (type: string) => {

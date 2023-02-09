@@ -7,10 +7,8 @@ import StyledButton from "../StyledButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
-import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
-import StakingModal from "../Modals/StakingModal";
 import { useContext, useState } from "react";
 import { numberWithCommas } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
@@ -21,6 +19,11 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { SkeletonComponent } from "components/SkeletonComponent";
+import DropDown from "./Dropdown";
+import LogoIcon from "components/LogoIcon";
+
+import EnterExitModal from "./Modals/EnterExitModal";
+import AddNFTModal from "./Modals/AddNFTModal";
 
 const CHAIN_SYMBOL = {
   1: "ETH",
@@ -39,8 +42,10 @@ const IndexDetail = ({
   accountData: any;
 }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
-  const [curType, setCurType] = useState("deposit");
+  const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);
+  const [curType, setCurType] = useState("enter");
   const [curGraph, setCurGraph] = useState(0);
+  const [curAPR, setCurAPR] = useState(0);
 
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
@@ -48,102 +53,16 @@ const IndexDetail = ({
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
 
-  const onCompoundReward = async () => {
-    setPending(true);
-    try {
-      console.log("onCompoundReward");
+  const { rate }: any = useContext(IndexContext);
 
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      const estimateGas: any = await poolContract.estimateGas.compoundReward({
-        value: data.performanceFee,
-      });
+  const aprTexts = ["YTD", "30D", "7D", "24hrs"];
 
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      const harvestTx = await poolContract.compoundReward(tx);
-      await harvestTx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
-
-  const onCompoundReflection = async () => {
-    setPending(true);
-    try {
-      let ttx, estimateGas;
-
-      console.log("onCompoundReflection");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.compoundDividend({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      ttx = await poolContract.compoundDividend(tx);
-      await ttx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
-
-  const onHarvestReward = async () => {
-    setPending(true);
-    try {
-      let harvestTx, estimateGas;
-
-      console.log("HarvestReward");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.claimReward({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      harvestTx = await poolContract.claimReward(tx);
-      await harvestTx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
-
-  const onHarvestReflection = async () => {
-    setPending(true);
-    try {
-      let harvestTx, estimateGas;
-
-      console.log("onHarvestReflection");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.claimDividend({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      harvestTx = await poolContract.claimDividend(tx);
-      await harvestTx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
-
-  const history =
-    data && data.history && address ? data.history.filter((data: any) => data.address === address.toLowerCase()) : [];
+  const graphData = [
+    [100, 300, 520, 60, 200],
+    [150, 100, 520, 40, 220],
+    [0.35, 0.3, 0.32, 0.38, 0.4],
+    [0.5, 0.32, 0.52, 0.4, 0.4],
+  ];
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -156,7 +75,7 @@ const IndexDetail = ({
         >
           <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
             {address && data ? (
-              <StakingModal
+              <EnterExitModal
                 open={stakingModalOpen}
                 setOpen={setStakingModalOpen}
                 type={curType}
@@ -166,6 +85,7 @@ const IndexDetail = ({
             ) : (
               ""
             )}
+            <AddNFTModal open={addNFTModalOpen} setOpen={setAddNFTModalOpen} />
             <PageHeader
               title={
                 <div className="text-[40px]">
@@ -191,176 +111,124 @@ const IndexDetail = ({
             ) : (
               <Container className="font-brand">
                 <div className="flex items-center justify-between font-roboto">
-                  <div className="flex w-[160px] flex-col">
-                    <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
-                        <div className="ml-2">Back to pool list</div>
-                      </StyledButton>
-                    </div>
-                    <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
-                      <StyledButton>
-                        <div className="absolute top-2.5 left-2">{lockSVG}</div>
-                        <div className="ml-3">Brewlabs Custody</div>
-                      </StyledButton>
-                    </div>
+                  <div className="h-[32px] w-[140px] ">
+                    <StyledButton onClick={() => setOpen(false)}>
+                      <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                      <div className="ml-2">Back to pool list</div>
+                    </StyledButton>
                   </div>
-                  <div className="flex flex-1 justify-end">
-                    <div className="hidden w-full max-w-[470px] sm:block">
-                      <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
-                        <StyledButton>
-                          <div className="absolute top-2.5 left-2">{lockSVG}</div>
-                          <div className="ml-3">Brewlabs Custody</div>
-                        </StyledButton>
-                      </div>
+                  <div className="flex flex-col sm:flex-row">
+                    <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                      <StyledButton>Mint Index NFT</StyledButton>
                     </div>
-                    <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
-                      <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
-                        <StyledButton>
-                          <div>Website</div>
-                          <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
-                        </StyledButton>
-                      </a>
-                      <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
-                        target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
-                        rel="noreferrer"
-                      >
-                        <StyledButton>
-                          <div>Swap</div>
-                          <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </a>
+                    <div className="mx-0 mt-2 h-[32px] w-[140px] sm:mx-2.5 sm:mt-0">
+                      <StyledButton type="secondary" onClick={() => setAddNFTModalOpen(true)}>
+                        Add Index NFT
+                      </StyledButton>
                     </div>
+                    <a
+                      className=" mt-2 h-[32px] w-[140px] sm:mt-0 "
+                      target="_blank"
+                      href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+                      rel="noreferrer"
+                    >
+                      <StyledButton>
+                        <div>Swap</div>
+                        <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                      </StyledButton>
+                    </a>
                   </div>
                 </div>
-                <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
-                  <div className="mt-4 flex w-[160px] items-center justify-center ">
-                    <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
+                <div className="mt-10 mb-0 flex justify-between xl:-mb-3 xl:mt-2">
+                  <div className="hidden min-w-[160px] md:block" />
+                  <div className="ml-2 flex w-full items-center justify-center md:w-[500px] md:justify-start xl:md:w-[1030px]">
+                    <LogoIcon classNames="w-6 text-dark dark:text-brand mr-2" />
+                    <div className="text-[#FFFFFFBF]">Brewlabs: Origin Index Series</div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center justify-between md:flex-row">
+                  <div className="mt-4 flex w-fit items-center md:w-[160px] ">
+                    <img src={"/images/directory/ogv.svg"} alt={""} className="w-[70px] rounded-full" />
+                    <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-[70px] rounded-full" />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
-                    <InfoPanel
-                      padding={"14px 25px 8px 25px"}
-                      className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
-                    >
-                      <div className="flex justify-between text-xl">
-                        <div>
-                          Pool: <span className="text-primary">{data.earningToken.symbol}</span>
-                        </div>
-                        <div className="flex">
-                          APR:&nbsp;
-                          <span className="text-primary">
-                            {data.apr !== undefined ? `${data.apr}%` : <SkeletonComponent />}
-                          </span>
+                    <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[500px]">
+                      <div className="flex justify-between text-xl flex-wrap">
+                        <div className="mr-4 whitespace-nowrap">Index: OGN-OGV</div>
+                        <div className="flex items-center">
+                          Performance:&nbsp;
+                          <span className={rate >= 0 ? "text-green" : "text-danger"}>{rate.toFixed(2)}%</span>
+                          <div className="ml-1 w-[60px]">
+                            <DropDown value={curAPR} setValue={setCurAPR} data={aprTexts} />
+                          </div>
                         </div>
                       </div>
-                      <div className="flex justify-between text-base  text-[#FFFFFF80]">
+                      <div className="flex justify-between text-base text-[#FFFFFF80] flex-wrap">
                         <div>
-                          Stake: <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
-                          <span className="text-primary">{data.earningToken.symbol}</span>
+                          <span className="#FFFFFF80">Buy</span> OGN & OGV
                         </div>
-                        <div className="text-primary">Flexible</div>
+                        <div className="flex items-center">
+                          <img src="/images/explorer/etherscan.png" alt={""} className="mr-1 w-3" />
+                          <div className="#FFFFFF80">Perpetual Index</div>
+                        </div>
                       </div>
-                      <div className="text-xs text-[#FFFFFF80]">
-                        Deposit Fee {data.depositFee.toFixed(2)}%
+                      <div className="text-xs leading-none text-[#FFFFFF80]">
+                        Deposit Fee 1.00 % ETH
                         <br />
-                        Withdraw Fee {data.withdrawFee.toFixed(2)}%
+                        Withdrawal Fee 0.00% / In Profit Withdrawal Fee 1.00% of Profit
                         <br />
-                        Peformance Fee {data.performanceFee / Math.pow(10, 18)} BNB
+                        Performance Fee 0.020 ETH
                       </div>
                     </InfoPanel>
 
                     <InfoPanel
-                      padding={"6px 25px 8px 25px"}
-                      className="ml-0 mt-4 flex max-w-full flex-wrap justify-between md:ml-[30px] md:max-w-[520px]"
+                      padding={"6px 25px 14px 25px"}
+                      className="ml-0 mt-4 flex max-w-full flex-wrap justify-between md:ml-[30px] md:max-w-[500px]"
                     >
                       <div className="mt-2">
-                        <div className="text-xl">Pool Rewards</div>
-                        <div className=" text-[#FFFFFF80]">
-                          <span className="text-primary">{data.earningToken.symbol}</span> earned
-                        </div>
-                        <div className="text-[#FFFFFF80]">
-                          <span className="text-primary">{data.reflectionToken.symbol}</span> Rewards
+                        <div className="text-xl">My Position</div>
+                        <div className="mt-1 leading-none text-primary">
+                          $150.52 <br />
+                          <span className="text-[#FFFFFF80]">Principal Investment</span>
                         </div>
                       </div>
                       <div className="mt-2">
-                        <div className="text-xl">Pending</div>
-                        <div className=" flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.pendingReward !== undefined ? (
-                            accountData.pendingReward.toFixed(0)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.earningToken.symbol}
+                        <div className="text-xl">Tokens</div>
+                        <div className="mt-1 flex items-center leading-none">
+                          <img src="/images/directory/ogn.svg" alt={""} className="mr-1 w-3" />
+                          <div className="text-[#FFFFFFBF]">
+                            4252 <span className="text-[#FFFFFF80]">OGN</span>
+                          </div>
                         </div>
-                        <div className="flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.pendingReflection !== undefined ? (
-                            accountData.pendingReflection.toFixed(0)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.reflectionToken.symbol}
+                        <div className="flex items-center leading-none">
+                          <img src="/images/directory/ogv.svg" alt={""} className="mr-1 w-3" />
+                          <div className="text-[#FFFFFFBF]">
+                            4221 <span className="text-[#FFFFFF80]">OGV</span>
+                          </div>
                         </div>
                       </div>
                       <div className="mt-2">
-                        <div className="text-xl">Total</div>
-                        <div className=" flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.totalReward !== undefined ? (
-                            accountData.totalReward.toFixed(2)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.earningToken.symbol}
-                        </div>
-                        <div className="flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.totalReflection !== undefined ? (
-                            accountData.totalReflection.toFixed(2)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.reflectionToken.symbol}
+                        <div className="text-xl">Profit</div>
+                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">
+                          <span className="text-green">$150.52</span>&nbsp;earned
                         </div>
                       </div>
                     </InfoPanel>
                   </div>
                 </div>
-                <div className="mt-7">
-                  <ProgressBar endBlock={data.endBlock} remaining={data.remainingBlock} />
-                </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
-                    <TotalStakedChart
-                      data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : CHAIN_SYMBOL[chainId]}
-                      price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
-                      curGraph={curGraph}
-                    />
+                    <TotalStakedChart data={graphData[curGraph]} symbol={""} price={1} curGraph={curGraph} />
                     <InfoPanel
                       className="mt-20 flex cursor-pointer justify-between"
                       type={"secondary"}
                       boxShadow={curGraph === 0 ? "primary" : null}
                       onClick={() => setCurGraph(0)}
                     >
-                      <div>Total Staked Value</div>
+                      <div>Total Index Value</div>
                       <div className="flex">
-                        {data.totalStaked !== undefined && data.price !== undefined ? (
-                          `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
-                        ) : (
-                          <SkeletonComponent />
-                        )}
+                        {graphData[0][graphData[0].length - 1]}&nbsp;
+                        <span className="text-[#FFFFFF80]">OGN / OGV</span>
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -370,16 +238,11 @@ const IndexDetail = ({
                       onClick={() => setCurGraph(1)}
                     >
                       <div>
-                        Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+                        Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalFee !== undefined ? (
-                          numberWithCommas(data.totalFee.toFixed(2))
-                        ) : (
-                          <SkeletonComponent />
-                        )}
-                        &nbsp;
-                        <span className="text-primary">{data.stakingToken.symbol}</span>
+                        {graphData[1][graphData[1].length - 1].toFixed(2)}&nbsp;
+                        <span className="text-[#FFFFFF80]">ETH</span>
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -389,15 +252,11 @@ const IndexDetail = ({
                       onClick={() => setCurGraph(2)}
                     >
                       <div>
-                        Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+                        Index Performance&nbsp;<span className="text-[#FFFFFF80]">(Price - 24hrs)</span>
                       </div>
-                      <div className="flex">
-                        {data.totalPerformanceFee !== undefined ? (
-                          numberWithCommas(data.totalPerformanceFee.toFixed(2))
-                        ) : (
-                          <SkeletonComponent />
-                        )}
-                        &nbsp;<span className="text-primary">BNB</span>
+                      <div className="flex text-[#FFFFFF80]">
+                        <span className="text-green">{graphData[2][graphData[2].length - 1].toFixed(2)}%</span>{" "}
+                        &nbsp;($0.0156)
                       </div>
                     </InfoPanel>
 
@@ -408,129 +267,41 @@ const IndexDetail = ({
                       onClick={() => setCurGraph(3)}
                     >
                       <div>
-                        Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
+                        Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
-                      <div className="flex">
-                        {data.totalStakedAddresses !== undefined ? (
-                          numberWithCommas(data.totalStakedAddresses)
-                        ) : (
-                          <SkeletonComponent />
-                        )}
+                      <div className="flex text-[#FFFFFF80]">
+                        <span className="text-green">{graphData[3][graphData[3].length - 1].toFixed(2)}%</span>{" "}
+                        &nbsp;($0.0156)
                       </div>
                     </InfoPanel>
                   </div>
-                  <div className="mt-10 w-full md:mt-0 md:w-[57%]">
-                    <div className="flex w-full flex-col xsm:flex-row">
-                      <div className="mr-0 flex-1 xsm:mr-[14px]">
-                        <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
-                        <div className="mt-1.5 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReward}
-                            disabled={!address || !accountData.pendingReward || pending}
-                            onClick={() => onCompoundReward()}
-                          >
-                            <div className="flex">
-                              Compound&nbsp;
-                              {!address ? (
-                                0
-                              ) : accountData.pendingReward !== undefined ? (
-                                accountData.pendingReward.toFixed(0)
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
-                            </div>
-                          </StyledButton>
-                        </div>
-                        <div className="mt-2 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReward}
-                            disabled={!address || !accountData.pendingReward || pending}
-                            onClick={() => onHarvestReward()}
-                          >
-                            <div className="flex">
-                              Harvest&nbsp;
-                              {!address ? (
-                                0
-                              ) : accountData.pendingReward !== undefined ? (
-                                accountData.pendingReward.toFixed(0)
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
-                            </div>
-                          </StyledButton>
-                        </div>
-                      </div>
-                      <div className="mt-5 flex-1 xsm:mt-0">
-                        <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
-                        <div className="mt-1.5 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReflection}
-                            disabled={!address || !accountData.pendingReflection || pending}
-                            onClick={() => onCompoundReflection()}
-                          >
-                            Compound&nbsp;
-                            {!address ? (
-                              "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(2)
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
-                          </StyledButton>
-                        </div>
-                        <div className="mt-2 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReflection}
-                            disabled={!address || !accountData.pendingReflection || pending}
-                            onClick={() => onHarvestReflection()}
-                          >
-                            Harvest&nbsp;
-                            {!address ? (
-                              "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(2)
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
-                          </StyledButton>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
                     <div className="mt-7">
-                      <StakingHistory history={history} />
+                      <StakingHistory history={[{}]} />
                     </div>
-                    <div className="flex h-12">
+                    <div className="absolute bottom-0 left-0 flex h-12 w-full">
                       <div className="mr-5 flex-1">
                         <StyledButton
+                          type={"quaternary"}
                           onClick={() => {
                             setStakingModalOpen(true);
-                            setCurType("deposit");
+                            setCurType("enter");
                           }}
                           disabled={pending || !address}
                         >
-                          Deposit {data.stakingToken.symbol}
+                          Enter OGN-OGV Index
                         </StyledButton>
                       </div>
                       <div className="flex-1">
                         <StyledButton
-                          type={"secondary"}
+                          type={"quaternary"}
                           onClick={() => {
                             setStakingModalOpen(true);
-                            setCurType("withdraw");
+                            setCurType("exit");
                           }}
                           disabled={pending || !address}
                         >
-                          <div className="text-[#FFFFFFBF]">
-                            Withdraw <span className="text-primary">{data.stakingToken.symbol}</span>
-                          </div>
+                          Exit &nbsp;<span className="text-green">$150.52 Profit</span>
                         </StyledButton>
                       </div>
                     </div>
@@ -555,9 +326,13 @@ const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: stri
   width: 100%;
   color: #ffffffbf;
   box-shadow: ${({ boxShadow }) =>
-    boxShadow === "primary" ? "0px 2px 4px #EEBB19" : boxShadow === "secondary" ? "0px 1px 4px #EEBB19" : ""};
+    boxShadow === "primary"
+      ? "0px 2px 1px rgba(255, 255, 255, 0.75)"
+      : boxShadow === "secondary"
+      ? "0px 1px 1px rgba(255, 255, 255, 0.75)"
+      : ""};
   :hover {
     border-color: ${({ type, boxShadow }) =>
-      type === "secondary" && !boxShadow ? "#EEBB19" : "rgba(255, 255, 255, 0.5)"};
+      type === "secondary" && !boxShadow ? "rgba(255, 255, 255, 0.75)" : "rgba(255, 255, 255, 0.5)"};
   }
 `;

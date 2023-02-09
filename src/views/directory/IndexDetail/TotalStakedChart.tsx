@@ -20,23 +20,23 @@ const TotalStakedChart = ({
 }) => {
   const getTitle = (type: number) => {
     if (type === 0) {
-      return "Total Staked Value";
+      return "Total Index Value";
     } else if (type === 1) {
-      return (
-        <div>
-          Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 2) {
       return (
         <div>
           Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
         </div>
       );
+    } else if (type === 2) {
+      return (
+        <div>
+          Index Performance<span className="text-[#FFFFFF80]"> (Price - 24hrs)</span>
+        </div>
+      );
     } else if (type === 3) {
       return (
         <div>
-          Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
+          Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
         </div>
       );
     }
@@ -50,7 +50,7 @@ const TotalStakedChart = ({
       },
     ],
     options: {
-      colors: ["#FFDE0D"],
+      colors: ["#2FD35D"],
       fill: {
         gradient: {
           type: "vertical",
@@ -61,12 +61,12 @@ const TotalStakedChart = ({
           colorStops: [
             {
               offset: 0,
-              color: "#EEBB19",
-              opacity: 1,
+              color: "#2FD35D",
+              opacity: 0.75,
             },
             {
               offset: 100,
-              color: "rgb(110, 220, 181)",
+              color: "#6EDCB5",
               opacity: 0,
             },
           ],
@@ -99,7 +99,7 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            return (curGraph !== 3 ? "$" : "") + BigNumberFormat(value * price, curGraph !== 3 ? 2 : 0);
+            return "$" + BigNumberFormat(value * price, 2);
           },
         },
       },
@@ -115,18 +115,7 @@ const TotalStakedChart = ({
     <StyledContainer>
       <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        {curGraph !== 3 ? (
-          <span>
-            {data !== undefined && data.length ? (
-              `$${BigNumberFormat(data[data.length - 1] * price)}`
-            ) : (
-              <SkeletonComponent />
-            )}
-            <br />
-          </span>
-        ) : (
-          ""
-        )}
+        <span>{`$${BigNumberFormat(data[data.length - 1] * price)}`}</span>
         <span className="flex text-primary">
           {data !== undefined && data.length ? (
             numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))
@@ -138,8 +127,8 @@ const TotalStakedChart = ({
         </span>
         <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>
       </div>
-      <div className="-mt-12">
-        <Chart options={chartData.options} series={chartData.series} type="area" height={280} />
+      <div className="-mt-2">
+        <Chart options={chartData.options} series={chartData.series} type="area" height={250} />
       </div>
     </StyledContainer>
   );

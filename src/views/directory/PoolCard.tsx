@@ -40,7 +40,14 @@ const PoolCard = ({
           <img src={data.chainLogo} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
-          <img src={data.earningToken.logo} alt={""} className="mr-3 w-7 rounded-full" />
+          {data.type === 3 ? (
+            <div className="mr-3 flex">
+              <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
+              <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
+            </div>
+          ) : (
+            <img src={data.earningToken.logo} alt={""} className="mr-3 w-7 rounded-full" />
+          )}
           <div>
             {data.type === 1 ? (
               <div className="leading-none">
@@ -79,7 +86,14 @@ const PoolCard = ({
       <div className="flex hidden flex-col px-6">
         <div className="flex  items-center justify-between ">
           <div className="flex items-center">
-            <img src={data.earningToken.logo} alt={""} className="mr-3 w-7 rounded-full" />
+            {data.type === 3 ? (
+              <div className="mr-3 flex">
+                <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
+                <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
+              </div>
+            ) : (
+              <img src={data.earningToken.logo} alt={""} className="mr-3 w-7 rounded-full" />
+            )}
             <div>
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
