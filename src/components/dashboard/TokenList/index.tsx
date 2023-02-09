@@ -244,7 +244,6 @@ const TokenList = ({
                 : logoFilter.length
                 ? logoFilter[0].logoURI
                 : emptyLogos[chainId];
-            const isVerified = logoFilter.length || data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
             const link = `${getBlockExplorerLink(data.address, "token", chainId)}?a=${address}`;
             return (
               <StyledLink
@@ -280,9 +279,6 @@ const TokenList = ({
                     <div>
                       <div className="flex items-center text-white">
                         <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
-                        <div className={isVerified ? "" : "hidden"}>
-                          <CheckCircleIcon className="ml-1 max-h-[12px] min-h-[12px] min-w-[12px] max-w-[12px] text-green" />
-                        </div>
                       </div>
                       <StyledDiv className={fullOpen ? "" : "hidden"}>
                         <div className={"overflow-hidden text-ellipsis whitespace-nowrap text-white opacity-25"}>

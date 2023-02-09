@@ -77,7 +77,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
                 {isLoading && wallet.connectorId === pendingConnector?.id && (
                   <div role="status">
                     <svg
-                      className="mr-2 inline h-8 w-8 animate-spin fill-yellow-500 text-gray-200 dark:text-gray-600"
+                      className="fill-yellow-500 mr-2 inline h-8 w-8 animate-spin text-gray-200 dark:text-gray-600"
                       viewBox="0 0 100 101"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"

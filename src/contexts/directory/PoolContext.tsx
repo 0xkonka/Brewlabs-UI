@@ -3,7 +3,7 @@ import { useFastRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffe
 import { useAccount } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getMulticallContract } from "utils/contractHelpers";
-import allPools from "../../config/constants/directory/pools.json";
+import pools from "../../config/constants/directory/pools.json";
 import UnLockABI from "config/abi/brewlabsUnLockup.json";
 
 import { ethers } from "ethers";
@@ -31,7 +31,6 @@ const PoolContextProvider = ({ children }: any) => {
   const { address } = useAccount();
   // const address = "0xc6c6602743b17c8fd3014cf5012120fc3cec2cb7";
   const { chainId } = useActiveChainId();
-  const pools = allPools.filter((data) => data.chainID === chainId);
   const [data, setData] = useState(pools);
   const [accountData, setAccountData] = useState(pools);
 
@@ -46,9 +45,9 @@ const PoolContextProvider = ({ children }: any) => {
     return sum;
   }
 
-  async function multicall(abi: any, calls: any) {
+  async function multicall(abi: any, calls: any, chainID: number) {
     const itf = new ethers.utils.Interface(abi);
-    const multi = getMulticallContract(chainId);
+    const multi = getMulticallContract(chainID);
     const calldata = calls.map((call: any) => [
       call.address.toLowerCase(),
       itf.encodeFunctionData(call.name, call.params),
@@ -70,7 +69,7 @@ const PoolContextProvider = ({ children }: any) => {
       data.stakingToken.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         ? WETH_ADDR[chainId]
         : data.stakingToken.address
-    }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
+    }-${data.chainID === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
 
     const priceResult = await axios.get(priceUrl);
     const price = priceResult.data.c[priceResult.data.c.length - 1];
@@ -103,7 +102,7 @@ const PoolContextProvider = ({ children }: any) => {
       },
     ];
 
-    const callResult = await multicall(UnLockABI, calls);
+    const callResult = await multicall(UnLockABI, calls, data.chainID);
 
     const apr = (callResult[0][0] / callResult[1][0]) * 28800 * 36500;
     const endBlock = callResult[2][0] / 1 - callResult[4][0] / 1;
@@ -228,7 +227,7 @@ const PoolContextProvider = ({ children }: any) => {
 
   async function fetchPoolDatas() {
     try {
-      const _data = pools.filter((data) => data.chainID === chainId);
+      const _data = data;
       let temp = await Promise.all(
         _data.map(async (data: any) => {
           const poolInfo = await fetchPoolData(data);
@@ -241,6 +240,12 @@ const PoolContextProvider = ({ children }: any) => {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async function fetchTokenTxAmount(address: string, chainID: number, tokenAddress: string) {
+    const rewardUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=${tokenAddress}&address=${address}&sort=asc&apikey=${API_KEY[chainID]}`;
+    const rewardResult = await axios.get(rewardUrl);
+    return rewardResult;
   }
 
   async function fetchAccountPoolData(data: any) {
@@ -262,7 +267,7 @@ const PoolContextProvider = ({ children }: any) => {
           params: [address],
         },
       ];
-      const result = await multicall(UnLockABI, calls);
+      const result = await multicall(UnLockABI, calls, data.chainID);
       calls = [
         {
           address: data.stakingToken.address,
@@ -275,13 +280,14 @@ const PoolContextProvider = ({ children }: any) => {
           params: [address, data.address],
         },
       ];
-      const balanceResult = await multicall(ERC20_ABI, calls);
+      const balanceResult = await multicall(ERC20_ABI, calls, data.chainID);
+      const totalInfos = await Promise.all([
+        fetchTokenTxAmount(data.address, data.chainID, data.earningToken.address),
+        fetchTokenTxAmount(data.address, data.chainID, data.reflectionToken.address),
+      ]);
 
-      const rewardUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=${data.earningToken.address}&address=${data.address}&sort=asc&apikey=${API_KEY[chainId]}`;
-      const rewardResult = await axios.get(rewardUrl);
-
-      const reflectionUrl = `https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=${data.reflectionToken.address}&address=${data.address}&sort=asc&apikey=${API_KEY[chainId]}`;
-      const reflectionResult = await axios.get(reflectionUrl);
+      const rewardResult: any = totalInfos[0];
+      const reflectionResult: any = totalInfos[1];
 
       return {
         pendingReward: result[0][0] / Math.pow(10, data.earningToken.decimals),
@@ -290,8 +296,14 @@ const PoolContextProvider = ({ children }: any) => {
         available: result[2].amount,
         balance: balanceResult[0][0],
         allowance: balanceResult[1][0] > "10000",
-        totalReward: getEarningAmount(rewardResult.data.result, data.earningToken.decimals),
-        totalReflection: getEarningAmount(reflectionResult.data.result, data.reflectionToken.decimals),
+        totalReward:
+          rewardResult.data !== undefined
+            ? getEarningAmount(rewardResult.data.result, data.earningToken.decimals)
+            : data.totalReward,
+        totalReflection:
+          reflectionResult.data !== undefined
+            ? getEarningAmount(reflectionResult.data.result, data.reflectionToken.decimals)
+            : data.totalReflection,
       };
     } catch (error) {
       console.log(error);
@@ -300,11 +312,13 @@ const PoolContextProvider = ({ children }: any) => {
 
   async function fetchAccountPoolDatas() {
     try {
-      const _data = pools.filter((data) => data.chainID === chainId);
+      const _data = accountData;
       let temp = await Promise.all(
         _data.map(async (data: any) => {
-          const accountInfo: any = await fetchAccountPoolData(data);
-          const serializedToken = { ...accountInfo };
+          let accountInfo;
+          if (data.chainID !== chainId) accountInfo = {};
+          else accountInfo = await fetchAccountPoolData(data);
+          const serializedToken = { ...data, ...accountInfo };
           return serializedToken;
         })
       );
@@ -314,17 +328,12 @@ const PoolContextProvider = ({ children }: any) => {
     }
   }
   useEffect(() => {
-    setData(pools);
     setAccountData(pools);
-  }, [chainId]);
-
-  useEffect(() => {
-    setAccountData(pools);
-  }, [address]);
+  }, [chainId, address]);
 
   useSlowRefreshEffect(() => {
     fetchPoolDatas();
-  }, [chainId]);
+  }, []);
 
   useFastRefreshEffect(() => {
     if (!address) {

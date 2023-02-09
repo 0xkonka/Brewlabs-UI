@@ -6,14 +6,14 @@
     "chainLogo": "/images/directory/eth.svg",
     "stakingToken": {
       "address": "0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7",
-      "symbol": "OGN-OGB",
+      "symbol": "OGN-OGV",
       "name": "Brewlabs",
       "decimals": 9,
       "logo": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"
     },
     "earningToken": {
       "address": "0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7",
-      "symbol": "OGN-OGB",
+      "symbol": "OGN-OGV",
       "name": "Brewlabs",
       "decimals": 9,
       "logo": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"

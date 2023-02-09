@@ -46,6 +46,7 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import SettingModal from "./components/modal/SettingModal";
 import Modal from "components/Modal";
+import ConfirmationModal from "./components/modal/ConfirmationModal";
 
 type TxResponse = TransactionResponse | null;
 
@@ -58,6 +59,8 @@ export default function Swap() {
   useDefaultsFromURLSearch();
 
   const [openSettingModal, setOpenSettingModal] = useState(false);
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [txConfirmInfo, setTxConfirmInfo] = useState({ type: "confirming", tx: "" });
 
   const [quoteData, setQuoteData] = useState({});
   const [outputAmount, setOutputAmount] = useState<CurrencyAmount>();
@@ -285,9 +288,16 @@ export default function Swap() {
     setAttemptingTxn(true);
     try {
       const tx = await approveCallback();
-      showNotify("confirming", tx);
+      setOpenConfirmationModal(true);
+      setTxConfirmInfo({
+        type: "confirming",
+        tx: tx.hash,
+      });
       await tx.wait();
-      showNotify("confirmed", tx);
+      setTxConfirmInfo({
+        type: "confirmed",
+        tx: tx.hash,
+      });
     } catch (err: any) {
       if (err?.code === 4001) {
         toast.error(t("Transaction rejected."));
@@ -296,53 +306,6 @@ export default function Swap() {
       }
     } finally {
       setAttemptingTxn(false);
-    }
-  };
-
-  const showNotify = (type, tx) => {
-    if (type === "confirming") {
-      toast.success(
-        <div className="toast__custom-layout">
-          <div className="message">
-            <span className="msg-text">Confirming Transaction</span>
-          </div>
-          <div className="link">
-            <img src={getBlockExplorerLogo(chainId)} alt="" />
-            <a href={getBlockExplorerLink(tx?.hash, "transaction", chainId)} className="down-text">
-              View Transaction Hash
-            </a>
-          </div>
-        </div>,
-        {
-          className: "toast__background-primary",
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-seemless.gif" alt="" />,
-          autoClose: 12000,
-          closeButton: false,
-          hideProgressBar: true,
-        }
-      );
-    }
-
-    if (type === "confirmed") {
-      toast.success(
-        <div className="toast__custom-layout">
-          <div className="message">
-            <span className="msg-text">Transaction Confirmed</span>
-          </div>
-          <div className="link">
-            <img src={getBlockExplorerLogo(chainId)} alt="" />
-            <a href={getBlockExplorerLink(tx?.hash, "transaction", chainId)} className="down-text">
-              View Transaction Hash
-            </a>
-          </div>
-        </div>,
-        {
-          icon: ({ theme, type }) => <img src="/images/brewlabs-bubbling-check.gif" alt="" />,
-          className: "toast__background-primary",
-          autoClose: 6000,
-          closeButton: false,
-        }
-      );
     }
   };
 
@@ -423,10 +386,16 @@ export default function Swap() {
           gasLimit: calculateTotalGas(estimatedGasLimit),
         });
       }
-      showNotify("confirming", tx);
+      setTxConfirmInfo({
+        type: "confirming",
+        tx: tx.hash,
+      });
       const receipt = await tx.wait();
       if (receipt?.status) {
-        showNotify("confirmed", tx);
+        setTxConfirmInfo({
+          type: "confirmed",
+          tx: tx.hash,
+        });
       }
     } catch (err: any) {
       if (err?.code === "ACTION_REJECTED") {
@@ -442,6 +411,12 @@ export default function Swap() {
 
   return (
     <PageWrapper>
+      <ConfirmationModal
+        open={openConfirmationModal}
+        setOpen={setOpenConfirmationModal}
+        type={txConfirmInfo.type}
+        tx={txConfirmInfo.tx}
+      />
       <PageHeader
         title={
           <>
