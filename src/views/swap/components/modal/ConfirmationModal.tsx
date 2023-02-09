@@ -66,6 +66,7 @@ const ConfirmationModal = ({ open, setOpen, type, tx }: ModalProps): ReactElemen
                     className="flex w-[50%] cursor-pointer items-center justify-center border-r  border-[FFFFFF80] py-2.5 text-white transition hover:bg-[rgb(61,66,76)]"
                     target={"_blank"}
                     href={`${SCAN_URL[chainId]}/tx/${tx}`}
+                    rel="noreferrer"
                   >
                     <img src={"/images/explorer/etherscan.png"} alt={""} className="mr-2 w-4" />
                     <div>Transaction</div>
