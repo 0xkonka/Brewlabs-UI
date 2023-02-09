@@ -43,12 +43,12 @@ const AddNFTModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
             transition={{ duration: 0.25 }}
           >
             <StyledPanel>
-              <div className="flex items-center justify-between border-b border-b-[#FFFFFF80] pb-3">
-                <div className="flex items-center pl-3 text-xl text-[#FFFFFFBF]">
+              <div className="flex xmd:items-center justify-between border-b border-b-[#FFFFFF80] pb-3 xmd:flex-row flex-col-reverse">
+                <div className="flex items-center pl-3 text-xl text-[#FFFFFFBF] xmd:mt-0 mt-5">
                   <LogoIcon classNames="w-9 text-brand mr-3" />
                   <div>Add Brewlabs Origin Index NFT</div>
                 </div>
-                <div className="h-10 w-[130px]">
+                <div className="h-10 min-w-[130px]">
                   <StyledButton type="secondary" onClick={() => setOpen(false)}>
                     <div className="flex items-center text-[#FFFFFFBF]">
                       {chevronLeftSVG}
@@ -59,24 +59,24 @@ const AddNFTModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               </div>
               <div>
                 <div className="mt-6 mb-2 text-xl text-[#FFFFFFBF]">Index NFT's Available</div>
-                <div className="flex justify-between">
-                  <div className="h-[240px]  w-[60%] rounded border border-primary bg-[#B9B8B81A] px-3.5 py-3">
+                <div className="flex justify-between xmd:flex-row flex-col">
+                  <div className="mr-6 xmd:mb-0 mb-5 min-h-[240px] flex-1 rounded border border-primary bg-[#B9B8B81A] px-3.5 py-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-[#FFFFFFBF]">
                         <div className="text-[#F5F5F5]">{checkSVG}</div>
                         <div className="ml-1">OGN-OGV [23]</div>
                       </div>
-                      <div className = 'text-xs'>$31.00 USD</div>
+                      <div className="text-xs">$31.00 USD</div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-[#FFFFFFBF]">
                         <div className="text-[#F5F5F540]">{checkSVG}</div>
                         <div className="ml-1">OGN-OGV [44]</div>
                       </div>
-                      <div className = 'text-xs'>$55.00 USD</div>
+                      <div className="text-xs">$55.00 USD</div>
                     </div>
                   </div>
-                  <div className="w-[35%]">
+                  <div>
                     <div className="flex items-center">
                       <img src={"/images/directory/ogn.svg"} alt={""} className="w-14" />
                       <div className="ml-3 leading-none">

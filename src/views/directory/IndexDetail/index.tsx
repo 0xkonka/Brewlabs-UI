@@ -153,7 +153,7 @@ const IndexDetail = ({
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[500px]">
-                      <div className="flex justify-between text-xl">
+                      <div className="flex justify-between text-xl flex-wrap">
                         <div className="mr-4 whitespace-nowrap">Index: OGN-OGV</div>
                         <div className="flex items-center">
                           Performance:&nbsp;
@@ -163,7 +163,7 @@ const IndexDetail = ({
                           </div>
                         </div>
                       </div>
-                      <div className="flex justify-between text-base text-[#FFFFFF80]">
+                      <div className="flex justify-between text-base text-[#FFFFFF80] flex-wrap">
                         <div>
                           <span className="#FFFFFF80">Buy</span> OGN & OGV
                         </div>

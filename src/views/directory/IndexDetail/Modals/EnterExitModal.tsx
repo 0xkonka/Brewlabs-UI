@@ -70,12 +70,12 @@ const EnterExitModal = ({
             transition={{ duration: 0.25 }}
           >
             <StyledPanel>
-              <div className="flex items-center justify-between border-b border-b-[#FFFFFF80] pb-3">
-                <div className="flex items-center pl-3 text-xl text-[#FFFFFFBF]">
+              <div className="flex flex-col-reverse items-center justify-between border-b border-b-[#FFFFFF80] pb-3 xmd:flex-row">
+                <div className="mt-5 flex items-center pl-3 text-xl text-[#FFFFFFBF] xmd:mt-0">
                   <LogoIcon classNames="w-9 text-brand mr-3" />
                   <div>{type === "enter" ? "Enter" : "Exit"} Brewlabs Origin Index</div>
                 </div>
-                <div className="h-10 w-[130px]">
+                <div className="h-10 w-full min-w-[130px] xmd:w-fit">
                   <StyledButton type="secondary" onClick={() => setOpen(false)}>
                     <div className="flex items-center text-[#FFFFFFBF]">
                       {chevronLeftSVG}
@@ -103,7 +103,7 @@ const EnterExitModal = ({
               ) : (
                 <div className="mb-6" />
               )}
-              <div className="mx-6 mt-4 flex items-center">
+              <div className="mx-auto mt-4 flex w-full max-w-[480px] items-center">
                 <img src={"/images/directory/ogv.svg"} alt={""} className="w-14" />
                 <StyledSlider value={value1} setValue={setValue1} balance={500} symbol={"OGV"} />
                 <div className="relative">
@@ -114,7 +114,7 @@ const EnterExitModal = ({
                 </div>
               </div>
 
-              <div className="mx-6 mt-8 mb-4 flex items-center">
+              <div className="mx-auto mt-8 mb-4 flex w-full max-w-[480px] items-center">
                 <img src={"/images/directory/ogn.svg"} alt={""} className="w-14" />
                 <StyledSlider value={value2} setValue={setValue2} balance={600} symbol={"OGN"} />
                 <div className="relative">
