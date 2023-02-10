@@ -10,6 +10,8 @@ import {
   getMulticallContract,
 } from "utils/contractHelpers";
 import ERC20ABI from "../config/abi/erc20.json";
+import claimableTokenAbi from "../config/abi/claimableToken.json";
+import dividendTrackerAbi from "config/abi/dividendTracker.json";
 
 import { ethers } from "ethers";
 
@@ -51,7 +53,7 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
-  // const address = "0xe3c42372a5777682c33e8808cd39f412d9af2d07";
+  // const address = "0xff20def8a6ebb0ac298cc60e13bbb7acf41d6ce1";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
@@ -59,21 +61,17 @@ const DashboardContextProvider = ({ children }: any) => {
   const ethersProvider = useProvider();
 
   async function multicall(abi: any, calls: any) {
-    try {
-      const itf = new ethers.utils.Interface(abi);
-      const multi = getMulticallContract(chainId);
-      const calldata = calls.map((call: any) => [
-        call.address.toLowerCase(),
-        itf.encodeFunctionData(call.name, call.params),
-      ]);
+    const itf = new ethers.utils.Interface(abi);
+    const multi = getMulticallContract(chainId);
+    const calldata = calls.map((call: any) => [
+      call.address.toLowerCase(),
+      itf.encodeFunctionData(call.name, call.params),
+    ]);
 
-      const { returnData } = await multi.aggregate(calldata);
-      const res = returnData.map((call: any, i: number) => itf.decodeFunctionResult(calls[i].name, call));
+    const { returnData } = await multi.aggregate(calldata);
+    const res = returnData.map((call: any, i: number) => itf.decodeFunctionResult(calls[i].name, call));
 
-      return res;
-    } catch (error) {
-      console.log(error);
-    }
+    return res;
   }
 
   const fetchTokenBaseInfo = async (address: any) => {
@@ -95,23 +93,52 @@ const DashboardContextProvider = ({ children }: any) => {
     return result;
   };
 
+  const isScamToken = async (token: any) => {
+    let isScam = false;
+    if (!token.name.includes("_Tracker")) {
+      try {
+        if (signer && token.address !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
+          const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
+          await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
+        }
+      } catch (error) {
+        isScam = true;
+      }
+    }
+    return isScam;
+  };
+
   const fetchTokenInfo = async (token: any) => {
     try {
       const to = Math.floor(Date.now() / 1000);
       const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
         token.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? WETH_ADDR[chainId] : token.address
       }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
-      let result = await axios.get(url);
+      let result: any = await Promise.all([await axios.get(url)]);
+      result = result[0];
 
       let reward = {
           pendingRewards: 0,
           totalRewards: 0,
           symbol: "",
         },
-        isReward = false;
+        isReward = false,
+        balance = token.balance;
       try {
-        const claimableContract = getClaimableTokenContract(chainId, token.address);
-        const dividendTracker = await claimableContract.dividendTracker();
+        let calls = [
+          {
+            address: token.address,
+            name: "dividendTracker",
+          },
+          {
+            address: token.address,
+            name: "balanceOf",
+            params: [address],
+          },
+        ];
+        const claimableResult = await multicall(claimableTokenAbi, calls);
+        const dividendTracker = claimableResult[0][0];
+        balance = claimableResult[1][0] / Math.pow(10, token.decimals);
         let rewardToken,
           pendingRewards = 0,
           totalRewards = 0;
@@ -133,9 +160,21 @@ const DashboardContextProvider = ({ children }: any) => {
             decimals: 18,
           };
         }
-        const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
-        pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
-        totalRewards = await dividendTrackerContract.withdrawnDividendOf(address);
+        calls = [
+          {
+            address: dividendTracker,
+            name: "withdrawableDividendOf",
+            params: [address],
+          },
+          {
+            address: dividendTracker,
+            name: "withdrawnDividendOf",
+            params: [address],
+          },
+        ];
+        const rewardResult = await multicall(dividendTrackerAbi, calls);
+        pendingRewards = rewardResult[0][0];
+        totalRewards = rewardResult[1][0];
         reward.pendingRewards =
           pendingRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.totalRewards =
@@ -145,25 +184,17 @@ const DashboardContextProvider = ({ children }: any) => {
       } catch (e) {
         // console.log(e);
       }
-      let isScam = false;
-      if (!token.name.includes("_Tracker")) {
-        try {
-          if (signer && token.address !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
-            await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
-          }
-        } catch (error) {
-          isScam = true;
-        }
-      }
+
+      let scamResult: any = await Promise.all([await isScamToken(token)]);
+      scamResult = scamResult[0];
 
       return {
-        ...token,
-        priceList: result.data.c,
-        price: result.data.c[result.data.c.length - 1],
+        priceList: result.data ? result.data.c : token.priceList,
+        price: result.data ? result.data.c[result.data.c.length - 1] : token.price,
         reward,
-        isScam: isScam,
+        isScam: scamResult !== undefined ? scamResult : token.isScam,
         isReward,
+        balance,
       };
     } catch (error) {
       console.log(token.address);
@@ -175,19 +206,18 @@ const DashboardContextProvider = ({ children }: any) => {
   const fetchTokenInfos = async (tokens: []) => {
     let data: any;
 
-    let temp = [];
-    for (let i = 0; i < tokens.length; i++) {
-      const tokenInfo: any = await fetchTokenInfo(tokens[i]);
-      temp.push(tokenInfo);
-    }
-    data = temp;
-
+    data = await Promise.all(
+      tokens.map(async (data: any) => {
+        const tokenInfo = await fetchTokenInfo(data);
+        const serializedToken = { ...data, ...tokenInfo };
+        return serializedToken;
+      })
+    );
     return data;
   };
 
   async function fetchTokens() {
     try {
-      console.log("Fetch Start");
       const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
       const covalReponse: any = await axios.get(covalUrl);
       const items = covalReponse.data.data.items;
@@ -239,7 +269,6 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchMarketInfo() {
     let i;
-    console.log("FETCH MARKET PRICE");
     for (i = 0; i < apiKeyList.length; i++) {
       try {
         const response = await fetch(new Request("https://api.livecoinwatch.com/overview/history"), {

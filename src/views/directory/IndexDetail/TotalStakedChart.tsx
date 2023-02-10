@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
-import { BigNumberFormat, numberWithCommas } from "utils/functions";
+import { BigNumberFormat, formatDollar, numberWithCommas } from "utils/functions";
 import { SkeletonComponent } from "components/SkeletonComponent";
+import { IndexContext } from "contexts/directory/IndexContext";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -42,6 +43,8 @@ const TotalStakedChart = ({
     }
   };
 
+  const pricechange = data.length ? ((data[data.length - 1] - data[0]) / data[0]) * 100 : 0;
+
   const chartData: any = {
     series: [
       {
@@ -50,7 +53,7 @@ const TotalStakedChart = ({
       },
     ],
     options: {
-      colors: ["#2FD35D"],
+      colors: [pricechange >= 0 ? "#2FD35D" : "#ea3943"],
       fill: {
         gradient: {
           type: "vertical",
@@ -58,18 +61,32 @@ const TotalStakedChart = ({
           inverseColors: true,
 
           stops: [0, 100],
-          colorStops: [
-            {
-              offset: 0,
-              color: "#2FD35D",
-              opacity: 0.75,
-            },
-            {
-              offset: 100,
-              color: "#6EDCB5",
-              opacity: 0,
-            },
-          ],
+          colorStops:
+            pricechange >= 0
+              ? [
+                  {
+                    offset: 0,
+                    color: "#2FD35D",
+                    opacity: 0.75,
+                  },
+                  {
+                    offset: 100,
+                    color: "#6EDCB5",
+                    opacity: 0,
+                  },
+                ]
+              : [
+                  {
+                    offset: 0,
+                    color: "#ea3943",
+                    opacity: 0.4,
+                  },
+                  {
+                    offset: 100,
+                    color: "#ea3943",
+                    opacity: 0,
+                  },
+                ],
         },
       },
       chart: {
@@ -99,7 +116,7 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            return "$" + BigNumberFormat(value * price, 2);
+            return (value * price).toFixed(2) + "%";
           },
         },
       },
@@ -111,14 +128,18 @@ const TotalStakedChart = ({
       },
     },
   };
+
+  const { rate }: any = useContext(IndexContext);
   return (
-    <StyledContainer>
+    <StyledContainer down={(pricechange < 0).toString()}>
       <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        <span>{`$${BigNumberFormat(data[data.length - 1] * price)}`}</span>
-        <span className="flex text-primary">
+        <span>{curGraph === 2 ? formatDollar(rate[3].value, 4) : data[data.length - 1] * price}</span>
+        <span className="flex">
           {data !== undefined && data.length ? (
-            numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))
+            <span className={data[data.length - 1] < 0 ? "text-danger" : "text-sucess"}>
+              {numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0)) + (curGraph === 2 ? "%" : "")}
+            </span>
           ) : (
             <SkeletonComponent />
           )}
@@ -136,12 +157,12 @@ const TotalStakedChart = ({
 
 export default TotalStakedChart;
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.div<{ down: string }>`
   .apexcharts-tooltip {
     color: white;
   }
   .apexcharts-tooltip.apexcharts-theme-light {
-    background: rgba(110, 220, 181, 0.5);
+    background: ${({ down }) => (down === "true" ? "rgba(234, 57, 67, 0.5)" : "rgba(110, 220, 181, 0.5)")};
   }
   .apexcharts-tooltip-title {
     display: none;

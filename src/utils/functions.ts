@@ -49,3 +49,8 @@ export const makeBigNumber = (amount, decimals) => {
   if (subDecimals > 0) _amount = _amount.slice(0, amount.length - subDecimals);
   return ethers.utils.parseUnits(_amount, decimals);
 };
+
+export const formatDollar = (value, decimals = 2) => {
+  if (value < 0) return "-$" + (-value).toFixed(decimals);
+  return "$" + value.toFixed(decimals);
+};

@@ -10,7 +10,7 @@ import styled from "styled-components";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import { useContext, useState } from "react";
-import { numberWithCommas } from "utils/functions";
+import { formatDollar, numberWithCommas } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
 import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -53,16 +53,11 @@ const IndexDetail = ({
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
 
-  const { rate }: any = useContext(IndexContext);
+  const { rate, rateHistory }: any = useContext(IndexContext);
 
   const aprTexts = ["YTD", "30D", "7D", "24hrs"];
 
-  const graphData = [
-    [100, 300, 520, 60, 200],
-    [150, 100, 520, 40, 220],
-    [0.35, 0.3, 0.32, 0.38, 0.4],
-    [0.5, 0.32, 0.52, 0.4, 0.4],
-  ];
+  const graphData = [[100, 300, 520, 60, 200], [150, 100, 520, 40, 220], rateHistory, [0.5, 0.32, 0.52, 0.4, 0.4]];
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -153,17 +148,19 @@ const IndexDetail = ({
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[500px]">
-                      <div className="flex justify-between text-xl flex-wrap">
+                      <div className="flex flex-wrap justify-between text-xl">
                         <div className="mr-4 whitespace-nowrap">Index: OGN-OGV</div>
                         <div className="flex items-center">
                           Performance:&nbsp;
-                          <span className={rate >= 0 ? "text-green" : "text-danger"}>{rate.toFixed(2)}%</span>
+                          <span className={rate[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
+                            {rate[curAPR].percent.toFixed(2)}%
+                          </span>
                           <div className="ml-1 w-[60px]">
                             <DropDown value={curAPR} setValue={setCurAPR} data={aprTexts} />
                           </div>
                         </div>
                       </div>
-                      <div className="flex justify-between text-base text-[#FFFFFF80] flex-wrap">
+                      <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80]">
                         <div>
                           <span className="#FFFFFF80">Buy</span> OGN & OGV
                         </div>
@@ -255,8 +252,11 @@ const IndexDetail = ({
                         Index Performance&nbsp;<span className="text-[#FFFFFF80]">(Price - 24hrs)</span>
                       </div>
                       <div className="flex text-[#FFFFFF80]">
-                        <span className="text-green">{graphData[2][graphData[2].length - 1].toFixed(2)}%</span>{" "}
-                        &nbsp;($0.0156)
+                        <span className={graphData[2][graphData[2].length - 1] < 0 ? "text-danger" : "text-green"}>
+                          {graphData[2][graphData[2].length - 1].toFixed(2)}%
+                        </span>
+                        &nbsp;(
+                        {formatDollar(rate[3].value, 4)})
                       </div>
                     </InfoPanel>
 
