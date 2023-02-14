@@ -28,6 +28,14 @@ const tokens = {
     "Metabolic",
     "https://metabolic.games/"
   ),
+  c4c: new Token(
+    POLYGON,
+    "0x8Fd0195469b51a935dC3C48617ced6B400E38C9C",
+    18,
+    "C4C",
+    "Crypto 4 A Cause Fund",
+    "https://crypto4ac.com/"
+  ),
 };
 
 export default tokens;
