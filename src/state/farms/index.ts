@@ -42,6 +42,62 @@ export const fetchFarmsTotalStakesAsync = (chainId) => async (dispatch, getState
   dispatch(setFarmsPublicData(data));
 };
 
+export const fetchFarmsTVLDataAsync = (pids) => async (dispatch, getState) => {
+  const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
+
+  const data = farms.map((farm) => ({
+    type: "farm",
+    chainId: farm.chainId,
+    contract: farm.contractAddress,
+    index: farm.poolId,
+  }));
+
+  axios.post(`${API_URL}/tvl/multiple`, { pools: data }).then((res) => {
+    const ret = res?.data ?? [];
+
+    const TVLData = [];
+    for (let farm of farms) {
+      let record = { pid: farm.pid, data: [] };
+      record.data = ret.filter(
+        (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.poolId
+      );
+
+      if (record.data.length > 0) {
+        TVLData.push(record);
+      }
+    }
+    dispatch(setFarmTVLData(TVLData));
+  });
+};
+
+export const fetchFarmsUserDepositDataAsync =
+  ({ account, pids }) =>
+  async (dispatch, getState) => {
+    const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
+
+    const data = farms.map((farm) => ({
+      type: "farm",
+      chainId: farm.chainId,
+      contract: farm.contractAddress,
+      index: farm.poolId,
+    }));
+
+    axios.post(`${API_URL}/deposit/${account}/multiple`, { pools: data }).then((res) => {
+      const ret = res?.data ?? [];
+
+      const depositData = [];
+      for (let farm of farms) {
+        let record = { pid: farm.pid, deposits: [] };
+        record.deposits = ret.filter(
+          (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.poolId
+        );
+
+        depositData.push(record);
+      }
+      dispatch(setFarmUserData(depositData));
+    });
+  };
+
 export const fetchFarmUserDataAsync =
   ({ account, chainId, pids }) =>
   async (dispatch, getState) => {
@@ -156,6 +212,14 @@ export const farmsSlice = createSlice({
         state.data[index] = { ...state.data[index], userData: { ...state.data[index].userData, [field]: value } };
       }
     },
+    setFarmTVLData: (state, action) => {
+      action.payload.forEach((tvlDataEl) => {
+        const { pid, data } = tvlDataEl;
+        const index = state.data.findIndex((farm) => farm.pid === pid);
+        state.data[index] = { ...state.data[index], TVLData: data };
+      });
+      state.userDataLoaded = true;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(resetUserState, (state) => {
@@ -171,6 +235,6 @@ export const farmsSlice = createSlice({
 });
 
 // Actions
-export const { setFarmsPublicData, setFarmUserData, updateFarmsUserData } = farmsSlice.actions;
+export const { setFarmsPublicData, setFarmUserData, updateFarmsUserData, setFarmTVLData } = farmsSlice.actions;
 
 export default farmsSlice.reducer;
