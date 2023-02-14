@@ -123,7 +123,7 @@ const userState: {
 };
 
 // Create a single global state object
-const initialState1 = {
+const initialState = {
   ...userState,
   modalIsOpen: false,
   mobileNavOpen: false,
@@ -132,6 +132,6 @@ const initialState1 = {
   sessionChainId: undefined as any,
 };
 
-const { useGlobalState, setGlobalState } = createGlobalState(initialState1);
+const { useGlobalState, setGlobalState } = createGlobalState(initialState);
 
 export { useGlobalState, setGlobalState };

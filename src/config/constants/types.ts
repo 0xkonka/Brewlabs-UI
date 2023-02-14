@@ -8,6 +8,7 @@ export interface SerializedToken {
   decimals: number;
   symbol: string;
   name: string;
+  logo?: string;
   projectLink?: string;
 }
 

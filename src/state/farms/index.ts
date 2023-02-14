@@ -1,23 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import farmsConfig from 'config/constants/farms'
+import farmsConfig from "config/constants/farms";
 import { resetUserState } from "state/global/actions";
 import { SerializedFarmsState } from "./types";
 
-const noAccountFarmConfig = farmsConfig.map((farm) => ({
-  ...farm,
-  userData: {
-    allowance: '0',
-    tokenBalance: '0',
-    stakedBalance: '0',
-    earnings: '0',
-    reflections: '0',
-  },
-}))
+const initialUserData = {
+  allowance: "0",
+  tokenBalance: "0",
+  stakedBalance: "0",
+  earnings: "0",
+  reflections: "0",
+  deposits: [],
+};
 
 const initialState: SerializedFarmsState = {
-  data: noAccountFarmConfig,
-  prices: {},
+  data: [],
   loadArchivedFarmsData: false,
   userDataLoaded: false,
 };
@@ -36,12 +33,7 @@ export const farmsSlice = createSlice({
       state.data = state.data.map((farm: any) => {
         return {
           ...farm,
-          userData: {
-            allowance: "0",
-            tokenBalance: "0",
-            stakedBalance: "0",
-            earnings: "0",
-          },
+          userData: initialUserData,
         };
       });
       state.userDataLoaded = false;
