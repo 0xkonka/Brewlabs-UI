@@ -3,16 +3,22 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import useSWRImmutable from "swr/immutable";
 
+import { SLOW_INTERVAL } from "config/constants";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
+import useTokenPrice from "hooks/useTokenPrice";
 import { useAppDispatch } from "state";
 import { deserializeToken } from "state/user/hooks/helpers";
 import { BIG_ZERO } from "utils/bigNumber";
 
-import { fetchFarmsPublicDataFromApiAsync, fetchFarmsTotalStakesAsync, fetchFarmUserDataAsync } from ".";
+import {
+  fetchFarmsPublicDataFromApiAsync,
+  fetchFarmsTotalStakesAsync,
+  fetchFarmsTVLDataAsync,
+  fetchFarmsUserDepositDataAsync,
+  fetchFarmUserDataAsync,
+} from ".";
 import { DeserializedFarm, DeserializedFarmUserData, SerializedFarm } from "./types";
 import { DeserializedDeposit, DeserializedFarmsState, SerializedDeposit, State } from "../types";
-import { SLOW_INTERVAL } from "config/constants";
-import useTokenPrice from "hooks/useTokenPrice";
 
 export const usePollFarmsPublicDataFromApi = () => {
   const dispatch = useAppDispatch();
@@ -46,12 +52,36 @@ export const usePollFarmsWithUserData = () => {
   );
 
   useSWRImmutable(
+    chainId ? ["publicFarmTVLData"] : null,
+    async () => {
+      const pids = farms.map((farmToFetch) => farmToFetch.pid);
+      dispatch(fetchFarmsTVLDataAsync(pids));
+    },
+    {
+      refreshInterval: SLOW_INTERVAL,
+    }
+  );
+
+  useSWRImmutable(
     account && chainId ? ["farmsWithUserData", account, chainId] : null,
     async () => {
       const pids = farms.map((farmToFetch) => farmToFetch.pid);
       const params = { account, pids, chainId };
 
       dispatch(fetchFarmUserDataAsync(params));
+    },
+    {
+      refreshInterval: SLOW_INTERVAL,
+    }
+  );
+
+  useSWRImmutable(
+    account ? ["farmsWithUserDepositData", account] : null,
+    async () => {
+      const pids = farms.map((farmToFetch) => farmToFetch.pid);
+      const params = { account, pids };
+
+      dispatch(fetchFarmsUserDepositDataAsync(params));
     },
     {
       refreshInterval: SLOW_INTERVAL,
