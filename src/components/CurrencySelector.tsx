@@ -209,7 +209,7 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
       default:
         return [];
     }
-  }, [activeTab, itemData, ethBalance, walletTokens]);
+  }, [activeTab, chainId, itemData, ethBalance, walletTokens]);
 
   const tokenMarketData = useTokenMarketChart(
     listingTokens

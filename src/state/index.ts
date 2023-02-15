@@ -8,7 +8,8 @@ import { NetworkConfig } from "config/constants/types";
 import { updateVersion } from "./global/actions";
 
 import storage from "./storage";
-import farmsReducer from "./farms";
+import farms from "./farms";
+import pools from "./pools";
 import user from "./user/reducer";
 import transactions from "./transactions/reducer";
 import swap from "./swap/reducer";
@@ -29,12 +30,13 @@ const persistConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
-    farms: farmsReducer,
+    farms,
+    pools,
     user,
-    transactions,
-    swap,
-    multicall,
     lists,
+    multicall,
+    swap,
+    transactions,
   })
 );
 
@@ -123,7 +125,7 @@ const userState: {
 };
 
 // Create a single global state object
-const initialState1 = {
+const initialState = {
   ...userState,
   modalIsOpen: false,
   mobileNavOpen: false,
@@ -132,6 +134,6 @@ const initialState1 = {
   sessionChainId: undefined as any,
 };
 
-const { useGlobalState, setGlobalState } = createGlobalState(initialState1);
+const { useGlobalState, setGlobalState } = createGlobalState(initialState);
 
 export { useGlobalState, setGlobalState };
