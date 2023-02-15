@@ -8,7 +8,7 @@ import { NetworkConfig } from "config/constants/types";
 import { updateVersion } from "./global/actions";
 
 import storage from "./storage";
-import farmsReducer from "./farms";
+import farms from "./farms";
 import user from "./user/reducer";
 import transactions from "./transactions/reducer";
 import swap from "./swap/reducer";
@@ -29,12 +29,12 @@ const persistConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
-    farms: farmsReducer,
+    farms,
     user,
-    transactions,
-    swap,
-    multicall,
     lists,
+    multicall,
+    swap,
+    transactions,
   })
 );
 
