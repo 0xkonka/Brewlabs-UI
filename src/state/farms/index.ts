@@ -44,6 +44,7 @@ export const fetchFarmsTotalStakesAsync = (chainId) => async (dispatch, getState
 
 export const fetchFarmsTVLDataAsync = (pids) => async (dispatch, getState) => {
   const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
+  if (farms.length === 0) return;
 
   const data = farms.map((farm) => ({
     type: "farm",
@@ -74,6 +75,7 @@ export const fetchFarmsUserDepositDataAsync =
   ({ account, pids }) =>
   async (dispatch, getState) => {
     const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
+    if (farms.length === 0) return;
 
     const data = farms.map((farm) => ({
       type: "farm",

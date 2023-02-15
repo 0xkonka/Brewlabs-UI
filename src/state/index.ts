@@ -9,6 +9,7 @@ import { updateVersion } from "./global/actions";
 
 import storage from "./storage";
 import farms from "./farms";
+import pools from "./pools";
 import user from "./user/reducer";
 import transactions from "./transactions/reducer";
 import swap from "./swap/reducer";
@@ -30,6 +31,7 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     farms,
+    pools,
     user,
     lists,
     multicall,
