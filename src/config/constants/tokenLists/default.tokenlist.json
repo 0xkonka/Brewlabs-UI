@@ -12,11 +12,11 @@
   "tokens": [
     {
       "chainId": 1,
-      "address": "0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba",
       "name": "BREWLABS",
       "symbol": "BREWLABS",
+      "address": "0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba",
       "decimals": 9,
-      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba/logo.png"
     },
     {
       "chainId": 1,
@@ -1589,10 +1589,18 @@
     {
       "name": "Grow Crop Corp",
       "symbol": "GCC",
-      "address": "0xAfbB5DafaceA3cFe1001357449e2ea268e50F368",
+      "address": "0x2090119735011cEFde9a8c9794A08c0d99B1F897",
       "chainId": 1,
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xAfbB5DafaceA3cFe1001357449e2ea268e50F368/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x2090119735011cEFde9a8c9794A08c0d99B1F897/logo.png"
+    },
+    {
+      "name": "Balto Token",
+      "symbol": "BALTO",
+      "address": "0x5955f7d312c5d84B004d259D55072C4F0A478dBC",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x5955f7d312c5d84B004d259D55072C4F0A478dBC/logo.png"
     },
     {
       "name": "MetaMerce Token",
@@ -1603,12 +1611,28 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x48a58Fdf91Ab56B5700D853733b860b4cDE08b26/logo.png"
     },
     {
-      "name": "ReVeR",
-      "symbol": "RVR",
-      "address": "0xb8b4b66852275355d591B90E5B75f84cAeffF392",
+      "name": "Okami",
+      "symbol": "OKM",
+      "address": "0xe8616218e54fc97941369622CcB968dae2BcC94D",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xe8616218e54fc97941369622CcB968dae2BcC94D/logo.png"
+    },
+    {
+      "name": "Shido Inu",
+      "symbol": "SHIDO",
+      "address": "0x173E552Bf97BBD50b455514ac52991Ef639ba703",
       "chainId": 1,
       "decimals": 9,
-      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xb8b4b66852275355d591B90E5B75f84cAeffF392/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x173E552Bf97BBD50b455514ac52991Ef639ba703/logo.png"
+    },
+    {
+      "name": "Slake",
+      "symbol": "SLAKE",
+      "address": "0x9C2500CfD2f1De40255Cee5EC8AdA6466E1eddf1",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x9C2500CfD2f1De40255Cee5EC8AdA6466E1eddf1/logo.png"
     },
     {
       "name": "Funicular Token",
@@ -1617,6 +1641,30 @@
       "chainId": 1,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x90A1Dd7f8dAD69FD1000A2d185D29BfddCe970F6/logo.png"
+    },
+    {
+      "name": "Volt Inu",
+      "symbol": "VOLT",
+      "address": "0x7db5af2B9624e1b3B4Bb69D6DeBd9aD1016A58Ac",
+      "chainId": 1,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x7db5af2B9624e1b3B4Bb69D6DeBd9aD1016A58Ac/logo.png"
+    },
+    {
+      "name": "Kingdom",
+      "symbol": "KNDM",
+      "address": "0x1ae378cC5d38350Ec90cE9bcf827a544cB2BBA75",
+      "chainId": 1,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x1ae378cC5d38350Ec90cE9bcf827a544cB2BBA75/logo.png"
+    },
+    {
+      "name": "Pomeranian",
+      "symbol": "POM",
+      "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
+      "chainId": 1,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x24ffe459F51ea20C5d8ad49843529fc33654e7E4/logo.png"
     },
     {
       "name": "WBNB Token",
@@ -2099,6 +2147,70 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x9d7107c8E30617CAdc11f9692A19C82ae8bbA938/logo.png"
     },
     {
+      "name": "Glow Token",
+      "symbol": "GLOW",
+      "address": "0x606379220AB266bBE4b0FeF8469e6E602f295a84",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x606379220AB266bBE4b0FeF8469e6E602f295a84/logo.png"
+    },
+    {
+      "name": "The Landlord",
+      "symbol": "LNDLRD",
+      "address": "0xd6dA6491A6663B1d413715f4fD8eDD74a4b47694",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xd6dA6491A6663B1d413715f4fD8eDD74a4b47694/logo.png"
+    },
+    {
+      "name": "Shido Inu",
+      "symbol": "SHIDO",
+      "address": "0x733Af324146DCfe743515D8D77DC25140a07F9e0",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x733Af324146DCfe743515D8D77DC25140a07F9e0/logo.png"
+    },
+    {
+      "name": "DAPPCASH",
+      "symbol": "DAPP",
+      "address": "0x1eF68f4507374960cF186c8999aadADB86736Ca4",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x1eF68f4507374960cF186c8999aadADB86736Ca4/logo.png"
+    },
+    {
+      "name": "Revoltance",
+      "symbol": "RVLT",
+      "address": "0x3E05385F64B8Ff3D47A63e1FaeF0585372717B41",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x3E05385F64B8Ff3D47A63e1FaeF0585372717B41/logo.png"
+    },
+    {
+      "name": "Y5 Crypto",
+      "symbol": "Y5",
+      "address": "0x158f40D656DE7A57B095CC01FB6bBFD17dC4faf9",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x158f40D656DE7A57B095CC01FB6bBFD17dC4faf9/logo.png"
+    },
+    {
+      "name": "LUCRO",
+      "symbol": "LCR",
+      "address": "0x988F7c894e4001EEB7B570CDE80dffE21CF7B6B9",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x988F7c894e4001EEB7B570CDE80dffE21CF7B6B9/logo.png"
+    },
+    {
+      "name": "Alcazar",
+      "symbol": "ALCAZAR",
+      "address": "0x353D0d1b4Feb416FAaAbD5B314D99ef148D56dFF",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x353D0d1b4Feb416FAaAbD5B314D99ef148D56dFF/logo.png"
+    },
+    {
       "name": "Matic Token",
       "symbol": "MATIC",
       "address": "0xCC42724C6683B7E57334c4E856f4c9965ED682bD",
@@ -2185,6 +2297,14 @@
       "chainId": 137,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0xFC541ec44A41974d76FC0b2F526CAE781ffAbaED/logo.png"
+    },
+    {
+      "name": "Crypto 4 A Cause Fund",
+      "symbol": "C4C",
+      "address": "0x8Fd0195469b51a935dC3C48617ced6B400E38C9C",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0x8Fd0195469b51a935dC3C48617ced6B400E38C9C/logo.png"
     },
     {
       "name": "Wrapped Fantom",

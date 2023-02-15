@@ -402,6 +402,70 @@ const tokens = {
     "LUCKY ROO",
     "https://luckyroo.io/"
   ),
+  glow: new Token(
+    BSC_MAINNET,
+    "0x606379220AB266bBE4b0FeF8469e6E602f295a84",
+    18,
+    "GLOW",
+    "Glow Token",
+    "https://www.glowtoken.net/"
+  ),
+  lndlrd: new Token(
+    BSC_MAINNET,
+    "0xd6dA6491A6663B1d413715f4fD8eDD74a4b47694",
+    18,
+    "LNDLRD",
+    "The Landlord",
+    "http://thelandlord.biz/"
+  ),
+  shido: new Token(
+    BSC_MAINNET,
+    "0x733Af324146DCfe743515D8D77DC25140a07F9e0",
+    9,
+    "SHIDO",
+    "Shido Inu",
+    "https://www.shido.finance/"
+  ),
+  dapp: new Token(
+    BSC_MAINNET,
+    "0x1eF68f4507374960cF186c8999aadADB86736Ca4",
+    18,
+    "DAPP",
+    "DAPPCASH",
+    "https://altnotify.com/"
+  ),
+  rvlt: new Token(
+    BSC_MAINNET,
+    "0x3E05385F64B8Ff3D47A63e1FaeF0585372717B41",
+    18,
+    "RVLT",
+    "Revoltance",
+    "https://revoltance.com/"
+  ),
+  y5: new Token(
+    BSC_MAINNET,
+    "0x158f40D656DE7A57B095CC01FB6bBFD17dC4faf9",
+    9,
+    "Y5",
+    "Y5 Crypto",
+    "https://y5crypto.com/"
+  ),
+  lcr: new Token(
+    BSC_MAINNET,
+    "0x988F7c894e4001EEB7B570CDE80dffE21CF7B6B9",
+    9,
+    "LCR",
+    "LUCRO",
+    "https://evergrowegc.com/lucrolaunch/"
+  ),
+  alcazar: new Token(
+    BSC_MAINNET,
+    "0x353D0d1b4Feb416FAaAbD5B314D99ef148D56dFF",
+    18,
+    "ALCAZAR",
+    "Alcazar",
+    "https://alcazartoken.io/"
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",

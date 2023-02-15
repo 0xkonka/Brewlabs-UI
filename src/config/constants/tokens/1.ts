@@ -240,7 +240,43 @@ const tokens = {
     "Alcazar",
     "https://alcazartoken.io/"
   ),
-  gcc: new Token(ETHEREUM, "0xAfbB5DafaceA3cFe1001357449e2ea268e50F368", 18, "GCC", "Grow Crop Corp"),
+  gcc: new Token(ETHEREUM, "0x2090119735011cEFde9a8c9794A08c0d99B1F897", 18, "GCC", "Grow Crop Corp"),
+  okm: new Token(ETHEREUM, "0xe8616218e54fc97941369622CcB968dae2BcC94D", 18, "OKM", "Okami"),
+  balto: new Token(
+    ETHEREUM,
+    "0x5955f7d312c5d84B004d259D55072C4F0A478dBC",
+    18,
+    "BALTO",
+    "Balto Token",
+    "https://baltotoken.com/"
+  ),
+  pom: new Token(
+    ETHEREUM,
+    "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
+    9,
+    "POM",
+    "Pomeranian",
+    "https://www.pomeranian.dev"
+  ),
+  funicular: new Token(ETHEREUM, "0x90A1Dd7f8dAD69FD1000A2d185D29BfddCe970F6", 18, "FUNICULAR", "Funicular Token"),
+  shido: new Token(
+    ETHEREUM,
+    "0x173E552Bf97BBD50b455514ac52991Ef639ba703",
+    9,
+    "SHIDO",
+    "Shido Inu",
+    "https://www.shido.finance/"
+  ),
+  slake: new Token(ETHEREUM, "0x9C2500CfD2f1De40255Cee5EC8AdA6466E1eddf1", 18, "SLAKE", "Slake", "https://slake.it/"),
+  volt: new Token(ETHEREUM, "0x7db5af2B9624e1b3B4Bb69D6DeBd9aD1016A58Ac", 9, "VOLT", "Volt Inu", "https://voltinu.in/"),
+  kndm: new Token(
+    ETHEREUM,
+    "0x1ae378cC5d38350Ec90cE9bcf827a544cB2BBA75",
+    18,
+    "KNDM",
+    "Kingdom",
+    "https://www.kingdometh.com/"
+  ),
   dai: new Token(ETHEREUM, "0x6B175474E89094C44Da98b954EedeAC495271d0F", 18, "DAI", "Dai Stablecoin"),
   wbtc: new Token(ETHEREUM, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", 8, "WBTC", "Wrapped BTC"),
   rune: new Token(ETHEREUM, "0x3155BA85D5F96b2d030a4966AF206230e46849cb", 18, "RUNE", "RUNE.ETH"),
