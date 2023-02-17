@@ -39,12 +39,22 @@ import HeaderMobile from "components/navigation/HeaderMobile";
 import NavigationDesktop from "components/navigation/NavigationDesktop";
 import NavigationMobile from "components/navigation/NavigationMobile";
 import { Updaters } from "../index";
+import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
+import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
   usePollBlockNumber();
   useAccountEventListener();
+
+  usePollFarmsPublicDataFromApi()
+  usePollPoolsPublicDataFromApi()
+
+  usePollFarmsWithUserData()
+  useFetchPublicPoolsData()
+  useFetchPoolsWithUserData()
+
   return null;
 }
 

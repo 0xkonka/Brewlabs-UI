@@ -31,6 +31,10 @@ const initialState: SerializedFarmsState = {
 export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/farms`).then((res) => {
     dispatch(setFarmsPublicData(res.data ?? []));
+    
+    const farms = res.data ?? []
+    const pids = farms.map((farmToFetch) => farmToFetch.pid);
+    dispatch(fetchFarmsTVLDataAsync(pids));
   });
 };
 
