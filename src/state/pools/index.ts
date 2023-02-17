@@ -223,7 +223,6 @@ export const PoolsSlice = createSlice({
       }
     },
   },
-  extraReducers: {},
 });
 
 // Actions
