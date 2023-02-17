@@ -32,8 +32,8 @@ export const usePollPoolsPublicDataFromApi = () => {
   }, [dispatch]);
 };
 
-export const useFetchUserPools = (account) => {
-  const { chainId } = useActiveWeb3React();
+export const useFetchPoolsWithUserData = () => {
+  const { chainId, account } = useActiveWeb3React();
   const dispatch = useAppDispatch();
   useSlowRefreshEffect(() => {
     if (account) {

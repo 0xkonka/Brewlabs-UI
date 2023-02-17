@@ -190,7 +190,6 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
   await Promise.all(
     filters.map(async (batch) => {
       try {
-        const bnbPool = batch.filter((p) => p.stakingToken.isNative);
         const nonLockupPools = batch.filter((p) => !p.stakingToken.isNative && p.poolCategory !== PoolCategory.LOCKUP);
         const lockupPools = batch.filter((p) => !p.stakingToken.isNative && p.poolCategory === PoolCategory.LOCKUP);
 
@@ -210,17 +209,8 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
           };
         });
 
-        const callsBnbPools = bnbPool.map((poolConfig) => {
-          return {
-            address: WNATIVE[poolConfig.chainId].address,
-            name: "balanceOf",
-            params: [poolConfig.contractAddress],
-          };
-        });
-
         const nonLockupPoolsTotalStaked = await multicall(singleStakingABI, callsNonLockupPools, chainId);
         const lockupPoolsTotalStaked = await multicall(lockupStakingABI, callsLockupPools, chainId);
-        const bnbPoolsTotalStaked = await multicall(wbnbABI, callsBnbPools, chainId);
 
         nonLockupPools.forEach((p, index) => {
           data.push({
@@ -237,13 +227,6 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
             totalStaked: ethers.utils
               .formatUnits(lockupPoolsTotalStaked[index].totalStaked._hex, p.stakingToken.decimals)
               .toString(),
-          });
-        });
-
-        bnbPool.forEach((p, index) => {
-          data.push({
-            sousId: p.sousId,
-            totalStaked: ethers.utils.formatUnits(bnbPoolsTotalStaked[index][0], p.stakingToken.decimals).toString(),
           });
         });
       } catch (e) {

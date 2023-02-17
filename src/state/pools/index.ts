@@ -20,6 +20,7 @@ import {
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
 import { AppThunk, SerializedPool } from "./types";
+import { PoolCategory } from "config/constants/types";
 
 const initialState: PoolsState = {
   data: [],
@@ -55,6 +56,40 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
 export const fetchPoolsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/pools`).then((res) => {
     dispatch(setPoolsPublicData(res.data));
+    
+    const pools = res.data ?? []
+    const soudIds = pools.map((pool) => pool.sousId);
+    dispatch(fetchPoolsTVLDataAsync(soudIds));
+  });
+};
+
+export const fetchPoolsTVLDataAsync = (sousIds) => async (dispatch, getState) => {
+  const pools = getState().pools.data.filter((pool) => sousIds.includes(pool.sousId));
+  if (pools.length === 0) return;
+
+  const data = pools.map((pool) => ({
+    type: pool.poolCategory === PoolCategory.LOCKUP ? "lockup" : "single",
+    chainId: pool.chainId,
+    contract: pool.contractAddress,
+    index: pool.lockup ?? 0,
+  }));
+
+  axios.post(`${API_URL}/tvl/multiple`, { pools: data }).then((res) => {
+    const ret = res?.data ?? [];
+
+    const TVLData = [];
+    for (let pool of pools) {
+      let record = { sousId: pool.sousId, data: [] };
+      record.data = ret.filter(
+        (d) =>
+          d.chainId === pool.chainId && d.address === pool.contractAddress.toLowerCase() && d.sousId === pool.sousId
+      );
+
+      if (record.data.length > 0) {
+        TVLData.push(record);
+      }
+    }
+    dispatch(setPoolTVLData(TVLData));
   });
 };
 
@@ -77,7 +112,7 @@ export const fetchPoolsStakingLimitsAsync = (chainId: ChainId) => async (dispatc
 };
 
 export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => async (dispatch, getState) => {
-  const pools = getState().pools.data;
+  const pools = getState().pools.data.filter((p) => p.chainId === chainId);
 
   fetchPoolsAllowance(account, chainId, pools).then((allowances) => {
     dispatch(
@@ -222,10 +257,19 @@ export const PoolsSlice = createSlice({
         );
       }
     },
+    setPoolTVLData: (state, action) => {
+      action.payload.forEach((tvlDataEl) => {
+        const { sousId, data } = tvlDataEl;
+        const index = state.data.findIndex((pool) => pool.sousId === sousId);
+        state.data[index] = { ...state.data[index], TVLData: data };
+      });
+      state.userDataLoaded = true;
+    },
   },
 });
 
 // Actions
-export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection } = PoolsSlice.actions;
+export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection, setPoolTVLData } =
+  PoolsSlice.actions;
 
 export default PoolsSlice.reducer;

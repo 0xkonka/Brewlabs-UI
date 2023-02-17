@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js"
 
 import { PoolCategory, SerializedToken, Version } from "config/constants/types"
 import { SerializedBigNumber } from "state/farms/types"
-import { State } from "state/types"
+import { State, StakingTVL, SerializedDeposit, DeserializedDeposit } from "state/types"
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
 
@@ -68,7 +68,9 @@ interface PoolConfigBaseProps {
       lockedBalance: BigNumber
       pendingReward: BigNumber
       pendingReflections: BigNumber[]
+      deposits: DeserializedDeposit[];
     }
+    TVLData?: StakingTVL[];
   }
   
   export interface SerializedPool extends SerializedPoolConfig, CorePoolProps {
@@ -82,5 +84,7 @@ interface PoolConfigBaseProps {
       lockedBalance: SerializedBigNumber
       pendingReward: SerializedBigNumber
       pendingReflections: SerializedBigNumber[]
+      deposits: SerializedDeposit[];
     }
+    TVLData?: StakingTVL[];
   }
