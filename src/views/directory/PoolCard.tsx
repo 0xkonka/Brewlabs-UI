@@ -1,13 +1,11 @@
+import styled from "styled-components";
+
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { CHAIN_ICONS } from "config/constants/networks";
-import { IndexContext } from "contexts/directory/IndexContext";
-import { PoolContext } from "contexts/directory/PoolContext";
-import { useContext, useState } from "react";
-import { usePools } from "state/pools/hooks";
-import styled from "styled-components";
 import { formatTotalStaked, formatTvl } from "utils/formatApy";
 import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import { Category } from "config/constants/types";
 
 const PoolCard = ({
   data,
@@ -47,7 +45,7 @@ const PoolCard = ({
             />
           )}
           <div>
-            {data.type === 1 ? (
+            {data.type === Category.POOL || data.type === Category.FARM ? (
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
               </div>
@@ -60,7 +58,7 @@ const PoolCard = ({
           </div>
         </div>
         <div className="min-w-[70px]">
-          {data.tvl ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
+          {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
@@ -71,7 +69,7 @@ const PoolCard = ({
         </div>
         <div className="min-w-[80px]">
           {data.type !== 3 ? (
-            data.apr !== undefined ? (
+            data.apr || data.apr === 0.0 ? (
               `${data.apr?.toFixed(2)}%`
             ) : (
               <div className="mr-2">{<SkeletonComponent />}</div>

@@ -24,6 +24,7 @@ export const formatTvl = (value, oraclePrice, useOrder = true) => {
   if (order < 0 || useOrder === false) {
     order = 0;
   }
+  if(order > 8) order = 8
 
   const num = tvl / 1000 ** order;
 
@@ -37,6 +38,7 @@ export const formatTotalStaked = (value, useOrder = true) => {
   if (order < 0 || useOrder === false) {
     order = 0;
   }
+  if(order > 8) order = 8
 
   const num = +tvl / 1000 ** order;
 

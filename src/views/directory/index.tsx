@@ -85,7 +85,7 @@ const Directory = ({ page }: { page: number }) => {
               <Container className="font-brand">
                 <CorePool
                   setSelectPoolDetail={setSelectPoolDetail}
-                  index={0}
+                  index={195}
                   setCurPool={setCurPool}
                   pools={allPools}
                 />

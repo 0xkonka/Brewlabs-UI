@@ -32,16 +32,19 @@ const PoolList = ({
           switch (data.type) {
             case Category.POOL:
               price = prices[getCurrencyId(data.chainId, data.earningToken.address)];
+              if (price > 500000) price = 0;
               tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
               break;
             case Category.FARM:
               price = prices[getCurrencyId(data.chainId, data.lpAddress, true)];
+              if (price > 500000) price = 0;
               tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
               break;
           }
+
           return (
             <PoolCard
-              data={{...data, tvl: +tvl.toFixed(2)}}
+              data={{ ...data, tvl: +tvl.toFixed(2) }}
               key={`${data.type}-${data.sousId}-${data.farmId}`}
               index={i}
               setSelectPoolDetail={setSelectPoolDetail}
