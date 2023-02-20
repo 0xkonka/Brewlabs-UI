@@ -56,8 +56,8 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
 export const fetchPoolsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/pools`).then((res) => {
     dispatch(setPoolsPublicData(res.data));
-    
-    const pools = res.data ?? []
+
+    const pools = res.data ?? [];
     const soudIds = pools.map((pool) => pool.sousId);
     dispatch(fetchPoolsTVLDataAsync(soudIds));
   });
@@ -82,7 +82,10 @@ export const fetchPoolsTVLDataAsync = (sousIds) => async (dispatch, getState) =>
       let record = { sousId: pool.sousId, data: [] };
       record.data = ret.filter(
         (d) =>
-          d.chainId === pool.chainId && d.address === pool.contractAddress.toLowerCase() && d.sousId === pool.sousId
+          d.chainId === pool.chainId &&
+          d.address === pool.contractAddress.toLowerCase() &&
+          (pool.poolCategory !== PoolCategory.LOCKUP ||
+            (pool.poolCategory === PoolCategory.LOCKUP && pool.lockup === d.pid))
       );
 
       if (record.data.length > 0) {

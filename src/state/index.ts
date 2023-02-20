@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useMemo, ReactNode } from "react";
+import logger from "redux-logger";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import { createGlobalState } from "react-hooks-global-state";
@@ -47,12 +48,19 @@ export function makeStore(preloadedState = undefined) {
   return configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        thunk: true,
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }),
+      process.env.NODE_ENV !== "production"
+        ? getDefaultMiddleware({
+            thunk: true,
+            serializableCheck: {
+              ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+          }).concat(logger)
+        : getDefaultMiddleware({
+            thunk: true,
+            serializableCheck: {
+              ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+          }),
     devTools: process.env.NODE_ENV === "development",
     preloadedState,
   });

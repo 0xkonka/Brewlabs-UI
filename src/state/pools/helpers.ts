@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import { SerializedDeposit } from "state/types";
 import { deserializeToken } from "state/user/hooks/helpers";
 import { BIG_ZERO } from "utils/bigNumber";
 import { DeserializedPool, SerializedPool } from "./types";
@@ -12,6 +13,7 @@ type UserData =
       lockedBalance: number | string;
       pendingReward: number | string;
       pendingReflections: number[] | string[];
+      deposits: SerializedDeposit[];
     };
 
 export const transformUserData = (userData: UserData) => {
@@ -21,6 +23,13 @@ export const transformUserData = (userData: UserData) => {
       userData?.pendingReflections?.[i] ? new BigNumber(userData.pendingReflections[i]) : BIG_ZERO
     );
   }
+  const deposits = [];
+  for (let i = 0; i < userData?.deposits?.length; i++) {
+    deposits.push({
+      ...userData.deposits[i],
+      amount: new BigNumber(userData.deposits[i].amount),
+    });
+  }
 
   return {
     allowance: userData ? new BigNumber(userData.allowance) : BIG_ZERO,
@@ -29,6 +38,7 @@ export const transformUserData = (userData: UserData) => {
     lockedBalance: userData ? new BigNumber(userData.lockedBalance) : BIG_ZERO,
     pendingReward: userData ? new BigNumber(userData.pendingReward) : BIG_ZERO,
     pendingReflections,
+    deposits,
   };
 };
 
