@@ -23,22 +23,8 @@ import StakingHistory from "./StakingHistory";
 import StakingModal from "./Modals/StakingModal";
 import { getNativeSybmol } from "lib/bridge/helpers";
 
-const CHAIN_SYMBOL = {
-  1: "ETH",
-  56: "BNB",
-};
-
-const StakingDetail = ({
-  open,
-  setOpen,
-  data,
-  accountData,
-}: {
-  open: boolean;
-  setOpen: any;
-  data: any;
-  accountData?: any;
-}) => {
+const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
+  const { userData: accountData } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
   const [curGraph, setCurGraph] = useState(0);
@@ -281,9 +267,12 @@ const StakingDetail = ({
                         <div className=" text-[#FFFFFF80]">
                           <span className="text-primary">{data.earningToken.symbol}</span> earned
                         </div>
-                        <div className="text-[#FFFFFF80]">
-                          <span className="text-primary">{data.reflectionToken.symbol}</span> Rewards
-                        </div>
+                        {data.reflectionTokens.length > 0 && (
+                          <div className="text-[#FFFFFF80]">
+                            <span className="text-primary">{data.reflectionTokens.map((t) => t.symbol).join("-")}</span>{" "}
+                            Rewards
+                          </div>
+                        )}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
@@ -298,17 +287,19 @@ const StakingDetail = ({
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        <div className="flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.pendingReflection !== undefined ? (
-                            accountData.pendingReflection.toFixed(0)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.reflectionToken.symbol}
-                        </div>
+                        {data.reflectionTokens.length > 0 && (
+                          <div className="flex text-primary">
+                            {!address ? (
+                              "0.00"
+                            ) : accountData.pendingReflection !== undefined ? (
+                              accountData.pendingReflection.toFixed(0)
+                            ) : (
+                              <SkeletonComponent />
+                            )}
+                            &nbsp;
+                            {data.reflectionTokens[0].symbol}
+                          </div>
+                        )}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Total</div>
@@ -323,17 +314,19 @@ const StakingDetail = ({
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        <div className="flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.totalReflection !== undefined ? (
-                            accountData.totalReflection.toFixed(2)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.reflectionToken.symbol}
-                        </div>
+                        {data.reflectionTokens.length > 0 && (
+                          <div className="flex text-primary">
+                            {!address ? (
+                              "0.00"
+                            ) : accountData.totalReflection !== undefined ? (
+                              accountData.totalReflection.toFixed(2)
+                            ) : (
+                              <SkeletonComponent />
+                            )}
+                            &nbsp;
+                            {data.reflectionTokens[0].symbol}
+                          </div>
+                        )}
                       </div>
                     </InfoPanel>
                   </div>
@@ -345,7 +338,9 @@ const StakingDetail = ({
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : getNativeSybmol[chainId]}
+                      symbol={
+                        curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : getNativeSybmol[chainId]
+                      }
                       price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
                       curGraph={curGraph}
                     />
@@ -465,45 +460,47 @@ const StakingDetail = ({
                           </StyledButton>
                         </div>
                       </div>
-                      <div className="mt-5 flex-1 xsm:mt-0">
-                        <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
-                        <div className="mt-1.5 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReflection}
-                            disabled={!address || !accountData.pendingReflection || pending}
-                            onClick={() => onCompoundReflection()}
-                          >
-                            Compound&nbsp;
-                            {!address ? (
-                              "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(2)
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
-                          </StyledButton>
+                      {data.reflectionTokens.length > 0 && (
+                        <div className="mt-5 flex-1 xsm:mt-0">
+                          <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
+                          <div className="mt-1.5 h-[56px] w-full">
+                            <StyledButton
+                              type="teritary"
+                              boxShadow={address && accountData.pendingReflection}
+                              disabled={!address || !accountData.pendingReflection || pending}
+                              onClick={() => onCompoundReflection()}
+                            >
+                              Compound&nbsp;
+                              {!address ? (
+                                "0.00"
+                              ) : accountData.pendingReflection !== undefined ? (
+                                accountData.pendingReflection.toFixed(2)
+                              ) : (
+                                <SkeletonComponent />
+                              )}
+                              <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                            </StyledButton>
+                          </div>
+                          <div className="mt-2 h-[56px] w-full">
+                            <StyledButton
+                              type="teritary"
+                              boxShadow={address && accountData.pendingReflection}
+                              disabled={!address || !accountData.pendingReflection || pending}
+                              onClick={() => onHarvestReflection()}
+                            >
+                              Harvest&nbsp;
+                              {!address ? (
+                                "0.00"
+                              ) : accountData.pendingReflection !== undefined ? (
+                                accountData.pendingReflection.toFixed(2)
+                              ) : (
+                                <SkeletonComponent />
+                              )}
+                              <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                            </StyledButton>
+                          </div>
                         </div>
-                        <div className="mt-2 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReflection}
-                            disabled={!address || !accountData.pendingReflection || pending}
-                            onClick={() => onHarvestReflection()}
-                          >
-                            Harvest&nbsp;
-                            {!address ? (
-                              "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(2)
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
-                          </StyledButton>
-                        </div>
-                      </div>
+                      )}
                     </div>
                     <div className="mt-7">
                       <StakingHistory history={history} />

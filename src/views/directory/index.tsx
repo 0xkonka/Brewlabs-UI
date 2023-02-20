@@ -8,7 +8,6 @@ import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 
 import { Category } from "config/constants/types";
-import { PoolContext } from "contexts/directory/PoolContext";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { useTokenPrices } from "hooks/useTokenPrice";
 import { usePools } from "state/pools/hooks";
@@ -28,14 +27,13 @@ const Directory = ({ page }: { page: number }) => {
   const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
-  const { pools: _pools } = usePools();
+  const { pools } = usePools();
   const prices = useTokenPrices();
 
-  const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
 
   const allPools = [
-    ..._pools.map((pool) => {
+    ...pools.map((pool) => {
       let price = prices[getCurrencyId(pool.chainId, pool.earningToken.address)];
       if (price > 500000) price = 0;
       return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };

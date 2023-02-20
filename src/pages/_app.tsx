@@ -20,7 +20,6 @@ import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
-import { PoolContextProvider } from "contexts/directory/PoolContext";
 import { IndexContextProvider } from "contexts/directory/IndexContext";
 import { LanguageProvider } from "contexts/localization";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
@@ -87,7 +86,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <TokenPriceContextProvider>
               <DashboardContextProvider>
-                <PoolContextProvider>
                   <IndexContextProvider>
                     <LanguageProvider>
                       <BridgeProvider>
@@ -138,7 +136,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                       </BridgeProvider>
                     </LanguageProvider>
                   </IndexContextProvider>
-                </PoolContextProvider>
               </DashboardContextProvider>
             </TokenPriceContextProvider>
           </ThemeProvider>

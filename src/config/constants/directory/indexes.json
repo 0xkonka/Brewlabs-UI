@@ -1,7 +1,7 @@
 [
   {
     "type": 3,
-    "chainID": 1,
+    "chainId": 1,
     "address": "0xc683433999a813A9F8DF4130d9FEDd39BbAb31B2",
     "chainLogo": "/images/directory/eth.svg",
     "stakingToken": {

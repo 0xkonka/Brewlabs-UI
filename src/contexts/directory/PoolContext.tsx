@@ -3,7 +3,7 @@ import { useFastRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffe
 import { useAccount } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getMulticallContract } from "utils/contractHelpers";
-import pools from "../../config/constants/directory/pools.json";
+// import pools from "../../config/constants/directory/pools.json";
 import UnLockABI from "config/abi/brewlabsUnLockup.json";
 
 import { ethers } from "ethers";
@@ -31,9 +31,8 @@ const PoolContextProvider = ({ children }: any) => {
   const { address } = useAccount();
   // const address = "0xc6c6602743b17c8fd3014cf5012120fc3cec2cb7";
   const { chainId } = useActiveChainId();
-  const [data, setData] = useState(pools);
-  const [accountData, setAccountData] = useState(pools);
-
+  const [data, setData] = useState([]);
+  const [accountData, setAccountData] = useState([]);
   function getEarningAmount(data, decimals) {
     let sum = 0;
 
@@ -328,7 +327,7 @@ const PoolContextProvider = ({ children }: any) => {
     }
   }
   useEffect(() => {
-    setAccountData(pools);
+    setAccountData([]);
   }, [chainId, address]);
 
   useSlowRefreshEffect(() => {
@@ -337,7 +336,7 @@ const PoolContextProvider = ({ children }: any) => {
 
   useFastRefreshEffect(() => {
     if (!address) {
-      setAccountData(pools);
+      setAccountData([]);
       return;
     }
     fetchAccountPoolDatas();
