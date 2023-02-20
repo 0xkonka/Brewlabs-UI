@@ -13,18 +13,23 @@ import WordHighlight from "components/text/WordHighlight";
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { BIG_ZERO } from "utils/bigNumber";
 import { getUnLockStakingContract } from "utils/contractHelpers";
 import { numberWithCommas } from "utils/functions";
+import { formatTvl } from "utils/formatApy";
+import { getBalanceNumber } from "utils/formatBalance";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../StyledButton";
 import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "./Modals/StakingModal";
-import { getNativeSybmol } from "lib/bridge/helpers";
 
 const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
-  const { userData: accountData } = data;
+  const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
   const [curGraph, setCurGraph] = useState(0);
@@ -32,8 +37,19 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
+
+  let hasReflections = false;
+  const reflectionTokenBalances = [];
+  for (let i = 0; i < reflectionTokens.length; i++) {
+    reflectionTokenBalances.push(
+      getBalanceNumber(accountData.pendingReflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals)
+    );
+    if (accountData.pendingReflections[i]?.gt(0)) hasReflections = true;
+  }
+  const earningTokenBalance = getBalanceNumber(accountData.pendingReward ?? BIG_ZERO, earningToken.decimals);
 
   const onCompoundReward = async () => {
     setPending(true);
@@ -202,7 +218,12 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       </div>
                     </div>
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
-                      <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
+                      <a
+                        className="h-[32px] w-[140px]"
+                        href={data.earningToken.projectLink}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         <StyledButton>
                           <div>Website</div>
                           <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
@@ -211,7 +232,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       <a
                         className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
                         target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>
@@ -224,7 +245,11 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                   <div className="mt-4 flex w-[160px] items-center justify-center ">
-                    <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
+                    <img
+                      src={getTokenLogoURL(earningToken.address, data.chainId)}
+                      alt={""}
+                      className="w-[100px] rounded-full"
+                    />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel
@@ -233,19 +258,19 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                     >
                       <div className="flex justify-between text-xl">
                         <div>
-                          Pool: <span className="text-primary">{data.earningToken.symbol}</span>
+                          Pool: <span className="text-primary">{earningToken.symbol}</span>
                         </div>
                         <div className="flex">
                           APR:&nbsp;
                           <span className="text-primary">
-                            {data.apr !== undefined ? `${data.apr}%` : <SkeletonComponent />}
+                            {data.apr || data.apr === 0.0 ? `${data.apr.toFixed(2)}%` : <SkeletonComponent />}
                           </span>
                         </div>
                       </div>
                       <div className="flex justify-between text-base  text-[#FFFFFF80]">
                         <div>
-                          Stake: <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
-                          <span className="text-primary">{data.earningToken.symbol}</span>
+                          Stake: <span className="text-primary">{stakingToken.symbol}</span> earn{" "}
+                          <span className="text-primary">{earningToken.symbol}</span>
                         </div>
                         <div className="text-primary">Flexible</div>
                       </div>
@@ -253,8 +278,14 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         Deposit Fee {data.depositFee.toFixed(2)}%
                         <br />
                         Withdraw Fee {data.withdrawFee.toFixed(2)}%
+                        {data.sousId === 203 && (
+                          <>
+                            <br />
+                            Early Withdraw Fee 10.00 %
+                          </>
+                        )}
                         <br />
-                        Peformance Fee {data.performanceFee / Math.pow(10, 18)} BNB
+                        Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}
                       </div>
                     </InfoPanel>
 
@@ -265,11 +296,13 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
-                          <span className="text-primary">{data.earningToken.symbol}</span> earned
+                          <span className="text-primary">{earningToken.symbol}</span> earned
                         </div>
-                        {data.reflectionTokens.length > 0 && (
+                        {data.reflection && (
                           <div className="text-[#FFFFFF80]">
-                            <span className="text-primary">{data.reflectionTokens.map((t) => t.symbol).join("-")}</span>{" "}
+                            <span className="text-primary">
+                              {reflectionTokens.length === 1 ? reflectionTokens[0].symbol : "Multiple"}
+                            </span>{" "}
                             Rewards
                           </div>
                         )}
@@ -277,29 +310,29 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
                         <div className=" flex text-primary">
-                          {!address ? (
+                          {!address || data.enableEmergencyWithdraw ? (
                             "0.00"
-                          ) : accountData.pendingReward !== undefined ? (
-                            accountData.pendingReward.toFixed(0)
+                          ) : accountData.pendingReward ? (
+                            +accountData.pendingReward.toFixed(4)
                           ) : (
                             <SkeletonComponent />
                           )}
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.reflectionTokens.length > 0 && (
-                          <div className="flex text-primary">
-                            {!address ? (
+                        {data.reflectionTokens.map((t, index) => (
+                          <div key={index} className="flex text-primary">
+                            {!address || data.enableEmergencyWithdraw ? (
                               "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(0)
+                            ) : accountData.pendingReflections[index] ? (
+                              accountData.pendingReflections[index].toFixed(0)
                             ) : (
                               <SkeletonComponent />
                             )}
                             &nbsp;
-                            {data.reflectionTokens[0].symbol}
+                            {t.symbol}
                           </div>
-                        )}
+                        ))}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Total</div>
@@ -332,7 +365,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                   </div>
                 </div>
                 <div className="mt-7">
-                  <ProgressBar endBlock={data.endBlock} remaining={data.remainingBlock} />
+                  <ProgressBar endBlock={data.endBlock} remaining={data.endBlock - data.startBlock} />
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
@@ -352,11 +385,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                     >
                       <div>Total Staked Value</div>
                       <div className="flex">
-                        {data.totalStaked !== undefined && data.price !== undefined ? (
-                          `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
-                        ) : (
-                          <SkeletonComponent />
-                        )}
+                        {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -393,7 +422,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         ) : (
                           <SkeletonComponent />
                         )}
-                        &nbsp;<span className="text-primary">BNB</span>
+                        &nbsp;<span className="text-primary">{getNativeSybmol(data.chainId)}</span>
                       </div>
                     </InfoPanel>
 
@@ -422,8 +451,8 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         <div className="mt-1.5 h-[56px] w-full">
                           <StyledButton
                             type="teritary"
-                            boxShadow={address && accountData.pendingReward}
-                            disabled={!address || !accountData.pendingReward || pending}
+                            boxShadow={address && earningTokenBalance > 0}
+                            disabled={!address || earningTokenBalance === 0 || pending}
                             onClick={() => onCompoundReward()}
                           >
                             <div className="flex">
@@ -431,7 +460,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                               {!address ? (
                                 0
                               ) : accountData.pendingReward !== undefined ? (
-                                accountData.pendingReward.toFixed(0)
+                                +earningTokenBalance.toFixed(4)
                               ) : (
                                 <SkeletonComponent />
                               )}
@@ -442,8 +471,8 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         <div className="mt-2 h-[56px] w-full">
                           <StyledButton
                             type="teritary"
-                            boxShadow={address && accountData.pendingReward}
-                            disabled={!address || !accountData.pendingReward || pending}
+                            boxShadow={address && earningTokenBalance > 0}
+                            disabled={!address || earningTokenBalance === 0 || pending}
                             onClick={() => onHarvestReward()}
                           >
                             <div className="flex">
@@ -451,7 +480,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                               {!address ? (
                                 0
                               ) : accountData.pendingReward !== undefined ? (
-                                accountData.pendingReward.toFixed(0)
+                                +earningTokenBalance.toFixed(4)
                               ) : (
                                 <SkeletonComponent />
                               )}
@@ -460,39 +489,45 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                           </StyledButton>
                         </div>
                       </div>
-                      {data.reflectionTokens.length > 0 && (
+                      {data.reflection && (
                         <div className="mt-5 flex-1 xsm:mt-0">
                           <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
                           <div className="mt-1.5 h-[56px] w-full">
                             <StyledButton
                               type="teritary"
-                              boxShadow={address && accountData.pendingReflection}
-                              disabled={!address || !accountData.pendingReflection || pending}
+                              boxShadow={address && hasReflections}
+                              disabled={!address || !hasReflections || pending}
                               onClick={() => onCompoundReflection()}
                             >
                               Compound&nbsp;
-                              {!address ? (
-                                "0.00"
-                              ) : accountData.pendingReflection !== undefined ? (
-                                accountData.pendingReflection.toFixed(2)
+                              {reflectionTokens.length > 1 ? (
+                                <span className="text-primary">&nbsp;Multiple</span>
                               ) : (
-                                <SkeletonComponent />
+                                <>
+                                  {!address ? (
+                                    "0.00"
+                                  ) : accountData.pendingReflections[0] !== undefined ? (
+                                    +reflectionTokenBalances[0].toFixed(4)
+                                  ) : (
+                                    <SkeletonComponent />
+                                  )}
+                                  <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                                </>
                               )}
-                              <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
                             </StyledButton>
                           </div>
                           <div className="mt-2 h-[56px] w-full">
                             <StyledButton
                               type="teritary"
-                              boxShadow={address && accountData.pendingReflection}
-                              disabled={!address || !accountData.pendingReflection || pending}
+                              boxShadow={address && hasReflections}
+                              disabled={!address || !hasReflections || pending}
                               onClick={() => onHarvestReflection()}
                             >
                               Harvest&nbsp;
                               {!address ? (
                                 "0.00"
-                              ) : accountData.pendingReflection !== undefined ? (
-                                accountData.pendingReflection.toFixed(2)
+                              ) : accountData.pendingReflections[0] !== undefined ? (
+                                +reflectionTokenBalances[0].toFixed(4)
                               ) : (
                                 <SkeletonComponent />
                               )}
@@ -506,31 +541,45 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       <StakingHistory history={history} />
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
-                      <div className="mr-5 flex-1">
-                        <StyledButton
-                          onClick={() => {
-                            setStakingModalOpen(true);
-                            setCurType("deposit");
-                          }}
-                          disabled={pending || !address}
-                        >
-                          Deposit {data.stakingToken.symbol}
-                        </StyledButton>
-                      </div>
-                      <div className="flex-1">
-                        <StyledButton
-                          type={"secondary"}
-                          onClick={() => {
-                            setStakingModalOpen(true);
-                            setCurType("withdraw");
-                          }}
-                          disabled={pending || !address}
-                        >
-                          <div className="text-[#FFFFFFBF]">
-                            Withdraw <span className="text-primary">{data.stakingToken.symbol}</span>
+                      {data.chainId !== chainId ? (
+                        <div className="flex-1">
+                          <StyledButton
+                            onClick={() => {
+                              if (canSwitch) switchNetwork(data.chainId);
+                            }}
+                          >
+                            Switch to {getNetworkLabel(data.chainId)}
+                          </StyledButton>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="mr-5 flex-1">
+                            <StyledButton
+                              onClick={() => {
+                                setStakingModalOpen(true);
+                                setCurType("deposit");
+                              }}
+                              disabled={pending || !address}
+                            >
+                              Deposit {data.stakingToken.symbol}
+                            </StyledButton>
                           </div>
-                        </StyledButton>
-                      </div>
+                          <div className="flex-1">
+                            <StyledButton
+                              type={"secondary"}
+                              onClick={() => {
+                                setStakingModalOpen(true);
+                                setCurType("withdraw");
+                              }}
+                              disabled={pending || !address}
+                            >
+                              <div className="text-[#FFFFFFBF]">
+                                Withdraw <span className="text-primary">{data.stakingToken.symbol}</span>
+                              </div>
+                            </StyledButton>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

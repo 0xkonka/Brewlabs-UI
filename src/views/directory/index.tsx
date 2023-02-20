@@ -51,7 +51,7 @@ const Directory = ({ page }: { page: number }) => {
     );
     if (curFilter === 0) setFilteredData(allPools);
     else setFilteredData(filtered.filter((data: any) => data.type === curFilter));
-  }, [curFilter, criteria, pools, indexes]);
+  }, [curFilter, criteria, allPools]);
 
   const renderDetailPage = () => {
     switch (curPool.type) {
