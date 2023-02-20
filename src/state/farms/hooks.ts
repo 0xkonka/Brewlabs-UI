@@ -13,7 +13,6 @@ import { BIG_ZERO } from "utils/bigNumber";
 import {
   fetchFarmsPublicDataFromApiAsync,
   fetchFarmsTotalStakesAsync,
-  fetchFarmsTVLDataAsync,
   fetchFarmsUserDepositDataAsync,
   fetchFarmUserDataAsync,
 } from ".";
