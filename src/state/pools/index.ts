@@ -20,7 +20,7 @@ import {
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
 import { AppThunk, SerializedPool } from "./types";
-import { PoolCategory } from "config/constants/types";
+import { Category, PoolCategory } from "config/constants/types";
 
 const initialState: PoolsState = {
   data: [],
@@ -55,9 +55,12 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
 
 export const fetchPoolsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/pools`).then((res) => {
-    dispatch(setPoolsPublicData(res.data));
+    let pools = [];
+    if(res.data) {
+      pools = res.data.map((pool) => ({type: Category.POOL, ...pool}))
+    }
+    dispatch(setPoolsPublicData(pools));
 
-    const pools = res.data ?? [];
     const soudIds = pools.map((pool) => pool.sousId);
     dispatch(fetchPoolsTVLDataAsync(soudIds));
   });

@@ -1,13 +1,17 @@
+import { Category } from "config/constants/types";
 import { useRef, useState } from "react";
 import styled from "styled-components";
+import getCurrencyId from "utils/getCurrencyId";
 import PoolCard from "./PoolCard";
 
 const PoolList = ({
   pools,
+  prices,
   setSelectPoolDetail,
   setCurPool,
 }: {
   pools: any;
+  prices: any;
   setSelectPoolDetail: any;
   setCurPool: any;
 }) => {
@@ -23,8 +27,26 @@ const PoolList = ({
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
         {pools.map((data: any, i: number) => {
+          let tvl = 0;
+          let price;
+          switch (data.type) {
+            case Category.POOL:
+              price = prices[getCurrencyId(data.chainId, data.earningToken.address)];
+              tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
+              break;
+            case Category.FARM:
+              price = prices[getCurrencyId(data.chainId, data.lpAddress, true)];
+              tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
+              break;
+          }
           return (
-            <PoolCard data={data} key={i} index={i} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
+            <PoolCard
+              data={{...data, tvl: +tvl.toFixed(2)}}
+              key={`${data.type}-${data.sousId}-${data.farmId}`}
+              index={i}
+              setSelectPoolDetail={setSelectPoolDetail}
+              setCurPool={setCurPool}
+            />
           );
         })}
       </PoolPanel>
@@ -39,7 +61,7 @@ const PoolHeader = styled.div`
   padding: 8px 0;
   font-size: 18px;
   color: #ffffff80;
-  
+
   @media screen and (max-width: 1080px) {
     display: none;
   }

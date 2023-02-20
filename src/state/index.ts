@@ -54,7 +54,7 @@ export function makeStore(preloadedState = undefined) {
             serializableCheck: {
               ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-          }).concat(logger)
+          }) // .concat(logger)
         : getDefaultMiddleware({
             thunk: true,
             serializableCheck: {

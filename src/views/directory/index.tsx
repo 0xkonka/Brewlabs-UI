@@ -12,6 +12,8 @@ import StakingDetail from "./StakingDetail";
 import IndexDetail from "./IndexDetail";
 import { PoolContext } from "contexts/directory/PoolContext";
 import { IndexContext } from "contexts/directory/IndexContext";
+import { usePools } from "state/pools/hooks";
+import { useTokenPrices } from "hooks/useTokenPrice";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -20,10 +22,13 @@ const Directory = ({ page }: { page: number }) => {
   const [curPool, setCurPool] = useState(0);
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
+  const {pools: _pools} = usePools()
+  const prices = useTokenPrices()
+
   const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
 
-  const allPools = [...pools, ...indexes],
+  const allPools = [..._pools, ...indexes],
     allAccountDatas = [...accountPoolDatas, accountIndexDatas];
 
   useEffect(() => {
@@ -94,7 +99,7 @@ const Directory = ({ page }: { page: number }) => {
                   />
                 </div>
                 <div className="mt-[18px] mb-[100px]">
-                  <PoolList pools={filteredData} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
+                  <PoolList pools={filteredData} prices={prices} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
                 </div>
               </Container>
             </div>
