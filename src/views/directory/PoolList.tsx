@@ -1,5 +1,4 @@
 import { Category } from "config/constants/types";
-import { useRef, useState } from "react";
 import styled from "styled-components";
 import getCurrencyId from "utils/getCurrencyId";
 import PoolCard from "./PoolCard";
@@ -9,42 +8,54 @@ const PoolList = ({
   prices,
   setSelectPoolDetail,
   setCurPool,
+  setSortOrder,
 }: {
   pools: any;
   prices: any;
   setSelectPoolDetail: any;
   setCurPool: any;
+  setSortOrder: any;
 }) => {
   return (
     <StyledContainer>
       <PoolHeader>
-        <div className="min-w-[80px]">Network</div>
-        <div className="min-w-[210px] pl-10">Pool</div>
-        <div className="min-w-[70px]">TVL</div>
-        <div className="min-w-[250px]">Total supply staked</div>
-        <div className="min-w-[80px]">APR</div>
+        <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
+          Network
+        </div>
+        <div className="min-w-[210px] pl-10 cursor-pointer" onClick={() => setSortOrder("default")}>
+          Pool
+        </div>
+        <div className="min-w-[70px] cursor-pointer" onClick={() => setSortOrder("tvl")}>
+          TVL
+        </div>
+        <div className="min-w-[250px] cursor-pointer" onClick={() => setSortOrder("totalStaked")}>
+          Total supply staked
+        </div>
+        <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("apr")}>
+          APR
+        </div>
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
         {pools.map((data: any, i: number) => {
-          let tvl = 0;
-          let price;
-          switch (data.type) {
-            case Category.POOL:
-              price = prices[getCurrencyId(data.chainId, data.earningToken.address)];
-              if (price > 500000) price = 0;
-              tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
-              break;
-            case Category.FARM:
-              price = prices[getCurrencyId(data.chainId, data.lpAddress, true)];
-              if (price > 500000) price = 0;
-              tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
-              break;
-          }
+          // let tvl = 0;
+          // let price;
+          // switch (data.type) {
+          //   case Category.POOL:
+          //     price = prices[getCurrencyId(data.chainId, data.earningToken.address)];
+          //     if (price > 500000) price = 0;
+          //     tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
+          //     break;
+          //   case Category.FARM:
+          //     price = prices[getCurrencyId(data.chainId, data.lpAddress, true)];
+          //     if (price > 500000) price = 0;
+          //     tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
+          //     break;
+          // }
 
           return (
             <PoolCard
-              data={{ ...data, tvl: +tvl.toFixed(2) }}
+              data={data}
               key={`${data.type}-${data.sousId}-${data.farmId}`}
               index={i}
               setSelectPoolDetail={setSelectPoolDetail}

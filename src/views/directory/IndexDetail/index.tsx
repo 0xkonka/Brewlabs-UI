@@ -39,7 +39,7 @@ const IndexDetail = ({
   open: boolean;
   setOpen: any;
   data: any;
-  accountData: any;
+  accountData?: any;
 }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);

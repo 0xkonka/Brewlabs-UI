@@ -1,26 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import { useContext, useState } from "react";
+import { useAccount, useSigner } from "wagmi";
 
+import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
+import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import { TokenPriceContext } from "contexts/TokenPriceContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { getUnLockStakingContract } from "utils/contractHelpers";
+import { numberWithCommas } from "utils/functions";
+
 import StyledButton from "../StyledButton";
-import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
 import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "./Modals/StakingModal";
-import { useContext, useState } from "react";
-import { numberWithCommas } from "utils/functions";
-import { useAccount, useSigner } from "wagmi";
-import { PoolContext } from "contexts/directory/PoolContext";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getUnLockStakingContract } from "utils/contractHelpers";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { IndexContext } from "contexts/directory/IndexContext";
-import { SkeletonComponent } from "components/SkeletonComponent";
+import { getNativeSybmol } from "lib/bridge/helpers";
 
 const CHAIN_SYMBOL = {
   1: "ETH",
@@ -36,7 +37,7 @@ const StakingDetail = ({
   open: boolean;
   setOpen: any;
   data: any;
-  accountData: any;
+  accountData?: any;
 }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
@@ -344,7 +345,7 @@ const StakingDetail = ({
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : CHAIN_SYMBOL[chainId]}
+                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : getNativeSybmol[chainId]}
                       price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
                       curGraph={curGraph}
                     />

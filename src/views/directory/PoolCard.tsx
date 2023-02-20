@@ -19,12 +19,27 @@ const PoolCard = ({
   setCurPool: any;
 }) => {
   const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Brewlabs Index", 4: "Zapper Pools" };
+
   return (
     <StyledContainer
       index={index}
       onClick={() => {
         setSelectPoolDetail(true);
-        // setCurPool(getIndex());
+        switch (data.type) {
+          case Category.POOL:
+            setCurPool({ type: Category.POOL, pid: data.sousId });
+            break;
+          case Category.FARM:
+            setCurPool({ type: Category.FARM, pid: data.farmId });
+            break;
+          case Category.INDEXES:
+            setCurPool({ type: Category.FARM, pid: data.pid });
+            break;
+          case Category.ZAPPER:
+            setCurPool({ type: Category.FARM, pid: data.pid });
+          default:
+            setSelectPoolDetail(false);
+        }
       }}
     >
       <div className="flex items-center justify-between">
@@ -38,11 +53,13 @@ const PoolCard = ({
               <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
             </div>
           ) : (
+            <div className="mr-3 w-7 h-7 bg-white rounded-full border border-white">
             <img
               src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
               alt={""}
-              className="mr-3 w-7 rounded-full"
+              className="rounded-full"
             />
+            </div>
           )}
           <div>
             {data.type === Category.POOL || data.type === Category.FARM ? (

@@ -1,35 +1,47 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
-import CorePool from "./CorePool";
-import SelectionPanel from "./SelectionPanel";
-import PoolList from "./PoolList";
-import { useContext, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import StakingDetail from "./StakingDetail";
-import IndexDetail from "./IndexDetail";
+
+import { Category } from "config/constants/types";
 import { PoolContext } from "contexts/directory/PoolContext";
 import { IndexContext } from "contexts/directory/IndexContext";
-import { usePools } from "state/pools/hooks";
 import { useTokenPrices } from "hooks/useTokenPrice";
+import { usePools } from "state/pools/hooks";
+import getCurrencyId from "utils/getCurrencyId";
+
+import CorePool from "./CorePool";
+import IndexDetail from "./IndexDetail";
+import PoolList from "./PoolList";
+import SelectionPanel from "./SelectionPanel";
+import StakingDetail from "./StakingDetail";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
+  const [sortOrder, setSortOrder] = useState("default");
   const [filteredData, setFilteredData] = useState([]);
-  const [curPool, setCurPool] = useState(0);
+  const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
-  const {pools: _pools} = usePools()
-  const prices = useTokenPrices()
+  const { pools: _pools } = usePools();
+  const prices = useTokenPrices();
 
   const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
 
-  const allPools = [..._pools, ...indexes],
-    allAccountDatas = [...accountPoolDatas, accountIndexDatas];
+  const allPools = [
+    ..._pools.map((pool) => {
+      let price = prices[getCurrencyId(pool.chainId, pool.earningToken.address)];
+      if (price > 500000) price = 0;
+      return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
+    }),
+    ...indexes,
+  ];
 
   useEffect(() => {
     const filtered = allPools.filter(
@@ -43,27 +55,33 @@ const Directory = ({ page }: { page: number }) => {
     else setFilteredData(filtered.filter((data: any) => data.type === curFilter));
   }, [curFilter, criteria, pools, indexes]);
 
-  return (
-    <PageWrapper>
-      {allPools[curPool] ? (
-        allPools[curPool].type === 1 ? (
+  const renderDetailPage = () => {
+    switch (curPool.type) {
+      case Category.POOL:
+        return (
           <StakingDetail
             open={selectPoolDetail}
             setOpen={setSelectPoolDetail}
-            data={allPools[curPool]}
-            accountData={allAccountDatas[curPool]}
+            data={allPools.find((pool) => pool.type === curPool.type && pool.sousId === curPool.pid)}
           />
-        ) : (
+        );
+      case Category.INDEXES:
+        return (
           <IndexDetail
             open={selectPoolDetail}
             setOpen={setSelectPoolDetail}
-            data={allPools[curPool]}
-            accountData={allAccountDatas[curPool]}
+            data={allPools.find((pool) => pool.type === curPool.type && pool.pid === curPool.pid)}
           />
-        )
-      ) : (
-        ""
-      )}
+        );
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <PageWrapper>
+      {renderDetailPage()}
+
       <AnimatePresence>
         {!selectPoolDetail && (
           <motion.div
@@ -99,7 +117,13 @@ const Directory = ({ page }: { page: number }) => {
                   />
                 </div>
                 <div className="mt-[18px] mb-[100px]">
-                  <PoolList pools={filteredData} prices={prices} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
+                  <PoolList
+                    pools={filteredData}
+                    prices={prices}
+                    setSelectPoolDetail={setSelectPoolDetail}
+                    setCurPool={setCurPool}
+                    setSortOrder={setSortOrder}
+                  />
                 </div>
               </Container>
             </div>
