@@ -7,11 +7,13 @@ import { PoolCategory } from "config/constants/types";
 import singleStakingABI from "config/abi/singlestaking.json";
 import lockupStakingABI from "config/abi/brewlabsLockup.json";
 import lockupV2StakingABI from "config/abi/brewlabsLockupV2.json";
-import wbnbABI from "config/abi/weth.json";
+import lockupMultiStakingABI from "config/abi/brewlabsStakingMulti.json";
+import erc20Abi from "config/abi/erc20.json";
 import { getAddress } from "utils/addressHelpers";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getSingleStakingContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
+import { getBalanceNumber } from "utils/formatBalance";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
   const poolsWithEnd = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
@@ -303,4 +305,55 @@ export const fetchPoolsStakingLimits = async (pools: any[]): Promise<{ [key: str
       [validPools[index].sousId]: stakingLimit,
     };
   }, {});
+};
+
+export const fetchPoolTotalRewards = async (pool) => {
+  let calls = [
+    {
+      address: pool.contractAddress,
+      name: "availableRewardTokens",
+      params: [],
+    },
+  ];
+
+  let abi = lockupStakingABI;
+  if (pool.poolCategory === PoolCategory.MULTI_LOCKUP) {
+    for (let i = 0; i < pool.reflectionTokens.length; i++) {
+      calls.push({
+        address: pool.contractAddress,
+        name: "availableDividendTokens",
+        params: [i],
+      });
+    }
+    abi = lockupMultiStakingABI;
+  } else {
+    if (
+      (pool.poolCategory === PoolCategory.CORE && pool.sousId <= 20) ||
+      (pool.poolCategory === PoolCategory.LOCKUP && pool.sousId <= 48) ||
+      (pool.poolCategory === PoolCategory.LOCKUP_V2 && pool.sousId <= 65)
+    ) {
+      calls.push({
+        address: pool.contractAddress,
+        name: "availabledividendTokens",
+        params: [],
+      });
+      abi = singleStakingABI;
+    } else {
+      calls.push({
+        address: pool.contractAddress,
+        name: "availableDividendTokens",
+        params: [],
+      });
+    }
+  }
+
+  const res = await multicall(abi, calls, pool.chainId);
+  let availableReflections = [];
+  if (pool.reflection) {
+    for (let i = 0; i < pool.reflectionTokens.length; i++) {
+      availableReflections.push(getBalanceNumber(res[i + 1], pool.reflectionTokens[i].decimals));
+    }
+  }
+
+  return { availableRewards: getBalanceNumber(res[0], pool.stakingToken.decimals), availableReflections };
 };

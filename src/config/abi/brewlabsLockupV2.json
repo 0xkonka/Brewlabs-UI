@@ -305,7 +305,7 @@
   },
   {
     "inputs": [],
-    "name": "availabledividendTokens",
+    "name": "availableDividendTokens",
     "outputs": [
       {
         "internalType": "uint256",

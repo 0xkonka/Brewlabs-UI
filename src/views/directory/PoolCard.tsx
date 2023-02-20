@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { CHAIN_ICONS } from "config/constants/networks";
-import { formatTotalStaked, formatTvl } from "utils/formatApy";
+import { formatAmount, formatTvl } from "utils/formatApy";
 import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { Category } from "config/constants/types";
@@ -79,7 +79,7 @@ const PoolCard = ({
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
-            `${formatTotalStaked(data.totalStaked)} ${data.earningToken.symbol}`
+            `${formatAmount(data.totalStaked)} ${data.earningToken.symbol}`
           ) : (
             <SkeletonComponent />
           )}

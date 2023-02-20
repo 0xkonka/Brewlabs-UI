@@ -20,6 +20,8 @@ interface CorePoolProps {
   earningTokenPrice?: number;
   reflectionTokenPrices?: number[];
   isAutoVault?: boolean;
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 interface PoolConfigBaseProps {

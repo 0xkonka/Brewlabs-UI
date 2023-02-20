@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAccount, useSigner } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
@@ -18,7 +18,7 @@ import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getUnLockStakingContract } from "utils/contractHelpers";
 import { numberWithCommas } from "utils/functions";
-import { formatTvl } from "utils/formatApy";
+import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -27,8 +27,13 @@ import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "./Modals/StakingModal";
+import { fetchPoolTotalRewards } from "state/pools/fetchPools";
+import { setPoolsPublicData, updateUserAllowance, updateUserBalance, updateUserPendingReward, updateUserStakedBalance } from "state/pools";
+import { useAppDispatch } from "state";
 
 const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
+  const dispatch = useAppDispatch();
+
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
@@ -50,6 +55,24 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
     if (accountData.pendingReflections[i]?.gt(0)) hasReflections = true;
   }
   const earningTokenBalance = getBalanceNumber(accountData.pendingReward ?? BIG_ZERO, earningToken.decimals);
+
+  useEffect(() => {
+    const fetchtotalRewards = async () => {
+      const { availableRewards, availableReflections } = await fetchPoolTotalRewards(data);
+      dispatch(setPoolsPublicData([{ sousId: data.sousId, availableRewards, availableReflections }]));      
+    };
+
+    fetchtotalRewards();
+  }, []);
+
+  useEffect(() => {
+    if(address) {
+      dispatch(updateUserAllowance(data.sousId, address, data.chainId))
+      dispatch(updateUserBalance(data.sousId, address, data.chainId))
+      dispatch(updateUserStakedBalance(data.sousId, address, data.chainId))
+      dispatch(updateUserPendingReward(data.sousId, address, data.chainId))
+    }
+  }, [address])
 
   const onCompoundReward = async () => {
     setPending(true);
@@ -313,7 +336,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                           {!address || data.enableEmergencyWithdraw ? (
                             "0.00"
                           ) : accountData.pendingReward ? (
-                            +accountData.pendingReward.toFixed(4)
+                            formatAmount(accountData.pendingReward.toFixed(4))
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -325,7 +348,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                             {!address || data.enableEmergencyWithdraw ? (
                               "0.00"
                             ) : accountData.pendingReflections[index] ? (
-                              accountData.pendingReflections[index].toFixed(0)
+                              formatAmount(accountData.pendingReflections[index].toFixed(4))
                             ) : (
                               <SkeletonComponent />
                             )}
@@ -339,27 +362,27 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         <div className=" flex text-primary">
                           {!address ? (
                             "0.00"
-                          ) : accountData.totalReward !== undefined ? (
-                            accountData.totalReward.toFixed(2)
+                          ) : data.availableRewards !== undefined ? (
+                            formatAmount(data.availableRewards.toFixed(2))
                           ) : (
                             <SkeletonComponent />
                           )}
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.reflectionTokens.length > 0 && (
-                          <div className="flex text-primary">
+                        {data.availableReflections?.map((t, index) => (
+                          <div key={index} className="flex text-primary">
                             {!address ? (
                               "0.00"
-                            ) : accountData.totalReflection !== undefined ? (
-                              accountData.totalReflection.toFixed(2)
+                            ) : data.availableReflections[index] !== undefined ? (
+                              formatAmount(data.availableReflections[index].toFixed(2))
                             ) : (
                               <SkeletonComponent />
                             )}
                             &nbsp;
-                            {data.reflectionTokens[0].symbol}
+                            {data.reflectionTokens[index].symbol}
                           </div>
-                        )}
+                        ))}
                       </div>
                     </InfoPanel>
                   </div>
@@ -460,7 +483,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                               {!address ? (
                                 0
                               ) : accountData.pendingReward !== undefined ? (
-                                +earningTokenBalance.toFixed(4)
+                                formatAmount(earningTokenBalance.toFixed(4))
                               ) : (
                                 <SkeletonComponent />
                               )}
@@ -480,7 +503,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                               {!address ? (
                                 0
                               ) : accountData.pendingReward !== undefined ? (
-                                +earningTokenBalance.toFixed(4)
+                                formatAmount(earningTokenBalance.toFixed(4))
                               ) : (
                                 <SkeletonComponent />
                               )}
@@ -507,7 +530,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                                   {!address ? (
                                     "0.00"
                                   ) : accountData.pendingReflections[0] !== undefined ? (
-                                    +reflectionTokenBalances[0].toFixed(4)
+                                    formatAmount(reflectionTokenBalances[0].toFixed(4))
                                   ) : (
                                     <SkeletonComponent />
                                   )}
@@ -527,7 +550,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                               {!address ? (
                                 "0.00"
                               ) : accountData.pendingReflections[0] !== undefined ? (
-                                +reflectionTokenBalances[0].toFixed(4)
+                                formatAmount(reflectionTokenBalances[0].toFixed(4))
                               ) : (
                                 <SkeletonComponent />
                               )}

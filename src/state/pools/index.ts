@@ -178,7 +178,7 @@ export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => as
 };
 
 export const updateUserAllowance =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
+  (sousId: number, account: string, chainId: ChainId) =>
   async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
@@ -188,7 +188,7 @@ export const updateUserAllowance =
   };
 
 export const updateUserBalance =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
+  (sousId: number, account: string, chainId: ChainId) =>
   async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
@@ -198,7 +198,7 @@ export const updateUserBalance =
   };
 
 export const updateUserStakedBalance =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
+  (sousId: number, account: string, chainId: ChainId) =>
   async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
@@ -209,7 +209,7 @@ export const updateUserStakedBalance =
   };
 
 export const updateUserPendingReward =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
+  (sousId: number, account: string, chainId: ChainId) =>
   async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;

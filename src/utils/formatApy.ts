@@ -31,7 +31,7 @@ export const formatTvl = (value, oraclePrice, useOrder = true) => {
   return `$${num.toFixed(2)}${units[order]}`;
 };
 
-export const formatTotalStaked = (value, useOrder = true) => {
+export const formatAmount = (value, useOrder = true) => {
   let tvl = new BigNumber(value).toFixed(2)
 
   let order = Math.floor(Math.log10(+tvl) / 3);
