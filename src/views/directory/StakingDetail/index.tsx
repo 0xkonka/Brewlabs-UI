@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
+import { WNATIVE } from "@brewlabs/sdk";
 import { useContext, useEffect, useState } from "react";
 import { useAccount, useSigner } from "wagmi";
 
@@ -14,7 +15,18 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import useTokenPrice from "hooks/useTokenPrice";
 import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
+import { useChainCurrentBlock } from "state/block/hooks";
+import {
+  setPoolsPublicData,
+  updateUserAllowance,
+  updateUserBalance,
+  updateUserPendingReward,
+  updateUserStakedBalance,
+} from "state/pools";
+import { fetchPoolFeeHistories, fetchPoolTotalRewards } from "state/pools/fetchPools";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getUnLockStakingContract } from "utils/contractHelpers";
 import { numberWithCommas } from "utils/functions";
@@ -27,9 +39,6 @@ import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "./Modals/StakingModal";
-import { fetchPoolTotalRewards } from "state/pools/fetchPools";
-import { setPoolsPublicData, updateUserAllowance, updateUserBalance, updateUserPendingReward, updateUserStakedBalance } from "state/pools";
-import { useAppDispatch } from "state";
 
 const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const dispatch = useAppDispatch();
@@ -45,6 +54,10 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
+  const currentBlock = useChainCurrentBlock(data.chainId);
+
+  const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
+  const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
   let hasReflections = false;
   const reflectionTokenBalances = [];
@@ -57,22 +70,55 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const earningTokenBalance = getBalanceNumber(accountData.pendingReward ?? BIG_ZERO, earningToken.decimals);
 
   useEffect(() => {
-    const fetchtotalRewards = async () => {
+    const fetchtotalRewardsAsync = async () => {
       const { availableRewards, availableReflections } = await fetchPoolTotalRewards(data);
-      dispatch(setPoolsPublicData([{ sousId: data.sousId, availableRewards, availableReflections }]));      
+      dispatch(setPoolsPublicData([{ sousId: data.sousId, availableRewards, availableReflections }]));
     };
 
-    fetchtotalRewards();
-  }, []);
+    const fetchFeeHistoriesAsync = async () => {
+      const { performanceFees, tokenFees, stakedAddresses } = await fetchPoolFeeHistories(data);
+
+      dispatch(
+        setPoolsPublicData([
+          {
+            sousId: data.sousId,
+            performanceFees: performanceFees,
+            tokenFees: tokenFees,
+            stakedAddresses: stakedAddresses,
+          },
+        ])
+      );
+    };
+
+    fetchtotalRewardsAsync();
+    fetchFeeHistoriesAsync();
+  }, [data.sousId]);
 
   useEffect(() => {
-    if(address) {
-      dispatch(updateUserAllowance(data.sousId, address, data.chainId))
-      dispatch(updateUserBalance(data.sousId, address, data.chainId))
-      dispatch(updateUserStakedBalance(data.sousId, address, data.chainId))
-      dispatch(updateUserPendingReward(data.sousId, address, data.chainId))
+    if (address) {
+      dispatch(updateUserAllowance(data.sousId, address, data.chainId));
+      dispatch(updateUserBalance(data.sousId, address, data.chainId));
+      dispatch(updateUserStakedBalance(data.sousId, address, data.chainId));
+      dispatch(updateUserPendingReward(data.sousId, address, data.chainId));
     }
-  }, [address])
+  }, [address, data.sousId]);
+
+  const graphData = () => {
+    let _graphData;
+    switch (curGraph) {
+      case 1:
+        return data.tokenFees;
+      case 2:
+        return data.performanceFees;
+      case 3:
+        return data.stakedAddresses;
+      default:
+        _graphData = data.TVLData ?? [];
+        _graphData = _graphData.map(v => +v)
+        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        return _graphData;
+    }
+  };
 
   const onCompoundReward = async () => {
     setPending(true);
@@ -196,7 +242,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Staking Pools" />
-                  <div className="text-xl font-normal">By Brewlabs</div>
+                  <div className="text-xl font-normal">By Brewlabs {data.sousId}</div>
                 </div>
               }
               summary="Words to go here..."
@@ -343,19 +389,20 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.reflectionTokens.map((t, index) => (
-                          <div key={index} className="flex text-primary">
-                            {!address || data.enableEmergencyWithdraw ? (
-                              "0.00"
-                            ) : accountData.pendingReflections[index] ? (
-                              formatAmount(accountData.pendingReflections[index].toFixed(4))
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            &nbsp;
-                            {t.symbol}
-                          </div>
-                        ))}
+                        {data.reflection &&
+                          data.reflectionTokens.map((t, index) => (
+                            <div key={index} className="flex text-primary">
+                              {!address || data.enableEmergencyWithdraw ? (
+                                "0.00"
+                              ) : accountData.pendingReflections[index] ? (
+                                formatAmount(accountData.pendingReflections[index].toFixed(4))
+                              ) : (
+                                <SkeletonComponent />
+                              )}
+                              &nbsp;
+                              {t.symbol}
+                            </div>
+                          ))}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Total</div>
@@ -370,34 +417,38 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.availableReflections?.map((t, index) => (
-                          <div key={index} className="flex text-primary">
-                            {!address ? (
-                              "0.00"
-                            ) : data.availableReflections[index] !== undefined ? (
-                              formatAmount(data.availableReflections[index].toFixed(2))
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            &nbsp;
-                            {data.reflectionTokens[index].symbol}
-                          </div>
-                        ))}
+                        {data.reflection &&
+                          data.availableReflections?.map((t, index) => (
+                            <div key={index} className="flex text-primary">
+                              {!address ? (
+                                "0.00"
+                              ) : data.availableReflections[index] !== undefined ? (
+                                formatAmount(data.availableReflections[index].toFixed(2))
+                              ) : (
+                                <SkeletonComponent />
+                              )}
+                              &nbsp;
+                              {data.reflectionTokens[index].symbol}
+                            </div>
+                          ))}
                       </div>
                     </InfoPanel>
                   </div>
                 </div>
                 <div className="mt-7">
-                  <ProgressBar endBlock={data.endBlock} remaining={data.endBlock - data.startBlock} />
+                  <ProgressBar
+                    endBlock={data.endBlock - data.startBlock}
+                    remaining={Math.max(0, data.endBlock - currentBlock)}
+                  />
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
-                      data={data.graphData === undefined ? [] : data.graphData[curGraph]}
+                      data={graphData()}
                       symbol={
                         curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : getNativeSybmol[chainId]
                       }
-                      price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
+                      price={curGraph === 3 ? 1 : curGraph !== 2 ? tokenPrice : nativeTokenPrice}
                       curGraph={curGraph}
                     />
                     <InfoPanel
@@ -421,8 +472,8 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalFee !== undefined ? (
-                          numberWithCommas(data.totalFee.toFixed(2))
+                        {data.tokenFees !== undefined ? (
+                          numberWithCommas(data.tokenFees[data.tokenFees.length-1].toFixed(2))
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -440,8 +491,8 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalPerformanceFee !== undefined ? (
-                          numberWithCommas(data.totalPerformanceFee.toFixed(2))
+                        {data.performanceFees !== undefined ? (
+                          numberWithCommas(data.performanceFees[data.performanceFees.length-1].toFixed(2))
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -459,8 +510,8 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalStakedAddresses !== undefined ? (
-                          numberWithCommas(data.totalStakedAddresses)
+                        {data.stakedAddresses !== undefined ? (
+                          numberWithCommas(data.stakedAddresses[data.stakedAddresses.length-1])
                         ) : (
                           <SkeletonComponent />
                         )}

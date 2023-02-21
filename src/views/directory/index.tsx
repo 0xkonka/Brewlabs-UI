@@ -23,7 +23,6 @@ const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
   const [sortOrder, setSortOrder] = useState("default");
-  const [filteredData, setFilteredData] = useState([]);
   const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
@@ -41,17 +40,19 @@ const Directory = ({ page }: { page: number }) => {
     ...indexes,
   ];
 
-  useEffect(() => {
-    const filtered = allPools.filter(
-      (data: any) =>
-        data.stakingToken.name.toLowerCase().includes(criteria.toLowerCase()) ||
-        data.stakingToken.symbol.toLowerCase().includes(criteria.toLowerCase()) ||
-        data.earningToken.name.toLowerCase().includes(criteria.toLowerCase()) ||
-        data.earningToken.symbol.toLowerCase().includes(criteria.toLowerCase())
-    );
-    if (curFilter === 0) setFilteredData(allPools);
-    else setFilteredData(filtered.filter((data: any) => data.type === curFilter));
-  }, [curFilter, criteria, allPools]);
+  let chosenPools;
+  if (curFilter || criteria) {
+    const lowercaseQuery = criteria.toLowerCase();
+    chosenPools = allPools
+      .filter(
+        (pool) =>
+          pool.stakingToken.name.toLowerCase().includes(lowercaseQuery) ||
+          pool.stakingToken.symbol.toLowerCase().includes(lowercaseQuery) ||
+          pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
+          pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
+      )
+      .filter((data) => data.type === curFilter);
+  }
 
   const renderDetailPage = () => {
     switch (curPool.type) {
@@ -116,7 +117,7 @@ const Directory = ({ page }: { page: number }) => {
                 </div>
                 <div className="mt-[18px] mb-[100px]">
                   <PoolList
-                    pools={filteredData}
+                    pools={chosenPools}
                     prices={prices}
                     setSelectPoolDetail={setSelectPoolDetail}
                     setCurPool={setCurPool}

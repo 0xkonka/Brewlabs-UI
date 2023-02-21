@@ -151,6 +151,10 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     rewardPerBlock: farm.rewardPerBlock ? new BigNumber(farm.rewardPerBlock) : BIG_ZERO,
     enableEmergencyWithdraw: farm.enableEmergencyWithdraw,
     externalSwap: farm.externalSwap,
+    TVLData: farm.TVLData,
+    performanceFees: farm.performanceFees,
+    tokenFees: farm.tokenFees,
+    stakedAddresses: farm.stakedAddresses
   };
 };
 

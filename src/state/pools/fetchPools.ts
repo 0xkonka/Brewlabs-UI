@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 
-import { MULTICALL_FETCH_LIMIT } from "config/constants";
+import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { PoolCategory } from "config/constants/types";
 import singleStakingABI from "config/abi/singlestaking.json";
 import lockupStakingABI from "config/abi/brewlabsLockup.json";
@@ -14,6 +14,7 @@ import { BIG_ZERO } from "utils/bigNumber";
 import { getSingleStakingContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
 import { getBalanceNumber } from "utils/formatBalance";
+import axios from "axios";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
   const poolsWithEnd = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
@@ -356,4 +357,35 @@ export const fetchPoolTotalRewards = async (pool) => {
   }
 
   return { availableRewards: getBalanceNumber(res[0], pool.stakingToken.decimals), availableReflections };
+};
+
+const sum = (arr) => {
+  let total = 0;
+  for (let i = 0; i < arr.length; i++) total += arr[i];
+  return total;
+};
+
+export const fetchPoolFeeHistories = async (pool) => {
+  let res;
+  try {
+    res = await axios.post(`${API_URL}/fee/single`, { type: "pool", id: pool.sousId });
+  } catch (e) {}
+  if (!res.data) {
+    return { performanceFees: [], tokenFees: [], stakedAddresses: [] };
+  }
+  const { performanceFees, tokenFees, stakedAddresses } = res.data;
+
+  let _performanceFees = [],
+    _tokenFees = [],
+    _stakedAddresses = [];
+  const timeBefore24Hrs = Math.floor(new Date().setHours(new Date().getHours() - 24) / 1000);
+  const curTime = Math.floor(new Date().getTime() / 1000);
+
+  for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
+    _performanceFees.push(sum(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
+    _tokenFees.push(sum(tokenFees.filter((v) => v.timestamp <= t).map((v) => +v.value)));
+    _stakedAddresses.push(sum(stakedAddresses.filter((v) => v.timestamp <= t).map((v) => v.value)));
+  }
+
+  return { performanceFees: _performanceFees, tokenFees: _tokenFees, stakedAddresses: _stakedAddresses };
 };

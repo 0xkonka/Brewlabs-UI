@@ -19,7 +19,7 @@ import {
   fetchUserPendingReward,
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
-import { AppThunk, SerializedPool } from "./types";
+import { SerializedPool } from "./types";
 import { Category, PoolCategory } from "config/constants/types";
 
 const initialState: PoolsState = {
@@ -56,8 +56,8 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
 export const fetchPoolsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/pools`).then((res) => {
     let pools = [];
-    if(res.data) {
-      pools = res.data.map((pool) => ({type: Category.POOL, ...pool}))
+    if (res.data) {
+      pools = res.data.map((pool) => ({ type: Category.POOL, ...pool }));
     }
     dispatch(setPoolsPublicData(pools));
 
@@ -70,26 +70,13 @@ export const fetchPoolsTVLDataAsync = (sousIds) => async (dispatch, getState) =>
   const pools = getState().pools.data.filter((pool) => sousIds.includes(pool.sousId));
   if (pools.length === 0) return;
 
-  const data = pools.map((pool) => ({
-    type: pool.poolCategory === PoolCategory.LOCKUP ? "lockup" : "single",
-    chainId: pool.chainId,
-    contract: pool.contractAddress,
-    index: pool.lockup ?? 0,
-  }));
-
-  axios.post(`${API_URL}/tvl/multiple`, { pools: data }).then((res) => {
+  axios.post(`${API_URL}/tvl/multiple`, { type: "pool", ids: pools.map((p) => p.sousId) }).then((res) => {
     const ret = res?.data ?? [];
 
     const TVLData = [];
     for (let pool of pools) {
       let record = { sousId: pool.sousId, data: [] };
-      record.data = ret.filter(
-        (d) =>
-          d.chainId === pool.chainId &&
-          d.address === pool.contractAddress.toLowerCase() &&
-          (pool.poolCategory !== PoolCategory.LOCKUP ||
-            (pool.poolCategory === PoolCategory.LOCKUP && pool.lockup === d.pid))
-      );
+      record.data = ret.filter((d) => d.sousId === pool.sousId).map((r) => r.totalStaked);
 
       if (record.data.length > 0) {
         TVLData.push(record);
@@ -178,8 +165,7 @@ export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => as
 };
 
 export const updateUserAllowance =
-  (sousId: number, account: string, chainId: ChainId) =>
-  async (dispatch, getState) => {
+  (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
 
@@ -187,19 +173,16 @@ export const updateUserAllowance =
     dispatch(updatePoolsUserData({ sousId, field: "allowance", value: allowances }));
   };
 
-export const updateUserBalance =
-  (sousId: number, account: string, chainId: ChainId) =>
-  async (dispatch, getState) => {
-    const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
-    if (!pool) return;
+export const updateUserBalance = (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
+  if (!pool) return;
 
-    const tokenBalances = await fetchUserBalance(pool, account, chainId);
-    dispatch(updatePoolsUserData({ sousId, field: "stakingTokenBalance", value: tokenBalances }));
-  };
+  const tokenBalances = await fetchUserBalance(pool, account, chainId);
+  dispatch(updatePoolsUserData({ sousId, field: "stakingTokenBalance", value: tokenBalances }));
+};
 
 export const updateUserStakedBalance =
-  (sousId: number, account: string, chainId: ChainId) =>
-  async (dispatch, getState) => {
+  (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
 
@@ -209,13 +192,14 @@ export const updateUserStakedBalance =
   };
 
 export const updateUserPendingReward =
-  (sousId: number, account: string, chainId: ChainId) =>
-  async (dispatch, getState) => {
+  (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
 
     const pendingRewards = await fetchUserPendingReward(pool, account, chainId);
     dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: pendingRewards }));
+
+    if (!(sousId > 1 && (sousId < 10 || sousId > 12) && sousId !== 33 && sousId !== 34)) return;
 
     const pendingReflections = await fetchUserPendingReflection(pool, account, chainId);
     dispatch(updatePoolsUserData({ sousId, field: "pendingReflections", value: pendingReflections ?? [] }));
