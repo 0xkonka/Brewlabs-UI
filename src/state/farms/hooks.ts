@@ -43,7 +43,6 @@ export const usePollFarmsWithUserData = () => {
   useSWRImmutable(
     chainId ? ["publicFarmData", chainId] : null,
     async () => {
-      console.log('@@@@@@@ publicFarmData')
       dispatch(fetchFarmsTotalStakesAsync(chainId));
     },
     {
@@ -57,7 +56,6 @@ export const usePollFarmsWithUserData = () => {
       const pids = farms.map((farmToFetch) => farmToFetch.pid && farmToFetch.chainId === chainId);
       const params = { account, pids, chainId };
 
-      console.log('@@@@@@@ farmsWithUserData', pids.length)
       dispatch(fetchFarmUserDataAsync(params));
     },
     {
@@ -68,7 +66,6 @@ export const usePollFarmsWithUserData = () => {
   useSWRImmutable(
     account ? ["farmsWithUserDepositData", account] : null,
     async () => {
-      console.log('@@@@@@@ farmsWithUserDepositData')
       const pids = farms.map((farmToFetch) => farmToFetch.pid);
       const params = { account, pids };
 
