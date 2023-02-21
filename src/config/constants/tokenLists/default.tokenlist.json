@@ -2219,6 +2219,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x353D0d1b4Feb416FAaAbD5B314D99ef148D56dFF/logo.png"
     },
     {
+      "name": "Dark Tavern Token",
+      "symbol": "DTT",
+      "address": "0x4aeB2D0B318e5e8ac62D5A39EB3495974951f477",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x4aeB2D0B318e5e8ac62D5A39EB3495974951f477/logo.png"
+    },
+    {
       "name": "Matic Token",
       "symbol": "MATIC",
       "address": "0xCC42724C6683B7E57334c4E856f4c9965ED682bD",
