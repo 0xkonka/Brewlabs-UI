@@ -3,8 +3,9 @@ import { useFastRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffe
 import { useAccount } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getMulticallContract } from "utils/contractHelpers";
-import pools from "../../config/constants/directory/pools.json";
-import UnLockABI from "config/abi/brewlabsUnLockup.json";
+import farms from "../../config/constants/directory/farms.json";
+import FarmABI from "config/abi/brewlabsFarm.json";
+import PairABI from "config/abi/lpToken.json";
 
 import { ethers } from "ethers";
 import axios from "axios";
@@ -20,19 +21,22 @@ const API_KEY = {
   56: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
 };
 
-const PoolContext: any = React.createContext({
+const FarmContext: any = React.createContext({
   data: [],
   accountData: [],
 });
 
-const custoDy = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
+const blockCount = {
+  1: 6219,
+  56: 28800,
+};
 
-const PoolContextProvider = ({ children }: any) => {
+const FarmContextProvider = ({ children }: any) => {
   const { address } = useAccount();
-  // const address = "0xc6c6602743b17c8fd3014cf5012120fc3cec2cb7";
+  // const address = "0x89A3d642c49856c89398e75BE387506bd929f08D";
   const { chainId } = useActiveChainId();
-  const [data, setData] = useState(pools);
-  const [accountData, setAccountData] = useState(pools);
+  const [data, setData] = useState(farms);
+  const [accountData, setAccountData] = useState(farms);
 
   function getEarningAmount(data, decimals) {
     let sum = 0;
@@ -59,61 +63,95 @@ const PoolContextProvider = ({ children }: any) => {
     return res;
   }
 
-  async function fetchPoolData(data: any) {
+  async function fetchPrice(address: string, chainID: number) {
     const to = Math.floor(Date.now() / 1000);
 
     //Fetching Staking Token Price
     const priceUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${
-      data.stakingToken.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-        ? WETH_ADDR[chainId]
-        : data.stakingToken.address
-    }-${data.chainID === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
+      address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? WETH_ADDR[chainID] : address
+    }-${chainID === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
 
     const priceResult = await axios.get(priceUrl);
-    const price = priceResult.data.c[priceResult.data.c.length - 1];
+    return priceResult.data.c[priceResult.data.c.length - 1];
+  }
+
+  async function fetchLPPrice(data: any) {
+    const price0 = await fetchPrice(data.stakingToken.pair.token0.address, data.chainID);
+    const price1 = await fetchPrice(data.stakingToken.pair.token1.address, data.chainID);
+
+    const decimals0 = data.stakingToken.pair.token0.decimals;
+    const decimals1 = data.stakingToken.pair.token1.decimals;
+
+    const calls = [
+      {
+        address: data.stakingToken.address,
+        name: "getReserves",
+        params: [],
+      },
+      {
+        address: data.stakingToken.address,
+        name: "totalSupply",
+        params: [],
+      },
+    ];
+    const result = await multicall(PairABI, calls, data.chainID);
+    const reserves = result[0];
+    const totalSupply = result[1][0] / Math.pow(10, data.stakingToken.decimals);
+    const price: number =
+      (2 *
+        Math.sqrt(((reserves[0] / Math.pow(10, decimals0)) * reserves[1]) / Math.pow(10, decimals1)) *
+        Math.sqrt(price0 * price1)) /
+      totalSupply;
+    return price;
+  }
+
+  async function fetchAPR(data: any, tokenPrice: number, lpPrice: number, rewardPerBlock: number, totalStaked: number) {
+    const rate =
+      totalStaked * lpPrice
+        ? (rewardPerBlock * 36500 * blockCount[data.chainID] * tokenPrice) / (totalStaked * lpPrice)
+        : Infinity;
+    return rate;
+  }
+
+  async function fetchPoolData(data: any) {
+    const price: number = await fetchLPPrice(data);
 
     let calls: any = [
       {
+        address: data.address,
+        name: "poolInfo",
+        params: [0],
+      },
+      {
+        address: data.address,
+        name: "performanceFee",
+        params: [],
+      },
+      {
+        address: data.address,
         name: "rewardPerBlock",
-        address: data.address,
+        params: [],
       },
       {
+        address: data.address,
         name: "totalStaked",
-        address: data.address,
-      },
-      {
-        address: data.address,
-        name: "bonusEndBlock",
-      },
-      {
-        address: data.address,
-        name: "lastRewardBlock",
-      },
-
-      {
-        address: data.address,
-        name: "startBlock",
-      },
-      {
-        address: data.address,
-        name: "owner",
+        params: [0],
       },
     ];
 
-    const callResult = await multicall(UnLockABI, calls, data.chainID);
+    const callResult = await multicall(FarmABI, calls, data.chainID);
 
-    const apr = (callResult[0][0] / callResult[1][0]) * 28800 * 36500;
-    const endBlock = callResult[2][0] / 1 - callResult[4][0] / 1;
-    const remainingBlock = callResult[3][0] / 1 - callResult[4][0] / 1;
-    const totalStaked = callResult[1][0] / Math.pow(10, data.stakingToken.decimals);
+    const totalStaked = callResult[3][0] / Math.pow(10, data.stakingToken.decimals);
+    const earningTokenPrice = await fetchPrice(data.earningToken.address, data.chainID);
+    const rewardPerBlock = callResult[2][0] / Math.pow(10, data.earningToken.decimals);
+    const apr = await fetchAPR(data, earningTokenPrice, price, rewardPerBlock, totalStaked);
     const tvl = Math.round(totalStaked * price);
 
     const url = `https://api.bscscan.com/api?module=account&action=txlist&address=${data.address}&startblock=0&endblock=99999999&sort=asc&apikey=HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND`;
 
     let sHistoryResult: any = await axios.get(url);
     sHistoryResult = sHistoryResult.data.result;
-    if (sHistoryResult === "Max rate limit reached") sHistoryResult = [];
-
+    if (sHistoryResult === "Max rate limit reached" || !sHistoryResult) sHistoryResult = [];
     let txCount = 0,
       sAmounts = {},
       _stakedAddressesHistory = [],
@@ -126,7 +164,7 @@ const PoolContextProvider = ({ children }: any) => {
 
     sHistoryResult.map((history: any) => {
       if (history.functionName.includes("deposit(")) {
-        const iface = new ethers.utils.Interface(["function deposit(uint256 _amount)"]);
+        const iface = new ethers.utils.Interface(["function deposit(uint256 _pid, uint256 _amount)"]);
         const decodeResult = iface.decodeFunctionData("deposit", history.input);
 
         tempStaked += decodeResult._amount / Math.pow(10, data.stakingToken.decimals);
@@ -154,7 +192,7 @@ const PoolContextProvider = ({ children }: any) => {
         }
       }
       if (history.functionName.includes("withdraw(")) {
-        const iface = new ethers.utils.Interface(["function withdraw(uint256 _amount)"]);
+        const iface = new ethers.utils.Interface(["function withdraw(uint256 _pid, uint256 _amount)"]);
         const decodeResult = iface.decodeFunctionData("withdraw", history.input);
 
         tempStaked -= decodeResult._amount / Math.pow(10, data.stakingToken.decimals);
@@ -174,14 +212,7 @@ const PoolContextProvider = ({ children }: any) => {
         sAmounts[history.from].value -= BigInt(decodeResult._amount);
       }
 
-      const functions = [
-        "deposit(",
-        "withdraw(",
-        "compoundReward(",
-        "compoundDividend(",
-        "claimReward(",
-        "claimDividend(",
-      ];
+      const functions = ["deposit(", "withdraw(", "claimReward("];
       if (history.timeStamp * 1000 >= Date.now() - 3600 * 24 * 1000)
         for (let j = 0; j < functions.length; j++)
           if (history.functionName.includes(functions[j])) {
@@ -211,11 +242,10 @@ const PoolContextProvider = ({ children }: any) => {
 
     _totalStakedHistory.push(totalStaked);
 
+    console.log(sHistory);
     return {
       history: sHistory,
-      endBlock,
       totalStaked: Math.round(totalStaked),
-      remainingBlock,
       apr: apr.toFixed(2),
       price,
       tvl,
@@ -223,7 +253,7 @@ const PoolContextProvider = ({ children }: any) => {
       totalFee: totalFee / Math.pow(10, data.stakingToken.decimals),
       totalStakedAddresses: c,
       graphData: [_totalStakedHistory, _tokenFeeHistory, _performanceFeeHistory, tempHistory],
-      isCustody: callResult[5][0].toLowerCase() === custoDy.toLowerCase(),
+      isCustody: false,
     };
   }
 
@@ -255,21 +285,16 @@ const PoolContextProvider = ({ children }: any) => {
       let calls = [
         {
           address: data.address,
-          name: "pendingReward",
-          params: [address],
-        },
-        {
-          address: data.address,
-          name: "pendingDividends",
-          params: [address],
+          name: "pendingRewards",
+          params: [0, address],
         },
         {
           address: data.address,
           name: "userInfo",
-          params: [address],
+          params: [0, address],
         },
       ];
-      const result = await multicall(UnLockABI, calls, data.chainID);
+      const result = await multicall(FarmABI, calls, data.chainID);
       calls = [
         {
           address: data.stakingToken.address,
@@ -283,29 +308,19 @@ const PoolContextProvider = ({ children }: any) => {
         },
       ];
       const balanceResult = await multicall(ERC20_ABI, calls, data.chainID);
-      const totalInfos = await Promise.all([
-        fetchTokenTxAmount(data.address, data.chainID, data.earningToken.address),
-        fetchTokenTxAmount(data.address, data.chainID, data.reflectionToken.address),
-      ]);
+      const totalInfos = await Promise.all([fetchTokenTxAmount(data.address, data.chainID, data.earningToken.address)]);
 
       const rewardResult: any = totalInfos[0];
-      const reflectionResult: any = totalInfos[1];
 
       return {
         pendingReward: result[0][0] / Math.pow(10, data.earningToken.decimals),
-        pendingReflection: result[1][0] / Math.pow(10, data.reflectionToken.decimals),
-        stakedAmount: result[2][0],
-        available: result[2].amount,
+        stakedAmount: result[1][0],
         balance: balanceResult[0][0],
         allowance: balanceResult[1][0] > "10000",
         totalReward:
           rewardResult.data !== undefined
             ? getEarningAmount(rewardResult.data.result, data.earningToken.decimals)
             : data.totalReward,
-        totalReflection:
-          reflectionResult.data !== undefined
-            ? getEarningAmount(reflectionResult.data.result, data.reflectionToken.decimals)
-            : data.totalReflection,
       };
     } catch (error) {
       console.log(error);
@@ -330,7 +345,7 @@ const PoolContextProvider = ({ children }: any) => {
     }
   }
   useEffect(() => {
-    setAccountData(pools);
+    setAccountData(farms);
   }, [chainId, address]);
 
   useSlowRefreshEffect(() => {
@@ -339,13 +354,13 @@ const PoolContextProvider = ({ children }: any) => {
 
   useFastRefreshEffect(() => {
     if (!address) {
-      setAccountData(pools);
+      setAccountData(farms);
       return;
     }
     fetchAccountPoolDatas();
   }, [address, chainId]);
 
-  return <PoolContext.Provider value={{ data, accountData }}>{children}</PoolContext.Provider>;
+  return <FarmContext.Provider value={{ data, accountData }}>{children}</FarmContext.Provider>;
 };
 
-export { PoolContext, PoolContextProvider };
+export { FarmContext, FarmContextProvider };

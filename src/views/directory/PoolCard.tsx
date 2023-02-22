@@ -1,6 +1,8 @@
 import { SkeletonComponent } from "components/SkeletonComponent";
+import { FarmContext } from "contexts/directory/FarmContext";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { PoolContext } from "contexts/directory/PoolContext";
+import { ZapperContext } from "contexts/directory/ZapperContext";
 import { useContext, useState } from "react";
 import styled from "styled-components";
 import { numberWithCommas } from "utils/functions";
@@ -18,9 +20,11 @@ const PoolCard = ({
 }) => {
   const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Brewlabs Index", 4: "Zapper Pools" };
   const { data: pools }: any = useContext(PoolContext);
+  const { data: farms }: any = useContext(FarmContext);
   const { data: indexes }: any = useContext(IndexContext);
+  const { data: zappers }: any = useContext(ZapperContext);
 
-  const allPools = [...pools, ...indexes];
+  const allPools = [...pools, ...farms, ...indexes, ...zappers];
 
   const getIndex = () => {
     for (let i = 0; i < allPools.length; i++) if (allPools[i] === data) return i;

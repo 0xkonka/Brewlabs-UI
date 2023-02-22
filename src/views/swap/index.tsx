@@ -47,6 +47,7 @@ import SwitchIconButton from "./components/SwitchIconButton";
 import SettingModal from "./components/modal/SettingModal";
 import Modal from "components/Modal";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
+import ApproveStatusBar from "./components/ApproveStatusBar";
 
 type TxResponse = TransactionResponse | null;
 
@@ -74,6 +75,7 @@ export default function Swap() {
   const [sellTax, setSellTax] = useState(0);
   const [slippage, setSlippage] = useState(50);
   const [verified, setVerified] = useState(false);
+  const [apporveStep, setApproveStep] = useState(0);
 
   // swap state
   const { typedValue } = useSwapState();
@@ -288,6 +290,7 @@ export default function Swap() {
     setAttemptingTxn(true);
     try {
       const tx = await approveCallback();
+      setApproveStep(1);
       setOpenConfirmationModal(true);
       setTxConfirmInfo({
         type: "confirming",
@@ -298,6 +301,7 @@ export default function Swap() {
         type: "confirmed",
         tx: tx.hash,
       });
+      setApproveStep(2);
     } catch (err: any) {
       if (err?.code === 4001) {
         toast.error(t("Transaction rejected."));
@@ -481,19 +485,22 @@ export default function Swap() {
                     {t("Loading")}
                   </button>
                 ) : approval <= ApprovalState.PENDING ? (
-                  <PrimarySolidButton
-                    onClick={() => {
-                      handleApprove();
-                    }}
-                  >
-                    {approval === ApprovalState.PENDING ? (
-                      <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                    ) : approval === ApprovalState.UNKNOWN ? (
-                      <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                    ) : (
-                      t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
-                    )}
-                  </PrimarySolidButton>
+                  <>
+                    <ApproveStatusBar step={apporveStep} url={currencies[Field.INPUT]} />
+                    <PrimarySolidButton
+                      onClick={() => {
+                        handleApprove();
+                      }}
+                    >
+                      {approval === ApprovalState.PENDING ? (
+                        <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                      ) : approval === ApprovalState.UNKNOWN ? (
+                        <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                      ) : (
+                        t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                      )}
+                    </PrimarySolidButton>
+                  </>
                 ) : (
                   <PrimarySolidButton
                     onClick={() => {

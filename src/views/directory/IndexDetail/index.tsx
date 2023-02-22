@@ -30,17 +30,8 @@ const CHAIN_SYMBOL = {
   56: "BNB",
 };
 
-const IndexDetail = ({
-  open,
-  setOpen,
-  data,
-  accountData,
-}: {
-  open: boolean;
-  setOpen: any;
-  data: any;
-  accountData: any;
-}) => {
+const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
+  const { open, setOpen, data, accountData } = detailDatas;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);
   const [curType, setCurType] = useState("enter");
@@ -85,10 +76,11 @@ const IndexDetail = ({
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Indexes" />
-                  <div className="text-xl font-normal">By Brewlabs</div>
+                  <div className="mt-5 whitespace-nowrap text-xl font-normal">
+                    Stake, farm, zap and explore indexes for passive income
+                  </div>
                 </div>
               }
-              summary="Words to go here..."
             />
             {!data ? (
               <Container className="font-brand">
