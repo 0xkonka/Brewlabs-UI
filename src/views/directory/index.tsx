@@ -95,7 +95,7 @@ const Directory = ({ page }: { page: number }) => {
                 title={
                   <div className="text-[40px]">
                     <WordHighlight content="Brewlabs Pool Directory" />
-                    <div className="mt-5 whitespace-nowrap text-xl font-normal">
+                    <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
                       Stake, farm, zap and explore indexes for passive income
                     </div>
                   </div>

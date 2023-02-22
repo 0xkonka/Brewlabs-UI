@@ -43,7 +43,7 @@ const AutoFarmer = ({}: {}) => {
       <div className="mb-4 flex w-full max-w-[1080px] items-center justify-between md:mb-0">
         <img src={"/images/directory/autofarmer.png"} alt={""} />
         {createPoolPanel("pc")}
-        <div className="w-full min-w-[220px] max-w-[340px] flex-1">
+        <div className="w-full xsm:min-w-[220px] xsm:min-w-[160px] max-w-[340px] flex-1">
           <div className="flex w-full justify-between">
             <div className="mr-[4%] h-[50px] flex-1">
               <StyledButton type={"quinary"}>

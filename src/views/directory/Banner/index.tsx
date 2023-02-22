@@ -40,7 +40,7 @@ const Banner = ({
         responsive={responsive}
         infinite={true}
         autoPlay={true}
-        autoPlaySpeed={100000}
+        autoPlaySpeed={5000}
         beforeChange={(nextSlide, { currentSlide, onMove }: any) => {
           setCurSlide((nextSlide - 2) % 3);
         }}
