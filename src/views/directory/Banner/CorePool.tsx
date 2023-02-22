@@ -1,6 +1,6 @@
 import LogoIcon from "components/LogoIcon";
 import styled from "styled-components";
-import StyledButton from "./StyledButton";
+import StyledButton from "../StyledButton";
 import { upSVG } from "components/dashboard/assets/svgs";
 import { useContext } from "react";
 import { PoolContext } from "contexts/directory/PoolContext";

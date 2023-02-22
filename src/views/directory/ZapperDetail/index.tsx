@@ -9,7 +9,7 @@ import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/sv
 import styled from "styled-components";
 import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
-import StakingHistory from "./StakingHistory";
+import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
 import { useContext, useState } from "react";
 import { numberWithCommas } from "utils/functions";
@@ -27,7 +27,7 @@ const CHAIN_SYMBOL = {
   56: "BNB",
 };
 
-const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
+const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, accountData } = detailDatas;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
@@ -38,52 +38,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { chainId } = useActiveChainId();
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
-
-  const onCompoundReward = async () => {
-    setPending(true);
-    try {
-      console.log("onCompoundReward");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      const estimateGas: any = await poolContract.estimateGas.compoundReward({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      const harvestTx = await poolContract.compoundReward(tx);
-      await harvestTx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
-
-  const onCompoundReflection = async () => {
-    setPending(true);
-    try {
-      let ttx, estimateGas;
-
-      console.log("onCompoundReflection");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.compoundDividend({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      ttx = await poolContract.compoundDividend(tx);
-      await ttx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
 
   const onHarvestReward = async () => {
     setPending(true);
@@ -102,30 +56,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
         value: data.performanceFee,
       };
       harvestTx = await poolContract.claimReward(tx);
-      await harvestTx.wait();
-    } catch (error) {
-      console.log(error);
-    }
-    setPending(false);
-  };
-
-  const onHarvestReflection = async () => {
-    setPending(true);
-    try {
-      let harvestTx, estimateGas;
-
-      console.log("onHarvestReflection");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.claimDividend({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      harvestTx = await poolContract.claimDividend(tx);
       await harvestTx.wait();
     } catch (error) {
       console.log(error);
@@ -202,18 +132,18 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     )}
                   </div>
                   <div className="flex flex-1 justify-end">
-                    <div className="hidden w-full max-w-[470px] sm:block">
-                      {data.isCustody ? (
+                    {data.isCustody ? (
+                      <div className="hidden w-full max-w-[470px] sm:block">
                         <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                           <StyledButton>
                             <div className="absolute top-2.5 left-2">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
                       <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
                         <StyledButton>
@@ -246,7 +176,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     >
                       <div className="flex justify-between text-xl">
                         <div>
-                          Pool: <span className="text-primary">{data.earningToken.symbol}</span>
+                          Pool: <span className="text-primary">{data.stakingToken.symbol}</span>
                         </div>
                         <div className="flex">
                           APR:&nbsp;
@@ -280,9 +210,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className=" text-[#FFFFFF80]">
                           <span className="text-primary">{data.earningToken.symbol}</span> earned
                         </div>
-                        <div className="text-[#FFFFFF80]">
-                          <span className="text-primary">{data.reflectionToken.symbol}</span> Rewards
-                        </div>
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
@@ -297,16 +224,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        <div className="flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.pendingReflection !== undefined ? (
-                            accountData.pendingReflection.toFixed(0)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.reflectionToken.symbol}
+                        <div className="text-primary">
+                          $150.52 <span className="text-[#FFFFFF80]">earned</span>
                         </div>
                       </div>
                       <div className="mt-2">
@@ -322,23 +241,15 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        <div className="flex text-primary">
-                          {!address ? (
-                            "0.00"
-                          ) : accountData.totalReflection !== undefined ? (
-                            accountData.totalReflection.toFixed(2)
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;
-                          {data.reflectionToken.symbol}
+                        <div className="text-primary">
+                          $150.52 <span className="text-[#FFFFFF80]">earned</span>
                         </div>
                       </div>
                     </InfoPanel>
                   </div>
                 </div>
                 <div className="mt-7">
-                  <ProgressBar endBlock={data.endBlock} remaining={data.remainingBlock} />
+                  <ProgressBar endBlock={1} remaining={0} />
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
@@ -361,25 +272,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         ) : (
                           <SkeletonComponent />
                         )}
-                      </div>
-                    </InfoPanel>
-                    <InfoPanel
-                      className="mt-2.5 flex cursor-pointer justify-between"
-                      type={"secondary"}
-                      boxShadow={curGraph === 1 ? "primary" : null}
-                      onClick={() => setCurGraph(1)}
-                    >
-                      <div>
-                        Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-                      </div>
-                      <div className="flex">
-                        {data.totalFee !== undefined ? (
-                          numberWithCommas(data.totalFee.toFixed(2))
-                        ) : (
-                          <SkeletonComponent />
-                        )}
-                        &nbsp;
-                        <span className="text-primary">{data.stakingToken.symbol}</span>
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -423,26 +315,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
-                        <div className="mt-1.5 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReward}
-                            disabled={!address || !accountData.pendingReward || pending}
-                            onClick={() => onCompoundReward()}
-                          >
-                            <div className="flex">
-                              Compound&nbsp;
-                              {!address ? (
-                                0
-                              ) : accountData.pendingReward !== undefined ? (
-                                accountData.pendingReward.toFixed(0)
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
-                            </div>
-                          </StyledButton>
-                        </div>
+
                         <div className="mt-2 h-[56px] w-full">
                           <StyledButton
                             type="teritary"
@@ -450,7 +323,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             disabled={!address || !accountData.pendingReward || pending}
                             onClick={() => onHarvestReward()}
                           >
-                            <div className="flex">
+                            <div className="flex text-sm">
                               Harvest&nbsp;
                               {!address ? (
                                 0
@@ -465,41 +338,19 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                       <div className="mt-5 flex-1 xsm:mt-0">
-                        <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
+                        <div className="text-xl text-[#FFFFFFBF]">Alternative</div>
                         <div className="mt-1.5 h-[56px] w-full">
                           <StyledButton
                             type="teritary"
                             boxShadow={address && accountData.pendingReflection}
                             disabled={!address || !accountData.pendingReflection || pending}
-                            onClick={() => onCompoundReflection()}
                           >
-                            Compound&nbsp;
-                            {!address ? (
-                              "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(2)
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
-                          </StyledButton>
-                        </div>
-                        <div className="mt-2 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && accountData.pendingReflection}
-                            disabled={!address || !accountData.pendingReflection || pending}
-                            onClick={() => onHarvestReflection()}
-                          >
-                            Harvest&nbsp;
-                            {!address ? (
-                              "0.00"
-                            ) : accountData.pendingReflection !== undefined ? (
-                              accountData.pendingReflection.toFixed(2)
-                            ) : (
-                              <SkeletonComponent />
-                            )}
-                            <span className="text-primary">&nbsp;{data.reflectionToken.symbol}</span>
+                            <div className="whitespace-nowrap text-sm">
+                              Convert
+                              <span className="text-primary">&nbsp;4525&nbsp;{data.earningToken.symbol}</span>
+                              &nbsp;to&nbsp;
+                              <span className="text-primary">$56.23 {data.convertToken.symbol}</span>
+                            </div>
                           </StyledButton>
                         </div>
                       </div>
@@ -512,11 +363,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <StyledButton
                           onClick={() => {
                             setStakingModalOpen(true);
-                            setCurType("deposit");
+                            setCurType("zapin");
                           }}
                           disabled={pending || !address}
                         >
-                          Deposit {data.stakingToken.symbol}
+                          Zap in {data.stakingToken.symbol}
                         </StyledButton>
                       </div>
                       <div className="flex-1">
@@ -524,12 +375,12 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           type={"secondary"}
                           onClick={() => {
                             setStakingModalOpen(true);
-                            setCurType("withdraw");
+                            setCurType("zapout");
                           }}
                           disabled={pending || !address}
                         >
                           <div className="text-[#FFFFFFBF]">
-                            Withdraw <span className="text-primary">{data.stakingToken.symbol}</span>
+                            Zap out <span className="text-primary">{data.stakingToken.symbol}</span>
                           </div>
                         </StyledButton>
                       </div>
@@ -545,7 +396,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   );
 };
 
-export default StakingDetail;
+export default ZapperDetail;
 
 const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: string }>`
   background: ${({ type }) => (type === "secondary" ? "rgba(185, 184, 184, 0.1)" : "rgba(185, 184, 184, 0.05)")};
