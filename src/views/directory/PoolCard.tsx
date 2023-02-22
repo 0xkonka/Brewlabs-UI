@@ -25,17 +25,17 @@ const PoolCard = ({
 }) => {
   const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Brewlabs Index", 4: "Zapper Pools" };
 
-  const { data: pools }: any = useContext(PoolContext);
-  const { data: farms }: any = useContext(FarmContext);
-  const { data: indexes }: any = useContext(IndexContext);
-  const { data: zappers }: any = useContext(ZapperContext);
+  // const { data: pools }: any = useContext(PoolContext);
+  // const { data: farms }: any = useContext(FarmContext);
+  // const { data: indexes }: any = useContext(IndexContext);
+  // const { data: zappers }: any = useContext(ZapperContext);
 
-  const allPools = [...pools, ...farms, ...indexes, ...zappers];
+  // const allPools = [...pools, ...farms, ...indexes, ...zappers];
 
-  const getIndex = () => {
-    for (let i = 0; i < allPools.length; i++) if (allPools[i] === data) return i;
-    return -1;
-  };
+  // const getIndex = () => {
+  //   for (let i = 0; i < allPools.length; i++) if (allPools[i] === data) return i;
+  //   return -1;
+  // };
 
   return (
     <StyledContainer
@@ -50,10 +50,10 @@ const PoolCard = ({
             setCurPool({ type: Category.FARM, pid: data.farmId });
             break;
           case Category.INDEXES:
-            setCurPool({ type: Category.FARM, pid: data.pid });
+            setCurPool({ type: Category.INDEXES, pid: data.pid });
             break;
           case Category.ZAPPER:
-            setCurPool({ type: Category.FARM, pid: data.pid });
+            setCurPool({ type: Category.ZAPPER, pid: data.pid });
           default:
             setSelectPoolDetail(false);
         }
@@ -104,7 +104,7 @@ const PoolCard = ({
         <div className="min-w-[80px]">
           {data.type !== 3 ? (
             data.apr || data.apr === 0.0 ? (
-              `${data.apr?.toFixed(2)}%`
+              `${(+data.apr).toFixed(2)}%`
             ) : (
               <div className="mr-2">{<SkeletonComponent />}</div>
             )
@@ -140,7 +140,7 @@ const PoolCard = ({
             APR:&nbsp;
             {data.type !== 3 ? (
               data.apr !== undefined ? (
-                `${data.apr?.toFixed(2)}%`
+                `${(+data.apr).toFixed(2)}%`
               ) : (
                 <div className="mr-2">{<SkeletonComponent />}</div>
               )
