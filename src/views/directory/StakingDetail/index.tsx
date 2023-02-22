@@ -45,7 +45,6 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 
-// const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
   const dispatch = useAppDispatch();
