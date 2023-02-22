@@ -242,7 +242,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Staking Pools" />
-                  <div className="text-xl font-normal">By Brewlabs {data.sousId}</div>
+                  <div className="text-xl font-normal">By Brewlabs</div>
                 </div>
               }
               summary="Words to go here..."
@@ -344,9 +344,9 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         <div className="text-primary">Flexible</div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
-                        Deposit Fee {data.depositFee.toFixed(2)}%
+                        Deposit Fee {(+data.depositFee).toFixed(2)}%
                         <br />
-                        Withdraw Fee {data.withdrawFee.toFixed(2)}%
+                        Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
                         {data.sousId === 203 && (
                           <>
                             <br />
