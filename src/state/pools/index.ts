@@ -86,6 +86,26 @@ export const fetchPoolsTVLDataAsync = (sousIds) => async (dispatch, getState) =>
   });
 };
 
+export const fetchPoolsUserDepositDataAsync = (account: string) => async (dispatch, getState) => {
+  const pools = getState().pools.data;
+  if (pools.length === 0) return;
+
+  axios
+    .post(`${API_URL}/deposit/${account}/multiple`, { type: "pool", ids: pools.map((p) => p.sousId) })
+    .then((res) => {
+      const ret = res?.data ?? [];
+
+      const depositData = [];
+      for (let pool of pools) {
+        let record = { sousId: pool.sousId, deposits: [] };
+        record.deposits = ret.filter((d) => d.sousId === pool.sousId);
+
+        depositData.push(record);
+      }
+      dispatch(setPoolsUserData(depositData));
+    });
+};
+
 export const fetchPoolsStakingLimitsAsync = (chainId: ChainId) => async (dispatch, getState) => {
   const poolsWithStakingLimit = getState()
     .pools.data.filter((p) => p.chainId === chainId)
@@ -255,11 +275,17 @@ export const PoolsSlice = createSlice({
       });
       state.userDataLoaded = true;
     },
+    resetPoolsUserData: (state) => {
+      state.data = state.data.map((pool) => {
+        return { ...pool, userData: undefined };
+      });
+      state.userDataLoaded = false;
+    },
   },
 });
 
 // Actions
-export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection, setPoolTVLData } =
+export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection, setPoolTVLData, resetPoolsUserData } =
   PoolsSlice.actions;
 
 export default PoolsSlice.reducer;

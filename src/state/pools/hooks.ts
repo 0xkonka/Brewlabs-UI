@@ -7,7 +7,13 @@ import { useAppDispatch } from "state";
 import { simpleRpcProvider } from "utils/providers";
 
 import { State } from "../types";
-import { fetchPoolsPublicDataAsync, fetchPoolsPublicDataFromApiAsync, fetchPoolsUserDataAsync } from ".";
+import {
+  fetchPoolsPublicDataAsync,
+  fetchPoolsPublicDataFromApiAsync,
+  fetchPoolsUserDataAsync,
+  fetchPoolsUserDepositDataAsync,
+  resetPoolsUserData,
+} from ".";
 import { transformPool } from "./helpers";
 import { DeserializedPool } from "./types";
 
@@ -39,6 +45,9 @@ export const useFetchPoolsWithUserData = () => {
   useSlowRefreshEffect(() => {
     if (account) {
       dispatch(fetchPoolsUserDataAsync(account, chainId));
+      dispatch(fetchPoolsUserDepositDataAsync(account));
+    } else {
+      dispatch(resetPoolsUserData());
     }
   }, [account, chainId, dispatch]);
 };

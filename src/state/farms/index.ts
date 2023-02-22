@@ -74,23 +74,18 @@ export const fetchFarmsUserDepositDataAsync =
     const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
     if (farms.length === 0) return;
 
-    axios
-      .post(`${API_URL}/deposit/${account}/multiple`, { type: "farm", ids: farms.map((p) => p.pid) })
-      .then((res) => {
-        const ret = res?.data ?? [];
+    axios.post(`${API_URL}/deposit/${account}/multiple`, { type: "farm", ids: farms.map((p) => p.pid) }).then((res) => {
+      const ret = res?.data ?? [];
 
-        const depositData = [];
-        for (let farm of farms) {
-          let record = { pid: farm.pid, deposits: [] };
-          record.deposits = ret.filter(
-            (d) =>
-              d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.pid
-          );
+      const depositData = [];
+      for (let farm of farms) {
+        let record = { pid: farm.pid, deposits: [] };
+        record.deposits = ret.filter((d) => d.farmId === farm.pid);
 
-          depositData.push(record);
-        }
-        dispatch(setFarmUserData(depositData));
-      });
+        depositData.push(record);
+      }
+      dispatch(setFarmUserData(depositData));
+    });
   };
 
 export const fetchFarmUserDataAsync =

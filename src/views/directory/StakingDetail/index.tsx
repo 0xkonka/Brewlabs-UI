@@ -12,7 +12,6 @@ import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
 import { DashboardContext } from "contexts/DashboardContext";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
@@ -21,6 +20,7 @@ import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
 import {
   setPoolsPublicData,
+  setPoolsUserData,
   updateUserAllowance,
   updateUserBalance,
   updateUserPendingReward,
@@ -39,6 +39,7 @@ import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import StakingModal from "./Modals/StakingModal";
+import { fetchUserDepositData } from "state/pools/fetchPoolsUser";
 
 const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const dispatch = useAppDispatch();
@@ -53,7 +54,6 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { ethPrice } = useContext(TokenPriceContext);
   const currentBlock = useChainCurrentBlock(data.chainId);
 
   const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
@@ -95,11 +95,17 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   }, [data.sousId]);
 
   useEffect(() => {
+    const fetchDepositHistoryAsync = async () => {
+      const res = await fetchUserDepositData(data, address);
+      dispatch(setPoolsUserData([res]));
+    };
+
     if (address) {
       dispatch(updateUserAllowance(data.sousId, address, data.chainId));
       dispatch(updateUserBalance(data.sousId, address, data.chainId));
       dispatch(updateUserStakedBalance(data.sousId, address, data.chainId));
       dispatch(updateUserPendingReward(data.sousId, address, data.chainId));
+      fetchDepositHistoryAsync();
     }
   }, [address, data.sousId]);
 
@@ -114,7 +120,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
         return data.stakedAddresses;
       default:
         _graphData = data.TVLData ?? [];
-        _graphData = _graphData.map(v => +v)
+        _graphData = _graphData.map((v) => +v);
         if (data.tvl) _graphData.push(data.totalStaked.toNumber());
         return _graphData;
     }
@@ -215,7 +221,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   };
 
   const history =
-    data && data.history && address ? data.history.filter((data: any) => data.address === address.toLowerCase()) : [];
+    data && data.userData?.deposits && address ? data.userData?.deposits.map(deposit => ({...deposit, symbol: data.stakingToken.symbol})) : [];
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -473,7 +479,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       </div>
                       <div className="flex">
                         {data.tokenFees !== undefined ? (
-                          numberWithCommas(data.tokenFees[data.tokenFees.length-1].toFixed(2))
+                          numberWithCommas(data.tokenFees[data.tokenFees.length - 1].toFixed(2))
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -492,7 +498,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       </div>
                       <div className="flex">
                         {data.performanceFees !== undefined ? (
-                          numberWithCommas(data.performanceFees[data.performanceFees.length-1].toFixed(2))
+                          numberWithCommas(data.performanceFees[data.performanceFees.length - 1].toFixed(2))
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -511,7 +517,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       </div>
                       <div className="flex">
                         {data.stakedAddresses !== undefined ? (
-                          numberWithCommas(data.stakedAddresses[data.stakedAddresses.length-1])
+                          numberWithCommas(data.stakedAddresses[data.stakedAddresses.length - 1])
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -612,7 +618,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       )}
                     </div>
                     <div className="mt-7">
-                      <StakingHistory history={history} />
+                      <StakingHistory history={history} type={data.poolCategory}/>
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
                       {data.chainId !== chainId ? (

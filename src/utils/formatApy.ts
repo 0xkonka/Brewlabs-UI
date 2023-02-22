@@ -31,8 +31,8 @@ export const formatTvl = (value, oraclePrice, useOrder = true) => {
   return `$${num.toFixed(2)}${units[order]}`;
 };
 
-export const formatAmount = (value, useOrder = true) => {
-  let tvl = new BigNumber(value).toFixed(2)
+export const formatAmount = (value, decimals = 2, useOrder = true) => {
+  let tvl = new BigNumber(value).toFixed(decimals)
 
   let order = Math.floor(Math.log10(+tvl) / 3);
   if (order < 0 || useOrder === false) {
@@ -42,7 +42,7 @@ export const formatAmount = (value, useOrder = true) => {
 
   const num = +tvl / 1000 ** order;
 
-  return `${num.toFixed(2)}${units[order]}`;
+  return `${num.toFixed(decimals)}${units[order]}`;
 };
 
 export const formatBalanceWithUnit = (value, baseOrder = 0) => {
