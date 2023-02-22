@@ -1659,6 +1659,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x1ae378cC5d38350Ec90cE9bcf827a544cB2BBA75/logo.png"
     },
     {
+      "name": "Bacon Token",
+      "symbol": "BACON",
+      "address": "0x186785D4cba7263532F1da9bBeC3Da612dd6D085",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x186785D4cba7263532F1da9bBeC3Da612dd6D085/logo.png"
+    },
+    {
       "name": "Pomeranian",
       "symbol": "POM",
       "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
@@ -2209,6 +2217,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x353D0d1b4Feb416FAaAbD5B314D99ef148D56dFF/logo.png"
+    },
+    {
+      "name": "Dark Tavern Token",
+      "symbol": "DTT",
+      "address": "0x4aeB2D0B318e5e8ac62D5A39EB3495974951f477",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x4aeB2D0B318e5e8ac62D5A39EB3495974951f477/logo.png"
     },
     {
       "name": "Matic Token",
