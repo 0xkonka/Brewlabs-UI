@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import { WNATIVE } from "@brewlabs/sdk";
 import { useContext, useEffect, useState } from "react";
-import { useAccount, useSigner } from "wagmi";
+import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
@@ -11,11 +12,12 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
 import {
@@ -27,19 +29,20 @@ import {
   updateUserStakedBalance,
 } from "state/pools";
 import { fetchPoolFeeHistories, fetchPoolTotalRewards } from "state/pools/fetchPools";
+import { fetchUserDepositData } from "state/pools/fetchPoolsUser";
 import { BIG_ZERO } from "utils/bigNumber";
-import { getUnLockStakingContract } from "utils/contractHelpers";
 import { numberWithCommas } from "utils/functions";
 import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-import StyledButton from "../StyledButton";
 import ProgressBar from "./ProgressBar";
-import TotalStakedChart from "./TotalStakedChart";
+import StyledButton from "../StyledButton";
 import StakingHistory from "./StakingHistory";
+import TotalStakedChart from "./TotalStakedChart";
 import StakingModal from "./Modals/StakingModal";
-import { fetchUserDepositData } from "state/pools/fetchPoolsUser";
+import useLockupPool from "./hooks/useLockupPool";
+import useUnlockupPool from "./hooks/useUnlockupPool";
 
 const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const dispatch = useAppDispatch();
@@ -50,7 +53,6 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const [curGraph, setCurGraph] = useState(0);
 
   const { address } = useAccount();
-  const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -58,6 +60,20 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
 
   const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
+
+  const isLockup = data.poolCategory === PoolCategory.LOCKUP;
+  const {
+    onReward: onRewardLockup,
+    onCompound: onCompoundLockup,
+    onDividend: onDividendLockup,
+    onCompoundDividend: onCompoundDividendLockup,
+  } = useLockupPool(data.sousId, data.contractAddress, data.lockup, data.performanceFee, data.enableEmergencyWithdraw);
+  const { onReward, onCompound, onDividend, onCompoundDividend } = useUnlockupPool(
+    data.sousId,
+    data.contractAddress,
+    data.performanceFee,
+    data.enableEmergencyWithdraw
+  );
 
   let hasReflections = false;
   const reflectionTokenBalances = [];
@@ -126,24 +142,21 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
     }
   };
 
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
   const onCompoundReward = async () => {
     setPending(true);
     try {
-      console.log("onCompoundReward");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      const estimateGas: any = await poolContract.estimateGas.compoundReward({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      const harvestTx = await poolContract.compoundReward(tx);
-      await harvestTx.wait();
+      if (isLockup) {
+        await onCompoundLockup();
+      } else {
+        await onCompound();
+      }
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -151,23 +164,14 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const onCompoundReflection = async () => {
     setPending(true);
     try {
-      let ttx, estimateGas;
-
-      console.log("onCompoundReflection");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.compoundDividend({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      ttx = await poolContract.compoundDividend(tx);
-      await ttx.wait();
+      if (isLockup) {
+        await onCompoundDividendLockup();
+      } else {
+        await onCompoundDividend();
+      }
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -175,23 +179,14 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const onHarvestReward = async () => {
     setPending(true);
     try {
-      let harvestTx, estimateGas;
-
-      console.log("HarvestReward");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.claimReward({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      harvestTx = await poolContract.claimReward(tx);
-      await harvestTx.wait();
+      if (isLockup) {
+        await onRewardLockup();
+      } else {
+        await onReward();
+      }
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -199,29 +194,22 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
   const onHarvestReflection = async () => {
     setPending(true);
     try {
-      let harvestTx, estimateGas;
-
-      console.log("onHarvestReflection");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.claimDividend({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      harvestTx = await poolContract.claimDividend(tx);
-      await harvestTx.wait();
+      if (isLockup) {
+        await onDividendLockup();
+      } else {
+        await onDividend();
+      }
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
 
   const history =
-    data && data.userData?.deposits && address ? data.userData?.deposits.map(deposit => ({...deposit, symbol: data.stakingToken.symbol})) : [];
+    data && data.userData?.deposits && address
+      ? data.userData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
+      : [];
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -334,6 +322,14 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       <div className="flex justify-between text-xl">
                         <div>
                           Pool: <span className="text-primary">{earningToken.symbol}</span>
+                          <a
+                            className="ml-1 inline-block"
+                            href={getExplorerLink(data.chainId, "address", data.contractAddress)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {LinkSVG}
+                          </a>
                         </div>
                         <div className="flex">
                           APR:&nbsp;
@@ -347,7 +343,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                           Stake: <span className="text-primary">{stakingToken.symbol}</span> earn{" "}
                           <span className="text-primary">{earningToken.symbol}</span>
                         </div>
-                        <div className="text-primary">Flexible</div>
+                        <div className="text-primary">{!data.lockup ? "Flexible" : `${data.duration} days lock`}</div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
                         Deposit Fee {(+data.depositFee).toFixed(2)}%
@@ -479,7 +475,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       </div>
                       <div className="flex">
                         {data.tokenFees !== undefined ? (
-                          numberWithCommas(data.tokenFees[data.tokenFees.length - 1].toFixed(2))
+                          formatAmount(data.tokenFees[data.tokenFees.length - 1].toFixed(2))
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -498,7 +494,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       </div>
                       <div className="flex">
                         {data.performanceFees !== undefined ? (
-                          numberWithCommas(data.performanceFees[data.performanceFees.length - 1].toFixed(2))
+                          data.performanceFees[data.performanceFees.length - 1].toFixed(4)
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -533,7 +529,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                             type="teritary"
                             boxShadow={address && earningTokenBalance > 0}
                             disabled={!address || earningTokenBalance === 0 || pending}
-                            onClick={() => onCompoundReward()}
+                            onClick={onCompoundReward}
                           >
                             <div className="flex">
                               Compound&nbsp;
@@ -548,60 +544,64 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                             </div>
                           </StyledButton>
                         </div>
-                        <div className="mt-2 h-[56px] w-full">
-                          <StyledButton
-                            type="teritary"
-                            boxShadow={address && earningTokenBalance > 0}
-                            disabled={!address || earningTokenBalance === 0 || pending}
-                            onClick={() => onHarvestReward()}
-                          >
-                            <div className="flex">
-                              Harvest&nbsp;
-                              {!address ? (
-                                0
-                              ) : accountData.pendingReward !== undefined ? (
-                                formatAmount(earningTokenBalance.toFixed(4))
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
-                            </div>
-                          </StyledButton>
-                        </div>
+                        {data.harvest && (
+                          <div className="mt-2 h-[56px] w-full">
+                            <StyledButton
+                              type="teritary"
+                              boxShadow={address && earningTokenBalance > 0}
+                              disabled={!address || earningTokenBalance === 0 || pending}
+                              onClick={onHarvestReward}
+                            >
+                              <div className="flex">
+                                Harvest&nbsp;
+                                {!address ? (
+                                  0
+                                ) : accountData.pendingReward !== undefined ? (
+                                  formatAmount(earningTokenBalance.toFixed(4))
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
+                              </div>
+                            </StyledButton>
+                          </div>
+                        )}
                       </div>
                       {data.reflection && (
                         <div className="mt-5 flex-1 xsm:mt-0">
                           <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
-                          <div className="mt-1.5 h-[56px] w-full">
-                            <StyledButton
-                              type="teritary"
-                              boxShadow={address && hasReflections}
-                              disabled={!address || !hasReflections || pending}
-                              onClick={() => onCompoundReflection()}
-                            >
-                              Compound&nbsp;
-                              {reflectionTokens.length > 1 ? (
-                                <span className="text-primary">&nbsp;Multiple</span>
-                              ) : (
-                                <>
-                                  {!address ? (
-                                    "0.00"
-                                  ) : accountData.pendingReflections[0] !== undefined ? (
-                                    formatAmount(reflectionTokenBalances[0].toFixed(4))
-                                  ) : (
-                                    <SkeletonComponent />
-                                  )}
-                                  <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
-                                </>
-                              )}
-                            </StyledButton>
-                          </div>
+                          {!data.noReflectionCompound && (
+                            <div className="mt-1.5 h-[56px] w-full">
+                              <StyledButton
+                                type="teritary"
+                                boxShadow={address && hasReflections}
+                                disabled={!address || !hasReflections || pending}
+                                onClick={onCompoundReflection}
+                              >
+                                Compound&nbsp;
+                                {reflectionTokens.length > 1 ? (
+                                  <span className="text-primary">&nbsp;Multiple</span>
+                                ) : (
+                                  <>
+                                    {!address ? (
+                                      "0.00"
+                                    ) : accountData.pendingReflections[0] !== undefined ? (
+                                      formatAmount(reflectionTokenBalances[0].toFixed(4))
+                                    ) : (
+                                      <SkeletonComponent />
+                                    )}
+                                    <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                                  </>
+                                )}
+                              </StyledButton>
+                            </div>
+                          )}
                           <div className="mt-2 h-[56px] w-full">
                             <StyledButton
                               type="teritary"
                               boxShadow={address && hasReflections}
                               disabled={!address || !hasReflections || pending}
-                              onClick={() => onHarvestReflection()}
+                              onClick={onHarvestReflection}
                             >
                               Harvest&nbsp;
                               {!address ? (
@@ -618,7 +618,7 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                       )}
                     </div>
                     <div className="mt-7">
-                      <StakingHistory history={history} type={data.poolCategory}/>
+                      <StakingHistory history={history} type={data.poolCategory} />
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
                       {data.chainId !== chainId ? (

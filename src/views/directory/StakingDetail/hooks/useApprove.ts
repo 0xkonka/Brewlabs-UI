@@ -19,7 +19,7 @@ const useApprovePool = (tokenAddress, sousId, contractAddress) => {
     const receipt = await tx.wait();
 
     dispatch(updateUserAllowance(sousId, account, chainId));
-    return receipt.status;
+    return receipt;
   }, [account, chainId, library, dispatch, contractAddress, sousId, tokenContract]);
 
   return { onApprove: handleApprove };

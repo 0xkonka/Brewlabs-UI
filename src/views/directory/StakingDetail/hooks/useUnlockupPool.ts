@@ -29,7 +29,7 @@ const stake = async (stakingContract, amount, decimals, performanceFee, gasPrice
     value: performanceFee,
   });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
 const unstake = async (
@@ -52,7 +52,7 @@ const unstake = async (
     value: performanceFee,
   });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
 const emergencyUnstake = async (stakingContract: any, gasPrice) => {
@@ -61,7 +61,7 @@ const emergencyUnstake = async (stakingContract: any, gasPrice) => {
 
   const tx = await stakingContract.emergencyWithdraw({ gasPrice, gasLimit });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
 const harvestPool = async (stakingContract, performanceFee, gasPrice) => {
@@ -70,7 +70,7 @@ const harvestPool = async (stakingContract, performanceFee, gasPrice) => {
 
   const tx = await stakingContract.claimReward({ gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
 const harvestDividend = async (stakingContract, performanceFee, gasPrice) => {
@@ -79,7 +79,7 @@ const harvestDividend = async (stakingContract, performanceFee, gasPrice) => {
 
   const tx = await stakingContract.claimDividend({ gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
 const compoundPool = async (stakingContract, performanceFee, gasPrice) => {
@@ -88,7 +88,7 @@ const compoundPool = async (stakingContract, performanceFee, gasPrice) => {
 
   const tx = await stakingContract.compoundReward({ gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
 const compoundDividend = async (stakingContract, performanceFee, gasPrice) => {
@@ -97,10 +97,10 @@ const compoundDividend = async (stakingContract, performanceFee, gasPrice) => {
 
   const tx = await stakingContract.compoundDividend({ gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
-  return receipt.status;
+  return receipt;
 };
 
-const useStakePool = (sousId: number, contractAddress, performanceFee = "0", enableEmergencyWithdraw = false) => {
+const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", enableEmergencyWithdraw = false) => {
   const dispatch = useAppDispatch();
   const { account, chainId, library } = useActiveWeb3React();
 
@@ -109,12 +109,13 @@ const useStakePool = (sousId: number, contractAddress, performanceFee = "0", ena
   const handleStake = useCallback(
     async (amount: string, decimals: number) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
-      await stake(stakingContract, amount, decimals, performanceFee, gasPrice);
+      const receipt = await stake(stakingContract, amount, decimals, performanceFee, gasPrice);
 
       dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
       dispatch(resetPendingReflection(sousId));
       dispatch(updateUserStakedBalance(sousId, account, chainId));
       dispatch(updateUserBalance(sousId, account, chainId));
+      return receipt;
     },
     [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]
   );
@@ -122,10 +123,11 @@ const useStakePool = (sousId: number, contractAddress, performanceFee = "0", ena
   const handleUnstake = useCallback(
     async (amount: string, decimals: number) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
+      let receipt;
       if (enableEmergencyWithdraw) {
-        await emergencyUnstake(stakingContract, gasPrice);
+        receipt = await emergencyUnstake(stakingContract, gasPrice);
       } else {
-        await unstake(stakingContract, amount, decimals, performanceFee, gasPrice, forceGasLimits[sousId]);
+        receipt = await unstake(stakingContract, amount, decimals, performanceFee, gasPrice, forceGasLimits[sousId]);
       }
 
       dispatch(resetPendingReflection(sousId));
@@ -133,44 +135,49 @@ const useStakePool = (sousId: number, contractAddress, performanceFee = "0", ena
       dispatch(updateUserStakedBalance(sousId, account, chainId));
       dispatch(updateUserBalance(sousId, account, chainId));
       dispatch(updateUserPendingReward(sousId, account, chainId));
+      return receipt;
     },
     [account, chainId, library, dispatch, enableEmergencyWithdraw, stakingContract, sousId, performanceFee]
   );
 
   const handleHarvest = useCallback(async () => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
-    await harvestPool(stakingContract, performanceFee, gasPrice);
+    const receipt = await harvestPool(stakingContract, performanceFee, gasPrice);
 
     dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserBalance(sousId, account, chainId));
+    return receipt;
   }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
 
   const handleHarvestDividend = useCallback(async () => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
-    await harvestDividend(stakingContract, performanceFee, gasPrice);
+    const receipt = await harvestDividend(stakingContract, performanceFee, gasPrice);
 
     dispatch(resetPendingReflection(sousId));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserBalance(sousId, account, chainId));
+    return receipt;
   }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
 
   const handleCompound = useCallback(async () => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
-    await compoundPool(stakingContract, performanceFee, gasPrice);
+    const receipt = await compoundPool(stakingContract, performanceFee, gasPrice);
 
     dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserStakedBalance(sousId, account, chainId));
+    return receipt;
   }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
 
   const handleCompoundDividend = useCallback(async () => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
-    await compoundDividend(stakingContract, performanceFee, gasPrice);
+    const receipt = await compoundDividend(stakingContract, performanceFee, gasPrice);
 
     dispatch(resetPendingReflection(sousId));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserStakedBalance(sousId, account, chainId));
+    return receipt;
   }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
 
   return {
@@ -183,4 +190,4 @@ const useStakePool = (sousId: number, contractAddress, performanceFee = "0", ena
   };
 };
 
-export default useStakePool;
+export default useUnlockupPool;
