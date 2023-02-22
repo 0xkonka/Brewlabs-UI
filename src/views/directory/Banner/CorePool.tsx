@@ -1,10 +1,9 @@
 import styled from "styled-components";
-
 import { upSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import StyledButton from "./StyledButton";
 import { getNativeSybmol } from "lib/bridge/helpers";
+import StyledButton from "../StyledButton";
 
 const CorePool = ({
   setSelectPoolDetail,

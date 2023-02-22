@@ -36,6 +36,7 @@ import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
+
 import ProgressBar from "./ProgressBar";
 import StyledButton from "../StyledButton";
 import StakingHistory from "./StakingHistory";
@@ -44,7 +45,9 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 
-const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
+// const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
+const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
+  const { open, setOpen, data } = detailDatas;
   const dispatch = useAppDispatch();
 
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
@@ -236,10 +239,11 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Staking Pools" />
-                  <div className="text-xl font-normal">By Brewlabs</div>
+                  <div className="mt-5 whitespace-nowrap text-xl font-normal">
+                    Stake, farm, zap and explore indexes for passive income
+                  </div>
                 </div>
               }
-              summary="Words to go here..."
             />
             {!data ? (
               <Container className="font-brand">
@@ -264,21 +268,29 @@ const StakingDetail = ({ open, setOpen, data }: { open: boolean; setOpen: any; d
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
-                    <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
-                      <StyledButton>
-                        <div className="absolute top-2.5 left-2">{lockSVG}</div>
-                        <div className="ml-3">Brewlabs Custody</div>
-                      </StyledButton>
-                    </div>
-                  </div>
-                  <div className="flex flex-1 justify-end">
-                    <div className="hidden w-full max-w-[470px] sm:block">
-                      <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                    {data.isCustody ? (
+                      <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                         <StyledButton>
                           <div className="absolute top-2.5 left-2">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div className="flex flex-1 justify-end">
+                    <div className="hidden w-full max-w-[470px] sm:block">
+                      {data.isCustody ? (
+                        <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                          <StyledButton>
+                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                            <div className="ml-3">Brewlabs Custody</div>
+                          </StyledButton>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
                       <a

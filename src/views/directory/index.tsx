@@ -13,11 +13,33 @@ import { useTokenPrices } from "hooks/useTokenPrice";
 import { usePools } from "state/pools/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 
-import CorePool from "./CorePool";
+// import CorePool from "./CorePool";
 import IndexDetail from "./IndexDetail";
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
 import StakingDetail from "./StakingDetail";
+
+import styled from "styled-components";
+import Banner from "./Banner";
+import { FarmContext } from "contexts/directory/FarmContext";
+import FarmingDetail from "./FarmingDetail";
+import { ZapperContext } from "contexts/directory/ZapperContext";
+import ZapperDetail from "./ZapperDetail";
+
+const responsive = {
+  desktop: {
+    breakpoint: { max: 10000, min: 1400 },
+    items: 1,
+  },
+  mobile: {
+    breakpoint: { max: 1400, min: 1000 },
+    items: 1,
+  },
+  small: {
+    breakpoint: { max: 1000, min: 100 },
+    items: 1,
+  },
+};
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -29,7 +51,10 @@ const Directory = ({ page }: { page: number }) => {
   const { pools } = usePools();
   const prices = useTokenPrices();
 
+  // const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
+  const { data: farms, accountData: accountFarms }: any = useContext(FarmContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
+  const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
   const allPools = [
     ...pools.map((pool) => {
@@ -37,7 +62,9 @@ const Directory = ({ page }: { page: number }) => {
       if (price > 500000) price = 0;
       return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
     }),
+    ...farms,
     ...indexes,
+    ...zappers,
   ];
 
   let chosenPools;
@@ -54,22 +81,54 @@ const Directory = ({ page }: { page: number }) => {
       .filter((data) => curFilter === 0 || data.type === curFilter);
   }
 
+  // const detailDatas = {
+  //   open: selectPoolDetail,
+  //   setOpen: setSelectPoolDetail,
+  //   data: allPools[curPool],
+  //   accountData: allAccountDatas[curPool],
+  // };
+
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:
         return (
           <StakingDetail
-            open={selectPoolDetail}
-            setOpen={setSelectPoolDetail}
-            data={allPools.find((pool) => pool.type === curPool.type && pool.sousId === curPool.pid)}
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool.sousId === curPool.pid),
+            }}
           />
         );
       case Category.INDEXES:
         return (
           <IndexDetail
-            open={selectPoolDetail}
-            setOpen={setSelectPoolDetail}
-            data={allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid)}
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+            }}
+          />
+        );
+
+      case Category.FARM:
+        return (
+          <FarmingDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+            }}
+          />
+        );
+      case Category.ZAPPER:
+        return (
+          <ZapperDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+            }}
           />
         );
       default:
@@ -94,18 +153,22 @@ const Directory = ({ page }: { page: number }) => {
                 title={
                   <div className="text-[40px]">
                     <WordHighlight content="Brewlabs Pool Directory" />
-                    <div className="text-xl font-normal">By Brewlabs</div>
+                    <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
+                      Stake, farm, zap and explore indexes for passive income
+                    </div>
                   </div>
                 }
-                summary="Words to go here..."
               />
               <Container className="font-brand">
-                <CorePool
+                {/* <CorePool
                   setSelectPoolDetail={setSelectPoolDetail}
                   index={195}
                   setCurPool={setCurPool}
                   pools={allPools}
-                />
+                /> */}
+
+                <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
+
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}
@@ -134,3 +197,17 @@ const Directory = ({ page }: { page: number }) => {
 };
 
 export default Directory;
+
+const DotGroup = styled.div<{ active?: boolean }>`
+  width: calc(100vw / 1440 * 50);
+  height: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: ${({ active }) => (active ? "deeppink" : "white")};
+  filter: blur(1px);
+  transition: all 0.5s;
+  @media screen and (max-width: 700px) {
+    width: calc(100vw / 700 * 45);
+    height: 3px;
+  }
+`;

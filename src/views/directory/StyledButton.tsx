@@ -51,6 +51,24 @@ const StyledButton = ({
     >
       {children}
     </button>
+  ) : type === "senary" ? (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`relative flex h-full w-full items-center justify-center rounded border border-primary bg-transparent text-sm font-medium text-[#FFFFFFBF] transition hover:shadow-[0_1px_4px_#EEBB19] disabled:cursor-[not-allowed] disabled:opacity-70`}
+    >
+      {children}
+    </button>
+  ) : type === "truenft" ? (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`relative flex h-full w-full items-center justify-center rounded bg-[#1B212D] text-sm font-medium text-[#FFFFFFBF] transition hover:text-brand disabled:cursor-[not-allowed] disabled:opacity-70`}
+    >
+      {children}
+    </button>
   ) : (
     <button
       type="button"
