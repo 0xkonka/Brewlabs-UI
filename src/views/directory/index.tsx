@@ -41,7 +41,7 @@ const Directory = ({ page }: { page: number }) => {
   ];
 
   let chosenPools;
-  if (curFilter || criteria) {
+  if (curFilter >= 0 || criteria) {
     const lowercaseQuery = criteria.toLowerCase();
     chosenPools = allPools
       .filter(
@@ -51,7 +51,7 @@ const Directory = ({ page }: { page: number }) => {
           pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
           pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
       )
-      .filter((data) => data.type === curFilter);
+      .filter((data) => curFilter === 0 || data.type === curFilter);
   }
 
   const renderDetailPage = () => {
@@ -69,7 +69,7 @@ const Directory = ({ page }: { page: number }) => {
           <IndexDetail
             open={selectPoolDetail}
             setOpen={setSelectPoolDetail}
-            data={allPools.find((pool) => pool.type === curPool.type && pool.pid === curPool.pid)}
+            data={allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid)}
           />
         );
       default:

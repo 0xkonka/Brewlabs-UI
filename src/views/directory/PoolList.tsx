@@ -1,11 +1,8 @@
-import { Category } from "config/constants/types";
 import styled from "styled-components";
-import getCurrencyId from "utils/getCurrencyId";
 import PoolCard from "./PoolCard";
 
 const PoolList = ({
   pools,
-  prices,
   setSelectPoolDetail,
   setCurPool,
   setSortOrder,
@@ -38,21 +35,6 @@ const PoolList = ({
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
         {pools.map((data: any, i: number) => {
-          // let tvl = 0;
-          // let price;
-          // switch (data.type) {
-          //   case Category.POOL:
-          //     price = prices[getCurrencyId(data.chainId, data.earningToken.address)];
-          //     if (price > 500000) price = 0;
-          //     tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
-          //     break;
-          //   case Category.FARM:
-          //     price = prices[getCurrencyId(data.chainId, data.lpAddress, true)];
-          //     if (price > 500000) price = 0;
-          //     tvl = data.totalStaked && price ? +data.totalStaked * price : 0;
-          //     break;
-          // }
-
           return (
             <PoolCard
               data={data}
