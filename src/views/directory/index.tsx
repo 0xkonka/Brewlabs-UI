@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
 
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -9,37 +10,19 @@ import WordHighlight from "components/text/WordHighlight";
 
 import { Category } from "config/constants/types";
 import { IndexContext } from "contexts/directory/IndexContext";
+import { FarmContext } from "contexts/directory/FarmContext";
+import { ZapperContext } from "contexts/directory/ZapperContext";
 import { useTokenPrices } from "hooks/useTokenPrice";
 import { usePools } from "state/pools/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 
-// import CorePool from "./CorePool";
-import IndexDetail from "./IndexDetail";
+import Banner from "./Banner";
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
-import StakingDetail from "./StakingDetail";
-
-import styled from "styled-components";
-import Banner from "./Banner";
-import { FarmContext } from "contexts/directory/FarmContext";
+import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
-import { ZapperContext } from "contexts/directory/ZapperContext";
+import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
-
-const responsive = {
-  desktop: {
-    breakpoint: { max: 10000, min: 1400 },
-    items: 1,
-  },
-  mobile: {
-    breakpoint: { max: 1400, min: 1000 },
-    items: 1,
-  },
-  small: {
-    breakpoint: { max: 1000, min: 100 },
-    items: 1,
-  },
-};
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -81,13 +64,6 @@ const Directory = ({ page }: { page: number }) => {
       .filter((data) => curFilter === 0 || data.type === curFilter);
   }
 
-  // const detailDatas = {
-  //   open: selectPoolDetail,
-  //   setOpen: setSelectPoolDetail,
-  //   data: allPools[curPool],
-  //   accountData: allAccountDatas[curPool],
-  // };
-
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:
@@ -100,17 +76,6 @@ const Directory = ({ page }: { page: number }) => {
             }}
           />
         );
-      case Category.INDEXES:
-        return (
-          <IndexDetail
-            detailDatas={{
-              open: selectPoolDetail,
-              setOpen: setSelectPoolDetail,
-              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
-            }}
-          />
-        );
-
       case Category.FARM:
         return (
           <FarmingDetail
@@ -118,9 +83,22 @@ const Directory = ({ page }: { page: number }) => {
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
               data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              accountData: accountFarms,
             }}
           />
         );
+      case Category.INDEXES:
+        return (
+          <IndexDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              accountData: accountIndexDatas,
+            }}
+          />
+        );
+
       case Category.ZAPPER:
         return (
           <ZapperDetail
@@ -128,6 +106,7 @@ const Directory = ({ page }: { page: number }) => {
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
               data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              accountData: accountZapperDatas,
             }}
           />
         );
@@ -160,13 +139,6 @@ const Directory = ({ page }: { page: number }) => {
                 }
               />
               <Container className="font-brand">
-                {/* <CorePool
-                  setSelectPoolDetail={setSelectPoolDetail}
-                  index={195}
-                  setCurPool={setCurPool}
-                  pools={allPools}
-                /> */}
-
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
 
                 <div className="mt-8">

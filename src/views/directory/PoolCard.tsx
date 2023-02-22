@@ -1,16 +1,11 @@
-import { FarmContext } from "contexts/directory/FarmContext";
-import { IndexContext } from "contexts/directory/IndexContext";
-import { PoolContext } from "contexts/directory/PoolContext";
-import { ZapperContext } from "contexts/directory/ZapperContext";
-import { useContext, useState } from "react";
 import styled from "styled-components";
 
-import { SkeletonComponent } from "components/SkeletonComponent";
 import { CHAIN_ICONS } from "config/constants/networks";
+import { Category } from "config/constants/types";
+import { SkeletonComponent } from "components/SkeletonComponent";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
-import { Category } from "config/constants/types";
 
 const PoolCard = ({
   data,
@@ -24,18 +19,6 @@ const PoolCard = ({
   setCurPool: any;
 }) => {
   const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Brewlabs Index", 4: "Zapper Pools" };
-
-  // const { data: pools }: any = useContext(PoolContext);
-  // const { data: farms }: any = useContext(FarmContext);
-  // const { data: indexes }: any = useContext(IndexContext);
-  // const { data: zappers }: any = useContext(ZapperContext);
-
-  // const allPools = [...pools, ...farms, ...indexes, ...zappers];
-
-  // const getIndex = () => {
-  //   for (let i = 0; i < allPools.length; i++) if (allPools[i] === data) return i;
-  //   return -1;
-  // };
 
   return (
     <StyledContainer
@@ -54,6 +37,7 @@ const PoolCard = ({
             break;
           case Category.ZAPPER:
             setCurPool({ type: Category.ZAPPER, pid: data.pid });
+            break;
           default:
             setSelectPoolDetail(false);
         }
@@ -70,12 +54,12 @@ const PoolCard = ({
               <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
             </div>
           ) : (
-            <div className="mr-3 w-7 h-7 bg-white rounded-full border border-white">
-            <img
-              src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
-              alt={""}
-              className="rounded-full"
-            />
+            <div className="mr-3 h-7 w-7 rounded-full border border-white bg-white">
+              <img
+                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
+                alt={""}
+                className="rounded-full"
+              />
             </div>
           )}
           <div>
@@ -122,7 +106,7 @@ const PoolCard = ({
                 <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
               </div>
             ) : (
-              <img src={data.earningToken.logo} alt={""} className="mr-3 w-7 rounded-full" />
+              <img src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
             )}
             <div>
               <div className="leading-none">

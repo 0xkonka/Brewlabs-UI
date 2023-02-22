@@ -90,7 +90,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
             <PageHeader
               title={
                 <div className="text-[40px]">
-                  <WordHighlight content="Staking Pools" />
+                  <WordHighlight content="Zapper Pools" />
                   <div className="mt-5 whitespace-nowrap text-xl font-normal">
                     Stake, farm, zap and explore indexes for passive income
                   </div>
