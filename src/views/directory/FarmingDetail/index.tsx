@@ -16,8 +16,12 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import useTokenPrice from "hooks/useTokenPrice";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { useChainCurrentBlock } from "state/block/hooks";
+import { BIG_ZERO } from "utils/bigNumber";
 import { getUnLockStakingContract } from "utils/contractHelpers";
+import { formatAmount } from "utils/formatApy";
+import { getBalanceNumber } from "utils/formatBalance";
 import { numberWithCommas } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../StyledButton";
 import ProgressBar from "./ProgressBar";
@@ -68,6 +72,9 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const history =
     data && data.history && address ? data.history.filter((data: any) => data.address === address.toLowerCase()) : [];
+
+  const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
+  const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -185,7 +192,11 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                   <div className="mt-4 flex w-[160px] items-center justify-center ">
-                    <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
+                    <img
+                      src={getTokenLogoURL(earningToken.address, data.chainId)}
+                      alt={""}
+                      className="w-[100px] rounded-full"
+                    />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel
@@ -199,14 +210,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="flex">
                           APR:&nbsp;
                           <span className="text-primary">
-                            {data.apr !== undefined ? `${data.apr}%` : <SkeletonComponent />}
+                            {data.apr || data.apr === 0.0 ? `${data.apr.toFixed(2)}%` : <SkeletonComponent />}
                           </span>
                         </div>
                       </div>
                       <div className="flex justify-between text-base  text-[#FFFFFF80]">
                         <div>
                           Stake: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span> earn{" "}
-                          <span className="text-primary">{data.earningToken.symbol}</span>
+                          <span className="text-primary">{earningToken.symbol}</span>
                         </div>
                         <div className="text-primary">Flexible</div>
                       </div>
@@ -227,36 +238,67 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
-                          <span className="text-primary">{data.earningToken.symbol}</span> earned
+                          <span className="text-primary">{earningToken.symbol}</span> earned
                         </div>
+                        {reflectionToken && (
+                          <div className="text-[#FFFFFF80]">
+                            <span className="text-primary">{reflectionToken.symbol}</span> Rewards
+                          </div>
+                        )}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
                         <div className=" flex text-primary">
-                          {!address ? (
+                          {!address || data.enableEmergencyWithdraw ? (
                             "0.00"
-                          ) : accountData.pendingReward !== undefined ? (
-                            accountData.pendingReward.toFixed(0)
+                          ) : accountData.earnings !== undefined ? (
+                            formatAmount(earningTokenBalance.toFixed(4))
                           ) : (
                             <SkeletonComponent />
                           )}
                           &nbsp;
-                          {data.earningToken.symbol}
+                          {earningToken.symbol}
                         </div>
+                        {reflectionToken && (
+                          <div className="flex text-primary">
+                            {!address || data.enableEmergencyWithdraw ? (
+                              "0.00"
+                            ) : accountData.reflections ? (
+                              formatAmount(reflectionTokenBalance.toFixed(4))
+                            ) : (
+                              <SkeletonComponent />
+                            )}
+                            &nbsp;
+                            {reflectionToken.symbol}
+                          </div>
+                        )}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Total</div>
                         <div className=" flex text-primary">
                           {!address ? (
                             "0.00"
-                          ) : accountData.totalReward !== undefined ? (
-                            accountData.totalReward.toFixed(2)
+                          ) : data.availableRewards !== undefined ? (
+                            formatAmount(data.availableRewards.toFixed(2))
                           ) : (
                             <SkeletonComponent />
                           )}
                           &nbsp;
-                          {data.earningToken.symbol}
+                          {earningToken.symbol}
                         </div>
+                        {reflectionToken && (
+                          <div className=" flex text-primary">
+                            {!address ? (
+                              "0.00"
+                            ) : data.availableReflections !== undefined ? (
+                              formatAmount(data.availableReflections.toFixed(2))
+                            ) : (
+                              <SkeletonComponent />
+                            )}
+                            &nbsp;
+                            {reflectionToken.symbol}
+                          </div>
+                        )}
                       </div>
                     </InfoPanel>
                   </div>
@@ -337,20 +379,20 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mt-2 h-[56px] w-[50%]">
                           <StyledButton
                             type="teritary"
-                            boxShadow={address && accountData.pendingReward}
-                            disabled={!address || !accountData.pendingReward || pending}
+                            boxShadow={address && earningTokenBalance > 0}
+                            disabled={!address || earningTokenBalance === 0 || pending}
                             onClick={() => onHarvestReward()}
                           >
                             <div className="flex">
                               Harvest&nbsp;
                               {!address ? (
                                 0
-                              ) : accountData.pendingReward !== undefined ? (
-                                accountData.pendingReward.toFixed(0)
+                              ) : accountData.earnings !== undefined ? (
+                                formatAmount(earningTokenBalance.toFixed(4))
                               ) : (
                                 <SkeletonComponent />
                               )}
-                              <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
+                              <span className="text-primary">&nbsp;{earningToken.symbol}</span>
                             </div>
                           </StyledButton>
                         </div>
