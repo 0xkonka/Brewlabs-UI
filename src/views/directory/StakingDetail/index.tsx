@@ -395,7 +395,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           {!address || data.enableEmergencyWithdraw ? (
                             "0.00"
                           ) : accountData.pendingReward ? (
-                            formatAmount(accountData.pendingReward.toFixed(4))
+                            formatAmount(earningTokenBalance.toFixed(4))
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -408,7 +408,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               {!address || data.enableEmergencyWithdraw ? (
                                 "0.00"
                               ) : accountData.pendingReflections[index] ? (
-                                formatAmount(accountData.pendingReflections[index].toFixed(4))
+                                formatAmount(reflectionTokenBalances[index].toFixed(4))
                               ) : (
                                 <SkeletonComponent />
                               )}
