@@ -51,6 +51,7 @@ export enum Chef {
 
 interface FarmConfigBaseProps {
   pid: number | null;
+  type?: Category;
   farmId?: number;
   poolId?: number;
   v1pid?: number;
@@ -87,6 +88,7 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
+  apr?: number;
   token: Currency;
   quoteToken: Currency;
   earningToken?: Currency;

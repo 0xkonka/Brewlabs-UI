@@ -48,7 +48,7 @@ const PoolCard = ({
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
-          {data.type === 3 ? (
+          {data.type === Category.INDEXES ? (
             <div className="mr-3 flex">
               <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
               <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
@@ -80,7 +80,7 @@ const PoolCard = ({
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
-            `${formatAmount(data.totalStaked)} ${data.earningToken.symbol}`
+            `${formatAmount(data.totalStaked)} ${data.type === Category.FARM ? data.lpSymbol.split(" ")[0] : data.stakingToken.symbol}`
           ) : (
             <SkeletonComponent />
           )}
@@ -136,7 +136,7 @@ const PoolCard = ({
             <div className="text-left xsm:text-right">Total supply staked</div>
             <div className="text-left text-sm xsm:text-right">
               {data.totalStaked !== undefined ? (
-                `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
+                `${numberWithCommas(data.totalStaked)} ${data.type === Category.FARM ? data.lpSymbol : data.stakingToken.symbol}`
               ) : (
                 <SkeletonComponent />
               )}

@@ -8,7 +8,6 @@ const PoolList = ({
   setSortOrder,
 }: {
   pools: any;
-  prices: any;
   setSelectPoolDetail: any;
   setCurPool: any;
   setSortOrder: any;

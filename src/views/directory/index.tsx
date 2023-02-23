@@ -12,7 +12,8 @@ import { Category } from "config/constants/types";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { FarmContext } from "contexts/directory/FarmContext";
 import { ZapperContext } from "contexts/directory/ZapperContext";
-import { useTokenPrices } from "hooks/useTokenPrice";
+import { TokenPriceContext } from "contexts/TokenPriceContext";
+import { useFarms } from "state/farms/hooks";
 import { usePools } from "state/pools/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 
@@ -32,20 +33,25 @@ const Directory = ({ page }: { page: number }) => {
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
   const { pools } = usePools();
-  const prices = useTokenPrices();
+  const { data: farms } = useFarms()
+  const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
 
   // const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
-  const { data: farms, accountData: accountFarms }: any = useContext(FarmContext);
+  const { data: _farms, accountData: accountFarms }: any = useContext(FarmContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
   const allPools = [
     ...pools.map((pool) => {
-      let price = prices[getCurrencyId(pool.chainId, pool.earningToken.address)];
+      let price = tokenPrices[getCurrencyId(pool.chainId, pool.earningToken.address)];
       if (price > 500000) price = 0;
       return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
     }),
-    ...farms,
+    ...farms.map((farm) => {
+      let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
+      if (price > 500000) price = 0;
+      return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
+    }),
     ...indexes,
     ...zappers,
   ];
@@ -56,8 +62,9 @@ const Directory = ({ page }: { page: number }) => {
     chosenPools = allPools
       .filter(
         (pool) =>
-          pool.stakingToken.name.toLowerCase().includes(lowercaseQuery) ||
-          pool.stakingToken.symbol.toLowerCase().includes(lowercaseQuery) ||
+          pool.stakingToken?.name.toLowerCase().includes(lowercaseQuery) ||
+          pool.stakingToken?.symbol.toLowerCase().includes(lowercaseQuery) ||
+          pool.lpSymbol?.toLowerCase().includes(lowercaseQuery) ||
           pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
           pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
       )
@@ -153,7 +160,6 @@ const Directory = ({ page }: { page: number }) => {
                 <div className="mt-[18px] mb-[100px]">
                   <PoolList
                     pools={chosenPools}
-                    prices={prices}
                     setSelectPoolDetail={setSelectPoolDetail}
                     setCurPool={setCurPool}
                     setSortOrder={setSortOrder}

@@ -13,6 +13,7 @@ import {
   fetchFarmUserTokenBalances,
 } from "./fetchFarmUser";
 import { fetchTotalStakesForFarms } from "./fetchPublicFarmData";
+import { Category } from "config/constants/types";
 
 const initialUserData = {
   allowance: "0",
@@ -30,9 +31,12 @@ const initialState: SerializedFarmsState = {
 
 export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/farms`).then((res) => {
-    dispatch(setFarmsPublicData(res.data ?? []));
-
-    const farms = res.data ?? [];
+    let farms = []
+    if(res.data) {
+      farms = res.data.map(farm => ({type: Category.FARM, ...farm}))
+    }
+    dispatch(setFarmsPublicData(farms));
+    
     const pids = farms.map((farmToFetch) => farmToFetch.pid);
     dispatch(fetchFarmsTVLDataAsync(pids));
   });

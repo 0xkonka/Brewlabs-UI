@@ -97,11 +97,13 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 
 export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
   const {
+    apr,
     lpAddress,
     contractAddress,
     lpSymbol,
     lpDecimals,
     pid,
+    type,
     farmId,
     poolId,
     chainId,
@@ -117,11 +119,13 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
   } = farm;
 
   return {
+    apr,
     lpAddress,
     contractAddress,
     lpSymbol,
     lpDecimals,
     pid,
+    type,
     farmId,
     poolId,
     chainId,
