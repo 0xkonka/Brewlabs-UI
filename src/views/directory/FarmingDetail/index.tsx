@@ -1,32 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import { useAccount, useSigner } from "wagmi";
 
+import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
+import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import useTokenPrice from "hooks/useTokenPrice";
+import { getNativeSybmol } from "lib/bridge/helpers";
+import { useChainCurrentBlock } from "state/block/hooks";
+import { getUnLockStakingContract } from "utils/contractHelpers";
+import { numberWithCommas } from "utils/functions";
+
 import StyledButton from "../StyledButton";
-import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
 import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
-import { useContext, useState } from "react";
-import { numberWithCommas } from "utils/functions";
-import { useAccount, useSigner } from "wagmi";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getUnLockStakingContract } from "utils/contractHelpers";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { SkeletonComponent } from "components/SkeletonComponent";
-
-const CHAIN_SYMBOL = {
-  1: "ETH",
-  56: "BNB",
-};
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data, accountData } = detailDatas;
+  const { open, setOpen, data } = detailDatas;
+  const { userData: accountData, token, quoteToken, earningToken, reflectionToken } = data;
 
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
@@ -36,7 +37,10 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { ethPrice } = useContext(TokenPriceContext);
+  const currentBlock = useChainCurrentBlock(data.chainId);
+
+  const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true);
+  const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
   const onHarvestReward = async () => {
     setPending(true);
@@ -153,7 +157,15 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <a
                         className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
                         target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+                        href={`https://earn.brewlabs.info/add/${
+                          quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
+                            ? getNativeSybmol(data.chainId)
+                            : quoteToken.address
+                        }/${
+                          token.isNative || token.symbol === WNATIVE[data.chainId].symbol
+                            ? getNativeSybmol(data.chainId)
+                            : token.address
+                        }`}
                         rel="noreferrer"
                       >
                         <StyledButton>
@@ -175,7 +187,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     >
                       <div className="flex justify-between text-xl">
                         <div>
-                          Pool: <span className="text-primary">{data.stakingToken.symbol}</span>
+                          Pool: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
                         </div>
                         <div className="flex">
                           APR:&nbsp;
@@ -186,17 +198,18 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex justify-between text-base  text-[#FFFFFF80]">
                         <div>
-                          Stake: <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
+                          Stake: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span> earn{" "}
                           <span className="text-primary">{data.earningToken.symbol}</span>
                         </div>
                         <div className="text-primary">Flexible</div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
-                        Deposit Fee {data.depositFee.toFixed(2)}%
+                        Deposit Fee {(+data.depositFee).toFixed(2)}%
                         <br />
-                        Withdraw Fee {data.withdrawFee.toFixed(2)}%
+                        Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
                         <br />
-                        Peformance Fee {data.performanceFee / Math.pow(10, 18)} BNB
+                        Peformance Fee {data.performanceFee ? data.performanceFee / Math.pow(10, 18) : "0.00"}{" "}
+                        {getNativeSybmol(data.chainId)}
                       </div>
                     </InfoPanel>
 
@@ -248,8 +261,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : CHAIN_SYMBOL[chainId]}
-                      price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
+                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.lpSymbol.split(" ")[0] : getNativeSybmol(data.chainId)}
+                      price={curGraph === 3 ? 1 : curGraph !== 2 ? lpPrice : nativeTokenPrice}
                       curGraph={curGraph}
                     />
                     <InfoPanel
@@ -260,8 +273,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     >
                       <div>Total Staked Value</div>
                       <div className="flex">
-                        {data.totalStaked !== undefined && data.price !== undefined ? (
-                          `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
+                        {data.totalStaked !== undefined && lpPrice !== undefined ? (
+                          `$${numberWithCommas((data.totalStaked * lpPrice).toFixed(0))}`
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -342,7 +355,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           }}
                           disabled={pending || !address}
                         >
-                          Deposit {data.stakingToken.symbol}
+                          Deposit {data.lpSymbol.split(" ")[0]}
                         </StyledButton>
                       </div>
                       <div className="flex-1">
@@ -355,7 +368,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           disabled={pending || !address}
                         >
                           <div className="text-[#FFFFFFBF]">
-                            Withdraw <span className="text-primary">{data.stakingToken.symbol}</span>
+                            Withdraw <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
                           </div>
                         </StyledButton>
                       </div>

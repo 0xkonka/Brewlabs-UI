@@ -7,12 +7,12 @@ import StyledButton from "../../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
 import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
 import { useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { ethers } from "ethers";
+import useTokenPrice from "hooks/useTokenPrice";
 
 const StakingModal = ({
   open,
@@ -30,14 +30,14 @@ const StakingModal = ({
   const { pending, setPending }: any = useContext(DashboardContext);
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
-  const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
+  const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true)
 
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
   const balance: any =
-    (type === "deposit" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
+    (type === "deposit" ? accountData.tokenBalance : accountData.stakedBalance) / Math.pow(10, 18);
 
   useEffect(() => {
     if (Number(amount) > balance && !maxPressed) setInsufficient(true);
@@ -47,7 +47,7 @@ const StakingModal = ({
   const onApprove = async () => {
     setPending(true);
     try {
-      const tokenContract = getBep20Contract(chainId, data.stakingToken.address, signer);
+      const tokenContract = getBep20Contract(chainId, data.lpAddress, signer);
       const estimateGas = await tokenContract.estimateGas.approve(data.address, ethers.constants.MaxUint256);
       const tx = {
         gasLimit: estimateGas.toString(),
@@ -66,7 +66,7 @@ const StakingModal = ({
       const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
       let ttx;
       if (type === "deposit") {
-        const _amount = maxPressed ? accountData.balance : makeBigNumber(amount, data.stakingToken.decimals);
+        const _amount = maxPressed ? accountData.balance : makeBigNumber(amount, 18);
         console.log("Lock type = ", type);
         console.log("Amount = ", _amount.toString());
         const estimateGas: any = await poolContract.estimateGas.deposit(_amount, {
@@ -79,7 +79,7 @@ const StakingModal = ({
         };
         ttx = await poolContract.deposit(_amount, tx);
       } else {
-        const _amount = maxPressed ? accountData.stakedAmount : makeBigNumber(amount, data.stakingToken.decimals);
+        const _amount = maxPressed ? accountData.stakedAmount : makeBigNumber(amount, 18);
         console.log("Lock type = ", type);
         console.log("Amount = ", _amount.toString());
         const estimateGas: any = await poolContract.estimateGas.withdraw(_amount, {
@@ -145,14 +145,14 @@ const StakingModal = ({
                 </div>
                 <a
                   className="flex-1"
-                  href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+                  href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.lpAddress}`}
                   target={"_blank"}
                   rel="noreferrer"
                 >
                   <StyledButton type="secondary">
                     <div className="flex items-center text-[#FFFFFFBF]">
                       <div>
-                        Get <span className="text-primary">{data.stakingToken.symbol}</span>
+                        Get <span className="text-primary">{data.lpSymbol}</span>
                       </div>
                       <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
                     </div>
@@ -161,7 +161,7 @@ const StakingModal = ({
               </div>
               <div className="mt-[30px]">
                 <StyledInput
-                  placeholder={`Enter amount ${data.stakingToken.symbol}...`}
+                  placeholder={`Enter amount ${data.lpSymbol}...`}
                   value={amount}
                   onChange={(e) => {
                     setAmount(e.target.value);
@@ -172,11 +172,11 @@ const StakingModal = ({
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
                   {type === "deposit" ? "My" : "Staked"}{" "}
-                  <span className="text-primary">{data.stakingToken.symbol}</span>:{" "}
+                  <span className="text-primary">{data.lpSymbol}</span>:{" "}
                   {numberWithCommas((balance ? balance : 0).toFixed(2))}
                 </div>
                 <div className="text-[#FFFFFF80]">
-                  ${(data.price && balance ? data.price * balance : 0).toFixed(2)} USD
+                  ${(lpPrice && balance ? lpPrice * balance : 0).toFixed(2)} USD
                 </div>
               </div>
               <div className="my-[18px] h-[1px] w-full bg-[#FFFFFF80]" />
@@ -190,7 +190,7 @@ const StakingModal = ({
                     }}
                   >
                     <div className="text-[#FFFFFFBF]">
-                      Select maximum <span className="text-primary">{data.stakingToken.symbol}</span>
+                      Select maximum <span className="text-primary">{data.lpSymbol}</span>
                     </div>
                   </StyledButton>
                 </div>
@@ -202,12 +202,12 @@ const StakingModal = ({
                       onClick={() => onConfirm()}
                     >
                       {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"}{" "}
-                      {data.stakingToken.symbol}
+                      {data.lpSymbol}
                     </StyledButton>
                   ) : (
                     <StyledButton type="primary" onClick={() => onApprove()} disabled={pending}>
                       Approve&nbsp;
-                      {data.stakingToken.symbol}
+                      {data.lpSymbol}
                     </StyledButton>
                   )}
                 </div>
