@@ -148,12 +148,19 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       ""
                     )}
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
-                      <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
-                        <StyledButton>
-                          <div>Website</div>
-                          <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
-                        </StyledButton>
-                      </a>
+                      {earningToken.projectLink && (
+                        <a
+                          className="h-[32px] w-[140px]"
+                          href={earningToken.projectLink}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <StyledButton>
+                            <div>Website</div>
+                            <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
+                          </StyledButton>
+                        </a>
+                      )}
                       <a
                         className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
                         target="_blank"
@@ -261,7 +268,13 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                      symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.lpSymbol.split(" ")[0] : getNativeSybmol(data.chainId)}
+                      symbol={
+                        curGraph === 3
+                          ? ""
+                          : curGraph !== 2
+                          ? data.lpSymbol.split(" ")[0]
+                          : getNativeSybmol(data.chainId)
+                      }
                       price={curGraph === 3 ? 1 : curGraph !== 2 ? lpPrice : nativeTokenPrice}
                       curGraph={curGraph}
                     />

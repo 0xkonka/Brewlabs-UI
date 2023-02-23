@@ -36,7 +36,6 @@ import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-
 import ProgressBar from "./ProgressBar";
 import StyledButton from "../StyledButton";
 import StakingHistory from "./StakingHistory";
@@ -292,17 +291,19 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       )}
                     </div>
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
-                      <a
-                        className="h-[32px] w-[140px]"
-                        href={data.earningToken.projectLink}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <StyledButton>
-                          <div>Website</div>
-                          <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
-                        </StyledButton>
-                      </a>
+                      {data.earningToken.projectLink && (
+                        <a
+                          className="h-[32px] w-[140px]"
+                          href={data.earningToken.projectLink}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <StyledButton>
+                            <div>Website</div>
+                            <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
+                          </StyledButton>
+                        </a>
+                      )}
                       <a
                         className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
                         target="_blank"
