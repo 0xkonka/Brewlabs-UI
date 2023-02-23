@@ -135,7 +135,9 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const history =
-    data && data.history && address ? data.history.filter((data: any) => data.address === address.toLowerCase()) : [];
+    data && data.userData?.deposits && address
+      ? data.userData?.deposits.map((deposit) => ({ ...deposit, symbol: data.lpSymbol.split("_")[0] }))
+      : [];
 
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
   const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
