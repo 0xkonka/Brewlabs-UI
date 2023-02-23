@@ -195,8 +195,8 @@ export const farmsSlice = createSlice({
       state.userDataLoaded = true;
     },
     updateFarmsUserData: (state, action) => {
-      const { field, value, pid, farmId } = action.payload;
-      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId);
+      const { field, value, pid } = action.payload;
+      const index = state.data.findIndex((p) => p.pid === pid);
 
       if (index >= 0) {
         state.data[index] = { ...state.data[index], userData: { ...state.data[index].userData, [field]: value } };

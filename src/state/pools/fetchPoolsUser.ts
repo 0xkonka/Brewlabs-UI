@@ -1,3 +1,4 @@
+import axios from "axios";
 import BigNumber from "bignumber.js";
 
 import erc20ABI from "config/abi/erc20.json";
@@ -11,8 +12,6 @@ import { PoolCategory } from "config/constants/types";
 import { BIG_ZERO } from "utils/bigNumber";
 import multicall from "utils/multicall";
 import { simpleRpcProvider } from "utils/providers";
-import axios from "axios";
-import { setPoolsUserData } from ".";
 
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
 // BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)

@@ -150,7 +150,6 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     externalSwap: farm.externalSwap,
     TVLData: farm.TVLData,
     performanceFees: farm.performanceFees,
-    tokenFees: farm.tokenFees,
     stakedAddresses: farm.stakedAddresses
   };
 };

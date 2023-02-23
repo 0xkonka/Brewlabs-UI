@@ -1,8 +1,10 @@
 import { ChainId } from "@brewlabs/sdk";
+import axios from "axios";
 import BigNumber from "bignumber.js";
 
 import erc20ABI from "config/abi/erc20.json";
 import masterchefABI from "config/abi/masterchef.json";
+import { API_URL } from "config/constants";
 import { SerializedFarmConfig } from "config/constants/types";
 import { getMasterChefAddress } from "utils/addressHelpers";
 import multicall from "utils/multicall";
@@ -117,4 +119,15 @@ export const fetchFarmUserReflections = async (
     return new BigNumber(reflections).toJSON();
   });
   return parsedReflections;
+};
+
+export const fetchFarmUserDeposits = async (farm, account) => {
+  const res = await axios.post(`${API_URL}/deposit/${account}/single`, { type: "farm", id: farm.pid });
+
+  const ret = res?.data ?? [];
+
+  let record = { pid: farm.pid, deposits: [] };
+  record.deposits = ret.filter((d) => d.farmId === farm.pid);
+
+  return record;
 };
