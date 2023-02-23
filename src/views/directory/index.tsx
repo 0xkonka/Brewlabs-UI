@@ -126,17 +126,3 @@ const Directory = ({ page }: { page: number }) => {
 };
 
 export default Directory;
-
-const DotGroup = styled.div<{ active?: boolean }>`
-  width: calc(100vw / 1440 * 50);
-  height: 4px;
-  margin-right: 10px;
-  cursor: pointer;
-  background-color: ${({ active }) => (active ? "deeppink" : "white")};
-  filter: blur(1px);
-  transition: all 0.5s;
-  @media screen and (max-width: 700px) {
-    width: calc(100vw / 700 * 45);
-    height: 3px;
-  }
-`;
