@@ -34,6 +34,8 @@ import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
+import { Version } from "config/constants/types";
+import useFarm from "./hooks/useFarm";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -54,6 +56,15 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
+
+  const { onReward, onHarvest, onCompound, onHarvestDividend, onCompoundDividend } = useFarm(
+    data.poolId,
+    data.farmId,
+    data.chainId,
+    data.contractAddress,
+    data.performanceFee,
+    data.enableEmergencyWithdraw
+  );
 
   useEffect(() => {
     const fetchtotalRewardsAsync = async () => {
@@ -249,7 +260,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         rel="noreferrer"
                       >
                         <StyledButton>
-                          <div>Swap</div>
+                          <div>Make LP</div>
                           <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
                         </StyledButton>
                       </a>
@@ -446,7 +457,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
-                        <div className="mt-2 h-[56px] sm:w-[50%]">
+                        <div className="mt-2 h-[56px]">
                           <StyledButton
                             type="teritary"
                             boxShadow={address && earningTokenBalance > 0}
@@ -466,6 +477,34 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             </div>
                           </StyledButton>
                         </div>
+                      </div>
+
+                      <div className="mr-0 flex-1 xsm:mr-[14px]">
+                        {reflectionToken && data.version > Version.V2 && (
+                          <>
+                            <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
+                            <div className="mt-2 h-[56px]">
+                              <StyledButton
+                                type="teritary"
+                                boxShadow={address && reflectionTokenBalance > 0}
+                                disabled={!address || reflectionTokenBalance === 0 || pending}
+                                onClick={() => onHarvestReward()}
+                              >
+                                <div className="flex">
+                                  Harvest&nbsp;
+                                  {!address ? (
+                                    0
+                                  ) : accountData.reflections !== undefined ? (
+                                    formatAmount(reflectionTokenBalance.toFixed(4))
+                                  ) : (
+                                    <SkeletonComponent />
+                                  )}
+                                  <span className="text-primary">&nbsp;{reflectionToken.symbol}</span>
+                                </div>
+                              </StyledButton>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="mt-7">
