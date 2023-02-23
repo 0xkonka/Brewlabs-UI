@@ -466,6 +466,14 @@ const tokens = {
     "Alcazar",
     "https://alcazartoken.io/"
   ),
+  dtt: new Token(
+    BSC_MAINNET,
+    '0x4aeB2D0B318e5e8ac62D5A39EB3495974951f477',
+    18,
+    'DTT',
+    'Dark Tavern Token',
+    'https://darktavern.online/',
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
