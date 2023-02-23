@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useAccount, useSigner } from "wagmi";
 
@@ -13,12 +14,17 @@ import WordHighlight from "components/text/WordHighlight";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getNativeSybmol } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
+import { fetchFarmUserDataAsync, setFarmsPublicData, setFarmUserData } from "state/farms";
+import { fetchFarmUserDeposits } from "state/farms/fetchFarmUser";
+import { fetchFarmFeeHistories, fetchFarmTotalRewards } from "state/farms/fetchPublicFarmData";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getUnLockStakingContract } from "utils/contractHelpers";
-import { formatAmount } from "utils/formatApy";
+import { formatAmount, formatTvl } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -31,6 +37,8 @@ import StakingModal from "./Modals/StakingModal";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
+  const dispatch = useAppDispatch();
+
   const { userData: accountData, token, quoteToken, earningToken, reflectionToken } = data;
 
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
@@ -40,11 +48,67 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
   const currentBlock = useChainCurrentBlock(data.chainId);
 
   const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
+
+  useEffect(() => {
+    const fetchtotalRewardsAsync = async () => {
+      const { availableRewards, availableReflections } = await fetchFarmTotalRewards(data);
+      dispatch(setFarmsPublicData([{ pid: data.pid, availableRewards, availableReflections }]));
+    };
+
+    const fetchFeeHistoriesAsync = async () => {
+      const { performanceFees, stakedAddresses } = await fetchFarmFeeHistories(data);
+
+      dispatch(
+        setFarmsPublicData([
+          {
+            pid: data.pid,
+            performanceFees: performanceFees,
+            stakedAddresses: stakedAddresses,
+          },
+        ])
+      );
+    };
+
+    fetchtotalRewardsAsync();
+    fetchFeeHistoriesAsync();
+  }, [data.pid]);
+
+  useEffect(() => {
+    const fetchDepositHistoryAsync = async () => {
+      const res = await fetchFarmUserDeposits(data, address);
+      dispatch(setFarmUserData([res]));
+    };
+
+    if (address) {
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
+      fetchDepositHistoryAsync();
+    }
+  }, [address, data.pid]);
+
+  const graphData = () => {
+    let _graphData;
+    switch (curGraph) {
+      case 2:
+        return data.performanceFees;
+      case 3:
+        return data.stakedAddresses;
+      default:
+        _graphData = data.TVLData ?? [];
+        _graphData = _graphData.map((v) => +v);
+        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        return _graphData;
+    }
+  };
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
 
   const onHarvestReward = async () => {
     setPending(true);
@@ -206,6 +270,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex justify-between text-xl">
                         <div>
                           Pool: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
+                          <a
+                            className="ml-1 inline-block"
+                            href={getExplorerLink(data.chainId, "address", data.contractAddress)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {LinkSVG}
+                          </a>
                         </div>
                         <div className="flex">
                           APR:&nbsp;
@@ -309,7 +381,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
-                      data={data.graphData === undefined ? [] : data.graphData[curGraph]}
+                      data={graphData()}
                       symbol={
                         curGraph === 3
                           ? ""
@@ -328,11 +400,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     >
                       <div>Total Staked Value</div>
                       <div className="flex">
-                        {data.totalStaked !== undefined && lpPrice !== undefined ? (
-                          `$${numberWithCommas((data.totalStaked * lpPrice).toFixed(0))}`
-                        ) : (
-                          <SkeletonComponent />
-                        )}
+                        {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -345,12 +413,12 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalPerformanceFee !== undefined ? (
-                          numberWithCommas(data.totalPerformanceFee.toFixed(2))
+                        {data.performanceFees !== undefined ? (
+                          data.performanceFees[data.performanceFees.length - 1].toFixed(4)
                         ) : (
                           <SkeletonComponent />
                         )}
-                        &nbsp;<span className="text-primary">BNB</span>
+                        &nbsp;<span className="text-primary">{getNativeSybmol(data.chainId)}</span>
                       </div>
                     </InfoPanel>
 
@@ -364,8 +432,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {data.totalStakedAddresses !== undefined ? (
-                          numberWithCommas(data.totalStakedAddresses)
+                        {data.stakedAddresses !== undefined ? (
+                          numberWithCommas(data.stakedAddresses[data.stakedAddresses.length - 1])
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -376,7 +444,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
-                        <div className="mt-2 h-[56px] w-[50%]">
+                        <div className="mt-2 h-[56px] sm:w-[50%]">
                           <StyledButton
                             type="teritary"
                             boxShadow={address && earningTokenBalance > 0}
@@ -402,31 +470,45 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <StakingHistory history={history} />
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
-                      <div className="mr-5 flex-1">
-                        <StyledButton
-                          onClick={() => {
-                            setStakingModalOpen(true);
-                            setCurType("deposit");
-                          }}
-                          disabled={pending || !address}
-                        >
-                          Deposit {data.lpSymbol.split(" ")[0]}
-                        </StyledButton>
-                      </div>
-                      <div className="flex-1">
-                        <StyledButton
-                          type={"secondary"}
-                          onClick={() => {
-                            setStakingModalOpen(true);
-                            setCurType("withdraw");
-                          }}
-                          disabled={pending || !address}
-                        >
-                          <div className="text-[#FFFFFFBF]">
-                            Withdraw <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
+                      {data.chainId !== chainId ? (
+                        <div className="flex-1">
+                          <StyledButton
+                            onClick={() => {
+                              if (canSwitch) switchNetwork(data.chainId);
+                            }}
+                          >
+                            Switch to {getNetworkLabel(data.chainId)}
+                          </StyledButton>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="mr-5 flex-1">
+                            <StyledButton
+                              onClick={() => {
+                                setStakingModalOpen(true);
+                                setCurType("deposit");
+                              }}
+                              disabled={pending || !address}
+                            >
+                              Deposit {data.lpSymbol.split(" ")[0]}
+                            </StyledButton>
                           </div>
-                        </StyledButton>
-                      </div>
+                          <div className="flex-1">
+                            <StyledButton
+                              type={"secondary"}
+                              onClick={() => {
+                                setStakingModalOpen(true);
+                                setCurType("withdraw");
+                              }}
+                              disabled={pending || !address}
+                            >
+                              <div className="text-[#FFFFFFBF]">
+                                Withdraw <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
+                              </div>
+                            </StyledButton>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

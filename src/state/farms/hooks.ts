@@ -116,6 +116,8 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     unverified,
     featured,
     isFinished,
+    availableRewards,
+    availableReflections,
   } = farm;
 
   return {
@@ -154,7 +156,9 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     externalSwap: farm.externalSwap,
     TVLData: farm.TVLData,
     performanceFees: farm.performanceFees,
-    stakedAddresses: farm.stakedAddresses
+    stakedAddresses: farm.stakedAddresses,
+    availableRewards,
+    availableReflections,
   };
 };
 

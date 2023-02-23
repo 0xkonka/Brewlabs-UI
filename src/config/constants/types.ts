@@ -85,6 +85,8 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
   quoteToken: SerializedToken;
   earningToken?: SerializedToken;
   reflectionToken?: SerializedToken;
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
@@ -93,6 +95,8 @@ export interface DeserializedFarmConfig extends FarmConfigBaseProps {
   quoteToken: Currency;
   earningToken?: Currency;
   reflectionToken?: Currency;
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 interface PoolConfigBaseProps {

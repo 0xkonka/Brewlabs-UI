@@ -207,7 +207,7 @@ export const fetchFarmTotalRewards = async (farm) => {
     let calls = [
       {
         address: farm.earningToken.address,
-        name: "balaneOf",
+        name: "balanceOf",
         params: [farm.contractAddress],
       },
       {
@@ -215,7 +215,7 @@ export const fetchFarmTotalRewards = async (farm) => {
           !farm.reflectionToken || farm.reflectionToken?.isNative
             ? farm.earningToken.address
             : farm.reflectionToken.address,
-        name: "balaneOf",
+        name: "balanceOf",
         params: [farm.contractAddress],
       },
     ];

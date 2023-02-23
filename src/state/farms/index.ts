@@ -31,12 +31,12 @@ const initialState: SerializedFarmsState = {
 
 export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/farms`).then((res) => {
-    let farms = []
-    if(res.data) {
-      farms = res.data.map(farm => ({type: Category.FARM, ...farm}))
+    let farms = [];
+    if (res.data) {
+      farms = res.data.map((farm) => ({ type: Category.FARM, ...farm }));
     }
     dispatch(setFarmsPublicData(farms));
-    
+
     const pids = farms.map((farmToFetch) => farmToFetch.pid);
     dispatch(fetchFarmsTVLDataAsync(pids));
   });
@@ -60,9 +60,7 @@ export const fetchFarmsTVLDataAsync = (pids) => async (dispatch, getState) => {
     const TVLData = [];
     for (let farm of farms) {
       let record = { pid: farm.pid, data: [] };
-      record.data = ret.filter(
-        (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.pid
-      );
+      record.data = ret.filter((d) => d.farmId === farm.pid).map((r) => r.totalStaked);
 
       if (record.data.length > 0) {
         TVLData.push(record);
