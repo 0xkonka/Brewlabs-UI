@@ -1,12 +1,17 @@
+import axios from "axios";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 
 import erc20 from "config/abi/erc20.json";
 import masterchefABI from "config/abi/masterchef.json";
 import masterchefV2ABI from "config/abi/masterchefV2.json";
-import { MULTICALL_FETCH_LIMIT } from "config/constants";
+
+import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { SerializedFarmConfig, Version } from "config/constants/types";
 import { BIG_ZERO } from "utils/bigNumber";
+import { getBalanceNumber } from "utils/formatBalance";
+import { sumOfArray } from "utils/functions";
+import { simpleRpcProvider } from "utils/providers";
 import multicall from "utils/multicall";
 
 import { SerializedBigNumber, SerializedFarm } from "./types";
@@ -18,9 +23,11 @@ type PublicFarmData = {
   depositFee: string;
   withdrawFee: string;
   performanceFee: string;
+  startBlock: number;
+  endBlock?: number;
 };
 
-const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
+export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const { poolId, chainId } = farm;
 
   // Only make masterchef calls if farm has poolId
@@ -57,7 +64,7 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
         : [null, null, null];
   }
 
-  const [totalAllocPoint, rewardPerBlock] =
+  const [totalAllocPoint, rewardPerBlock, startBlock] =
     farm.poolId || farm.poolId === 0
       ? await multicall(
           masterchefABI,
@@ -69,6 +76,10 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
             {
               address: farm.contractAddress,
               name: "rewardPerBlock",
+            },
+            {
+              address: farm.contractAddress,
+              name: "startBlock",
             },
           ],
           chainId
@@ -102,10 +113,12 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
     depositFee: `${depositFee.dividedBy(100).toFixed(2)}`,
     withdrawFee: `${withdrawFee.dividedBy(100).toFixed(2)}`,
     performanceFee: performanceFee.toString(),
+    startBlock: new BigNumber(info.startBlock ?? startBlock).toNumber(),
+    endBlock: info.bonusEndBlock ? new BigNumber(info.bonusEndBlock).toNumber() : undefined,
   };
 };
 
-const fetchFarms = async (farmsToFetch: SerializedFarmConfig[]) => {
+export const fetchFarms = async (farmsToFetch: SerializedFarmConfig[]) => {
   const data = await Promise.all(
     farmsToFetch.map(async (farmConfig) => {
       const farm = await fetchFarm(farmConfig);
@@ -174,4 +187,72 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
   return data;
 };
 
-export default fetchFarms;
+export const fetchFarmTotalRewards = async (farm) => {
+  let availableRewards, availableReflections;
+  if (farm.pid > 10) {
+    let calls = [
+      {
+        address: farm.contractAddress,
+        name: "availableRewardTokens",
+        params: [],
+      },
+      {
+        address: farm.contractAddress,
+        name: "availableDividendTokens",
+        params: [],
+      },
+    ];
+    [availableRewards, availableReflections] = await multicall(masterchefV2ABI, calls, farm.chainId);
+  } else {
+    let calls = [
+      {
+        address: farm.earningToken.address,
+        name: "balaneOf",
+        params: [farm.contractAddress],
+      },
+      {
+        address:
+          !farm.reflectionToken || farm.reflectionToken?.isNative
+            ? farm.earningToken.address
+            : farm.reflectionToken.address,
+        name: "balaneOf",
+        params: [farm.contractAddress],
+      },
+    ];
+    [availableRewards, availableReflections] = await multicall(erc20, calls, farm.chainId);
+
+    if (farm.reflectionToken?.isNative) {
+      availableReflections = await simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
+    }
+  }
+
+  return {
+    availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
+    availableReflections: farm.reflectionToken
+      ? getBalanceNumber(availableReflections, farm.reflectionToken.decimals)
+      : 0,
+  };
+};
+
+export const fetchFarmFeeHistories = async (farm) => {
+  let res;
+  try {
+    res = await axios.post(`${API_URL}/fee/single`, { type: "farm", id: farm.pid });
+  } catch (e) {}
+  if (!res.data) {
+    return { performanceFees: [], stakedAddresses: [] };
+  }
+  const { performanceFees, stakedAddresses } = res.data;
+
+  let _performanceFees = [],
+    _stakedAddresses = [];
+  const timeBefore24Hrs = Math.floor(new Date().setHours(new Date().getHours() - 24) / 1000);
+  const curTime = Math.floor(new Date().getTime() / 1000);
+
+  for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
+    _performanceFees.push(sumOfArray(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
+    _stakedAddresses.push(sumOfArray(stakedAddresses.filter((v) => v.timestamp <= t).map((v) => v.value)));
+  }
+
+  return { performanceFees: _performanceFees, stakedAddresses: _stakedAddresses };
+};

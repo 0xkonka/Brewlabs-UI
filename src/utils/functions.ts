@@ -54,3 +54,9 @@ export const formatDollar = (value, decimals = 2) => {
   if (value < 0) return "-$" + (-value).toFixed(decimals);
   return "$" + value.toFixed(decimals);
 };
+
+export const sumOfArray = (arr) => {
+  let total = 0;
+  for (let i = 0; i < arr.length; i++) total += arr[i];
+  return total;
+};
