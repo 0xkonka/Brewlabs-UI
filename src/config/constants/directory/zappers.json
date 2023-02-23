@@ -1,7 +1,7 @@
 [
   {
     "type": 4,
-    "chainID": 56,
+    "chainId": 56,
     "address": "0xdee79028336238d6bc14d6fbc7709ba073f2684f",
     "chainLogo": "/images/directory/bsc.svg",
     "stakingToken": {
@@ -16,6 +16,7 @@
       }
     },
     "earningToken": {
+      "chainId": 56,
       "address": "0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7",
       "symbol": "CAKE",
       "name": "CAKE",

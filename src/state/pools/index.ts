@@ -19,7 +19,8 @@ import {
   fetchUserPendingReward,
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
-import { AppThunk, SerializedPool } from "./types";
+import { SerializedPool } from "./types";
+import { Category, PoolCategory } from "config/constants/types";
 
 const initialState: PoolsState = {
   data: [],
@@ -54,8 +55,55 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
 
 export const fetchPoolsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/pools`).then((res) => {
-    dispatch(setPoolsPublicData(res.data));
+    let pools = [];
+    if (res.data) {
+      pools = res.data.map((pool) => ({ type: Category.POOL, ...pool }));
+    }
+    dispatch(setPoolsPublicData(pools));
+
+    const soudIds = pools.map((pool) => pool.sousId);
+    dispatch(fetchPoolsTVLDataAsync(soudIds));
   });
+};
+
+export const fetchPoolsTVLDataAsync = (sousIds) => async (dispatch, getState) => {
+  const pools = getState().pools.data.filter((pool) => sousIds.includes(pool.sousId));
+  if (pools.length === 0) return;
+
+  axios.post(`${API_URL}/tvl/multiple`, { type: "pool", ids: pools.map((p) => p.sousId) }).then((res) => {
+    const ret = res?.data ?? [];
+
+    const TVLData = [];
+    for (let pool of pools) {
+      let record = { sousId: pool.sousId, data: [] };
+      record.data = ret.filter((d) => d.sousId === pool.sousId).map((r) => r.totalStaked);
+
+      if (record.data.length > 0) {
+        TVLData.push(record);
+      }
+    }
+    dispatch(setPoolTVLData(TVLData));
+  });
+};
+
+export const fetchPoolsUserDepositDataAsync = (account: string) => async (dispatch, getState) => {
+  const pools = getState().pools.data;
+  if (pools.length === 0) return;
+
+  axios
+    .post(`${API_URL}/deposit/${account}/multiple`, { type: "pool", ids: pools.map((p) => p.sousId) })
+    .then((res) => {
+      const ret = res?.data ?? [];
+
+      const depositData = [];
+      for (let pool of pools) {
+        let record = { sousId: pool.sousId, deposits: [] };
+        record.deposits = ret.filter((d) => d.sousId === pool.sousId);
+
+        depositData.push(record);
+      }
+      dispatch(setPoolsUserData(depositData));
+    });
 };
 
 export const fetchPoolsStakingLimitsAsync = (chainId: ChainId) => async (dispatch, getState) => {
@@ -77,7 +125,7 @@ export const fetchPoolsStakingLimitsAsync = (chainId: ChainId) => async (dispatc
 };
 
 export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => async (dispatch, getState) => {
-  const pools = getState().pools.data;
+  const pools = getState().pools.data.filter((p) => p.chainId === chainId);
 
   fetchPoolsAllowance(account, chainId, pools).then((allowances) => {
     dispatch(
@@ -137,8 +185,7 @@ export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => as
 };
 
 export const updateUserAllowance =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
-  async (dispatch, getState) => {
+  (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
 
@@ -146,19 +193,16 @@ export const updateUserAllowance =
     dispatch(updatePoolsUserData({ sousId, field: "allowance", value: allowances }));
   };
 
-export const updateUserBalance =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
-  async (dispatch, getState) => {
-    const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
-    if (!pool) return;
+export const updateUserBalance = (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
+  if (!pool) return;
 
-    const tokenBalances = await fetchUserBalance(pool, account, chainId);
-    dispatch(updatePoolsUserData({ sousId, field: "stakingTokenBalance", value: tokenBalances }));
-  };
+  const tokenBalances = await fetchUserBalance(pool, account, chainId);
+  dispatch(updatePoolsUserData({ sousId, field: "stakingTokenBalance", value: tokenBalances }));
+};
 
 export const updateUserStakedBalance =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
-  async (dispatch, getState) => {
+  (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
 
@@ -168,13 +212,14 @@ export const updateUserStakedBalance =
   };
 
 export const updateUserPendingReward =
-  (sousId: number, account: string, chainId: ChainId): AppThunk =>
-  async (dispatch, getState) => {
+  (sousId: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
     const pool = getState().pools.data.find((p) => p.sousId === sousId && p.chainId === chainId);
     if (!pool) return;
 
     const pendingRewards = await fetchUserPendingReward(pool, account, chainId);
     dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: pendingRewards }));
+
+    if (!(sousId > 1 && (sousId < 10 || sousId > 12) && sousId !== 33 && sousId !== 34)) return;
 
     const pendingReflections = await fetchUserPendingReflection(pool, account, chainId);
     dispatch(updatePoolsUserData({ sousId, field: "pendingReflections", value: pendingReflections ?? [] }));
@@ -222,11 +267,25 @@ export const PoolsSlice = createSlice({
         );
       }
     },
+    setPoolTVLData: (state, action) => {
+      action.payload.forEach((tvlDataEl) => {
+        const { sousId, data } = tvlDataEl;
+        const index = state.data.findIndex((pool) => pool.sousId === sousId);
+        state.data[index] = { ...state.data[index], TVLData: data };
+      });
+      state.userDataLoaded = true;
+    },
+    resetPoolsUserData: (state) => {
+      state.data = state.data.map((pool) => {
+        return { ...pool, userData: undefined };
+      });
+      state.userDataLoaded = false;
+    },
   },
-  extraReducers: {},
 });
 
 // Actions
-export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection } = PoolsSlice.actions;
+export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection, setPoolTVLData, resetPoolsUserData } =
+  PoolsSlice.actions;
 
 export default PoolsSlice.reducer;

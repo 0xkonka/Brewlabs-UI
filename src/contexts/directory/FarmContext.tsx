@@ -242,7 +242,7 @@ const FarmContextProvider = ({ children }: any) => {
 
     _totalStakedHistory.push(totalStaked);
 
-    console.log(sHistory);
+    // console.log(sHistory);
     return {
       history: sHistory,
       totalStaked: Math.round(totalStaked),

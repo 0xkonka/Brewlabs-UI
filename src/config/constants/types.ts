@@ -12,6 +12,14 @@ export interface SerializedToken {
   projectLink?: string;
 }
 
+export enum Category {
+  "ALL" = 0,
+  "POOL",
+  "FARM",
+  "INDEXES",
+  "ZAPPER",
+}
+
 export enum PoolCategory {
   "COMMUNITY" = "Community",
   "CORE" = "Core",

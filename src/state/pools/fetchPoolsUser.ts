@@ -6,11 +6,13 @@ import lockupStakingV2ABI from "config/abi/brewlabsLockupV2.json";
 import brewlabsStakingMultiABI from "config/abi/brewlabsStakingMulti.json";
 import singleStakingABI from "config/abi/singlestaking.json";
 
-import { MULTICALL_FETCH_LIMIT } from "config/constants";
+import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { PoolCategory } from "config/constants/types";
 import { BIG_ZERO } from "utils/bigNumber";
 import multicall from "utils/multicall";
 import { simpleRpcProvider } from "utils/providers";
+import axios from "axios";
+import { setPoolsUserData } from ".";
 
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
 // BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)
@@ -372,4 +374,15 @@ export const fetchUserPendingReflection = async (pool, account, chainId) => {
 
   const nonLockupRes = await multicall(singleStakingABI, calls, chainId);
   return [new BigNumber(nonLockupRes[0]).toJSON()];
+};
+
+export const fetchUserDepositData = async (pool, account) => {
+  const res = await axios.post(`${API_URL}/deposit/${account}/single`, { type: "pool", id: pool.sousId });
+
+  const ret = res?.data ?? [];
+
+  let record = { sousId: pool.sousId, deposits: [] };
+  record.deposits = ret.filter((d) => d.sousId === pool.sousId);
+
+  return record;
 };

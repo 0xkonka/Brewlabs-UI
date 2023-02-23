@@ -13,7 +13,6 @@ import { BIG_ZERO } from "utils/bigNumber";
 import {
   fetchFarmsPublicDataFromApiAsync,
   fetchFarmsTotalStakesAsync,
-  fetchFarmsTVLDataAsync,
   fetchFarmsUserDepositDataAsync,
   fetchFarmUserDataAsync,
 } from ".";
@@ -52,20 +51,9 @@ export const usePollFarmsWithUserData = () => {
   );
 
   useSWRImmutable(
-    chainId ? ["publicFarmTVLData"] : null,
-    async () => {
-      const pids = farms.map((farmToFetch) => farmToFetch.pid);
-      dispatch(fetchFarmsTVLDataAsync(pids));
-    },
-    {
-      refreshInterval: SLOW_INTERVAL,
-    }
-  );
-
-  useSWRImmutable(
     account && chainId ? ["farmsWithUserData", account, chainId] : null,
     async () => {
-      const pids = farms.map((farmToFetch) => farmToFetch.pid);
+      const pids = farms.map((farmToFetch) => farmToFetch.pid && farmToFetch.chainId === chainId);
       const params = { account, pids, chainId };
 
       dispatch(fetchFarmUserDataAsync(params));
@@ -160,6 +148,10 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     rewardPerBlock: farm.rewardPerBlock ? new BigNumber(farm.rewardPerBlock) : BIG_ZERO,
     enableEmergencyWithdraw: farm.enableEmergencyWithdraw,
     externalSwap: farm.externalSwap,
+    TVLData: farm.TVLData,
+    performanceFees: farm.performanceFees,
+    tokenFees: farm.tokenFees,
+    stakedAddresses: farm.stakedAddresses
   };
 };
 

@@ -2,16 +2,19 @@ import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 
-import { MULTICALL_FETCH_LIMIT } from "config/constants";
+import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { PoolCategory } from "config/constants/types";
 import singleStakingABI from "config/abi/singlestaking.json";
 import lockupStakingABI from "config/abi/brewlabsLockup.json";
 import lockupV2StakingABI from "config/abi/brewlabsLockupV2.json";
-import wbnbABI from "config/abi/weth.json";
+import lockupMultiStakingABI from "config/abi/brewlabsStakingMulti.json";
+import erc20Abi from "config/abi/erc20.json";
 import { getAddress } from "utils/addressHelpers";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getSingleStakingContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
+import { getBalanceNumber } from "utils/formatBalance";
+import axios from "axios";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
   const poolsWithEnd = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
@@ -190,7 +193,6 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
   await Promise.all(
     filters.map(async (batch) => {
       try {
-        const bnbPool = batch.filter((p) => p.stakingToken.isNative);
         const nonLockupPools = batch.filter((p) => !p.stakingToken.isNative && p.poolCategory !== PoolCategory.LOCKUP);
         const lockupPools = batch.filter((p) => !p.stakingToken.isNative && p.poolCategory === PoolCategory.LOCKUP);
 
@@ -210,17 +212,8 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
           };
         });
 
-        const callsBnbPools = bnbPool.map((poolConfig) => {
-          return {
-            address: WNATIVE[poolConfig.chainId].address,
-            name: "balanceOf",
-            params: [poolConfig.contractAddress],
-          };
-        });
-
         const nonLockupPoolsTotalStaked = await multicall(singleStakingABI, callsNonLockupPools, chainId);
         const lockupPoolsTotalStaked = await multicall(lockupStakingABI, callsLockupPools, chainId);
-        const bnbPoolsTotalStaked = await multicall(wbnbABI, callsBnbPools, chainId);
 
         nonLockupPools.forEach((p, index) => {
           data.push({
@@ -237,13 +230,6 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
             totalStaked: ethers.utils
               .formatUnits(lockupPoolsTotalStaked[index].totalStaked._hex, p.stakingToken.decimals)
               .toString(),
-          });
-        });
-
-        bnbPool.forEach((p, index) => {
-          data.push({
-            sousId: p.sousId,
-            totalStaked: ethers.utils.formatUnits(bnbPoolsTotalStaked[index][0], p.stakingToken.decimals).toString(),
           });
         });
       } catch (e) {
@@ -320,4 +306,86 @@ export const fetchPoolsStakingLimits = async (pools: any[]): Promise<{ [key: str
       [validPools[index].sousId]: stakingLimit,
     };
   }, {});
+};
+
+export const fetchPoolTotalRewards = async (pool) => {
+  let calls = [
+    {
+      address: pool.contractAddress,
+      name: "availableRewardTokens",
+      params: [],
+    },
+  ];
+
+  let abi = lockupStakingABI;
+  if (pool.poolCategory === PoolCategory.MULTI_LOCKUP) {
+    for (let i = 0; i < pool.reflectionTokens.length; i++) {
+      calls.push({
+        address: pool.contractAddress,
+        name: "availableDividendTokens",
+        params: [i],
+      });
+    }
+    abi = lockupMultiStakingABI;
+  } else {
+    if (
+      (pool.poolCategory === PoolCategory.CORE && pool.sousId <= 20) ||
+      (pool.poolCategory === PoolCategory.LOCKUP && pool.sousId <= 48) ||
+      (pool.poolCategory === PoolCategory.LOCKUP_V2 && pool.sousId <= 65)
+    ) {
+      calls.push({
+        address: pool.contractAddress,
+        name: "availabledividendTokens",
+        params: [],
+      });
+      abi = singleStakingABI;
+    } else {
+      calls.push({
+        address: pool.contractAddress,
+        name: "availableDividendTokens",
+        params: [],
+      });
+    }
+  }
+
+  const res = await multicall(abi, calls, pool.chainId);
+  let availableReflections = [];
+  if (pool.reflection) {
+    for (let i = 0; i < pool.reflectionTokens.length; i++) {
+      availableReflections.push(getBalanceNumber(res[i + 1], pool.reflectionTokens[i].decimals));
+    }
+  }
+
+  return { availableRewards: getBalanceNumber(res[0], pool.stakingToken.decimals), availableReflections };
+};
+
+const sum = (arr) => {
+  let total = 0;
+  for (let i = 0; i < arr.length; i++) total += arr[i];
+  return total;
+};
+
+export const fetchPoolFeeHistories = async (pool) => {
+  let res;
+  try {
+    res = await axios.post(`${API_URL}/fee/single`, { type: "pool", id: pool.sousId });
+  } catch (e) {}
+  if (!res.data) {
+    return { performanceFees: [], tokenFees: [], stakedAddresses: [] };
+  }
+  const { performanceFees, tokenFees, stakedAddresses } = res.data;
+
+  let _performanceFees = [],
+    _tokenFees = [],
+    _stakedAddresses = [];
+  const timeBefore24Hrs = Math.floor(new Date().setHours(new Date().getHours() - 24) / 1000);
+  const curTime = Math.floor(new Date().getTime() / 1000);
+
+  for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
+    _performanceFees.push(sum(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
+    _tokenFees.push(sum(tokenFees.filter((v) => v.timestamp <= t).map((v) => +v.value)));
+    _stakedAddresses.push(sum(stakedAddresses.filter((v) => v.timestamp <= t).map((v) => v.value)));
+  }
+
+  return { performanceFees: _performanceFees, tokenFees: _tokenFees, stakedAddresses: _stakedAddresses };
 };

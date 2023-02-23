@@ -22,13 +22,6 @@ export interface DeserializedDeposit {
   timestamp: number;
   unlockTime?: number;
 }
-
-export interface StakingTVL {
-  date: string;
-  totalStaked: string;
-  totalStakedInUsd: string;
-}
-
 export interface BlockState {
   currentBlock: number;
   initialBlock: number;

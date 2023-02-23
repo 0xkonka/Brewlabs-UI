@@ -31,6 +31,10 @@ const initialState: SerializedFarmsState = {
 export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/farms`).then((res) => {
     dispatch(setFarmsPublicData(res.data ?? []));
+
+    const farms = res.data ?? [];
+    const pids = farms.map((farmToFetch) => farmToFetch.pid);
+    dispatch(fetchFarmsTVLDataAsync(pids));
   });
 };
 
@@ -46,21 +50,14 @@ export const fetchFarmsTVLDataAsync = (pids) => async (dispatch, getState) => {
   const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
   if (farms.length === 0) return;
 
-  const data = farms.map((farm) => ({
-    type: "farm",
-    chainId: farm.chainId,
-    contract: farm.contractAddress,
-    index: farm.poolId,
-  }));
-
-  axios.post(`${API_URL}/tvl/multiple`, { pools: data }).then((res) => {
+  axios.post(`${API_URL}/tvl/multiple`, { type: "farm", ids: farms.map((p) => p.pid) }).then((res) => {
     const ret = res?.data ?? [];
 
     const TVLData = [];
     for (let farm of farms) {
       let record = { pid: farm.pid, data: [] };
       record.data = ret.filter(
-        (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.poolId
+        (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.pid
       );
 
       if (record.data.length > 0) {
@@ -77,22 +74,13 @@ export const fetchFarmsUserDepositDataAsync =
     const farms = getState().farms.data.filter((farm) => pids.includes(farm.pid));
     if (farms.length === 0) return;
 
-    const data = farms.map((farm) => ({
-      type: "farm",
-      chainId: farm.chainId,
-      contract: farm.contractAddress,
-      index: farm.poolId,
-    }));
-
-    axios.post(`${API_URL}/deposit/${account}/multiple`, { pools: data }).then((res) => {
+    axios.post(`${API_URL}/deposit/${account}/multiple`, { type: "farm", ids: farms.map((p) => p.pid) }).then((res) => {
       const ret = res?.data ?? [];
 
       const depositData = [];
       for (let farm of farms) {
         let record = { pid: farm.pid, deposits: [] };
-        record.deposits = ret.filter(
-          (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.poolId
-        );
+        record.deposits = ret.filter((d) => d.farmId === farm.pid);
 
         depositData.push(record);
       }

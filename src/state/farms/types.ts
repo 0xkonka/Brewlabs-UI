@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 
 import { DeserializedFarmConfig, SerializedFarmConfig } from "config/constants/types";
-import { DeserializedDeposit, SerializedDeposit, StakingTVL } from "state/types";
+import { DeserializedDeposit, SerializedDeposit } from "state/types";
 
 export type SerializedBigNumber = string;
 
@@ -31,7 +31,10 @@ export interface SerializedFarm extends SerializedFarmConfig {
   withdrawFee?: string;
   performanceFee?: string;
   userData?: SerializedFarmUserData;
-  TVLData?: StakingTVL[];
+  TVLData?: number[];
+  performanceFees?: number[];
+  tokenFees?: string[];
+  stakedAddresses?: number[];
 }
 export interface DeserializedFarm extends DeserializedFarmConfig {
   totalStaked?: BigNumber;
@@ -41,5 +44,8 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   withdrawFee?: string;
   performanceFee?: string;
   userData?: DeserializedFarmUserData;
-  TVLData?: StakingTVL[];
+  TVLData?: number[];
+  performanceFees?: number[];
+  tokenFees?: string[];
+  stakedAddresses?: number[];
 }

@@ -152,7 +152,7 @@ const ZapperContextProvider = ({ children }: any) => {
     let sHistoryResult: any = await axios.get(url);
     sHistoryResult = sHistoryResult.data.result;
     if (sHistoryResult === "Max rate limit reached" || !sHistoryResult) sHistoryResult = [];
-    console.log(sHistoryResult);
+    // console.log(sHistoryResult);
     let txCount = 0,
       sAmounts = {},
       _stakedAddressesHistory = [],
