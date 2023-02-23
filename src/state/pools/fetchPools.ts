@@ -1,20 +1,20 @@
+import axios from "axios";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { ChainId } from "@brewlabs/sdk";
 
-import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
-import { PoolCategory } from "config/constants/types";
 import singleStakingABI from "config/abi/singlestaking.json";
 import lockupStakingABI from "config/abi/brewlabsLockup.json";
 import lockupV2StakingABI from "config/abi/brewlabsLockupV2.json";
 import lockupMultiStakingABI from "config/abi/brewlabsStakingMulti.json";
-import erc20Abi from "config/abi/erc20.json";
+
+import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
+import { PoolCategory } from "config/constants/types";
 import { getAddress } from "utils/addressHelpers";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getSingleStakingContract } from "utils/contractHelpers";
-import multicall from "utils/multicall";
 import { getBalanceNumber } from "utils/formatBalance";
-import axios from "axios";
+import multicall from "utils/multicall";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
   const poolsWithEnd = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
@@ -356,7 +356,7 @@ export const fetchPoolTotalRewards = async (pool) => {
     }
   }
 
-  return { availableRewards: getBalanceNumber(res[0], pool.stakingToken.decimals), availableReflections };
+  return { availableRewards: getBalanceNumber(res[0], pool.earningToken.decimals), availableReflections };
 };
 
 const sum = (arr) => {
