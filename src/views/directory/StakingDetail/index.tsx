@@ -237,7 +237,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Staking Pools" />
-                  <div className="mt-5 whitespace-nowrap text-xl font-normal">
+                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
                     Stake, farm, zap and explore indexes for passive income
                   </div>
                 </div>
@@ -396,7 +396,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           {!address || data.enableEmergencyWithdraw ? (
                             "0.00"
                           ) : accountData.pendingReward ? (
-                            formatAmount(accountData.pendingReward.toFixed(4))
+                            formatAmount(earningTokenBalance.toFixed(4))
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -409,7 +409,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               {!address || data.enableEmergencyWithdraw ? (
                                 "0.00"
                               ) : accountData.pendingReflections[index] ? (
-                                formatAmount(accountData.pendingReflections[index].toFixed(4))
+                                formatAmount(reflectionTokenBalances[index].toFixed(4))
                               ) : (
                                 <SkeletonComponent />
                               )}
