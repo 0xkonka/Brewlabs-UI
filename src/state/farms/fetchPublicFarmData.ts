@@ -223,11 +223,12 @@ export const fetchFarmTotalRewards = async (farm) => {
 
     if (farm.reflectionToken?.isNative) {
       availableReflections = await simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
+      availableReflections = new BigNumber(availableReflections._hex)
     }
   }
 
   return {
-    availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
+    availableRewards: getBalanceNumber( availableRewards, farm.earningToken.decimals),
     availableReflections: farm.reflectionToken
       ? getBalanceNumber(availableReflections, farm.reflectionToken.decimals)
       : 0,
