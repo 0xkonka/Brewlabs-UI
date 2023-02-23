@@ -136,7 +136,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                   <ToastContainer />
                                 </div>
 
-                              <ToastContainer />
                               </PersistGate>
                             </SWRConfig>
                           </BridgeProvider>
