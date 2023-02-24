@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useAppDispatch } from "state";
-import { updateUserAllowance } from "state/pools";
-import { getNetworkGasPrice } from "utils/getGasPrice";
-import {  useTokenContract } from "hooks/useContract";
 import { ethers } from "ethers";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useTokenContract } from "hooks/useContract";
+import { useAppDispatch } from "state";
+import { fetchFarmUserDataAsync } from "state/farms";
+import { getNetworkGasPrice } from "utils/getGasPrice";
 
-const useApprovePool = (tokenAddress, sousId, contractAddress) => {
+const useApproveFarm = (tokenAddress, pid, contractAddress) => {
   const dispatch = useAppDispatch();
   const { account, chainId, library } = useActiveWeb3React();
 
@@ -18,11 +18,11 @@ const useApprovePool = (tokenAddress, sousId, contractAddress) => {
     const tx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256, { gasPrice });
     const receipt = await tx.wait();
 
-    dispatch(updateUserAllowance(sousId, account, chainId));
+    dispatch(fetchFarmUserDataAsync({ account, chainId, pids: [pid] }));
     return receipt;
-  }, [account, chainId, library, dispatch, contractAddress, sousId, tokenContract]);
+  }, [account, chainId, library, dispatch, contractAddress, pid, tokenContract]);
 
   return { onApprove: handleApprove };
 };
 
-export default useApprovePool;
+export default useApproveFarm;

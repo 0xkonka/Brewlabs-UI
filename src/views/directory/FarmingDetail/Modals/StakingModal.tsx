@@ -1,18 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { toast } from "react-toastify";
 import styled from "styled-components";
-import { makeBigNumber, numberWithCommas } from "utils/functions";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+
+import { Version } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
-import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
-import { useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { ethers } from "ethers";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import useTokenPrice from "hooks/useTokenPrice";
+import { numberWithCommas } from "utils/functions";
+
+import useApproveFarm from "../hooks/useApprove";
+import useFarm from "../hooks/useFarm";
+import StyledButton from "../../StyledButton";
 
 const StakingModal = ({
   open,
@@ -28,73 +33,54 @@ const StakingModal = ({
   accountData: any;
 }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { data: signer }: any = useSigner();
-  const { chainId } = useActiveChainId();
-  const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true)
+  const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true);
 
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
-  const balance: any =
-    (type === "deposit" ? accountData.tokenBalance : accountData.stakedBalance) / Math.pow(10, 18);
+  const { onApprove } = useApproveFarm(data.lpAddress, data.pid, data.contractAddress);
+  const { onStake, onUnstake } = useFarm(
+    data.poolId,
+    data.farmId,
+    data.chainId,
+    data.contractAddress,
+    data.version >= Version.V2 && data.performanceFee ? data.performanceFee : "0"
+  );
+
+  const balance: any = (type === "deposit" ? accountData.tokenBalance : accountData.stakedBalance) / Math.pow(10, 18);
 
   useEffect(() => {
     if (Number(amount) > balance && !maxPressed) setInsufficient(true);
     else setInsufficient(false);
   }, [amount, maxPressed]);
 
-  const onApprove = async () => {
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleApprove = async () => {
     setPending(true);
     try {
-      const tokenContract = getBep20Contract(chainId, data.lpAddress, signer);
-      const estimateGas = await tokenContract.estimateGas.approve(data.address, ethers.constants.MaxUint256);
-      const tx = {
-        gasLimit: estimateGas.toString(),
-      };
-      const approvetx = await tokenContract.approve(data.address, ethers.constants.MaxUint256, tx);
-      await approvetx.wait();
+      await onApprove();
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
 
-  const onConfirm = async () => {
+  const handleConfirm = async () => {
     setPending(true);
     try {
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      let ttx;
       if (type === "deposit") {
-        const _amount = maxPressed ? accountData.balance : makeBigNumber(amount, 18);
-        console.log("Lock type = ", type);
-        console.log("Amount = ", _amount.toString());
-        const estimateGas: any = await poolContract.estimateGas.deposit(_amount, {
-          value: data.performanceFee,
-        });
-        console.log("EstimateGas = ", estimateGas.toString());
-        const tx = {
-          value: data.performanceFee,
-          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
-        };
-        ttx = await poolContract.deposit(_amount, tx);
+        await onStake(amount);
       } else {
-        const _amount = maxPressed ? accountData.stakedAmount : makeBigNumber(amount, 18);
-        console.log("Lock type = ", type);
-        console.log("Amount = ", _amount.toString());
-        const estimateGas: any = await poolContract.estimateGas.withdraw(_amount, {
-          value: data.performanceFee,
-        });
-        console.log("EstimateGas = ", estimateGas.toString());
-        const tx = {
-          value: data.performanceFee,
-          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
-        };
-        ttx = await poolContract.withdraw(_amount, tx);
+        await onUnstake(amount);
       }
-      await ttx.wait();
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -145,7 +131,15 @@ const StakingModal = ({
                 </div>
                 <a
                   className="flex-1"
-                  href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.lpAddress}`}
+                  href={`https://earn.brewlabs.info/add/${
+                    data.quoteToken.isNative || data.quoteToken.symbol === WNATIVE[data.chainId].symbol
+                      ? getNativeSybmol(data.chainId)
+                      : data.quoteToken.address
+                  }/${
+                    data.token.isNative || data.token.symbol === WNATIVE[data.chainId].symbol
+                      ? getNativeSybmol(data.chainId)
+                      : data.token.address
+                  }`}
                   target={"_blank"}
                   rel="noreferrer"
                 >
@@ -171,13 +165,10 @@ const StakingModal = ({
               </div>
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
-                  {type === "deposit" ? "My" : "Staked"}{" "}
-                  <span className="text-primary">{data.lpSymbol}</span>:{" "}
+                  {type === "deposit" ? "My" : "Staked"} <span className="text-primary">{data.lpSymbol}</span>:{" "}
                   {numberWithCommas((balance ? balance : 0).toFixed(2))}
                 </div>
-                <div className="text-[#FFFFFF80]">
-                  ${(lpPrice && balance ? lpPrice * balance : 0).toFixed(2)} USD
-                </div>
+                <div className="text-[#FFFFFF80]">${(lpPrice && balance ? lpPrice * balance : 0).toFixed(2)} USD</div>
               </div>
               <div className="my-[18px] h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[400px]">
@@ -196,16 +187,11 @@ const StakingModal = ({
                 </div>
                 <div className="mt-3 h-12">
                   {accountData.allowance ? (
-                    <StyledButton
-                      type="primary"
-                      disabled={!amount || insufficient || pending}
-                      onClick={() => onConfirm()}
-                    >
-                      {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"}{" "}
-                      {data.lpSymbol}
+                    <StyledButton type="primary" disabled={!amount || insufficient || pending} onClick={handleConfirm}>
+                      {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"} {data.lpSymbol}
                     </StyledButton>
                   ) : (
-                    <StyledButton type="primary" onClick={() => onApprove()} disabled={pending}>
+                    <StyledButton type="primary" onClick={handleApprove} disabled={pending}>
                       Approve&nbsp;
                       {data.lpSymbol}
                     </StyledButton>

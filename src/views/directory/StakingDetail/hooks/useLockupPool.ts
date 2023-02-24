@@ -10,7 +10,7 @@ import {
   updateUserPendingReward,
   updateUserStakedBalance,
 } from "state/pools";
-import { BIG_TEN, BIG_ZERO } from "utils/bigNumber";
+import { BIG_ZERO } from "utils/bigNumber";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { calculateGasMargin } from "utils";
 

@@ -1,9 +1,8 @@
-import BigNumber from 'bignumber.js'
-import { DEFAULT_TOKEN_DECIMAL } from 'config/constants';
+import { ethers } from 'ethers';
 import { calculateGasMargin } from 'utils'
 
 export const stakeFarm = async (masterChefContract, pid, amount, performanceFee, gasPrice) => {
-  const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
+  const value = ethers.utils.parseEther(amount).toString()
 
   let gasLimit = await masterChefContract.estimateGas.deposit(pid, value, {value: performanceFee});
   gasLimit = calculateGasMargin(gasLimit)
@@ -14,7 +13,7 @@ export const stakeFarm = async (masterChefContract, pid, amount, performanceFee,
 }
 
 export const unstakeFarm = async (masterChefContract, pid, amount, performanceFee, gasPrice) => {
-  const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
+  const value = ethers.utils.parseEther(amount).toString()
   
   let gasLimit = await masterChefContract.estimateGas.withdraw(pid, value, {value: performanceFee});
   gasLimit = calculateGasMargin(gasLimit)
