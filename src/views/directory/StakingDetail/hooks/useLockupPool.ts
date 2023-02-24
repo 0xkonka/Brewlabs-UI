@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import BigNumber from "bignumber.js";
 import { parseUnits } from "ethers/lib/utils";
 import { useLockupStaking } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -16,14 +15,11 @@ import { getNetworkGasPrice } from "utils/getGasPrice";
 import { calculateGasMargin } from "utils";
 
 const stake = async (stakingContract, type, amount, decimals, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.deposit(
-    new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString(),
-    type,
-    { value: performanceFee }
-  );
+  const units = parseUnits(amount, decimals);
+  let gasLimit = await stakingContract.estimateGas.deposit(units.toString(), type, { value: performanceFee });
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await stakingContract.deposit(new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString(), type, {
+  const tx = await stakingContract.deposit(units.toString(), type, {
     gasPrice,
     gasLimit,
     value: performanceFee,

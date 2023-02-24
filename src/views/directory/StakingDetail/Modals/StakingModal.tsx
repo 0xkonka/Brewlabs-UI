@@ -38,21 +38,19 @@ const StakingModal = ({
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
-  // const balance: any =
-  //   (type === "deposit" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
   const isLockup = data.poolCategory === PoolCategory.LOCKUP;
   const { onApprove } = useApprovePool(data.stakingToken.address, data.sousId, data.contractAddress);
   const { onStake: onStakeLockup, onUnStake: onUnStakeLockup } = useLockupPool(
     data.sousId,
     data.contractAddress,
     data.lockup,
-    data.performanceFee,
+    data.version ? data.performanceFee : '0',
     data.enableEmergencyWithdraw
   );
   const { onStake, onUnstake } = useUnlockupPool(
     data.sousId,
     data.contractAddress,
-    data.performanceFee,
+    data.version ? data.performanceFee : '0',
     data.enableEmergencyWithdraw
   );
 
