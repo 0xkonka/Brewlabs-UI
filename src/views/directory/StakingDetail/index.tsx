@@ -450,8 +450,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 </div>
                 <div className="mt-7">
                   <ProgressBar
-                    endBlock={data.endBlock - data.startBlock}
-                    remaining={Math.max(0, data.endBlock - currentBlock)}
+                    blocks={data.endBlock - data.startBlock}
+                    remaining={Math.max(0, data.endBlock - currentBlock ?? 0)}
                   />
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
