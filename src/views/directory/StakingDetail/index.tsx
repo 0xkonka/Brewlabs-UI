@@ -36,7 +36,6 @@ import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-
 import ProgressBar from "./ProgressBar";
 import StyledButton from "../StyledButton";
 import StakingHistory from "./StakingHistory";
@@ -267,29 +266,21 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
-                    {data.isCustody ? (
-                      <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
+                    <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
+                      <StyledButton>
+                        <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                        <div className="ml-3">Brewlabs Custody</div>
+                      </StyledButton>
+                    </div>
+                  </div>
+                  <div className="flex flex-1 justify-end">
+                    <div className="hidden w-full max-w-[470px] sm:block">
+                      <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                         <StyledButton>
                           <div className="absolute top-2.5 left-2">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                  <div className="flex flex-1 justify-end">
-                    <div className="hidden w-full max-w-[470px] sm:block">
-                      {data.isCustody ? (
-                        <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
-                          <StyledButton>
-                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
-                            <div className="ml-3">Brewlabs Custody</div>
-                          </StyledButton>
-                        </div>
-                      ) : (
-                        ""
-                      )}
                     </div>
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
                       <a
