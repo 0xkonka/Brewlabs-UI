@@ -49,6 +49,7 @@ const StyledDropDown = styled.div<{ open: String }>`
   border-radius: 8px;
   border-bottom-left-radius: ${({ open }) => (open === "true" ? 0 : "8px")};
   border-bottom-right-radius: ${({ open }) => (open === "true" ? 0 : "8px")};
+  z-index : 100;
 `;
 
 const DropDownBody = styled.div<{ open: String }>`

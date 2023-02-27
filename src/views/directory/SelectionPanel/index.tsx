@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import DropDown from "./Dropdown";
+import ActivityDropdown from "./ActivityDropdown";
 
 const SelectionPanel = ({
   pools,
@@ -28,25 +29,41 @@ const SelectionPanel = ({
     `Zapper Pools (${counts[4]})`,
     `My positions (0)`,
   ];
+
+  const [activity, setActivity] = useState("active");
+
   return (
-    <div className="flex flex-row md:flex-col">
-      <div className="mb-3 block max-w-[500px] flex-1 xl:hidden">
-        <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
-      </div>
-      <div className="hidden md:flex">
-        {filters.map((data, i) => {
-          return (
-            <FilterButton key={i} active={curFilter === i} onClick={() => setCurFilter(i)}>
-              {data}
-            </FilterButton>
-          );
-        })}
-        <div className="hidden max-w-[280px] flex-1 xl:block">
+    <div className="flex flex-row items-end md:flex-col md:items-start">
+      <div className="mb-0 block flex w-full flex-1 items-center justify-between md:mb-3 xl:hidden">
+        <div className="max-w-[500px] flex-1">
           <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
         </div>
+        <div className={`ml-4  w-[110px]  ${curFilter === 1 ? "hidden md:block" : "hidden"}`}>
+          <ActivityDropdown value={activity} setValue={setActivity} />
+        </div>
       </div>
-      <div className="ml-3 block w-[160px]  md:hidden">
+      <div className="flex w-fit flex-none items-center justify-between md:flex-1 xl:w-full">
+        <div className="hidden flex-1 md:flex">
+          {filters.map((data, i) => {
+            return (
+              <FilterButton key={i} active={curFilter === i} onClick={() => setCurFilter(i)}>
+                {data}
+              </FilterButton>
+            );
+          })}
+          <div className="hidden max-w-[280px] flex-1 xl:block">
+            <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
+          </div>
+        </div>
+        <div className={`ml-4  w-[110px] ${curFilter === 1 ? "hidden xl:block" : "hidden"}`}>
+          <ActivityDropdown value={activity} setValue={setActivity} />
+        </div>
+      </div>
+      <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
         <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
+        <div className={`mt-2 w-full ${curFilter === 1 ? "block" : "hidden"}`}>
+          <ActivityDropdown value={activity} setValue={setActivity} />
+        </div>
       </div>
     </div>
   );
