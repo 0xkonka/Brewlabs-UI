@@ -1,4 +1,3 @@
-import { useRef, useState } from "react";
 import styled from "styled-components";
 import PoolCard from "./PoolCard";
 
@@ -6,25 +5,44 @@ const PoolList = ({
   pools,
   setSelectPoolDetail,
   setCurPool,
+  setSortOrder,
 }: {
   pools: any;
+  prices: any;
   setSelectPoolDetail: any;
   setCurPool: any;
+  setSortOrder: any;
 }) => {
   return (
     <StyledContainer>
       <PoolHeader>
-        <div className="min-w-[80px]">Network</div>
-        <div className="min-w-[210px] pl-10">Pool</div>
-        <div className="min-w-[70px]">TVL</div>
-        <div className="min-w-[250px]">Total supply staked</div>
-        <div className="min-w-[80px]">APR</div>
+        <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
+          Network
+        </div>
+        <div className="min-w-[210px] pl-10 cursor-pointer" onClick={() => setSortOrder("default")}>
+          Pool
+        </div>
+        <div className="min-w-[70px] cursor-pointer" onClick={() => setSortOrder("tvl")}>
+          TVL
+        </div>
+        <div className="min-w-[250px] cursor-pointer" onClick={() => setSortOrder("totalStaked")}>
+          Total supply staked
+        </div>
+        <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("apr")}>
+          APR
+        </div>
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
         {pools.map((data: any, i: number) => {
           return (
-            <PoolCard data={data} key={i} index={i} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
+            <PoolCard
+              data={data}
+              key={`${data.type}-${data.sousId}-${data.farmId}`}
+              index={i}
+              setSelectPoolDetail={setSelectPoolDetail}
+              setCurPool={setCurPool}
+            />
           );
         })}
       </PoolPanel>
@@ -39,7 +57,7 @@ const PoolHeader = styled.div`
   padding: 8px 0;
   font-size: 18px;
   color: #ffffff80;
-  
+
   @media screen and (max-width: 1080px) {
     display: none;
   }

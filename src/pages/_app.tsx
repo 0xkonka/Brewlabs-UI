@@ -20,7 +20,6 @@ import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
-import { PoolContextProvider } from "contexts/directory/PoolContext";
 import { FarmContextProvider } from "contexts/directory/FarmContext";
 import { IndexContextProvider } from "contexts/directory/IndexContext";
 import { ZapperContextProvider } from "contexts/directory/ZapperContext";
@@ -41,12 +40,22 @@ import HeaderMobile from "components/navigation/HeaderMobile";
 import NavigationDesktop from "components/navigation/NavigationDesktop";
 import NavigationMobile from "components/navigation/NavigationMobile";
 import { Updaters } from "../index";
+import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
+import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
   usePollBlockNumber();
   useAccountEventListener();
+
+  usePollFarmsPublicDataFromApi()
+  usePollPoolsPublicDataFromApi()
+
+  usePollFarmsWithUserData()
+  useFetchPublicPoolsData()
+  useFetchPoolsWithUserData()
+
   return null;
 }
 
@@ -79,7 +88,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <TokenPriceContextProvider>
               <DashboardContextProvider>
-                <PoolContextProvider>
                   <FarmContextProvider>
                     <IndexContextProvider>
                       <ZapperContextProvider>
@@ -127,6 +135,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                   </div>
                                   <ToastContainer />
                                 </div>
+
                               </PersistGate>
                             </SWRConfig>
                           </BridgeProvider>
@@ -134,7 +143,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                       </ZapperContextProvider>
                     </IndexContextProvider>
                   </FarmContextProvider>
-                </PoolContextProvider>
               </DashboardContextProvider>
             </TokenPriceContextProvider>
           </ThemeProvider>

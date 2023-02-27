@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useMemo, ReactNode } from "react";
+import logger from "redux-logger";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import { createGlobalState } from "react-hooks-global-state";
@@ -8,7 +9,8 @@ import { NetworkConfig } from "config/constants/types";
 import { updateVersion } from "./global/actions";
 
 import storage from "./storage";
-import farmsReducer from "./farms";
+import farms from "./farms";
+import pools from "./pools";
 import user from "./user/reducer";
 import transactions from "./transactions/reducer";
 import swap from "./swap/reducer";
@@ -29,12 +31,13 @@ const persistConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
-    farms: farmsReducer,
+    farms,
+    pools,
     user,
-    transactions,
-    swap,
-    multicall,
     lists,
+    multicall,
+    swap,
+    transactions,
   })
 );
 
@@ -45,12 +48,19 @@ export function makeStore(preloadedState = undefined) {
   return configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        thunk: true,
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }),
+      process.env.NODE_ENV !== "production"
+        ? getDefaultMiddleware({
+            thunk: true,
+            serializableCheck: {
+              ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+          }) // .concat(logger)
+        : getDefaultMiddleware({
+            thunk: true,
+            serializableCheck: {
+              ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+          }),
     devTools: process.env.NODE_ENV === "development",
     preloadedState,
   });
@@ -123,7 +133,7 @@ const userState: {
 };
 
 // Create a single global state object
-const initialState1 = {
+const initialState = {
   ...userState,
   modalIsOpen: false,
   mobileNavOpen: false,
@@ -132,6 +142,6 @@ const initialState1 = {
   sessionChainId: undefined as any,
 };
 
-const { useGlobalState, setGlobalState } = createGlobalState(initialState1);
+const { useGlobalState, setGlobalState } = createGlobalState(initialState);
 
 export { useGlobalState, setGlobalState };

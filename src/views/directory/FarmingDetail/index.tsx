@@ -14,12 +14,10 @@ import StakingModal from "./Modals/StakingModal";
 import { useContext, useState } from "react";
 import { numberWithCommas } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
-import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getUnLockStakingContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { IndexContext } from "contexts/directory/IndexContext";
 import { SkeletonComponent } from "components/SkeletonComponent";
 
 const CHAIN_SYMBOL = {
@@ -29,6 +27,7 @@ const CHAIN_SYMBOL = {
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, accountData } = detailDatas;
+
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
   const [curGraph, setCurGraph] = useState(0);
@@ -90,8 +89,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
             <PageHeader
               title={
                 <div className="text-[40px]">
-                  <WordHighlight content="Staking Pools" />
-                  <div className="mt-5 whitespace-nowrap text-xl font-normal">
+                  <WordHighlight content="Yield Farming" />
+                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
                     Stake, farm, zap and explore indexes for passive income
                   </div>
                 </div>

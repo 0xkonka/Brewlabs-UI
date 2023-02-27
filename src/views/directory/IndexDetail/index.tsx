@@ -5,20 +5,17 @@ import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 import StyledButton from "../StyledButton";
 import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import { useContext, useState } from "react";
-import { formatDollar, numberWithCommas } from "utils/functions";
+import { formatDollar } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
-import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
-import { getUnLockStakingContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { IndexContext } from "contexts/directory/IndexContext";
-import { SkeletonComponent } from "components/SkeletonComponent";
 import DropDown from "./Dropdown";
 import LogoIcon from "components/LogoIcon";
 
@@ -76,7 +73,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Indexes" />
-                  <div className="mt-5 whitespace-nowrap text-xl font-normal">
+                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
                     Stake, farm, zap and explore indexes for passive income
                   </div>
                 </div>

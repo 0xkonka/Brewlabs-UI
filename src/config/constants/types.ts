@@ -8,7 +8,16 @@ export interface SerializedToken {
   decimals: number;
   symbol: string;
   name: string;
+  logo?: string;
   projectLink?: string;
+}
+
+export enum Category {
+  "ALL" = 0,
+  "POOL",
+  "FARM",
+  "INDEXES",
+  "ZAPPER",
 }
 
 export enum PoolCategory {

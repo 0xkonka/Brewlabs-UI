@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
 import { BigNumberFormat, numberWithCommas } from "utils/functions";
@@ -19,26 +18,27 @@ const TotalStakedChart = ({
   curGraph: number;
 }) => {
   const getTitle = (type: number) => {
-    if (type === 0) {
-      return "Total Staked Value";
-    } else if (type === 1) {
-      return (
-        <div>
-          Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 2) {
-      return (
-        <div>
-          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 3) {
-      return (
-        <div>
-          Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
+    switch (type) {
+      case 1:
+        return (
+          <div>
+            Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+          </div>
+        );
+      case 2:
+        return (
+          <div>
+            Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+          </div>
+        );
+      case 3:
+        return (
+          <div>
+            Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
+          </div>
+        );
+      default:
+        return "Total Staked Value";
     }
   };
 
@@ -138,8 +138,8 @@ const TotalStakedChart = ({
         </span>
         <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>
       </div>
-      <div className="-mt-12">
-        <Chart options={chartData.options} series={chartData.series} type="area" height={280} />
+      <div className="-mt-2">
+        <Chart options={chartData.options} series={chartData.series} type="area" height={250} />
       </div>
     </StyledContainer>
   );

@@ -62,14 +62,14 @@ export const useMasterchef = (address: string) => {
 export const useSingleStaking = (chainId: ChainId, contractAddress: string) => {
   const { data: signer } = useSigner();
   return useMemo(
-    () => getSingleStakingContract(chainId, getAddress(contractAddress, chainId), signer ?? undefined),
+    () => getSingleStakingContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
   );
 };
 export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
   const { data: signer } = useSigner();
   return useMemo(
-    () => getLockupStakingContract(chainId, getAddress(contractAddress, chainId), signer ?? undefined),
+    () => getLockupStakingContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
   );
 };

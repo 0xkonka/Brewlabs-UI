@@ -1,18 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { toast } from "react-toastify";
 import styled from "styled-components";
-import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { PoolContext } from "contexts/directory/PoolContext";
+
+import { PoolCategory } from "config/constants/types";
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import { DashboardContext } from "contexts/DashboardContext";
-import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
-import { useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { ethers } from "ethers";
+import useTokenPrice from "hooks/useTokenPrice";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getFullDisplayBalance } from "utils/formatBalance";
+
+import StyledButton from "../../StyledButton";
+import useApprovePool from "../hooks/useApprove";
+import useLockupPool from "../hooks/useLockupPool";
+import useUnlockupPool from "../hooks/useUnlockupPool";
 
 const StakingModal = ({
   open,
@@ -28,73 +32,83 @@ const StakingModal = ({
   accountData: any;
 }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { data: signer }: any = useSigner();
-  const { chainId } = useActiveChainId();
-  const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
+  const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
 
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
-  const balance: any =
-    (type === "deposit" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
+  const isLockup = data.poolCategory === PoolCategory.LOCKUP;
+  const { onApprove } = useApprovePool(data.stakingToken.address, data.sousId, data.contractAddress);
+  const { onStake: onStakeLockup, onUnStake: onUnStakeLockup } = useLockupPool(
+    data.sousId,
+    data.contractAddress,
+    data.lockup,
+    data.version ? data.performanceFee : '0',
+    data.enableEmergencyWithdraw
+  );
+  const { onStake, onUnstake } = useUnlockupPool(
+    data.sousId,
+    data.contractAddress,
+    data.version ? data.performanceFee : '0',
+    data.enableEmergencyWithdraw
+  );
+
+  const getCalculatedStakingLimit = () => {
+    let balance;
+    if (type !== "deposit") {
+      if (data.enableEmergencyWithdraw || data.sousId === 203) {
+        balance = accountData.stakedBalance;
+      } else {
+        balance = accountData.stakedBalance.minus(accountData.lockedBalance);
+      }
+    } else {
+      balance =
+        data.stakingLimit.gt(0) && accountData.stakingTokenBalance.gt(data.stakingLimit)
+          ? accountData.stakingLimit
+          : accountData.stakingTokenBalance;
+    }
+    return getFullDisplayBalance(balance, data.stakingToken.decimals);
+  };
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
 
   useEffect(() => {
-    if (Number(amount) > balance && !maxPressed) setInsufficient(true);
+    if (Number(amount) > +getCalculatedStakingLimit() && !maxPressed) setInsufficient(true);
     else setInsufficient(false);
   }, [amount, maxPressed]);
 
-  const onApprove = async () => {
+  const handleApprove = async () => {
     setPending(true);
     try {
-      const tokenContract = getBep20Contract(chainId, data.stakingToken.address, signer);
-      const estimateGas = await tokenContract.estimateGas.approve(data.address, ethers.constants.MaxUint256);
-      const tx = {
-        gasLimit: estimateGas.toString(),
-      };
-      const approvetx = await tokenContract.approve(data.address, ethers.constants.MaxUint256, tx);
-      await approvetx.wait();
+      await onApprove();
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
 
-  const onConfirm = async () => {
+  const handleConfirm = async () => {
     setPending(true);
     try {
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      let ttx;
       if (type === "deposit") {
-        const _amount = maxPressed ? accountData.balance : makeBigNumber(amount, data.stakingToken.decimals);
-        console.log("Lock type = ", type);
-        console.log("Amount = ", _amount.toString());
-        const estimateGas: any = await poolContract.estimateGas.deposit(_amount, {
-          value: data.performanceFee,
-        });
-        console.log("EstimateGas = ", estimateGas.toString());
-        const tx = {
-          value: data.performanceFee,
-          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
-        };
-        ttx = await poolContract.deposit(_amount, tx);
+        if (isLockup) {
+          await onStakeLockup(amount, data.stakingToken.decimals);
+        } else {
+          await onStake(amount, data.stakingToken.decimals);
+        }
       } else {
-        const _amount = maxPressed ? accountData.stakedAmount : makeBigNumber(amount, data.stakingToken.decimals);
-        console.log("Lock type = ", type);
-        console.log("Amount = ", _amount.toString());
-        const estimateGas: any = await poolContract.estimateGas.withdraw(_amount, {
-          value: data.performanceFee,
-        });
-        console.log("EstimateGas = ", estimateGas.toString());
-        const tx = {
-          value: data.performanceFee,
-          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
-        };
-        ttx = await poolContract.withdraw(_amount, tx);
+        if (isLockup) {
+          await onUnStakeLockup(amount, data.stakingToken.decimals);
+        } else {
+          await onUnstake(amount, data.stakingToken.decimals);
+        }
       }
-      await ttx.wait();
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -172,11 +186,13 @@ const StakingModal = ({
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
                   {type === "deposit" ? "My" : "Staked"}{" "}
-                  <span className="text-primary">{data.stakingToken.symbol}</span>:{" "}
-                  {numberWithCommas((balance ? balance : 0).toFixed(2))}
+                  <span className="text-primary">{data.stakingToken.symbol}</span>: {getCalculatedStakingLimit()}
                 </div>
                 <div className="text-[#FFFFFF80]">
-                  ${(data.price && balance ? data.price * balance : 0).toFixed(2)} USD
+                  $
+                  {(tokenPrice && +getCalculatedStakingLimit() ? tokenPrice * +getCalculatedStakingLimit() : 0).toFixed(
+                    2
+                  )}
                 </div>
               </div>
               <div className="my-[18px] h-[1px] w-full bg-[#FFFFFF80]" />
@@ -186,7 +202,7 @@ const StakingModal = ({
                     type="secondary"
                     onClick={() => {
                       setMaxPressed(true);
-                      setAmount(balance);
+                      setAmount(getCalculatedStakingLimit());
                     }}
                   >
                     <div className="text-[#FFFFFFBF]">
@@ -195,17 +211,17 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  {accountData.allowance ? (
+                  {accountData.allowance?.gt(1000) ? (
                     <StyledButton
                       type="primary"
                       disabled={!amount || insufficient || pending}
-                      onClick={() => onConfirm()}
+                      onClick={() => handleConfirm()}
                     >
                       {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"}{" "}
                       {data.stakingToken.symbol}
                     </StyledButton>
                   ) : (
-                    <StyledButton type="primary" onClick={() => onApprove()} disabled={pending}>
+                    <StyledButton type="primary" onClick={() => handleApprove()} disabled={pending}>
                       Approve&nbsp;
                       {data.stakingToken.symbol}
                     </StyledButton>

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { SkeletonComponent } from "components/SkeletonComponent";
 
-const ProgressBar = ({ endBlock, remaining }: { endBlock: number; remaining: number }) => {
+const ProgressBar = ({ blocks, remaining }: { blocks: number; remaining: number }) => {
   const [percent, setPercent] = useState(0);
   useEffect(() => {
-    setPercent(remaining ? Math.min((remaining / endBlock) * 100, 100) : 0);
-  }, [endBlock, remaining]);
+    setPercent(remaining ? Math.min(((blocks - remaining) / blocks) * 100, 100) : 100);
+  }, [blocks, remaining]);
   return (
     <div>
       <div className="mb-2 flex flex-col items-end text-xl leading-none">

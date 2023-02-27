@@ -1,87 +1,124 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
-import SelectionPanel from "./SelectionPanel";
-import PoolList from "./PoolList";
-import { useContext, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import StakingDetail from "./StakingDetail";
-import IndexDetail from "./IndexDetail";
-import { PoolContext } from "contexts/directory/PoolContext";
-import { IndexContext } from "contexts/directory/IndexContext";
-import styled from "styled-components";
-import Banner from "./Banner";
-import { FarmContext } from "contexts/directory/FarmContext";
-import FarmingDetail from "./FarmingDetail";
-import { ZapperContext } from "contexts/directory/ZapperContext";
-import ZapperDetail from "./ZapperDetail";
 
-const responsive = {
-  desktop: {
-    breakpoint: { max: 10000, min: 1400 },
-    items: 1,
-  },
-  mobile: {
-    breakpoint: { max: 1400, min: 1000 },
-    items: 1,
-  },
-  small: {
-    breakpoint: { max: 1000, min: 100 },
-    items: 1,
-  },
-};
+import { Category } from "config/constants/types";
+import { IndexContext } from "contexts/directory/IndexContext";
+import { FarmContext } from "contexts/directory/FarmContext";
+import { ZapperContext } from "contexts/directory/ZapperContext";
+import { useTokenPrices } from "hooks/useTokenPrice";
+import { usePools } from "state/pools/hooks";
+import getCurrencyId from "utils/getCurrencyId";
+
+import Banner from "./Banner";
+import PoolList from "./PoolList";
+import SelectionPanel from "./SelectionPanel";
+import IndexDetail from "./IndexDetail";
+import FarmingDetail from "./FarmingDetail";
+import StakingDetail from "./StakingDetail";
+import ZapperDetail from "./ZapperDetail";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
-  const [curPool, setCurPool] = useState(0);
+  const [sortOrder, setSortOrder] = useState("default");
+  const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
 
-  const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
+  const { pools } = usePools();
+  const prices = useTokenPrices();
+
+  // const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
   const { data: farms, accountData: accountFarms }: any = useContext(FarmContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
-  const allPools = [...pools, ...farms, ...indexes, ...zappers],
-    allAccountDatas = [...accountPoolDatas, ...accountFarms, accountIndexDatas, ...accountZapperDatas];
+  const allPools = [
+    ...pools.map((pool) => {
+      let price = prices[getCurrencyId(pool.chainId, pool.earningToken.address)];
+      if (price > 500000) price = 0;
+      return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
+    }),
+    ...farms,
+    ...indexes,
+    ...zappers,
+  ];
 
-  useEffect(() => {
-    const filtered = allPools.filter(
-      (data: any) =>
-        data.stakingToken.name.toLowerCase().includes(criteria.toLowerCase()) ||
-        data.stakingToken.symbol.toLowerCase().includes(criteria.toLowerCase()) ||
-        data.earningToken.name.toLowerCase().includes(criteria.toLowerCase()) ||
-        data.earningToken.symbol.toLowerCase().includes(criteria.toLowerCase())
-    );
-    if (curFilter === 0) setFilteredData(allPools);
-    else setFilteredData(filtered.filter((data: any) => data.type === curFilter));
-  }, [curFilter, criteria, pools, indexes, farms, zappers]);
+  let chosenPools;
+  if (curFilter >= 0 || criteria) {
+    const lowercaseQuery = criteria.toLowerCase();
+    chosenPools = allPools
+      .filter(
+        (pool) =>
+          pool.stakingToken.name.toLowerCase().includes(lowercaseQuery) ||
+          pool.stakingToken.symbol.toLowerCase().includes(lowercaseQuery) ||
+          pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
+          pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
+      )
+      .filter((data) => curFilter === 0 || data.type === curFilter);
+  }
 
-  const detailDatas = {
-    open: selectPoolDetail,
-    setOpen: setSelectPoolDetail,
-    data: allPools[curPool],
-    accountData: allAccountDatas[curPool],
+  const renderDetailPage = () => {
+    switch (curPool.type) {
+      case Category.POOL:
+        return (
+          <StakingDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool.sousId === curPool.pid),
+            }}
+          />
+        );
+      case Category.FARM:
+        return (
+          <FarmingDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              accountData: accountFarms,
+            }}
+          />
+        );
+      case Category.INDEXES:
+        return (
+          <IndexDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              accountData: accountIndexDatas,
+            }}
+          />
+        );
+
+      case Category.ZAPPER:
+        return (
+          <ZapperDetail
+            detailDatas={{
+              open: selectPoolDetail,
+              setOpen: setSelectPoolDetail,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              accountData: accountZapperDatas,
+            }}
+          />
+        );
+      default:
+        return "";
+    }
   };
 
   return (
     <PageWrapper>
-      {allPools[curPool] ? (
-        allPools[curPool].type === 1 ? (
-          <StakingDetail detailDatas={detailDatas} />
-        ) : allPools[curPool].type === 2 ? (
-          <FarmingDetail detailDatas={detailDatas} />
-        ) : allPools[curPool].type === 4 ? (
-          <ZapperDetail detailDatas={detailDatas} />
-        ) : (
-          <IndexDetail detailDatas={detailDatas} />
-        )
-      ) : (
-        ""
-      )}
+      {renderDetailPage()}
+
       <AnimatePresence>
         {!selectPoolDetail && (
           <motion.div
@@ -114,7 +151,13 @@ const Directory = ({ page }: { page: number }) => {
                   />
                 </div>
                 <div className="mt-[18px] mb-[100px]">
-                  <PoolList pools={filteredData} setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} />
+                  <PoolList
+                    pools={chosenPools}
+                    prices={prices}
+                    setSelectPoolDetail={setSelectPoolDetail}
+                    setCurPool={setCurPool}
+                    setSortOrder={setSortOrder}
+                  />
                 </div>
               </Container>
             </div>
