@@ -9,7 +9,7 @@ const DisconnectWalletButton = () => {
     <button
       className="btn"
       onClick={() => {
-        disconnect(), setIsOpen(false);
+        disconnect(), setIsOpen(0);
       }}
     >
       Disconnect wallet
