@@ -20,7 +20,7 @@ const CurrencySelectButton = ({ inputCurrencySelect }: { inputCurrencySelect: bo
   return (
     <button
       onClick={() => {
-        setIsOpen(true);
+        setIsOpen(isOpen === 1 ? 1 : 2);
         setSidebarContent(
           <CurrencySelector inputType={inputCurrencySelect ? "input" : "output"} selectedCurrency={inputValue} />
         );

@@ -28,7 +28,7 @@ const ToolBar = ({
   return (
     <div className={"flex items-center justify-between"}>
       <LogoPanel>
-        <DropDown value={listType} setValue={setListType} />
+        <DropDown value={listType} setValue={setListType} values={["Wallet", "Archive"]} />
       </LogoPanel>
       <ValuePanel ref={ref} onScroll={(e: any) => setCurScroll(e.target.scrollLeft)}>
         <div className="flex items-center justify-between pl-2">
@@ -78,7 +78,7 @@ const ToolBar = ({
             <div className="mr-px text-sm text-white">Pending Rewards</div>
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
-          <div className={"w-[52px]"} />
+          <div className={"w-5"} />
         </div>
       </ValuePanel>
     </div>

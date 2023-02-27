@@ -75,7 +75,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         </button>
       ) : (
         <div className="group flex w-full flex-shrink-0 items-center justify-between">
-          <div className="flex items-center">
+          <div className="mr-3 flex flex-1 items-center overflow-hidden">
             <div
               onClick={(e) => {
                 if (supportedNetworks.length > 1 && !allowDisconnect) {
@@ -95,7 +95,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
             <button
               className="ml-3 overflow-hidden"
-              onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect)}
+              onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect ? 1 : 0)}
             >
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
