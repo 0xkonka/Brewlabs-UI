@@ -2,18 +2,17 @@ import clsx from "clsx";
 import { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
-const DropDown = ({ value, setValue }: { setValue?: any; value: number }) => {
-  const values = ["Wallet", "Archive"];
+const DropDown = ({ value, setValue, values }: { setValue?: any; value: number; values: any }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="dropdown w-28" onClick={() => setOpen(!open)}>
+    <div className="dropdown w-32" onClick={() => setOpen(!open)}>
       <label
         tabIndex={0}
-        className="btn-sm btn m-1 w-full bg-amber-400 active:bg-brand dark:text-zinc-800 dark:hover:bg-dark dark:hover:text-brand"
+        className="btn-sm btn m-1 flex w-full justify-between bg-amber-400 active:bg-brand dark:text-zinc-800 dark:hover:bg-dark dark:hover:text-brand"
       >
         {values[value]}
-        {!open ? <ChevronDownIcon className="h-3 w-6" /> : <ChevronUpIcon className="h-3 w-6" />}
+        {!open ? <ChevronDownIcon className="h-3" /> : <ChevronUpIcon className="h-3" />}
       </label>
       <ul
         tabIndex={0}

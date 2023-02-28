@@ -23,6 +23,7 @@ import { Field } from "state/swap/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
+import UserDashboard from "components/dashboard/UserDashboard";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -61,12 +62,15 @@ const CurrencyRow = ({
   const balance = useCurrencyBalance(account, currency);
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const { onUserInput, onCurrencySelection, onSwitchTokens } = useSwapActionHandlers();
+  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   return (
     <button
       className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
       onClick={() => {
-        setIsOpen(false);
+        if (userSidebarOpen === 2) setIsOpen(0);
+        setSidebarContent(<UserDashboard />);
         onUserInput(input, "");
         onCurrencySelection(input, currency);
       }}

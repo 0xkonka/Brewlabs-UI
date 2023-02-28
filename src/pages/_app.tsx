@@ -19,6 +19,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { BridgeProvider } from "contexts/BridgeContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
+import { SwapContextProvider } from "contexts/SwapContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
 import { FarmContextProvider } from "contexts/directory/FarmContext";
 import { IndexContextProvider } from "contexts/directory/IndexContext";
@@ -49,12 +50,12 @@ function GlobalHooks() {
   usePollBlockNumber();
   useAccountEventListener();
 
-  usePollFarmsPublicDataFromApi()
-  usePollPoolsPublicDataFromApi()
+  usePollFarmsPublicDataFromApi();
+  usePollPoolsPublicDataFromApi();
 
-  usePollFarmsWithUserData()
-  useFetchPublicPoolsData()
-  useFetchPoolsWithUserData()
+  usePollFarmsWithUserData();
+  useFetchPublicPoolsData();
+  useFetchPoolsWithUserData();
 
   return null;
 }
@@ -88,6 +89,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <TokenPriceContextProvider>
               <DashboardContextProvider>
+                <SwapContextProvider>
                   <FarmContextProvider>
                     <IndexContextProvider>
                       <ZapperContextProvider>
@@ -135,7 +137,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                   </div>
                                   <ToastContainer />
                                 </div>
-
                               </PersistGate>
                             </SWRConfig>
                           </BridgeProvider>
@@ -143,6 +144,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                       </ZapperContextProvider>
                     </IndexContextProvider>
                   </FarmContextProvider>
+                </SwapContextProvider>
               </DashboardContextProvider>
             </TokenPriceContextProvider>
           </ThemeProvider>

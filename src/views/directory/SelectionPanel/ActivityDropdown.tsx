@@ -35,7 +35,7 @@ const ActivityDropdown = ({ value, setValue }: { setValue?: any; value: string }
       className="portfolio-shadow relative z-10 flex h-[30px] w-full cursor-pointer items-center justify-center bg-[#D9D9D91A] text-sm text-[#FFFFFF80]"
       ref={dropRef}
       onClick={() => setOpen(!open)}
-      open={open.toString()}
+      open={open}
     >
       <div className="flex w-full items-center justify-between px-3">
         <div className="flex items-center">
@@ -47,7 +47,7 @@ const ActivityDropdown = ({ value, setValue }: { setValue?: any; value: string }
         </div>
       </div>
 
-      <DropDownBody className={"absolute top-[30px] w-full rounded-b transition-all"} open={open.toString()}>
+      <DropDownBody className={"absolute top-[30px] w-full rounded-b transition-all"} open={open}>
         {Object.keys(data).map((key, i) => {
           return (
             <div
@@ -79,14 +79,14 @@ const StyledCircle = styled.div<{ color: String }>`
   box-shadow: 0px 0px 1px 1px ${({ color }) => color}; ;
 `;
 
-const StyledDropDown = styled.div<{ open: String }>`
+const StyledDropDown = styled.div<{ open: Boolean }>`
   border-radius: 8px;
-  border-bottom-left-radius: ${({ open }) => (open === "true" ? 0 : "8px")};
-  border-bottom-right-radius: ${({ open }) => (open === "true" ? 0 : "8px")};
+  border-bottom-left-radius: ${({ open }) => (open ? 0 : "8px")};
+  border-bottom-right-radius: ${({ open }) => (open ? 0 : "8px")};
 `;
 
-const DropDownBody = styled.div<{ open: String }>`
-  height: ${({ open }) => (open === "true" ? "90px" : 0)};
+const DropDownBody = styled.div<{ open: Boolean }>`
+  height: ${({ open }) => (open ? "90px" : 0)};
   overflow: hidden;
   background: rgb(51, 60, 78);
 `;
