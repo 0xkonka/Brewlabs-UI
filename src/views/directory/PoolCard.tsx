@@ -136,7 +136,7 @@ const PoolCard = ({
             <div className="text-left xsm:text-right">Total supply staked</div>
             <div className="text-left text-sm xsm:text-right">
               {data.totalStaked !== undefined ? (
-                `${numberWithCommas(data.totalStaked)} ${data.stakingToken.symbol}`
+                `${formatAmount(data.totalStaked)} ${data.stakingToken.symbol}`
               ) : (
                 <SkeletonComponent />
               )}
@@ -145,7 +145,7 @@ const PoolCard = ({
         </div>
         <div className="mt-3 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
           <div className="flex">
-            TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl)}` : <SkeletonComponent />}
+            TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl.toFixed(2))}` : <SkeletonComponent />}
           </div>
         </div>
       </div>
