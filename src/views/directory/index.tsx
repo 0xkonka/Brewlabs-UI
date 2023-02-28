@@ -65,7 +65,9 @@ const Directory = ({ page }: { page: number }) => {
           pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
           pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
       )
-      .filter((data) => curFilter === 0 || data.type === curFilter);
+      .filter(
+        (data) => curFilter === 0 || data.type === curFilter || (curFilter === 5 && data.userData?.stakedBalance.gt(0))
+      );
   }
 
   switch (status) {
@@ -75,7 +77,8 @@ const Directory = ({ page }: { page: number }) => {
     case "new":
       chosenPools = chosenPools.filter(
         (pool) =>
-          !pool.isFinished && (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
+          !pool.isFinished &&
+          (+pool?.startBlock === 0 || +pool?.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
       );
       break;
     default:
