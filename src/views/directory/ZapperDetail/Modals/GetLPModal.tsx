@@ -1,18 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
 import StyledButton from "../../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
-import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { PoolContext } from "contexts/directory/PoolContext";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
-import { useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { ethers } from "ethers";
 
 const GetLPModal = ({ open, setOpen, setStakingOpen }: { open: boolean; setOpen: any; setStakingOpen: any }) => {
   const [amount, setAmount] = useState("");

@@ -14,12 +14,10 @@ import StakingModal from "./Modals/StakingModal";
 import { useContext, useState } from "react";
 import { numberWithCommas } from "utils/functions";
 import { useAccount, useSigner } from "wagmi";
-import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getUnLockStakingContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { IndexContext } from "contexts/directory/IndexContext";
 import { SkeletonComponent } from "components/SkeletonComponent";
 
 const CHAIN_SYMBOL = {
