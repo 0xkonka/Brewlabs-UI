@@ -245,6 +245,12 @@ export const BASE_URL = "https://earn.brewlabs.info";
 export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
 export const DEFAULT_GAS_LIMIT = 200000;
 
+export const BLOCKS_PER_DAY = {
+  [ChainId.ETHEREUM]: 6426,
+  [ChainId.BSC_MAINNET]: 28800,
+  [ChainId.POLYGON]: 40000,
+};
+
 export const BANANA_PER_BLOCK = new BigNumber(10);
 export const BLOCKS_PER_YEAR = new BigNumber(10512000);
 export const BANANA_PER_YEAR = BANANA_PER_BLOCK.times(BLOCKS_PER_YEAR);

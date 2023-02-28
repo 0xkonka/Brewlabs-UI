@@ -9,12 +9,16 @@ const SelectionPanel = ({
   setCurFilter,
   criteria,
   setCriteria,
+  activity,
+  setActivity,
 }: {
   pools: any;
   curFilter: number;
   setCurFilter: any;
   criteria: string;
   setCriteria: any;
+  activity: any;
+  setActivity: any;
 }) => {
   let counts = [];
   for (let i = 1; i <= 4; i++) {
@@ -29,8 +33,6 @@ const SelectionPanel = ({
     `Zapper Pools (${counts[4]})`,
     `My positions (0)`,
   ];
-
-  const [activity, setActivity] = useState("active");
 
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">

@@ -8,12 +8,14 @@ import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BLOCKS_PER_DAY } from "config/constants";
 import { Category } from "config/constants/types";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { FarmContext } from "contexts/directory/FarmContext";
 import { ZapperContext } from "contexts/directory/ZapperContext";
 import { useTokenPrices } from "hooks/useTokenPrice";
 import { usePools } from "state/pools/hooks";
+import { useChainCurrentBlocks } from "state/block/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 
 import Banner from "./Banner";
@@ -30,9 +32,11 @@ const Directory = ({ page }: { page: number }) => {
   const [sortOrder, setSortOrder] = useState("default");
   const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
+  const [status, setStatus] = useState("active");
 
   const { pools } = usePools();
   const prices = useTokenPrices();
+  const currentBlocks = useChainCurrentBlocks();
 
   // const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
   const { data: farms, accountData: accountFarms }: any = useContext(FarmContext);
@@ -62,6 +66,20 @@ const Directory = ({ page }: { page: number }) => {
           pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
       )
       .filter((data) => curFilter === 0 || data.type === curFilter);
+  }
+
+  switch (status) {
+    case "finished":
+      chosenPools = chosenPools.filter((pool) => pool.isFinished);
+      break;
+    case "new":
+      chosenPools = chosenPools.filter(
+        (pool) =>
+          !pool.isFinished && (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
+      );
+      break;
+    default:
+      chosenPools = chosenPools.filter((pool) => !pool.isFinished);
   }
 
   const renderDetailPage = () => {
@@ -148,6 +166,8 @@ const Directory = ({ page }: { page: number }) => {
                     setCurFilter={setCurFilter}
                     criteria={criteria}
                     setCriteria={setCriteria}
+                    activity={status}
+                    setActivity={setStatus}
                   />
                 </div>
                 <div className="mt-[18px] mb-[100px]">
