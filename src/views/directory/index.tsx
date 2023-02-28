@@ -78,11 +78,11 @@ const Directory = ({ page }: { page: number }) => {
       chosenPools = chosenPools.filter(
         (pool) =>
           !pool.isFinished &&
-          (+pool?.startBlock === 0 || +pool?.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
+          (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
       );
       break;
     default:
-      chosenPools = chosenPools.filter((pool) => !pool.isFinished);
+      chosenPools = chosenPools.filter((pool) => !pool.isFinished && +pool.startBlock > 0);
   }
 
   const renderDetailPage = () => {
