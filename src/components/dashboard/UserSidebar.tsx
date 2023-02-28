@@ -1,18 +1,33 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ConnectWallet from "./ConnectWallet";
 import UserDashboard from "components/dashboard/UserDashboard";
 import { useGlobalState } from "../../state";
+import { useAccount, useConnect } from "wagmi";
+import { connect } from "http2";
 
+let tempConnected;
 const UserSidebar = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+  const { isConnected } = useAccount();
+  const { connectors, connect } = useConnect();
+  tempConnected = isConnected;
+  useEffect(() => {
+    if (!window.ethereum) return;
+    if (!tempConnected) connect({ connector: connectors[1] });
+    window.ethereum.on("chainChanged", async (chainId) => {
+      //logic for chain change
+      console.log("Changed", tempConnected);
+      if (!tempConnected) connect({ connector: connectors[1] });
+    });
+  }, [window.ethereum]);
 
   return (
-    <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" onClose={() => setIsOpen(false)} className="relative z-40">
+    <Transition.Root show={isOpen > 0} as={Fragment}>
+      <Dialog as="div" onClose={() => setIsOpen(0)} className="relative z-40">
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"
@@ -45,7 +60,7 @@ const UserSidebar = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setIsOpen(false);
+                    setIsOpen(0);
                   }}
                   className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-inset focus:ring-white sm:focus:ring-2"
                 >

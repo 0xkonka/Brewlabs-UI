@@ -1,4 +1,5 @@
 // eslint-disable-next-line camelcase
+import { ChainId } from "@brewlabs/sdk";
 import useSWR, { useSWRConfig, unstable_serialize } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useProvider } from "wagmi";
@@ -74,6 +75,16 @@ export const useChainCurrentBlock = (chainId: number): number => {
   );
   return currentBlock;
 };
+
+export const useChainCurrentBlocks = () => {
+  let blocks = {}
+  blocks[ChainId.ETHEREUM] = useChainCurrentBlock(ChainId.ETHEREUM)
+  blocks[ChainId.BSC_MAINNET] = useChainCurrentBlock(ChainId.BSC_MAINNET)
+  blocks[ChainId.POLYGON] = useChainCurrentBlock(ChainId.POLYGON)
+  blocks[ChainId.AVALANCHE] = useChainCurrentBlock(ChainId.AVALANCHE)
+
+  return blocks
+}
 
 export const useInitialBlock = (): number => {
   const { chainId } = useActiveChainId();

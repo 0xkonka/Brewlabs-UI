@@ -97,7 +97,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
             <button
               className="ml-3 overflow-hidden"
               onClick={() => {
-                setUserSidebarOpen(!allowDisconnect);
+                setUserSidebarOpen(!allowDisconnect ? 1 : 0);
                 setUserSidebarContent(<UserDashboard />);
               }}
             >

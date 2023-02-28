@@ -16,12 +16,13 @@ export const navigationData = [
   },
   {
     name: "Staking",
-    href: "https://earn.brewlabs.info/pools",
-    external: true,
+    href: "/staking",
+    external: false,
     icon: "ClockIcon",
   },
   {
     name: "Farms",
+    // href: "/farms",
     href: "https://earn.brewlabs.info/farms",
     external: true,
     icon: "ArrowTrendingUpIcon",
@@ -41,6 +42,7 @@ export const navigationData = [
   {
     name: "Zap",
     href: "https://earn.brewlabs.info/zap",
+    // href: "/zapper",
     external: true,
     icon: "BoltIcon",
   },
