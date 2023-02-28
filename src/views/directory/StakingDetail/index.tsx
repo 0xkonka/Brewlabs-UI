@@ -266,22 +266,26 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
-                    <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
-                      <StyledButton>
-                        <div className="absolute top-2.5 left-2">{lockSVG}</div>
-                        <div className="ml-3">Brewlabs Custody</div>
-                      </StyledButton>
-                    </div>
-                  </div>
-                  <div className="flex flex-1 justify-end">
-                    <div className="hidden w-full max-w-[470px] sm:block">
-                      <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                    {data.isCustody && (
+                      <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                         <StyledButton>
                           <div className="absolute top-2.5 left-2">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
-                    </div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 justify-end">
+                    {data.isCustody && (
+                      <div className="hidden w-full max-w-[470px] sm:block">
+                        <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                          <StyledButton>
+                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                            <div className="ml-3">Brewlabs Custody</div>
+                          </StyledButton>
+                        </div>
+                      </div>
+                    )}
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
                       <a
                         className="h-[32px] w-[140px]"
@@ -345,7 +349,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           Stake: <span className="text-primary">{stakingToken.symbol}</span> earn{" "}
                           <span className="text-primary">{earningToken.symbol}</span>
                         </div>
-                        <div className="text-primary">{data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}</div>
+                        <div className="text-primary">
+                          {data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}
+                        </div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
                         Deposit Fee {(+data.depositFee).toFixed(2)}%
