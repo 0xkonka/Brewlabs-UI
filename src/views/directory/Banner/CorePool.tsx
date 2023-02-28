@@ -36,7 +36,7 @@ const CorePool = ({
               Stake <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
               <span className="text-primary">{data.earningToken.symbol}</span>
             </div>
-            <div className="text-primary">{!data.lockup ? "Flexible" : `${data.duration} day lock`}</div>
+            <div className="text-primary">{data.lockup === undefined ? "Flexible" : `${data.duration} day lock`}</div>
           </div>
           <div className="flex flex-wrap items-start justify-between">
             <div>

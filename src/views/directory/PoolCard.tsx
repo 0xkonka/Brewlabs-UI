@@ -71,7 +71,7 @@ const PoolCard = ({
               <div className="leading-none">{data.stakingToken.symbol}</div>
             )}
             <div className="text-xs">
-              {poolNames[data.type]} - {!data.lockup ? "Flexible" : `${data.duration} days lock`}
+              {poolNames[data.type]} - {data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@ const PoolCard = ({
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
               </div>
               <div className="text-xs">
-                {poolNames[data.type]} - {data.duration === 0 ? "Flexible" : `${data.duration} day lock`}
+                {poolNames[data.type]} - {data.lockup === undefined ? "Flexible" : `${data.duration} day lock`}
               </div>
             </div>
           </div>

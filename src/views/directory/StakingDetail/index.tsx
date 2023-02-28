@@ -345,7 +345,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           Stake: <span className="text-primary">{stakingToken.symbol}</span> earn{" "}
                           <span className="text-primary">{earningToken.symbol}</span>
                         </div>
-                        <div className="text-primary">{!data.lockup ? "Flexible" : `${data.duration} days lock`}</div>
+                        <div className="text-primary">{data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}</div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
                         Deposit Fee {(+data.depositFee).toFixed(2)}%
