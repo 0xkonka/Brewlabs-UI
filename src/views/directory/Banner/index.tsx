@@ -42,13 +42,13 @@ const Banner = ({
         autoPlay={true}
         autoPlaySpeed={5000}
         beforeChange={(nextSlide, { currentSlide, onMove }: any) => {
-          setCurSlide((nextSlide - 2) % 3);
+          setCurSlide((nextSlide - 2) % 2);
         }}
         ref={carouselRef}
       >
         <CorePool setSelectPoolDetail={setSelectPoolDetail} index={195} setCurPool={setCurPool} pools={allPools} />
         {/* <AutoFarmer /> */}
-        <CorePool setSelectPoolDetail={setSelectPoolDetail} index={195} setCurPool={setCurPool} pools={allPools} />
+        {/* <CorePool setSelectPoolDetail={setSelectPoolDetail} index={195} setCurPool={setCurPool} pools={allPools} /> */}
         <TrueNFT />
       </Carousel>
       <DotGroup active={curSlide}>
@@ -64,12 +64,12 @@ const Banner = ({
             // setCurSlide((curSlide + 2) % 3);
           }}
         />
-        <div
+        {/* <div
           onClick={() => {
             carouselRef.current.goToSlide(4);
             // setCurSlide((curSlide + 2) % 3);
           }}
-        />
+        /> */}
       </DotGroup>
     </div>
   );

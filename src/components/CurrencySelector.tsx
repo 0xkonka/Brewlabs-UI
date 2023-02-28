@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, useEffect } from "react";
 import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
@@ -24,6 +24,8 @@ import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
 import UserDashboard from "components/dashboard/UserDashboard";
+import DropDown from "./dashboard/TokenList/Dropdown";
+import { SwapContext } from "contexts/SwapContext";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -115,6 +117,9 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
   const debouncedQuery = useDebounce(searchQuery, 200);
 
   const [invertSearchOrder] = useState<boolean>(false);
+  const { viewType, setViewType }: any = useContext(SwapContext);
+  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const allTokens = useAllTokens();
 
@@ -231,10 +236,32 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
     setPage((page - 1) % totalPages);
   };
 
+  const [viewSelect, setViewSelect] = useState(0);
+
+  const onSelect = (i: number) => {
+    if (i > 0) {
+      setViewType(i - 1);
+      setSidebarContent(<UserDashboard />);
+    }
+    setViewSelect(i);
+  };
+
   return (
     <div className="relative w-full">
-      <div className="mb-6 font-brand">
-        <h2 className="text-3xl">Select token {inputType}</h2>
+      <div className="mb-6 flex items-center justify-between">
+        <div className="font-brand">
+          <h2 className="text-3xl">Select token {inputType}</h2>
+        </div>
+        {userSidebarOpen === 1 ? (
+          <DropDown
+            values={["Token Select", "Portfolio", "Swap"]}
+            width={"w-36"}
+            value={viewSelect}
+            setValue={onSelect}
+          />
+        ) : (
+          ""
+        )}
       </div>
 
       <nav className="mb-4 flex space-x-4" aria-label="Tabs">

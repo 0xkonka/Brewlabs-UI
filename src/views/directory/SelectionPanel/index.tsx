@@ -34,15 +34,15 @@ const SelectionPanel = ({
 
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
-      <div className="mb-0 block flex w-full flex-1 items-center justify-between md:mb-3 xl:hidden">
+      <div className="mb-0 block flex flex-1 items-center justify-between md:mb-3 xl:hidden w-full">
         <div className="max-w-[500px] flex-1">
           <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
         </div>
-        <div className={`ml-4  w-[110px]  ${curFilter === 1 ? "hidden md:block" : "hidden"}`}>
+        <div className="ml-4 hidden w-[110px] md:block">
           <ActivityDropdown value={activity} setValue={setActivity} />
         </div>
       </div>
-      <div className="flex w-fit flex-none items-center justify-between md:flex-1 xl:w-full">
+      <div className="flex flex-none items-center justify-between md:flex-1 xl:w-full w-fit">
         <div className="hidden flex-1 md:flex">
           {filters.map((data, i) => {
             return (
@@ -55,13 +55,13 @@ const SelectionPanel = ({
             <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
           </div>
         </div>
-        <div className={`ml-4  w-[110px] ${curFilter === 1 ? "hidden xl:block" : "hidden"}`}>
+        <div className="ml-4 hidden w-[110px] xl:block">
           <ActivityDropdown value={activity} setValue={setActivity} />
         </div>
       </div>
-      <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
+      <div className="xsm:ml-10 ml-4 block w-[160px]  md:hidden">
         <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
-        <div className={`mt-2 w-full ${curFilter === 1 ? "block" : "hidden"}`}>
+        <div className="mt-2 w-full">
           <ActivityDropdown value={activity} setValue={setActivity} />
         </div>
       </div>

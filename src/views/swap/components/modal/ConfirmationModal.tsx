@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dialog } from "@headlessui/react";
 import styled from "styled-components";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { TransactionFailedSVG } from "components/dashboard/assets/svgs";
 
 type ModalProps = {
   open: boolean;
@@ -51,19 +52,29 @@ const ConfirmationModal = ({ open, setOpen, type, tx }: ModalProps): ReactElemen
               transition={{ duration: 0.25 }}
             >
               <StyledPanel>
-                <div className="flex w-full items-center justify-center overflow-hidden rounded-t-lg bg-brand py-1.5 ">
+                <div
+                  className={`flex w-full items-center justify-between overflow-hidden rounded-t-lg ${
+                    type === "failed" ? "bg-danger" : "bg-brand"
+                  } py-1.5 px-4`}
+                >
                   {type === "confirming" ? (
-                    <img src={"/images/brewlabs-bubbling-seemless.gif"} alt={""} className="mr-4 -ml-4 w-[70px]" />
+                    <img src={"/images/brewlabs-bubbling-seemless.gif"} alt={""} className="w-[70px]" />
+                  ) : type === "failed" ? (
+                    <div className="ml-2 flex h-[70px] items-center">{TransactionFailedSVG}</div>
                   ) : (
                     <div className="h-[70px]" />
                   )}
                   <div className="text-[22px] text-black">
-                    {type === "confirming" ? "Confirming Transaction" : "Transaction Confirmed"}
+                    {type === "confirming"
+                      ? "Confirming Transaction"
+                      : type === "failed"
+                      ? "Transaction Failed"
+                      : "Transaction Confirmed"}
                   </div>
                 </div>
-                <div className="border-top-none flex overflow-hidden rounded-b-lg border border-[#FFFFFF80] bg-[rgb(38,44,55)] font-roboto font-semibold">
+                <div className="border-t-0 flex overflow-hidden rounded-b-lg border border-[#FFFFFF80] bg-[rgb(38,44,55)] font-roboto font-semibold">
                   <a
-                    className="flex w-[50%] cursor-pointer items-center justify-center border-r  border-[FFFFFF80] py-2.5 text-white transition hover:bg-[rgb(61,66,76)]"
+                    className="flex w-[50%] cursor-pointer items-center justify-center border-r  border-[FFFFFF80] py-2 text-white transition hover:bg-[rgb(61,66,76)]"
                     target={"_blank"}
                     href={`${SCAN_URL[chainId]}/tx/${tx}`}
                     rel="noreferrer"
@@ -72,7 +83,7 @@ const ConfirmationModal = ({ open, setOpen, type, tx }: ModalProps): ReactElemen
                     <div>Transaction</div>
                   </a>
                   <div
-                    className="flex w-[50%] cursor-pointer items-center justify-center py-2.5 text-white transition hover:bg-[rgb(61,66,76)]"
+                    className="flex w-[50%] cursor-pointer items-center justify-center py-2 text-white transition hover:bg-[rgb(61,66,76)]"
                     onClick={() => setOpen(false)}
                   >
                     Dismiss
