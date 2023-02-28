@@ -313,6 +313,9 @@ export default function SwapPanel({ type = "swap" }) {
         type: "confirmed",
         tx: tx.hash,
       });
+      setTimeout(() => {
+        setOpenConfirmationModal(false);
+      }, 5000);
       setApproveStep(2);
     } catch (err: any) {
       // if (err?.code === 4001) {
@@ -324,6 +327,9 @@ export default function SwapPanel({ type = "swap" }) {
         type: "failed",
         tx: tx.hash,
       });
+      setTimeout(() => {
+        setOpenConfirmationModal(false);
+      }, 5000);
     } finally {
       setAttemptingTxn(false);
     }
