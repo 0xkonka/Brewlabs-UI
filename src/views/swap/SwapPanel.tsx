@@ -47,7 +47,7 @@ import { SwapContext } from "contexts/SwapContext";
 
 type TxResponse = TransactionResponse | null;
 
-export default function SwapPanel({ type = "swap" }) {
+export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
   const { account, library, chainId } = useActiveWeb3React();
   const { data: signer } = useSigner();
 
@@ -443,7 +443,7 @@ export default function SwapPanel({ type = "swap" }) {
       />
       <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
-      <ChainSelect id="chain-select" />
+      {!disableChainSelect && <ChainSelect id="chain-select" />}
 
       <div className="rounded-2xl border border-gray-600">
         <CurrencyInputPanel

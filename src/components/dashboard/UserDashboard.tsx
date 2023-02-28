@@ -63,7 +63,7 @@ const UserDashboard = () => {
       </div>
       {viewType === 1 ? (
         <div className="mt-4 flex justify-center">
-          <SwapPanel type={"draw"} />
+          <SwapPanel type={"draw"} disableChainSelect />
         </div>
       ) : (
         <>
