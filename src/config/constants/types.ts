@@ -18,6 +18,7 @@ export enum Category {
   "FARM",
   "INDEXES",
   "ZAPPER",
+  "MY_POSITION",
 }
 
 export enum PoolCategory {
