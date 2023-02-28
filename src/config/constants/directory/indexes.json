@@ -1,36 +1,3 @@
 [
-  {
-    "type": 3,
-    "chainId": 1,
-    "address": "0xc683433999a813A9F8DF4130d9FEDd39BbAb31B2",
-    "chainLogo": "/images/directory/eth.svg",
-    "stakingToken": {
-      "address": "0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7",
-      "symbol": "OGN-OGV",
-      "name": "Brewlabs",
-      "decimals": 9,
-      "logo": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"
-    },
-    "earningToken": {
-      "address": "0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7",
-      "symbol": "OGN-OGV",
-      "name": "Brewlabs",
-      "decimals": 9,
-      "logo": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"
-    },
-    "reflectionToken": {
-      "address": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-      "symbol": "BUSD",
-      "name": "BUSD",
-      "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xe9e7cea3dedca5984780bafc599bd69add087d56/logo.png"
-    },
-    "duration": 0,
-    "depositFee": 0.3,
-    "withdrawFee": 1,
-    "performanceFee": "3500000000000000",
-    "website": "https://brewlabs.info/",
-    "tvl": 53000,
-    "totalStaked": 230516
-  }
+ 
 ]

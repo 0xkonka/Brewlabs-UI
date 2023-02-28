@@ -295,10 +295,15 @@ export default function SwapPanel({ type = "swap" }) {
 
   const handleApprove = async () => {
     setAttemptingTxn(true);
+    let tx: any = { hash: "" };
+    setOpenConfirmationModal(true);
+    setTxConfirmInfo({
+      type: "confirming",
+      tx: tx.hash,
+    });
     try {
-      const tx = await approveCallback();
+      tx = await approveCallback();
       setApproveStep(1);
-      setOpenConfirmationModal(true);
       setTxConfirmInfo({
         type: "confirming",
         tx: tx.hash,
@@ -310,11 +315,15 @@ export default function SwapPanel({ type = "swap" }) {
       });
       setApproveStep(2);
     } catch (err: any) {
-      if (err?.code === 4001) {
-        toast.error(t("Transaction rejected."));
-      } else {
-        toast.error(t("Please try again. Confirm the transaction and make sure you are paying enough gas!"));
-      }
+      // if (err?.code === 4001) {
+      //   toast.error(t("Transaction rejected."));
+      // } else {
+      //   toast.error(t("Please try again. Confirm the transaction and make sure you are paying enough gas!"));
+      // }
+      setTxConfirmInfo({
+        type: "failed",
+        tx: tx.hash,
+      });
     } finally {
       setAttemptingTxn(false);
     }
@@ -423,7 +432,7 @@ export default function SwapPanel({ type = "swap" }) {
   return (
     <div
       className={`relative mx-auto mb-4 flex w-fit max-w-xl flex-col gap-1 rounded-3xl  pb-10 pt-4 ${
-        type === "swap" ? "border-t dark:border-slate-600 px-4" : ""
+        type === "swap" ? "border-t px-4 dark:border-slate-600" : ""
       } dark:bg-zinc-900 sm:px-10 md:mx-0`}
     >
       <ConfirmationModal
