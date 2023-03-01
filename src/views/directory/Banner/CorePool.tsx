@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { PoolCategory } from "config/constants/types";
 import { upSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
@@ -36,7 +37,7 @@ const CorePool = ({
               Stake <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
               <span className="text-primary">{data.earningToken.symbol}</span>
             </div>
-            <div className="text-primary">{data.lockup === undefined ? "Flexible" : `${data.duration} day lock`}</div>
+            <div className="text-primary">{data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} day lock`}</div>
           </div>
           <div className="flex flex-wrap items-start justify-between">
             <div>

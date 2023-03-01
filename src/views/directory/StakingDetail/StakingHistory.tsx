@@ -8,12 +8,13 @@ const StakingHistory = ({
   history,
   type,
   onWithdraw,
+  setPopulatedAmount,
 }: {
   history: any;
   type: PoolCategory;
   onWithdraw: any;
+  setPopulatedAmount: any;
 }) => {
- 
   return (
     <div className="h-[300px] overflow-x-scroll text-[#FFFFFFBF]">
       <div className="flex justify-between text-xl">
@@ -31,7 +32,18 @@ const StakingHistory = ({
               </div>
               <div className="min-w-[60px]">{data.blockNumber}</div>
               <div className="min-w-[80px] text-right">
-                {type === PoolCategory.CORE ? <>N/A</> : <CountDown time={data.unlockTime} onWithdraw={onWithdraw} />}
+                {type === PoolCategory.CORE ? (
+                  <>N/A</>
+                ) : (
+                  <CountDown
+                    time={data.unlockTime}
+                    onWithdraw={() => {
+                      setPopulatedAmount("0")
+                      setPopulatedAmount(data.amount.toString());
+                      onWithdraw();
+                    }}
+                  />
+                )}
               </div>
             </div>
           );

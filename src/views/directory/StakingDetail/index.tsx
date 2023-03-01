@@ -12,7 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { PoolCategory } from "config/constants/types";
+import { Category, PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
@@ -51,9 +51,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
+  const [populatedAmount, setPopulatedAmount] = useState("0")
   const [curGraph, setCurGraph] = useState(0);
 
-  const { address } = useAccount();
+  const address = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
+  // const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -229,6 +231,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 type={curType}
                 data={data}
                 accountData={accountData}
+                defaultAmount={populatedAmount}
               />
             ) : (
               ""
@@ -350,7 +353,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <span className="text-primary">{earningToken.symbol}</span>
                         </div>
                         <div className="text-primary">
-                          {data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}
+                          {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} days lock`}
                         </div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
@@ -629,6 +632,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <StakingHistory
                         history={history}
                         type={data.poolCategory}
+                        setPopulatedAmount={setPopulatedAmount}
                         onWithdraw={() => {
                           setCurType("withdraw");
                           setStakingModalOpen(true);
