@@ -51,8 +51,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
-  const [populatedAmount, setPopulatedAmount] = useState("0")
-  const [curGraph, setCurGraph] = useState(0);
+  const [populatedAmount, setPopulatedAmount] = useState("0");
+  const [curGraph, setCurGraph] = useState(1);
 
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
@@ -141,6 +141,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
         return data.performanceFees;
       case 4:
         return data.stakedAddresses;
+      default:
+        _graphData = data.TVLData ?? [];
+        _graphData = _graphData.map((v) => +v);
+        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        return _graphData;
     }
   };
 
@@ -472,11 +477,17 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       className="mt-20 flex cursor-pointer justify-between"
                       type={"secondary"}
                       boxShadow={curGraph === 0 ? "primary" : null}
-                      onClick={() => setCurGraph(0)}
+                      onClick={() => setCurGraph(1)}
                     >
                       <div>My Staked Tokens</div>
                       <div className="flex">
-                        {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
+                        {!address ? (
+                          "$0.00"
+                        ) : accountData.stakedBalance ? (
+                          `$${formatAmount(getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0))}`
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
                     <InfoPanel

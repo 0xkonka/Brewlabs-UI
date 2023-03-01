@@ -19,19 +19,19 @@ const TotalStakedChart = ({
 }) => {
   const getTitle = (type: number) => {
     switch (type) {
-      case 1:
+      case 2:
         return (
           <div>
             Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
           </div>
         );
-      case 2:
+      case 3:
         return (
           <div>
             Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
           </div>
         );
-      case 3:
+      case 4:
         return (
           <div>
             Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
