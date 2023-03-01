@@ -8,7 +8,7 @@ import FullOpenVector from "./FullOpenVector";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import SwapPanel from "views/swap/SwapPanel";
-import DropDown from "./TokenList/Dropdown";
+import NavButton from "./NavButton";
 import { SwapContext } from "contexts/SwapContext";
 
 const UserDashboard = () => {
@@ -45,7 +45,7 @@ const UserDashboard = () => {
             <LogoIcon classNames="w-14 text-dark dark:text-brand" />
             <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
           </div>
-          <DropDown values={["Portfolio", "Swap"]} value={viewType} setValue={setViewType} />
+          <NavButton value={viewType} setValue={setViewType} />
         </div>
 
         {viewType === 0 ? (
