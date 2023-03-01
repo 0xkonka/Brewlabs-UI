@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 import { CHAIN_ICONS } from "config/constants/networks";
-import { Category } from "config/constants/types";
+import { Category, PoolCategory } from "config/constants/types";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { numberWithCommas } from "utils/functions";
@@ -71,7 +71,7 @@ const PoolCard = ({
               <div className="leading-none">{data.stakingToken.symbol}</div>
             )}
             <div className="text-xs">
-              {poolNames[data.type]} - {data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}
+              {poolNames[data.type]} - {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} days lock`}
             </div>
           </div>
         </div>

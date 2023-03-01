@@ -12,7 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { PoolCategory } from "config/constants/types";
+import { Category, PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
@@ -51,6 +51,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
+  const [populatedAmount, setPopulatedAmount] = useState("0")
   const [curGraph, setCurGraph] = useState(0);
 
   const { address } = useAccount();
@@ -229,6 +230,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 type={curType}
                 data={data}
                 accountData={accountData}
+                defaultAmount={populatedAmount}
               />
             ) : (
               ""
@@ -350,7 +352,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <span className="text-primary">{earningToken.symbol}</span>
                         </div>
                         <div className="text-primary">
-                          {data.lockup === undefined ? "Flexible" : `${data.duration} days lock`}
+                          {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} days lock`}
                         </div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
@@ -642,7 +644,15 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       )}
                     </div>
                     <div className="mt-7">
-                      <StakingHistory history={history} type={data.poolCategory} />
+                      <StakingHistory
+                        history={history}
+                        type={data.poolCategory}
+                        setPopulatedAmount={setPopulatedAmount}
+                        onWithdraw={() => {
+                          setCurType("withdraw");
+                          setStakingModalOpen(true);
+                        }}
+                      />
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
                       {data.chainId !== chainId ? (

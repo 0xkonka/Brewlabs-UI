@@ -24,12 +24,14 @@ const StakingModal = ({
   type,
   data,
   accountData,
+  defaultAmount,
 }: {
   open: boolean;
   setOpen: any;
   type: string;
   data: any;
   accountData: any;
+  defaultAmount?: string;
 }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
   const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
@@ -44,15 +46,21 @@ const StakingModal = ({
     data.sousId,
     data.contractAddress,
     data.lockup,
-    data.version ? data.performanceFee : '0',
+    data.version ? data.performanceFee : "0",
     data.enableEmergencyWithdraw
   );
   const { onStake, onUnstake } = useUnlockupPool(
     data.sousId,
     data.contractAddress,
-    data.version ? data.performanceFee : '0',
+    data.version ? data.performanceFee : "0",
     data.enableEmergencyWithdraw
   );
+
+  useEffect(() => {
+    if (defaultAmount && +defaultAmount > 0) {
+      setAmount(defaultAmount);
+    }
+  }, [defaultAmount]);
 
   const getCalculatedStakingLimit = () => {
     let balance;
@@ -106,6 +114,7 @@ const StakingModal = ({
           await onUnstake(amount, data.stakingToken.decimals);
         }
       }
+      setAmount("0");
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(data.chainId));

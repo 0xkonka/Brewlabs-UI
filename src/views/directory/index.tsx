@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styled from "styled-components";
+import orderBy from "lodash/orderBy";
 
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -53,6 +53,45 @@ const Directory = ({ page }: { page: number }) => {
     ...zappers,
   ];
 
+  const sortPools = (poolsToSort) => {
+    switch (sortOrder) {
+      case "apr":
+        return orderBy(poolsToSort, (pool) => pool.apr ?? 0, "desc");
+      case "earned":
+        return orderBy(
+          poolsToSort,
+          (pool) => {
+            const earningTokenPrice = +prices[getCurrencyId(pool.earningToken.chainId, pool.earningToken.address)];
+            if (!pool.userData || !earningTokenPrice) {
+              return 0;
+            }
+            return pool.userData.pendingReward.times(earningTokenPrice).toNumber();
+          },
+          "desc"
+        );
+      case "tvl":
+        return orderBy(poolsToSort, (pool) => pool.tvl ?? 0, "desc");
+      case "totalStaked":
+        return orderBy(
+          poolsToSort,
+          (pool) => {
+            let totalStaked = Number.NaN;
+            if (pool.totalStaked?.isFinite()) {
+              totalStaked = +pool.totalStaked.toString();
+            }
+            return Number.isFinite(totalStaked) ? totalStaked : 0;
+          },
+          "desc"
+        );
+      case "chainId":
+        return orderBy(poolsToSort, (pool) => pool.chainId, "asc");
+      case "latest":
+        return orderBy(poolsToSort, (pool) => pool.sortOrder, "desc");
+      default:
+        return orderBy(poolsToSort, (pool) => pool.sortOrder, "asc");
+    }
+  };
+
   let chosenPools;
   if (curFilter >= 0 || criteria) {
     const lowercaseQuery = criteria.toLowerCase();
@@ -83,6 +122,7 @@ const Directory = ({ page }: { page: number }) => {
     default:
       chosenPools = chosenPools.filter((pool) => !pool.isFinished && +pool.startBlock > 0);
   }
+  chosenPools = sortPools(chosenPools);
 
   const renderDetailPage = () => {
     switch (curPool.type) {
