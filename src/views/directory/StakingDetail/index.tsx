@@ -626,7 +626,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       )}
                     </div>
                     <div className="mt-7">
-                      <StakingHistory history={history} type={data.poolCategory} />
+                      <StakingHistory
+                        history={history}
+                        type={data.poolCategory}
+                        onWithdraw={() => {
+                          setCurType("withdraw");
+                          setStakingModalOpen(true);
+                        }}
+                      />
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
                       {data.chainId !== chainId ? (

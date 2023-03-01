@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 let timerid = null;
-const CountDown = ({ time }: { time: number }) => {
+const CountDown = ({ time, onWithdraw }: { time: number; onWithdraw: any }) => {
   const [timeText, setTimeText] = useState("");
   const formatTime = () => {
     const _time = Math.floor((time - Date.now()) / 1000);
@@ -24,7 +24,14 @@ const CountDown = ({ time }: { time: number }) => {
       formatTime();
     }, 1000);
   }, [time]);
-  return <div className="leading-none">{timeText}</div>;
+  return (
+    <>
+      <div className="cursor-pointer leading-none" onClick={() => (timeText === "Unlocked" ? onWithdraw() : {})}>
+        {timeText}
+      </div>
+      <div className="leading-none">{timeText === "Unlocked" ? "" : "Remaining"}</div>
+    </>
+  );
 };
 
 export default CountDown;
