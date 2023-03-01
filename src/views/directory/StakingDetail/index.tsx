@@ -6,13 +6,13 @@ import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
+import { chevronLeftSVG, LinkSVG, lockSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { Category, PoolCategory } from "config/constants/types";
+import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
@@ -51,8 +51,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
-  const [populatedAmount, setPopulatedAmount] = useState("0")
-  const [curGraph, setCurGraph] = useState(0);
+  const [populatedAmount, setPopulatedAmount] = useState("0");
+  const [curGraph, setCurGraph] = useState(1);
 
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
@@ -131,10 +131,15 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
     let _graphData;
     switch (curGraph) {
       case 1:
-        return data.tokenFees;
+        _graphData = data.TVLData ?? [];
+        _graphData = _graphData.map((v) => +v);
+        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        return _graphData;
       case 2:
-        return data.performanceFees;
+        return data.tokenFees;
       case 3:
+        return data.performanceFees;
+      case 4:
         return data.stakedAddresses;
       default:
         _graphData = data.TVLData ?? [];
@@ -366,7 +371,12 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </>
                         )}
                         <br />
-                        Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}
+                        <div className="flex">
+                          Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}&nbsp;
+                          <div className="tooltip" data-tip="Performance fee is charged per transaction.">
+                            <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                          </div>
+                        </div>
                       </div>
                     </InfoPanel>
 
@@ -458,16 +468,33 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <TotalStakedChart
                       data={graphData()}
                       symbol={
-                        curGraph === 3 ? "" : curGraph !== 2 ? data.stakingToken.symbol : getNativeSybmol[chainId]
+                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSybmol[chainId]
                       }
-                      price={curGraph === 3 ? 1 : curGraph !== 2 ? tokenPrice : nativeTokenPrice}
+                      price={curGraph === 4 ? 1 : curGraph !== 3 ? tokenPrice : nativeTokenPrice}
                       curGraph={curGraph}
                     />
                     <InfoPanel
                       className="mt-20 flex cursor-pointer justify-between"
                       type={"secondary"}
                       boxShadow={curGraph === 0 ? "primary" : null}
-                      onClick={() => setCurGraph(0)}
+                      onClick={() => setCurGraph(1)}
+                    >
+                      <div>My Staked Tokens</div>
+                      <div className="flex">
+                        {!address ? (
+                          "$0.00"
+                        ) : accountData.stakedBalance ? (
+                          `$${formatAmount(getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0))}`
+                        ) : (
+                          <SkeletonComponent />
+                        )}
+                      </div>
+                    </InfoPanel>
+                    <InfoPanel
+                      className="mt-2.5 flex cursor-pointer justify-between"
+                      type={"secondary"}
+                      boxShadow={curGraph === 1 ? "primary" : null}
+                      onClick={() => setCurGraph(1)}
                     >
                       <div>Total Staked Value</div>
                       <div className="flex">
@@ -477,8 +504,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <InfoPanel
                       className="mt-2.5 flex cursor-pointer justify-between"
                       type={"secondary"}
-                      boxShadow={curGraph === 1 ? "primary" : null}
-                      onClick={() => setCurGraph(1)}
+                      boxShadow={curGraph === 2 ? "primary" : null}
+                      onClick={() => setCurGraph(2)}
                     >
                       <div>
                         Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
@@ -496,8 +523,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <InfoPanel
                       className="mt-2.5 flex cursor-pointer justify-between"
                       type={"secondary"}
-                      boxShadow={curGraph === 2 ? "primary" : null}
-                      onClick={() => setCurGraph(2)}
+                      boxShadow={curGraph === 3 ? "primary" : null}
+                      onClick={() => setCurGraph(3)}
                     >
                       <div>
                         Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
@@ -515,8 +542,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <InfoPanel
                       className="mt-2.5 flex cursor-pointer justify-between"
                       type={"secondary"}
-                      boxShadow={curGraph === 3 ? "primary" : null}
-                      onClick={() => setCurGraph(3)}
+                      boxShadow={curGraph === 4 ? "primary" : null}
+                      onClick={() => setCurGraph(4)}
                     >
                       <div>
                         Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>

@@ -27,7 +27,7 @@ const ConfirmationModal = ({ open, setOpen, type, tx }: ModalProps): ReactElemen
           onClose={() => setOpen(false)}
           className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
         >
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex min-h-full items-start justify-end p-4 text-center">
             <motion.div
               initial={{
                 opacity: 0,

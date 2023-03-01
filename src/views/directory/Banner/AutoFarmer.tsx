@@ -1,10 +1,6 @@
-import LogoIcon from "components/LogoIcon";
 import styled from "styled-components";
 import StyledButton from "../StyledButton";
-import { upSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
-import { useContext } from "react";
-import { PoolContext } from "contexts/directory/PoolContext";
-import { SkeletonComponent } from "components/SkeletonComponent";
+import { warningFarmerSVG } from "components/dashboard/assets/svgs";
 
 const AutoFarmer = ({}: {}) => {
   const createPoolPanel = (type: string) => {
@@ -14,7 +10,7 @@ const AutoFarmer = ({}: {}) => {
       >
         <div className="flex flex-wrap items-center justify-between text-xl ">
           <div className="flex items-center text-primary">
-            {warningFarmerSVG}
+            {warningFarmerSVG("15px")}
             <div className="ml-1 whitespace-nowrap">BREWLABS Auto Farmer</div>
           </div>
           <div className="text-[#FFFFFFBF]">

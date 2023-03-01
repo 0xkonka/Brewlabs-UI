@@ -4,7 +4,6 @@ import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEff
 import { erc20ABI, useAccount, useProvider, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import {
-  getClaimableTokenContract,
   getContract,
   getDividendTrackerContract,
   getMulticallContract,
@@ -49,7 +48,6 @@ let temp_addr, temp_id;
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
-  const [allowance, setAllowances] = useState([]);
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const { address } = useAccount();
