@@ -54,8 +54,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [populatedAmount, setPopulatedAmount] = useState("0")
   const [curGraph, setCurGraph] = useState(0);
 
-  const address = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
-  // const { address } = useAccount();
+  const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);

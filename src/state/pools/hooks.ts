@@ -44,8 +44,8 @@ export const useFetchPoolsWithUserData = () => {
 
   useSlowRefreshEffect(() => {
     if (account) {
-      dispatch(fetchPoolsUserDataAsync("0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F", chainId));
-      dispatch(fetchPoolsUserDepositDataAsync("0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F"));
+      dispatch(fetchPoolsUserDataAsync(account, chainId));
+      dispatch(fetchPoolsUserDepositDataAsync(account));
     } else {
       dispatch(resetPoolsUserData());
     }
