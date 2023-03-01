@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
@@ -7,7 +7,6 @@ import StyledButton from "../../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
 import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { PoolContext } from "contexts/directory/PoolContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
 import { useSigner } from "wagmi";
@@ -30,7 +29,6 @@ const StakingModal = ({
   const { pending, setPending }: any = useContext(DashboardContext);
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
-  const { data: pools, accountData: accountPools }: any = useContext(PoolContext);
 
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);

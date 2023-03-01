@@ -11,7 +11,7 @@ const ApproveStatusBar = ({ step, url }: { step: number; url: any }) => (
     </StyledLogo>
     <StyledBorder active={step > 0} />
     <StyledLogo active={step > 1}>
-      <img src="/images/brewlabsRouter.png" alt={""} className="w-[30px]" />
+      <img src="/images/brewlabsRouter.svg" alt={""} className="w-[30px]" />
     </StyledLogo>
     <StyledBorder active={step > 1} />
     <div className={step > 1 ? "text-green" : "text-[#FFFFFF80]"}>{checkCircleSVG}</div>

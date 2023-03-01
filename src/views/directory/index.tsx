@@ -38,7 +38,6 @@ const Directory = ({ page }: { page: number }) => {
   const prices = useTokenPrices();
   const currentBlocks = useChainCurrentBlocks();
 
-  // const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
   const { data: farms, accountData: accountFarms }: any = useContext(FarmContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
