@@ -71,12 +71,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
     onCompound: onCompoundLockup,
     onDividend: onDividendLockup,
     onCompoundDividend: onCompoundDividendLockup,
-  } = useLockupPool(data.sousId, data.contractAddress, data.lockup, data.performanceFee, data.enableEmergencyWithdraw);
+  } = useLockupPool(data.sousId, data.contractAddress, data.lockup, data.performanceFee);
   const { onReward, onCompound, onDividend, onCompoundDividend } = useUnlockupPool(
     data.sousId,
     data.contractAddress,
-    data.performanceFee,
-    data.enableEmergencyWithdraw
+    data.performanceFee
   );
 
   let hasReflections = false;
@@ -236,13 +235,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 setOpen={setStakingModalOpen}
                 type={curType}
                 data={data}
-                accountData={accountData}
                 defaultAmount={populatedAmount}
               />
             ) : (
               ""
             )}
-            <EmergencyModal open={emergencyOpen} setOpen={setEmergencyOpen} />
+            {data.enableEmergencyWithdraw && (
+              <EmergencyModal open={emergencyOpen} setOpen={setEmergencyOpen} data={data} />
+            )}
             <PageHeader
               title={
                 <div className="text-[40px]">
@@ -297,11 +297,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     )}
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
-                      <div className="h-[32px] w-[180px]">
-                        <StyledButton type={"danger"} onClick={() => setEmergencyOpen(true)}>
-                          Emergency Withdraw
-                        </StyledButton>
-                      </div>
+                      {data.enableEmergencyWithdraw && (
+                        <div className="h-[32px] w-[180px]">
+                          <StyledButton type={"danger"} onClick={() => setEmergencyOpen(true)} disabled={pending || !address}>
+                            Emergency Withdraw
+                          </StyledButton>
+                        </div>
+                      )}
                       <a
                         className="ml-0 h-[32px] w-[140px] sm:ml-5"
                         href={data.earningToken.projectLink}
