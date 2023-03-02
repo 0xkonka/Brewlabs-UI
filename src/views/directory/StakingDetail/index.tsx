@@ -43,6 +43,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
+import EmergencyModal from "./Modals/EmergencyModal";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -50,6 +51,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
+  const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
   const [populatedAmount, setPopulatedAmount] = useState("0");
   const [curGraph, setCurGraph] = useState(1);
@@ -240,6 +242,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
             ) : (
               ""
             )}
+            <EmergencyModal open={emergencyOpen} setOpen={setEmergencyOpen} />
             <PageHeader
               title={
                 <div className="text-[40px]">
@@ -294,8 +297,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     )}
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
+                      <div className="h-[32px] w-[180px]">
+                        <StyledButton type={"danger"} onClick={() => setEmergencyOpen(true)}>
+                          Emergency Withdraw
+                        </StyledButton>
+                      </div>
                       <a
-                        className="h-[32px] w-[140px]"
+                        className="ml-0 h-[32px] w-[140px] sm:ml-5"
                         href={data.earningToken.projectLink}
                         target="_blank"
                         rel="noreferrer"
@@ -484,7 +492,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         {!address ? (
                           "$0.00"
                         ) : accountData.stakedBalance ? (
-                          `$${formatAmount(getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0))}`
+                          `$${formatAmount(
+                            getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
+                          )}`
                         ) : (
                           <SkeletonComponent />
                         )}

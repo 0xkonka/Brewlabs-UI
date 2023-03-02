@@ -69,6 +69,15 @@ const StyledButton = ({
     >
       {children}
     </button>
+  ) : type === "danger" ? (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`relative flex h-full w-full items-center justify-center rounded bg-danger text-sm font-semibold text-black transition hover:text-white disabled:cursor-[not-allowed] disabled:opacity-70`}
+    >
+      {children}
+    </button>
   ) : (
     <button
       type="button"
