@@ -1,6 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
+import { SerializedPoolConfig } from "state/pools/types";
 import { serializeTokens } from "./tokens";
-import { SerializedPoolConfig, PoolCategory, Version } from "./types";
+import { PoolCategory, Version } from "./types";
 
 const pools: SerializedPoolConfig[] = [
   {

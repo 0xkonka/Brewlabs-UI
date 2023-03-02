@@ -460,16 +460,22 @@ export const ValuePanel = styled.div`
 `;
 
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
-  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 30 + 27}px`)};
+  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 618px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
   @media screen and (max-width: 650px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 28 + 27}px`)};
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 618px)" : `${count * 28 + 27}px`)};
   }
   @media screen and (max-height: 725px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 530px)" : `${count * 30 + 27}px`)};
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 518px)" : `${count * 30 + 27}px`)};
     @media screen and (max-width: 650px) {
-      height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 530px)" : `${count * 28 + 27}px`)};
+      height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 518px)" : `${count * 28 + 27}px`)};
     }
+  }
+  @media screen and (max-height: 890px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 554px)" : `${count * 28 + 27}px`)};
+  }
+  @media screen and (max-height: 820px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 265px)" : `${count * 28 + 27}px`)};
   }
 `;
 

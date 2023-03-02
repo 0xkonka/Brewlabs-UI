@@ -8,12 +8,14 @@ import FullOpenVector from "./FullOpenVector";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import SwapPanel from "views/swap/SwapPanel";
-import DropDown from "./TokenList/Dropdown";
+import NavButton from "./NavButton";
 import { SwapContext } from "contexts/SwapContext";
+import PriceList from "./PriceList";
+import styled from "styled-components";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
-  const [fullOpen, setFullOpen] = useState(true);
+  const [fullOpen, setFullOpen] = useState(false);
   const { tokens }: any = useContext(DashboardContext);
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(0);
@@ -24,7 +26,9 @@ const UserDashboard = () => {
   const { viewType, setViewType }: any = useContext(SwapContext);
 
   useEffect(() => {
-    setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
+    if (window.innerHeight < 820) setItemsPerPage(Math.min(Math.floor((window.innerHeight - 297) / 50), 7));
+    else if (window.innerHeight < 890) setItemsPerPage(Math.min(Math.floor((window.innerHeight - 586) / 50), 7));
+    else setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
   }, [fullOpen]);
 
   useEffect(() => {
@@ -36,31 +40,30 @@ const UserDashboard = () => {
     }
     setMaxPage(Math.ceil(filteredTokens.length / itemsPerPage));
   }, [listType, tokens, archives, itemsPerPage]);
-
   return (
     <>
-      <div className="relative mr-1.5 flex w-full  flex-col  pt-16 pb-3">
+      <StyledContainer className="relative mr-1.5 flex w-full  flex-col  pb-3">
         <div className="flex w-full justify-between border-b border-yellow pb-4">
           <div className="flex items-center ">
             <LogoIcon classNames="w-14 text-dark dark:text-brand" />
             <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
           </div>
-          <DropDown values={["Portfolio", "Swap"]} value={viewType} setValue={setViewType} />
+          <NavButton value={viewType} setValue={setViewType} />
         </div>
 
         {viewType === 0 ? (
-          <>
+          <ChartPanel>
             <div className={"mt-7"}>
               <PerformanceChart tokens={tokens} showType={showType} />
             </div>
             <div className={"relative z-10 flex w-full justify-center"}>
               <SwitchButton value={showType} setValue={setShowType} />
             </div>{" "}
-          </>
+          </ChartPanel>
         ) : (
           ""
         )}
-      </div>
+      </StyledContainer>
       {viewType === 1 ? (
         <div className="mt-4 flex justify-center">
           <SwapPanel type={"draw"} disableChainSelect />
@@ -79,7 +82,7 @@ const UserDashboard = () => {
             listType={listType}
             setListType={setListType}
           />
-          <div className={"mb-3 w-full"}>
+          <div className={"w-full"}>
             <FullOpenVector
               open={fullOpen}
               setOpen={setFullOpen}
@@ -90,8 +93,34 @@ const UserDashboard = () => {
           </div>
         </>
       )}
+      <PricePanel className={`absolute bottom-8 w-full px-4 ${fullOpen ? "hidden" : ""}`} viewType={viewType}>
+        <PriceList />
+      </PricePanel>
     </>
   );
 };
 
 export default UserDashboard;
+
+const StyledContainer = styled.div`
+  padding-top: 64px;
+
+  @media screen and (max-height: 890px) {
+    padding-top: 0px;
+  }
+`;
+
+const ChartPanel = styled.div`
+  @media screen and (max-height: 820px) {
+    display: none;
+  }
+`;
+
+const PricePanel = styled.div<{ viewType: number }>`
+  @media screen and (max-height: 530px) {
+    display: none;
+  }
+  @media screen and (max-height: 850px) {
+    display: ${({ viewType }) => (viewType === 1 ? "none" : "")};
+  }
+`;

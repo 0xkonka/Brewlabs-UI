@@ -43,6 +43,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
+import EmergencyModal from "./Modals/EmergencyModal";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -50,6 +51,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
+  const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
   const [populatedAmount, setPopulatedAmount] = useState("0");
   const [curGraph, setCurGraph] = useState(1);
@@ -69,12 +71,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
     onCompound: onCompoundLockup,
     onDividend: onDividendLockup,
     onCompoundDividend: onCompoundDividendLockup,
-  } = useLockupPool(data.sousId, data.contractAddress, data.lockup, data.performanceFee, data.enableEmergencyWithdraw);
+  } = useLockupPool(data.sousId, data.contractAddress, data.lockup, data.performanceFee);
   const { onReward, onCompound, onDividend, onCompoundDividend } = useUnlockupPool(
     data.sousId,
     data.contractAddress,
-    data.performanceFee,
-    data.enableEmergencyWithdraw
+    data.performanceFee
   );
 
   let hasReflections = false;
@@ -234,11 +235,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 setOpen={setStakingModalOpen}
                 type={curType}
                 data={data}
-                accountData={accountData}
                 defaultAmount={populatedAmount}
               />
             ) : (
               ""
+            )}
+            {data.enableEmergencyWithdraw && (
+              <EmergencyModal open={emergencyOpen} setOpen={setEmergencyOpen} data={data} />
             )}
             <PageHeader
               title={
@@ -294,8 +297,19 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     )}
                     <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
+                      {data.enableEmergencyWithdraw && (
+                        <div className="h-[32px] w-[180px]">
+                          <StyledButton
+                            type={"danger"}
+                            onClick={() => setEmergencyOpen(true)}
+                            disabled={pending || !address}
+                          >
+                            Emergency Withdraw
+                          </StyledButton>
+                        </div>
+                      )}
                       <a
-                        className="h-[32px] w-[140px]"
+                        className="ml-0 h-[32px] w-[140px] sm:ml-5"
                         href={data.earningToken.projectLink}
                         target="_blank"
                         rel="noreferrer"
@@ -401,7 +415,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
                         <div className=" flex text-primary">
-                          {!address || data.enableEmergencyWithdraw ? (
+                          {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                             "0.00"
                           ) : accountData.pendingReward ? (
                             formatAmount(earningTokenBalance.toFixed(4))
@@ -414,7 +428,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         {data.reflection &&
                           data.reflectionTokens.map((t, index) => (
                             <div key={index} className="flex text-primary">
-                              {!address || data.enableEmergencyWithdraw ? (
+                              {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                 "0.00"
                               ) : accountData.pendingReflections[index] ? (
                                 formatAmount(reflectionTokenBalances[index].toFixed(4))
@@ -484,7 +498,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         {!address ? (
                           "$0.00"
                         ) : accountData.stakedBalance ? (
-                          `$${formatAmount(getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0))}`
+                          `$${formatAmount(
+                            getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
+                          )}`
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -570,8 +586,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           >
                             <div className="flex">
                               Compound&nbsp;
-                              {!address ? (
-                                0
+                              {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                "0.00"
                               ) : accountData.pendingReward !== undefined ? (
                                 formatAmount(earningTokenBalance.toFixed(4))
                               ) : (
@@ -591,8 +607,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             >
                               <div className="flex">
                                 Harvest&nbsp;
-                                {!address ? (
-                                  0
+                                {!address  || (data.enableEmergencyWithdraw && data.disableHarvest)? (
+                                  "0.00"
                                 ) : accountData.pendingReward !== undefined ? (
                                   formatAmount(earningTokenBalance.toFixed(4))
                                 ) : (
@@ -620,7 +636,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                   <span className="text-primary">&nbsp;Multiple</span>
                                 ) : (
                                   <>
-                                    {!address ? (
+                                    {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                       "0.00"
                                     ) : accountData.pendingReflections[0] !== undefined ? (
                                       formatAmount(reflectionTokenBalances[0].toFixed(4))
@@ -641,7 +657,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               onClick={onHarvestReflection}
                             >
                               Harvest&nbsp;
-                              {!address ? (
+                              {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                 "0.00"
                               ) : accountData.pendingReflections[0] !== undefined ? (
                                 formatAmount(reflectionTokenBalances[0].toFixed(4))

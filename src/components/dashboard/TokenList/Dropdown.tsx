@@ -19,7 +19,7 @@ const DropDown = ({
     <div className={`dropdown ${width}`} onClick={() => setOpen(!open)}>
       <label
         tabIndex={0}
-        className="btn-sm btn m-1 flex w-full justify-between bg-amber-400 active:bg-brand dark:text-zinc-800 dark:hover:bg-dark dark:hover:text-brand"
+        className="btn-sm btn flex w-full justify-between bg-amber-400 active:bg-brand dark:text-zinc-800 dark:hover:bg-dark dark:hover:text-brand"
       >
         {values[value]}
         {!open ? <ChevronDownIcon className="h-3" /> : <ChevronUpIcon className="h-3" />}

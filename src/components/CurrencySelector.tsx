@@ -26,6 +26,7 @@ import { isAddress } from "utils";
 import UserDashboard from "components/dashboard/UserDashboard";
 import DropDown from "./dashboard/TokenList/Dropdown";
 import { SwapContext } from "contexts/SwapContext";
+import NavButton from "./dashboard/NavButton";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -239,10 +240,8 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
   const [viewSelect, setViewSelect] = useState(0);
 
   const onSelect = (i: number) => {
-    if (i > 0) {
-      setViewType(i - 1);
-      setSidebarContent(<UserDashboard />);
-    }
+    setViewType(i);
+    setSidebarContent(<UserDashboard />);
     setViewSelect(i);
   };
 
@@ -252,16 +251,7 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
         <div className="font-brand">
           <h2 className="text-3xl">Select token {inputType}</h2>
         </div>
-        {userSidebarOpen === 1 ? (
-          <DropDown
-            values={["Token Select", "Portfolio", "Swap"]}
-            width={"w-36"}
-            value={viewSelect}
-            setValue={onSelect}
-          />
-        ) : (
-          ""
-        )}
+        {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
       </div>
 
       <nav className="mb-4 flex space-x-4" aria-label="Tabs">
