@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Fragment, useEffect } from "react";
 import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
@@ -6,21 +7,20 @@ import ConnectWallet from "./ConnectWallet";
 import UserDashboard from "components/dashboard/UserDashboard";
 import { useGlobalState } from "../../state";
 import { useAccount, useConnect } from "wagmi";
-import { connect } from "http2";
 
 let tempConnected;
+
 const UserSidebar = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
   const { isConnected } = useAccount();
   const { connectors, connect } = useConnect();
   tempConnected = isConnected;
+
   useEffect(() => {
     if (!window.ethereum) return;
     if (!tempConnected) connect({ connector: connectors[1] });
     window.ethereum.on("chainChanged", async (chainId) => {
-      //logic for chain change
-      console.log("Changed", tempConnected);
       if (!tempConnected) connect({ connector: connectors[1] });
     });
   }, [window.ethereum]);
@@ -68,7 +68,7 @@ const UserSidebar = () => {
                   <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                 </button>
               </div>
-              <div className="flex h-full w-full flex-1 flex-col items-center px-6 py-6">
+              <div className="relative flex h-full w-full flex-1 flex-col items-center px-6 py-6">
                 {sidebarContent ?? <UserDashboard />}
               </div>
               <ConnectWallet allowDisconnect />

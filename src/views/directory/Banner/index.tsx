@@ -33,6 +33,7 @@ const Banner = ({
 }) => {
   const carouselRef: any = useRef();
   const [curSlide, setCurSlide] = useState(0);
+
   return (
     <div className="mb-5">
       <Carousel
