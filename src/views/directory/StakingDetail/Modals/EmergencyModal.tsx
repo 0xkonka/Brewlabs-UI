@@ -178,12 +178,14 @@ const EmergencyModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                     <StyledButton
                       type={"secondary"}
                       onClick={onHarvestReflection}
-                      disabled={pending || !hasReflections}
+                      disabled={pending || !hasReflections || (data.enableEmergencyWithdraw && data.disableHarvest)}
                     >
                       <div className="flex text-[#FFFFFFBF]">
                         Step 1 : Harvest{" "}
                         {reflectionTokens.length === 1 &&
-                          (accountData.pendingReflections[0] ? (
+                          (data.enableEmergencyWithdraw && data.disableHarvest ? (
+                            "0.00"
+                          ) : accountData.pendingReflections[0] ? (
                             formatAmount(reflectionTokenBalances[0].toFixed(4))
                           ) : (
                             <SkeletonComponent />
@@ -200,11 +202,15 @@ const EmergencyModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                   <StyledButton
                     type={"secondary"}
                     onClick={onHarvestReward}
-                    disabled={pending || earningTokenBalance === 0}
+                    disabled={
+                      pending || earningTokenBalance === 0 || (data.enableEmergencyWithdraw && data.disableHarvest)
+                    }
                   >
                     <div className="text-[#FFFFFFBF]">
                       Step {data.reflection ? 2 : 1} : Harvest{" "}
-                      {accountData.pendingReward !== undefined ? (
+                      {data.enableEmergencyWithdraw && data.disableHarvest ? (
+                        "0.00"
+                      ) : accountData.pendingReward !== undefined ? (
                         formatAmount(earningTokenBalance.toFixed(2))
                       ) : (
                         <SkeletonComponent />
