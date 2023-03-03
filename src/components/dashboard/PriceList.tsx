@@ -165,7 +165,7 @@ const PriceList = () => {
             percent = ((price - data.history[0]) / data.history[0]) * 100;
           }
           return (
-            <div className="relative w-[210px] rounded-[20px] border border-[#FFFFFF80] px-[18px] py-3" key={i}>
+            <div className="relative w-[210px] rounded-[20px] border-[2px] border-[#FFFFFF80] px-[18px] py-3" key={i}>
               <div className="flex items-center">
                 <img src={data.logo} alt={""} className="mr-3 w-7 rounded-full" />
                 <div className="font-semibold">
