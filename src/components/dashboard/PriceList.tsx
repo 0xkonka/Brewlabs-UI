@@ -7,6 +7,7 @@ import { chevronLeftSVG, DoubleUpSVG } from "./assets/svgs";
 import { BigNumberFormat } from "utils/functions";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 const responsive = {
   desktop: {
@@ -167,7 +168,7 @@ const PriceList = () => {
           return (
             <div className="relative w-[210px] rounded-[20px] border-[2px] border-[#FFFFFF80] px-[18px] py-3" key={i}>
               <div className="flex items-center">
-                <img src={data.logo} alt={""} className="mr-3 w-7 rounded-full" />
+                <img src={getTokenLogoURL(data.address, data.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
                 <div className="font-semibold">
                   <div className="text-sm text-white">{data.symbol}</div>
                   <div className={`${percent >= 0 ? "text-[#2FD35D]" : "text-[#ea3943]"} text-xs`}>
