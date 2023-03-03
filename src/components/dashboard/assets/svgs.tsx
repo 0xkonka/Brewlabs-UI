@@ -210,7 +210,6 @@ export const NavSVG = (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <circle cx="20" cy="20" r="19.5" stroke="currentColor" />
   </svg>
 );
 

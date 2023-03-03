@@ -120,7 +120,5 @@ const PricePanel = styled.div<{ viewType: number }>`
   @media screen and (max-height: 530px) {
     display: none;
   }
-  @media screen and (max-height: 850px) {
-    display: ${({ viewType }) => (viewType === 1 ? "none" : "")};
-  }
+  display: ${({ viewType }) => (viewType === 1 ? "none" : "")};
 `;
