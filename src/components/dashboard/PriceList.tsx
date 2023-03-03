@@ -152,7 +152,7 @@ const PriceList = () => {
         infinite={true}
         draggable={false}
         autoPlay={true}
-        autoPlaySpeed={5000}
+        autoPlaySpeed={3000}
         arrows={true}
         customRightArrow={<CustomRightArrow onClick={undefined} />}
         customLeftArrow={<CustomLeftArrow onClick={undefined} />}
@@ -192,6 +192,7 @@ export default PriceList;
 
 const StyledContainer = styled.div`
   width: calc(100% - 30px);
+  height : 160px;
   margin: 0 auto;
   .react-multi-carousel-list {
     position: unset !important;

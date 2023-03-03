@@ -25,10 +25,16 @@ const NavButton = ({ setValue, value }: { setValue?: any; value: number }) => {
   }, []);
 
   return (
-    <div className="relative cursor-pointer z-10" onClick={() => setOpen(!open)} ref={nav}>
-      <div className={`${open ? "text-white" : "text-brand"} transition hover:text-white`}>{NavSVG}</div>
+    <div className="relative z-10 cursor-pointer" onClick={() => setOpen(!open)} ref={nav}>
       <div
-        className={`absolute -right-[7px] top-[56px]  overflow-hidden rounded-lg  bg-brand transition-all ${
+        className={`${
+          open ? "flex items-center justify-center border-brand text-brand" : "hover:text-white"
+        }  rounded-full border border-transparent text-brand transition`}
+      >
+        {NavSVG}
+      </div>
+      <div
+        className={`absolute -right-[7px] top-[57px]  overflow-hidden rounded-lg  bg-brand transition-all ${
           open ? "h-20 w-[144px]" : "h-0 w-0"
         }`}
       >
