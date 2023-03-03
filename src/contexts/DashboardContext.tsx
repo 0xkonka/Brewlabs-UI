@@ -105,7 +105,7 @@ const DashboardContextProvider = ({ children }: any) => {
   async function fetchPrice(address: any, chainID: number, resolution: number) {
     const to = Math.floor(Date.now() / 1000);
     const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
-      address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? WNATIVE[chainID].address : address
+      address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" || !address ? WNATIVE[chainID].address : address
     }-${chainID === 56 ? "bsc" : "eth"}_USD&resolution=${resolution}&from=${to - 3600 * 24}&to=${to}`;
     let result: any = await axios.get(url);
     return result;
@@ -116,7 +116,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
     data = await Promise.all(
       prices.map(async (data: any) => {
-        const tokenInfo = await fetchPrice(data.address, data.chainID, 60);
+        const tokenInfo = await fetchPrice(data.address, data.chainId, 60);
 
         const serializedToken = { ...data, history: tokenInfo.data.c };
         return serializedToken;
@@ -130,7 +130,6 @@ const DashboardContextProvider = ({ children }: any) => {
   const fetchTokenInfo = async (token: any) => {
     try {
       let result: any = await fetchPrice(token.address, chainId, 10);
-      console.log("Result", result, token.address, chainId);
 
       let reward = {
           pendingRewards: 0,

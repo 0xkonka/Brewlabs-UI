@@ -474,6 +474,14 @@ const tokens = {
     'Dark Tavern Token',
     'https://darktavern.online/',
   ),
+  bvst: new Token(
+    BSC_MAINNET,
+    '0x592032513b329a0956b3f14d661119880F2361a6',
+    18,
+    'BVST',
+    'BlocVest Token',
+    'https://blocvest.io/',
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
