@@ -44,7 +44,7 @@ const Directory = ({ page }: { page: number }) => {
 
   const allPools = [
     ...pools.map((pool) => {
-      let price = prices[getCurrencyId(pool.chainId, pool.earningToken.address)];
+      let price = prices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
       if (price > 500000) price = 0;
       return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
     }),
