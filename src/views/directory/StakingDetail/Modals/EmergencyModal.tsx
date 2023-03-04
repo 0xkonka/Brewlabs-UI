@@ -3,15 +3,113 @@ import { useContext } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { SkeletonComponent } from "components/SkeletonComponent";
+
+import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
+import useTokenPrice from "hooks/useTokenPrice";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { BIG_ZERO } from "utils/bigNumber";
+import { formatAmount } from "utils/formatApy";
+import { getBalanceNumber } from "utils/formatBalance";
+import { numberWithCommas } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
+import useLockupPool from "../hooks/useLockupPool";
+import useUnlockupPool from "../hooks/useUnlockupPool";
 
-const EmergencyModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
+const EmergencyModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
+  const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
+
+  const isLockup = data.poolCategory === PoolCategory.LOCKUP;
+  const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
+
+  const { onReward: onRewardLockup, onDividend: onDividendLockup } = useLockupPool(
+    data.sousId,
+    data.contractAddress,
+    data.lockup,
+    data.performanceFee
+  );
+  const { onReward, onDividend } = useUnlockupPool(data.sousId, data.contractAddress, data.performanceFee);
+
+  const { onUnStake: onUnStakeLockup } = useLockupPool(
+    data.sousId,
+    data.contractAddress,
+    data.lockup,
+    data.version ? data.performanceFee : "0",
+    data.enableEmergencyWithdraw
+  );
+  const { onUnstake } = useUnlockupPool(
+    data.sousId,
+    data.contractAddress,
+    data.version ? data.performanceFee : "0",
+    data.enableEmergencyWithdraw
+  );
+
+  let hasReflections = false;
+  const reflectionTokenBalances = [];
+  for (let i = 0; i < reflectionTokens.length; i++) {
+    reflectionTokenBalances.push(
+      getBalanceNumber(accountData.pendingReflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals)
+    );
+    if (accountData.pendingReflections[i]?.gt(0)) hasReflections = true;
+  }
+  const earningTokenBalance = getBalanceNumber(accountData.pendingReward ?? BIG_ZERO, earningToken.decimals);
+  const stakedBalance = getBalanceNumber(accountData.stakedBalance ?? BIG_ZERO, stakingToken.decimals);
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleConfirm = async () => {
+    setPending(true);
+    try {
+      if (isLockup) {
+        await onUnStakeLockup(stakedBalance, stakingToken.decimals);
+      } else {
+        await onUnstake(stakedBalance.toString(), stakingToken.decimals);
+      }
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const onHarvestReward = async () => {
+    setPending(true);
+    try {
+      if (isLockup) {
+        await onRewardLockup();
+      } else {
+        await onReward();
+      }
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const onHarvestReflection = async () => {
+    setPending(true);
+    try {
+      if (isLockup) {
+        await onDividendLockup();
+      } else {
+        await onDividend();
+      }
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -57,35 +155,75 @@ const EmergencyModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               </div>
               <div className="-mt-5 border-b border-b-[#FFFFFF80] pb-2 text-xl text-[#FFFFFFBF]">Withdraw Amount</div>
               <div className="mt-[30px]">
-                <StyledInput placeholder={`Enter amount BREWLABS...`} />
+                <StyledInput
+                  placeholder={`Enter amount ${stakingToken.symbol}...`}
+                  value={stakedBalance ?? "0"}
+                  readOnly
+                />
               </div>
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
                   Staked&nbsp;
-                  <span className="text-primary">BREWLABS</span> 4,531,245.00
+                  <span className="text-primary">{stakingToken.symbol}</span>{" "}
+                  {numberWithCommas(stakedBalance.toFixed(2))}
                 </div>
-                <div className="text-[#FFFFFF80]">$4,531.00 USD</div>
+                <div className="text-[#FFFFFF80]">
+                  ${numberWithCommas(tokenPrice ? (tokenPrice * stakedBalance).toFixed(2) : "0.00")}
+                </div>
               </div>
               <div className="my-[18px] h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[400px]">
+                {data.reflection && (
+                  <div className="h-12">
+                    <StyledButton
+                      type={"secondary"}
+                      onClick={onHarvestReflection}
+                      disabled={pending || !hasReflections || (data.enableEmergencyWithdraw && data.disableHarvest)}
+                    >
+                      <div className="flex text-[#FFFFFFBF]">
+                        Step 1 : Harvest{" "}
+                        {reflectionTokens.length === 1 &&
+                          (data.enableEmergencyWithdraw && data.disableHarvest ? (
+                            "0.00"
+                          ) : accountData.pendingReflections[0] ? (
+                            formatAmount(reflectionTokenBalances[0].toFixed(4))
+                          ) : (
+                            <SkeletonComponent />
+                          ))}
+                        <span className="ml-1 text-brand">
+                          {reflectionTokens.length === 1 ? reflectionTokens[0].symbol : "Reflections"}
+                        </span>
+                      </div>
+                    </StyledButton>
+                  </div>
+                )}
+                <div className="mt-3" />
                 <div className="h-12">
-                  <StyledButton type={"secondary"}>
+                  <StyledButton
+                    type={"secondary"}
+                    onClick={onHarvestReward}
+                    disabled={
+                      pending || earningTokenBalance === 0 || (data.enableEmergencyWithdraw && data.disableHarvest)
+                    }
+                  >
                     <div className="text-[#FFFFFFBF]">
-                      Step 1 : Harvest 4525 <span className="text-brand">BUSD</span>
+                      Step {data.reflection ? 2 : 1} : Harvest{" "}
+                      {data.enableEmergencyWithdraw && data.disableHarvest ? (
+                        "0.00"
+                      ) : accountData.pendingReward !== undefined ? (
+                        formatAmount(earningTokenBalance.toFixed(2))
+                      ) : (
+                        <SkeletonComponent />
+                      )}
+                      <span className="ml-1 text-brand">{stakingToken.symbol}</span>
                     </div>
                   </StyledButton>
                 </div>
                 <div className="mt-3" />
                 <div className="h-12">
-                  <StyledButton type={"secondary"}>
-                    <div className="text-[#FFFFFFBF]">
-                      Step 2 : Harvest 4525 <span className="text-brand">BREWS</span>
-                    </div>
+                  <StyledButton type={"danger"} onClick={handleConfirm} disabled={pending || stakedBalance === 0}>
+                    Step {data.reflection ? 3 : 2} : Emergency withdraw {stakingToken.symbol}
                   </StyledButton>
-                </div>
-                <div className="mt-3" />
-                <div className="h-12">
-                  <StyledButton type={"danger"}>Step 3 : Emergency withdraw BREWLABS</StyledButton>
                 </div>
               </div>
               <button

@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
-import { erc20ABI, useAccount, useProvider, useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
-import ERC20ABI from "../config/abi/erc20.json";
-import claimableTokenAbi from "../config/abi/claimableToken.json";
+import { ethers } from "ethers";
+import { WNATIVE } from "@brewlabs/sdk";
+import { erc20ABI, useAccount, useSigner } from "wagmi";
+
+import ERC20ABI from "config/abi/erc20.json";
+import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import prices from "config/constants/prices";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 
-import { ethers } from "ethers";
 
 const DashboardContext: any = React.createContext({
   tokens: [],
@@ -36,11 +38,6 @@ const apiKeyList = [
 const tokenList_URI: any = {
   56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
   1: "https://tokens.coingecko.com/ethereum/all.json",
-};
-
-const WETH = {
-  56: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-  1: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 };
 
 let temp_addr: any, temp_id: any;
@@ -108,7 +105,7 @@ const DashboardContextProvider = ({ children }: any) => {
   async function fetchPrice(address: any, chainID: number, resolution: number) {
     const to = Math.floor(Date.now() / 1000);
     const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
-      address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? WETH[chainID] : address
+      address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" || !address ? WNATIVE[chainID].address : address
     }-${chainID === 56 ? "bsc" : "eth"}_USD&resolution=${resolution}&from=${to - 3600 * 24}&to=${to}`;
     let result: any = await axios.get(url);
     return result;
@@ -119,7 +116,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
     data = await Promise.all(
       prices.map(async (data: any) => {
-        const tokenInfo = await fetchPrice(data.address, data.chainID, 60);
+        const tokenInfo = await fetchPrice(data.address, data.chainId, 60);
 
         const serializedToken = { ...data, history: tokenInfo.data.c };
         return serializedToken;
@@ -133,7 +130,6 @@ const DashboardContextProvider = ({ children }: any) => {
   const fetchTokenInfo = async (token: any) => {
     try {
       let result: any = await fetchPrice(token.address, chainId, 10);
-      console.log("Result", result, token.address, chainId);
 
       let reward = {
           pendingRewards: 0,
