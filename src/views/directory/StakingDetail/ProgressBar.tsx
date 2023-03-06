@@ -14,7 +14,7 @@ const ProgressBar = ({ blocks, remaining }: { blocks: number; remaining: number 
         <div className="text-[#FFFFFFBF]">Pool Duration</div>
         <div className="flex text-base text-[#FFFFFF80]">
           Blocks Remaining:&nbsp;
-          <span className="text-primary">{remaining !== undefined ? remaining : <SkeletonComponent />}</span>
+          <span className="text-primary">{remaining !== undefined && !isNaN(remaining) ? remaining : <SkeletonComponent />}</span>
         </div>
       </div>
       <StyledProgressBar percent={percent}>
