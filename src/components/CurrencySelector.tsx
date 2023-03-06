@@ -63,19 +63,27 @@ const CurrencyRow = ({
   const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
   const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
-  const { onUserInput, onCurrencySelection, onSwitchTokens } = useSwapActionHandlers();
-  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+  const { onUserInput, onCurrencySelection } = useSwapActionHandlers();
+  const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   return (
     <button
       className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
       onClick={() => {
-        if (userSidebarOpen === 2) setIsOpen(0);
-        setSidebarContent(<UserDashboard />);
         onUserInput(input, "");
         onCurrencySelection(input, currency);
+
+        if (userSidebarOpen === 2) {
+          setUserSidebarOpen(0);
+
+          setTimeout(() => {
+            setSidebarContent(<UserDashboard />);
+          }, 1000);
+          return;
+        }
+
+        setSidebarContent(<UserDashboard />);
       }}
     >
       <div className="flex items-center justify-between gap-4">
