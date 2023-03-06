@@ -499,8 +499,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           "$0.00"
                         ) : accountData.stakedBalance ? (
                           `$${formatAmount(
-                            getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
-                          )}`
+                            getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) *
+                              (tokenPrice ? tokenPrice : 0)
+                          )} `
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -607,7 +608,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             >
                               <div className="flex">
                                 Harvest&nbsp;
-                                {!address  || (data.enableEmergencyWithdraw && data.disableHarvest)? (
+                                {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                   "0.00"
                                 ) : accountData.pendingReward !== undefined ? (
                                   formatAmount(earningTokenBalance.toFixed(4))
