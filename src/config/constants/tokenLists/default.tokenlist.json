@@ -1667,6 +1667,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x186785D4cba7263532F1da9bBeC3Da612dd6D085/logo.png"
     },
     {
+      "name": "Balloon Protocol",
+      "symbol": "AIR",
+      "address": "0x3B7eEb31278fFC9f1fc2C0C8543825b646C3E66b",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x3B7eEb31278fFC9f1fc2C0C8543825b646C3E66b/logo.png"
+    },
+    {
       "name": "Pomeranian",
       "symbol": "POM",
       "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
