@@ -62,7 +62,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
   const currentBlock = useChainCurrentBlock(data.chainId);
 
-  const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
+  const tokenPrice = useTokenPrice(data.chainId, stakingToken.address);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
   const isLockup = data.poolCategory === PoolCategory.LOCKUP;
