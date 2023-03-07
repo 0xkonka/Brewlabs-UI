@@ -658,14 +658,20 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               onClick={onHarvestReflection}
                             >
                               Harvest&nbsp;
-                              {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                "0.00"
-                              ) : accountData.pendingReflections[0] !== undefined ? (
-                                formatAmount(reflectionTokenBalances[0].toFixed(4))
+                              {reflectionTokens.length > 1 ? (
+                                <span className="text-primary">&nbsp;Multiple</span>
                               ) : (
-                                <SkeletonComponent />
+                                <>
+                                  {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                    "0.00"
+                                  ) : accountData.pendingReflections[0] !== undefined ? (
+                                    formatAmount(reflectionTokenBalances[0].toFixed(4))
+                                  ) : (
+                                    <SkeletonComponent />
+                                  )}
+                                  <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                                </>
                               )}
-                              <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
                             </StyledButton>
                           </div>
                         </div>
