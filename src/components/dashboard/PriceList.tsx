@@ -178,8 +178,8 @@ const PriceList = () => {
                 </div>
               </div>
               <div className="text-right text-[20px] font-bold text-white">
-                {price >= 0.01 ? (
-                  "$" + price.toFixed(3)
+                {price >= 0.0001 ? (
+                  "$" + price.toFixed(price >= 100 ? 2 : 4)
                 ) : (
                   <div>
                     $0.0<span className="text-sm">{priceFormat(price).count}</span>
