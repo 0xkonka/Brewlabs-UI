@@ -437,7 +437,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   return (
     <div
-      className={`relative mx-auto mb-4 flex w-fit max-w-xl flex-col gap-1 rounded-3xl  pb-10 pt-4 ${
+      className={`relative mx-auto mb-4 flex w-fit min-w-fit max-w-xl flex-col gap-1 rounded-3xl pb-10 pt-4 sm:min-w-[540px] ${
         type === "swap" ? "border-t px-4 dark:border-slate-600" : ""
       } dark:bg-zinc-900 sm:px-10 md:mx-0`}
     >

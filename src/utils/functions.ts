@@ -54,3 +54,15 @@ export const formatDollar = (value, decimals = 2) => {
   if (value < 0) return "-$" + (-value).toFixed(decimals);
   return "$" + value.toFixed(decimals);
 };
+
+export const priceFormat = (str) => {
+  const strlist = Number(str).toFixed(14).split(".");
+  let c = 0;
+  let value = "";
+  if (strlist.length > 1) {
+    while (strlist[1][c++] === "0");
+    const temp = strlist[1].slice(0, c + 4);
+    value = strlist[1].substring(temp.length - 5, temp.length - 1);
+  }
+  return { count: c - 1, value };
+};

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import styled from "styled-components";
 import { DashboardContext } from "contexts/DashboardContext";
 import { chevronLeftSVG, DoubleUpSVG } from "./assets/svgs";
-import { BigNumberFormat } from "utils/functions";
+import { BigNumberFormat, priceFormat } from "utils/functions";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -177,7 +177,16 @@ const PriceList = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-right text-xl font-bold text-white">${price.toFixed(2)}</div>
+              <div className="text-right text-[20px] font-bold text-white">
+                {price >= 0.01 ? (
+                  "$" + price.toFixed(3)
+                ) : (
+                  <div>
+                    $0.0<span className="text-sm">{priceFormat(price).count}</span>
+                    {priceFormat(price).value}
+                  </div>
+                )}
+              </div>
 
               <DrawChart key={i} data={data.history} />
               <div className={`absolute right-[18px] top-4 ${percent >= 50 ? "" : "hidden"}`}>{DoubleUpSVG}</div>
@@ -193,7 +202,7 @@ export default PriceList;
 
 const StyledContainer = styled.div`
   width: calc(100% - 30px);
-  height : 160px;
+  height: 160px;
   margin: 0 auto;
   .react-multi-carousel-list {
     position: unset !important;
@@ -214,7 +223,7 @@ const StyledContainer = styled.div`
 const StyledChartPanel = styled.div<{ down: String }>`
   width: calc(100% + 30px);
   margin-left: -20px;
-  margin-top: -35px;
+  margin-top: -25px;
   margin-bottom: -30px;
   .apexcharts-tooltip {
     color: white;
