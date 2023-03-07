@@ -482,6 +482,14 @@ const tokens = {
     'BlocVest Token',
     'https://blocvest.io/',
   ),
+  sweep: new Token(
+    BSC_MAINNET,
+    '0x09c704c1EB9245Af48f058878e72129557a10F04',
+    9,
+    'SWEEP',
+    'Sweeptoken',
+    'https://sweepproject.com/',
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
