@@ -80,7 +80,7 @@ const PoolCard = ({
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
-            `${formatAmount(data.totalStaked)} ${data.earningToken.symbol}`
+            `${formatAmount(data.totalStaked)} ${data.stakingToken.symbol}`
           ) : (
             <SkeletonComponent />
           )}
