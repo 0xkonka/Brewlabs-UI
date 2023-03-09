@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -10,10 +10,10 @@ import styled from "styled-components";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 
 import { Version } from "config/constants/types";
+import { numberWithCommas } from "utils/functions";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import useTokenPrice from "hooks/useTokenPrice";
-import { numberWithCommas } from "utils/functions";
 
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";

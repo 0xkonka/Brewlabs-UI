@@ -43,6 +43,7 @@ interface PoolConfigBaseProps {
   unverified?: boolean;
   featured?: boolean;
   enableEmergencyWithdraw?: boolean;
+  disableHarvest?: boolean;
   forceEndblock?: number;
   headerSuffix?: string;
   externalSwap?: string;

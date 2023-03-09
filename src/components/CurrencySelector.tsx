@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, useEffect } from "react";
 import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
@@ -23,6 +23,10 @@ import { Field } from "state/swap/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
+import UserDashboard from "components/dashboard/UserDashboard";
+import DropDown from "./dashboard/TokenList/Dropdown";
+import { SwapContext } from "contexts/SwapContext";
+import NavButton from "./dashboard/NavButton";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -59,16 +63,27 @@ const CurrencyRow = ({
   const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
   const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
-  const { onUserInput, onCurrencySelection, onSwitchTokens } = useSwapActionHandlers();
+  const { onUserInput, onCurrencySelection } = useSwapActionHandlers();
+  const [, setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   return (
     <button
       className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
       onClick={() => {
-        setIsOpen(false);
         onUserInput(input, "");
         onCurrencySelection(input, currency);
+
+        if (userSidebarOpen === 2) {
+          setUserSidebarOpen(0);
+
+          setTimeout(() => {
+            setSidebarContent(<UserDashboard />);
+          }, 1000);
+          return;
+        }
+
+        setSidebarContent(<UserDashboard />);
       }}
     >
       <div className="flex items-center justify-between gap-4">
@@ -111,6 +126,9 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
   const debouncedQuery = useDebounce(searchQuery, 200);
 
   const [invertSearchOrder] = useState<boolean>(false);
+  const { viewType, setViewType }: any = useContext(SwapContext);
+  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const allTokens = useAllTokens();
 
@@ -227,10 +245,21 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
     setPage((page - 1) % totalPages);
   };
 
+  const [viewSelect, setViewSelect] = useState(0);
+
+  const onSelect = (i: number) => {
+    setViewType(i);
+    setSidebarContent(<UserDashboard />);
+    setViewSelect(i);
+  };
+
   return (
     <div className="relative w-full">
-      <div className="mb-6 font-brand">
-        <h2 className="text-3xl">Select token {inputType}</h2>
+      <div className="mb-6 flex items-center justify-between">
+        <div className="font-brand">
+          <h2 className="text-3xl">Select token {inputType}</h2>
+        </div>
+        {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
       </div>
 
       <nav className="mb-4 flex space-x-4" aria-label="Tabs">

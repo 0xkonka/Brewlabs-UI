@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import DropDown from "./Dropdown";
+import ActivityDropdown from "./ActivityDropdown";
 
 const SelectionPanel = ({
   pools,
@@ -8,45 +9,65 @@ const SelectionPanel = ({
   setCurFilter,
   criteria,
   setCriteria,
+  activity,
+  setActivity,
 }: {
   pools: any;
   curFilter: number;
   setCurFilter: any;
   criteria: string;
   setCriteria: any;
+  activity: any;
+  setActivity: any;
 }) => {
   let counts = [];
   for (let i = 1; i <= 4; i++) {
     const filter = pools.filter((data: any) => data.type === i);
     counts[i] = filter.length;
   }
+  counts[5] = pools.filter((data) => data.userData?.stakedBalance.gt(0)).length;
+
   const filters = [
     `All (${counts[1] + counts[2] + counts[3] + counts[4]})`,
     `Staking Pools (${counts[1]})`,
     `Yield Farms (${counts[2]})`,
     `Indexes (${counts[3]})`,
     `Zapper Pools (${counts[4]})`,
-    `My positions (0)`,
+    `My positions (${counts[5]})`,
   ];
+
   return (
-    <div className="flex flex-row md:flex-col">
-      <div className="mb-3 block max-w-[500px] flex-1 xl:hidden">
-        <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
-      </div>
-      <div className="hidden md:flex">
-        {filters.map((data, i) => {
-          return (
-            <FilterButton key={i} active={curFilter === i} onClick={() => setCurFilter(i)}>
-              {data}
-            </FilterButton>
-          );
-        })}
-        <div className="hidden max-w-[280px] flex-1 xl:block">
+    <div className="flex flex-row items-end md:flex-col md:items-start">
+      <div className="mb-0 block flex w-full flex-1 items-center justify-between md:mb-3 xl:hidden">
+        <div className="max-w-[500px] flex-1">
           <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
         </div>
+        <div className="ml-4 hidden w-[110px] md:block">
+          <ActivityDropdown value={activity} setValue={setActivity} />
+        </div>
       </div>
-      <div className="ml-3 block w-[160px]  md:hidden">
+      <div className="flex w-fit flex-none items-center justify-between md:flex-1 xl:w-full">
+        <div className="hidden flex-1 md:flex">
+          {filters.map((data, i) => {
+            return (
+              <FilterButton key={i} active={curFilter === i} onClick={() => setCurFilter(i)}>
+                {data}
+              </FilterButton>
+            );
+          })}
+          <div className="hidden max-w-[280px] flex-1 xl:block">
+            <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
+          </div>
+        </div>
+        <div className="ml-4 hidden w-[110px] xl:block">
+          <ActivityDropdown value={activity} setValue={setActivity} />
+        </div>
+      </div>
+      <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
         <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
+        <div className="mt-2 w-full">
+          <ActivityDropdown value={activity} setValue={setActivity} />
+        </div>
       </div>
     </div>
   );

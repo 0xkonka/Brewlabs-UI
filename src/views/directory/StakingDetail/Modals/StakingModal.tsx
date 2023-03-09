@@ -23,15 +23,16 @@ const StakingModal = ({
   setOpen,
   type,
   data,
-  accountData,
+  defaultAmount,
 }: {
   open: boolean;
   setOpen: any;
   type: string;
   data: any;
-  accountData: any;
+  defaultAmount?: string;
 }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
+  const { userData: accountData } = data;
   const tokenPrice = useTokenPrice(data.chainId, data.stakingToken.address);
 
   const [amount, setAmount] = useState("");
@@ -44,18 +45,26 @@ const StakingModal = ({
     data.sousId,
     data.contractAddress,
     data.lockup,
-    data.version ? data.performanceFee : '0',
+    data.version ? data.performanceFee : "0",
     data.enableEmergencyWithdraw
   );
   const { onStake, onUnstake } = useUnlockupPool(
     data.sousId,
     data.contractAddress,
-    data.version ? data.performanceFee : '0',
+    data.version ? data.performanceFee : "0",
     data.enableEmergencyWithdraw
   );
 
+  useEffect(() => {
+    if (defaultAmount && +defaultAmount > 0) {
+      setAmount(defaultAmount);
+    }
+  }, [defaultAmount]);
+
   const getCalculatedStakingLimit = () => {
     let balance;
+    if(!accountData) return "0"
+    
     if (type !== "deposit") {
       if (data.enableEmergencyWithdraw || data.sousId === 203) {
         balance = accountData.stakedBalance;
@@ -106,6 +115,7 @@ const StakingModal = ({
           await onUnstake(amount, data.stakingToken.decimals);
         }
       }
+      setAmount("0");
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(data.chainId));
@@ -211,7 +221,7 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  {accountData.allowance?.gt(1000) ? (
+                  {accountData?.allowance?.gt(1000) ? (
                     <StyledButton
                       type="primary"
                       disabled={!amount || insufficient || pending}

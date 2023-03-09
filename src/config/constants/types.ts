@@ -18,6 +18,7 @@ export enum Category {
   "FARM",
   "INDEXES",
   "ZAPPER",
+  "MY_POSITION",
 }
 
 export enum PoolCategory {
@@ -65,6 +66,7 @@ interface FarmConfigBaseProps {
   isCommunity?: boolean;
   lpManager?: string;
   enableEmergencyWithdraw?: boolean;
+  disableHarvest?: boolean;
   isServiceFee?: boolean;
   compound?: boolean;
   compoundRelection?: boolean;
@@ -97,42 +99,6 @@ export interface DeserializedFarmConfig extends FarmConfigBaseProps {
   reflectionToken?: Currency;
   availableRewards?: number;
   availableReflections?: number[];
-}
-
-interface PoolConfigBaseProps {
-  sousId: number;
-  chainId: ChainId;
-  contractAddress: string;
-  poolCategory: PoolCategory;
-  tokenPerBlock: string;
-  sortOrder?: number;
-  version?: Version;
-  harvest?: boolean;
-  noCompound?: boolean;
-  reflection?: boolean;
-  noReflectionCompound?: boolean;
-  lockup?: number;
-  isServiceFee?: boolean;
-  isFinished?: boolean;
-  migration?: boolean;
-  unverified?: boolean;
-  featured?: boolean;
-  enableEmergencyWithdraw?: boolean;
-  forceEndblock?: number;
-  headerSuffix?: string;
-  externalSwap?: string;
-}
-
-export interface SerializedPoolConfig extends PoolConfigBaseProps {
-  earningToken: SerializedToken;
-  stakingToken: SerializedToken;
-  reflectionTokens?: SerializedToken[];
-}
-
-export interface DeserializedPoolConfig extends PoolConfigBaseProps {
-  earningToken: Currency;
-  stakingToken: Currency;
-  reflectionTokens?: Currency[];
 }
 
 export interface BridgeToken extends SerializedToken {

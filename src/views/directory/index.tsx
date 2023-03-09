@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styled from "styled-components";
+import orderBy from "lodash/orderBy";
 
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BLOCKS_PER_DAY } from "config/constants";
 import { Category } from "config/constants/types";
 import { IndexContext } from "contexts/directory/IndexContext";
 import { FarmContext } from "contexts/directory/FarmContext";
@@ -15,6 +16,7 @@ import { ZapperContext } from "contexts/directory/ZapperContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
 import { usePools } from "state/pools/hooks";
+import { useChainCurrentBlocks } from "state/block/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 
 import Banner from "./Banner";
@@ -31,13 +33,15 @@ const Directory = ({ page }: { page: number }) => {
   const [sortOrder, setSortOrder] = useState("default");
   const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
+  const [status, setStatus] = useState("active");
 
   const { pools } = usePools();
   const { data: farms } = useFarms()
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
 
-  // const { data: pools, accountData: accountPoolDatas }: any = useContext(PoolContext);
-  const { data: _farms, accountData: accountFarms }: any = useContext(FarmContext);
+  const currentBlocks = useChainCurrentBlocks();
+
+  const { accountData: accountFarms }: any = useContext(FarmContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
@@ -56,6 +60,45 @@ const Directory = ({ page }: { page: number }) => {
     ...zappers,
   ];
 
+  const sortPools = (poolsToSort) => {
+    switch (sortOrder) {
+      case "apr":
+        return orderBy(poolsToSort, (pool) => pool.apr ?? 0, "desc");
+      case "earned":
+        return orderBy(
+          poolsToSort,
+          (pool) => {
+            const earningTokenPrice = +tokenPrices[getCurrencyId(pool.earningToken.chainId, pool.earningToken.address)];
+            if (!pool.userData || !earningTokenPrice) {
+              return 0;
+            }
+            return pool.userData.pendingReward.times(earningTokenPrice).toNumber();
+          },
+          "desc"
+        );
+      case "tvl":
+        return orderBy(poolsToSort, (pool) => pool.tvl ?? 0, "desc");
+      case "totalStaked":
+        return orderBy(
+          poolsToSort,
+          (pool) => {
+            let totalStaked = Number.NaN;
+            if (pool.totalStaked?.isFinite()) {
+              totalStaked = +pool.totalStaked.toString();
+            }
+            return Number.isFinite(totalStaked) ? totalStaked : 0;
+          },
+          "desc"
+        );
+      case "chainId":
+        return orderBy(poolsToSort, (pool) => pool.chainId, "asc");
+      case "latest":
+        return orderBy(poolsToSort, (pool) => pool.sortOrder, "desc");
+      default:
+        return orderBy(poolsToSort, (pool) => pool.sortOrder, "asc");
+    }
+  };
+
   let chosenPools;
   if (curFilter >= 0 || criteria) {
     const lowercaseQuery = criteria.toLowerCase();
@@ -68,8 +111,26 @@ const Directory = ({ page }: { page: number }) => {
           pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
           pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
       )
-      .filter((data) => curFilter === 0 || data.type === curFilter);
+      .filter(
+        (data) => curFilter === 0 || data.type === curFilter || (curFilter === 5 && data.userData?.stakedBalance.gt(0))
+      );
   }
+
+  switch (status) {
+    case "finished":
+      chosenPools = chosenPools.filter((pool) => pool.isFinished);
+      break;
+    case "new":
+      chosenPools = chosenPools.filter(
+        (pool) =>
+          !pool.isFinished &&
+          (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
+      );
+      break;
+    default:
+      chosenPools = chosenPools.filter((pool) => !pool.isFinished && +pool.startBlock > 0);
+  }
+  chosenPools = sortPools(chosenPools);
 
   const renderDetailPage = () => {
     switch (curPool.type) {
@@ -155,6 +216,8 @@ const Directory = ({ page }: { page: number }) => {
                     setCurFilter={setCurFilter}
                     criteria={criteria}
                     setCriteria={setCriteria}
+                    activity={status}
+                    setActivity={setStatus}
                   />
                 </div>
                 <div className="mt-[18px] mb-[100px]">
@@ -175,17 +238,3 @@ const Directory = ({ page }: { page: number }) => {
 };
 
 export default Directory;
-
-const DotGroup = styled.div<{ active?: boolean }>`
-  width: calc(100vw / 1440 * 50);
-  height: 4px;
-  margin-right: 10px;
-  cursor: pointer;
-  background-color: ${({ active }) => (active ? "deeppink" : "white")};
-  filter: blur(1px);
-  transition: all 0.5s;
-  @media screen and (max-width: 700px) {
-    width: calc(100vw / 700 * 45);
-    height: 3px;
-  }
-`;

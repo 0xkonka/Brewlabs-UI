@@ -1,32 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
-import { erc20ABI, useAccount, useProvider, useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import {
-  getClaimableTokenContract,
-  getContract,
-  getDividendTrackerContract,
-  getMulticallContract,
-} from "utils/contractHelpers";
-import ERC20ABI from "../config/abi/erc20.json";
-import claimableTokenAbi from "../config/abi/claimableToken.json";
-import dividendTrackerAbi from "config/abi/dividendTracker.json";
-
 import { ethers } from "ethers";
+import { WNATIVE } from "@brewlabs/sdk";
+import { erc20ABI, useAccount, useSigner } from "wagmi";
+
+import ERC20ABI from "config/abi/erc20.json";
+import claimableTokenAbi from "config/abi/claimableToken.json";
+import dividendTrackerAbi from "config/abi/dividendTracker.json";
+import prices from "config/constants/prices";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
+
 
 const DashboardContext: any = React.createContext({
   tokens: [],
+  priceHistory: [],
   marketHistory: [],
   tokenList: [],
   pending: false,
   setPending: () => {},
 });
-
-const WETH_ADDR: any = {
-  1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-};
 
 const CHAIN_NAME: any = {
   1: "ETH",
@@ -45,20 +40,19 @@ const tokenList_URI: any = {
   1: "https://tokens.coingecko.com/ethereum/all.json",
 };
 
-let temp_addr, temp_id;
+let temp_addr: any, temp_id: any;
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
-  const [allowance, setAllowances] = useState([]);
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
+  const [priceHistory, setPriceHistory] = useState([]);
   const { address } = useAccount();
   // const address = "0xff20def8a6ebb0ac298cc60e13bbb7acf41d6ce1";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
   const { data: signer }: any = useSigner();
-  const ethersProvider = useProvider();
 
   async function multicall(abi: any, calls: any) {
     const itf = new ethers.utils.Interface(abi);
@@ -108,14 +102,34 @@ const DashboardContextProvider = ({ children }: any) => {
     return isScam;
   };
 
+  async function fetchPrice(address: any, chainID: number, resolution: number) {
+    const to = Math.floor(Date.now() / 1000);
+    const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
+      address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" || !address ? WNATIVE[chainID].address : address
+    }-${chainID === 56 ? "bsc" : "eth"}_USD&resolution=${resolution}&from=${to - 3600 * 24}&to=${to}`;
+    let result: any = await axios.get(url);
+    return result;
+  }
+
+  async function fetchPrices() {
+    let data: any;
+
+    data = await Promise.all(
+      prices.map(async (data: any) => {
+        const tokenInfo = await fetchPrice(data.address, data.chainId, 60);
+
+        const serializedToken = { ...data, history: tokenInfo.data.c };
+        return serializedToken;
+      })
+    );
+
+    setPriceHistory(data);
+    return data;
+  }
+
   const fetchTokenInfo = async (token: any) => {
     try {
-      const to = Math.floor(Date.now() / 1000);
-      const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
-        token.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? WETH_ADDR[chainId] : token.address
-      }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
-      let result: any = await Promise.all([await axios.get(url)]);
-      result = result[0];
+      let result: any = await fetchPrice(token.address, chainId, 10);
 
       let reward = {
           pendingRewards: 0,
@@ -181,9 +195,7 @@ const DashboardContextProvider = ({ children }: any) => {
           totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.symbol = rewardToken.symbol;
         isReward = true;
-      } catch (e) {
-        // console.log(e);
-      }
+      } catch (e) {}
 
       let scamResult: any = await Promise.all([await isScamToken(token)]);
       scamResult = scamResult[0];
@@ -197,7 +209,6 @@ const DashboardContextProvider = ({ children }: any) => {
         balance,
       };
     } catch (error) {
-      console.log(token.address);
       console.log(error);
       return token;
     }
@@ -242,7 +253,6 @@ const DashboardContextProvider = ({ children }: any) => {
             name: isLP ? LPInfo[0] : items[i].contract_name,
             symbol: isLP ? LPInfo[1] : items[i].contract_ticker_symbol,
             decimals: isLP ? LPInfo[2] : items[i].contract_decimals,
-            // logo: items[i].logo_url,
             address: items[i].contract_address.toLowerCase(),
             price,
             priceList: filter.length ? filter[0].priceList : [price],
@@ -332,8 +342,12 @@ const DashboardContextProvider = ({ children }: any) => {
     setTokens([]);
   }, [chainId, address]);
 
+  useSlowRefreshEffect(() => {
+    fetchPrices();
+  }, []);
+
   return (
-    <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList }}>
+    <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList, priceHistory }}>
       {children}
     </DashboardContext.Provider>
   );

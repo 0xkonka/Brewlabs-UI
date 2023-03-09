@@ -5,8 +5,8 @@ import { StarIcon as StarOutlineIcon, CheckCircleIcon, TrashIcon } from "@heroic
 import { StarIcon } from "@heroicons/react/24/solid";
 import StyledButton from "../StyledButton";
 import styled from "styled-components";
-import { NoneSVG, warningSVG } from "../assets/svgs";
-import { isArray } from "lodash";
+import { claimSVG, disabledClaimSVG, NoneSVG, warningSVG } from "../assets/svgs";
+import { chain, isArray } from "lodash";
 import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
@@ -14,6 +14,11 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat, getBlockExplorerLink } from "utils/functions";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { SwapContext } from "contexts/SwapContext";
+import { useSwapActionHandlers } from "state/swap/hooks";
+import { Field } from "state/swap/actions";
+import { Currency, Token, NATIVE_CURRENCIES } from "@brewlabs/sdk";
+import { NativeCurrency } from "@brewlabs/sdk/dist/entities/NativeCurrency";
 
 const emptyLogos = {
   1: "/images/dashboard/tokens/empty-token-eth.webp",
@@ -60,6 +65,9 @@ const TokenList = ({
   const { data: signer }: any = useSigner();
   const { pending, setPending, tokenList }: any = useContext(DashboardContext);
   const valueRef: any = useRef();
+
+  const { viewType, setViewType }: any = useContext(SwapContext);
+  const { onCurrencySelection } = useSwapActionHandlers();
 
   const sortData = (data: any) => {
     try {
@@ -274,14 +282,28 @@ const TokenList = ({
                       )}
                     </div>
                   </div>
-                  <a target={"_blank"} href={link} rel="noreferrer" className="flex items-center">
+                  <a
+                    target={"_blank"}
+                    onClick={() => {
+                      // let t = new Token(chainId, data.address, data.decimals);
+                      let t: any;
+                      if (data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") t = NATIVE_CURRENCIES[chainId];
+                      else t = new Token(chainId, data.address, data.decimals);
+                      // t.address = data.address;
+                      // t.isNative = data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+                      onCurrencySelection(Field.OUTPUT, t);
+                      setViewType(1);
+                    }}
+                    rel="noreferrer"
+                    className="flex items-center"
+                  >
                     <img src={logo} alt="" className="mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full" />
                     <div>
                       <div className="flex items-center text-white">
                         <StyledDiv className={"overflow-hidden text-ellipsis whitespace-nowrap"}>{data.name}</StyledDiv>
                       </div>
                       <StyledDiv className={fullOpen ? "" : "hidden"}>
-                        <div className={"overflow-hidden text-ellipsis whitespace-nowrap text-white opacity-25"}>
+                        <div className={"overflow-hidden text-ellipsis whitespace-nowrap text-white opacity-50"}>
                           {BigNumberFormat(data.balance)} {data.symbol}
                         </div>
                       </StyledDiv>
@@ -321,7 +343,9 @@ const TokenList = ({
                       BigNumberFormat(data.balance)
                     )}
                   </div>
-                  <div className={"min-w-[75px] text-center"}>${BigNumberFormat(data.price, 3)}</div>
+                  <div className={`min-w-[75px] text-center ${priceUp ? "text-[#2FD35D]" : "text-[#D9563A]"}`}>
+                    ${BigNumberFormat(data.price, 3)}
+                  </div>
                   <div className={"min-w-[75px] text-center"}>${BigNumberFormat(data.balance * data.price)}</div>
                   <div className={"flex min-w-[100px] justify-center"}>
                     {data.isReward ? (
@@ -334,7 +358,7 @@ const TokenList = ({
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
-                  <div className={"flex min-w-[120px] justify-center"}>
+                  <div className={"flex min-w-[120px] justify-center text-[#2FD35D]"}>
                     {data.isReward ? (
                       `${BigNumberFormat(
                         data.name.toLowerCase() === "brewlabs"
@@ -345,16 +369,23 @@ const TokenList = ({
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
-                  <div className={"flex h-[24px] w-[52px] justify-center"}>
+                  <div className={"flex h-[24px] w-[20px] items-center justify-center"}>
                     {data.isScam ? (
                       <div className={"text-brand"} id={"app-title" + i}>
                         {warningSVG}
                         <ReactTooltip anchorId={"app-title" + i} place="left" content="Possible scam token" />
                       </div>
                     ) : data.isReward ? (
-                      <StyledButton onClick={() => onClaim(data.address)} disabled={pending}>
-                        Claim
-                      </StyledButton>
+                      pending || !data.isReward || !data.reward.pendingRewards ? (
+                        <div className="cursor-pointer">{disabledClaimSVG}</div>
+                      ) : (
+                        <div
+                          onClick={() => onClaim(data.address)}
+                          className="cursor-pointer transition hover:opacity-80"
+                        >
+                          {claimSVG}
+                        </div>
+                      )
                     ) : (
                       ""
                     )}
@@ -387,7 +418,7 @@ const StyledLink = styled.div<{ isHover: string; left?: string; right?: string }
   }
 `;
 const ColoredLink = styled(StyledLink)<{ priceUp: string }>`
-  color: ${({ priceUp }) => (priceUp === "true" ? "#2FD35D" : "#D9563A")}!important;
+  color: white;
 `;
 
 export const LogoPanel = styled.div<{ showShadow?: string }>`
@@ -429,16 +460,22 @@ export const ValuePanel = styled.div`
 `;
 
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
-  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 30 + 27}px`)};
+  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 618px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
   @media screen and (max-width: 650px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 620px)" : `${count * 28 + 27}px`)};
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 618px)" : `${count * 28 + 27}px`)};
   }
   @media screen and (max-height: 725px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 530px)" : `${count * 30 + 27}px`)};
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 518px)" : `${count * 30 + 27}px`)};
     @media screen and (max-width: 650px) {
-      height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 530px)" : `${count * 28 + 27}px`)};
+      height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 518px)" : `${count * 28 + 27}px`)};
     }
+  }
+  @media screen and (max-height: 890px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 554px)" : `${count * 28 + 27}px`)};
+  }
+  @media screen and (max-height: 820px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 265px)" : `${count * 28 + 27}px`)};
   }
 `;
 

@@ -22,8 +22,9 @@ export const navigationData = [
   },
   {
     name: "Farms",
-    href: "/farms",
-    external: false,
+    // href: "/farms",
+    href: "https://earn.brewlabs.info/farms",
+    external: true,
     icon: "ArrowTrendingUpIcon",
   },
   // {
@@ -40,8 +41,9 @@ export const navigationData = [
   },
   {
     name: "Zap",
-    href: "/zapper",
-    external: false,
+    href: "https://earn.brewlabs.info/zap",
+    // href: "/zapper",
+    external: true,
     icon: "BoltIcon",
   },
   {

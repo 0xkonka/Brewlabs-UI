@@ -284,6 +284,14 @@ const tokens = {
     "BACON",
     "Bacon Token",
   ),
+  air: new Token(
+    ETHEREUM,
+    "0x3B7eEb31278fFC9f1fc2C0C8543825b646C3E66b",
+    18,
+    "AIR",
+    "Balloon Protocol",
+    "https://balloon-protocol.info/"
+  ),
   dai: new Token(ETHEREUM, "0x6B175474E89094C44Da98b954EedeAC495271d0F", 18, "DAI", "Dai Stablecoin"),
   wbtc: new Token(ETHEREUM, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", 8, "WBTC", "Wrapped BTC"),
   rune: new Token(ETHEREUM, "0x3155BA85D5F96b2d030a4966AF206230e46849cb", 18, "RUNE", "RUNE.ETH"),

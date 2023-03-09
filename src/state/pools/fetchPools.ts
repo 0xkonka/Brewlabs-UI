@@ -49,10 +49,8 @@ export const fetchPoolsBlockLimits = async (chainId, pools) => {
         batch.forEach((pool, index) => {
           data.push({
             sousId: pool.sousId,
-            startBlock: new BigNumber(starts[index]).toJSON(),
-            endBlock: pool.forceEndblock
-              ? new BigNumber(pool.forceEndblock).toJSON()
-              : new BigNumber(ends[index]).toJSON(),
+            startBlock: starts[index][0].toNumber(),
+            endBlock: pool.forceEndblock ? pool.forceEndblock : ends[index][0].toNumber(),
           });
         });
       } catch (e) {
@@ -148,28 +146,28 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
         nonLockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: new BigNumber(nonLockupPoolsRewards[index]).toJSON(),
-            depositFee: new BigNumber(nonLockupPoolsDFee[index]).dividedBy(100).toNumber(),
-            withdrawFee: new BigNumber(nonLockupPoolsWFee[index]).dividedBy(100).toNumber(),
+            tokenPerBlock: nonLockupPoolsRewards[index][0].toString(),
+            depositFee: nonLockupPoolsDFee[index][0].div(100).toNumber(),
+            withdrawFee: nonLockupPoolsWFee[index][0].div(100).toNumber(),
             duration: 0,
           });
         });
         lockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: new BigNumber(lockupPoolsRewards[index]).toJSON(),
-            depositFee: new BigNumber(lockupPoolsFees[index].depositFee._hex).dividedBy(100).toNumber(),
-            withdrawFee: new BigNumber(lockupPoolsFees[index].withdrawFee._hex).dividedBy(100).toNumber(),
-            duration: new BigNumber(lockupPoolsFees[index].duration._hex).toNumber(),
+            tokenPerBlock: lockupPoolsRewards[index][0].toString(),
+            depositFee: lockupPoolsFees[index].depositFee.div(100).toNumber(),
+            withdrawFee: lockupPoolsFees[index].withdrawFee.div(100).toNumber(),
+            duration: lockupPoolsFees[index].duration.toNumber(),
           });
         });
         lockupV2Pools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: new BigNumber(lockupV2PoolsRewards[index]).toJSON(),
-            depositFee: new BigNumber(lockupV2PoolsFees[index].depositFee._hex).dividedBy(100).toNumber(),
-            withdrawFee: new BigNumber(lockupV2PoolsFees[index].withdrawFee._hex).dividedBy(100).toNumber(),
-            duration: new BigNumber(lockupV2PoolsFees[index].duration._hex).toNumber(),
+            tokenPerBlock: lockupV2PoolsRewards[index][0].toString(),
+            depositFee: lockupV2PoolsFees[index].depositFee.div(100).toNumber(),
+            withdrawFee: lockupV2PoolsFees[index].withdrawFee.div(100).toNumber(),
+            duration: lockupV2PoolsFees[index].duration.toNumber(),
           });
         });
       } catch (e) {
