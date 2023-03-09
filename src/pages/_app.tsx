@@ -21,7 +21,6 @@ import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { SwapContextProvider } from "contexts/SwapContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
-import { FarmContextProvider } from "contexts/directory/FarmContext";
 import { IndexContextProvider } from "contexts/directory/IndexContext";
 import { ZapperContextProvider } from "contexts/directory/ZapperContext";
 import { LanguageProvider } from "contexts/localization";
@@ -90,7 +89,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
             <TokenPriceContextProvider>
               <DashboardContextProvider>
                 <SwapContextProvider>
-                  <FarmContextProvider>
                     <IndexContextProvider>
                       <ZapperContextProvider>
                         <LanguageProvider>
@@ -143,7 +141,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                         </LanguageProvider>
                       </ZapperContextProvider>
                     </IndexContextProvider>
-                  </FarmContextProvider>
                 </SwapContextProvider>
               </DashboardContextProvider>
             </TokenPriceContextProvider>
