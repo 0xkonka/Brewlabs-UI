@@ -36,7 +36,7 @@ const Directory = ({ page }: { page: number }) => {
   const [status, setStatus] = useState("active");
 
   const { pools } = usePools();
-  const { data: farms } = useFarms()
+  const { data: farms } = useFarms();
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
 
   const currentBlocks = useChainCurrentBlocks();
@@ -124,11 +124,21 @@ const Directory = ({ page }: { page: number }) => {
       chosenPools = chosenPools.filter(
         (pool) =>
           !pool.isFinished &&
-          (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])
+          ((pool.type === Category.POOL &&
+            (+pool.startBlock === 0 ||
+              +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
+            (pool.type === Category.FARM &&
+              (+pool.startBlock > currentBlocks[pool.chainId] ||
+                +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])))
       );
       break;
     default:
-      chosenPools = chosenPools.filter((pool) => !pool.isFinished && +pool.startBlock > 0);
+      chosenPools = chosenPools.filter(
+        (pool) =>
+          !pool.isFinished &&
+          ((pool.type === Category.POOL && +pool.startBlock > 0) ||
+            (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]))
+      );
   }
   chosenPools = sortPools(chosenPools);
 

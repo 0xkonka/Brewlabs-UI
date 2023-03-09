@@ -64,7 +64,9 @@ interface FarmConfigBaseProps {
   contractAddress?: string;
   multiplier?: string;
   isCommunity?: boolean;
+  isCustody?: boolean;
   lpManager?: string;
+  sortOrder?: number;
   enableEmergencyWithdraw?: boolean;
   disableHarvest?: boolean;
   isServiceFee?: boolean;
