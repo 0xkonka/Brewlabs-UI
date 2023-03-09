@@ -11,7 +11,6 @@ import WordHighlight from "components/text/WordHighlight";
 import { BLOCKS_PER_DAY } from "config/constants";
 import { Category } from "config/constants/types";
 import { IndexContext } from "contexts/directory/IndexContext";
-import { FarmContext } from "contexts/directory/FarmContext";
 import { ZapperContext } from "contexts/directory/ZapperContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
@@ -41,7 +40,6 @@ const Directory = ({ page }: { page: number }) => {
 
   const currentBlocks = useChainCurrentBlocks();
 
-  const { accountData: accountFarms }: any = useContext(FarmContext);
   const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
@@ -160,8 +158,7 @@ const Directory = ({ page }: { page: number }) => {
             detailDatas={{
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
-              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
-              accountData: accountFarms,
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid)
             }}
           />
         );
