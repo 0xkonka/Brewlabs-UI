@@ -70,8 +70,8 @@ export interface DeserializedPool extends DeserializedPoolConfig, CorePoolProps 
     stakingTokenBalance: BigNumber;
     stakedBalance: BigNumber;
     lockedBalance: BigNumber;
-    pendingReward: BigNumber;
-    pendingReflections: BigNumber[];
+    earnings: BigNumber;
+    reflections: BigNumber[];
     deposits: DeserializedDeposit[];
   };
   TVLData?: number[];
@@ -89,8 +89,8 @@ export interface SerializedPool extends SerializedPoolConfig, CorePoolProps {
     stakingTokenBalance: SerializedBigNumber;
     stakedBalance: SerializedBigNumber;
     lockedBalance: SerializedBigNumber;
-    pendingReward: SerializedBigNumber;
-    pendingReflections: SerializedBigNumber[];
+    earnings: SerializedBigNumber;
+    reflections: SerializedBigNumber[];
     deposits: SerializedDeposit[];
   };
   TVLData?: number[];

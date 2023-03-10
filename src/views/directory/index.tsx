@@ -70,7 +70,7 @@ const Directory = ({ page }: { page: number }) => {
             if (!pool.userData || !earningTokenPrice) {
               return 0;
             }
-            return pool.userData.pendingReward.times(earningTokenPrice).toNumber();
+            return pool.userData.earnings.times(earningTokenPrice).toNumber();
           },
           "desc"
         );

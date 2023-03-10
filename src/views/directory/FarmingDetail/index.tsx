@@ -4,7 +4,7 @@ import { WNATIVE } from "@brewlabs/sdk";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";

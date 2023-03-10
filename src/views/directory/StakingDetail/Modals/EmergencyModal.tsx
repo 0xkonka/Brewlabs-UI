@@ -55,11 +55,11 @@ const EmergencyModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
   const reflectionTokenBalances = [];
   for (let i = 0; i < reflectionTokens.length; i++) {
     reflectionTokenBalances.push(
-      getBalanceNumber(accountData.pendingReflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals)
+      getBalanceNumber(accountData.reflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals)
     );
-    if (accountData.pendingReflections[i]?.gt(0)) hasReflections = true;
+    if (accountData.reflections[i]?.gt(0)) hasReflections = true;
   }
-  const earningTokenBalance = getBalanceNumber(accountData.pendingReward ?? BIG_ZERO, earningToken.decimals);
+  const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
   const stakedBalance = getBalanceNumber(accountData.stakedBalance ?? BIG_ZERO, stakingToken.decimals);
 
   const showError = (errorMsg: string) => {
@@ -185,7 +185,7 @@ const EmergencyModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                         {reflectionTokens.length === 1 &&
                           (data.enableEmergencyWithdraw && data.disableHarvest ? (
                             "0.00"
-                          ) : accountData.pendingReflections[0] ? (
+                          ) : accountData.reflections[0] ? (
                             formatAmount(reflectionTokenBalances[0].toFixed(4))
                           ) : (
                             <SkeletonComponent />
@@ -210,7 +210,7 @@ const EmergencyModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                       Step {data.reflection ? 2 : 1} : Harvest{" "}
                       {data.enableEmergencyWithdraw && data.disableHarvest ? (
                         "0.00"
-                      ) : accountData.pendingReward !== undefined ? (
+                      ) : accountData.earnings !== undefined ? (
                         formatAmount(earningTokenBalance.toFixed(2))
                       ) : (
                         <SkeletonComponent />
