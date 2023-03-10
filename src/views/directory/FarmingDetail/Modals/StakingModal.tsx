@@ -21,6 +21,7 @@ import { numberWithCommas } from "utils/functions";
 import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";
+import { getBalanceAmount } from "utils/formatBalance";
 
 const StakingModal = ({
   open,
@@ -55,10 +56,12 @@ const StakingModal = ({
     data.enableEmergencyWithdraw
   );
 
-  const balance: any = (type === "deposit" ? accountData.tokenBalance : accountData.stakedBalance) / Math.pow(10, 18);
+  const balance: any = getBalanceAmount(
+    type === "deposit" ? accountData.tokenBalance : accountData.stakedBalance
+  ).toString();
 
   useEffect(() => {
-    if (Number(amount) > balance && !maxPressed) setInsufficient(true);
+    if (Number(amount) > +balance && !maxPressed) setInsufficient(true);
     else setInsufficient(false);
   }, [amount, maxPressed]);
 
@@ -175,9 +178,9 @@ const StakingModal = ({
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
                   {type === "deposit" ? "My" : "Staked"} <span className="text-primary">{data.lpSymbol}</span>:{" "}
-                  {numberWithCommas((balance ? balance : 0).toFixed(2))}
+                  {numberWithCommas((balance ? +balance : 0).toFixed(5))}
                 </div>
-                <div className="text-[#FFFFFF80]">${(lpPrice && balance ? lpPrice * balance : 0).toFixed(2)} USD</div>
+                <div className="text-[#FFFFFF80]">${(lpPrice && balance ? lpPrice * +balance : 0).toFixed(2)} USD</div>
               </div>
               <div className="my-[18px] h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[400px]">
