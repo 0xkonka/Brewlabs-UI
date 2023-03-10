@@ -178,7 +178,7 @@ const StakingModal = ({
               <div className="mt-1 flex w-full flex-col items-end text-sm">
                 <div className="text-[#FFFFFFBF]">
                   {type === "deposit" ? "My" : "Staked"} <span className="text-primary">{data.lpSymbol}</span>:{" "}
-                  {numberWithCommas((balance ? +balance : 0).toFixed(5))}
+                  {numberWithCommas(+(balance ? +balance : 0).toFixed(5))}
                 </div>
                 <div className="text-[#FFFFFF80]">${(lpPrice && balance ? lpPrice * +balance : 0).toFixed(2)} USD</div>
               </div>

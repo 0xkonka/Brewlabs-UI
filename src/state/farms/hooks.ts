@@ -51,9 +51,11 @@ export const usePollFarmsWithUserData = () => {
   );
 
   useSWRImmutable(
-    account && chainId ? ["farmsWithUserData", account, chainId] : null,
+    account && chainId ? ["farmsWithUserData", account, chainId, farms.length] : null,
     async () => {
-      const pids = farms.map((farmToFetch) => farmToFetch.pid && farmToFetch.chainId === chainId);
+      const pids = farms
+        .filter((farmToFetch) => farmToFetch.pid && farmToFetch.chainId === chainId)
+        .map((farm) => farm.pid);
       const params = { account, pids, chainId };
 
       dispatch(fetchFarmUserDataAsync(params));
@@ -96,16 +98,7 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 };
 
 export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
-  const {
-    token,
-    quoteToken,
-    earningToken,
-    reflectionToken,
-    totalStaked,
-    poolWeight,
-    rewardPerBlock,
-    ...rest
-  } = farm;
+  const { token, quoteToken, earningToken, reflectionToken, totalStaked, poolWeight, rewardPerBlock, ...rest } = farm;
 
   return {
     ...rest,

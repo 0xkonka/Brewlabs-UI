@@ -110,7 +110,10 @@ const Directory = ({ page }: { page: number }) => {
           pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
       )
       .filter(
-        (data) => curFilter === 0 || data.type === curFilter || (curFilter === 5 && data.userData?.stakedBalance.gt(0))
+        (data) =>
+          curFilter === Category.ALL ||
+          data.type === curFilter ||
+          (curFilter === Category.MY_POSITION && data.userData?.stakedBalance.gt(0))
       );
   }
 
@@ -158,7 +161,7 @@ const Directory = ({ page }: { page: number }) => {
             detailDatas={{
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
-              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid)
+              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
             }}
           />
         );
