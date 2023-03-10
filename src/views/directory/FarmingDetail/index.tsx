@@ -12,18 +12,17 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { Version } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getExplorerLink, getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
-import { useChainCurrentBlock } from "state/block/hooks";
 import { fetchFarmUserDataAsync, setFarmsPublicData, setFarmUserData } from "state/farms";
 import { fetchFarmUserDeposits } from "state/farms/fetchFarmUser";
 import { fetchFarmFeeHistories, fetchFarmTotalRewards } from "state/farms/fetchPublicFarmData";
 import { BIG_ZERO } from "utils/bigNumber";
-import { getUnLockStakingContract } from "utils/contractHelpers";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import { numberWithCommas } from "utils/functions";
@@ -34,7 +33,6 @@ import ProgressBar from "./ProgressBar";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
-import { Version } from "config/constants/types";
 import useFarm from "./hooks/useFarm";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
@@ -48,11 +46,9 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(0);
 
   const { address } = useAccount();
-  const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
-  const currentBlock = useChainCurrentBlock(data.chainId);
 
   const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
@@ -121,26 +117,54 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
     if (errorMsg) toast.error(errorMsg);
   };
 
-  const onHarvestReward = async () => {
+  const handleHarvest = async () => {
     setPending(true);
     try {
-      let harvestTx, estimateGas;
-
-      console.log("HarvestReward");
-
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      estimateGas = await poolContract.estimateGas.claimReward({
-        value: data.performanceFee,
-      });
-
-      const tx = {
-        gasLimit: Math.ceil(estimateGas * 1.2),
-        value: data.performanceFee,
-      };
-      harvestTx = await poolContract.claimReward(tx);
-      await harvestTx.wait();
+      if (data.version > Version.V2) {
+        await onHarvest();
+      } else {
+        await onReward();
+      }
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleHarvestDividned = async () => {
+    setPending(true);
+    try {
+      await onHarvestDividend();
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleCompound = async () => {
+    setPending(true);
+    try {
+      await onCompound();
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleCompoundDividend = async () => {
+    setPending(true);
+    try {
+      await onCompoundDividend();
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -334,7 +358,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2">
                         <div className="text-xl">Pending</div>
                         <div className=" flex text-primary">
-                          {!address || data.enableEmergencyWithdraw ? (
+                          {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                             "0.00"
                           ) : accountData.earnings !== undefined ? (
                             formatAmount(earningTokenBalance.toFixed(4))
@@ -346,7 +370,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                         {reflectionToken && (
                           <div className="flex text-primary">
-                            {!address || data.enableEmergencyWithdraw ? (
+                            {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                               "0.00"
                             ) : accountData.reflections ? (
                               formatAmount(reflectionTokenBalance.toFixed(4))
@@ -461,12 +485,17 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <StyledButton
                             type="teritary"
                             boxShadow={address && earningTokenBalance > 0}
-                            disabled={!address || earningTokenBalance === 0 || pending}
-                            onClick={() => onHarvestReward()}
+                            disabled={
+                              !address ||
+                              earningTokenBalance === 0 ||
+                              (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                              pending
+                            }
+                            onClick={handleHarvest}
                           >
                             <div className="flex">
                               Harvest&nbsp;
-                              {!address ? (
+                              {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                 0
                               ) : accountData.earnings !== undefined ? (
                                 formatAmount(earningTokenBalance.toFixed(4))
@@ -477,6 +506,33 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             </div>
                           </StyledButton>
                         </div>
+                        {data.compound && (
+                          <div className="mt-2 h-[56px]">
+                            <StyledButton
+                              type="teritary"
+                              boxShadow={address && earningTokenBalance > 0}
+                              disabled={
+                                !address ||
+                                earningTokenBalance === 0 ||
+                                (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                                pending
+                              }
+                              onClick={handleCompound}
+                            >
+                              <div className="flex">
+                                Compound&nbsp;
+                                {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                  0
+                                ) : accountData.earnings !== undefined ? (
+                                  formatAmount(earningTokenBalance.toFixed(4))
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                <span className="text-primary">&nbsp;{earningToken.symbol}</span>
+                              </div>
+                            </StyledButton>
+                          </div>
+                        )}
                       </div>
 
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
@@ -487,12 +543,17 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               <StyledButton
                                 type="teritary"
                                 boxShadow={address && reflectionTokenBalance > 0}
-                                disabled={!address || reflectionTokenBalance === 0 || pending}
-                                onClick={() => onHarvestReward()}
+                                disabled={
+                                  !address ||
+                                  reflectionTokenBalance === 0 ||
+                                  (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                                  pending
+                                }
+                                onClick={handleHarvestDividned}
                               >
                                 <div className="flex">
                                   Harvest&nbsp;
-                                  {!address ? (
+                                  {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                     0
                                   ) : accountData.reflections !== undefined ? (
                                     formatAmount(reflectionTokenBalance.toFixed(4))
@@ -503,6 +564,33 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 </div>
                               </StyledButton>
                             </div>
+                            {data.compoundRelection && (
+                              <div className="mt-2 h-[56px]">
+                                <StyledButton
+                                  type="teritary"
+                                  boxShadow={address && reflectionTokenBalance > 0}
+                                  disabled={
+                                    !address ||
+                                    reflectionTokenBalance === 0 ||
+                                    (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                                    pending
+                                  }
+                                  onClick={handleCompoundDividend}
+                                >
+                                  <div className="flex">
+                                    Compound&nbsp;
+                                    {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                      0
+                                    ) : accountData.reflections !== undefined ? (
+                                      formatAmount(reflectionTokenBalance.toFixed(4))
+                                    ) : (
+                                      <SkeletonComponent />
+                                    )}
+                                    <span className="text-primary">&nbsp;{reflectionToken.symbol}</span>
+                                  </div>
+                                </StyledButton>
+                              </div>
+                            )}
                           </>
                         )}
                       </div>

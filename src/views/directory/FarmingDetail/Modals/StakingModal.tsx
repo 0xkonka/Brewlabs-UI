@@ -6,18 +6,21 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
 
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 
 import { Version } from "config/constants/types";
-import { numberWithCommas } from "utils/functions";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import useTokenPrice from "hooks/useTokenPrice";
+import { useAppDispatch } from "state";
+import { fetchFarmUserDataAsync } from "state/farms";
+import { numberWithCommas } from "utils/functions";
 
+import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";
-import StyledButton from "../../StyledButton";
 
 const StakingModal = ({
   open,
@@ -32,6 +35,9 @@ const StakingModal = ({
   data: any;
   accountData: any;
 }) => {
+  const dispatch = useAppDispatch();
+  const { address } = useAccount();
+
   const { pending, setPending }: any = useContext(DashboardContext);
   const lpPrice = useTokenPrice(data.chainId, data.lpAddress, true);
 
@@ -45,7 +51,8 @@ const StakingModal = ({
     data.farmId,
     data.chainId,
     data.contractAddress,
-    data.version >= Version.V2 && data.performanceFee ? data.performanceFee : "0"
+    data.version >= Version.V2 && data.performanceFee ? data.performanceFee : "0",
+    data.enableEmergencyWithdraw
   );
 
   const balance: any = (type === "deposit" ? accountData.tokenBalance : accountData.stakedBalance) / Math.pow(10, 18);
@@ -63,6 +70,7 @@ const StakingModal = ({
     setPending(true);
     try {
       await onApprove();
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(data.chainId));
@@ -78,6 +86,7 @@ const StakingModal = ({
       } else {
         await onUnstake(amount);
       }
+      dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(data.chainId));

@@ -584,7 +584,12 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <StyledButton
                             type="teritary"
                             boxShadow={address && earningTokenBalance > 0}
-                            disabled={!address || earningTokenBalance === 0 || pending}
+                            disabled={
+                              !address ||
+                              earningTokenBalance === 0 ||
+                              (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                              pending
+                            }
                             onClick={onCompoundReward}
                           >
                             <div className="flex">
@@ -605,7 +610,12 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <StyledButton
                               type="teritary"
                               boxShadow={address && earningTokenBalance > 0}
-                              disabled={!address || earningTokenBalance === 0 || pending}
+                              disabled={
+                                !address ||
+                                earningTokenBalance === 0 ||
+                                (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                                pending
+                              }
                               onClick={onHarvestReward}
                             >
                               <div className="flex">
@@ -631,7 +641,12 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               <StyledButton
                                 type="teritary"
                                 boxShadow={address && hasReflections}
-                                disabled={!address || !hasReflections || pending}
+                                disabled={
+                                  !address ||
+                                  !hasReflections ||
+                                  (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                                  pending
+                                }
                                 onClick={onCompoundReflection}
                               >
                                 Compound&nbsp;
@@ -656,7 +671,12 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <StyledButton
                               type="teritary"
                               boxShadow={address && hasReflections}
-                              disabled={!address || !hasReflections || pending}
+                              disabled={
+                                !address ||
+                                !hasReflections ||
+                                (data.enableEmergencyWithdraw && data.disableHarvest) ||
+                                pending
+                              }
                               onClick={onHarvestReflection}
                             >
                               Harvest&nbsp;
