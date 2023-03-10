@@ -52,6 +52,7 @@ export enum Chef {
 
 interface FarmConfigBaseProps {
   pid: number | null;
+  type?: Category;
   farmId?: number;
   poolId?: number;
   v1pid?: number;
@@ -63,7 +64,9 @@ interface FarmConfigBaseProps {
   contractAddress?: string;
   multiplier?: string;
   isCommunity?: boolean;
+  isCustody?: boolean;
   lpManager?: string;
+  sortOrder?: number;
   enableEmergencyWithdraw?: boolean;
   disableHarvest?: boolean;
   isServiceFee?: boolean;
@@ -86,13 +89,18 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
   quoteToken: SerializedToken;
   earningToken?: SerializedToken;
   reflectionToken?: SerializedToken;
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
+  apr?: number;
   token: Currency;
   quoteToken: Currency;
   earningToken?: Currency;
   reflectionToken?: Currency;
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 export interface BridgeToken extends SerializedToken {

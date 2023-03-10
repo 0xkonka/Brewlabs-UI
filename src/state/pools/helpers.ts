@@ -11,17 +11,15 @@ type UserData =
       stakingTokenBalance: number | string;
       stakedBalance: number | string;
       lockedBalance: number | string;
-      pendingReward: number | string;
-      pendingReflections: number[] | string[];
+      earnings: number | string;
+      reflections: number[] | string[];
       deposits: SerializedDeposit[];
     };
 
 export const transformUserData = (userData: UserData) => {
-  const pendingReflections = [];
-  for (let i = 0; i < userData?.pendingReflections?.length; i++) {
-    pendingReflections.push(
-      userData?.pendingReflections?.[i] ? new BigNumber(userData.pendingReflections[i]) : BIG_ZERO
-    );
+  const reflections = [];
+  for (let i = 0; i < userData?.reflections?.length; i++) {
+    reflections.push(userData?.reflections?.[i] ? new BigNumber(userData.reflections[i]) : BIG_ZERO);
   }
   const deposits = [];
   for (let i = 0; i < userData?.deposits?.length; i++) {
@@ -36,8 +34,8 @@ export const transformUserData = (userData: UserData) => {
     stakingTokenBalance: userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO,
     stakedBalance: userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO,
     lockedBalance: userData?.lockedBalance ? new BigNumber(userData.lockedBalance) : BIG_ZERO,
-    pendingReward: userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO,
-    pendingReflections,
+    earnings: userData?.earnings ? new BigNumber(userData.earnings) : BIG_ZERO,
+    reflections,
     deposits,
   };
 };

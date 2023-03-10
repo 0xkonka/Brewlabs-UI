@@ -55,6 +55,12 @@ export const formatDollar = (value, decimals = 2) => {
   return "$" + value.toFixed(decimals);
 };
 
+export const sumOfArray = (arr) => {
+  let total = 0;
+  for (let i = 0; i < arr.length; i++) total += arr[i];
+  return total;
+};
+
 export const priceFormat = (str) => {
   const strlist = Number(str).toFixed(14).split(".");
   let c = 0;
