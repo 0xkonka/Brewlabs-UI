@@ -63,13 +63,13 @@ const navigation = {
   earn: [
     {
       name: "Staking",
-      href: "https://earn.brewlabs.info/pools",
+      href: "/pools",
       external: true,
       status: "",
     },
     {
       name: "Farms",
-      href: "https://earn.brewlabs.info/farms",
+      href: "/farms",
       external: true,
       status: "",
     },
