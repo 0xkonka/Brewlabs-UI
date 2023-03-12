@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import CountDown from "./CountDown";
+import { formatAmount } from "utils/formatApy";
 
 const StakingHistory = ({ history }: { history: any }) => {
   return (
@@ -16,13 +16,10 @@ const StakingHistory = ({ history }: { history: any }) => {
           return (
             <div className="flex items-center justify-between border-b border-b-[#FFFFFF40] py-2.5" key={i}>
               <div className="min-w-[150px]">
-                {data.value.toFixed(0)} <span className="text-primary">{data.symbol}</span>
+                {formatAmount(data.amount.toString(), 5)} <span className="text-primary">{data.symbol}</span>
               </div>
               <div className="min-w-[60px]">{data.blockNumber}</div>
-              <div className="min-w-[80px] text-right">
-                <CountDown time={data.timeRemaining} />
-                {data.timeRemaining ? "Remaining" : ""}
-              </div>
+              <div className="min-w-[80px] text-right">N/A</div>
             </div>
           );
         })}

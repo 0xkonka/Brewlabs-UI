@@ -48,7 +48,7 @@ const PoolCard = ({
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
-          {data.type === 3 ? (
+          {data.type === Category.INDEXES ? (
             <div className="mr-3 flex">
               <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
               <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
@@ -71,7 +71,10 @@ const PoolCard = ({
               <div className="leading-none">{data.stakingToken.symbol}</div>
             )}
             <div className="text-xs">
-              {poolNames[data.type]} - {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} days lock`}
+              {poolNames[data.type]} -{" "}
+              {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
+                ? "Flexible"
+                : `${data.duration} days lock`}
             </div>
           </div>
         </div>
@@ -80,7 +83,9 @@ const PoolCard = ({
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
-            `${formatAmount(data.totalStaked)} ${data.stakingToken.symbol}`
+            `${formatAmount(data.totalStaked)} ${
+              data.type === Category.FARM ? data.lpSymbol.split(" ")[0] : data.stakingToken.symbol
+            }`
           ) : (
             <SkeletonComponent />
           )}
@@ -106,7 +111,11 @@ const PoolCard = ({
                 <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
               </div>
             ) : (
-              <img src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
+              <img
+                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
+                alt={""}
+                className="mr-3 w-7 rounded-full"
+              />
             )}
             <div>
               <div className="leading-none">
@@ -136,7 +145,9 @@ const PoolCard = ({
             <div className="text-left xsm:text-right">Total supply staked</div>
             <div className="text-left text-sm xsm:text-right">
               {data.totalStaked !== undefined ? (
-                `${formatAmount(data.totalStaked)} ${data.stakingToken.symbol}`
+                `${formatAmount(data.totalStaked)} ${
+                  data.type === Category.FARM ? data.lpSymbol : data.stakingToken.symbol
+                }`
               ) : (
                 <SkeletonComponent />
               )}

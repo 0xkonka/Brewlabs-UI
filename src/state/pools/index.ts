@@ -3,6 +3,7 @@ import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
 
 import { API_URL } from "config/constants";
+import { Category } from "config/constants/types";
 import { BIG_ZERO } from "utils/bigNumber";
 import { PoolsState } from "state/types";
 
@@ -20,7 +21,6 @@ import {
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
 import { SerializedPool } from "./types";
-import { Category, PoolCategory } from "config/constants/types";
 
 const initialState: PoolsState = {
   data: [],
@@ -40,7 +40,7 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
       const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId);
       const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId);
       const isPoolEndBlockExceeded =
-      blockLimit.endBlock > 0 && currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false;
+        blockLimit.endBlock > 0 && currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false;
       const isPoolFinished = pool.isFinished || isPoolEndBlockExceeded;
 
       return {
@@ -166,18 +166,18 @@ export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => as
       setPoolsUserData(
         pools.map((pool) => ({
           sousId: pool.sousId,
-          pendingReward: pendingRewards[pool.sousId],
+          earnings: pendingRewards[pool.sousId],
         }))
       )
     );
   });
 
-  fetchUserPendingReflections(account, chainId, pools).then((pendingReflections) => {
+  fetchUserPendingReflections(account, chainId, pools).then((reflections) => {
     dispatch(
       setPoolsUserData(
         pools.map((pool) => ({
           sousId: pool.sousId,
-          pendingReflections: pendingReflections[pool.sousId] ?? [],
+          reflections: reflections[pool.sousId] ?? [],
         }))
       )
     );
@@ -217,12 +217,12 @@ export const updateUserPendingReward =
     if (!pool) return;
 
     const pendingRewards = await fetchUserPendingReward(pool, account, chainId);
-    dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: pendingRewards }));
+    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: pendingRewards }));
 
     if (!(sousId > 1 && (sousId < 10 || sousId > 12) && sousId !== 33 && sousId !== 34)) return;
 
-    const pendingReflections = await fetchUserPendingReflection(pool, account, chainId);
-    dispatch(updatePoolsUserData({ sousId, field: "pendingReflections", value: pendingReflections ?? [] }));
+    const reflections = await fetchUserPendingReflection(pool, account, chainId);
+    dispatch(updatePoolsUserData({ sousId, field: "reflections", value: reflections ?? [] }));
   };
 
 export const PoolsSlice = createSlice({
@@ -262,9 +262,7 @@ export const PoolsSlice = createSlice({
       const index = state.data.findIndex((p) => p.sousId === sousId);
 
       if (index >= 0) {
-        state.data[index].userData.pendingReflections = state.data[index].userData.pendingReflections.map(() =>
-          BIG_ZERO.toJSON()
-        );
+        state.data[index].userData.reflections = state.data[index].userData.reflections.map(() => BIG_ZERO.toJSON());
       }
     },
     setPoolTVLData: (state, action) => {
@@ -285,7 +283,13 @@ export const PoolsSlice = createSlice({
 });
 
 // Actions
-export const { setPoolsPublicData, setPoolsUserData, updatePoolsUserData, resetPendingReflection, setPoolTVLData, resetPoolsUserData } =
-  PoolsSlice.actions;
+export const {
+  setPoolsPublicData,
+  setPoolsUserData,
+  updatePoolsUserData,
+  resetPendingReflection,
+  setPoolTVLData,
+  resetPoolsUserData,
+} = PoolsSlice.actions;
 
 export default PoolsSlice.reducer;
