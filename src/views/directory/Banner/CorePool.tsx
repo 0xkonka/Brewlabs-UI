@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { upSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
@@ -22,7 +23,7 @@ const CorePool = ({
   const CreatePoolInfoPanel = (type: string) => {
     return (
       <PoolInfoPanel type={type}>
-        <div className="w-full text-xs text-[#FFFFFF80]">
+        <div className="relative w-full text-xs text-[#FFFFFF80]">
           <div className="flex flex-wrap justify-between">
             <div className="text-xl text-[#FFFFFFBF]">
               Core Pool: <span className="text-primary">{data.earningToken.symbol}</span>
@@ -37,7 +38,9 @@ const CorePool = ({
               Stake <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
               <span className="text-primary">{data.earningToken.symbol}</span>
             </div>
-            <div className="text-primary">{data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} day lock`}</div>
+            <div className="text-primary">
+              {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} day lock`}
+            </div>
           </div>
           <div className="flex flex-wrap items-start justify-between">
             <div>
@@ -51,6 +54,9 @@ const CorePool = ({
               {upSVG}
               <div className="ml-2">Acending APR</div>
             </div>
+          </div>
+          <div className="absolute bottom-1 right-1">
+            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
           </div>
         </div>
       </PoolInfoPanel>

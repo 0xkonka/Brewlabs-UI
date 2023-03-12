@@ -126,7 +126,7 @@ const PoolCard = ({
               </div>
             </div>
           </div>
-          <img src={data.chainLogo} alt={""} className="w-9" />
+          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="mt-6 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
           <div className="flex text-2xl">
