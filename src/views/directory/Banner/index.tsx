@@ -50,7 +50,6 @@ const Banner = ({
         <CorePool setSelectPoolDetail={setSelectPoolDetail} index={195} setCurPool={setCurPool} pools={allPools} />
         <CorePool setSelectPoolDetail={setSelectPoolDetail} index={209} setCurPool={setCurPool} pools={allPools} />
         {/* <AutoFarmer /> */}
-        {/* <CorePool setSelectPoolDetail={setSelectPoolDetail} index={195} setCurPool={setCurPool} pools={allPools} /> */}
         <TrueNFT />
       </Carousel>
       <DotGroup active={curSlide}>
