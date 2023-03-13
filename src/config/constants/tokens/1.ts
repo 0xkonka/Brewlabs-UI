@@ -286,7 +286,7 @@ const tokens = {
     "Balloon Protocol",
     "https://balloon-protocol.info/"
   ),
-  xua2: new Token(ETHEREUM, "0x8D265f448d5e98F13778A1217FBdc59a9EcA338F", 18, "XUA2", "London Gold"),
+  xua2: new Token(ETHEREUM, "0xB3C28F8b7929497285D07a8f48ff466A7d4C782F", 18, "XUA2", "London Gold"),
   dai: new Token(ETHEREUM, "0x6B175474E89094C44Da98b954EedeAC495271d0F", 18, "DAI", "Dai Stablecoin"),
   wbtc: new Token(ETHEREUM, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", 8, "WBTC", "Wrapped BTC"),
   rune: new Token(ETHEREUM, "0x3155BA85D5F96b2d030a4966AF206230e46849cb", 18, "RUNE", "RUNE.ETH"),

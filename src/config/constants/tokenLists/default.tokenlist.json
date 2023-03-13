@@ -1677,10 +1677,10 @@
     {
       "name": "London Gold",
       "symbol": "XUA2",
-      "address": "0x8D265f448d5e98F13778A1217FBdc59a9EcA338F",
+      "address": "0xB3C28F8b7929497285D07a8f48ff466A7d4C782F",
       "chainId": 1,
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x8D265f448d5e98F13778A1217FBdc59a9EcA338F/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xB3C28F8b7929497285D07a8f48ff466A7d4C782F/logo.png"
     },
     {
       "name": "Pomeranian",
