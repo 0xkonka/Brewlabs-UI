@@ -710,7 +710,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         }}
                       />
                     </div>
-                    <div className="absolute bottom-0 left-0 flex h-12 w-full">
+                    <div className="sm:absolute relative sm:mt-0 mt-2 bottom-0 left-0 flex h-12 w-full">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton
