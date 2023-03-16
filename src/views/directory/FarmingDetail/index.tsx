@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
 
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
+import { chevronLeftSVG, LinkSVG, lockSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
@@ -332,11 +332,23 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
                         Deposit Fee {(+data.depositFee).toFixed(2)}%
+                        <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
+                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        </div>
                         <br />
                         Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
+                        <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
+                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        </div>
                         <br />
                         Peformance Fee {data.performanceFee ? data.performanceFee / Math.pow(10, 18) : "0.00"}{" "}
                         {getNativeSybmol(data.chainId)}
+                        <div
+                          className="tooltip"
+                          data-tip="Performance fee is charged per transaction to the Brewlabs Treasury."
+                        >
+                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        </div>
                       </div>
                     </InfoPanel>
 
@@ -598,7 +610,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="mt-7">
                       <StakingHistory history={history} />
                     </div>
-                    <div className="sm:absolute relative sm:mt-0 mt-2 bottom-0 left-0 flex h-12 w-full">
+                    <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full sm:absolute sm:mt-0">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton

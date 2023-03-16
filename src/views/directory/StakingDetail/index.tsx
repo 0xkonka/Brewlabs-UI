@@ -378,6 +378,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
                         Deposit Fee {(+data.depositFee).toFixed(2)}%
+                        <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
+                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        </div>
                         <br />
                         Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
                         {data.sousId === 203 && (
@@ -386,10 +389,16 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             Early Withdraw Fee 10.00 %
                           </>
                         )}
+                        <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
+                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        </div>
                         <br />
                         <div className="flex">
                           Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}&nbsp;
-                          <div className="tooltip" data-tip="Performance fee is charged per transaction.">
+                          <div
+                            className="tooltip"
+                            data-tip="Performance fee is charged per transaction to the Brewlabs Treasury."
+                          >
                             <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
@@ -710,7 +719,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         }}
                       />
                     </div>
-                    <div className="sm:absolute relative sm:mt-0 mt-2 bottom-0 left-0 flex h-12 w-full">
+                    <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full sm:absolute sm:mt-0">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton
