@@ -12,6 +12,7 @@ import NavButton from "./NavButton";
 import { SwapContext } from "contexts/SwapContext";
 import PriceList from "./PriceList";
 import styled from "styled-components";
+import SwapBoard from "views/swap/SwapBoard";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
@@ -66,7 +67,7 @@ const UserDashboard = () => {
       </StyledContainer>
       {viewType === 1 ? (
         <div className="mt-4 flex justify-center">
-          <SwapPanel type={"draw"} disableChainSelect />
+          <SwapBoard type={"draw"} disableChainSelect />
         </div>
       ) : (
         <>
