@@ -18,6 +18,9 @@ const SwapContext: any = React.createContext({
   verified: false,
   apporveStep: 0,
   viewType: 0,
+  swapTab: 0,
+  addLiquidityStep: 0,
+  openSettingModal: false,
   setQuoteData: () => {},
   setOutputAmount: () => {},
   setSlippageInput: () => {},
@@ -32,6 +35,9 @@ const SwapContext: any = React.createContext({
   setVerified: () => {},
   setApproveStep: () => {},
   setViewType: () => {},
+  setSwapTab: () => {},
+  setAddLiquidityStep: () => {},
+  setOpenSettingModal: () => {},
 });
 
 const SwapContextProvider = ({ children }: any) => {
@@ -50,6 +56,9 @@ const SwapContextProvider = ({ children }: any) => {
   const [apporveStep, setApproveStep] = useState(0);
 
   const [viewType, setViewType] = useState(0);
+  const [swapTab, setSwapTab] = useState(0);
+  const [addLiquidityStep, setAddLiquidityStep] = useState(0);
+  const [openSettingModal, setOpenSettingModal] = useState(false);
 
   useDefaultsFromURLSearch();
 
@@ -70,6 +79,9 @@ const SwapContextProvider = ({ children }: any) => {
         verified,
         apporveStep,
         viewType,
+        swapTab,
+        addLiquidityStep,
+        openSettingModal,
         setQuoteData,
         setOutputAmount,
         setSlippageInput,
@@ -84,6 +96,9 @@ const SwapContextProvider = ({ children }: any) => {
         setVerified,
         setApproveStep,
         setViewType,
+        setSwapTab,
+        setAddLiquidityStep,
+        setOpenSettingModal,
       }}
     >
       {children}
