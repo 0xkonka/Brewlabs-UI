@@ -7,36 +7,36 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
 const ProgressBar = ({
-  startBlock,
-  endBlock,
-  curBlock,
+  block,
+  rewards,
 }: {
-  startBlock: number | undefined;
-  endBlock: number | undefined;
-  curBlock: number | undefined;
+  block: {
+    start: number | undefined;
+    end: number | undefined;
+    current: number | undefined;
+  };
+  rewards: {
+    deposit: number | undefined;
+    available: number | undefined;
+  };
 }) => {
   const [filter, setFilter] = useState(0);
   const [percent, setPercent] = useState(0);
 
   const { chainId } = useActiveChainId();
 
-  const blocks = endBlock - startBlock,
-    remaining = Math.max(0, endBlock - curBlock);
+  let total = filter === 0 ? block.end - block.start : rewards.deposit;
+  let remaining =
+    filter === 0 ? Math.max(0, block.end - block.current) : Math.max(0, rewards.deposit - rewards.available);
 
   useEffect(() => {
-    setPercent(remaining ? Math.min(((blocks - remaining) / blocks) * 100, 100) : 100);
-  }, [blocks, remaining]);
+    setPercent(remaining ? Math.min(((total - remaining) / total) * 100, 100) : 0);
+  }, [block.start, block.end, block.current, rewards.deposit, rewards.available, filter]);
+
   return (
     <div>
       <div>Pool Query</div>
       <div className="flex">
-        {/* <div className="mb-2 flex flex-col items-end text-xl leading-none">
-        <div className="text-[#FFFFFFBF]">Pool Duration</div>
-        <div className="flex text-base text-[#FFFFFF80]">
-          Blocks Remaining:&nbsp;
-          <span className="text-primary">{remaining !== undefined && !isNaN(remaining) ? remaining : <SkeletonComponent />}</span>
-        </div>
-      </div> */}
         <div className="min-w-[150px] sm:min-w-[180px]">
           <Menu as="div" className="relative inline-block w-full text-left text-xs sm:text-sm">
             <div>
@@ -94,11 +94,11 @@ const ProgressBar = ({
             {filter === 0 ? (
               <>
                 Blocks Remaining:{" "}
-                {!curBlock || !endBlock || !startBlock ? (
+                {!block.current || !block.start || !block.end ? (
                   <SkeletonComponent />
                 ) : (
                   <a
-                    href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/block/${endBlock}`}
+                    href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/block/${block.end}`}
                     target={"_blank"}
                     rel={"noreferrer"}
                     className="dark:text-primary"
@@ -108,7 +108,14 @@ const ProgressBar = ({
                 )}
               </>
             ) : (
-              `Reward Balance: `
+              <>
+                Reward Balance:&nbsp;
+                {!rewards.available || !rewards.deposit ? (
+                  <SkeletonComponent />
+                ) : (
+                  <span className="dark:text-primary">{remaining.toFixed(2)}</span>
+                )}
+              </>
             )}
           </div>
         </div>

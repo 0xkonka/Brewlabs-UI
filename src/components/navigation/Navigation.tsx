@@ -24,7 +24,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
         <div className="flex flex-shrink-0 items-center px-4">
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
         </div>
-        <nav className="mt-5 flex flex-1 justify-between flex-col" aria-label="Sidebar">
+        <nav className="mt-5 flex flex-1 flex-col justify-between" aria-label="Sidebar">
           <div className="space-y-1 px-2 font-brand tracking-wider">
             {navigationData.map((item) => (
               <Link href={item.href} passHref key={item.name}>
@@ -58,13 +58,16 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
           </div>
           <div>
             <a
-              className="ml-6 flex text-sm"
+              className={clsx(slim ? "ml-4" : "ml-6 ", "flex text-sm")}
               href="https://brewlabs.gitbook.io/welcome-to-brewlabs/important-docs/brewlabs-dapp-terms-of-service"
               target={"_blank"}
               rel={"noreferrer"}
             >
-              <img src="/images/dashboard/docs.svg" alt=""></img>&nbsp;&nbsp;Visit&nbsp;
-              <span className="dark:text-primary">Brewlabs docs</span>
+              <img src="/images/dashboard/docs.svg" alt="" className={clsx(slim && "h-5 w-5")}></img>
+              <span className={clsx(slim && "sr-only", "ml-2")}>
+                Visit&nbsp;
+                <span className="dark:text-primary">Brewlabs docs</span>
+              </span>
             </a>
           </div>
         </nav>

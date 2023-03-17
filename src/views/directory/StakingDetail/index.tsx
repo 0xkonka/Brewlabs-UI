@@ -28,7 +28,7 @@ import {
   updateUserPendingReward,
   updateUserStakedBalance,
 } from "state/pools";
-import { fetchPoolFeeHistories, fetchPoolTotalRewards } from "state/pools/fetchPools";
+import { fetchPoolDepositBalance, fetchPoolFeeHistories, fetchPoolTotalRewards } from "state/pools/fetchPools";
 import { fetchUserDepositData } from "state/pools/fetchPoolsUser";
 import { BIG_ZERO } from "utils/bigNumber";
 import { numberWithCommas } from "utils/functions";
@@ -91,7 +91,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   useEffect(() => {
     const fetchtotalRewardsAsync = async () => {
       const { availableRewards, availableReflections } = await fetchPoolTotalRewards(data);
-      dispatch(setPoolsPublicData([{ sousId: data.sousId, availableRewards, availableReflections }]));
+      const depositBalance = await fetchPoolDepositBalance(data);
+
+      dispatch(setPoolsPublicData([{ sousId: data.sousId, availableRewards, availableReflections, depositBalance }]));
     };
 
     const fetchFeeHistoriesAsync = async () => {
@@ -134,7 +136,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 1:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
-        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
         return _graphData;
       case 2:
         return data.tokenFees;
@@ -145,7 +147,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
-        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
         return _graphData;
     }
   };
@@ -377,29 +379,31 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
-                        Deposit Fee {(+data.depositFee).toFixed(2)}%
-                        <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
-                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        <div className="flex">
+                          Deposit Fee {(+data.depositFee).toFixed(2)}%
+                          <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
+                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                          </div>
                         </div>
-                        <br />
-                        Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
-                        {data.sousId === 203 && (
-                          <>
-                            <br />
-                            Early Withdraw Fee 10.00 %
-                          </>
-                        )}
-                        <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
-                          <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                        <div className="flex">
+                          Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
+                          {data.sousId === 203 && (
+                            <>
+                              <br />
+                              Early Withdraw Fee 10.00 %
+                            </>
+                          )}
+                          <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
+                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                          </div>
                         </div>
-                        <br />
                         <div className="flex">
                           Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}&nbsp;
                           <div
                             className="tooltip"
                             data-tip="Performance fee is charged per transaction to the Brewlabs Treasury."
                           >
-                            <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                       </div>
@@ -483,7 +487,17 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                 </div>
                 <div className="mt-7">
-                  <ProgressBar startBlock={data.startBlock} endBlock={data.endBlock} curBlock={currentBlock} />
+                  <ProgressBar
+                    block={{ start: data.startBlock, end: data.endBlock, current: currentBlock }}
+                    rewards={{
+                      deposit:
+                        data.depositBalance -
+                        (data.earningToken.address.toLowerCase() === data.stakingToken.address.toLowerCase()
+                          ? data.totalStaked
+                          : 0),
+                      available: data.availableRewards,
+                    }}
+                  />
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
@@ -792,7 +806,7 @@ const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: stri
   width: 100%;
   color: #ffffffbf;
   box-shadow: ${({ boxShadow }) =>
-    boxShadow === "primary" ? "0px 1px 4px #EEBB19" : boxShadow === "secondary" ? "0px 1px 4px #EEBB19" : ""};
+    boxShadow === "primary" ? "0px 0px 4px #EEBB19" : boxShadow === "secondary" ? "0px 0px 4px #EEBB19" : ""};
   :hover {
     border-color: ${({ type, boxShadow }) =>
       type === "secondary" && !boxShadow ? "#EEBB19" : "rgba(255, 255, 255, 0.5)"};
