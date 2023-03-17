@@ -14,6 +14,7 @@ import { getAddress } from "utils/addressHelpers";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getSingleStakingContract } from "utils/contractHelpers";
 import { getBalanceNumber } from "utils/formatBalance";
+import { sumOfArray } from "utils/functions";
 import multicall from "utils/multicall";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
@@ -48,10 +49,8 @@ export const fetchPoolsBlockLimits = async (chainId, pools) => {
         batch.forEach((pool, index) => {
           data.push({
             sousId: pool.sousId,
-            startBlock: new BigNumber(starts[index]).toJSON(),
-            endBlock: pool.forceEndblock
-              ? new BigNumber(pool.forceEndblock).toJSON()
-              : new BigNumber(ends[index]).toJSON(),
+            startBlock: starts[index][0].toNumber(),
+            endBlock: pool.forceEndblock ? pool.forceEndblock : ends[index][0].toNumber(),
           });
         });
       } catch (e) {
@@ -147,28 +146,28 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
         nonLockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: new BigNumber(nonLockupPoolsRewards[index]).toJSON(),
-            depositFee: new BigNumber(nonLockupPoolsDFee[index]).dividedBy(100).toNumber(),
-            withdrawFee: new BigNumber(nonLockupPoolsWFee[index]).dividedBy(100).toNumber(),
+            tokenPerBlock: nonLockupPoolsRewards[index][0].toString(),
+            depositFee: nonLockupPoolsDFee[index][0].div(100).toNumber(),
+            withdrawFee: nonLockupPoolsWFee[index][0].div(100).toNumber(),
             duration: 0,
           });
         });
         lockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: new BigNumber(lockupPoolsRewards[index]).toJSON(),
-            depositFee: new BigNumber(lockupPoolsFees[index].depositFee._hex).dividedBy(100).toNumber(),
-            withdrawFee: new BigNumber(lockupPoolsFees[index].withdrawFee._hex).dividedBy(100).toNumber(),
-            duration: new BigNumber(lockupPoolsFees[index].duration._hex).toNumber(),
+            tokenPerBlock: lockupPoolsRewards[index][0].toString(),
+            depositFee: lockupPoolsFees[index].depositFee.div(100).toNumber(),
+            withdrawFee: lockupPoolsFees[index].withdrawFee.div(100).toNumber(),
+            duration: lockupPoolsFees[index].duration.toNumber(),
           });
         });
         lockupV2Pools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: new BigNumber(lockupV2PoolsRewards[index]).toJSON(),
-            depositFee: new BigNumber(lockupV2PoolsFees[index].depositFee._hex).dividedBy(100).toNumber(),
-            withdrawFee: new BigNumber(lockupV2PoolsFees[index].withdrawFee._hex).dividedBy(100).toNumber(),
-            duration: new BigNumber(lockupV2PoolsFees[index].duration._hex).toNumber(),
+            tokenPerBlock: lockupV2PoolsRewards[index][0].toString(),
+            depositFee: lockupV2PoolsFees[index].depositFee.div(100).toNumber(),
+            withdrawFee: lockupV2PoolsFees[index].withdrawFee.div(100).toNumber(),
+            duration: lockupV2PoolsFees[index].duration.toNumber(),
           });
         });
       } catch (e) {
@@ -359,12 +358,6 @@ export const fetchPoolTotalRewards = async (pool) => {
   return { availableRewards: getBalanceNumber(res[0], pool.earningToken.decimals), availableReflections };
 };
 
-const sum = (arr) => {
-  let total = 0;
-  for (let i = 0; i < arr.length; i++) total += arr[i];
-  return total;
-};
-
 export const fetchPoolFeeHistories = async (pool) => {
   let res;
   try {
@@ -382,9 +375,9 @@ export const fetchPoolFeeHistories = async (pool) => {
   const curTime = Math.floor(new Date().getTime() / 1000);
 
   for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
-    _performanceFees.push(sum(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
-    _tokenFees.push(sum(tokenFees.filter((v) => v.timestamp <= t).map((v) => +v.value)));
-    _stakedAddresses.push(sum(stakedAddresses.filter((v) => v.timestamp <= t).map((v) => v.value)));
+    _performanceFees.push(sumOfArray(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
+    _tokenFees.push(sumOfArray(tokenFees.filter((v) => v.timestamp <= t).map((v) => +v.value)));
+    _stakedAddresses.push(sumOfArray(stakedAddresses.filter((v) => v.timestamp <= t).map((v) => v.value)));
   }
 
   return { performanceFees: _performanceFees, tokenFees: _tokenFees, stakedAddresses: _stakedAddresses };

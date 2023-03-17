@@ -21,7 +21,6 @@ import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { SwapContextProvider } from "contexts/SwapContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
-import { FarmContextProvider } from "contexts/directory/FarmContext";
 import { IndexContextProvider } from "contexts/directory/IndexContext";
 import { ZapperContextProvider } from "contexts/directory/ZapperContext";
 import { LanguageProvider } from "contexts/localization";
@@ -90,60 +89,58 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
             <TokenPriceContextProvider>
               <DashboardContextProvider>
                 <SwapContextProvider>
-                  <FarmContextProvider>
-                    <IndexContextProvider>
-                      <ZapperContextProvider>
-                        <LanguageProvider>
-                          <BridgeProvider>
-                            <SWRConfig>
-                              <GlobalHooks />
-                              <PersistGate loading={null} persistor={persistor}>
-                                <DefaultSeo {...SEO} />
-                                <Updaters />
+                  <IndexContextProvider>
+                    <ZapperContextProvider>
+                      <LanguageProvider>
+                        <BridgeProvider>
+                          <SWRConfig>
+                            <GlobalHooks />
+                            <PersistGate loading={null} persistor={persistor}>
+                              <DefaultSeo {...SEO} />
+                              <Updaters />
 
-                                <div
-                                  className={clsx(
-                                    router?.pathname === "/" && "home",
-                                    "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
-                                  )}
-                                >
-                                  <Suspense>
-                                    <Bubbles />
-                                  </Suspense>
+                              <div
+                                className={clsx(
+                                  router?.pathname === "/" && "home",
+                                  "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                                )}
+                              >
+                                <Suspense>
+                                  <Bubbles />
+                                </Suspense>
 
-                                  <Image
-                                    className="fixed top-0 -right-44 dark:opacity-50"
-                                    src="/images/blur-indigo.png"
-                                    alt="background blur"
-                                    width={567}
-                                    height={567}
-                                    unoptimized={false}
-                                  />
+                                <Image
+                                  className="fixed top-0 -right-44 dark:opacity-50"
+                                  src="/images/blur-indigo.png"
+                                  alt="background blur"
+                                  width={567}
+                                  height={567}
+                                  unoptimized={false}
+                                />
 
-                                  <div className="flex h-full">
-                                    <NavigationDesktop />
-                                    <NavigationMobile />
-                                    <UserSidebar />
+                                <div className="flex h-full">
+                                  <NavigationDesktop />
+                                  <NavigationMobile />
+                                  <UserSidebar />
 
-                                    <div className="flex flex-1 flex-col">
-                                      <HeaderMobile />
+                                  <div className="flex flex-1 flex-col">
+                                    <HeaderMobile />
 
-                                      <LazyMotion features={domAnimation}>
-                                        <AnimatePresence exitBeforeEnter>
-                                          <App {...props} />
-                                        </AnimatePresence>
-                                      </LazyMotion>
-                                    </div>
+                                    <LazyMotion features={domAnimation}>
+                                      <AnimatePresence exitBeforeEnter>
+                                        <App {...props} />
+                                      </AnimatePresence>
+                                    </LazyMotion>
                                   </div>
-                                  <ToastContainer />
                                 </div>
-                              </PersistGate>
-                            </SWRConfig>
-                          </BridgeProvider>
-                        </LanguageProvider>
-                      </ZapperContextProvider>
-                    </IndexContextProvider>
-                  </FarmContextProvider>
+                                <ToastContainer />
+                              </div>
+                            </PersistGate>
+                          </SWRConfig>
+                        </BridgeProvider>
+                      </LanguageProvider>
+                    </ZapperContextProvider>
+                  </IndexContextProvider>
                 </SwapContextProvider>
               </DashboardContextProvider>
             </TokenPriceContextProvider>

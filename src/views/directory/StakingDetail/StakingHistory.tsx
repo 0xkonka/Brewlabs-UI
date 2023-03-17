@@ -16,7 +16,7 @@ const StakingHistory = ({
   setPopulatedAmount: any;
 }) => {
   return (
-    <div className="h-[300px] overflow-x-scroll text-[#FFFFFFBF]">
+    <div className="sm:h-[300px] h-auto overflow-x-scroll text-[#FFFFFFBF]">
       <div className="flex justify-between text-xl">
         <div className="min-w-[150px]">Stake</div>
         <div className="min-w-[60px]">Block</div>

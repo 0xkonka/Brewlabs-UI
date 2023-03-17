@@ -51,9 +51,11 @@ export const usePollFarmsWithUserData = () => {
   );
 
   useSWRImmutable(
-    account && chainId ? ["farmsWithUserData", account, chainId] : null,
+    account && chainId ? ["farmsWithUserData", account, chainId, farms.length] : null,
     async () => {
-      const pids = farms.map((farmToFetch) => farmToFetch.pid && farmToFetch.chainId === chainId);
+      const pids = farms
+        .filter((farmToFetch) => farmToFetch.pid && farmToFetch.chainId === chainId)
+        .map((farm) => farm.pid);
       const params = { account, pids, chainId };
 
       dispatch(fetchFarmUserDataAsync(params));
@@ -96,62 +98,18 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 };
 
 export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
-  const {
-    lpAddress,
-    contractAddress,
-    lpSymbol,
-    lpDecimals,
-    pid,
-    farmId,
-    poolId,
-    chainId,
-    dual,
-    multiplier,
-    isCommunity,
-    lpManager,
-    compound,
-    compoundRelection,
-    unverified,
-    featured,
-    isFinished,
-  } = farm;
+  const { token, quoteToken, earningToken, reflectionToken, totalStaked, poolWeight, rewardPerBlock, ...rest } = farm;
 
   return {
-    lpAddress,
-    contractAddress,
-    lpSymbol,
-    lpDecimals,
-    pid,
-    farmId,
-    poolId,
-    chainId,
-    dual,
-    multiplier,
-    isCommunity,
-    lpManager,
-    compound,
-    compoundRelection,
-    unverified,
-    featured,
-    isFinished,
-    token: deserializeToken(farm.token),
-    quoteToken: deserializeToken(farm.quoteToken),
-    earningToken: farm.earningToken ? deserializeToken(farm.earningToken) : undefined,
-    reflectionToken: farm.reflectionToken ? deserializeToken(farm.reflectionToken) : undefined,
+    ...rest,
+    token: deserializeToken(token),
+    quoteToken: deserializeToken(quoteToken),
+    earningToken: earningToken ? deserializeToken(earningToken) : undefined,
+    reflectionToken: reflectionToken ? deserializeToken(reflectionToken) : undefined,
     userData: deserializeFarmUserData(farm),
-    totalStaked: farm.totalStaked ? new BigNumber(farm.totalStaked) : BIG_ZERO,
-    poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
-    depositFee: farm.depositFee,
-    withdrawFee: farm.withdrawFee,
-    version: farm.version,
-    performanceFee: farm.performanceFee,
-    rewardPerBlock: farm.rewardPerBlock ? new BigNumber(farm.rewardPerBlock) : BIG_ZERO,
-    enableEmergencyWithdraw: farm.enableEmergencyWithdraw,
-    externalSwap: farm.externalSwap,
-    TVLData: farm.TVLData,
-    performanceFees: farm.performanceFees,
-    tokenFees: farm.tokenFees,
-    stakedAddresses: farm.stakedAddresses
+    totalStaked: totalStaked ? new BigNumber(totalStaked) : BIG_ZERO,
+    poolWeight: poolWeight ? new BigNumber(poolWeight) : BIG_ZERO,
+    rewardPerBlock: rewardPerBlock ? new BigNumber(rewardPerBlock) : BIG_ZERO,
   };
 };
 

@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import BigNumber from "bignumber.js";
 import { useSingleStaking } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAppDispatch } from "state";
@@ -17,17 +16,11 @@ import { ethers } from "ethers";
 import { forceGasLimits } from "config/constants/pools";
 
 const stake = async (stakingContract, amount, decimals, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.deposit(
-    new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString(),
-    { value: performanceFee }
-  );
+  const _amount = ethers.utils.parseUnits(amount, decimals);
+  let gasLimit = await stakingContract.estimateGas.deposit(_amount, { value: performanceFee });
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await stakingContract.deposit(new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString(), {
-    gasPrice,
-    gasLimit,
-    value: performanceFee,
-  });
+  const tx = await stakingContract.deposit(_amount, { gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
   return receipt;
 };
@@ -40,17 +33,13 @@ const unstake = async (
   gasPrice,
   forceGasLimit = "0"
 ) => {
-  const units = ethers.utils.parseUnits(amount, decimals);
+  const _amount = ethers.utils.parseUnits(amount, decimals);
 
-  let gasLimit = await stakingContract.estimateGas.withdraw(units.toString(), { value: performanceFee });
+  let gasLimit = await stakingContract.estimateGas.withdraw(_amount, { value: performanceFee });
   gasLimit = calculateGasMargin(gasLimit);
   if (forceGasLimit !== "0") gasLimit = forceGasLimit;
 
-  const tx = await stakingContract.withdraw(units.toString(), {
-    gasPrice,
-    gasLimit,
-    value: performanceFee,
-  });
+  const tx = await stakingContract.withdraw(_amount, { gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
   return receipt;
 };
@@ -111,7 +100,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
       const gasPrice = await getNetworkGasPrice(library, chainId);
       const receipt = await stake(stakingContract, amount, decimals, performanceFee, gasPrice);
 
-      dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
+      dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
       dispatch(resetPendingReflection(sousId));
       dispatch(updateUserStakedBalance(sousId, account, chainId));
       dispatch(updateUserBalance(sousId, account, chainId));
@@ -131,7 +120,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
       }
 
       dispatch(resetPendingReflection(sousId));
-      dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
+      dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
       dispatch(updateUserStakedBalance(sousId, account, chainId));
       dispatch(updateUserBalance(sousId, account, chainId));
       dispatch(updateUserPendingReward(sousId, account, chainId));
@@ -144,7 +133,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await harvestPool(stakingContract, performanceFee, gasPrice);
 
-    dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
+    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserBalance(sousId, account, chainId));
     return receipt;
@@ -164,7 +153,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await compoundPool(stakingContract, performanceFee, gasPrice);
 
-    dispatch(updatePoolsUserData({ sousId, field: "pendingReward", value: BIG_ZERO.toJSON() }));
+    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserStakedBalance(sousId, account, chainId));
     return receipt;

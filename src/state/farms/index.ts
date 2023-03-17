@@ -13,6 +13,7 @@ import {
   fetchFarmUserTokenBalances,
 } from "./fetchFarmUser";
 import { fetchTotalStakesForFarms } from "./fetchPublicFarmData";
+import { Category } from "config/constants/types";
 
 const initialUserData = {
   allowance: "0",
@@ -30,9 +31,12 @@ const initialState: SerializedFarmsState = {
 
 export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/farms`).then((res) => {
-    dispatch(setFarmsPublicData(res.data ?? []));
+    let farms = [];
+    if (res.data) {
+      farms = res.data.map((farm) => ({ type: Category.FARM, ...farm }));
+    }
+    dispatch(setFarmsPublicData(farms));
 
-    const farms = res.data ?? [];
     const pids = farms.map((farmToFetch) => farmToFetch.pid);
     dispatch(fetchFarmsTVLDataAsync(pids));
   });
@@ -56,9 +60,7 @@ export const fetchFarmsTVLDataAsync = (pids) => async (dispatch, getState) => {
     const TVLData = [];
     for (let farm of farms) {
       let record = { pid: farm.pid, data: [] };
-      record.data = ret.filter(
-        (d) => d.chainId === farm.chainId && d.address === farm.contractAddress.toLowerCase() && d.pid === farm.pid
-      );
+      record.data = ret.filter((d) => d.farmId === farm.pid).map((r) => r.totalStaked);
 
       if (record.data.length > 0) {
         TVLData.push(record);
@@ -195,8 +197,8 @@ export const farmsSlice = createSlice({
       state.userDataLoaded = true;
     },
     updateFarmsUserData: (state, action) => {
-      const { field, value, pid, farmId } = action.payload;
-      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId);
+      const { field, value, pid, farmId } = action.payload
+      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId)
 
       if (index >= 0) {
         state.data[index] = { ...state.data[index], userData: { ...state.data[index].userData, [field]: value } };

@@ -22,9 +22,8 @@ export const navigationData = [
   },
   {
     name: "Farms",
-    // href: "/farms",
-    href: "https://earn.brewlabs.info/farms",
-    external: true,
+    href: "/farms",
+    external: false,
     icon: "ArrowTrendingUpIcon",
   },
   // {

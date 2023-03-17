@@ -30,10 +30,11 @@ export interface SerializedFarm extends SerializedFarmConfig {
   depositFee?: string;
   withdrawFee?: string;
   performanceFee?: string;
+  startBlock?: number;
+  endBlock?: number;
   userData?: SerializedFarmUserData;
   TVLData?: number[];
   performanceFees?: number[];
-  tokenFees?: string[];
   stakedAddresses?: number[];
 }
 export interface DeserializedFarm extends DeserializedFarmConfig {
@@ -43,9 +44,10 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   depositFee?: string;
   withdrawFee?: string;
   performanceFee?: string;
+  startBlock?: number;
+  endBlock?: number;
   userData?: DeserializedFarmUserData;
   TVLData?: number[];
   performanceFees?: number[];
-  tokenFees?: string[];
   stakedAddresses?: number[];
 }
