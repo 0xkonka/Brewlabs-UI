@@ -1683,6 +1683,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xB3C28F8b7929497285D07a8f48ff466A7d4C782F/logo.png"
     },
     {
+      "name": "R33LZ",
+      "symbol": "R33LZ",
+      "address": "0x5D3957DF518adE9AdfD7c4341a0cf7D6D73EC682",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x5D3957DF518adE9AdfD7c4341a0cf7D6D73EC682/logo.png"
+    },
+    {
       "name": "Pomeranian",
       "symbol": "POM",
       "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
