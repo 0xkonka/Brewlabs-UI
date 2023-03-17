@@ -472,10 +472,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                 </div>
                 <div className="mt-7">
-                  <ProgressBar
-                    blocks={data.endBlock - data.startBlock}
-                    remaining={Math.max(0, data.endBlock - currentBlock ?? 0)}
-                  />
+                  <ProgressBar startBlock={data.startBlock} endBlock={data.endBlock} curBlock={currentBlock} />
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
@@ -489,25 +486,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     />
                     <InfoPanel
                       className="mt-20 flex cursor-pointer justify-between"
-                      type={"secondary"}
-                      boxShadow={curGraph === 0 ? "primary" : null}
-                      onClick={() => setCurGraph(1)}
-                    >
-                      <div>My Staked Tokens</div>
-                      <div className="flex">
-                        {!address ? (
-                          "$0.00"
-                        ) : accountData.stakedBalance ? (
-                          `$${formatAmount(
-                            getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
-                          )}`
-                        ) : (
-                          <SkeletonComponent />
-                        )}
-                      </div>
-                    </InfoPanel>
-                    <InfoPanel
-                      className="mt-2.5 flex cursor-pointer justify-between"
                       type={"secondary"}
                       boxShadow={curGraph === 1 ? "primary" : null}
                       onClick={() => setCurGraph(1)}
@@ -575,6 +553,39 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
+                      <InfoPanel className="flex cursor-pointer justify-between" type={"secondary"}>
+                        <div>My Staked Tokens</div>
+                        <div className="flex">
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.stakedBalance ? (
+                            `${formatAmount(getBalanceNumber(accountData.stakedBalance, stakingToken.decimals))}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                          &nbsp;
+                          <span className="text-primary">{data.earningToken.symbol}</span>
+                        </div>
+                      </InfoPanel>
+                      <InfoPanel
+                        className="mt-2 flex cursor-pointer justify-between xsm:ml-4 xsm:mt-0"
+                        type={"secondary"}
+                      >
+                        <div>USD Value</div>
+                        <div className="flex">
+                          {!address ? (
+                            "$0.00"
+                          ) : accountData.stakedBalance ? (
+                            `$${formatAmount(
+                              getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
+                            )}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                        </div>
+                      </InfoPanel>
+                    </div>
+                    <div className="mt-8 flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
                         <div className="mt-1.5 h-[56px] w-full">
@@ -607,7 +618,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             >
                               <div className="flex">
                                 Harvest&nbsp;
-                                {!address  || (data.enableEmergencyWithdraw && data.disableHarvest)? (
+                                {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                   "0.00"
                                 ) : accountData.pendingReward !== undefined ? (
                                   formatAmount(earningTokenBalance.toFixed(4))
@@ -739,11 +750,12 @@ const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: stri
   background: ${({ type }) => (type === "secondary" ? "rgba(185, 184, 184, 0.1)" : "rgba(185, 184, 184, 0.05)")};
   border: 0.5px solid rgba(255, 255, 255, 0.5);
   border-radius: 4px;
+  align-items: center;
   padding: ${({ padding, type }) => (type === "secondary" ? "12px 15px" : padding)};
   width: 100%;
   color: #ffffffbf;
   box-shadow: ${({ boxShadow }) =>
-    boxShadow === "primary" ? "0px 2px 4px #EEBB19" : boxShadow === "secondary" ? "0px 1px 4px #EEBB19" : ""};
+    boxShadow === "primary" ? "0px 1px 4px #EEBB19" : boxShadow === "secondary" ? "0px 1px 4px #EEBB19" : ""};
   :hover {
     border-color: ${({ type, boxShadow }) =>
       type === "secondary" && !boxShadow ? "#EEBB19" : "rgba(255, 255, 255, 0.5)"};
