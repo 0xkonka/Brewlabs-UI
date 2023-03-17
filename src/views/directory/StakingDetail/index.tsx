@@ -401,7 +401,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}&nbsp;
                           <div
                             className="tooltip"
-                            data-tip="Performance fee is charged per transaction to the Brewlabs Treasury."
+                            data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
                           >
                             <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
