@@ -358,6 +358,31 @@ export const fetchPoolTotalRewards = async (pool) => {
   return { availableRewards: getBalanceNumber(res[0], pool.earningToken.decimals), availableReflections };
 };
 
+export const fetchPoolDepositBalance = async (pool) => {
+  const url = `https://${
+    pool.chainId === 1 ? "api.etherscan.io" : "api.bscscan.com"
+  }/api?module=account&action=tokentx&contractaddress=${pool.earningToken.address}&address=${
+    pool.contractAddress
+  }&startblock=0&endblock=99999999&sort=asc&apikey=${
+    pool.chainId === 1 ? "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX" : "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND"
+  }`;
+
+  let sHistoryResult: any = await axios.get(url);
+  sHistoryResult = sHistoryResult.data.result;
+
+  let depositBalance = 0;
+
+  if (sHistoryResult && sHistoryResult !== "Max rate limit reached") {
+    sHistoryResult.map((history: any) => {
+      if (history.to.toLowerCase() === pool.contractAddress.toLowerCase()) {
+        depositBalance += history.value / Math.pow(10, pool.earningToken.decimals);
+      }
+    });
+  }
+  console.log(depositBalance);
+  return depositBalance;
+};
+
 export const fetchPoolFeeHistories = async (pool) => {
   let res;
   try {
