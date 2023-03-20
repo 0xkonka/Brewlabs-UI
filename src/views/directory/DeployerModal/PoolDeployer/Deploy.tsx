@@ -8,6 +8,8 @@ import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "component
 const Deploy = ({ step, setStep, setOpen }) => {
   const [contractAddress, setContractAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState(null);
+  const [withdrawFee, setWithdrawFee] = useState(1);
+  const [initialSupply, setInitialSupply] = useState(1);
 
   useEffect(() => {
     if (contractAddress.length) setTokenAddress("0x330518cc95c92881bCaC1526185a514283A5584D");
@@ -67,9 +69,19 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div>Initial reward supply for 12 months</div>
           <div className="flex items-center">
-            <div className="text-[#3F3F46]">{PlusSVG}</div>
-            <div className="mx-2">1.00%</div>
-            <div className="text-[#3F3F46]">{MinusSVG}</div>
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setInitialSupply(Math.min(3, initialSupply + 0.1))}
+            >
+              {PlusSVG}
+            </div>
+            <div className="mx-2">{initialSupply.toFixed(2)}%</div>
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setInitialSupply(Math.max(0, initialSupply - 0.1))}
+            >
+              {MinusSVG}
+            </div>
           </div>
         </div>
         <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
@@ -82,9 +94,19 @@ const Deploy = ({ step, setStep, setOpen }) => {
             <div>Withdrawal fee</div>
           </div>
           <div className="flex items-center">
-            <div className="text-[#3F3F46]">{PlusSVG}</div>
-            <div className="mx-2">1.00%</div>
-            <div className="text-[#3F3F46]">{MinusSVG}</div>
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setWithdrawFee(Math.min(2, withdrawFee + 0.1))}
+            >
+              {PlusSVG}
+            </div>
+            <div className="mx-2">{withdrawFee.toFixed(2)}%</div>
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setWithdrawFee(Math.max(0, withdrawFee - 0.1))}
+            >
+              {MinusSVG}
+            </div>
           </div>
         </div>
         <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">

@@ -1,26 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import StyledButton from "../../StyledButton";
-import ChainSelect from "views/swap/components/ChainSelect";
 import { useEffect, useState } from "react";
+import ChainSelect from "../ChainSelect";
+import RouterSelect from "../RouterSelect";
+import { useActiveChainId } from "hooks/useActiveChainId";
 
 const SelectToken = ({ step, setStep }) => {
   const [contractAddress, setContractAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState(null);
+  const [routerAddress, setRouterAddress] = useState(null);
+  const { chainId } = useActiveChainId();
 
   useEffect(() => {
     if (contractAddress.length) setTokenAddress("0x330518cc95c92881bCaC1526185a514283A5584D");
     else setTokenAddress(null);
   }, [contractAddress]);
 
+  const routers = {
+    1: [
+      {
+        name: "Uniswap",
+        address: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        image: "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
+      },
+    ],
+    56: [
+      {
+        name: "Pancakeswap",
+        address: "0x10ed43c718714eb63d5aa57b78b54704e256024e",
+        image: "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
+      },
+    ],
+  };
+
   return (
     <div>
       <div>
         <div className="mt-2 text-white">
           <div className="mb-1">1.Select deployment network:</div>
-          <ChainSelect id="chain-select" />
+          {/* <ChainSelect id="chain-select" /> */}
+          <ChainSelect />
         </div>
-        <div className="text-[#FFFFFF40]">
+        <div className={tokenAddress ? "text-white" : "text-[#FFFFFF40]"}>
           <div className="mb-1">2. Select token:</div>
           <StyledInput
             placeholder={`Search by contract address...`}
@@ -37,12 +59,18 @@ const SelectToken = ({ step, setStep }) => {
             <div className="text-center">Token found!</div>
             <div className="mt-3 flex w-full items-center justify-center">
               <div className="mr-1.5 h-7 w-7 rounded-full bg-[#D9D9D9]" />
-              <div className="flex-1 overflow-hidden  text-ellipsis whitespace-nowrap xsm:flex-none">{tokenAddress}</div>
+              <div className="flex-1 overflow-hidden  text-ellipsis whitespace-nowrap xsm:flex-none">
+                {tokenAddress}
+              </div>
             </div>
           </div>
         ) : (
           "Pending..."
         )}
+      </div>
+      <div className="mb-8">
+        <div className="mb-1">3. Select router:</div>
+        <RouterSelect routers={routers[chainId ?? 1]} />
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
