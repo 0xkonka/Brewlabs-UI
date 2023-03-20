@@ -15,9 +15,10 @@ interface CurrencyInputPanelProps {
   label?: string;
   currency: Currency | null;
   balance: CurrencyAmount | undefined;
+  onCurrencySelect?: (currency: Currency) => void;
 }
 
-const CurrencyInputPanel = ({ value, onUserInput, onMax, label, currency, balance }: CurrencyInputPanelProps) => {
+const CurrencyInputPanel = ({ value, onUserInput, onMax, label, currency, balance, onCurrencySelect }: CurrencyInputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
 
@@ -33,7 +34,7 @@ const CurrencyInputPanel = ({ value, onUserInput, onMax, label, currency, balanc
             }}
             decimals={currency?.decimals}
           />
-          <CurrencySelectButton inputCurrencySelect={true} />
+          <CurrencySelectButton currency={currency} onCurrencySelect={onCurrencySelect} />
         </div>
         <div className="flex justify-between">
           <div className="ml-1 text-sm opacity-40">

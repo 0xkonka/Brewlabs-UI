@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useContext } from "react";
 import { toast } from "react-toastify";
-import { CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
+import { CurrencyAmount, Price, WNATIVE, Currency } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
 import { ethers, BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
@@ -88,7 +88,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const { typedValue } = useSwapState();
   const { currencies, currencyBalances, parsedAmount: inputAmount, inputError } = useDerivedSwapInfo();
   const [quoteError, setQuoteError] = useState<string | undefined>();
-  const { onUserInput, onSwitchTokens } = useSwapActionHandlers();
+  const { onUserInput, onSwitchTokens, onCurrencySelection } = useSwapActionHandlers();
 
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
@@ -422,6 +422,14 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     }
   };
 
+  const handleInputCurrencySelect = (currency: Currency) => {
+    onCurrencySelection(Field.INPUT, currency);
+  }
+
+  const handleOutputCurrencySelect = (currency: Currency) => {
+    onCurrencySelection(Field.OUTPUT, currency);
+  }
+
   return (
     <>
       <ConfirmationModal
@@ -440,6 +448,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           showMaxButton={!atMaxAmount}
           currency={currencies[Field.INPUT]}
           balance={currencyBalances[Field.INPUT]}
+          onCurrencySelect={handleInputCurrencySelect}
         />
       </div>
 
@@ -463,6 +472,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           buyTax={buyTax}
           sellTax={sellTax}
           verified={verified}
+          onCurrencySelect={handleOutputCurrencySelect}
         />
       </div>
       {account &&

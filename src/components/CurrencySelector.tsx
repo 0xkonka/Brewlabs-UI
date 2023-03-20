@@ -19,8 +19,6 @@ import { filterTokens, useSortedTokensByQuery } from "components/searchModal/fil
 
 import { useGlobalState } from "state";
 
-import { Field } from "state/swap/actions";
-import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
 import UserDashboard from "components/dashboard/UserDashboard";
@@ -29,10 +27,10 @@ import { SwapContext } from "contexts/SwapContext";
 import NavButton from "./dashboard/NavButton";
 
 interface CurrencySelectorProps {
-  inputType: "input" | "output";
   selectedCurrency?: Currency | null;
   otherSelectedCurrency?: Currency | null;
   filteredCurrencies?: Currency[];
+  onCurrencySelect?: (currency: Currency) => void;
 }
 
 const tabs = [
@@ -53,17 +51,15 @@ const tabs = [
 const CurrencyRow = ({
   currency,
   marketData,
-  inputType,
+  onCurrencySelect
 }: {
   currency: Currency;
   marketData: any;
-  inputType: "input" | "output";
+  onCurrencySelect?: (currency: Currency) => void;
 }) => {
   const { account } = useActiveWeb3React();
-  const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
   const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
-  const { onUserInput, onCurrencySelection } = useSwapActionHandlers();
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
@@ -71,9 +67,7 @@ const CurrencyRow = ({
     <button
       className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
       onClick={() => {
-        onUserInput(input, "");
-        onCurrencySelection(input, currency);
-
+        onCurrencySelect(currency);
         if (userSidebarOpen === 2) {
           setUserSidebarOpen(0);
 
@@ -119,7 +113,7 @@ const CurrencyRow = ({
   );
 };
 
-const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorProps) => {
+const CurrencySelector = ({ filteredCurrencies, onCurrencySelect }: CurrencySelectorProps) => {
   const { chainId, account } = useActiveWeb3React();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -257,7 +251,7 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
     <div className="relative w-full">
       <div className="mb-6 flex items-center justify-between">
         <div className="font-brand">
-          <h2 className="text-3xl">Select token {inputType}</h2>
+          <h2 className="text-3xl">Select token</h2>
         </div>
         {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
       </div>
@@ -297,8 +291,8 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
                 <CurrencyRow
                   key={index}
                   currency={currency}
-                  inputType={inputType}
                   marketData={tokenMarketData[tokenAddress] || defaultMarketData}
+                  onCurrencySelect = {onCurrencySelect}
                 />
               );
             })

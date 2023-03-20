@@ -12,6 +12,7 @@ import TradeCard from "./TradeCard";
 interface CurrencyOutputPanelProps {
   value: string;
   onUserInput: (value: string) => void;
+  onCurrencySelect: (currency: Currency) => void;
   label?: string;
   currency?: Currency | null;
   balance: CurrencyAmount | undefined;
@@ -26,6 +27,7 @@ interface CurrencyOutputPanelProps {
 const CurrencyOutputPanel = ({
   value,
   onUserInput,
+  onCurrencySelect,
   label,
   currency,
   balance,
@@ -54,7 +56,7 @@ const CurrencyOutputPanel = ({
               }}
               decimals={currency?.decimals}
             />
-            <CurrencySelectButton inputCurrencySelect={false} />
+            <CurrencySelectButton currency={currency} onCurrencySelect={onCurrencySelect} />
           </div>
           <div className="flex justify-between">
             <div className="ml-1 text-sm opacity-40">
