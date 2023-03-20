@@ -78,12 +78,21 @@ const StyledButton = ({
     >
       {children}
     </button>
+  ) : type === "deployer" ? (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="relative flex h-full w-full items-center justify-center rounded border border-[#FFFFFF40] bg-transparent text-sm text-[#FFFFFFBF] transition disabled:cursor-[not-allowed] disabled:opacity-70"
+    >
+      {children}
+    </button>
   ) : (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="portfolio-shadow relative flex h-full w-full items-center justify-center rounded bg-primary text-sm font-semibold text-black transition enabled:hover:bg-dark enabled:hover:text-brand disabled:cursor-[not-allowed] disabled:opacity-70"
+      className="portfolio-shadow  relative flex h-full w-full items-center justify-center rounded bg-primary text-sm font-semibold text-black transition enabled:hover:bg-dark enabled:hover:text-brand disabled:cursor-[not-allowed] disabled:opacity-70"
     >
       {children}
     </button>
