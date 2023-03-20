@@ -345,7 +345,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         {getNativeSybmol(data.chainId)}
                         <div
                           className="tooltip"
-                          data-tip="Performance fee is charged per transaction to the Brewlabs Treasury."
+                          data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
                         >
                           <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
                         </div>

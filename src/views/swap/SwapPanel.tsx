@@ -35,7 +35,7 @@ import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
 import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
-import SubNav from "./components/SubNav";
+import SubNav from "./components/nav/SubNav";
 import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
@@ -53,7 +53,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   const { t } = useTranslation();
 
-  const [openSettingModal, setOpenSettingModal] = useState(false);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [txConfirmInfo, setTxConfirmInfo] = useState({ type: "confirming", tx: "" });
 
@@ -95,7 +94,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
 
   // txn values
-  const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
+  const [userSlippageTolerance] = useUserSlippageTolerance();
 
   useEffect(() => {
     setTyping(true);
@@ -281,18 +280,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     [onUserInput]
   );
 
-  const parseCustomSlippage = (value: string) => {
-    setSlippageInput(value);
-    try {
-      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
-      if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
-        setUserSlippageTolerance(valueAsIntFromRoundedFloat);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleApprove = async () => {
     setAttemptingTxn(true);
     let tx: any = { hash: "" };
@@ -436,20 +423,13 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   };
 
   return (
-    <div
-      className={`relative mx-auto mb-4 flex w-fit min-w-fit max-w-xl flex-col gap-1 rounded-3xl pb-10 pt-4 sm:min-w-[540px] ${
-        type === "swap" ? "border-t px-4 dark:border-slate-600" : ""
-      } dark:bg-zinc-900 sm:px-10 md:mx-0`}
-    >
+    <>
       <ConfirmationModal
         open={openConfirmationModal}
         setOpen={setOpenConfirmationModal}
         type={txConfirmInfo.type}
         tx={txConfirmInfo.tx}
       />
-      <SubNav openSettingModal={() => setOpenSettingModal(true)} />
-
-      {!disableChainSelect && <ChainSelect id="chain-select" />}
 
       <div className="rounded-2xl border border-gray-600">
         <CurrencyInputPanel
@@ -533,22 +513,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
         ))}
 
       <History />
-      {openSettingModal && (
-        <Modal
-          open={openSettingModal}
-          onClose={() => {
-            setOpenSettingModal(false);
-          }}
-        >
-          <SettingModal
-            autoMode={autoMode}
-            setAutoMode={setAutoMode}
-            slippage={slippage}
-            slippageInput={slippageInput}
-            parseCustomSlippage={parseCustomSlippage}
-          />
-        </Modal>
-      )}
-    </div>
+    </>
   );
 }
