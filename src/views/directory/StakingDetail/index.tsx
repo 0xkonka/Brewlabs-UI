@@ -589,7 +589,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <SkeletonComponent />
                           )}
                           &nbsp;
-                          <span className="text-primary">{data.earningToken.symbol}</span>
+                          <span className="text-primary">{stakingToken.symbol}</span>
                         </div>
                       </InfoPanel>
                       <InfoPanel
