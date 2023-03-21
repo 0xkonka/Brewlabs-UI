@@ -1,4 +1,5 @@
 import { ChainId } from "@brewlabs/sdk";
+import { ROUTER_ADDRESS } from "config/constants";
 import addresses from "config/constants/contracts";
 import { AppId, Chef } from "config/constants/types";
 
@@ -27,6 +28,9 @@ export const getAggregatorAddress = (chainId: ChainId) => {
 };
 export const getBrewlabsAggregationRouterAddress = (chainId: ChainId) => {
   return getAddress(addresses.brewlabsAggregationRouter, chainId);
+}
+export const getBrewlabsRouterAddress = (chainId: ChainId) => {
+  return ROUTER_ADDRESS[chainId];
 }
 export const getZapperAddress = (chainId: ChainId) => {
   return getAddress(addresses.zapper, chainId);

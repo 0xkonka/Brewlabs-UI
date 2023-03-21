@@ -1,4 +1,4 @@
-import { JSBI, Percent } from '@brewlabs/sdk'
+import { JSBI, Percent, CurrencyAmount } from '@brewlabs/sdk'
 import { getAddress } from '@ethersproject/address'
 import { BigNumber } from '@ethersproject/bignumber'
 
@@ -29,6 +29,16 @@ export function calculateTotalGas(value: BigNumber): BigNumber {
 // converts a basis points value to a sdk percent
 export function basisPointsToPercent(num: number): Percent {
   return new Percent(JSBI.BigInt(num), JSBI.BigInt(10000))
+}
+
+export function calculateSlippageAmount(value: CurrencyAmount, slippage: number): [JSBI, JSBI] {
+  if (slippage < 0 || slippage > 10000) {
+    throw Error(`Unexpected slippage value: ${slippage}`)
+  }
+  return [
+    JSBI.divide(JSBI.multiply(value.raw, JSBI.BigInt(10000 - slippage)), JSBI.BigInt(10000)),
+    JSBI.divide(JSBI.multiply(value.raw, JSBI.BigInt(10000 + slippage)), JSBI.BigInt(10000))
+  ]
 }
 
 export function escapeRegExp(string: string): string {
