@@ -13,7 +13,6 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 
-
 const DashboardContext: any = React.createContext({
   tokens: [],
   priceHistory: [],
@@ -153,7 +152,7 @@ const DashboardContextProvider = ({ children }: any) => {
         const claimableResult = await multicall(claimableTokenAbi, calls);
         const dividendTracker = claimableResult[0][0];
         balance = claimableResult[1][0] / Math.pow(10, token.decimals);
-        let rewardToken,
+        let rewardToken: any,
           pendingRewards = 0,
           totalRewards = 0;
         try {
@@ -235,6 +234,7 @@ const DashboardContextProvider = ({ children }: any) => {
       let _tokens: any = [];
 
       for (let i = 0; i < items.length; i++) {
+        if (!items[i].contract_decimals) continue;
         const filter = tokens.filter((data) => data.address.toLowerCase() === items[i].contract_address.toLowerCase());
         const price = filter.length
           ? filter[0].price
@@ -242,7 +242,7 @@ const DashboardContextProvider = ({ children }: any) => {
           ? 1
           : items[i].quote_rate / 1;
         const isLP = !items[i].contract_name;
-        let LPInfo;
+        let LPInfo: any;
         if (isLP) {
           LPInfo = await fetchTokenBaseInfo(items[i].contract_address);
           if (!LPInfo[0]) continue;
