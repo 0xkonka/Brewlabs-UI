@@ -51,7 +51,6 @@ const Directory = ({ page }: { page: number }) => {
     }),
     ...farms.map((farm) => {
       let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-      if (price > 500000) price = 0;
       return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
     }),
     ...indexes,
@@ -119,7 +118,7 @@ const Directory = ({ page }: { page: number }) => {
 
   switch (status) {
     case "finished":
-      chosenPools = chosenPools.filter((pool) => pool.isFinished);
+      chosenPools = chosenPools.filter((pool) => pool.isFinished || pool.multiplier === 0);
       break;
     case "new":
       chosenPools = chosenPools.filter(

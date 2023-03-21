@@ -3,7 +3,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 
-const ActivityDropdown = ({ value, setValue }: { setValue?: any; value: string }) => {
+const ActivityDropdown = ({ value, setValue, counts }: { setValue?: any; value: string, counts: any }) => {
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
 
@@ -40,7 +40,7 @@ const ActivityDropdown = ({ value, setValue }: { setValue?: any; value: string }
       <div className="flex w-full items-center justify-between px-3">
         <div className="flex items-center">
           <StyledCircle color={data[value].color} />
-          <div>{data[value].text}</div>
+          <div>{data[value].text}({counts[value] ?? 0})</div>
         </div>
         <div className={""}>
           {!open ? <ChevronDownIcon className={"h-[14px]"} /> : <ChevronUpIcon className={"h-[14px]"} />}
@@ -57,7 +57,7 @@ const ActivityDropdown = ({ value, setValue }: { setValue?: any; value: string }
             >
               <div className="flex items-center">
                 <StyledCircle color={data[key].color} />
-                <div>{data[key].text}</div>
+                <div>{data[key].text}({counts[key] ?? 0})</div>
               </div>
               <div className="w-3" />
             </div>
