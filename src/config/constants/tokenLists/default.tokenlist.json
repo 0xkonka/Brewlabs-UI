@@ -1691,6 +1691,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x5D3957DF518adE9AdfD7c4341a0cf7D6D73EC682/logo.png"
     },
     {
+      "name": "ReVeR",
+      "symbol": "RVR",
+      "address": "0xb8b4b66852275355d591B90E5B75f84cAeffF392",
+      "chainId": 1,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xb8b4b66852275355d591B90E5B75f84cAeffF392/logo.png"
+    },
+    {
       "name": "Pomeranian",
       "symbol": "POM",
       "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
