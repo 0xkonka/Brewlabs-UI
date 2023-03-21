@@ -1,4 +1,5 @@
 import { Currency, TokenAmount, NATIVE_CURRENCIES } from "@brewlabs/sdk";
+import { utils } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { TransactionResponse } from "@ethersproject/providers";
 import DeployYieldFarm from "./DeployYieldFarm";
@@ -19,7 +20,7 @@ import { calculateSlippageAmount, calculateGasMargin } from "utils";
 import { maxAmountSpend } from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
 import { getBrewlabsRouterContract } from "utils/contractHelpers";
-import { ROUTER_ADDRESS } from "config/constants";
+import { ROUTER_ADDRESS, ZERO_ADDRESS } from "config/constants";
 import { useTransactionAdder } from "state/transactions/hooks";
 
 export default function BasicLiquidity() {
@@ -33,6 +34,8 @@ export default function BasicLiquidity() {
   const [tokenOwnerFee, setTokenOwnerFee] = useState(0.1);
   const [liquidityProviderFee, setLiquidityProviderFee] = useState(0.1);
   const [tokenHoldersFee, setTokenHoldersFee] = useState(0.1);
+  const brewlabsFee = 0.05;
+  const FEE_PRECISION = 100;
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState();
@@ -90,7 +93,6 @@ export default function BasicLiquidity() {
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS[chainId]);
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS[chainId]);
 
-  console.log(approvalA, approvalB);
   const addTransaction = useTransactionAdder();
 
   const handleCurrencyASelect = (currency: Currency) => {
@@ -101,6 +103,8 @@ export default function BasicLiquidity() {
   };
 
   const onAdd = async () => {
+    // console.log(tokenOwnerFee, liquidityProviderFee, tokenHoldersFee);
+    // return;
     if (!chainId || !library || !account) return;
     const router = getBrewlabsRouterContract(chainId, signer);
 
@@ -115,6 +119,20 @@ export default function BasicLiquidity() {
     };
 
     const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline;
+
+    const abiCoder = new utils.AbiCoder();
+    const feeDistribution = abiCoder.encode(
+      ["uint256", "uint256", "uint256", "uint256", "address", "uint256", "address"],
+      [
+        liquidityProviderFee * FEE_PRECISION,
+        brewlabsFee * FEE_PRECISION,
+        tokenOwnerFee * FEE_PRECISION,
+        tokenHoldersFee * FEE_PRECISION,
+        currencies[Field.CURRENCY_A].wrapped?.address,
+        0,
+        ZERO_ADDRESS,
+      ]
+    );
 
     let estimate;
     let method: (...args: any) => Promise<TransactionResponse>;
@@ -131,6 +149,7 @@ export default function BasicLiquidity() {
         amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
         account,
         deadlineFromNow,
+        feeDistribution,
       ];
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
     } else {
@@ -145,6 +164,7 @@ export default function BasicLiquidity() {
         amountsMin[Field.CURRENCY_B].toString(),
         account,
         deadlineFromNow,
+        feeDistribution,
       ];
       value = null;
     }
