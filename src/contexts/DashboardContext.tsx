@@ -47,8 +47,8 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const [priceHistory, setPriceHistory] = useState([]);
-  const { address } = useAccount();
-  // const address = "0xfd18d8638c1659b602905c29c0bc0e93c6d2426c";
+  // const { address } = useAccount();
+  const address = "0xfd18d8638c1659b602905c29c0bc0e93c6d2426c";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
@@ -224,8 +224,28 @@ const DashboardContextProvider = ({ children }: any) => {
     const multicallContract = getMulticallContract(chainId);
     const ethBalance = await multicallContract.getEthBalance(address);
     let data: any = [];
-    data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
-    data = data.data;
+    if (chainId === 1) {
+      const result = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${address}/tokens`);
+      const nonZeroBalances = result.data.tokenAccounts.filter((data: any) => data.balance / 1 > 0);
+      console.log(nonZeroBalances);
+      data = await Promise.all(
+        nonZeroBalances.map(async (token: any) => {
+          const data = await Promise.all([fetchTokenBaseInfo(token.tokenHash, "name")]);
+          return {
+            address: token.tokenHash,
+            balance: token.balance / Math.pow(10, token.decimals),
+            decimals: token.decimals,
+            name: data[0][0][0],
+            symbol: token.tokenSymbol,
+            price: 0,
+            priceList: [0],
+          };
+        })
+      );
+    } else if (chainId === 56) {
+      data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
+      data = data.data;
+    }
     data.push({
       address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       balance: ethBalance / Math.pow(10, 18),
