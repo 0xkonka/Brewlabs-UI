@@ -221,7 +221,7 @@ const Directory = ({ page }: { page: number }) => {
                 }
               />
               <Container className="font-brand">
-                <div className="mb-4 flex justify-end">
+                {/* <div className="mb-4 flex justify-end">
                   <div className="h-[32px] w-[140px] font-roboto">
                     <StyledButton onClick={() => setDeployerOpen(true)}>
                       <div className="flex items-center">
@@ -230,7 +230,7 @@ const Directory = ({ page }: { page: number }) => {
                       </div>
                     </StyledButton>
                   </div>
-                </div>
+                </div> */}
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
 
                 <div className="mt-8">
