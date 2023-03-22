@@ -224,47 +224,8 @@ const DashboardContextProvider = ({ children }: any) => {
     const multicallContract = getMulticallContract(chainId);
     const ethBalance = await multicallContract.getEthBalance(address);
     let data: any = [];
-    if (chainId === 1) {
-      const result = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${address}/tokens`);
-      const nonZeroBalances = result.data.tokenAccounts.filter((data: any) => data.balance / 1 > 0);
-      data = await Promise.all(
-        nonZeroBalances.map(async (token: any) => {
-          const data = await Promise.all([
-            // fetchPrice(token.tokenHash, chainId, 10),
-            fetchTokenBaseInfo(token.tokenHash, "name"),
-          ]);
-          return {
-            address: token.tokenHash,
-            balance: token.balance / Math.pow(10, token.decimals),
-            decimals: token.decimals,
-            name: data[0][0][0],
-            symbol: token.tokenSymbol,
-            price: 0,
-            priceList: [0],
-          };
-        })
-      );
-    } else if (chainId === 56) {
-      const result = await axios.get(
-        `https://bsc-explorer-api.nodereal.io/api/token/getTokensByAddress?address=${address}&pageSize=0x64`
-      );
-      data = result.data.data.erc20.details
-        .filter(
-          (token: any) =>
-            token.tokenBalance / Math.pow(10, token.tokenDecimals / 1) > 0 && !token.tokenName.includes("u0000")
-        )
-        .map((token: any) => {
-          return {
-            address: token.tokenAddress,
-            balance: token.tokenBalance / Math.pow(10, token.tokenDecimals / 1),
-            decimals: token.tokenDecimals / 1,
-            name: token.tokenName,
-            symbol: token.tokenSymbol,
-            price: token.price,
-            priceList: [token.price],
-          };
-        });
-    }
+    data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
+    data = data.data;
     data.push({
       address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       balance: ethBalance / Math.pow(10, 18),
