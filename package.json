@@ -19,6 +19,7 @@
     "@types/react-portal": "^4.0.4",
     "@types/styled-components": "^5.1.26",
     "@uniswap/token-lists": "^1.0.0-beta.30",
+    "alchemy-sdk": "^2.6.1",
     "animate.css": "^4.1.1",
     "aos": "^2.3.4",
     "apexcharts": "^3.36.3",
