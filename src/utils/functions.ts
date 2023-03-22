@@ -7,7 +7,11 @@ export function numberWithCommas(x: any) {
 }
 
 export const BigNumberFormat = (str: any, decimals: number = 2) => {
-  if (Number(str) >= 1000000000) return `${numberWithCommas((str / 1000000000).toFixed(decimals))}B`;
+  const length = Math.floor(Math.log10(str));
+  if (Number(str) >= 1000000000000)
+    return `${numberWithCommas((str / Math.pow(10, length)).toFixed(decimals))}e+${length}T`;
+  else if (Number(str) >= 1000000000000) return `${numberWithCommas((str / 1000000000000).toFixed(decimals))}T`;
+  else if (Number(str) >= 1000000000) return `${numberWithCommas((str / 1000000000).toFixed(decimals))}B`;
   else if (Number(str) >= 1000000) return `${numberWithCommas((str / 1000000).toFixed(decimals))}M`;
   else if (Number(str) >= 1000) return `${numberWithCommas((str / 1000).toFixed(decimals))}K`;
   else return `${numberWithCommas(str.toFixed(decimals))}`;

@@ -25,6 +25,9 @@ import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
 import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import StyledButton from "./StyledButton";
+import DeployerModal from "./DeployerModal";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -33,6 +36,7 @@ const Directory = ({ page }: { page: number }) => {
   const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
   const [status, setStatus] = useState("active");
+  const [deployerOpen, setDeployerOpen] = useState(false);
 
   const { pools } = usePools();
   const { data: farms } = useFarms();
@@ -194,6 +198,7 @@ const Directory = ({ page }: { page: number }) => {
 
   return (
     <PageWrapper>
+      <DeployerModal open={deployerOpen} setOpen={setDeployerOpen} />
       {renderDetailPage()}
 
       <AnimatePresence>
@@ -216,6 +221,16 @@ const Directory = ({ page }: { page: number }) => {
                 }
               />
               <Container className="font-brand">
+                {/* <div className="mb-4 flex justify-end">
+                  <div className="h-[32px] w-[140px] font-roboto">
+                    <StyledButton onClick={() => setDeployerOpen(true)}>
+                      <div className="flex items-center">
+                        <div className="ml-1">Deploy Product</div>
+                        <div className="ml-1 -scale-100">{chevronLeftSVG}</div>
+                      </div>
+                    </StyledButton>
+                  </div>
+                </div> */}
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
 
                 <div className="mt-8">
