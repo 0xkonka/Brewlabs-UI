@@ -47,8 +47,8 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const [priceHistory, setPriceHistory] = useState([]);
-  // const { address } = useAccount();
-  const address = "0xfd18d8638c1659b602905c29c0bc0e93c6d2426c";
+  const { address } = useAccount();
+  // const address = "0xfd18d8638c1659b602905c29c0bc0e93c6d2426c";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
