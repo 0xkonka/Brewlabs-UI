@@ -275,7 +275,7 @@ const DashboardContextProvider = ({ children }: any) => {
       for (let i = 0; i < items.length; i++) {
         const filter = tokens.filter((data) => data.address.toLowerCase() === items[i].address.toLowerCase());
         _tokens.push({
-          balance: items[i].balance,
+          balance: filter.length ? filter[0].balance : items[i].balance,
           name: items[i].name,
           symbol: items[i].symbol,
           decimals: items[i].decimals,
