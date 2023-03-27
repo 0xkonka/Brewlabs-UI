@@ -142,7 +142,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     ) : (
                       ""
                     )}
-                    <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
+                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
                       <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
                         <StyledButton>
                           <div>Website</div>
