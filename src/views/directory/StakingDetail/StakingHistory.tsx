@@ -17,7 +17,7 @@ const StakingHistory = ({
   setPopulatedAmount: any;
 }) => {
   return (
-    <StyledContainer className="mt-7 h-auto flex-1 overflow-y-scroll text-[#FFFFFFBF]">
+    <StyledContainer className="mt-7 flex-1 overflow-y-scroll text-[#FFFFFFBF]">
       <div className="flex justify-between text-xl">
         <div className="min-w-[150px]">Stake</div>
         <div className="min-w-[60px]">Block</div>
@@ -56,6 +56,7 @@ const StakingHistory = ({
 
 const StyledContainer = styled.div`
   padding-right: 4px;
+  overflow-x: hidden;
   ::-webkit-scrollbar {
     width: 16px;
     height: 16px;
@@ -75,6 +76,7 @@ const StyledContainer = styled.div`
     ::-webkit-scrollbar {
       display: none !important;
     }
+    overflow-x: scroll;
   }
 `;
 
