@@ -186,7 +186,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+          <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll  pb-[150px]">
             {address && data ? (
               <StakingModal
                 open={stakingModalOpen}
@@ -255,7 +255,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     ) : (
                       ""
                     )}
-                    <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
+                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
                       {earningToken.projectLink && (
                         <a
                           className="h-[32px] w-[140px]"
@@ -427,7 +427,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="mt-7">
                   <ProgressBar endBlock={1} remaining={0} />
                 </div>
-                <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
+                <div className="mt-10 flex h-[500px] w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={graphData()}
@@ -489,7 +489,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </InfoPanel>
                   </div>
-                  <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
+                  <div className="relative mt-10 flex w-full flex-col justify-between md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
@@ -607,10 +607,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         )}
                       </div>
                     </div>
-                    <div className="mt-7">
-                      <StakingHistory history={history} />
-                    </div>
-                    <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full sm:absolute sm:mt-0">
+                    <StakingHistory history={history} />
+                    <div className="relative mt-2 mb-[150px] flex h-12 w-full md:mb-0">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton
