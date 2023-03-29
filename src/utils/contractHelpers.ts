@@ -6,21 +6,21 @@ import { AppId, Chef } from "config/constants/types";
 // ABI
 import bep20Abi from "config/abi/erc20.json";
 import erc721Abi from "config/abi/erc721.json";
-import aggregatorAbi from "config/abi/brewlabsAggregator.json";
-import brewlabsAggregationRouter from "config/abi/BrewlabsAggregationRouter.json";
+import aggregatorAbi from "config/abi/swap/brewlabsAggregator.json";
+import brewlabsAggregationRouter from "config/abi/swap/BrewlabsAggregationRouter.json";
 import verifictionAbi from "config/abi/brewlabsFactoryVerification.json";
-import lockupStaking from "config/abi/brewlabsLockup.json";
+import lockupStaking from "config/abi/staking/brewlabsLockup.json";
 import lpManagerAbi from "config/abi/brewlabsLiquidityManager.json";
 import zapperAbi from "config/abi/brewlabsZapInConstructor.json";
 import externalMasterChefAbi from "config/abi/externalMasterchef.json";
 import lpTokenAbi from "config/abi/lpToken.json";
-import masterChef from "config/abi/masterchef.json";
-import masterChefV2 from "config/abi/masterchefV2.json";
+import masterChef from "config/abi/staking/masterchef.json";
+import masterChefV2 from "config/abi/staking/masterchefV2.json";
 import MultiCallAbi from "config/abi/Multicall.json";
-import singleStaking from "config/abi/singlestaking.json";
+import singleStaking from "config/abi/staking/singlestaking.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
-import UnLockAbi from "config/abi/brewlabsUnLockup.json";
+import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
 
 // Addresses
 import {

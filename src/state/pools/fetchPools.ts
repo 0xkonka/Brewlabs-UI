@@ -3,10 +3,10 @@ import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { ChainId } from "@brewlabs/sdk";
 
-import singleStakingABI from "config/abi/singlestaking.json";
-import lockupStakingABI from "config/abi/brewlabsLockup.json";
-import lockupV2StakingABI from "config/abi/brewlabsLockupV2.json";
-import lockupMultiStakingABI from "config/abi/brewlabsStakingMulti.json";
+import singleStakingABI from "config/abi/staking/singlestaking.json";
+import lockupStakingABI from "config/abi/staking/brewlabsLockup.json";
+import lockupV2StakingABI from "config/abi/staking/brewlabsLockupV2.json";
+import lockupMultiStakingABI from "config/abi/staking/brewlabsStakingMulti.json";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { PoolCategory } from "config/constants/types";
@@ -379,7 +379,6 @@ export const fetchPoolDepositBalance = async (pool) => {
       }
     });
   }
-  console.log(depositBalance);
   return depositBalance;
 };
 
