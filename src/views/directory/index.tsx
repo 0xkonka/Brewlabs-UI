@@ -141,7 +141,8 @@ const Directory = ({ page }: { page: number }) => {
         (pool) =>
           !pool.isFinished &&
           ((pool.type === Category.POOL && +pool.startBlock > 0) ||
-            (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]))
+            (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
+            (pool.type === Category.INDEXES))
       );
   }
   chosenPools = sortPools(chosenPools);
