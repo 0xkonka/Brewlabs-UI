@@ -2,10 +2,12 @@ import styled from "styled-components";
 
 import { CHAIN_ICONS } from "config/constants/networks";
 import { Category, PoolCategory } from "config/constants/types";
-import { SkeletonComponent } from "components/SkeletonComponent";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import IndexLogo from "components/logo/IndexLogo";
+import { SkeletonComponent } from "components/SkeletonComponent";
 
 const PoolCard = ({
   data,
@@ -49,10 +51,7 @@ const PoolCard = ({
         </div>
         <div className="flex min-w-[210px] items-center">
           {data.type === Category.INDEXES ? (
-            <div className="mr-3 flex">
-              <img src={getTokenLogoURL(data.tokens[0].address, data.chainId)} alt={""} className="w-9 rounded-full" />
-              <img src={getTokenLogoURL(data.tokens[1].address, data.chainId)} alt={""} className="-ml-3 w-9 rounded-full" />
-            </div>
+            <IndexLogo tokens={data.tokens} />
           ) : (
             <div className="mr-3 h-7 w-7 rounded-full border border-white bg-white">
               <img
@@ -84,17 +83,16 @@ const PoolCard = ({
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
             data.type === Category.INDEXES ? (
-              <>
+              <div className="leading-none">
                 {data.tokens.map((t, index) => (
-                  <div>
-                    {formatAmount(data.totalStaked[index])} {" "}
-                    {t.symbol}
+                  <div className="text-[14px]">
+                    {formatAmount(data.totalStaked[index])} {t.symbol}
                   </div>
                 ))}
-              </>
+              </div>
             ) : (
               <>
-                {formatAmount(data.totalStaked)} {" "}
+                {formatAmount(data.totalStaked)}{" "}
                 {[Category.FARM, Category.ZAPPER].includes(data.type)
                   ? data.lpSymbol.split(" ")[0]
                   : data.stakingToken.symbol}
@@ -166,17 +164,16 @@ const PoolCard = ({
             <div className="text-left text-sm xsm:text-right">
               {data.totalStaked !== undefined ? (
                 data.type === Category.INDEXES ? (
-                  <>
+                  <div className="leading-none">
                     {data.tokens.map((t, index) => (
-                      <div>
-                        {formatAmount(data.totalStaked[index])} {" "}
-                        {t.symbol}
+                      <div className="text-[14px]">
+                        {formatAmount(data.totalStaked[index])} {t.symbol}
                       </div>
                     ))}
-                  </>
+                  </div>
                 ) : (
                   <>
-                    {formatAmount(data.totalStaked)} {" "}
+                    {formatAmount(data.totalStaked)}{" "}
                     {[Category.FARM, Category.ZAPPER].includes(data.type)
                       ? data.lpSymbol.split(" ")[0]
                       : data.stakingToken.symbol}
