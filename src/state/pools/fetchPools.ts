@@ -9,6 +9,7 @@ import lockupV2StakingABI from "config/abi/staking/brewlabsLockupV2.json";
 import lockupMultiStakingABI from "config/abi/staking/brewlabsStakingMulti.json";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
+import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { getAddress } from "utils/addressHelpers";
 import { BIG_ZERO } from "utils/bigNumber";
@@ -359,13 +360,9 @@ export const fetchPoolTotalRewards = async (pool) => {
 };
 
 export const fetchPoolDepositBalance = async (pool) => {
-  const url = `https://${
-    pool.chainId === 1 ? "api.etherscan.io" : "api.bscscan.com"
-  }/api?module=account&action=tokentx&contractaddress=${pool.earningToken.address}&address=${
-    pool.contractAddress
-  }&startblock=0&endblock=99999999&sort=asc&apikey=${
-    pool.chainId === 1 ? "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX" : "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND"
-  }`;
+  const url = `${EXPLORER_API_URLS[pool.chainId]}?module=account&action=tokentx&contractaddress=${
+    pool.earningToken.address
+  }&address=${pool.contractAddress}&startblock=0&endblock=99999999&sort=asc&apikey=${EXPLORER_API_KEYS[pool.chainId]}`;
 
   let sHistoryResult: any = await axios.get(url);
   sHistoryResult = sHistoryResult.data.result;
