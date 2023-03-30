@@ -22,11 +22,6 @@ import LogoIcon from "components/LogoIcon";
 import EnterExitModal from "./Modals/EnterExitModal";
 import AddNFTModal from "./Modals/AddNFTModal";
 
-const CHAIN_SYMBOL = {
-  1: "ETH",
-  56: "BNB",
-};
-
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, accountData } = detailDatas;
   const [stakingModalOpen, setStakingModalOpen] = useState(false);

@@ -50,8 +50,8 @@ const PoolCard = ({
         <div className="flex min-w-[210px] items-center">
           {data.type === Category.INDEXES ? (
             <div className="mr-3 flex">
-              <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
-              <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
+              <img src={getTokenLogoURL(data.tokens[0].address, data.chainId)} alt={""} className="w-9 rounded-full" />
+              <img src={getTokenLogoURL(data.tokens[1].address, data.chainId)} alt={""} className="-ml-3 w-9 rounded-full" />
             </div>
           ) : (
             <div className="mr-3 h-7 w-7 rounded-full border border-white bg-white">
@@ -63,12 +63,12 @@ const PoolCard = ({
             </div>
           )}
           <div>
-            {data.type === Category.POOL || data.type === Category.FARM ? (
+            {data.type === Category.INDEXES ? (
+              <div className="leading-none">{data.tokens.map((t) => t.symbol).join("-")}</div>
+            ) : (
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
               </div>
-            ) : (
-              <div className="leading-none">{data.stakingToken.symbol}</div>
             )}
             <div className="text-xs">
               {poolNames[data.type]} -{" "}
@@ -83,15 +83,29 @@ const PoolCard = ({
         </div>
         <div className="min-w-[250px]">
           {data.totalStaked !== undefined ? (
-            `${formatAmount(data.totalStaked)} ${
-              data.type === Category.FARM ? data.lpSymbol.split(" ")[0] : data.stakingToken.symbol
-            }`
+            data.type === Category.INDEXES ? (
+              <>
+                {data.tokens.map((t, index) => (
+                  <div>
+                    {formatAmount(data.totalStaked[index])} {" "}
+                    {t.symbol}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                {formatAmount(data.totalStaked)} {" "}
+                {[Category.FARM, Category.ZAPPER].includes(data.type)
+                  ? data.lpSymbol.split(" ")[0]
+                  : data.stakingToken.symbol}
+              </>
+            )
           ) : (
             <SkeletonComponent />
           )}
         </div>
         <div className="min-w-[80px]">
-          {data.type !== 3 ? (
+          {data.type !== Category.INDEXES ? (
             data.apr || data.apr === 0.0 ? (
               `${(+data.apr).toFixed(2)}%`
             ) : (
@@ -119,7 +133,13 @@ const PoolCard = ({
             )}
             <div>
               <div className="leading-none">
-                <span className="text-primary">Earn</span> {data.earningToken.symbol}
+                {data.type === Category.INDEXES ? (
+                  <>{data.tokens.map((t) => t.symbol).join("-")}</>
+                ) : (
+                  <>
+                    <span className="text-primary">Earn</span> {data.earningToken.symbol}
+                  </>
+                )}
               </div>
               <div className="text-xs">
                 {poolNames[data.type]} - {data.lockup === undefined ? "Flexible" : `${data.duration} day lock`}
@@ -145,9 +165,23 @@ const PoolCard = ({
             <div className="text-left xsm:text-right">Total supply staked</div>
             <div className="text-left text-sm xsm:text-right">
               {data.totalStaked !== undefined ? (
-                `${formatAmount(data.totalStaked)} ${
-                  data.type === Category.FARM ? data.lpSymbol : data.stakingToken.symbol
-                }`
+                data.type === Category.INDEXES ? (
+                  <>
+                    {data.tokens.map((t, index) => (
+                      <div>
+                        {formatAmount(data.totalStaked[index])} {" "}
+                        {t.symbol}
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {formatAmount(data.totalStaked)} {" "}
+                    {[Category.FARM, Category.ZAPPER].includes(data.type)
+                      ? data.lpSymbol.split(" ")[0]
+                      : data.stakingToken.symbol}
+                  </>
+                )
               ) : (
                 <SkeletonComponent />
               )}

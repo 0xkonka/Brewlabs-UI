@@ -21,13 +21,12 @@ import getCurrencyId from "utils/getCurrencyId";
 import Banner from "./Banner";
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
+import DeployerModal from "./DeployerModal";
+
 import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
 import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
-import StyledButton from "./StyledButton";
-import DeployerModal from "./DeployerModal";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -57,7 +56,14 @@ const Directory = ({ page }: { page: number }) => {
       let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
       return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
     }),
-    ...indexes,
+    ...indexes.map((_index) => {
+      let tvl = 0;
+      for (let i = 0; i < _index.tokens.length; i++) {
+        let price = tokenPrices[getCurrencyId(_index.chainId, _index.tokens[i].address)];
+        tvl += _index.totalStaked?.[i] && price ? +_index.totalStaked[i] * price : 0;
+      }
+      return { ..._index, tvl };
+    }),
     ...zappers,
   ];
 
@@ -109,8 +115,11 @@ const Directory = ({ page }: { page: number }) => {
           pool.stakingToken?.name.toLowerCase().includes(lowercaseQuery) ||
           pool.stakingToken?.symbol.toLowerCase().includes(lowercaseQuery) ||
           pool.lpSymbol?.toLowerCase().includes(lowercaseQuery) ||
-          pool.earningToken.name.toLowerCase().includes(lowercaseQuery) ||
-          pool.earningToken.symbol.toLowerCase().includes(lowercaseQuery)
+          pool.earningToken?.name.toLowerCase().includes(lowercaseQuery) ||
+          pool.earningToken?.symbol.toLowerCase().includes(lowercaseQuery) ||
+          pool.tokens?.filter(
+            (t) => t.name.toLowerCase().includes(lowercaseQuery) || t.symbol.toLowerCase().includes(lowercaseQuery)
+          ).length
       )
       .filter(
         (data) =>
@@ -142,7 +151,7 @@ const Directory = ({ page }: { page: number }) => {
           !pool.isFinished &&
           ((pool.type === Category.POOL && +pool.startBlock > 0) ||
             (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
-            (pool.type === Category.INDEXES))
+            pool.type === Category.INDEXES)
       );
   }
   chosenPools = sortPools(chosenPools);
