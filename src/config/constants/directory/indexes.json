@@ -24,6 +24,6 @@
     ],
     "fee": 0.25,
     "performanceFee": "3500000000000000",
-    "totalStaked": ["100", "150"]
+    "totalStaked": ["0.01", "150"]
   }
 ]
