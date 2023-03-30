@@ -1,26 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useState } from "react";
+import { ethers } from "ethers";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import { useAccount, useSigner } from "wagmi";
 
 import Container from "components/layout/Container";
+import { chevronLeftSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
-import StyledButton from "../StyledButton";
-import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import TotalStakedChart from "./TotalStakedChart";
-import StakingHistory from "./StakingHistory";
-import { useContext, useState } from "react";
-import { formatDollar } from "utils/functions";
-import { useAccount, useSigner } from "wagmi";
-import { DashboardContext } from "contexts/DashboardContext";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { IndexContext } from "contexts/directory/IndexContext";
-import DropDown from "./Dropdown";
 import LogoIcon from "components/LogoIcon";
 
+import { DashboardContext } from "contexts/DashboardContext";
+import { TokenPriceContext } from "contexts/TokenPriceContext";
+import { IndexContext } from "contexts/directory/IndexContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { getNativeSybmol } from "lib/bridge/helpers";
+import { formatDollar, getIndexName } from "utils/functions";
+
+import StyledButton from "../StyledButton";
+import DropDown from "./Dropdown";
+import IndexLogo from "./IndexLogo";
 import EnterExitModal from "./Modals/EnterExitModal";
 import AddNFTModal from "./Modals/AddNFTModal";
+import TotalStakedChart from "./TotalStakedChart";
+import StakingHistory from "./StakingHistory";
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, accountData } = detailDatas;
@@ -52,7 +56,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
           transition={{ duration: 0.3 }}
         >
           <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
-            {address && data ? (
+            {/* {address && data && (
               <EnterExitModal
                 open={stakingModalOpen}
                 setOpen={setStakingModalOpen}
@@ -60,9 +64,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 data={data}
                 accountData={accountData}
               />
-            ) : (
-              ""
-            )}
+            )} */}
             <AddNFTModal open={addNFTModalOpen} setOpen={setAddNFTModalOpen} />
             <PageHeader
               title={
@@ -108,7 +110,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <a
                       className=" mt-2 h-[32px] w-[140px] sm:mt-0 "
                       target="_blank"
-                      href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+                      href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.tokens[0].address}`}
                       rel="noreferrer"
                     >
                       <StyledButton>
@@ -126,16 +128,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-between md:flex-row">
-                  <div className="mt-4 flex w-fit items-center md:w-[160px] ">
-                    <img src={"/images/directory/ogv.svg"} alt={""} className="w-[70px] rounded-full" />
-                    <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-[70px] rounded-full" />
-                  </div>
+                  <IndexLogo tokens={data.tokens} />
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[500px]">
                       <div className="flex flex-wrap justify-between text-xl">
-                        <div className="mr-4 whitespace-nowrap">Index: OGN-OGV</div>
+                        <div className="mr-4 whitespace-nowrap">Index: {getIndexName(data.tokens)}</div>
                         <div className="flex items-center">
-                          Performance:&nbsp;
+                          {/* Performance:&nbsp; */}
                           <span className={rate[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
                             {rate[curAPR].percent.toFixed(2)}%
                           </span>
@@ -146,7 +145,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80]">
                         <div>
-                          <span className="#FFFFFF80">Buy</span> OGN & OGV
+                          <span className="#FFFFFF80">Buy</span>{" "}
+                          {data.tokens.length === 2
+                            ? data.tokens.map((t) => t.symbol).join(" & ")
+                            : `${data.tokens.length} Tokens`}
                         </div>
                         <div className="flex items-center">
                           <img src="/images/explorer/etherscan.png" alt={""} className="mr-1 w-3" />
@@ -154,11 +156,28 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                       <div className="text-xs leading-none text-[#FFFFFF80]">
-                        Deposit Fee 1.00 % ETH
-                        <br />
-                        Withdrawal Fee 0.00% / In Profit Withdrawal Fee 1.00% of Profit
-                        <br />
-                        Performance Fee 0.020 ETH
+                        <div className="flex">
+                          Deposit Fee {data.fee}% {getNativeSybmol(data.chainId)}
+                          <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
+                            <div className="ml-1">{warningFarmerSVG("11px")}</div>
+                          </div>
+                        </div>
+                        <div className="flex">
+                          Withdrawal Fee 0.00% / In Profit Withdrawal Fee {data.fee}% of Profit
+                          <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
+                            <div className="ml-1">{warningFarmerSVG("11px")}</div>
+                          </div>
+                        </div>
+                        <div className="flex">
+                          Performance Fee {ethers.utils.formatEther(data.performanceFee)}{" "}
+                          {getNativeSybmol(data.chainId)}
+                          <div
+                            className="tooltip"
+                            data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
+                          >
+                            <div className="ml-1">{warningFarmerSVG("11px")}</div>
+                          </div>
+                        </div>
                       </div>
                     </InfoPanel>
 

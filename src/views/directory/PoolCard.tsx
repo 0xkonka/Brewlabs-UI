@@ -3,11 +3,18 @@ import styled from "styled-components";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { Category, PoolCategory } from "config/constants/types";
 import { formatAmount, formatTvl } from "utils/formatApy";
-import { numberWithCommas } from "utils/functions";
+import { getIndexName, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import IndexLogo from "components/logo/IndexLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
+
+const poolNames = {
+  [Category.POOL]: "Staking Pool",
+  [Category.FARM]: "Yield Farms",
+  [Category.INDEXES]: "Brewlabs Index",
+  [Category.ZAPPER]: "Zapper Pools",
+};
 
 const PoolCard = ({
   data,
@@ -20,8 +27,6 @@ const PoolCard = ({
   setSelectPoolDetail: any;
   setCurPool: any;
 }) => {
-  const poolNames = { 1: "Staking Pool", 2: "Yield Farms", 3: "Brewlabs Index", 4: "Zapper Pools" };
-
   return (
     <StyledContainer
       index={index}
@@ -63,7 +68,7 @@ const PoolCard = ({
           )}
           <div>
             {data.type === Category.INDEXES ? (
-              <div className="leading-none">{data.tokens.map((t) => t.symbol).join("-")}</div>
+              <div className="leading-none">{getIndexName(data.tokens)}</div>
             ) : (
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
@@ -132,7 +137,7 @@ const PoolCard = ({
             <div>
               <div className="leading-none">
                 {data.type === Category.INDEXES ? (
-                  <>{data.tokens.map((t) => t.symbol).join("-")}</>
+                  <>{getIndexName(data.tokens)}</>
                 ) : (
                   <>
                     <span className="text-primary">Earn</span> {data.earningToken.symbol}
