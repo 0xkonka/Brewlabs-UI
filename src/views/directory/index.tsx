@@ -49,13 +49,12 @@ const Directory = ({ page }: { page: number }) => {
 
   const allPools = [
     ...pools.map((pool) => {
-      let price = tokenPrices[getCurrencyId(pool.chainId, pool.earningToken.address)];
+      let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
       if (price > 500000) price = 0;
       return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
     }),
     ...farms.map((farm) => {
       let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-      if (price > 500000) price = 0;
       return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
     }),
     ...indexes,
@@ -123,7 +122,7 @@ const Directory = ({ page }: { page: number }) => {
 
   switch (status) {
     case "finished":
-      chosenPools = chosenPools.filter((pool) => pool.isFinished);
+      chosenPools = chosenPools.filter((pool) => pool.isFinished || pool.multiplier === 0);
       break;
     case "new":
       chosenPools = chosenPools.filter(
@@ -222,7 +221,7 @@ const Directory = ({ page }: { page: number }) => {
                 }
               />
               <Container className="font-brand">
-                <div className="mb-4 flex justify-end">
+                {/* <div className="mb-4 flex justify-end">
                   <div className="h-[32px] w-[140px] font-roboto">
                     <StyledButton onClick={() => setDeployerOpen(true)}>
                       <div className="flex items-center">
@@ -231,7 +230,7 @@ const Directory = ({ page }: { page: number }) => {
                       </div>
                     </StyledButton>
                   </div>
-                </div>
+                </div> */}
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
 
                 <div className="mt-8">

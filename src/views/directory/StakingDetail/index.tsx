@@ -298,7 +298,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                     )}
-                    <div className="ml-[30px] flex w-full max-w-fit flex-col justify-end sm:max-w-[520px] sm:flex-row">
+                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
                       {data.enableEmergencyWithdraw && (
                         <div className="h-[32px] w-[180px]">
                           <StyledButton
@@ -499,7 +499,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     }}
                   />
                 </div>
-                <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
+                <div className="mt-10 flex h-[560px] w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={graphData()}
@@ -576,7 +576,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </InfoPanel>
                   </div>
-                  <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
+                  <div className="relative mt-10 flex w-full flex-col justify-between md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
                       <InfoPanel className="flex cursor-pointer justify-between" type={"secondary"}>
                         <div>My Staked Tokens</div>
@@ -589,7 +589,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <SkeletonComponent />
                           )}
                           &nbsp;
-                          <span className="text-primary">{data.earningToken.symbol}</span>
+                          <span className="text-primary">{stakingToken.symbol}</span>
                         </div>
                       </InfoPanel>
                       <InfoPanel
@@ -732,18 +732,16 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       )}
                     </div>
-                    <div className="mt-7">
-                      <StakingHistory
-                        history={history}
-                        type={data.poolCategory}
-                        setPopulatedAmount={setPopulatedAmount}
-                        onWithdraw={() => {
-                          setCurType("withdraw");
-                          setStakingModalOpen(true);
-                        }}
-                      />
-                    </div>
-                    <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full sm:absolute sm:mt-0">
+                    <StakingHistory
+                      history={history}
+                      type={data.poolCategory}
+                      setPopulatedAmount={setPopulatedAmount}
+                      onWithdraw={() => {
+                        setCurType("withdraw");
+                        setStakingModalOpen(true);
+                      }}
+                    />
+                    <div className="relative mt-2 mb-[150px] flex h-12 w-full md:mb-0">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton

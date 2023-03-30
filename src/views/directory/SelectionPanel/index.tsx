@@ -1,5 +1,9 @@
-import { useState } from "react";
 import styled from "styled-components";
+
+import { Category } from "config/constants/types";
+import { BLOCKS_PER_DAY } from "config/constants";
+import { useChainCurrentBlocks } from "state/block/hooks";
+
 import DropDown from "./Dropdown";
 import ActivityDropdown from "./ActivityDropdown";
 
@@ -20,6 +24,8 @@ const SelectionPanel = ({
   activity: any;
   setActivity: any;
 }) => {
+  const currentBlocks = useChainCurrentBlocks();
+
   let counts = [];
   for (let i = 1; i <= 4; i++) {
     const filter = pools.filter((data: any) => data.type === i);
@@ -36,14 +42,38 @@ const SelectionPanel = ({
     `My positions (${counts[5]})`,
   ];
 
+  let activityCnts = {};
+  let filteredPools = pools.filter(
+    (data) =>
+      curFilter === Category.ALL ||
+      data.type === curFilter ||
+      (curFilter === Category.MY_POSITION && data.userData?.stakedBalance.gt(0))
+  );
+  activityCnts["active"] = filteredPools.filter(
+    (pool) =>
+      !pool.isFinished &&
+      ((pool.type === Category.POOL && +pool.startBlock > 0) ||
+        (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]))
+  ).length;
+  activityCnts["finished"] = filteredPools.filter((pool) => pool.isFinished || pool.multiplier === 0).length;
+  activityCnts["new"] = filteredPools.filter(
+    (pool) =>
+      !pool.isFinished &&
+      ((pool.type === Category.POOL &&
+        (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
+        (pool.type === Category.FARM &&
+          (+pool.startBlock > currentBlocks[pool.chainId] ||
+            +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])))
+  ).length;
+
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
       <div className="mb-0 block flex w-full flex-1 items-center justify-between md:mb-3 xl:hidden">
         <div className="max-w-[500px] flex-1">
           <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
         </div>
-        <div className="ml-4 hidden w-[110px] md:block">
-          <ActivityDropdown value={activity} setValue={setActivity} />
+        <div className="ml-4 hidden w-[130px] md:block">
+          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts}/>
         </div>
       </div>
       <div className="flex w-fit flex-none items-center justify-between md:flex-1 xl:w-full">
@@ -59,14 +89,14 @@ const SelectionPanel = ({
             <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
           </div>
         </div>
-        <div className="ml-4 hidden w-[110px] xl:block">
-          <ActivityDropdown value={activity} setValue={setActivity} />
+        <div className="ml-4 hidden w-[130px] xl:block">
+          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts}/>
         </div>
       </div>
       <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
         <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
         <div className="mt-2 w-full">
-          <ActivityDropdown value={activity} setValue={setActivity} />
+          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
     </div>
