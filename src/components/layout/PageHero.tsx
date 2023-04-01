@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import PhoneFrame from "@components/PhoneFrame";
 import { PlayCircleIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Container from "./Container";
@@ -34,13 +35,17 @@ const PageHero = () => {
             </div>
           </div>
 
-          <div className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6"
+          >
             <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-top-10 lg:-bottom-20 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
               <PhoneFrame className="mx-auto max-w-[366px]" priority>
                 <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute top-2 left-0" />
               </PhoneFrame>
             </div>
-          </div>
+          </motion.div>
         </div>
       </Container>
 

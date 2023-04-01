@@ -17,8 +17,8 @@ const VideoSection = () => (
           </p>
 
           <p className="mt-2 dark:text-gray-600">
-            Staking is a great way to earn passive income or if you are the contract owner it's a great way to reward
-            your community.
+            Staking is a great way to earn passive income or if you are the contract owner it&apos;s a great way to
+            reward your community.
           </p>
 
           <button className="btn-primary btn-sm btn mt-4">
