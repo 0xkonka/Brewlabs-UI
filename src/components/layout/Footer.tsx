@@ -105,16 +105,13 @@ const navigation = {
 const Footer = () => (
   <div className="relative">
     <svg
-      className="w-full absolute h-16 -top-16"
+      className="absolute -top-16 h-16 w-full"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 24 150 28 "
       preserveAspectRatio="none"
     >
       <defs>
-        <path
-          id="wave-path"
-          d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
-        />
+        <path id="wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
       </defs>
       <g className="wave1">
         <use xlinkHref="#wave-path" x="50" y="3" fill="rgba(17,24,39, .1)" />
@@ -123,21 +120,17 @@ const Footer = () => (
         <use xlinkHref="#wave-path" x="50" y="0" fill="rgba(17,24,39, .2)" />
       </g>
       <g className="wave3">
-        <use xlinkHref="#wave-path" x="50" y="9" fill="#0F2131" />
+        <use xlinkHref="#wave-path" x="50" y="9" fill="#27272a" />
       </g>
     </svg>
-    <footer className="bg-dark" aria-labelledby="footer-heading">
+    <footer className="bg-zinc-800" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Brewlabs Footer
       </h2>
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+      <div className="mx-auto max-w-7xl py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
-            <a
-              href="https://brewlabs.info"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://brewlabs.info" target="_blank" rel="noopener noreferrer">
               <Image
                 className="h-auto pr-16"
                 width={350}
@@ -147,18 +140,15 @@ const Footer = () => (
               />
             </a>
 
-            <p className="text-gray-500 text-base">
-              Brewlabs is a Binance Smart Chain utility project responsible for
-              a number of community tools and platforms within the
-              cryptocurrency space.
+            <p className="text-base text-gray-500">
+              Brewlabs is a Binance Smart Chain utility project responsible for a number of community tools and
+              platforms within the cryptocurrency space.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+          <div className="mt-12 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  Services
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Services</h3>
                 <ul className="mt-4 space-y-4">
                   {navigation.services.map((item) => (
                     <li className="flex items-center" key={item.name}>
@@ -172,18 +162,14 @@ const Footer = () => (
                       </a>
 
                       {item.status === "soon" && (
-                        <span className="ml-2 text-sm bg-white p-1 rounded bg-opacity-40">
-                          Soon
-                        </span>
+                        <span className="ml-2 rounded bg-white bg-opacity-40 p-1 text-sm">Soon</span>
                       )}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="mt-12 md:mt-0">
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  About
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">About</h3>
                 <ul className="mt-4 space-y-4">
                   {navigation.about.map((item) => (
                     <li className="flex items-center" key={item.name}>
@@ -197,9 +183,7 @@ const Footer = () => (
                       </a>
 
                       {item.status === "soon" && (
-                        <span className="ml-2 text-sm bg-white p-1 rounded bg-opacity-40">
-                          Soon
-                        </span>
+                        <span className="ml-2 rounded bg-white bg-opacity-40 p-1 text-sm">Soon</span>
                       )}
                     </li>
                   ))}
@@ -208,9 +192,7 @@ const Footer = () => (
             </div>
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  Tools
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Tools</h3>
                 <ul className="mt-4 space-y-4">
                   {navigation.tools.map((item) => (
                     <li className="flex items-center" key={item.name}>
@@ -224,18 +206,14 @@ const Footer = () => (
                       </a>
 
                       {item.status === "soon" && (
-                        <span className="ml-2 text-sm bg-white p-1 rounded bg-opacity-40">
-                          Soon
-                        </span>
+                        <span className="ml-2 rounded bg-white bg-opacity-40 p-1 text-sm">Soon</span>
                       )}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="mt-12 md:mt-0">
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  Earn
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Earn</h3>
                 <ul className="mt-4 space-y-4">
                   {navigation.earn.map((item) => (
                     <li className="flex items-center" key={item.name}>
@@ -249,9 +227,7 @@ const Footer = () => (
                       </a>
 
                       {item.status === "soon" && (
-                        <span className="ml-2 text-sm bg-white p-1 rounded bg-opacity-40">
-                          Soon
-                        </span>
+                        <span className="ml-2 rounded bg-white bg-opacity-40 p-1 text-sm">Soon</span>
                       )}
                     </li>
                   ))}
@@ -261,9 +237,7 @@ const Footer = () => (
           </div>
         </div>
         <div className="mt-12 border-t border-gray-700 pt-8">
-          <p className="text-base text-gray-400 xl:text-center">
-            &copy; 2021 Brewlabs, Inc. All rights reserved.
-          </p>
+          <p className="text-base text-gray-400 xl:text-center">&copy; 2023 Brewlabs, Inc. All rights reserved.</p>
         </div>
       </div>
     </footer>

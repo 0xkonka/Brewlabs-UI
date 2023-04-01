@@ -38,7 +38,6 @@ import NavigationDesktop from "components/navigation/NavigationDesktop";
 import NavigationMobile from "components/navigation/NavigationMobile";
 import { Updaters } from "../index";
 
-
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
@@ -95,7 +94,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                           </Suspense>
 
                           <Image
-                            className="fixed top-0 -right-44 dark:opacity-50"
+                            className="fixed top-0 -right-44 home:z-10 dark:opacity-50"
                             src="/images/blur-indigo.png"
                             alt="background blur"
                             width={567}
