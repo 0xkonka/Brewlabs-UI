@@ -20,6 +20,7 @@ import MultiCallAbi from "config/abi/Multicall.json";
 import singleStaking from "config/abi/singlestaking.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
+import UnLockAbi from "config/abi/brewlabsUnLockup.json";
 
 // Addresses
 import {
@@ -98,6 +99,15 @@ export const getLockupStakingContract = (
 ) => {
   return getContract(chainId, address, lockupStaking, signer);
 };
+
+export const getUnLockStakingContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, UnLockAbi, signer);
+};
+
 export const getLpManagerContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getLpManagerAddress(chainId), lpManagerAbi, signer);
 };
@@ -124,7 +134,10 @@ export const getAggregatorContract = (chainId: ChainId, signer?: ethers.Signer |
   return getContract(chainId, getAggregatorAddress(chainId), aggregatorAbi, signer);
 };
 
-export const getBrewlabsAggregationRouterContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+export const getBrewlabsAggregationRouterContract = (
+  chainId: ChainId,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
   return getContract(chainId, getBrewlabsAggregationRouterAddress(chainId), brewlabsAggregationRouter, signer);
 };
 

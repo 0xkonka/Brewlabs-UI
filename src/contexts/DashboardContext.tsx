@@ -1,30 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
-import { erc20ABI, useAccount, useProvider, useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import {
-  getClaimableTokenContract,
-  getContract,
-  getDividendTrackerContract,
-  getMulticallContract,
-} from "utils/contractHelpers";
-import ERC20ABI from "../config/abi/erc20.json";
-
 import { ethers } from "ethers";
+import { WNATIVE } from "@brewlabs/sdk";
+import { erc20ABI, useAccount, useSigner } from "wagmi";
+import { Alchemy, Network } from "alchemy-sdk";
+
+import ERC20ABI from "config/abi/erc20.json";
+import claimableTokenAbi from "config/abi/claimableToken.json";
+import dividendTrackerAbi from "config/abi/dividendTracker.json";
+import prices from "config/constants/prices";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 
 const DashboardContext: any = React.createContext({
   tokens: [],
+  priceHistory: [],
   marketHistory: [],
   tokenList: [],
   pending: false,
   setPending: () => {},
 });
-
-const WETH_ADDR: any = {
-  1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-};
 
 const CHAIN_NAME: any = {
   1: "ETH",
@@ -43,76 +40,122 @@ const tokenList_URI: any = {
   1: "https://tokens.coingecko.com/ethereum/all.json",
 };
 
-let temp_addr, temp_id;
+const WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+
+let temp_addr: any, temp_id: any;
 const DashboardContextProvider = ({ children }: any) => {
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
-  const [allowance, setAllowances] = useState([]);
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
+  const [priceHistory, setPriceHistory] = useState([]);
   const { address } = useAccount();
-  // const address = "0xe3c42372a5777682c33e8808cd39f412d9af2d07";
+  // const address = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
   const { data: signer }: any = useSigner();
-  const ethersProvider = useProvider();
 
   async function multicall(abi: any, calls: any) {
-    try {
-      const itf = new ethers.utils.Interface(abi);
-      const multi = getMulticallContract(chainId);
-      const calldata = calls.map((call: any) => [
-        call.address.toLowerCase(),
-        itf.encodeFunctionData(call.name, call.params),
-      ]);
+    const itf = new ethers.utils.Interface(abi);
+    const multi = getMulticallContract(chainId);
+    const calldata = calls.map((call: any) => [
+      call.address.toLowerCase(),
+      itf.encodeFunctionData(call.name, call.params),
+    ]);
 
-      const { returnData } = await multi.aggregate(calldata);
-      const res = returnData.map((call: any, i: number) => itf.decodeFunctionResult(calls[i].name, call));
+    const { returnData } = await multi.aggregate(calldata);
+    const res = returnData.map((call: any, i: number) => itf.decodeFunctionResult(calls[i].name, call));
 
-      return res;
-    } catch (error) {
-      console.log(error);
-    }
+    return res;
   }
 
-  const fetchTokenBaseInfo = async (address: any) => {
-    const calls = [
-      {
+  const fetchTokenBaseInfo = async (address: any, type = "name symbol decimals", accountAddress: string = null) => {
+    let calls: any = [];
+    const splitList = type === "" ? [] : type.split(" ");
+    for (let i = 0; i < splitList.length; i++)
+      calls.push({
         address: address,
-        name: "name",
-      },
-      {
+        name: splitList[i],
+      });
+    if (accountAddress)
+      calls.push({
         address: address,
-        name: "symbol",
-      },
-      {
-        address: address,
-        name: "decimals",
-      },
-    ];
+        name: "balanceOf",
+        params: [accountAddress],
+      });
     const result = await multicall(erc20ABI, calls);
     return result;
   };
 
+  const isScamToken = async (token: any) => {
+    let isScam = false;
+    if (!token.name.includes("_Tracker")) {
+      try {
+        if (signer && token.address !== WETH_ADDR) {
+          const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
+          await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
+        }
+      } catch (error) {
+        isScam = true;
+      }
+    }
+    return isScam;
+  };
+
+  async function fetchPrice(address: any, chainID: number, resolution: number) {
+    const to = Math.floor(Date.now() / 1000);
+    const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
+      address === WETH_ADDR || !address ? WNATIVE[chainID].address : address
+    }-${chainID === 56 ? "bsc" : "eth"}_USD&resolution=${resolution}&from=${to - 3600 * 24}&to=${to}`;
+    let result: any = await axios.get(url);
+    return result;
+  }
+
+  async function fetchPrices() {
+    let data: any;
+
+    data = await Promise.all(
+      prices.map(async (data: any) => {
+        const tokenInfo = await fetchPrice(data.address, data.chainId, 60);
+
+        const serializedToken = { ...data, history: tokenInfo.data.c };
+        return serializedToken;
+      })
+    );
+
+    setPriceHistory(data);
+    return data;
+  }
+
   const fetchTokenInfo = async (token: any) => {
     try {
-      const to = Math.floor(Date.now() / 1000);
-      const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
-        token.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? WETH_ADDR[chainId] : token.address
-      }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`;
-      let result = await axios.get(url);
-
       let reward = {
           pendingRewards: 0,
           totalRewards: 0,
           symbol: "",
         },
-        isReward = false;
+        isReward = false,
+        balance = token.balance;
+
+      let priceBalanceResult: any = await Promise.all([
+        fetchPrice(token.address, chainId, 10),
+        token.address === WETH_ADDR ? 0 : fetchTokenBaseInfo(token.address, "", address),
+      ]);
+      let result = priceBalanceResult[0];
+      balance = token.address === WETH_ADDR ? balance : priceBalanceResult[1][0][0] / Math.pow(10, token.decimals);
       try {
-        const claimableContract = getClaimableTokenContract(chainId, token.address);
-        const dividendTracker = await claimableContract.dividendTracker();
-        let rewardToken,
+        let calls = [
+          {
+            address: token.address,
+            name: "dividendTracker",
+            params: [],
+          },
+        ];
+        const claimableResult = await multicall(claimableTokenAbi, calls);
+        const dividendTracker = claimableResult[0][0];
+        if (token.address === "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()) console.log(balance);
+        let rewardToken: any,
           pendingRewards = 0,
           totalRewards = 0;
         try {
@@ -133,111 +176,125 @@ const DashboardContextProvider = ({ children }: any) => {
             decimals: 18,
           };
         }
-        const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
-        pendingRewards = await dividendTrackerContract.withdrawableDividendOf(address);
-        totalRewards = await dividendTrackerContract.withdrawnDividendOf(address);
+        calls = [
+          {
+            address: dividendTracker,
+            name: "withdrawableDividendOf",
+            params: [address],
+          },
+          {
+            address: dividendTracker,
+            name: "withdrawnDividendOf",
+            params: [address],
+          },
+        ];
+        const rewardResult = await multicall(dividendTrackerAbi, calls);
+        pendingRewards = rewardResult[0][0];
+        totalRewards = rewardResult[1][0];
         reward.pendingRewards =
           pendingRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.totalRewards =
           totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.symbol = rewardToken.symbol;
         isReward = true;
-      } catch (e) {
-        // console.log(e);
-      }
-      let isScam = false;
-      if (!token.name.includes("_Tracker")) {
-        try {
-          if (signer && token.address !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            const tokenContract = getContract(chainId, token.address, ERC20ABI, signer);
-            await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
-          }
-        } catch (error) {
-          isScam = true;
-        }
-      }
+      } catch (e) {}
+
+      let scamResult: any = await Promise.all([await isScamToken(token)]);
+      scamResult = scamResult[0];
 
       return {
-        ...token,
-        priceList: result.data.c,
-        price: result.data.c[result.data.c.length - 1],
+        priceList: result.data ? result.data.c : token.priceList,
+        price: result.data ? result.data.c[result.data.c.length - 1] : token.price,
         reward,
-        isScam: isScam,
+        isScam: scamResult !== undefined ? scamResult : token.isScam,
         isReward,
+        balance,
       };
     } catch (error) {
-      console.log(token.address);
       console.log(error);
+      console.log(token);
       return token;
     }
   };
 
-  const fetchTokenInfos = async (tokens: [], initial: boolean) => {
+  const fetchTokenInfos = async (tokens: []) => {
     let data: any;
-    console.log("Initial", initial);
-    if (initial)
-      data = await Promise.all(
-        tokens.map(async (data: any) => {
-          const tokenInfo = await fetchTokenInfo(data);
-          const serializedToken = { ...tokenInfo };
-          return serializedToken;
-        })
-      );
-    else {
-      let temp = [];
-      for (let i = 0; i < tokens.length; i++) {
-        const tokenInfo: any = await fetchTokenInfo(tokens[i]);
-        temp.push(tokenInfo);
-      }
-      data = temp;
-    }
+
+    data = await Promise.all(
+      tokens.map(async (data: any) => {
+        const tokenInfo = await fetchTokenInfo(data);
+        if (tokenInfo.name === "Wrapped ETH") console.log(tokenInfo);
+        const serializedToken = { ...data, ...tokenInfo, balance: tokenInfo.balance };
+        return serializedToken;
+      })
+    );
     return data;
   };
 
+  async function fetchTokenBalances() {
+    const multicallContract = getMulticallContract(chainId);
+    const ethBalance = await multicallContract.getEthBalance(address);
+    let data: any = [];
+    if (chainId === 1) {
+      const result = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${address}/tokens`);
+      const nonZeroBalances = result.data.tokenAccounts.filter((data: any) => data.balance / 1 > 0);
+      data = await Promise.all(
+        nonZeroBalances.map(async (token: any) => {
+          const data = await Promise.all([fetchTokenBaseInfo(token.tokenHash, "name")]);
+          return {
+            address: token.tokenHash,
+            balance: token.balance / Math.pow(10, token.decimals),
+            decimals: token.decimals,
+            name: data[0][0][0],
+            symbol: token.tokenSymbol,
+            price: 0,
+            priceList: [0],
+          };
+        })
+      );
+    } else if (chainId === 56) {
+      data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
+      data = data.data;
+    }
+    data.push({
+      address: WETH_ADDR,
+      balance: ethBalance / Math.pow(10, 18),
+      decimals: 18,
+      name: chainId === 1 ? "Ethereum" : "Binance",
+      symbol: chainId === 1 ? "ETH" : "BNB",
+      price: 0,
+      priceList: [0],
+    });
+    return data;
+  }
   async function fetchTokens() {
     try {
-      console.log("Fetch Start");
-      const covalUrl = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=ckey_6cd616c30ff1407bbbb4b12c5bd`;
-      const covalReponse: any = await axios.get(covalUrl);
-      const items = covalReponse.data.data.items;
+      const items: any = await fetchTokenBalances();
       let _tokens: any = [];
 
       for (let i = 0; i < items.length; i++) {
-        const filter = tokens.filter((data) => data.address.toLowerCase() === items[i].contract_address.toLowerCase());
-        const price = filter.length
-          ? filter[0].price
-          : items[i].contract_ticker_symbol === "BUSD" || items[i].contract_ticker_symbol === "USDC"
-          ? 1
-          : items[i].quote_rate / 1;
-        const isLP = !items[i].contract_name;
-        let LPInfo;
-        if (isLP) {
-          LPInfo = await fetchTokenBaseInfo(items[i].contract_address);
-          if (!LPInfo[0]) continue;
-        }
-        if (items[i].balance / 1 > 0 || items[i].contract_address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-          _tokens.push({
-            balance: items[i].balance / Math.pow(10, isLP ? LPInfo[2] : items[i].contract_decimals),
-            name: isLP ? LPInfo[0] : items[i].contract_name,
-            symbol: isLP ? LPInfo[1] : items[i].contract_ticker_symbol,
-            decimals: isLP ? LPInfo[2] : items[i].contract_decimals,
-            // logo: items[i].logo_url,
-            address: items[i].contract_address.toLowerCase(),
-            price,
-            priceList: filter.length ? filter[0].priceList : [price],
-            reward: {
-              totalRewards: filter.length ? filter[0].reward.totalRewards : 0,
-              pendingRewards: filter.length ? filter[0].reward.pendingRewards : 0,
-              symbol: filter.length ? filter[0].reward.symbol : "",
-            },
-            isScam: filter.length ? filter[0].isScam : false,
-            isReward: filter.length ? filter[0].isReward : false,
-          });
+        const filter = tokens.filter((data) => data.address.toLowerCase() === items[i].address.toLowerCase());
+        _tokens.push({
+          balance: filter.length ? filter[0].balance : items[i].balance,
+          name: items[i].name,
+          symbol: items[i].symbol,
+          decimals: items[i].decimals,
+          address: items[i].address.toLowerCase(),
+          price: filter.length ? filter[0].price : items[i].price,
+          priceList: filter.length ? filter[0].priceList : items[i].priceList,
+          reward: {
+            totalRewards: filter.length ? filter[0].reward.totalRewards : 0,
+            pendingRewards: filter.length ? filter[0].reward.pendingRewards : 0,
+            symbol: filter.length ? filter[0].reward.symbol : "",
+          },
+          isScam: filter.length ? filter[0].isScam : false,
+          isReward: filter.length ? filter[0].isReward : false,
+        });
       }
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
-      let tokenInfos: any = await fetchTokenInfos(_tokens, tokens.length === 0);
+      let tokenInfos: any = await fetchTokenInfos(_tokens);
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
 
       setTokens(tokenInfos);
@@ -248,7 +305,6 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchMarketInfo() {
     let i;
-    console.log("FETCH MARKET PRICE");
     for (i = 0; i < apiKeyList.length; i++) {
       try {
         const response = await fetch(new Request("https://api.livecoinwatch.com/overview/history"), {
@@ -312,8 +368,12 @@ const DashboardContextProvider = ({ children }: any) => {
     setTokens([]);
   }, [chainId, address]);
 
+  useSlowRefreshEffect(() => {
+    fetchPrices();
+  }, []);
+
   return (
-    <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList }}>
+    <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList, priceHistory }}>
       {children}
     </DashboardContext.Provider>
   );

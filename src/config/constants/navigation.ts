@@ -16,14 +16,14 @@ export const navigationData = [
   },
   {
     name: "Staking",
-    href: "https://earn.brewlabs.info/pools",
-    external: true,
+    href: "/staking",
+    external: false,
     icon: "ClockIcon",
   },
   {
     name: "Farms",
-    href: "https://earn.brewlabs.info/farms",
-    external: true,
+    href: "/farms",
+    external: false,
     icon: "ArrowTrendingUpIcon",
   },
   // {
@@ -41,6 +41,7 @@ export const navigationData = [
   {
     name: "Zap",
     href: "https://earn.brewlabs.info/zap",
+    // href: "/zapper",
     external: true,
     icon: "BoltIcon",
   },

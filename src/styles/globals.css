@@ -7,7 +7,11 @@
   --background: white;
   --foreground: black;
 }
-
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+  display: none !important;
+}
 html.dark a,
 html.dark p,
 html.dark h3 {
@@ -75,4 +79,7 @@ html.dark h3 {
 
 .btn-protocol-shadow {
   box-shadow: 0px 4px 4px 0px rgb(0 0 0 / 25%);
+}
+.staking-button-shadow {
+  box-shadow: 0px 0px 3px #eebb19;
 }

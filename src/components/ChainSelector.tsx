@@ -95,7 +95,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
                       network.id,
                       NATIVE_CURRENCIES[network.id === 0 ? ChainId.BSC_MAINNET : network.id].wrapped.address
                     )
-                  ].toFixed(5) ?? "0.000"}
+                  ]?.toFixed(5) ?? "0.000"}
                 </p>
               </div>
 

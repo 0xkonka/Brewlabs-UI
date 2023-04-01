@@ -8,7 +8,17 @@ export interface SerializedToken {
   decimals: number;
   symbol: string;
   name: string;
+  logo?: string;
   projectLink?: string;
+}
+
+export enum Category {
+  "ALL" = 0,
+  "POOL",
+  "FARM",
+  "INDEXES",
+  "ZAPPER",
+  "MY_POSITION",
 }
 
 export enum PoolCategory {
@@ -42,6 +52,7 @@ export enum Chef {
 
 interface FarmConfigBaseProps {
   pid: number | null;
+  type?: Category;
   farmId?: number;
   poolId?: number;
   v1pid?: number;
@@ -53,8 +64,11 @@ interface FarmConfigBaseProps {
   contractAddress?: string;
   multiplier?: string;
   isCommunity?: boolean;
+  isCustody?: boolean;
   lpManager?: string;
+  sortOrder?: number;
   enableEmergencyWithdraw?: boolean;
+  disableHarvest?: boolean;
   isServiceFee?: boolean;
   compound?: boolean;
   compoundRelection?: boolean;
@@ -75,49 +89,18 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
   quoteToken: SerializedToken;
   earningToken?: SerializedToken;
   reflectionToken?: SerializedToken;
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
+  apr?: number;
   token: Currency;
   quoteToken: Currency;
   earningToken?: Currency;
   reflectionToken?: Currency;
-}
-
-interface PoolConfigBaseProps {
-  sousId: number;
-  chainId: ChainId;
-  contractAddress: string;
-  poolCategory: PoolCategory;
-  tokenPerBlock: string;
-  sortOrder?: number;
-  version?: Version;
-  harvest?: boolean;
-  noCompound?: boolean;
-  reflection?: boolean;
-  noReflectionCompound?: boolean;
-  lockup?: number;
-  isServiceFee?: boolean;
-  isFinished?: boolean;
-  migration?: boolean;
-  unverified?: boolean;
-  featured?: boolean;
-  enableEmergencyWithdraw?: boolean;
-  forceEndblock?: number;
-  headerSuffix?: string;
-  externalSwap?: string;
-}
-
-export interface SerializedPoolConfig extends PoolConfigBaseProps {
-  earningToken: SerializedToken;
-  stakingToken: SerializedToken;
-  reflectionTokens?: SerializedToken[];
-}
-
-export interface DeserializedPoolConfig extends PoolConfigBaseProps {
-  earningToken: Currency;
-  stakingToken: Currency;
-  reflectionTokens?: Currency[];
+  availableRewards?: number;
+  availableReflections?: number[];
 }
 
 export interface BridgeToken extends SerializedToken {
