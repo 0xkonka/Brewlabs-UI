@@ -83,6 +83,7 @@ export const fetchIndexesPublicDataAsync = (chainId: ChainId) => async (dispatch
 
 export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => async (dispatch, getState) => {
   const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
+  if (indexes.length === 0) return;
 
   fetchUserStakings(account, chainId, indexes).then((stakings) => {
     dispatch(setIndexesUserData(stakings));
@@ -101,6 +102,63 @@ export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => 
           nftItems: nftInfo.filter((data) => data.indexAddress.toLowerCase() === pool.address.toLowerCase()),
         }))
       )
+    )
+  );
+};
+
+export const fetchIndexUserHistoryDataAsync = (pid: number, account: string) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data;
+  if (indexes.length === 0) return;
+
+  axios.post(`${API_URL}/history/${account}/multiple`, { type: "index", ids: [pid] }).then((res) => {
+    const ret = res?.data ?? [];
+
+    const historyData = [];
+    for (let pool of indexes) {
+      let record = { pid: pool.pid, histories: [] };
+      record.histories = ret.filter((d) => d.pid === pool.pid);
+
+      historyData.push(record);
+    }
+    dispatch(setIndexesUserData(historyData));
+  });
+};
+
+export const updateUserStakings = (pid: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const index = getState().indexes.data.filter((p) => p.pid === pid && p.chainId === chainId);
+  if (!index) return;
+
+  const stakings = await fetchUserStakings(account, chainId, [index]);
+  dispatch(setIndexesUserData(stakings));
+};
+
+export const updateNftAllowance = (pid: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const index = getState().indexes.data.filter((p) => p.pid === pid && p.chainId === chainId);
+  if (!index) return;
+
+  const allowances = await fetchUserNftAllowance(account, chainId, [index]);
+  dispatch(setIndexesUserData(allowances));
+};
+
+export const updateUserBalance = (account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
+  if (indexes.length === 0) return;
+
+  const ethBalance = await fetchUserBalance(account, chainId);
+  dispatch(setIndexesUserData(indexes.map((pool) => ({ pid: pool.pid, ethBalance: ethBalance.toString() }))));
+};
+
+export const updateUserNftInfo = (account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
+  if (indexes.length === 0) return;
+
+  const nftInfo = await fetchUserNftData(account, chainId, indexes[0].nft);
+  dispatch(
+    setIndexesUserData(
+      indexes.map((pool) => ({
+        pid: pool.pid,
+        nftItems: nftInfo.filter((data) => data.indexAddress.toLowerCase() === pool.address.toLowerCase()),
+      }))
     )
   );
 };

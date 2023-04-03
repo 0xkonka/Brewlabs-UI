@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
@@ -25,9 +25,26 @@ import EnterExitModal from "./Modals/EnterExitModal";
 import AddNFTModal from "./Modals/AddNFTModal";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
+import { useAppDispatch } from "state";
+import { fetchIndexFeeHistories, fetchIndexPerformance, getAverageHistory } from "state/indexes/fetchIndexes";
+import {
+  fetchIndexUserHistoryDataAsync,
+  setIndexesPublicData,
+  updateNftAllowance,
+  updateUserBalance,
+  updateUserNftInfo,
+  updateUserStakings,
+} from "state/indexes";
+import getCurrencyId from "utils/getCurrencyId";
+import { SkeletonComponent } from "components/SkeletonComponent";
+import { formatTvl } from "utils/formatApy";
+import useTokenPrice from "hooks/useTokenPrice";
+import { WNATIVE } from "@brewlabs/sdk";
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data, accountData } = detailDatas;
+  const { open, setOpen, data } = detailDatas;
+  const dispatch = useAppDispatch();
+
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);
   const [curType, setCurType] = useState("enter");
@@ -38,13 +55,92 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { ethPrice } = useContext(TokenPriceContext);
+
+  const { tokenPrices } = useContext(TokenPriceContext);
+  const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
   const { rate, rateHistory }: any = useContext(IndexContext);
 
   const aprTexts = ["YTD", "30D", "7D", "24hrs"];
 
-  const graphData = [[100, 300, 520, 60, 200], [150, 100, 520, 40, 220], rateHistory, [0.5, 0.32, 0.52, 0.4, 0.4]];
+  useEffect(() => {
+    const fetchPriceHistoryAsync = async () => {
+      const { priceChanges, priceHistories, tokenPrices } = await fetchIndexPerformance(data);
+
+      dispatch(
+        setIndexesPublicData([
+          {
+            pid: data.pid,
+            priceChanges,
+            priceHistories,
+            tokenPrices,
+          },
+        ])
+      );
+    };
+
+    const fetchFeeHistoriesAsync = async () => {
+      const { performanceFees } = await fetchIndexFeeHistories(data);
+
+      dispatch(
+        setIndexesPublicData([
+          {
+            pid: data.pid,
+            performanceFees,
+          },
+        ])
+      );
+    };
+
+    fetchFeeHistoriesAsync();
+    fetchPriceHistoryAsync();
+  }, [data.pid]);
+
+  useEffect(() => {
+    if (address) {
+      dispatch(updateNftAllowance(data.pid, address, data.chainId));
+      dispatch(updateUserStakings(data.pid, address, data.chainId));
+      dispatch(updateUserBalance(address, data.chainId));
+      dispatch(updateUserNftInfo(address, data.chainId));
+
+      dispatch(fetchIndexUserHistoryDataAsync(data.pid, address));
+    }
+  }, [data.pid, address]);
+
+  const graphData = () => {
+    let _graphData;
+    switch (curGraph) {
+      case 0:
+        _graphData = data.TVLData ?? [];
+        if (data.tvl !== undefined) {
+          _graphData.push(data.totalStaked);
+        }
+        if (_graphData.length === 1) _graphData.push(_graphData[0]);
+        return _graphData;
+      case 1:
+        return data.performanceFees ?? [];
+      case 2:
+        return data.priceHistories;
+      case 3:
+        return []
+
+        for(let i = 0; i < data.priceHistories[0].length; i++) {
+          let amount = 0;
+          for(let k = 0; k < data.numTokens; k++) {
+            amount += +data.totalStaked[k] * data.priceHistories[k][i]            
+          }
+          _graphData.push(amount)
+        }
+        return _graphData;
+      default:
+        _graphData = data.TVLData ?? [];
+        if (data.tvl !== undefined) {
+          _graphData.push(data.totalStaked);
+        }
+        if (_graphData.length === 1) _graphData.push(_graphData[0]);
+        return _graphData;
+    }
+  };
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -135,9 +231,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mr-4 whitespace-nowrap">Index: {getIndexName(data.tokens)}</div>
                         <div className="flex items-center">
                           {/* Performance:&nbsp; */}
-                          <span className={rate[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
-                            {rate[curAPR].percent.toFixed(2)}%
-                          </span>
+                          {data.priceChanges !== undefined ? (
+                            <span className={data.priceChanges[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
+                              {data.priceChanges[curAPR].percent.toFixed(2)}%
+                            </span>
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                           <div className="ml-1 w-[60px]">
                             <DropDown value={curAPR} setValue={setCurAPR} data={aprTexts} />
                           </div>
@@ -218,7 +318,17 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 </div>
                 <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
-                    <TotalStakedChart data={graphData[curGraph]} symbol={""} price={1} curGraph={curGraph} />
+                    <TotalStakedChart
+                      data={graphData()}
+                      symbols={curGraph === 1 ? [getNativeSybmol(data.chainId)] : data.tokens.map((t) => t.symbol)}
+                      prices={
+                        curGraph === 1
+                          ? [nativeTokenPrice]
+                          : data.tokenPrices ??
+                            data.tokens.map((t) => tokenPrices[getCurrencyId(t.chainId, t.address)] ?? 0)
+                      }
+                      curGraph={curGraph}
+                    />
                     <InfoPanel
                       className="mt-20 flex cursor-pointer justify-between"
                       type={"secondary"}
@@ -227,8 +337,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     >
                       <div>Total Index Value</div>
                       <div className="flex">
-                        {graphData[0][graphData[0].length - 1]}&nbsp;
-                        <span className="text-[#FFFFFF80]">OGN / OGV</span>
+                        {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
+                        <span className="ml-1 text-[#FFFFFF80]">OGN / OGV</span>
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -241,8 +351,12 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex">
-                        {graphData[1][graphData[1].length - 1].toFixed(2)}&nbsp;
-                        <span className="text-[#FFFFFF80]">ETH</span>
+                        {data.performanceFees !== undefined ? (
+                          data.performanceFees[data.performanceFees.length - 1].toFixed(4)
+                        ) : (
+                          <SkeletonComponent />
+                        )}
+                        <span className="ml-1 text-[#FFFFFF80]">{getNativeSybmol(data.chainId)}</span>
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -255,11 +369,20 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Index Performance&nbsp;<span className="text-[#FFFFFF80]">(Price - 24hrs)</span>
                       </div>
                       <div className="flex text-[#FFFFFF80]">
-                        <span className={graphData[2][graphData[2].length - 1] < 0 ? "text-danger" : "text-green"}>
-                          {graphData[2][graphData[2].length - 1].toFixed(2)}%
-                        </span>
-                        &nbsp;(
-                        {formatDollar(rate[3].value, 4)})
+                        {data.priceChanges !== undefined ? (
+                          <span className={data.priceChanges[3].percent < 0 ? "text-danger" : "text-green"}>
+                            {data.priceChanges[3].percent.toFixed(2)}%
+                          </span>
+                        ) : (
+                          <SkeletonComponent />
+                        )}
+                        &nbsp; (
+                        {data.priceChanges !== undefined ? (
+                          formatDollar(data.priceChanges[3].value, 2)
+                        ) : (
+                          <SkeletonComponent />
+                        )}
+                        )
                       </div>
                     </InfoPanel>
 
@@ -273,7 +396,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex text-[#FFFFFF80]">
-                        <span className="text-green">{graphData[3][graphData[3].length - 1].toFixed(2)}%</span>{" "}
+                        <span className="text-green">
+                          {/* {data.priceHistories?.[data.priceHistories?.length - 1].toFixed(2)}% */}
+                        </span>{" "}
                         &nbsp;($0.0156)
                       </div>
                     </InfoPanel>

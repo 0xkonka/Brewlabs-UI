@@ -3,8 +3,9 @@ import { ethers } from "ethers";
 
 import IndexAbi from "config/abi/indexes/index.json";
 
-import { MULTICALL_FETCH_LIMIT } from "config/constants";
+import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import multicall from "utils/multicall";
+import { sumOfArray } from "utils/functions";
 
 export const fetchIndexesTotalStaking = async (chainId, indexes) => {
   const selectedIndexs = indexes.filter((p) => p.chainId === chainId);
@@ -61,7 +62,7 @@ const getPriceChange = (prices, time) => {
   let curPrices = [];
   for (let k = 0; k < prices.length; k++) {
     curPrices.push(prices[k].c[prices[k].c.length - 1]);
-    prevPriceChange += curPrices[k] / prices.length;
+    currentPriceChange += curPrices[k] / prices.length;
   }
 
   let prevPrices = new Array(prices.length).fill(0);
@@ -80,7 +81,7 @@ const getPriceChange = (prices, time) => {
   };
 };
 
-const getHistory = (prices) => {
+export const getAverageHistory = (prices) => {
   let temp = [];
 
   for (let i = 0; i < prices[0].length; i++) {
@@ -98,28 +99,31 @@ const getHistory = (prices) => {
 };
 
 export const fetchIndexPerformance = async (pool) => {
-  const to = Math.floor(Date.now() / 1000);
+  let keys = {1: 'eth', 56: 'bsc', 137: 'polygon'}
 
+  const to = Math.floor(Date.now() / 1000);
   let prices = [];
+  let tokenPrices = []
   try {
     for (let i = 0; i < pool.numTokens; i++) {
       const tokenYearUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${
         pool.tokens[i].address
-      }-eth_USD&resolution=1440&from=${to - 3600 * 24 * 365}&to=${to}`;
+      }-${keys[pool.chainId]}_USD&resolution=1440&from=${to - 3600 * 24 * 365}&to=${to}`;
 
       let priceResult = await axios.get(tokenYearUrl);
       const yearlyPrice = priceResult.data;
 
       const tokenDayUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${
         pool.tokens[i].address
-      }-eth_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
+      }-${keys[pool.chainId]}_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
 
       priceResult = await axios.get(tokenDayUrl);
       const dailyPrice = priceResult.data;
-      prices.push(yearlyPrice, dailyPrice);
+      prices.push([yearlyPrice, dailyPrice]);
+      tokenPrices.push(dailyPrice.c[dailyPrice.c.length - 1])
     }
   } catch (e) {
-    return;
+    return { priceChanges: new Array(4).fill({ percent: 0, value: 0 }), priceHistories: [] };
   }
 
   let priceChanges = [
@@ -141,7 +145,28 @@ export const fetchIndexPerformance = async (pool) => {
     ),
   ];
 
-  let priceHistories = getHistory(prices.map((p) => p[1].c));
+  // let priceHistories = getHistory(prices.map((p) => p[1].c));
 
-  return { priceChanges, priceHistories };
+  return { priceChanges, priceHistories: prices.map((p) => p[1].c), tokenPrices };
+};
+
+export const fetchIndexFeeHistories = async (pool) => {
+  let res;
+  try {
+    res = await axios.post(`${API_URL}/fee/single`, { type: "index", id: pool.pid });
+  } catch (e) {}
+  if (!res.data) {
+    return { performanceFees: [] };
+  }
+  const { performanceFees } = res.data;
+
+  let _performanceFees = [];
+  const timeBefore24Hrs = Math.floor(new Date().setHours(new Date().getHours() - 24) / 1000);
+  const curTime = Math.floor(new Date().getTime() / 1000);
+
+  for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
+    _performanceFees.push(sumOfArray(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
+  }
+
+  return { performanceFees: _performanceFees };
 };
