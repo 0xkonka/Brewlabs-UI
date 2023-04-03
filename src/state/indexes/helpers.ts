@@ -13,7 +13,7 @@ export const transformUserData = (userData: any) => {
   };
 };
 export const transformIndex = (pool: SerializedIndex): DeserializedIndex => {
-  const { totalStaked, tokens, userData, ...rest } = pool;
+  const { tokens, userData, ...rest } = pool;
 
   const _tokens = [];
   for (let i = 0; i < tokens.length; i++) {
@@ -23,7 +23,6 @@ export const transformIndex = (pool: SerializedIndex): DeserializedIndex => {
   return {
     ...rest,
     tokens: _tokens,
-    totalStaked: totalStaked.map(t => BigNumber.from(t)),
     userData: transformUserData(userData),
   };
 };

@@ -26,14 +26,16 @@ export const usePollIndexesFromApi = () => {
 export const useFetchPublicIndexesData = () => {
   const dispatch = useAppDispatch();
   const { chainId } = useActiveWeb3React();
+  const { indexes } = useIndexes();
 
   useSlowRefreshEffect(() => {
     dispatch(fetchIndexesPublicDataAsync(chainId));
-  }, [chainId]);
+  }, [chainId, indexes.length]);
 };
 
 export const useFetchIndexesWithUserData = () => {
   const { chainId, account } = useActiveWeb3React();
+  const { indexes } = useIndexes();
   const dispatch = useAppDispatch();
 
   useSlowRefreshEffect(() => {
@@ -43,7 +45,7 @@ export const useFetchIndexesWithUserData = () => {
     } else {
       dispatch(resetIndexesUserData());
     }
-  }, [account, chainId, dispatch]);
+  }, [account, chainId, indexes.length, dispatch]);
 };
 
 export const useIndexes = (): { indexes: DeserializedIndex[]; userDataLoaded: boolean } => {

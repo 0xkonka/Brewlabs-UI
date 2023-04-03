@@ -31,7 +31,6 @@ export const fetchUserStakings = async (account, chainId, indexes) => {
         }
 
         const userStakes = await multicall(IndexAbi, calls, chainId);
-
         batch.forEach((pool, index) => {
           data.push({
             pid: pool.pid,
@@ -45,6 +44,7 @@ export const fetchUserStakings = async (account, chainId, indexes) => {
       }
     })
   );
+  return data;
 };
 
 export const fetchUserNftAllowance = async (account, chainId, indexes) => {
@@ -84,6 +84,7 @@ export const fetchUserNftAllowance = async (account, chainId, indexes) => {
       }
     })
   );
+  return data
 };
 
 export const fetchUserBalance = async (account, chainId) => {
@@ -95,7 +96,7 @@ export const fetchUserBalance = async (account, chainId) => {
 };
 
 export const fetchUserNftData = async (account, chainId, nftAddr) => {
-  if(!nftAddr) return [];
+  if (!nftAddr) return [];
 
   let calls = [{ address: nftAddr, name: "balanceOf", params: [account] }];
   const [balance] = await multicall(IndexNftAbi, calls, chainId);

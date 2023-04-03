@@ -84,11 +84,15 @@ export const fetchIndexesPublicDataAsync = (chainId: ChainId) => async (dispatch
 export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => async (dispatch, getState) => {
   const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
 
-  fetchUserStakings(account, chainId, indexes).then((stakings) => dispatch(setIndexesUserData(stakings)));
-  fetchUserNftAllowance(account, chainId, indexes).then((allowances) => dispatch(setIndexesUserData(allowances)));
-  fetchUserBalance(account, chainId).then((ethBalance) =>
-    dispatch(setIndexesUserData(indexes.map((pool) => ({ pid: pool.pid, ethBalance }))))
-  );
+  fetchUserStakings(account, chainId, indexes).then((stakings) => {
+    dispatch(setIndexesUserData(stakings));
+  });
+  fetchUserNftAllowance(account, chainId, indexes).then((allowances) => {
+    dispatch(setIndexesUserData(allowances));
+  });
+  fetchUserBalance(account, chainId).then((ethBalance) => {
+    dispatch(setIndexesUserData(indexes.map((pool) => ({ pid: pool.pid, ethBalance: ethBalance.toString() }))));
+  });
   fetchUserNftData(account, chainId, indexes[0]?.nft).then((nftInfo) =>
     dispatch(
       setIndexesUserData(
@@ -107,11 +111,12 @@ export const IndexesSlice = createSlice({
   reducers: {
     setIndexesPublicData: (state, action) => {
       const liveIndexesData: SerializedIndex[] = action.payload;
+
       liveIndexesData.map((pool) => {
         const index = state.data.findIndex((p) => p.pid === pool.pid);
         if (index >= 0) {
           state.data[index] = { ...state.data[index], ...pool };
-        } else if (pool.contractAddress) {
+        } else if (pool.address) {
           state.data.push(pool);
         }
         return pool;

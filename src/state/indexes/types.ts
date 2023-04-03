@@ -5,10 +5,11 @@ import { BigNumber } from "ethers";
 interface IndexConfigBaseProps {
   pid: number;
   chainId: ChainId;
-  contractAddress: string;
+  address: string;
   nft: string;
   numTokens: number;
   fee: string;
+  createdAt: string;
   sortOrder?: number;
   version?: Version;
   isCustody?: boolean;
@@ -42,7 +43,7 @@ export type NFTInfo = {
 };
 
 export interface DeserializedIndex extends DeserializedIndexConfig {
-  totalStaked: BigNumber[];
+  totalStaked: string[];
   performanceFee?: string;
   userData?: {
     allowance: boolean; // nft allowance

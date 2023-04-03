@@ -10,11 +10,11 @@ import WordHighlight from "components/text/WordHighlight";
 
 import { BLOCKS_PER_DAY } from "config/constants";
 import { Category } from "config/constants/types";
-import { IndexContext } from "contexts/directory/IndexContext";
 import { ZapperContext } from "contexts/directory/ZapperContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
 import { usePools } from "state/pools/hooks";
+import { useIndexes } from "state/indexes/hooks";
 import { useChainCurrentBlocks } from "state/block/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 
@@ -39,11 +39,10 @@ const Directory = ({ page }: { page: number }) => {
 
   const { pools } = usePools();
   const { data: farms } = useFarms();
+  const { indexes } = useIndexes();
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
 
   const currentBlocks = useChainCurrentBlocks();
-
-  const { data: indexes, accountData: accountIndexDatas }: any = useContext(IndexContext);
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
   const allPools = [
@@ -142,7 +141,8 @@ const Directory = ({ page }: { page: number }) => {
               +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
             (pool.type === Category.FARM &&
               (+pool.startBlock > currentBlocks[pool.chainId] ||
-                +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])))
+                +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
+            (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
       );
       break;
     default:
@@ -185,7 +185,6 @@ const Directory = ({ page }: { page: number }) => {
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
               data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
-              accountData: accountIndexDatas,
             }}
           />
         );
