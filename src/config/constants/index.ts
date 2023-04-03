@@ -277,4 +277,4 @@ export const ZERO_PERCENT = new Percent("0");
 export const ONE_HUNDRED_PERCENT = new Percent("1");
 
 export const slippageWithTVL = 200;
-export const slippageDefault = 50;
+export const slippageDefault = 5000;

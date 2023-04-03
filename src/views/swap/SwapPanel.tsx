@@ -239,13 +239,15 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           const totalTax =
             (Math.max(baseTokenInfo.BuyTax, baseTokenInfo.SellTax) + Math.max(tokenInfo.BuyTax, tokenInfo.SellTax)) *
             100;
-          setSlippage(Math.floor(totalTax + (totalTax ? slippageWithTVL : slippageDefault)));
+            if(totalTax && !isNaN(totalTax)) {
+              setSlippage(Math.floor(totalTax + slippageWithTVL));
+            }
         } catch (err) {
           console.error(err);
           setSlippage(slippageDefault);
         }
       };
-      fetchData();
+      // fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT]]);
