@@ -99,28 +99,28 @@ export const getAverageHistory = (prices) => {
 };
 
 export const fetchIndexPerformance = async (pool) => {
-  let keys = {1: 'eth', 56: 'bsc', 137: 'polygon'}
+  let keys = { 1: "eth", 56: "bsc", 137: "polygon" };
 
   const to = Math.floor(Date.now() / 1000);
   let prices = [];
-  let tokenPrices = []
+  let tokenPrices = [];
   try {
     for (let i = 0; i < pool.numTokens; i++) {
-      const tokenYearUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${
-        pool.tokens[i].address
-      }-${keys[pool.chainId]}_USD&resolution=1440&from=${to - 3600 * 24 * 365}&to=${to}`;
+      const tokenYearUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${
+        keys[pool.chainId]
+      }_USD&resolution=1440&from=${to - 3600 * 24 * 365}&to=${to}`;
 
       let priceResult = await axios.get(tokenYearUrl);
       const yearlyPrice = priceResult.data;
 
-      const tokenDayUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${
-        pool.tokens[i].address
-      }-${keys[pool.chainId]}_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
+      const tokenDayUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${
+        keys[pool.chainId]
+      }_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
 
       priceResult = await axios.get(tokenDayUrl);
       const dailyPrice = priceResult.data;
       prices.push([yearlyPrice, dailyPrice]);
-      tokenPrices.push(dailyPrice.c[dailyPrice.c.length - 1])
+      tokenPrices.push(dailyPrice.c[dailyPrice.c.length - 1]);
     }
   } catch (e) {
     return { priceChanges: new Array(4).fill({ percent: 0, value: 0 }), priceHistories: [] };
@@ -158,9 +158,10 @@ export const fetchIndexFeeHistories = async (pool) => {
   if (!res.data) {
     return { performanceFees: [] };
   }
-  const { performanceFees } = res.data;
+  const { performanceFees, commissions } = res.data;
 
-  let _performanceFees = [];
+  let _performanceFees = [],
+    _commissions = [];
   const timeBefore24Hrs = Math.floor(new Date().setHours(new Date().getHours() - 24) / 1000);
   const curTime = Math.floor(new Date().getTime() / 1000);
 
@@ -168,5 +169,9 @@ export const fetchIndexFeeHistories = async (pool) => {
     _performanceFees.push(sumOfArray(performanceFees.filter((v) => v.timestamp <= t).map((v) => v.value)));
   }
 
-  return { performanceFees: _performanceFees };
+  for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
+    _commissions.push(sumOfArray(commissions.filter((v) => v.timestamp <= t).map((v) => v.value)));
+  }
+
+  return { performanceFees: _performanceFees, commissions: _commissions };
 };

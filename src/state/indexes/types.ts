@@ -55,6 +55,7 @@ export interface DeserializedIndex extends DeserializedIndexConfig {
   };
   TVLData?: number[];
   performanceFees?: number[];
+  commissions?: number[];
   tokenPrices?: number[];
   priceChanges?: any;
   priceHistories?: any;
@@ -73,6 +74,7 @@ export interface SerializedIndex extends SerializedIndexConfig {
   };
   TVLData?: number[];
   performanceFees?: number[];
+  commissions?: number[];
   tokenPrices?: number[];
   priceChanges?: any;
   priceHistories?: any;

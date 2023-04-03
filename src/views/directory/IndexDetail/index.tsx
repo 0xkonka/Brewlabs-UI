@@ -13,7 +13,6 @@ import LogoIcon from "components/LogoIcon";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { IndexContext } from "contexts/directory/IndexContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { formatDollar, getIndexName } from "utils/functions";
@@ -26,7 +25,7 @@ import AddNFTModal from "./Modals/AddNFTModal";
 import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./StakingHistory";
 import { useAppDispatch } from "state";
-import { fetchIndexFeeHistories, fetchIndexPerformance, getAverageHistory } from "state/indexes/fetchIndexes";
+import { fetchIndexFeeHistories, fetchIndexPerformance } from "state/indexes/fetchIndexes";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -37,7 +36,7 @@ import {
 } from "state/indexes";
 import getCurrencyId from "utils/getCurrencyId";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import { formatTvl } from "utils/formatApy";
+import { formatAmount, formatTvl } from "utils/formatApy";
 import useTokenPrice from "hooks/useTokenPrice";
 import { WNATIVE } from "@brewlabs/sdk";
 
@@ -59,8 +58,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { tokenPrices } = useContext(TokenPriceContext);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
-  const { rate, rateHistory }: any = useContext(IndexContext);
-
   const aprTexts = ["YTD", "30D", "7D", "24hrs"];
 
   useEffect(() => {
@@ -80,13 +77,14 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     };
 
     const fetchFeeHistoriesAsync = async () => {
-      const { performanceFees } = await fetchIndexFeeHistories(data);
+      const { performanceFees, commissions } = await fetchIndexFeeHistories(data);
 
       dispatch(
         setIndexesPublicData([
           {
             pid: data.pid,
             performanceFees,
+            commissions,
           },
         ])
       );
@@ -122,16 +120,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 2:
         return data.priceHistories;
       case 3:
-        return []
-
-        for(let i = 0; i < data.priceHistories[0].length; i++) {
-          let amount = 0;
-          for(let k = 0; k < data.numTokens; k++) {
-            amount += +data.totalStaked[k] * data.priceHistories[k][i]            
-          }
-          _graphData.push(amount)
-        }
-        return _graphData;
+        return data.commissions ?? [];
       default:
         _graphData = data.TVLData ?? [];
         if (data.tvl !== undefined) {
@@ -352,7 +341,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex">
                         {data.performanceFees !== undefined ? (
-                          data.performanceFees[data.performanceFees.length - 1].toFixed(4)
+                          formatAmount(data.performanceFees[data.performanceFees.length - 1].toFixed(4), 4)
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -396,10 +385,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
                       </div>
                       <div className="flex text-[#FFFFFF80]">
-                        <span className="text-green">
-                          {/* {data.priceHistories?.[data.priceHistories?.length - 1].toFixed(2)}% */}
-                        </span>{" "}
-                        &nbsp;($0.0156)
+                        $
+                        {data.commissions
+                          ? formatAmount(data.commissions[data.commissions.length - 1].toFixed(2))
+                          : "0.00"}
                       </div>
                     </InfoPanel>
                   </div>

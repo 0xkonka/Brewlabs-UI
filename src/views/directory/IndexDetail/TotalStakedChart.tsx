@@ -2,6 +2,7 @@
 import styled from "styled-components";
 import dynamic from "next/dynamic";
 import { getAverageHistory } from "state/indexes/fetchIndexes";
+import { formatAmount } from "utils/formatApy";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -16,43 +17,8 @@ const TotalStakedChart = ({
   prices: number[];
   curGraph: number;
 }) => {
-  const getTitle = (type: number) => {
-    if (type === 0) {
-      return "Total Index Value";
-    } else if (type === 1) {
-      return (
-        <div>
-          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 2) {
-      return (
-        <div>
-          Index Performance<span className="text-[#FFFFFF80]"> (Price - 24hrs)</span>
-        </div>
-      );
-    } else if (type === 3) {
-      return (
-        <div>
-          Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    }
-  };
-
   let pricechange = 0;
-  if (data.length > 0) {
-    let startPrice = 0,
-      curPrice = 0;
-    for (let i = 0; i < data[0].length; i++) {
-      startPrice += +data[0][i];
-      curPrice += +data[data.length - 1][i];
-    }
-    pricechange = startPrice ? ((curPrice - startPrice) / startPrice) * 100 : 0;
-
-    if (curGraph === 2) pricechange = getAverageHistory(data)[data.length - 1];
-    if (curGraph < 2) pricechange = 0;
-  }
+  if (curGraph === 2) pricechange = getAverageHistory(data)[data.length - 1];
 
   const chartData: any = {
     series: [
@@ -62,7 +28,7 @@ const TotalStakedChart = ({
           curGraph === 2
             ? getAverageHistory(data)
             : data.map((value) => {
-                if (curGraph === 1) return value;
+                if (curGraph !== 0) return value;
 
                 let tvl = 0;
                 value.forEach((v, index) => {
@@ -151,6 +117,30 @@ const TotalStakedChart = ({
     },
   };
 
+  const getTitle = (type: number) => {
+    if (type === 0) {
+      return "Total Index Value";
+    } else if (type === 1) {
+      return (
+        <div>
+          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    } else if (type === 2) {
+      return (
+        <div>
+          Index Performance<span className="text-[#FFFFFF80]"> (Price - 24hrs)</span>
+        </div>
+      );
+    } else if (type === 3) {
+      return (
+        <div>
+          Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    }
+  };
+
   const getChartHeader = () => {
     switch (curGraph) {
       case 0:
@@ -160,7 +150,7 @@ const TotalStakedChart = ({
             {data[0].map((d, index) => (
               <>
                 <span className="flex">
-                  {chartData.series[0].data[data.length - 1]} {symbols[index]}
+                  {formatAmount(chartData.series[0].data[data.length - 1])} {symbols[index]}
                 </span>
               </>
             ))}
@@ -171,7 +161,7 @@ const TotalStakedChart = ({
           <>
             <span className="mb-1 flex">${+data[data.length - 1] * prices[0]}</span>
             <span className="flex">
-              {data[data.length - 1]} {symbols[0]}
+              {formatAmount(data[data.length - 1], 4)} {symbols[0]}
             </span>
           </>
         );
@@ -195,6 +185,8 @@ const TotalStakedChart = ({
             })}
           </>
         );
+      case 3:
+        return <span className="mb-1 flex">${formatAmount(+data[data.length - 1])}</span>;
     }
   };
 
