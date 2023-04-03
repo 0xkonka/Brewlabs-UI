@@ -36,8 +36,12 @@ const PageHero = () => {
           </div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, translateY: 100 }}
+            whileInView={{ opacity: 1, translateY: 0 }}
+            transition={{
+              duration: 0.75,
+              delay: 0.5,
+            }}
             className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6"
           >
             <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-top-10 lg:-bottom-20 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">

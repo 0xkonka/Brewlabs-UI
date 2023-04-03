@@ -1,7 +1,7 @@
 import { Fragment, lazy, Suspense, useEffect } from "react";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
-import Image from "next/future/image";
+import Image from "next/image";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";

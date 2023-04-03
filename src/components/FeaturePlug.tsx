@@ -1,26 +1,44 @@
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ArrowLongRightIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 const features = [
   {
     name: "Swap tokens",
-    description: "You can manage phone, email and chat conversations all from a single mailbox.",
+    description: "Swap tokens in real time with ease across multiple networks at the best prices on the BrewSwap.",
+    link: "/swap",
   },
   {
     name: "Track performance",
-    description: "You can manage phone, email and chat conversations all from a single mailbox.",
+    description: "Manage your live portfolio with the Brewlabs dashboard personalised for your wallet.",
+    link: "/performance",
   },
   {
     name: "Construct liquidity",
-    description: "You can manage phone, email and chat conversations all from a single mailbox.",
+    description: "Manage your liquidity across various decentralised exchanges.",
+    link: "",
+    external: true,
   },
-  { name: "Invest", description: "You can manage phone, email and chat conversations all from a single mailbox." },
+  {
+    name: "Index",
+    description: "Purchase a basket of tokens to speculate performance and mitigate investment risk.",
+    link: "",
+  },
   {
     name: "Cross-chain bridging",
-    description: "Find what you need with advanced filters, bulk actions, and quick views.",
+    description: "Move your tokens cross-chain between networks with the Brewlabs bridge.",
+    link: "",
   },
-  { name: "Zap", description: "Find what you need with advanced filters, bulk actions, and quick views." },
-  { name: "Stables", description: "Find what you need with advanced filters, bulk actions, and quick views." },
-  { name: "Mobile app", description: "Find what you need with advanced filters, bulk actions, and quick views." },
+  { name: "Zap", description: "Find the best performing yield farms and participate with a single click.", link: "" },
+  {
+    name: "Yield farming",
+    description: "Discover yield farming opportunities through Brewlabs and partners.",
+    link: "",
+  },
+  {
+    name: "NTFs",
+    description: "Explore the TrueNFT marketplace for your favourite NFT’s, stake, mint and transfer NFTS plus more.",
+    link: "",
+  },
 ];
 
 const FeaturePlug = () => {
@@ -41,11 +59,13 @@ const FeaturePlug = () => {
           <dl className="grid grid-cols-1 gap-12 sm:grid-flow-col sm:grid-cols-2 sm:grid-rows-4">
             {features.map((feature) => (
               <div key={feature.name} className="relative">
-                <dt>
-                  <CheckIcon className="absolute mt-1 h-6 w-6 text-dark dark:text-brand" aria-hidden="true" />
-                  <p className="ml-10 text-lg font-semibold leading-8 text-gray-900">{feature.name}</p>
-                </dt>
-                <dd className="mt-2 ml-10 text-base leading-7 text-gray-600">{feature.description}</dd>
+                <Link className="" href={feature.link}>
+                  <dt>
+                    <CheckIcon className="absolute mt-1 h-6 w-6 text-dark dark:text-brand" aria-hidden="true" />
+                    <p className="ml-10 text-lg font-semibold leading-8 text-gray-900">{feature.name}</p>
+                  </dt>
+                  <dd className="mt-2 ml-10 text-base leading-7 text-gray-600">{feature.description}</dd>
+                </Link>
               </div>
             ))}
           </dl>
