@@ -40,6 +40,8 @@ export interface DeserializedIndex extends DeserializedIndexConfig {
   userData?: {
     allowance: boolean; // nft allowance
     ethBalance: BigNumber;
+    nftItems: NFTInfo[]
+    stakedUsdAmount: BigNumber;
     stakedBalances: BigNumber[];
     histories: IndexHistory[];
   };
@@ -61,6 +63,7 @@ export interface SerializedIndex extends SerializedIndexConfig {
     allowance: boolean; // nft allowance
     ethBalance: string;
     nftItems: NFTInfo[]
+    stakedUsdAmount: string;
     stakedBalances: string[];
     histories: IndexHistory[];
   };
