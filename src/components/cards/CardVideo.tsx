@@ -1,4 +1,4 @@
-import Image from "next/future/image";
+import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import LogoIcon from "@components/LogoIcon";
