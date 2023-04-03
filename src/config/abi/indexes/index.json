@@ -13,7 +13,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "percent",
+        "type": "uint256"
+      }
+    ],
     "name": "claimTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
