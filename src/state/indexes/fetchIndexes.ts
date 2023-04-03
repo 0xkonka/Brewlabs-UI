@@ -6,7 +6,7 @@ import IndexAbi from "config/abi/indexes/index.json";
 import { MULTICALL_FETCH_LIMIT } from "config/constants";
 import multicall from "utils/multicall";
 
-export const fetchIndexsTotalStaking = async (chainId, indexes) => {
+export const fetchIndexesTotalStaking = async (chainId, indexes) => {
   const selectedIndexs = indexes.filter((p) => p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedIndexs.length; i += MULTICALL_FETCH_LIMIT) {

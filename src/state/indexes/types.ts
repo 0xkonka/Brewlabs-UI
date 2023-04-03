@@ -34,26 +34,28 @@ export interface IndexHistory {
   timestamp: number;
 }
 
+export type NFTInfo = {
+  tokenId: number;
+  level: number;
+  amounts: string[];
+  usdAmount: string;
+};
+
 export interface DeserializedIndex extends DeserializedIndexConfig {
   totalStaked: BigNumber[];
   performanceFee?: string;
   userData?: {
     allowance: boolean; // nft allowance
     ethBalance: BigNumber;
-    nftItems: NFTInfo[]
-    stakedUsdAmount: BigNumber;
+    nftItems: NFTInfo[];
+    stakedUsdAmount: string;
     stakedBalances: BigNumber[];
     histories: IndexHistory[];
   };
   TVLData?: number[];
   performanceFees?: number[];
-}
-
-export type NFTInfo = {
-    tokenId: number;
-    level: number;
-    amounts: string[];
-    usdAmount: string;
+  priceChanges?: any;
+  priceHistories?: any;
 }
 
 export interface SerializedIndex extends SerializedIndexConfig {
@@ -62,11 +64,13 @@ export interface SerializedIndex extends SerializedIndexConfig {
   userData?: {
     allowance: boolean; // nft allowance
     ethBalance: string;
-    nftItems: NFTInfo[]
+    nftItems: NFTInfo[];
     stakedUsdAmount: string;
     stakedBalances: string[];
     histories: IndexHistory[];
   };
   TVLData?: number[];
   performanceFees?: number[];
+  priceChanges?: any;
+  priceHistories?: any;
 }

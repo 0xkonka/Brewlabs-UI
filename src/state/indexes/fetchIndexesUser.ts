@@ -35,8 +35,8 @@ export const fetchUserStakings = async (account, chainId, indexes) => {
         batch.forEach((pool, index) => {
           data.push({
             pid: pool.pid,
-            usdAmount: ethers.utils.formatEther(userStakes[index].usdAmount),
-            amounts: userStakes[index].amounts.map((amount) => amount.toString()),
+            stakedUsdAmount: ethers.utils.formatEther(userStakes[index].usdAmount),
+            stakedBalances: userStakes[index].amounts.map((amount) => amount.toString()),
           });
         });
       } catch (e) {
@@ -95,6 +95,8 @@ export const fetchUserBalance = async (account, chainId) => {
 };
 
 export const fetchUserNftData = async (account, chainId, nftAddr) => {
+  if(!nftAddr) return [];
+
   let calls = [{ address: nftAddr, name: "balanceOf", params: [account] }];
   const [balance] = await multicall(IndexNftAbi, calls, chainId);
   if (balance[0].eq(0)) return [];

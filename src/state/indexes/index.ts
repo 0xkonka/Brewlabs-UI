@@ -1,9 +1,12 @@
+import { ChainId } from "@brewlabs/sdk";
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 import { API_URL } from "config/constants";
 import { Category } from "config/constants/types";
 import { IndexesState } from "state/types";
+import { fetchIndexesTotalStaking } from "./fetchIndexes";
+import { fetchUserBalance, fetchUserNftAllowance, fetchUserNftData, fetchUserStakings } from "./fetchIndexesUser";
 
 import { SerializedIndex } from "./types";
 
@@ -12,7 +15,7 @@ const initialState: IndexesState = {
   userDataLoaded: false,
 };
 
-export const fetchIndexesPublicDataFromApiAsync = () => async (dispatch) => {
+export const fetchIndexesFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/indexes`).then((res) => {
     let indexes = [];
     if (res.data) {
@@ -45,24 +48,57 @@ export const fetchIndexesTVLDataAsync = (pids) => async (dispatch, getState) => 
   });
 };
 
-export const fetchIndexesUserDepositDataAsync = (account: string) => async (dispatch, getState) => {
+export const fetchIndexesUserHistoryDataAsync = (account: string) => async (dispatch, getState) => {
   const indexes = getState().indexes.data;
   if (indexes.length === 0) return;
 
   axios
-    .post(`${API_URL}/deposit/${account}/multiple`, { type: "index", ids: indexes.map((p) => p.pid) })
+    .post(`${API_URL}/history/${account}/multiple`, { type: "index", ids: indexes.map((p) => p.pid) })
     .then((res) => {
       const ret = res?.data ?? [];
 
-      const depositData = [];
+      const historyData = [];
       for (let pool of indexes) {
-        let record = { pid: pool.pid, deposits: [] };
-        record.deposits = ret.filter((d) => d.pid === pool.pid);
+        let record = { pid: pool.pid, histories: [] };
+        record.histories = ret.filter((d) => d.pid === pool.pid);
 
-        depositData.push(record);
+        historyData.push(record);
       }
-      dispatch(setIndexesUserData(depositData));
+      dispatch(setIndexesUserData(historyData));
     });
+};
+
+// Thunks
+export const fetchIndexesPublicDataAsync = (chainId: ChainId) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data;
+
+  const totalStakings = await fetchIndexesTotalStaking(chainId, indexes);
+
+  const liveData = indexes
+    .filter((p) => p.chainId === chainId)
+    .map((pool) => totalStakings.find((entry) => entry.sousId === pool.sousId));
+
+  dispatch(setIndexesPublicData(liveData));
+};
+
+export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
+
+  fetchUserStakings(account, chainId, indexes).then((stakings) => dispatch(setIndexesUserData(stakings)));
+  fetchUserNftAllowance(account, chainId, indexes).then((allowances) => dispatch(setIndexesUserData(allowances)));
+  fetchUserBalance(account, chainId).then((ethBalance) =>
+    dispatch(setIndexesUserData(indexes.map((pool) => ({ pid: pool.pid, ethBalance }))))
+  );
+  fetchUserNftData(account, chainId, indexes[0]?.nft).then((nftInfo) =>
+    dispatch(
+      setIndexesUserData(
+        indexes.map((pool) => ({
+          pid: pool.pid,
+          nftItems: nftInfo.filter((data) => data.indexAddress.toLowerCase() === pool.address.toLowerCase()),
+        }))
+      )
+    )
+  );
 };
 
 export const IndexesSlice = createSlice({
