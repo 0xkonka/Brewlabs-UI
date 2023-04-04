@@ -81,6 +81,16 @@ export const fetchIndexesPublicDataAsync = (chainId: ChainId) => async (dispatch
   dispatch(setIndexesPublicData(liveData));
 };
 
+export const fetchIndexPublicDataAsync = (pid: number) => async (dispatch, getState) => {
+  const index = getState().indexes.data.find((pool) => pool.pid === pid);
+  if (!index) return;
+
+  const totalStakings = await fetchIndexesTotalStaking(index.chainId, [index]);
+  if (totalStakings.length === 0) return;
+
+  dispatch(setIndexesPublicData([totalStakings[0]]));
+};
+
 export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => async (dispatch, getState) => {
   const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
   if (indexes.length === 0) return;

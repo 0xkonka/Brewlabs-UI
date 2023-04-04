@@ -21,6 +21,7 @@ import singleStaking from "config/abi/staking/singlestaking.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
+import IndexAbi from "config/abi/indexes/index.json";
 
 // Addresses
 import {
@@ -143,6 +144,10 @@ export const getBrewlabsAggregationRouterContract = (
 
 export const getZapInContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getZapperAddress(chainId), zapperAbi, signer);
+};
+
+export const getIndexContract = (chainId: ChainId, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, address, IndexAbi, signer);
 };
 
 export const getExternalMasterChefContract = (

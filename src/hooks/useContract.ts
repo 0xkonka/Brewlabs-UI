@@ -24,6 +24,7 @@ import {
   getSingleStakingContract,
   getLockupStakingContract,
   getContract,
+  getIndexContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -70,6 +71,14 @@ export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
   const { data: signer } = useSigner();
   return useMemo(
     () => getLockupStakingContract(chainId, contractAddress, signer ?? undefined),
+    [chainId, contractAddress, signer]
+  );
+};
+
+export const useIndexContract = (chainId: ChainId, contractAddress: string) => {
+  const { data: signer } = useSigner();
+  return useMemo(
+    () => getIndexContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
   );
 };

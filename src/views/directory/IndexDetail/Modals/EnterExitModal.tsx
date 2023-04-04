@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -19,6 +19,10 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../../StyledButton";
 import StyledSlider from "./StyledSlider";
+import useIndex from "../hooks/useIndex";
+import { toast } from "react-toastify";
+import { DashboardContext } from "contexts/DashboardContext";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 
 const EnterExitModal = ({
   open,
@@ -39,6 +43,9 @@ const EnterExitModal = ({
 
   const [percent, setPercent] = useState(100);
   const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(0));
+
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { onZapIn, onZapOut, onClaim } = useIndex(data.pid, data.address, data.performanceFee);
 
   const ethbalance = ethers.utils.formatEther(userData.ethBalance);
   const stakedBalances = userData.stakedBalances?.length
@@ -94,6 +101,43 @@ const EnterExitModal = ({
     profit -= +userData.stakedUsdAmount;
 
     return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mx-1`}>${formatAmount(profit)}</span>;
+  };
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleZapIn = async () => {
+    setPending(true);
+    try {
+      await onZapIn(amount, [percent, ...percents]);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleZapOut = async () => {
+    setPending(true);
+    try {
+      await onZapOut();
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleClaimTokens = async () => {
+    setPending(true);
+    try {
+      await onClaim(percent);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
   };
 
   return (
@@ -219,15 +263,27 @@ const EnterExitModal = ({
               <div className="mx-auto w-full max-w-[480px]">
                 {type === "enter" ? (
                   <div className="h-12">
-                    <StyledButton type="quaternary">
+                    <StyledButton type="quaternary" onClick={handleZapIn} disabled={!amount || pending || insufficient}>
                       {insufficient ? `Insufficient balance` : `Enter ${getIndexName(tokens)} Index`}
                     </StyledButton>
                   </div>
                 ) : (
                   <div className="flex h-12">
-                    <StyledButton type="quaternary">Exit {renderProfit()} Profit</StyledButton>
+                    <StyledButton
+                      type="quaternary"
+                      onClick={handleClaimTokens}
+                      disabled={pending || !percent || !userData.stakedUsdAmount}
+                    >
+                      Exit {renderProfit()} Profit
+                    </StyledButton>
                     <div className="mx-1" />
-                    <StyledButton type="quaternary">Zap Out</StyledButton>
+                    <StyledButton
+                      type="quaternary"
+                      onClick={handleZapOut}
+                      disabled={pending || !userData.stakedUsdAmount}
+                    >
+                      Zap Out
+                    </StyledButton>
                   </div>
                 )}
               </div>

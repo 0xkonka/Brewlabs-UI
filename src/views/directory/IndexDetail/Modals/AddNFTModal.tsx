@@ -1,17 +1,42 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 import styled from "styled-components";
-import { numberWithCommas } from "utils/functions";
+
+import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
-import StyledSlider from "./StyledSlider";
+import { DashboardContext } from "contexts/DashboardContext";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { DeserializedIndex } from "state/indexes/types";
 
+import useIndex from "../hooks/useIndex";
+import StyledButton from "../../StyledButton";
+
 const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
+  const { onStakeNft } = useIndex(data.pid, data.address, data.performanceFee);
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { userData } = data;
+
+  const [tokenId, setTokenId] = useState();
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleStakeNft = async () => {
+    setPending(true);
+    try {
+      await onStakeNft(tokenId);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog
@@ -98,7 +123,13 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
               <div className="my-6 h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[480px]">
                 <div className="h-12">
-                  <StyledButton type="quinary">Add Index NFT</StyledButton>
+                  <StyledButton
+                    type="quinary"
+                    disabled={pending || !userData.nftItems?.length}
+                    onClick={handleStakeNft}
+                  >
+                    Add Index NFT
+                  </StyledButton>
                 </div>
               </div>
               <button

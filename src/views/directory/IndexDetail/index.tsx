@@ -4,7 +4,8 @@ import { WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
-import { useAccount, useSigner } from "wagmi";
+import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
@@ -18,7 +19,7 @@ import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchIndexFeeHistories, fetchIndexPerformance } from "state/indexes/fetchIndexes";
 import {
@@ -34,6 +35,8 @@ import { formatAmount, formatTvl } from "utils/formatApy";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
+import useIndex from "./hooks/useIndex";
+
 import StyledButton from "../StyledButton";
 import EnterExitModal from "./Modals/EnterExitModal";
 import AddNFTModal from "./Modals/AddNFTModal";
@@ -41,6 +44,8 @@ import DropDown from "./Dropdown";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
+
+const aprTexts = ["YTD", "30D", "7D", "24hrs"];
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -56,13 +61,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
-  const { data: signer }: any = useSigner();
   const { pending, setPending }: any = useContext(DashboardContext);
-
   const { tokenPrices } = useContext(TokenPriceContext);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
-  const aprTexts = ["YTD", "30D", "7D", "24hrs"];
+  const { onMintNft } = useIndex(data.pid, data.address, data.performanceFee);
 
   useEffect(() => {
     const fetchPriceHistoryAsync = async () => {
@@ -150,6 +153,21 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>${formatAmount(profit)}</span>;
   };
 
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleMintNft = async () => {
+    setPending(true);
+    try {
+      await onMintNft();
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (
@@ -198,10 +216,19 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-col sm:flex-row">
                     <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
-                      <StyledButton>Mint Index NFT</StyledButton>
+                      <StyledButton
+                        disabled={!address || pending || chainId !== data.chainId || !userData.stakedUsdAmount}
+                        onClick={handleMintNft}
+                      >
+                        Mint Index NFT
+                      </StyledButton>
                     </div>
                     <div className="mx-0 mt-2 h-[32px] w-[140px] sm:mx-2.5 sm:mt-0">
-                      <StyledButton type="secondary" onClick={() => setAddNFTModalOpen(true)}>
+                      <StyledButton
+                        type="secondary"
+                        disabled={!address || pending || chainId !== data.chainId}
+                        onClick={() => setAddNFTModalOpen(true)}
+                      >
                         Add Index NFT
                       </StyledButton>
                     </div>
