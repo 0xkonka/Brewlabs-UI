@@ -362,7 +362,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <InfoPanel
-                      className="mt-20 flex cursor-pointer justify-between"
+                      className="mt-[80px] flex cursor-pointer justify-between lg:mt-20"
                       type={"secondary"}
                       boxShadow={curGraph === 0 ? "primary" : null}
                       onClick={() => setCurGraph(0)}
@@ -439,9 +439,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
                     <div className="mt-7">
-                      <StakingHistory history={[{}]} />
+                      <StakingHistory data={data} history={userData.histories} />
                     </div>
-                    <div className="absolute bottom-0 left-0 flex h-12 w-full">
+                    <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full md:absolute">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton
