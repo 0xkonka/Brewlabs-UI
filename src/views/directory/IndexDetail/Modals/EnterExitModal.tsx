@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { numberWithCommas } from "utils/functions";
 import LogoIcon from "components/LogoIcon";
 import StyledSlider from "./StyledSlider";
+import { ethers } from "ethers";
 
 const EnterExitModal = ({
   open,
@@ -30,11 +31,13 @@ const EnterExitModal = ({
   const [value1, setValue1] = useState(0);
   const [value2, setValue2] = useState(0);
 
-  const balance: any =
-    (type === "deposit" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
+  const ethbalance = ethers.utils.formatEther(accountData.ethBalance);
+  const stakedBalances = accountData.stakedBalances.map((a, index) =>
+    ethers.utils.formatUnits(a, data.tokens[index].decimals)
+  );
 
   useEffect(() => {
-    if (Number(amount) > balance && !maxPressed) setInsufficient(true);
+    if (type === "deposit" && Number(amount) > +ethbalance && !maxPressed) setInsufficient(true);
     else setInsufficient(false);
   }, [amount, maxPressed]);
 

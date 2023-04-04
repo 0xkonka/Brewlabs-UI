@@ -90,7 +90,7 @@ const PoolCard = ({
             data.type === Category.INDEXES ? (
               <div className="leading-none">
                 {data.tokens.map((t, index) => (
-                  <div className="text-[14px]">
+                  <div key={index} className="text-[14px]">
                     {formatAmount(data.totalStaked[index])} {t.symbol}
                   </div>
                 ))}

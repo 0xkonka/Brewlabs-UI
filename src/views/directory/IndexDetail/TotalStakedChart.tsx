@@ -148,11 +148,9 @@ const TotalStakedChart = ({
           <>
             <span className="mb-1 flex">${chartData.series[0].data[data.length - 1]}</span>
             {data[0].map((d, index) => (
-              <>
-                <span className="flex">
-                  {formatAmount(chartData.series[0].data[data.length - 1])} {symbols[index]}
-                </span>
-              </>
+              <span key={index} className="flex">
+                {formatAmount(chartData.series[0].data[data.length - 1])} {symbols[index]}
+              </span>
             ))}
           </>
         );
@@ -176,11 +174,9 @@ const TotalStakedChart = ({
             {data.map((d, index) => {
               let priceChange = ((d[d.length - 1] - d[0]) / d[d.length - 1]) * 100;
               return (
-                <>
-                  <span className={`flex ${priceChange < 0 ? "text-danger" : "text-green"}`}>
+                  <span key={index} className={`flex ${priceChange < 0 ? "text-danger" : "text-green"}`}>
                     {priceChange.toFixed(2)}% {symbols[index]}
                   </span>
-                </>
               );
             })}
           </>

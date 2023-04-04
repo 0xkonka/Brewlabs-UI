@@ -16,13 +16,11 @@ import WordHighlight from "components/text/WordHighlight";
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getNativeSybmol } from "lib/bridge/helpers";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchIndexFeeHistories, fetchIndexPerformance } from "state/indexes/fetchIndexes";
-import { formatDollar, getIndexName } from "utils/functions";
-import { formatAmount, formatTvl } from "utils/formatApy";
-import getTokenLogoURL from "utils/getTokenLogoURL";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -31,7 +29,10 @@ import {
   updateUserNftInfo,
   updateUserStakings,
 } from "state/indexes";
+import { formatDollar, getIndexName } from "utils/functions";
+import { formatAmount, formatTvl } from "utils/formatApy";
 import getCurrencyId from "utils/getCurrencyId";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../StyledButton";
 import EnterExitModal from "./Modals/EnterExitModal";
@@ -43,6 +44,7 @@ import TotalStakedChart from "./TotalStakedChart";
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
+  const { tokens, userData, priceHistories } = data;
   const dispatch = useAppDispatch();
 
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
@@ -52,8 +54,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curAPR, setCurAPR] = useState(0);
 
   const { address } = useAccount();
-  const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
+  const { data: signer }: any = useSigner();
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const { tokenPrices } = useContext(TokenPriceContext);
@@ -134,12 +137,12 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const renderProfit = () => {
     let profit = 0;
-    const { userData, priceHistories } = data;
-    if (!userData?.stakedUsdAmount || !priceHistories?.length) return <span className="mr-1 text-green">$0.00</span>;
+    if (!userData?.stakedBalances?.length || !priceHistories?.length)
+      return <span className="mr-1 text-green">$0.00</span>;
 
     for (let k = 0; k < data.numTokens; k++) {
       profit +=
-        +ethers.utils.formatUnits(userData.stakedBalances[k], data.tokens[k].decimals) *
+        +ethers.utils.formatUnits(userData.stakedBalances[k], tokens[k].decimals) *
         (priceHistories[k][priceHistories[k].length - 1] - priceHistories[k][0]);
     }
     profit -= +userData.stakedUsdAmount;
@@ -157,15 +160,15 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
           transition={{ duration: 0.3 }}
         >
           <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
-            {/* {address && data && (
+            {address && data && (
               <EnterExitModal
                 open={stakingModalOpen}
                 setOpen={setStakingModalOpen}
                 type={curType}
                 data={data}
-                accountData={accountData}
+                accountData={userData}
               />
-            )} */}
+            )}
             <AddNFTModal open={addNFTModalOpen} setOpen={setAddNFTModalOpen} />
             <PageHeader
               title={
@@ -211,7 +214,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <a
                       className=" mt-2 h-[32px] w-[140px] sm:mt-0 "
                       target="_blank"
-                      href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.tokens[0].address}`}
+                      href={`https://bridge.brewlabs.info/swap?outputCurrency=${tokens[0].address}`}
                       rel="noreferrer"
                     >
                       <StyledButton>
@@ -229,11 +232,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-between md:flex-row">
-                  <IndexLogo tokens={data.tokens} />
+                  <IndexLogo tokens={tokens} />
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[500px]">
                       <div className="flex flex-wrap justify-between text-xl">
-                        <div className="mr-4 whitespace-nowrap">Index: {getIndexName(data.tokens)}</div>
+                        <div className="mr-4 whitespace-nowrap">Index: {getIndexName(tokens)}</div>
                         <div className="flex items-center">
                           {/* Performance:&nbsp; */}
                           {data.priceChanges !== undefined ? (
@@ -251,9 +254,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80]">
                         <div>
                           <span className="#FFFFFF80">Buy</span>{" "}
-                          {data.tokens.length === 2
-                            ? data.tokens.map((t) => t.symbol).join(" & ")
-                            : `${data.tokens.length} Tokens`}
+                          {tokens.length === 2 ? tokens.map((t) => t.symbol).join(" & ") : `${tokens.length} Tokens`}
                         </div>
                         <div className="flex items-center">
                           <img src="/images/explorer/etherscan.png" alt={""} className="mr-1 w-3" />
@@ -293,8 +294,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2">
                         <div className="text-xl">My Position</div>
                         <div className="mt-1 leading-none text-primary">
-                          {data.userData?.stakedUsdAmount ? (
-                            `$${formatAmount(data.userData.stakedUsdAmount, 2)}`
+                          {userData?.stakedUsdAmount ? (
+                            `$${formatAmount(userData.stakedUsdAmount, 2)}`
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -303,13 +304,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="mt-2">
                         <div className="mb-1 text-xl">Tokens</div>
-                        {data.tokens.map((token, index) => (
-                          <div className="flex items-center leading-none" key={token.address}>
+                        {tokens.map((token, index) => (
+                          <div className="mt-1 flex items-center leading-none" key={token.address}>
                             <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="mr-1 w-3" />
-                            <div className="text-[#FFFFFFBF]">
-                              {data.userData?.stakedBalances ? (
+                            <div className="flex text-[#FFFFFFBF]">
+                              {userData?.stakedBalances.length ? (
                                 `${formatAmount(
-                                  ethers.utils.formatUnits(data.userData.stakedBalances[index], token.decimals),
+                                  ethers.utils.formatUnits(userData.stakedBalances[index], token.decimals),
                                   4
                                 )}`
                               ) : (
@@ -331,12 +332,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={graphData()}
-                      symbols={curGraph === 1 ? [getNativeSybmol(data.chainId)] : data.tokens.map((t) => t.symbol)}
+                      symbols={curGraph === 1 ? [getNativeSybmol(data.chainId)] : tokens.map((t) => t.symbol)}
                       prices={
                         curGraph === 1
                           ? [nativeTokenPrice]
-                          : data.tokenPrices ??
-                            data.tokens.map((t) => tokenPrices[getCurrencyId(t.chainId, t.address)] ?? 0)
+                          : data.tokenPrices ?? tokens.map((t) => tokenPrices[getCurrencyId(t.chainId, t.address)] ?? 0)
                       }
                       curGraph={curGraph}
                     />
@@ -350,7 +350,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex">
                         {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
                         <span className="ml-1 text-[#FFFFFF80]">
-                          {data.tokens.length === 2 ? data.tokens.map((t) => t.symbol).join(" / ") : `Multiple`}
+                          {tokens.length === 2 ? tokens.map((t) => t.symbol).join(" / ") : `Multiple`}
                         </span>
                       </div>
                     </InfoPanel>
@@ -421,30 +421,46 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <StakingHistory history={[{}]} />
                     </div>
                     <div className="absolute bottom-0 left-0 flex h-12 w-full">
-                      <div className="mr-5 flex-1">
-                        <StyledButton
-                          type={"quaternary"}
-                          onClick={() => {
-                            setStakingModalOpen(true);
-                            setCurType("enter");
-                          }}
-                          disabled={pending || !address}
-                        >
-                          Enter {getIndexName(data.tokens)} Index
-                        </StyledButton>
-                      </div>
-                      <div className="flex-1">
-                        <StyledButton
-                          type={"quaternary"}
-                          onClick={() => {
-                            setStakingModalOpen(true);
-                            setCurType("exit");
-                          }}
-                          disabled={pending || !address}
-                        >
-                          Exit &nbsp;<span className="text-green">$150.52 Profit</span>
-                        </StyledButton>
-                      </div>
+                      {data.chainId !== chainId ? (
+                        <div className="flex-1">
+                          <StyledButton
+                            type={"quaternary"}
+                            disabled={!canSwitch}
+                            onClick={() => {
+                              if (canSwitch) switchNetwork(data.chainId);
+                            }}
+                          >
+                            Switch to {getNetworkLabel(data.chainId)}
+                          </StyledButton>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="mr-5 flex-1">
+                            <StyledButton
+                              type={"quaternary"}
+                              onClick={() => {
+                                setStakingModalOpen(true);
+                                setCurType("enter");
+                              }}
+                              disabled={pending || !address}
+                            >
+                              Enter {getIndexName(tokens)} Index
+                            </StyledButton>
+                          </div>
+                          <div className="flex-1">
+                            <StyledButton
+                              type={"quaternary"}
+                              onClick={() => {
+                                setStakingModalOpen(true);
+                                setCurType("exit");
+                              }}
+                              disabled={pending || !address}
+                            >
+                              Exit &nbsp;{renderProfit()} Profit
+                            </StyledButton>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

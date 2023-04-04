@@ -125,7 +125,7 @@ export const fetchIndexUserHistoryDataAsync = (pid: number, account: string) => 
 };
 
 export const updateUserStakings = (pid: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
-  const index = getState().indexes.data.filter((p) => p.pid === pid && p.chainId === chainId);
+  const index = getState().indexes.data.find((p) => p.pid === pid && p.chainId === chainId);
   if (!index) return;
 
   const stakings = await fetchUserStakings(account, chainId, [index]);
@@ -133,7 +133,7 @@ export const updateUserStakings = (pid: number, account: string, chainId: ChainI
 };
 
 export const updateNftAllowance = (pid: number, account: string, chainId: ChainId) => async (dispatch, getState) => {
-  const index = getState().indexes.data.filter((p) => p.pid === pid && p.chainId === chainId);
+  const index = getState().indexes.data.find((p) => p.pid === pid && p.chainId === chainId);
   if (!index) return;
 
   const allowances = await fetchUserNftAllowance(account, chainId, [index]);
