@@ -1,21 +1,23 @@
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const IndexLogo = ({ tokens }) => {
+const IndexLogo = ({ tokens, classNames = "mr-3" }) => {
   switch (tokens.length) {
     case 2:
       return (
-        <div className="mr-3 flex">
-          <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-7 rounded-full" />
-          <img
-            src={getTokenLogoURL(tokens[1].address, tokens[1].chainId)}
-            alt={""}
-            className="-ml-3 w-7 rounded-full"
-          />
+        <div className={classNames}>
+          <div className="flex">
+            <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-7 rounded-full" />
+            <img
+              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId)}
+              alt={""}
+              className="-ml-3 w-7 rounded-full"
+            />
+          </div>
         </div>
       );
     case 3:
       return (
-        <div className="mr-3">
+        <div className={classNames}>
           <div className="flex">
             <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-6 rounded-full" />
             <img
@@ -35,7 +37,7 @@ const IndexLogo = ({ tokens }) => {
       );
     case 4:
       return (
-        <div className="mr-3">
+        <div className={classNames}>
           <div className="flex">
             <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-6 rounded-full" />
             <img
@@ -56,7 +58,7 @@ const IndexLogo = ({ tokens }) => {
       );
     case 5:
       return (
-        <div className="mr-3">
+        <div className={classNames}>
           <div className="flex">
             <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-6 rounded-full" />
             <img

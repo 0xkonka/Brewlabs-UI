@@ -161,15 +161,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
         >
           <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
             {address && data && (
-              <EnterExitModal
-                open={stakingModalOpen}
-                setOpen={setStakingModalOpen}
-                type={curType}
-                data={data}
-                accountData={userData}
-              />
+              <EnterExitModal open={stakingModalOpen} setOpen={setStakingModalOpen} type={curType} data={data} />
             )}
-            <AddNFTModal open={addNFTModalOpen} setOpen={setAddNFTModalOpen} />
+            <AddNFTModal open={addNFTModalOpen} setOpen={setAddNFTModalOpen} data={data} />
             <PageHeader
               title={
                 <div className="text-[40px]">

@@ -9,8 +9,9 @@ import styled from "styled-components";
 import { numberWithCommas } from "utils/functions";
 import LogoIcon from "components/LogoIcon";
 import StyledSlider from "./StyledSlider";
+import { DeserializedIndex } from "state/indexes/types";
 
-const AddNFTModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
+const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog

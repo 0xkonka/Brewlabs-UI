@@ -1,45 +1,100 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
-import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import { numberWithCommas } from "utils/functions";
-import LogoIcon from "components/LogoIcon";
-import StyledSlider from "./StyledSlider";
+import { WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Dialog } from "@headlessui/react";
+import { AnimatePresence, motion } from "framer-motion";
+import styled from "styled-components";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import IndexLogo from "components/logo/IndexLogo";
+import LogoIcon from "components/LogoIcon";
+
+import useTokenPrice from "hooks/useTokenPrice";
+import { DeserializedIndex } from "state/indexes/types";
+import { formatAmount } from "utils/formatApy";
+import { getIndexName } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import StyledButton from "../../StyledButton";
+import StyledSlider from "./StyledSlider";
 
 const EnterExitModal = ({
   open,
   setOpen,
   type,
   data,
-  accountData,
 }: {
   open: boolean;
   setOpen: any;
   type: string;
-  data: any;
-  accountData: any;
+  data: DeserializedIndex;
 }) => {
+  const { tokens, priceHistories, userData } = data;
+
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
-  const [value1, setValue1] = useState(0);
-  const [value2, setValue2] = useState(0);
+  const [percent, setPercent] = useState(100);
+  const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(0));
 
-  const ethbalance = ethers.utils.formatEther(accountData.ethBalance);
-  const stakedBalances = accountData.stakedBalances.map((a, index) =>
-    ethers.utils.formatUnits(a, data.tokens[index].decimals)
-  );
+  const ethbalance = ethers.utils.formatEther(userData.ethBalance);
+  const stakedBalances = userData.stakedBalances?.length
+    ? userData.stakedBalances.map((a, index) => ethers.utils.formatUnits(a, tokens[index].decimals))
+    : new Array(data.numTokens).fill("0");
+
+  const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
   useEffect(() => {
-    if (type === "deposit" && Number(amount) > +ethbalance && !maxPressed) setInsufficient(true);
+    if (type === "enter" && Number(amount) > +ethbalance && !maxPressed) setInsufficient(true);
     else setInsufficient(false);
   }, [amount, maxPressed]);
+
+  const percentChanged = (idx, value) => {
+    if (idx === 0) {
+      setPercent(value);
+
+      let _percents = percents;
+      let total = value;
+      for (let k = 2; k < data.numTokens; k++) {
+        total += _percents[k - 1];
+      }
+      _percents[0] = 100 - total;
+      setPercents(_percents);
+    } else {
+      let _percents = percents;
+      _percents[idx - 1] = value;
+      setPercents(_percents);
+
+      let total = 0;
+      for (let k = 0; k < data.numTokens - 1; k++) {
+        total += _percents[k];
+      }
+      setPercent(100 - total);
+    }
+  };
+
+  const calcExitUsdAmount = () => {
+    let total = 0;
+    for (let k = 0; k < data.numTokens; k++) {
+      total += +stakedBalances[k] * data.tokenPrices[k];
+    }
+    return ((total * percent) / 100).toFixed(2);
+  };
+
+  const renderProfit = () => {
+    let profit = 0;
+    if (!priceHistories?.length) return <span className="mx-1 text-green">$0.00</span>;
+
+    for (let k = 0; k < data.numTokens; k++) {
+      profit += +stakedBalances[k] * (priceHistories[k][priceHistories[k].length - 1] - priceHistories[k][0]);
+    }
+    profit -= +userData.stakedUsdAmount;
+
+    return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mx-1`}>${formatAmount(profit)}</span>;
+  };
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -94,51 +149,85 @@ const EnterExitModal = ({
                       placeholder={`Enter amount ETH...`}
                       value={amount}
                       onChange={(e) => {
+                        if ((isNaN(+e.target.value) || !e.target.value) && e.target.value !== "") return;
+
                         setAmount(e.target.value);
                         setMaxPressed(false);
                       }}
                     />
                   </div>
                   <div className="mt-1 flex w-full flex-col items-end text-sm">
-                    <div className="text-[#FFFFFF80]">${(0).toFixed(2)} USD</div>
+                    <div className="text-[#FFFFFF80]">${(+(amount ?? 0) * nativeTokenPrice).toFixed(2)} USD</div>
                   </div>
                 </>
               ) : (
-                <div className="mb-6" />
+                <div className="mt-5 mb-[10px] sm:mb-[20px]">
+                  {tokens.map((token, index) => (
+                    <div key={token.address} className="text-center">
+                      {formatAmount(stakedBalances[index], 4)} {token.symbol}
+                    </div>
+                  ))}
+                </div>
               )}
-              <div className="mx-auto mt-4 flex w-full max-w-[480px] items-center">
-                <img src={"/images/directory/ogv.svg"} alt={""} className="w-14" />
-                <StyledSlider value={value1} setValue={setValue1} balance={500} symbol={"OGV"} />
+
+              <div className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
+                {type === "enter" ? (
+                  <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-14" />
+                ) : (
+                  <IndexLogo tokens={tokens} classNames="mr-0 scale-125" />
+                )}
+                <StyledSlider value={percent} setValue={(v) => percentChanged(0, v)} balance={100} symbol={"%"} />
                 <div className="relative">
                   <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
-                    {value1.toFixed(2)}%
+                    {percent.toFixed(2)}%
                   </div>
-                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">$4,531.00 USD</div>
+                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
+                    {type === "enter" ? (
+                      <>${((+(amount ?? 0) * nativeTokenPrice * percent) / 100).toFixed(2)} USD</>
+                    ) : (
+                      <>${calcExitUsdAmount()} USD</>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="mx-auto mt-8 mb-4 flex w-full max-w-[480px] items-center">
-                <img src={"/images/directory/ogn.svg"} alt={""} className="w-14" />
-                <StyledSlider value={value2} setValue={setValue2} balance={600} symbol={"OGN"} />
-                <div className="relative">
-                  <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
-                    {value2.toFixed(2)}%
+              {type === "enter" ? (
+                tokens.slice(1).map((token, index) => (
+                  <div key={token.address} className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
+                    <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="w-14" />
+                    <StyledSlider
+                      value={percents[index]}
+                      setValue={(v) => percentChanged(index + 1, v)}
+                      balance={100}
+                      symbol={"%"}
+                    />
+                    <div className="relative">
+                      <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
+                        {percents[index].toFixed(2)}%
+                      </div>
+                      <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
+                        ${((+(amount ?? 0) * nativeTokenPrice * percents[index]) / 100).toFixed(2)} USD
+                      </div>
+                    </div>
                   </div>
-                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">$4,531.00 USD</div>
-                </div>
-              </div>
+                ))
+              ) : (
+                <div className={type !== "enter" ? "mt-[30px] sm:mt-[70px]" : ""}></div>
+              )}
 
               <div className="my-6 h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[480px]">
                 {type === "enter" ? (
                   <div className="h-12">
-                    <StyledButton type="quaternary">Enter OGN-OGV Index</StyledButton>
+                    <StyledButton type="quaternary">
+                      {insufficient ? `Insufficient balance` : `Enter ${getIndexName(tokens)} Index`}
+                    </StyledButton>
                   </div>
                 ) : (
-                  <div className="h-12">
-                    <StyledButton type="quaternary">
-                      Exit <span className="text-green">$150.52 Profit</span>
-                    </StyledButton>
+                  <div className="flex h-12">
+                    <StyledButton type="quaternary">Exit {renderProfit()} Profit</StyledButton>
+                    <div className="mx-1" />
+                    <StyledButton type="quaternary">Zap Out</StyledButton>
                   </div>
                 )}
               </div>
