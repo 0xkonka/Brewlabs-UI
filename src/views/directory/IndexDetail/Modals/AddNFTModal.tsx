@@ -10,6 +10,7 @@ import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
 import { DeserializedIndex } from "state/indexes/types";
 import { getIndexName } from "utils/functions";
 import { formatAmount } from "utils/formatApy";
@@ -17,16 +18,36 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import useIndex from "../hooks/useIndex";
 import StyledButton from "../../StyledButton";
+import useNftApprove from "../hooks/useNftApprove";
+import { updateNftAllowance } from "state/indexes";
+import { useAccount } from "wagmi";
 
 const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
-  const { onStakeNft } = useIndex(data.pid, data.address, data.performanceFee);
+  const dispatch = useAppDispatch();
+  const { address } = useAccount();
+
   const { pending, setPending }: any = useContext(DashboardContext);
   const { tokens, userData, tokenPrices } = data;
 
   const [tokenId, setTokenId] = useState<number | undefined>();
 
+  const { onStakeNft } = useIndex(data.pid, data.address, data.performanceFee);
+  const { onApprove } = useNftApprove(data.nft);
+
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleApproveNft = async () => {
+    setPending(true);
+    try {
+      await onApprove(data.address);
+      dispatch(updateNftAllowance(data.pid, address, data.chainId));
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
   };
 
   const handleStakeNft = async () => {
@@ -139,9 +160,9 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                       !userData.nftItems?.length ||
                       !userData.nftItems?.map((n) => n.tokenId).includes(tokenId)
                     }
-                    onClick={handleStakeNft}
+                    onClick={userData?.allowance ? handleStakeNft : handleApproveNft}
                   >
-                    Add Index NFT
+                    {userData?.allowance ? `Add Index NFT` : "Approve Index NFT"}
                   </StyledButton>
                 </div>
               </div>
