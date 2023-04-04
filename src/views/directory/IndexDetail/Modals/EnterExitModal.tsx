@@ -5,13 +5,16 @@ import { ethers } from "ethers";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "components/logo/IndexLogo";
 import LogoIcon from "components/LogoIcon";
 
+import { DashboardContext } from "contexts/DashboardContext";
 import useTokenPrice from "hooks/useTokenPrice";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { DeserializedIndex } from "state/indexes/types";
 import { formatAmount } from "utils/formatApy";
 import { getIndexName } from "utils/functions";
@@ -20,9 +23,6 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import StyledButton from "../../StyledButton";
 import StyledSlider from "./StyledSlider";
 import useIndex from "../hooks/useIndex";
-import { toast } from "react-toastify";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 
 const EnterExitModal = ({
   open,
@@ -272,7 +272,7 @@ const EnterExitModal = ({
                     <StyledButton
                       type="quaternary"
                       onClick={handleClaimTokens}
-                      disabled={pending || !percent || !userData.stakedUsdAmount}
+                      disabled={pending || !percent || +userData.stakedUsdAmount <= 0}
                     >
                       Exit {renderProfit()} Profit
                     </StyledButton>
@@ -280,7 +280,7 @@ const EnterExitModal = ({
                     <StyledButton
                       type="quaternary"
                       onClick={handleZapOut}
-                      disabled={pending || !userData.stakedUsdAmount}
+                      disabled={pending || +userData.stakedUsdAmount <= 0}
                     >
                       Zap Out
                     </StyledButton>

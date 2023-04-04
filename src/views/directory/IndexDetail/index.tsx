@@ -217,7 +217,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-col sm:flex-row">
                     <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                       <StyledButton
-                        disabled={!address || pending || chainId !== data.chainId || !userData.stakedUsdAmount}
+                        disabled={!address || pending || chainId !== data.chainId || +userData.stakedUsdAmount <= 0}
                         onClick={handleMintNft}
                       >
                         Mint Index NFT
