@@ -1,31 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import { useAccount, useSigner } from "wagmi";
 
-import Container from "components/layout/Container";
 import { chevronLeftSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
+import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
-import WordHighlight from "components/text/WordHighlight";
 import LogoIcon from "components/LogoIcon";
+import { SkeletonComponent } from "components/SkeletonComponent";
+import WordHighlight from "components/text/WordHighlight";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import useTokenPrice from "hooks/useTokenPrice";
 import { getNativeSybmol } from "lib/bridge/helpers";
-import { formatDollar, getIndexName } from "utils/functions";
-
-import StyledButton from "../StyledButton";
-import DropDown from "./Dropdown";
-import IndexLogo from "./IndexLogo";
-import EnterExitModal from "./Modals/EnterExitModal";
-import AddNFTModal from "./Modals/AddNFTModal";
-import TotalStakedChart from "./TotalStakedChart";
-import StakingHistory from "./StakingHistory";
 import { useAppDispatch } from "state";
 import { fetchIndexFeeHistories, fetchIndexPerformance } from "state/indexes/fetchIndexes";
+import { formatDollar, getIndexName } from "utils/functions";
+import { formatAmount, formatTvl } from "utils/formatApy";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -35,10 +32,14 @@ import {
   updateUserStakings,
 } from "state/indexes";
 import getCurrencyId from "utils/getCurrencyId";
-import { SkeletonComponent } from "components/SkeletonComponent";
-import { formatAmount, formatTvl } from "utils/formatApy";
-import useTokenPrice from "hooks/useTokenPrice";
-import { WNATIVE } from "@brewlabs/sdk";
+
+import StyledButton from "../StyledButton";
+import EnterExitModal from "./Modals/EnterExitModal";
+import AddNFTModal from "./Modals/AddNFTModal";
+import DropDown from "./Dropdown";
+import IndexLogo from "./IndexLogo";
+import StakingHistory from "./StakingHistory";
+import TotalStakedChart from "./TotalStakedChart";
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -129,6 +130,21 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
         if (_graphData.length === 1) _graphData.push(_graphData[0]);
         return _graphData;
     }
+  };
+
+  const renderProfit = () => {
+    let profit = 0;
+    const { userData, priceHistories } = data;
+    if (!userData?.stakedUsdAmount || !priceHistories?.length) return <span className="mr-1 text-green">$0.00</span>;
+
+    for (let k = 0; k < data.numTokens; k++) {
+      profit +=
+        +ethers.utils.formatUnits(userData.stakedBalances[k], data.tokens[k].decimals) *
+        (priceHistories[k][priceHistories[k].length - 1] - priceHistories[k][0]);
+    }
+    profit -= +userData.stakedUsdAmount;
+
+    return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>${formatAmount(profit)}</span>;
   };
 
   return (
@@ -277,30 +293,36 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2">
                         <div className="text-xl">My Position</div>
                         <div className="mt-1 leading-none text-primary">
-                          $150.52 <br />
-                          <span className="text-[#FFFFFF80]">Principal Investment</span>
+                          {data.userData?.stakedUsdAmount ? (
+                            `$${formatAmount(data.userData.stakedUsdAmount, 2)}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                          <span className="flex text-[#FFFFFF80]">Principal Investment</span>
                         </div>
                       </div>
                       <div className="mt-2">
-                        <div className="text-xl">Tokens</div>
-                        <div className="mt-1 flex items-center leading-none">
-                          <img src="/images/directory/ogn.svg" alt={""} className="mr-1 w-3" />
-                          <div className="text-[#FFFFFFBF]">
-                            4252 <span className="text-[#FFFFFF80]">OGN</span>
+                        <div className="mb-1 text-xl">Tokens</div>
+                        {data.tokens.map((token, index) => (
+                          <div className="flex items-center leading-none" key={token.address}>
+                            <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="mr-1 w-3" />
+                            <div className="text-[#FFFFFFBF]">
+                              {data.userData?.stakedBalances ? (
+                                `${formatAmount(
+                                  ethers.utils.formatUnits(data.userData.stakedBalances[index], token.decimals),
+                                  4
+                                )}`
+                              ) : (
+                                <SkeletonComponent />
+                              )}
+                              <span className="ml-1 text-[#FFFFFF80]">{token.symbol}</span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center leading-none">
-                          <img src="/images/directory/ogv.svg" alt={""} className="mr-1 w-3" />
-                          <div className="text-[#FFFFFFBF]">
-                            4221 <span className="text-[#FFFFFF80]">OGV</span>
-                          </div>
-                        </div>
+                        ))}
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Profit</div>
-                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">
-                          <span className="text-green">$150.52</span>&nbsp;earned
-                        </div>
+                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">{renderProfit()}earned</div>
                       </div>
                     </InfoPanel>
                   </div>
@@ -327,7 +349,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div>Total Index Value</div>
                       <div className="flex">
                         {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
-                        <span className="ml-1 text-[#FFFFFF80]">OGN / OGV</span>
+                        <span className="ml-1 text-[#FFFFFF80]">
+                          {data.tokens.length === 2 ? data.tokens.map((t) => t.symbol).join(" / ") : `Multiple`}
+                        </span>
                       </div>
                     </InfoPanel>
                     <InfoPanel
@@ -406,7 +430,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           }}
                           disabled={pending || !address}
                         >
-                          Enter OGN-OGV Index
+                          Enter {getIndexName(data.tokens)} Index
                         </StyledButton>
                       </div>
                       <div className="flex-1">

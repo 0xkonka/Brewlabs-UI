@@ -18,7 +18,7 @@ const TotalStakedChart = ({
   curGraph: number;
 }) => {
   let pricechange = 0;
-  if (curGraph === 2) pricechange = getAverageHistory(data)[data.length - 1];
+  if (curGraph === 2) pricechange = getAverageHistory(data)[data[0].length - 1];
 
   const chartData: any = {
     series: [

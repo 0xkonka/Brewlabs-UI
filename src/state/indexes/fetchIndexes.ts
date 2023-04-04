@@ -145,8 +145,6 @@ export const fetchIndexPerformance = async (pool) => {
     ),
   ];
 
-  // let priceHistories = getHistory(prices.map((p) => p[1].c));
-
   return { priceChanges, priceHistories: prices.map((p) => p[1].c), tokenPrices };
 };
 
