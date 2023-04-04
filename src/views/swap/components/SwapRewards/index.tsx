@@ -20,7 +20,7 @@ const SwapRewards = () => {
         content="Pairs on BrewSwap distribute trading volume fees to liquidity providers, owners and token holders instantly"
       />
       <div className="flex flex-col items-center justify-between xsm:flex-row">
-        <div className="relative text-2xl text-white">
+        <div className="relative text-2xl text-white sm:ml-0 ml-4">
           <span className="ml-2 text-[#FCD34D]">Brew</span>Swap Rewards
           <div className="absolute top-2.5 -left-3 scale-150 text-white" id={"brewSwapInfo"}>
             {InfoSVG}
@@ -48,7 +48,7 @@ const SwapRewards = () => {
           );
         })}
       </div>
-      <div className="mt-2  w-full max-w-[280px]">
+      <div className="mt-2  w-full ">
         <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
       </div>
       <div className="mt-6 flex flex-wrap items-center justify-between rounded-[30px] border  border-[#FFFFFF80] p-[24px_12px_24px_12px] sm:p-[24px_15px_24px_24px]">
