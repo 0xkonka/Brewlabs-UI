@@ -6,11 +6,13 @@ const PoolList = ({
   setSelectPoolDetail,
   setCurPool,
   setSortOrder,
+  loading,
 }: {
   pools: any;
   setSelectPoolDetail: any;
   setCurPool: any;
   setSortOrder: any;
+  loading: boolean;
 }) => {
   return (
     <StyledContainer>
@@ -18,7 +20,7 @@ const PoolList = ({
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
           Network
         </div>
-        <div className="min-w-[210px] pl-10 cursor-pointer" onClick={() => setSortOrder("default")}>
+        <div className="min-w-[210px] cursor-pointer pl-10" onClick={() => setSortOrder("default")}>
           Pool
         </div>
         <div className="min-w-[70px] cursor-pointer" onClick={() => setSortOrder("tvl")}>
@@ -33,17 +35,19 @@ const PoolList = ({
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
-        {pools.map((data: any, i: number) => {
-          return (
-            <PoolCard
-              data={data}
-              key={`${data.type}-${data.sousId}-${data.farmId}`}
-              index={i}
-              setSelectPoolDetail={setSelectPoolDetail}
-              setCurPool={setCurPool}
-            />
-          );
-        })}
+        {!loading && <div className="mt-3 text-center">loading...</div>}
+        {loading &&
+          pools.map((data: any, i: number) => {
+            return (
+              <PoolCard
+                data={data}
+                key={`${data.type}-${data.sousId}-${data.farmId}`}
+                index={i}
+                setSelectPoolDetail={setSelectPoolDetail}
+                setCurPool={setCurPool}
+              />
+            );
+          })}
       </PoolPanel>
     </StyledContainer>
   );

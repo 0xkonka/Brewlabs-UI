@@ -36,14 +36,15 @@ export interface DeserializedFarmsState {
 }
 
 export interface PoolsState {
-  data: SerializedPool[]
-  userDataLoaded: boolean
+  data: SerializedPool[];
+  userDataLoaded: boolean;
+  dataFetched: boolean;
 }
 
 export interface State {
   block: BlockState;
   farms: SerializedFarmsState;
-  pools: PoolsState
+  pools: PoolsState;
   lists: ListsState;
   multicall: MulticallState;
   user: UserState;
