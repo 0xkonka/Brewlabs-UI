@@ -53,7 +53,6 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
       dispatch(updateNftAllowance(data.pid, address, data.chainId));
 
       toast.success(`Approved NFT staking`);
-      setOpen(false);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -158,7 +157,7 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                             </div>
                             <div className="text-xs text-[#FFFFFF80]">
                               $
-                              {selectedNft
+                              {selectedNft && tokenPrices
                                 ? formatAmount(
                                     +ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals) *
                                       tokenPrices[index]
