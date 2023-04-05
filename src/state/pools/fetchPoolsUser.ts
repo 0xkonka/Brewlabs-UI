@@ -2,10 +2,10 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 
 import erc20ABI from "config/abi/erc20.json";
-import lockupStakingABI from "config/abi/brewlabsLockup.json";
-import lockupStakingV2ABI from "config/abi/brewlabsLockupV2.json";
-import brewlabsStakingMultiABI from "config/abi/brewlabsStakingMulti.json";
-import singleStakingABI from "config/abi/singlestaking.json";
+import lockupStakingABI from "config/abi/staking/brewlabsLockup.json";
+import lockupStakingV2ABI from "config/abi/staking/brewlabsLockupV2.json";
+import brewlabsStakingMultiABI from "config/abi/staking/brewlabsStakingMulti.json";
+import singleStakingABI from "config/abi/staking/singlestaking.json";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { PoolCategory } from "config/constants/types";

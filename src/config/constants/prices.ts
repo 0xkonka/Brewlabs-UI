@@ -14,11 +14,5 @@ const prices = [
   tokens[ChainId.BSC_MAINNET].bvst,
   tokens[ChainId.BSC_MAINNET].dtt,
 ];
-// WPT
-// GCC
-// Vulkania
-// ROO
-// BALTO
-// BVST
-// DTT
+
 export default prices;

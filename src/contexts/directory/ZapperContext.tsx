@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getMulticallContract } from "utils/contractHelpers";
 import zappers from "../../config/constants/directory/zappers.json";
-import FarmABI from "config/abi/brewlabsFarm.json";
+import FarmABI from "config/abi/staking/brewlabsFarm.json";
 import PairABI from "config/abi/lpToken.json";
 
 import { ethers } from "ethers";
