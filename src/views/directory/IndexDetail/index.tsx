@@ -300,7 +300,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                         <div className="flex">
-                          Performance Fee {ethers.utils.formatEther(data.performanceFee)}{" "}
+                          Performance Fee {ethers.utils.formatEther(data.performanceFee ?? "0")}{" "}
                           {getNativeSybmol(data.chainId)}
                           <div
                             className="tooltip"
