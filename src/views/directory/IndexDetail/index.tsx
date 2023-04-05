@@ -294,7 +294,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                         <div className="flex">
-                          Withdrawal Fee 0.00% / In Profit Withdrawal Fee {data.fee}% of Profit
+                          Withdrawal Fee 0.00% / In Profit Withdrawal Fee {data.fee ?? ""}% of Profit
                           <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
                             <div className="ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
