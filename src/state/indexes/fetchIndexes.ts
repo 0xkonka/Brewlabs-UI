@@ -153,7 +153,7 @@ export const fetchIndexFeeHistories = async (pool) => {
   try {
     res = await axios.post(`${API_URL}/fee/single`, { type: "index", id: pool.pid });
   } catch (e) {}
-  if (!res.data) {
+  if (!res?.data) {
     return { performanceFees: [] };
   }
   const { performanceFees, commissions } = res.data;
