@@ -21,6 +21,7 @@ import StyledButton from "../../StyledButton";
 import useNftApprove from "../hooks/useNftApprove";
 import { updateNftAllowance } from "state/indexes";
 import { useAccount } from "wagmi";
+import { ethers } from "ethers";
 
 const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
   const dispatch = useAppDispatch();
@@ -33,6 +34,13 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
 
   const { onStakeNft } = useIndex(data.pid, data.address, data.performanceFee);
   const { onApprove } = useNftApprove(data.nft);
+
+  useEffect(() => {
+    if (!userData.nftItems?.length) return;
+    if (userData.nftItems.map((n) => n.tokenId).includes(tokenId)) return;
+
+    setTokenId(userData.nftItems[0].tokenId);
+  }, [userData.nftItems.length, data.pid]);
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
@@ -144,10 +152,18 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                           <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="w-12" />
                           <div className="ml-3 leading-none">
                             <div className="text-xl text-[#FFFFFFBF]">
-                              {selectedNft ? formatAmount(selectedNft.amounts[index], 4) : "0.00"}
+                              {selectedNft
+                                ? formatAmount(ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals), 6)
+                                : "0.00"}
                             </div>
                             <div className="text-xs text-[#FFFFFF80]">
-                              ${selectedNft ? formatAmount(+selectedNft.amounts[index] * tokenPrices[index]) : "0.00"}
+                              $
+                              {selectedNft
+                                ? formatAmount(
+                                    +ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals) *
+                                      tokenPrices[index]
+                                  )
+                                : "0.00"}
                             </div>
                           </div>
                         </div>

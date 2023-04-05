@@ -163,6 +163,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(true);
     try {
       await onMintNft();
+
+      toast.success("Index NFT was mint")
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -388,7 +390,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex">
                         {data.performanceFees !== undefined ? (
-                          formatAmount(data.performanceFees[data.performanceFees.length - 1].toFixed(4), 4)
+                          data.performanceFees.length > 0 ? (
+                            formatAmount(data.performanceFees[data.performanceFees.length - 1], 4)
+                          ) : (
+                            "0.00"
+                          )
                         ) : (
                           <SkeletonComponent />
                         )}

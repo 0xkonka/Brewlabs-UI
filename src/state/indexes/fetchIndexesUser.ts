@@ -118,15 +118,15 @@ export const fetchUserNftData = async (account, chainId, nftAddr) => {
     const nftInfo = await multicall(IndexNftAbi, calls, chainId);
 
     return tokenIds.map((tokenId, index) => {
-      let level = nftInfo[index].level.toNumber();
-      let usdAmount = ethers.utils.formatEther(nftInfo[index].usdAmount);
-      let amounts = nftInfo[index].amounts.map((amount) => amount.toString());
+      let level = nftInfo[index][0].toNumber();
+      let usdAmount = ethers.utils.formatEther(nftInfo[index][2]);
+      let amounts = nftInfo[index][1].map((amount) => amount.toString());
       return {
         tokenId,
         level,
         amounts,
         usdAmount,
-        indexAddress: nftInfo[index].address ?? "0x11ff513ED9770C2eB02655777EF55F123a17ec00",
+        indexAddress: nftInfo[index][3] ?? "0x11ff513ED9770C2eB02655777EF55F123a17ec00",
       };
     });
   }
