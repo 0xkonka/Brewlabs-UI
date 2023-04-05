@@ -17,7 +17,7 @@ import useTokenPrice from "hooks/useTokenPrice";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { DeserializedIndex } from "state/indexes/types";
 import { formatAmount } from "utils/formatApy";
-import { getIndexName } from "utils/functions";
+import { getIndexName, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../../StyledButton";
@@ -96,11 +96,15 @@ const EnterExitModal = ({
     if (!priceHistories?.length) return <span className="mx-1 text-green">$0.00</span>;
 
     for (let k = 0; k < data.numTokens; k++) {
-      profit += +stakedBalances[k] * (priceHistories[k][priceHistories[k].length - 1] - priceHistories[k][0]);
+      profit += +stakedBalances[k] * priceHistories[k][priceHistories[k].length - 1];
     }
     profit -= +userData.stakedUsdAmount;
 
-    return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mx-1`}>${formatAmount(profit)}</span>;
+    return (
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"} mx-1`}>
+        ${numberWithCommas(profit.toFixed(3))}
+      </span>
+    );
   };
 
   const showError = (errorMsg: string) => {
@@ -217,7 +221,7 @@ const EnterExitModal = ({
                 <div className="mt-5 mb-[10px] sm:mb-[20px]">
                   {tokens.map((token, index) => (
                     <div key={token.address} className="text-center">
-                      {formatAmount(stakedBalances[index], 4)} {token.symbol}
+                      {formatAmount(stakedBalances[index], 6)} {token.symbol}
                     </div>
                   ))}
                 </div>

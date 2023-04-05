@@ -168,7 +168,7 @@ export const fetchIndexFeeHistories = async (pool) => {
   }
 
   for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
-    _commissions.push(sumOfArray(commissions.filter((v) => v.timestamp <= t).map((v) => v.value)));
+    _commissions.push(sumOfArray(commissions.filter((v) => v.timestamp <= t).map((v) => +v.value)));
   }
 
   return { performanceFees: _performanceFees, commissions: _commissions };

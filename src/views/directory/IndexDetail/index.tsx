@@ -30,7 +30,7 @@ import {
   updateUserNftInfo,
   updateUserStakings,
 } from "state/indexes";
-import { formatDollar, getIndexName } from "utils/functions";
+import { formatDollar, getIndexName, numberWithCommas } from "utils/functions";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -117,9 +117,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     switch (curGraph) {
       case 0:
         _graphData = data.TVLData ?? [];
-        if (data.tvl !== undefined) {
-          _graphData.push(data.totalStaked);
-        }
+        _graphData = _graphData.map((v) => v);
+        if (data.totalStaked?.length) _graphData.push(data.totalStaked);
         if (_graphData.length === 1) _graphData.push(_graphData[0]);
         return _graphData;
       case 1:
@@ -127,12 +126,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 2:
         return data.priceHistories;
       case 3:
-        return data.commissions ? data.commissions.map((c) => +c * nativeTokenPrice) : [];
+        return data.commissions ?? [];
       default:
         _graphData = data.TVLData ?? [];
-        if (data.tvl !== undefined) {
-          _graphData.push(data.totalStaked);
-        }
+        _graphData = _graphData.map((v) => v);
+        if (data.totalStaked?.length) _graphData.push(data.totalStaked);
         if (_graphData.length === 1) _graphData.push(_graphData[0]);
         return _graphData;
     }
@@ -146,11 +144,15 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     for (let k = 0; k < data.numTokens; k++) {
       profit +=
         +ethers.utils.formatUnits(userData.stakedBalances[k], tokens[k].decimals) *
-        (priceHistories[k][priceHistories[k].length - 1] - priceHistories[k][0]);
+        priceHistories[k][priceHistories[k].length - 1];
     }
     profit -= +userData.stakedUsdAmount;
 
-    return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>${formatAmount(profit)}</span>;
+    return (
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
+        ${numberWithCommas(profit.toFixed(3))}
+      </span>
+    );
   };
 
   const showError = (errorMsg: string) => {
@@ -355,7 +357,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       data={graphData()}
                       symbols={curGraph === 1 ? [getNativeSybmol(data.chainId)] : tokens.map((t) => t.symbol)}
                       prices={
-                        curGraph === 1
+                        curGraph === 1 || curGraph === 3
                           ? [nativeTokenPrice]
                           : data.tokenPrices ?? tokens.map((t) => tokenPrices[getCurrencyId(t.chainId, t.address)] ?? 0)
                       }
@@ -439,7 +441,14 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="relative mt-10 w-full md:mt-0 md:w-[57%]">
                     <div className="mt-7">
-                      <StakingHistory data={data} history={userData.histories} />
+                      <StakingHistory
+                        data={data}
+                        history={userData.histories}
+                        setOpen={() => {
+                          setStakingModalOpen(true);
+                          setCurType("exit");
+                        }}
+                      />
                     </div>
                     <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full md:absolute">
                       {data.chainId !== chainId ? (

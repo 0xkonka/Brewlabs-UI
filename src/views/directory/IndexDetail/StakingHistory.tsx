@@ -1,15 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { formatAmount } from "utils/formatApy";
-import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
+import { getBlockExplorerLink, getBlockExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const StakingHistory = ({ data, history }: { data: any; history: any }) => {
+const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; setOpen: any }) => {
   const { tokens, priceHistories } = data;
   const [histories, setHistories] = useState([]);
 
   useEffect(() => {
-    let _histories = history.sort((a, b) => a.timestamp - b.timestamp);
+    let _histories = [...history]
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map((v) => ({ ...v, realAmounts: new Array(data.numTokens).fill(0), realUsdAmount: 0 }));
+
     for (let i = 0; i < _histories.length; i++) {
       let _history = _histories[i];
       switch (_history.method) {
@@ -59,7 +62,7 @@ const StakingHistory = ({ data, history }: { data: any; history: any }) => {
       }
     }
 
-    setHistories(_histories);
+    setHistories(_histories.sort((a, b) => b.timestamp - a.timestamp));
   }, [data.pid, history.length]);
 
   const renderProfit = (item) => {
@@ -68,11 +71,13 @@ const StakingHistory = ({ data, history }: { data: any; history: any }) => {
     if (!item || !priceHistories?.length) return <span className="mr-1 text-green">$0.00</span>;
 
     for (let k = 0; k < data.numTokens; k++) {
-      profit += +item.realAmounts[k] * (priceHistories[k][priceHistories[k].length - 1] - priceHistories[k][0]);
+      profit += +item.realAmounts[k] * priceHistories[k][priceHistories[k].length - 1];
     }
     profit -= +item.realUsdAmount;
 
-    return <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>${formatAmount(profit)}</span>;
+    return (
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"}`}>${numberWithCommas(profit.toFixed(3))}</span>
+    );
   };
 
   return (
@@ -92,11 +97,9 @@ const StakingHistory = ({ data, history }: { data: any; history: any }) => {
               <div className="flex items-center justify-between border-b border-b-[#FFFFFF40] py-4" key={item.txHash}>
                 <div className="min-w-[100px]">
                   {tokens.map((token, index) => (
-                    <div className="flex items-center leading-none">
+                    <div key={index} className="flex items-center leading-none">
                       <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="mr-1 w-3" />
-                      <div className="text-[#FFFFFFBF]">
-                        {formatAmount(item.amounts[index])} <span className="text-[#FFFFFF80]">{token.symbol}</span>
-                      </div>
+                      <div className="text-[#FFFFFFBF]">{formatAmount(item.amounts[index], 6)}</div>
                     </div>
                   ))}
                 </div>
@@ -111,7 +114,9 @@ const StakingHistory = ({ data, history }: { data: any; history: any }) => {
                 </a>
                 <div className="min-w-[70px]">{item.blockNumber}</div>
                 {item.realUsdAmount > 0 ? (
-                  <div className="min-w-[140px] text-right">Exit {renderProfit(item)} Profit</div>
+                  <div className="min-w-[140px] cursor-pointer text-right" onClick={setOpen}>
+                    Exit {renderProfit(item)} Profit
+                  </div>
                 ) : (
                   <div className="min-w-[140px] text-right"></div>
                 )}
