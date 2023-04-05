@@ -102,9 +102,9 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            if (curGraph === 1) return "$" + +(+value * prices[0]).toFixed(4);
+            if (curGraph === 1) return "$" + +(+value * prices[0]).toFixed(2);
             if (curGraph === 2) return value.toFixed(2) + "%";
-            return "$" + value;
+            return "$" + value.toFixed(2);
           },
         },
       },
@@ -146,10 +146,10 @@ const TotalStakedChart = ({
       case 0:
         return (
           <>
-            <span className="mb-1 flex">${chartData.series[0].data[data.length - 1]}</span>
-            {data[0].map((d, index) => (
+            <span className="mb-1 flex">${chartData.series[0].data[data.length - 1].toFixed(2)}</span>
+            {data[data.length-1].map((d, index) => (
               <span key={index} className="flex">
-                {formatAmount(chartData.series[0].data[data.length - 1])} {symbols[index]}
+                {formatAmount(d, 6)} {symbols[index]}
               </span>
             ))}
           </>

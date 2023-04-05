@@ -111,6 +111,9 @@ const EnterExitModal = ({
     setPending(true);
     try {
       await onZapIn(amount, [percent, ...percents]);
+
+      toast.success(`Zapped in successfully`);
+      setOpen(false);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -122,6 +125,9 @@ const EnterExitModal = ({
     setPending(true);
     try {
       await onZapOut();
+
+      toast.success(`Zapped out successfully`);
+      setOpen(false);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -133,6 +139,9 @@ const EnterExitModal = ({
     setPending(true);
     try {
       await onClaim(percent);
+
+      toast.success(`Claimed ${percent}% tokens`);
+      setOpen(false);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));

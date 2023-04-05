@@ -43,6 +43,9 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
     try {
       await onApprove(data.address);
       dispatch(updateNftAllowance(data.pid, address, data.chainId));
+
+      toast.success(`Approved NFT staking`);
+      setOpen(false);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -54,6 +57,9 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
     setPending(true);
     try {
       await onStakeNft(tokenId);
+
+      toast.success(`Index NFT was unlocked`);
+      setOpen(false);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));

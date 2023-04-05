@@ -58,7 +58,7 @@ const Directory = ({ page }: { page: number }) => {
     ...indexes.map((_index) => {
       let tvl = 0;
       for (let i = 0; i < _index.tokens.length; i++) {
-        let price = tokenPrices[getCurrencyId(_index.chainId, _index.tokens[i].address)];
+        let price = _index.tokenPrices?.[i] ?? tokenPrices[getCurrencyId(_index.chainId, _index.tokens[i].address)];
         tvl += _index.totalStaked?.[i] && price ? +_index.totalStaked[i] * price : 0;
       }
       return { ..._index, tvl };

@@ -127,7 +127,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 2:
         return data.priceHistories;
       case 3:
-        return data.commissions ?? [];
+        return data.commissions ? data.commissions.map((c) => +c * nativeTokenPrice) : [];
       default:
         _graphData = data.TVLData ?? [];
         if (data.tvl !== undefined) {
@@ -431,8 +431,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex text-[#FFFFFF80]">
                         $
-                        {data.commissions
-                          ? formatAmount(data.commissions[data.commissions.length - 1].toFixed(2))
+                        {data.commissions?.length
+                          ? formatAmount(+data.commissions[data.commissions.length - 1] * nativeTokenPrice)
                           : "0.00"}
                       </div>
                     </InfoPanel>
