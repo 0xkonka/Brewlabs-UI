@@ -25,6 +25,7 @@ import { SerializedPool } from "./types";
 const initialState: PoolsState = {
   data: [],
   userDataLoaded: false,
+  dataFetched: false,
 };
 
 // Thunks
@@ -240,6 +241,7 @@ export const PoolsSlice = createSlice({
         }
         return pool;
       });
+      state.dataFetched = true;
     },
     setPoolsUserData: (state, action) => {
       const userData = action.payload;

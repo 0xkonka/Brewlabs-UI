@@ -54,10 +54,11 @@ export const useFetchPoolsWithUserData = () => {
   }, [account, chainId, pools.length, dispatch]);
 };
 
-export const usePools = (): { pools: DeserializedPool[]; userDataLoaded: boolean } => {
-  const { pools, userDataLoaded } = useSelector((state: State) => ({
+export const usePools = (): { pools: DeserializedPool[]; userDataLoaded: boolean; dataFetched: boolean } => {
+  const { pools, userDataLoaded, dataFetched } = useSelector((state: State) => ({
     pools: state.pools.data,
     userDataLoaded: state.pools.userDataLoaded,
+    dataFetched: state.pools.dataFetched,
   }));
-  return { pools: pools.map(transformPool), userDataLoaded };
+  return { pools: pools.map(transformPool), userDataLoaded, dataFetched };
 };

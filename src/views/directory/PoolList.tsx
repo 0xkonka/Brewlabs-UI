@@ -6,11 +6,13 @@ const PoolList = ({
   setSelectPoolDetail,
   setCurPool,
   setSortOrder,
+  loading,
 }: {
   pools: any;
   setSelectPoolDetail: any;
   setCurPool: any;
   setSortOrder: any;
+  loading: boolean;
 }) => {
   return (
     <StyledContainer>
@@ -33,17 +35,19 @@ const PoolList = ({
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
       <PoolPanel>
-        {pools.map((data: any, i: number) => {
-          return (
-            <PoolCard
-              data={data}
-              key={`${data.type}-${data.chainId}-${data.sousId}-${data.contractAddress ?? data.address}`}
-              index={i}
-              setSelectPoolDetail={setSelectPoolDetail}
-              setCurPool={setCurPool}
-            />
-          );
-        })}
+        {!loading && <div className="mt-3 text-center">loading...</div>}
+        {loading &&
+          pools.map((data: any, i: number) => {
+            return (
+              <PoolCard
+                data={data}
+                key={`${data.type}-${data.sousId}-${data.farmId}`}
+                index={i}
+                setSelectPoolDetail={setSelectPoolDetail}
+                setCurPool={setCurPool}
+              />
+            );
+          })}
       </PoolPanel>
     </StyledContainer>
   );

@@ -37,7 +37,7 @@ const Directory = ({ page }: { page: number }) => {
   const [status, setStatus] = useState("active");
   const [deployerOpen, setDeployerOpen] = useState(false);
 
-  const { pools } = usePools();
+  const { pools, dataFetched } = usePools();
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
@@ -259,6 +259,7 @@ const Directory = ({ page }: { page: number }) => {
                     setSelectPoolDetail={setSelectPoolDetail}
                     setCurPool={setCurPool}
                     setSortOrder={setSortOrder}
+                    loading={dataFetched}
                   />
                 </div>
               </Container>

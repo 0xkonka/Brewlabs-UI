@@ -26,10 +26,11 @@ const SubNav = ({ openSettingModal }: Props) => {
             setSwapTab(1);
             setAddLiquidityStep(0);
           }}
+          disabled
         >
           Add liquidity
         </button>
-        <button className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""}`} onClick={() => setSwapTab(2)}>
+        <button className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""}`} onClick={() => setSwapTab(2)} disabled>
           Swap Rewards
         </button>
       </div>

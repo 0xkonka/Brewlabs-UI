@@ -39,6 +39,7 @@ export interface DeserializedFarmsState {
 export interface PoolsState {
   data: SerializedPool[];
   userDataLoaded: boolean;
+  dataFetched: boolean;
 }
 export interface IndexesState {
   data: SerializedIndex[];

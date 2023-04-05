@@ -1,4 +1,4 @@
-import { Fragment, lazy, Suspense, useEffect } from "react";
+import { Fragment, lazy, Suspense, useEffect, useState } from "react";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
 import Image from "next/future/image";
@@ -71,6 +71,12 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
   const router = useRouter();
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const handler = (page: any) => {
       window.dataLayer.push({
@@ -99,7 +105,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                       <LanguageProvider>
                         <BridgeProvider>
                           <SWRConfig>
-                            <GlobalHooks />
+                            {mounted && <GlobalHooks />}
                             <PersistGate loading={null} persistor={persistor}>
                               <DefaultSeo {...SEO} />
                               <Updaters />
