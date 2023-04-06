@@ -31,9 +31,11 @@ export default function BasicLiquidity() {
   const [currencyA, setCurrencyA] = useState<any>();
   const [currencyB, setCurrencyB] = useState<any>();
 
-  const [tokenOwnerFee, setTokenOwnerFee] = useState(0.1);
-  const [liquidityProviderFee, setLiquidityProviderFee] = useState(0.1);
-  const [tokenHoldersFee, setTokenHoldersFee] = useState(0.1);
+  const [tokenOwnerFee, setTokenOwnerFee] = useState(0.0);
+  const [liquidityProviderFee, setLiquidityProviderFee] = useState(0.25);
+  // const [tokenHoldersFee, setTokenHoldersFee] = useState(0.0);
+  const tokenHoldersFee = 0.0;
+  const referralFee = 0.0;
   const brewlabsFee = 0.05;
   const FEE_PRECISION = 100;
 
@@ -103,8 +105,6 @@ export default function BasicLiquidity() {
   };
 
   const onAdd = async () => {
-    // console.log(tokenOwnerFee, liquidityProviderFee, tokenHoldersFee);
-    // return;
     if (!chainId || !library || !account) return;
     const router = getBrewlabsRouterContract(chainId, signer);
 
@@ -119,20 +119,6 @@ export default function BasicLiquidity() {
     };
 
     const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline;
-
-    const abiCoder = new utils.AbiCoder();
-    const feeDistribution = abiCoder.encode(
-      ["uint256", "uint256", "uint256", "uint256", "address", "uint256", "address"],
-      [
-        liquidityProviderFee * FEE_PRECISION,
-        brewlabsFee * FEE_PRECISION,
-        tokenOwnerFee * FEE_PRECISION,
-        tokenHoldersFee * FEE_PRECISION,
-        currencies[Field.CURRENCY_A].wrapped?.address,
-        0,
-        ZERO_ADDRESS,
-      ]
-    );
 
     let estimate;
     let method: (...args: any) => Promise<TransactionResponse>;
@@ -149,7 +135,6 @@ export default function BasicLiquidity() {
         amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
         account,
         deadlineFromNow,
-        feeDistribution,
       ];
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
     } else {
@@ -164,7 +149,6 @@ export default function BasicLiquidity() {
         amountsMin[Field.CURRENCY_B].toString(),
         account,
         deadlineFromNow,
-        feeDistribution,
       ];
       value = null;
     }
@@ -202,10 +186,10 @@ export default function BasicLiquidity() {
     // }, 2000);
   };
 
-  const onUpdateFee = (value, setValue) => {
+  const onUpdateFee = (value, setValue, min, max) => {
     return (update) => {
       const newValue = value + update;
-      setValue(Math.min(Math.max(newValue, 0), 100));
+      setValue(Math.min(Math.max(newValue, min), max));
     };
   };
 
@@ -230,27 +214,23 @@ export default function BasicLiquidity() {
       key: "Pool fee for token owner",
       value: tokenOwnerFee.toFixed(2) + "%",
       controller: true,
-      onUpdate: onUpdateFee(tokenOwnerFee, setTokenOwnerFee),
+      onUpdate: onUpdateFee(tokenOwnerFee, setTokenOwnerFee, 0, 0.05),
     },
     {
       key: "Pool fee for liquidity providers",
       value: liquidityProviderFee.toFixed(2) + "%",
-      controller: true,
-      onUpdate: onUpdateFee(liquidityProviderFee, setLiquidityProviderFee),
     },
-    {
-      key: "Pool fee for token holders",
-      value: tokenHoldersFee.toFixed(2) + "%",
-      controller: true,
-      onUpdate: onUpdateFee(tokenHoldersFee, setTokenHoldersFee),
-    },
+    // {
+    //   key: "Pool fee for token holders",
+    //   value: tokenHoldersFee.toFixed(2) + "%",
+    // },
     {
       key: "Pool fee for Brewlabs protocol",
       value: "0.05%",
     },
     {
       key: "Total pool fee",
-      value: (tokenOwnerFee + tokenHoldersFee + liquidityProviderFee + 0.05).toFixed(2) + "%",
+      value: (tokenOwnerFee + tokenHoldersFee + liquidityProviderFee + brewlabsFee).toFixed(2) + "%",
     },
   ];
 
@@ -319,7 +299,7 @@ export default function BasicLiquidity() {
                   <div className="ml-2 flex min-w-[120px]">
                     <div className="min-w-[12px] text-gray-600">
                       {item.controller && (
-                        <button className="w-full text-left" onClick={() => item.onUpdate(0.05)}>
+                        <button className="w-full text-left" onClick={() => item.onUpdate(0.01)}>
                           +
                         </button>
                       )}
@@ -327,7 +307,7 @@ export default function BasicLiquidity() {
                     {item.value}
                     {item.controller && (
                       <div className="min-w-[12px] text-gray-600">
-                        <button className="w-full text-right" onClick={() => item.onUpdate(-0.05)}>
+                        <button className="w-full text-right" onClick={() => item.onUpdate(-0.01)}>
                           -
                         </button>
                       </div>
@@ -337,11 +317,17 @@ export default function BasicLiquidity() {
               ))}
             </div>
           </div>
-          {(approvalA === ApprovalState.NOT_APPROVED ||
-            approvalA === ApprovalState.PENDING ||
-            approvalB === ApprovalState.NOT_APPROVED ||
-            approvalB === ApprovalState.PENDING) && (
-            <div className="flex justify-between">
+          {approvalA === ApprovalState.NOT_APPROVED ||
+          approvalA === ApprovalState.PENDING ||
+          approvalB === ApprovalState.NOT_APPROVED ||
+          approvalB === ApprovalState.PENDING ? (
+            <div
+              className={`grid ${
+                approvalA === ApprovalState.APPROVED || approvalB === ApprovalState.APPROVED
+                  ? "grid-cols-1"
+                  : "grid-cols-2"
+              } gap-2`}
+            >
               {approvalA !== ApprovalState.APPROVED && (
                 <SolidButton onClick={approveACallback} disabled={approvalA === ApprovalState.PENDING}>
                   {approvalA === ApprovalState.PENDING
@@ -357,14 +343,15 @@ export default function BasicLiquidity() {
                 </SolidButton>
               )}
             </div>
+          ) : (
+            <SolidButton
+              onClick={onNext}
+              // disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+              disabled={false}
+            >
+              {addLiquidityStep === 2 ? "Create pool" : "Next: Select yield farm metrics"}
+            </SolidButton>
           )}
-          <SolidButton
-            onClick={onNext}
-            // disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-            disabled={false}
-          >
-            {addLiquidityStep === 2 ? "Create pool" : "Next: Select yield farm metrics"}
-          </SolidButton>
           <OutlinedButton className="mt-1 font-bold" small onClick={() => setAddLiquidityStep(1)}>
             Back
           </OutlinedButton>

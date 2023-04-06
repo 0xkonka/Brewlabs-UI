@@ -103,7 +103,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
           {tradePanelToggled ? (
             <div className="mt-1 flex justify-between">
               <div className="min-w-[190px]">
-                {customConditionMatched ? (
+                {/* {customConditionMatched ? (
                   <span className="mb-2 flex max-w-fit items-center gap-1 rounded-2xl border border-green px-2">
                     <BoltIcon className="h-3 w-3 dark:text-green" />
                     <p className="text-[13px]">Custom conditions</p>
@@ -113,7 +113,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                     <BoltIcon className="h-3 w-3 dark:text-primary" />
                     <p className="text-[13px]">Custom conditions</p>
                   </span>
-                )}
+                )} */}
                 <div className="ml-1">
                   <span className="flex justify-between">
                     <p className="text-[11px]">
@@ -149,7 +149,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                       {data.toToken.symbol}
                     </p>
                   </span>
-                  <span className="flex items-center justify-start gap-1">
+                  {/* <span className="flex items-center justify-start gap-1">
                     <LockClosedIcon className="h-3 w-3 dark:text-green" />
                     <p className="text-[11px]">Liquidity Locked</p>
                   </span>
@@ -160,7 +160,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                       <ExclamationTriangleIcon className="h-3 w-3 dark:text-danger" />
                     )}
                     <p className="text-[11px]">Brewlabs Verified</p>
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>
