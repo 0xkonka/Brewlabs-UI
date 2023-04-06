@@ -212,7 +212,6 @@ const DashboardContextProvider = ({ children }: any) => {
       };
     } catch (error) {
       console.log(error);
-      console.log(token);
       return token;
     }
   };

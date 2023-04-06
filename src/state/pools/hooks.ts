@@ -20,6 +20,7 @@ import { DeserializedPool } from "./types";
 export const useFetchPublicPoolsData = () => {
   const dispatch = useAppDispatch();
   const { chainId } = useActiveWeb3React();
+  const { pools } = usePools();
 
   useSlowRefreshEffect(() => {
     const fetchPoolsPublicData = async () => {
@@ -28,7 +29,7 @@ export const useFetchPublicPoolsData = () => {
     };
 
     fetchPoolsPublicData();
-  }, [dispatch, chainId]);
+  }, [dispatch, chainId, pools.length]);
 };
 
 export const usePollPoolsPublicDataFromApi = () => {
@@ -40,6 +41,7 @@ export const usePollPoolsPublicDataFromApi = () => {
 
 export const useFetchPoolsWithUserData = () => {
   const { chainId, account } = useActiveWeb3React();
+  const { pools } = usePools();
   const dispatch = useAppDispatch();
 
   useSlowRefreshEffect(() => {
@@ -49,13 +51,14 @@ export const useFetchPoolsWithUserData = () => {
     } else {
       dispatch(resetPoolsUserData());
     }
-  }, [account, chainId, dispatch]);
+  }, [account, chainId, pools.length, dispatch]);
 };
 
-export const usePools = (): { pools: DeserializedPool[]; userDataLoaded: boolean } => {
-  const { pools, userDataLoaded } = useSelector((state: State) => ({
+export const usePools = (): { pools: DeserializedPool[]; userDataLoaded: boolean; dataFetched: boolean } => {
+  const { pools, userDataLoaded, dataFetched } = useSelector((state: State) => ({
     pools: state.pools.data,
     userDataLoaded: state.pools.userDataLoaded,
+    dataFetched: state.pools.dataFetched,
   }));
-  return { pools: pools.map(transformPool), userDataLoaded };
+  return { pools: pools.map(transformPool), userDataLoaded, dataFetched };
 };

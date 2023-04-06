@@ -3,7 +3,7 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 
 import erc20ABI from "config/abi/erc20.json";
-import masterchefABI from "config/abi/masterchef.json";
+import masterchefABI from "config/abi/staking/masterchef.json";
 import { API_URL } from "config/constants";
 import { SerializedFarmConfig } from "config/constants/types";
 import { getMasterChefAddress } from "utils/addressHelpers";

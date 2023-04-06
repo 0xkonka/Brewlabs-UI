@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { DeserializedFarm, SerializedFarm } from "./farms/types";
+import { SerializedIndex } from "./indexes/types";
 import { ListsState } from "./lists/reducer";
 import { MulticallState } from "./multicall/reducer";
 import { SerializedPool } from "./pools/types";
@@ -36,14 +37,20 @@ export interface DeserializedFarmsState {
 }
 
 export interface PoolsState {
-  data: SerializedPool[]
-  userDataLoaded: boolean
+  data: SerializedPool[];
+  userDataLoaded: boolean;
+  dataFetched: boolean;
+}
+export interface IndexesState {
+  data: SerializedIndex[];
+  userDataLoaded: boolean;
 }
 
 export interface State {
   block: BlockState;
   farms: SerializedFarmsState;
-  pools: PoolsState
+  pools: PoolsState;
+  indexes: IndexesState;
   lists: ListsState;
   multicall: MulticallState;
   user: UserState;
