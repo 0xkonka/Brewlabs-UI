@@ -32,6 +32,9 @@ export const getBrewlabsAggregationRouterAddress = (chainId: ChainId) => {
 export const getBrewlabsRouterAddress = (chainId: ChainId) => {
   return ROUTER_ADDRESS[chainId];
 }
+export const getBrewlabsFeeManagerAddress = (chainId: ChainId) => {
+  return getAddress(addresses.brewlabsFeeManager, chainId);
+}
 export const getZapperAddress = (chainId: ChainId) => {
   return getAddress(addresses.zapper, chainId);
 };

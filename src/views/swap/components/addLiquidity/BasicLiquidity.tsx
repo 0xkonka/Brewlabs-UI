@@ -31,12 +31,11 @@ export default function BasicLiquidity() {
   const [currencyA, setCurrencyA] = useState<any>();
   const [currencyB, setCurrencyB] = useState<any>();
 
-  const [tokenOwnerFee, setTokenOwnerFee] = useState(0.0);
-  const [liquidityProviderFee, setLiquidityProviderFee] = useState(0.25);
-  // const [tokenHoldersFee, setTokenHoldersFee] = useState(0.0);
+  const liquidityProviderFee = 0.25;
   const tokenHoldersFee = 0.0;
   const referralFee = 0.0;
   const brewlabsFee = 0.05;
+  const tokenOwnerFee = 0.0;
   const FEE_PRECISION = 100;
 
   // mint state
@@ -186,13 +185,6 @@ export default function BasicLiquidity() {
     // }, 2000);
   };
 
-  const onUpdateFee = (value, setValue, min, max) => {
-    return (update) => {
-      const newValue = value + update;
-      setValue(Math.min(Math.max(newValue, min), max));
-    };
-  };
-
   const onNext = () => {
     if (addLiquidityStep === 2) {
       onAdd();
@@ -213,8 +205,6 @@ export default function BasicLiquidity() {
     {
       key: "Pool fee for token owner",
       value: tokenOwnerFee.toFixed(2) + "%",
-      controller: true,
-      onUpdate: onUpdateFee(tokenOwnerFee, setTokenOwnerFee, 0, 0.05),
     },
     {
       key: "Pool fee for liquidity providers",
@@ -297,21 +287,9 @@ export default function BasicLiquidity() {
                 <div key={item.key} className="mt-1 flex justify-between">
                   <div>{item.key}</div>
                   <div className="ml-2 flex min-w-[120px]">
-                    <div className="min-w-[12px] text-gray-600">
-                      {item.controller && (
-                        <button className="w-full text-left" onClick={() => item.onUpdate(0.01)}>
-                          +
-                        </button>
-                      )}
+                    <div className="ml-[12px]">
+                      {item.value}
                     </div>
-                    {item.value}
-                    {item.controller && (
-                      <div className="min-w-[12px] text-gray-600">
-                        <button className="w-full text-right" onClick={() => item.onUpdate(-0.01)}>
-                          -
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}

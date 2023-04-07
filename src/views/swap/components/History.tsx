@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
-import { useSwapHistory } from "hooks/swap/useSwapHIstory";
+import { useSwapHistory } from "hooks/swap/useSwapHistory";
 import { useCurrency } from "hooks/Tokens";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ETH_ADDRESSES } from "config/constants";

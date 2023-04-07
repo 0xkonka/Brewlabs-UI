@@ -8,6 +8,7 @@ import bep20Abi from "config/abi/erc20.json";
 import erc721Abi from "config/abi/erc721.json";
 import aggregatorAbi from "config/abi/swap/brewlabsAggregator.json";
 import brewlabsRouterAbi from "config/abi/swap/brewlabsRouter.json";
+import brewlabsFeeManagerAbi from "config/abi/swap/brewlabsFeeManager.json";
 import brewlabsAggregationRouterAbi from "config/abi/swap/BrewlabsAggregationRouter.json";
 import verifictionAbi from "config/abi/brewlabsFactoryVerification.json";
 import lockupStaking from "config/abi/staking/brewlabsLockup.json";
@@ -35,6 +36,7 @@ import {
   getExternalMasterChefAddress,
   getBrewlabsAggregationRouterAddress,
   getBrewlabsRouterAddress,
+  getBrewlabsFeeManagerAddress,
 } from "utils/addressHelpers";
 import { provider } from "./wagmi";
 
@@ -147,6 +149,10 @@ export const getBrewlabsAggregationRouterContract = (
 export const getBrewlabsRouterContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getBrewlabsRouterAddress(chainId), brewlabsRouterAbi, signer);
 };
+
+export const getBrewlabsFeeManagerContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getBrewlabsFeeManagerAddress(chainId), brewlabsFeeManagerAbi, signer);
+}
 
 export const getZapInContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getZapperAddress(chainId), zapperAbi, signer);
