@@ -1,55 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
-import { BigNumberFormat, formatDollar, numberWithCommas } from "utils/functions";
-import { SkeletonComponent } from "components/SkeletonComponent";
-import { IndexContext } from "contexts/directory/IndexContext";
+import { getAverageHistory } from "state/indexes/fetchIndexes";
+import { formatAmount } from "utils/formatApy";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const TotalStakedChart = ({
   data,
-  symbol,
-  price,
+  symbols,
+  prices,
   curGraph,
 }: {
   data: any;
-  symbol: string;
-  price: number;
+  symbols: string[];
+  prices: number[];
   curGraph: number;
 }) => {
-  const getTitle = (type: number) => {
-    if (type === 0) {
-      return "Total Index Value";
-    } else if (type === 1) {
-      return (
-        <div>
-          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 2) {
-      return (
-        <div>
-          Index Performance<span className="text-[#FFFFFF80]"> (Price - 24hrs)</span>
-        </div>
-      );
-    } else if (type === 3) {
-      return (
-        <div>
-          Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    }
-  };
-
-  const pricechange = data.length ? ((data[data.length - 1] - data[0]) / data[0]) * 100 : 0;
+  let pricechange = 0;
+  if (curGraph === 2) pricechange = getAverageHistory(data)[data[0].length - 1];
 
   const chartData: any = {
     series: [
       {
         name: "Price",
-        data: data ? data : [],
+        data:
+          curGraph === 2
+            ? getAverageHistory(data)
+            : data.map((value) => {
+                if (curGraph !== 0) return value;
+
+                let tvl = 0;
+                value.forEach((v, index) => {
+                  tvl += +v * prices[index];
+                });
+                return tvl;
+              }),
       },
     ],
     options: {
@@ -116,7 +102,9 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            return (value * price).toFixed(2) + "%";
+            if (curGraph === 1 || curGraph === 3) return "$" + +(+value * prices[0]).toFixed(2);
+            if (curGraph === 2) return value.toFixed(2) + "%";
+            return "$" + value.toFixed(2);
           },
         },
       },
@@ -129,27 +117,89 @@ const TotalStakedChart = ({
     },
   };
 
-  const { rate }: any = useContext(IndexContext);
+  const getTitle = (type: number) => {
+    if (type === 0) {
+      return "Total Index Value";
+    } else if (type === 1) {
+      return (
+        <div>
+          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    } else if (type === 2) {
+      return (
+        <div>
+          Index Performance<span className="text-[#FFFFFF80]"> (Price - 24hrs)</span>
+        </div>
+      );
+    } else if (type === 3) {
+      return (
+        <div>
+          Owner comissions<span className="text-[#FFFFFF80]"> (24hrs)</span>
+        </div>
+      );
+    }
+  };
+
+  const getChartHeader = () => {
+    switch (curGraph) {
+      case 0:
+        return (
+          <>
+            <span className="mb-1 flex">${chartData.series[0].data[data.length - 1].toFixed(2)}</span>
+            {data[data.length - 1].map((d, index) => (
+              <span key={index} className="flex">
+                {formatAmount(d, 6)} {symbols[index]}
+              </span>
+            ))}
+          </>
+        );
+      case 1:
+        return (
+          <>
+            <span className="mb-1 flex">${formatAmount(+data[data.length - 1] * prices[0], 4)}</span>
+            <span className="flex">
+              {formatAmount(data[data.length - 1], 4)} {symbols[0]}
+            </span>
+          </>
+        );
+      case 2:
+        return (
+          <>
+            <span
+              className={`mb-1 flex ${+getAverageHistory(data)[data[0].length - 1] < 0 ? "text-danger" : "text-green"}`}
+            >
+              {+getAverageHistory(data)[data[0].length - 1].toFixed(2)} %
+            </span>
+            {data.map((d, index) => {
+              let priceChange = ((d[d.length - 1] - d[0]) / d[d.length - 1]) * 100;
+              return (
+                <span key={index} className={`flex ${priceChange < 0 ? "text-danger" : "text-green"}`}>
+                  {priceChange.toFixed(2)}% {symbols[index]}
+                </span>
+              );
+            })}
+          </>
+        );
+      case 3:
+        return <span className="mb-1 flex">${formatAmount(+data[data.length - 1] * prices[0])}</span>;
+    }
+  };
+
   return (
     <StyledContainer down={(pricechange < 0).toString()}>
       <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        <span>{curGraph === 2 ? formatDollar(rate[3].value, 4) : data[data.length - 1] * price}</span>
-        <span className="flex">
-          {data !== undefined && data.length ? (
-            <span className={data[data.length - 1] < 0 ? "text-danger" : "text-sucess"}>
-              {numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0)) + (curGraph === 2 ? "%" : "")}
-            </span>
-          ) : (
-            <SkeletonComponent />
-          )}
-          &nbsp;
-          {symbol}
-        </span>
+        {getChartHeader()}
         <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>
       </div>
       <div className="-mt-2">
-        <Chart options={chartData.options} series={chartData.series} type="area" height={250} />
+        <Chart
+          options={chartData.options}
+          series={chartData.series}
+          type="area"
+          height={curGraph === 0 ? 250 - 10 * data[0].length : curGraph === 2 ? 250 - 10 * data.length : 250}
+        />
       </div>
     </StyledContainer>
   );

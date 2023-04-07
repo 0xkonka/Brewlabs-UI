@@ -109,3 +109,8 @@ export const routers = {
     },
   ],
 };
+
+export const getIndexName = (tokens) => {
+  if (tokens.length === 2) return tokens.map((t) => t.symbol).join("-");
+  return tokens.map((t, index) => (index > 0 ? t.symbol.substring(0, 1) : t.symbol)).join("-");
+};

@@ -25,6 +25,7 @@ import { SerializedPool } from "./types";
 const initialState: PoolsState = {
   data: [],
   userDataLoaded: false,
+  dataFetched: false,
 };
 
 // Thunks
@@ -40,13 +41,13 @@ export const fetchPoolsPublicDataAsync = (currentBlock: number, chainId: ChainId
       const blockLimit = blockLimits.find((entry) => entry.sousId === pool.sousId);
       const totalStaking = totalStakings.find((entry) => entry.sousId === pool.sousId);
       const isPoolEndBlockExceeded =
-        blockLimit.endBlock > 0 && currentBlock > 0 && blockLimit ? currentBlock > Number(blockLimit.endBlock) : false;
+        blockLimit && blockLimit.endBlock > 0 && currentBlock > 0 ? currentBlock > Number(blockLimit.endBlock) : false;
       const isPoolFinished = pool.isFinished || isPoolEndBlockExceeded;
 
       return {
         ...blockLimit,
         ...totalStaking,
-        isFinished: isPoolFinished,
+        isFinished: blockLimit ? isPoolFinished : undefined,
       };
     });
 
@@ -240,6 +241,7 @@ export const PoolsSlice = createSlice({
         }
         return pool;
       });
+      state.dataFetched = true;
     },
     setPoolsUserData: (state, action) => {
       const userData = action.payload;

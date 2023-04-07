@@ -12,7 +12,7 @@ import { useTranslation } from "contexts/localization";
 import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
 import { usdToken } from "config/constants/tokens";
 import contracts from "config/constants/contracts";
-import AggregaionRouterV2Abi from "config/abi/AggregationRouterV5.json";
+import AggregaionRouterV2Abi from "config/abi/swap/AggregationRouterV5.json";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import {

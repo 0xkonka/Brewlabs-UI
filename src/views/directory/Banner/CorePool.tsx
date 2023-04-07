@@ -25,29 +25,49 @@ const CorePool = ({
       <PoolInfoPanel type={type}>
         <div className="relative w-full text-xs text-[#FFFFFF80]">
           <div className="flex flex-wrap justify-between">
-            <div className="text-xl text-[#FFFFFFBF]">
-              Core Pool: <span className="text-primary">{data.earningToken.symbol}</span>
+            <div className="flex text-xl text-[#FFFFFFBF]">
+              Core Pool:{" "}
+              <span className="ml-2 text-primary">{data ? data.earningToken.symbol : <SkeletonComponent />}</span>
             </div>
             <div className="flex text-xl text-primary">
-              <span className="text-[#FFFFFFBF]">APR:</span>&nbsp;
-              {data.apr || data.apr === 0.0 ? `${data.apr.toFixed(2)}%` : <SkeletonComponent />}
+              <span className="mr-1 text-[#FFFFFFBF]">APR:</span>
+              {data && (data.apr || data.apr === 0.0) ? `${data.apr.toFixed(2)}%` : <SkeletonComponent />}
             </div>
           </div>
           <div className="flex flex-wrap justify-between text-base">
-            <div>
-              Stake <span className="text-primary">{data.stakingToken.symbol}</span> earn{" "}
-              <span className="text-primary">{data.earningToken.symbol}</span>
+            <div className="flex">
+              Stake <span className="mx-1 text-primary">{data ? data.stakingToken.symbol : <SkeletonComponent />}</span>
+              earn <span className="ml-1 text-primary">{data ? data.earningToken.symbol : <SkeletonComponent />}</span>
             </div>
             <div className="text-primary">
-              {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} day lock`}
+              {data ? (
+                data.poolCategory === PoolCategory.CORE ? (
+                  "Flexible"
+                ) : (
+                  `${data.duration} day lock`
+                )
+              ) : (
+                <SkeletonComponent />
+              )}
             </div>
           </div>
           <div className="flex flex-wrap items-start justify-between">
             <div>
-              <div>Deposit Fee {data.depositFee.toFixed(2)}%</div>
-              <div>Withdrawal Fee {data.withdrawFee.toFixed(2)}%</div>
-              <div>
-                Performance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}
+              <div className="flex">
+                <span className="mr-1">Deposit Fee</span>
+                {data ? `${data.depositFee.toFixed(2)}%` : <SkeletonComponent />}
+              </div>
+              <div className="flex">
+                <span className="mr-1">Withdrawal Fee</span>
+                {data ? `${data.withdrawFee.toFixed(2)}%` : <SkeletonComponent />}
+              </div>
+              <div className="flex">
+                <span className="mr-1">Performance Fee</span>
+                {data ? (
+                  `${data.performanceFee / Math.pow(10, 18)} ${getNativeSybmol(data.chainId)}`
+                ) : (
+                  <SkeletonComponent />
+                )}
               </div>
             </div>
             <div className="flex items-center text-primary">
@@ -56,19 +76,19 @@ const CorePool = ({
             </div>
           </div>
           <div className="absolute bottom-1 right-1">
-            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+            {data ? <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" /> : <SkeletonComponent />}
           </div>
         </div>
       </PoolInfoPanel>
     );
   };
 
-  if (!data)
-    return (
-      <div className="flex justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 text-xl text-brand sm:px-5">
-        No Pool
-      </div>
-    );
+  // if (!data)
+  //   return (
+  //     <div className="flex justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 text-xl text-brand sm:px-5">
+  //       No Pool
+  //     </div>
+  //   );
 
   return (
     <div className="rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 sm:px-5">
@@ -79,23 +99,31 @@ const CorePool = ({
 
         <div className="w-[50%] max-w-[200px] md:w-[340px] md:max-w-full">
           <a
-            href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+            href={`https://bridge.brewlabs.info/swap?outputCurrency=${data?.stakingToken.address}`}
             target={"_blank"}
             rel="noreferrer"
           >
             <div className="h-[50px]">
-              <StyledButton>Get {data.stakingToken.symbol}</StyledButton>
+              <StyledButton>
+                <span className="mr-1">Get</span> {data ? data.stakingToken.symbol : <SkeletonComponent />}
+              </StyledButton>
             </div>
           </a>
           <div className="mt-2 h-[50px]">
-            <StyledButton
-              onClick={() => {
-                setSelectPoolDetail(true);
-                setCurPool({ type: data.type, pid: data.sousId });
-              }}
-            >
-              Deposit {data.stakingToken.symbol}
-            </StyledButton>
+            {data ? (
+              <StyledButton
+                onClick={() => {
+                  setSelectPoolDetail(true);
+                  setCurPool({ type: data.type, pid: data.sousId });
+                }}
+              >
+                Deposit {data.stakingToken.symbol}
+              </StyledButton>
+            ) : (
+              <StyledButton>
+                <span className="mr-1">Deposit</span> <SkeletonComponent />
+              </StyledButton>
+            )}
           </div>
         </div>
       </div>

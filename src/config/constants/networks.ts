@@ -60,6 +60,16 @@ export const EXPLORER_URLS = {
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
 };
 
+export const EXPLORER_API_URLS = {
+  [ChainId.ETHEREUM]: "https://api.etherscan.io/api",
+  [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api"
+}
+
+export const EXPLORER_API_KEYS = {
+  [ChainId.ETHEREUM]: "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX",
+  [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND"
+}
+
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
   [ChainId.GOERLI]: "Goerli",

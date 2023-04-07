@@ -1,16 +1,79 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 import styled from "styled-components";
-import { numberWithCommas } from "utils/functions";
-import LogoIcon from "components/LogoIcon";
-import StyledSlider from "./StyledSlider";
 
-const AddNFTModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
+import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
+import LogoIcon from "components/LogoIcon";
+import { DashboardContext } from "contexts/DashboardContext";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
+import { DeserializedIndex } from "state/indexes/types";
+import { getIndexName } from "utils/functions";
+import { formatAmount } from "utils/formatApy";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import useIndex from "../hooks/useIndex";
+import StyledButton from "../../StyledButton";
+import useNftApprove from "../hooks/useNftApprove";
+import { updateNftAllowance } from "state/indexes";
+import { useAccount } from "wagmi";
+import { ethers } from "ethers";
+
+const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
+  const dispatch = useAppDispatch();
+  const { address } = useAccount();
+
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { tokens, userData, tokenPrices } = data;
+
+  const [tokenId, setTokenId] = useState<number | undefined>();
+
+  const { onStakeNft } = useIndex(data.pid, data.address, data.performanceFee);
+  const { onApprove } = useNftApprove(data.nft);
+
+  useEffect(() => {
+    if (!userData.nftItems?.length) return;
+    if (userData.nftItems.map((n) => n.tokenId).includes(tokenId)) return;
+
+    setTokenId(userData.nftItems[0].tokenId);
+  }, [userData.nftItems.length, data.pid]);
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleApproveNft = async () => {
+    setPending(true);
+    try {
+      await onApprove(data.address);
+      dispatch(updateNftAllowance(data.pid, address, data.chainId));
+
+      toast.success(`Approved NFT staking`);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleStakeNft = async () => {
+    setPending(true);
+    try {
+      await onStakeNft(tokenId);
+
+      toast.success(`Index NFT was unlocked`);
+      setOpen(false);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog
@@ -60,44 +123,68 @@ const AddNFTModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               <div>
                 <div className="mt-6 mb-2 text-xl text-[#FFFFFFBF]">Index NFT&apos;s Available</div>
                 <div className="flex flex-col justify-between xmd:flex-row">
-                  <div className="mr-6 mb-5 min-h-[240px] flex-1 rounded border border-primary bg-[#B9B8B81A] px-3.5 py-3 xmd:mb-0">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-[#FFFFFFBF]">
-                        <div className="text-[#F5F5F5]">{checkSVG}</div>
-                        <div className="ml-1">OGN-OGV [23]</div>
-                      </div>
-                      <div className="text-xs">$31.00 USD</div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-[#FFFFFFBF]">
-                        <div className="text-[#F5F5F540]">{checkSVG}</div>
-                        <div className="ml-1">OGN-OGV [44]</div>
-                      </div>
-                      <div className="text-xs">$55.00 USD</div>
-                    </div>
+                  <div className="mr-0 mb-5 min-h-[240px] flex-1 rounded border border-primary bg-[#B9B8B81A] px-3.5 py-3 xmd:mb-0 sm:mr-6">
+                    {userData.nftItems &&
+                      userData.nftItems.map((nft) => (
+                        <div
+                          key={nft.tokenId}
+                          className="flex cursor-pointer items-center justify-between"
+                          onClick={() => setTokenId(nft.tokenId)}
+                        >
+                          <div className="flex items-center text-[#FFFFFFBF]">
+                            <div className={nft.tokenId === tokenId ? "text-[#F5F5F5]" : "text-[#F5F5F540]"}>
+                              {checkSVG}
+                            </div>
+                            <div className="ml-1">
+                              {getIndexName(tokens)} [{nft.tokenId}]
+                            </div>
+                          </div>
+                          <div className="text-xs">${formatAmount(nft.usdAmount, 2)} USD</div>
+                        </div>
+                      ))}
                   </div>
-                  <div>
-                    <div className="flex items-center">
-                      <img src={"/images/directory/ogn.svg"} alt={""} className="w-14" />
-                      <div className="ml-3 leading-none">
-                        <div className="text-xl text-[#FFFFFFBF]">721.84 OGN</div>
-                        <div className="text-xs text-[#FFFFFF80]">$16.00 USD</div>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex items-center">
-                      <img src={"/images/directory/ogv.svg"} alt={""} className="w-14" />
-                      <div className="ml-3 leading-none">
-                        <div className="text-xl text-[#FFFFFFBF]">721.84 OGV</div>
-                        <div className="text-xs text-[#FFFFFF80]">$16.00 USD</div>
-                      </div>
-                    </div>
+                  <div className="min-w-[180px]">
+                    {tokens.map((token, index) => {
+                      const selectedNft = userData.nftItems?.find((nft) => nft.tokenId === tokenId);
+                      return (
+                        <div className="mb-3 flex items-center" key={token.address}>
+                          <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="w-12" />
+                          <div className="ml-3 leading-none">
+                            <div className="text-xl text-[#FFFFFFBF]">
+                              {selectedNft
+                                ? formatAmount(ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals), 6)
+                                : "0.00"}
+                            </div>
+                            <div className="text-xs text-[#FFFFFF80]">
+                              $
+                              {selectedNft && tokenPrices
+                                ? formatAmount(
+                                    +ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals) *
+                                      tokenPrices[index]
+                                  )
+                                : "0.00"}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
               <div className="my-6 h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[480px]">
                 <div className="h-12">
-                  <StyledButton type="quinary">Add Index NFT</StyledButton>
+                  <StyledButton
+                    type="quinary"
+                    disabled={
+                      pending ||
+                      !userData.nftItems?.length ||
+                      !userData.nftItems?.map((n) => n.tokenId).includes(tokenId)
+                    }
+                    onClick={userData?.allowance ? handleStakeNft : handleApproveNft}
+                  >
+                    {userData?.allowance ? `Add Index NFT` : "Approve Index NFT"}
+                  </StyledButton>
                 </div>
               </div>
               <button
