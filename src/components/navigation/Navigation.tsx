@@ -9,6 +9,7 @@ import ConnectWallet from "../wallet/ConnectWallet";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
 import { navigationData } from "../../config/constants/navigation";
+import { AirdropSVG, FactorySVG } from "components/dashboard/assets/svgs";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
@@ -57,6 +58,30 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
             ))}
           </div>
           <div>
+            <a
+              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm")}`}
+              href="https://brewlabs-airdrop.tools/bsc"
+              target={"_blank"}
+              rel={"noreferrer"}
+            >
+              {AirdropSVG}
+              <span className={clsx(slim && "sr-only", "ml-2")}>
+                Visit&nbsp;
+                <span className="dark:text-primary">Airdrop tool</span>
+              </span>
+            </a>
+            <a
+              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm")}
+              href="https://brewlabs.info/factory"
+              target={"_blank"}
+              rel={"noreferrer"}
+            >
+              {FactorySVG}
+              <span className={clsx(slim && "sr-only", "ml-2")}>
+                Visit&nbsp;
+                <span className="dark:text-primary">Brewlabs Factory</span>
+              </span>
+            </a>
             <a
               className={clsx(slim ? "ml-4" : "ml-6 ", "flex text-sm")}
               href="https://brewlabs.gitbook.io/welcome-to-brewlabs/important-docs/brewlabs-dapp-terms-of-service"

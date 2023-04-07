@@ -85,13 +85,13 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
     <>
       <WagmiProvider client={client}>
         <Provider store={store}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <TokenPriceContextProvider>
-              <DashboardContextProvider>
-                <SwapContextProvider>
-                  <IndexContextProvider>
-                    <ZapperContextProvider>
-                      <LanguageProvider>
+          <LanguageProvider>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+              <TokenPriceContextProvider>
+                <DashboardContextProvider>
+                  <SwapContextProvider>
+                    <IndexContextProvider>
+                      <ZapperContextProvider>
                         <BridgeProvider>
                           <SWRConfig>
                             <GlobalHooks />
@@ -138,13 +138,13 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                             </PersistGate>
                           </SWRConfig>
                         </BridgeProvider>
-                      </LanguageProvider>
-                    </ZapperContextProvider>
-                  </IndexContextProvider>
-                </SwapContextProvider>
-              </DashboardContextProvider>
-            </TokenPriceContextProvider>
-          </ThemeProvider>
+                      </ZapperContextProvider>
+                    </IndexContextProvider>
+                  </SwapContextProvider>
+                </DashboardContextProvider>
+              </TokenPriceContextProvider>
+            </ThemeProvider>
+          </LanguageProvider>
         </Provider>
       </WagmiProvider>
 

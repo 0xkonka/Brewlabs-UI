@@ -76,3 +76,36 @@ export const priceFormat = (str) => {
   }
   return { count: c - 1, value };
 };
+
+const CHAIN_LOGO = {
+  1: "/images/networks/eth.svg",
+  56: "/images/networks/bsc.png",
+};
+export const getChainLogo = (chainId) => {
+  return CHAIN_LOGO[chainId];
+};
+
+const EXPLORER_LOGO = {
+  1: "/images/explorer/etherscan.png",
+  56: "/images/explorer/bscscan.png",
+};
+
+export const getExplorerLogo = (chainId) => {
+  return EXPLORER_LOGO[chainId];
+};
+export const routers = {
+  1: [
+    {
+      name: "Uniswap",
+      address: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+      image: "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
+    },
+  ],
+  56: [
+    {
+      name: "Pancakeswap",
+      address: "0x10ed43c718714eb63d5aa57b78b54704e256024e",
+      image: "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
+    },
+  ],
+};

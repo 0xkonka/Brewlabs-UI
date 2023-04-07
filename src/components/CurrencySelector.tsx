@@ -20,6 +20,7 @@ import { filterTokens, useSortedTokensByQuery } from "components/searchModal/fil
 import { useGlobalState } from "state";
 
 import { Field } from "state/swap/actions";
+import { Field as LiquidityField } from "state/mint/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
@@ -33,6 +34,9 @@ interface CurrencySelectorProps {
   selectedCurrency?: Currency | null;
   otherSelectedCurrency?: Currency | null;
   filteredCurrencies?: Currency[];
+  onUserInput: any;
+  type: string;
+  onCurrencySelect: any;
 }
 
 const tabs = [
@@ -54,16 +58,22 @@ const CurrencyRow = ({
   currency,
   marketData,
   inputType,
+  onUserInput,
+  type,
+  onCurrencySelect,
 }: {
   currency: Currency;
   marketData: any;
   inputType: "input" | "output";
+  onUserInput: any;
+  type: string;
+  onCurrencySelect: any;
 }) => {
   const { account } = useActiveWeb3React();
-  const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
+
   const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
-  const { onUserInput, onCurrencySelection } = useSwapActionHandlers();
+  const { onCurrencySelection } = useSwapActionHandlers();
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
@@ -71,8 +81,22 @@ const CurrencyRow = ({
     <button
       className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
       onClick={() => {
-        onUserInput(input, "");
-        onCurrencySelection(input, currency);
+        if (type === "liquidity") {
+          const input =
+            inputType === "input"
+              ? type === "liquidity"
+                ? LiquidityField.CURRENCY_A
+                : Field.INPUT
+              : type === "liquidity"
+              ? LiquidityField.CURRENCY_B
+              : Field.OUTPUT;
+          onUserInput("");
+          onCurrencySelect(input, currency);
+        } else {
+          const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
+          // onUserInput(input, "");
+          onCurrencySelection(input, currency);
+        }
 
         if (userSidebarOpen === 2) {
           setUserSidebarOpen(0);
@@ -119,7 +143,13 @@ const CurrencyRow = ({
   );
 };
 
-const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorProps) => {
+const CurrencySelector = ({
+  inputType,
+  filteredCurrencies,
+  onUserInput,
+  type,
+  onCurrencySelect,
+}: CurrencySelectorProps) => {
   const { chainId, account } = useActiveWeb3React();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -299,6 +329,9 @@ const CurrencySelector = ({ inputType, filteredCurrencies }: CurrencySelectorPro
                   currency={currency}
                   inputType={inputType}
                   marketData={tokenMarketData[tokenAddress] || defaultMarketData}
+                  onUserInput={onUserInput}
+                  type={type}
+                  onCurrencySelect={onCurrencySelect}
                 />
               );
             })

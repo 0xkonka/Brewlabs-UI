@@ -15,11 +15,28 @@ interface CurrencyInputPanelProps {
   label?: string;
   currency: Currency | null;
   balance: CurrencyAmount | undefined;
+  type?: string;
+  onCurrencySelect?: any;
+  inputCurrencySelect?: boolean;
+  currencies?: any;
 }
 
-const CurrencyInputPanel = ({ value, onUserInput, onMax, label, currency, balance }: CurrencyInputPanelProps) => {
+const CurrencyInputPanel = ({
+  value,
+  onUserInput,
+  onMax,
+  label,
+  currency,
+  balance,
+  type = "swap",
+  onCurrencySelect,
+  inputCurrencySelect = true,
+  currencies,
+}: CurrencyInputPanelProps) => {
   const { chainId } = useActiveWeb3React();
-  const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
+  let tokenPrice, wrappedPrice;
+  wrappedPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
+  tokenPrice = wrappedPrice;
 
   return (
     <div className="px-4 py-2 sm:ml-2 lg:ml-6">
@@ -33,7 +50,13 @@ const CurrencyInputPanel = ({ value, onUserInput, onMax, label, currency, balanc
             }}
             decimals={currency?.decimals}
           />
-          <CurrencySelectButton inputCurrencySelect={true} />
+          <CurrencySelectButton
+            inputCurrencySelect={inputCurrencySelect}
+            onUserInput={onUserInput}
+            type={type}
+            onCurrencySelect={onCurrencySelect}
+            currencies={currencies}
+          />
         </div>
         <div className="flex justify-between">
           <div className="ml-1 text-sm opacity-40">

@@ -197,7 +197,8 @@ const DashboardContextProvider = ({ children }: any) => {
           totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.symbol = rewardToken.symbol;
         isReward = true;
-      } catch (e) {}
+      } catch (e) {
+      }
 
       let scamResult: any = await Promise.all([await isScamToken(token)]);
       scamResult = scamResult[0];
