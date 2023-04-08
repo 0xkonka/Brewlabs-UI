@@ -13,6 +13,8 @@ import pools from "./pools";
 import indexes from "./indexes";
 import user from "./user/reducer";
 import transactions from "./transactions/reducer";
+import burn from "./burn/reducer";
+import mint from "./mint/reducer";
 import swap from "./swap/reducer";
 import lists from "./lists/reducer";
 import multicall from "./multicall/reducer";
@@ -39,6 +41,8 @@ const persistedReducer = persistReducer(
     multicall,
     swap,
     transactions,
+    burn,
+    mint
   })
 );
 

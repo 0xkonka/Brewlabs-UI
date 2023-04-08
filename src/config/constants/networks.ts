@@ -57,8 +57,8 @@ export const EXPLORER_NAMES = {
 
 export const EXPLORER_URLS = {
   [ChainId.ETHEREUM]: "https://etherscan.io",
-  [ChainId.BSC_MAINNET]: "https://bscscan.com"
-}
+  [ChainId.BSC_MAINNET]: "https://bscscan.com",
+};
 
 export const EXPLORER_API_URLS = {
   [ChainId.ETHEREUM]: "https://api.etherscan.io/api",
@@ -103,4 +103,97 @@ export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
 export const MORALIS_CHAIN_NAME = {
   [ChainId.ETHEREUM]: "mainnet",
   [ChainId.BSC_MAINNET]: "bsc",
+};
+
+export const SUPPORTED_CHAINS = [
+  ChainId.ETHEREUM,
+  ChainId.BSC_MAINNET,
+  ChainId.POLYGON,
+  ChainId.FANTOM,
+  ChainId.AVALANCHE,
+  ChainId.CRONOS,
+];
+
+export const NETWORKS = {
+  [ChainId.ETHEREUM]: {
+    chainId: `0x${Number(ChainId.ETHEREUM).toString(16)}`,
+    chainName: "Ethereum Mainnet",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://api.nodes-brewlabs.info/rpc/eth"],
+    blockExplorerUrls: ["https://etherscan.io"],
+  },
+  [ChainId.BSC_MAINNET]: {
+    chainId: `0x${Number(ChainId.BSC_MAINNET).toString(16)}`,
+    chainName: "BNB Smart Chain",
+    nativeCurrency: {
+      name: "BNB",
+      symbol: "BNB",
+      decimals: 18,
+    },
+    rpcUrls: [
+      "https://bsc-dataseed1.defibit.io",
+      "https://bsc-dataseed1.ninicoin.io",
+      "https://bsc-dataseed.binance.org",
+    ],
+    blockExplorerUrls: ["https://bscscan.com"],
+  },
+  [ChainId.BSC_TESTNET]: {
+    chainId: `0x${Number(ChainId.BSC_MAINNET).toString(16)}`,
+    chainName: "BNB Smart Chain Testnet",
+    nativeCurrency: {
+      name: "BNB",
+      symbol: "BNB",
+      decimals: 18,
+    },
+    rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+    blockExplorerUrls: ["https://testnet.bscscan.com"],
+  },
+  [ChainId.POLYGON]: {
+    chainId: `0x${Number(ChainId.POLYGON).toString(16)}`,
+    chainName: "Polygon Mainnet",
+    nativeCurrency: {
+      name: "Matic",
+      symbol: "MATIC",
+      decimals: 18,
+    },
+    rpcUrls: ["https://polygon-rpc.com/"],
+    blockExplorerUrls: ["https://polygonscan.com"],
+  },
+  [ChainId.FANTOM]: {
+    chainId: `0x${Number(ChainId.FANTOM).toString(16)}`,
+    chainName: "Fantom Opera Mainnet",
+    nativeCurrency: {
+      name: "Fantom",
+      symbol: "FTM",
+      decimals: 18,
+    },
+    rpcUrls: ["https://rpc.ftm.tools/"],
+    blockExplorerUrls: ["https://ftmscan.com"],
+  },
+  [ChainId.AVALANCHE]: {
+    chainId: `0x${Number(ChainId.AVALANCHE).toString(16)}`,
+    chainName: "Avalanche C-Chain",
+    nativeCurrency: {
+      name: "Avalanche",
+      symbol: "AVAX",
+      decimals: 18,
+    },
+    rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+    blockExplorerUrls: ["https://snowtrace.io"],
+  },
+  [ChainId.CRONOS]: {
+    chainId: `0x${Number(ChainId.CRONOS).toString(16)}`,
+    chainName: "Cronos Mainnet",
+    nativeCurrency: {
+      name: "Cronos",
+      symbol: "CRO",
+      decimals: 18,
+    },
+    rpcUrls: ["https://evm.cronos.org"],
+    blockExplorerUrls: ["https://cronoscan.com"],
+  },
 };

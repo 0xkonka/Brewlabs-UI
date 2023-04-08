@@ -70,7 +70,7 @@ const SelectToken = ({ step, setStep }) => {
       </div>
       <div className="mb-8">
         <div className="mb-1">3. Select router:</div>
-        <RouterSelect routers={routers[chainId ?? 1]} />
+        <RouterSelect routers={routers[chainId ?? 1] ?? []} />
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">

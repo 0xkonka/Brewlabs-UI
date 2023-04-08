@@ -11,7 +11,7 @@ import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
-import { BigNumberFormat, getBlockExplorerLink } from "utils/functions";
+import { BigNumberFormat, getBlockExplorerLink, getChainLogo } from "utils/functions";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { SwapContext } from "contexts/SwapContext";
@@ -23,11 +23,6 @@ import { NativeCurrency } from "@brewlabs/sdk/dist/entities/NativeCurrency";
 const emptyLogos = {
   1: "/images/dashboard/tokens/empty-token-eth.webp",
   56: "/images/dashboard/tokens/empty-token-bsc.webp",
-};
-
-const CHAIN_LOGO = {
-  1: "/images/dashboard/tokens/ETH.png",
-  56: "/images/dashboard/tokens/BNB.png",
 };
 
 const TokenList = ({
@@ -248,7 +243,7 @@ const TokenList = ({
             );
             const logo =
               data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                ? CHAIN_LOGO[chainId]
+                ? getChainLogo(chainId)
                 : logoFilter.length
                 ? logoFilter[0].logoURI
                 : emptyLogos[chainId];

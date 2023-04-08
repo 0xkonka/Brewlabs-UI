@@ -53,8 +53,8 @@ export const navigationData = [
   },
   {
     name: "Constructor",
-    href: "https://earn.brewlabs.info/liquidity",
-    external: true,
+    href: "/constructor",
+    external: false,
     icon: "ArrowDownOnSquareIcon",
   },
 ] as NavigationItem[];
