@@ -164,14 +164,18 @@ export type WalletConfig<T = unknown> = {
 
 export interface BrewlabsToken {
   id: Address;
-  name: string;
-  symbol: string;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
 }
 
 export interface BrewlabsPair {
   id: Address;
   token0: BrewlabsToken;
   token1: BrewlabsToken;
+  token0Owner?: Address;
+  token1Owner?: Address;
+  referrer?: Address;
   volumeToken0: BigNumber;
   volumeToken1: BigNumber;
   volumeUSD: BigNumber;
