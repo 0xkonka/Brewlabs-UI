@@ -28,9 +28,6 @@ export default function BasicLiquidity() {
   const { data: signer } = useSigner();
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
 
-  const [currencyA, setCurrencyA] = useState<any>();
-  const [currencyB, setCurrencyB] = useState<any>();
-
   const liquidityProviderFee = 0.25;
   const tokenHoldersFee = 0.0;
   const referralFee = 0.0;
@@ -52,8 +49,11 @@ export default function BasicLiquidity() {
     liquidityMinted,
     poolTokenPercentage,
     error,
-  } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined);
-  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity);
+  } = useDerivedMintInfo(undefined, undefined);
+  const { onFieldAInput, onFieldBInput, onCurrencySelection } = useMintActionHandlers(noLiquidity);
+
+  const currencyA = currencies[Field.CURRENCY_A];
+  const currencyB = currencies[Field.CURRENCY_B];
 
   const isValid = !error;
 
@@ -95,13 +95,6 @@ export default function BasicLiquidity() {
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS[chainId]);
 
   const addTransaction = useTransactionAdder();
-
-  const handleCurrencyASelect = (currency: Currency) => {
-    setCurrencyA(currency);
-  };
-  const handleCurrencyBSelect = (currency: Currency) => {
-    setCurrencyB(currency);
-  };
 
   const onAdd = async () => {
     if (!chainId || !library || !account) return;
@@ -240,9 +233,11 @@ export default function BasicLiquidity() {
                 onMax={() => {
                   onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
                 }}
-                onCurrencySelect={handleCurrencyASelect}
+                onCurrencySelect={onCurrencySelection}
                 currency={currencies[Field.CURRENCY_A]}
-                balance={undefined}
+                balance={currencyBalances[Field.CURRENCY_A]}
+                type={"liquidity"}
+                currencies={currencies}
                 showMaxButton
               ></CurrencyInputPanel>
             </div>
@@ -260,9 +255,12 @@ export default function BasicLiquidity() {
                 onMax={() => {
                   onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
                 }}
-                onCurrencySelect={handleCurrencyBSelect}
+                onCurrencySelect={onCurrencySelection}
                 currency={currencies[Field.CURRENCY_B]}
-                balance={undefined}
+                balance={currencyBalances[Field.CURRENCY_B]}
+                currencies={currencies}
+                type={"liquidity"}
+                inputCurrencySelect={false}
                 showMaxButton
               ></CurrencyInputPanel>
             </div>

@@ -13,9 +13,9 @@ import pools from "./pools";
 import indexes from "./indexes";
 import user from "./user/reducer";
 import transactions from "./transactions/reducer";
-import swap from "./swap/reducer";
-import mint from "./mint/reducer";
 import burn from "./burn/reducer";
+import mint from "./mint/reducer";
+import swap from "./swap/reducer";
 import lists from "./lists/reducer";
 import multicall from "./multicall/reducer";
 import { BridgeToken } from "config/constants/types";
@@ -37,12 +37,12 @@ const persistedReducer = persistReducer(
     pools,
     indexes,
     user,
-    mint,
-    burn,
     lists,
     multicall,
     swap,
     transactions,
+    burn,
+    mint
   })
 );
 

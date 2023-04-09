@@ -5,16 +5,15 @@ type SolidButtonProps = {
   onClick?: (e: any) => void;
   disabled: boolean;
   className?: string;
+  disabled?: boolean;
 };
 
-const SolidButton = ({ children, onClick, disabled, className }: SolidButtonProps) => {
+const SolidButton = ({ children, onClick, className, disabled }: SolidButtonProps) => {
   return (
     <button
-      className={`${
-        disabled
-          ? "cursor-not-allowed btn btn-outline"
-          : "cursor-pointer bg-primary text-black hover:border-primary hover:bg-opacity-60"
-      } rounded-3xl  py-3 text-center font-['Roboto'] text-sm font-bold transition ${className ?? ""} `}
+      className={`cursor-pointer rounded-3xl bg-primary py-3 text-center font-['Roboto'] text-sm font-bold text-black transition enabled:hover:bg-opacity-60 enabled:hover:border-primary ${
+        className ?? ""
+      } disabled:cursor-not-allowed disabled:opacity-70`}
       onClick={onClick}
       disabled={disabled}
     >

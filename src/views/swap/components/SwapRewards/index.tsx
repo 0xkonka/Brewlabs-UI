@@ -30,7 +30,7 @@ const SwapRewards = () => {
   const pairs: BrewlabsPair[] = useMemo(
     () => [
       {
-        id: "0x9208af9f11f183c906e60118cb8d70d2ffd2b701",
+        id: "0x9208af9f11f183C906e60118CB8D70D2Ffd2B701",
         token0: {
           id: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
           name: "Wrapped BNB",
@@ -46,7 +46,7 @@ const SwapRewards = () => {
         volumeUSD: BigNumber.from(1000),
       },
       {
-        id: "0x9208af9f11f183c906e60118cb8d70d2ffd2b701",
+        id: "0x9208af9f11f183C906e60118CB8D70D2Ffd2B701",
         token0: {
           id: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
           name: "Wrapped BNB",
@@ -81,7 +81,8 @@ const SwapRewards = () => {
 
   const [lpBalances] = useTokenBalancesWithLoadingIndicator(account, lpTokens);
   const [tokenBalances] = useTokenBalancesWithLoadingIndicator(account, pairTokens);
-    
+  
+  console.log(lpBalances, tokenBalances);
   const filteredPairs = useMemo(() => {
     const quieriedPairs = pairs.filter(
       (pair) =>

@@ -22,6 +22,7 @@ interface CurrencyOutputPanelProps {
   buyTax?: number;
   sellTax?: number;
   verified: boolean;
+  currencies: any;
 }
 
 const CurrencyOutputPanel = ({
@@ -37,6 +38,7 @@ const CurrencyOutputPanel = ({
   buyTax,
   sellTax,
   verified,
+  currencies,
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
@@ -56,7 +58,7 @@ const CurrencyOutputPanel = ({
               }}
               decimals={currency?.decimals}
             />
-            <CurrencySelectButton currency={currency} onCurrencySelect={onCurrencySelect} />
+            <CurrencySelectButton inputCurrencySelect={false} currencies={currencies} />
           </div>
           <div className="flex justify-between">
             <div className="ml-1 text-sm opacity-40">
