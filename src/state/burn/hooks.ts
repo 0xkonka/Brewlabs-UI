@@ -30,7 +30,7 @@ export function useDerivedBurnInfo(
   error?: string;
 } {
   const { account, chainId } = useActiveWeb3React();
-  // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
+  // const account = "0x442996e5dE18D79ab7cC8C0388D87059D64AAbe1";
 
   const { independentField, typedValue } = useBurnState();
 

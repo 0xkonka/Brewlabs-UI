@@ -59,24 +59,28 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
           </div>
           <div>
             <a
-              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm")}`}
+              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm items-center")}`}
               href="https://brewlabs-airdrop.tools/bsc"
               target={"_blank"}
               rel={"noreferrer"}
             >
-              {AirdropSVG}
+              <div>
+                <AirdropSVG className={`${slim ? "w-[22px] -ml-[1px] mb-1.5" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`} />
+              </div>
               <span className={clsx(slim && "sr-only", "ml-2")}>
                 Visit&nbsp;
                 <span className="dark:text-primary">Airdrop tool</span>
               </span>
             </a>
             <a
-              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm")}
+              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm items-center")}
               href="https://brewlabs.info/factory"
               target={"_blank"}
               rel={"noreferrer"}
             >
-              {FactorySVG}
+              <div>
+                <FactorySVG className={`${slim ? "-ml-[1px] w-[22px] mb-1.5" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`} />
+              </div>
               <span className={clsx(slim && "sr-only", "ml-2")}>
                 Visit&nbsp;
                 <span className="dark:text-primary">Brewlabs Factory</span>

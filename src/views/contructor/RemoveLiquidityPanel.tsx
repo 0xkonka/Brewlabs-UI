@@ -3,7 +3,7 @@ import StyledSlider from "./StyledSlider";
 import StyledButton from "views/directory/StyledButton";
 import OutlinedButton from "views/swap/components/button/OutlinedButton";
 import SolidButton from "views/swap/components/button/SolidButton";
-import { getExplorerLogo, numberWithCommas } from "utils/functions";
+import { WETH_ADDR, getChainLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { ApprovalState } from "hooks/useApproveCallback";
 import { useCurrency } from "hooks/Tokens";
@@ -28,10 +28,11 @@ import { TransactionResponse } from "alchemy-sdk";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useAccount } from "wagmi";
+import { NETWORKS } from "config/constants/networks";
 
 export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
   const { address: account } = useAccount();
-  // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
+  // const account = "0x442996e5dE18D79ab7cC8C0388D87059D64AAbe1";
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(
     null
   );
@@ -56,6 +57,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
   const [allowedSlippage] = useUserSlippageTolerance();
   const lpManager = getLpManagerAddress(chainId);
   const deadline = useTransactionDeadline();
+  const [isGetWETH, setIsGetWETH] = useState(false);
 
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
@@ -106,15 +108,14 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
       const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
       if (!liquidityAmount) throw new Error("missing liquidity amount");
 
-      const currencyBIsETH = currencyB.isNative;
-      const oneCurrencyIsETH = currencyA.isNative || currencyBIsETH;
-
       if (!tokenA || !tokenB) throw new Error("could not wrap");
       let methodNames: string[];
       let args: Array<string | string[] | number | boolean>;
+      const currencyBIsETH = currencyB.address === WETH_ADDR[selectedLP.chainId];
+      const currencyAIsETH = currencyA.address === WETH_ADDR[selectedLP.chainId];
       if (approval === ApprovalState.APPROVED) {
         // removeLiquidityETH
-        if (oneCurrencyIsETH) {
+        if (!isGetWETH) {
           methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
           args = [
             currencyBIsETH ? tokenA.address : tokenB.address,
@@ -139,6 +140,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
           ];
         }
       }
+      console.log(methodNames, args);
       const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
         methodNames.map((methodName) =>
           router.estimateGas[methodName](...args)
@@ -304,36 +306,108 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
       <div className="mx-0 mt-[60px] rounded-[30px] border border-[#FFFFFF80] py-4 px-4 font-bold text-[#FFFFFF80] sm:mx-4 sm:px-8">
         <div className="text-lg text-[#FFFFFFBF]">Receive</div>
         <div>
-          <div className="flex flex-wrap justify-between text-sm">
-            <div className="w-full xsm:w-[50%]">{selectedLP.token0.symbol}</div>
-            <div className="mt-1 flex w-full items-center xsm:mt-0 xsm:w-[50%]">
-              <img
-                src={getTokenLogoURL(token0Address, selectedLP.chainId)}
-                alt={""}
-                className="mr-2 h-5 w-5 rounded-full"
-                onError={(e: any) => {
-                  e.target.src = `/images/dashboard/tokens/empty-token-${
-                    selectedLP.chainId === 1 ? "eth" : "bsc"
-                  }.webp`;
-                }}
-              />
-              <div>{currencyAmountA && !currencyAmountA.equalTo(0) ? currencyAmountA.toFixed(3) : "0.000"}</div>
+          <div className="flex flex-wrap items-center justify-between text-sm">
+            <div className="w-full xsm:w-[50%]">
+              {currencyA && currencyA.address === WETH_ADDR[selectedLP.chainId]
+                ? isGetWETH
+                  ? `W${NETWORKS[selectedLP.chainId].nativeCurrency.name}`
+                  : NETWORKS[selectedLP.chainId].nativeCurrency.name
+                : selectedLP.token0.symbol}
+            </div>
+            <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
+              <div className="flex items-center">
+                <img
+                  src={getTokenLogoURL(token0Address, selectedLP.chainId)}
+                  alt={""}
+                  className="mr-2 h-5 w-5 rounded-full"
+                  onError={(e: any) => {
+                    e.target.src = `/images/dashboard/tokens/empty-token-${
+                      selectedLP.chainId === 1 ? "eth" : "bsc"
+                    }.webp`;
+                  }}
+                />
+                <div>{currencyAmountA && !currencyAmountA.equalTo(0) ? currencyAmountA.toFixed(3) : "0.000"}</div>
+              </div>
+              {currencyA && currencyA.address === WETH_ADDR[selectedLP.chainId] ? (
+                <div className="h-8 w-[110px]">
+                  <StyledButton type={"quinary"} onClick={() => setIsGetWETH(!isGetWETH)}>
+                    <div className="flex items-center justify-between">
+                      <img
+                        src={
+                          !isGetWETH
+                            ? getTokenLogoURL(WETH_ADDR[selectedLP.chainId], selectedLP.chainId)
+                            : getChainLogo(selectedLP.chainId)
+                        }
+                        alt={""}
+                        className="mr-2 h-5 w-5 rounded-full"
+                      />
+                      <div className="text-xs leading-none">
+                        GET{" "}
+                        {!isGetWETH
+                          ? `W${NETWORKS[selectedLP.chainId].nativeCurrency.name}`
+                          : NETWORKS[selectedLP.chainId].nativeCurrency.name}
+                      </div>
+                    </div>
+                  </StyledButton>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
-          <div className="mt-1 flex flex-wrap justify-between text-sm">
-            <div className="w-full xsm:w-[50%]">{selectedLP.token1.symbol}</div>
-            <div className="mt-1 flex w-full items-center xsm:mt-0 xsm:w-[50%]">
-              <img
-                src={getTokenLogoURL(token1Address, selectedLP.chainId)}
-                alt={""}
-                className="mr-2 h-5 w-5 rounded-full"
-                onError={(e: any) => {
-                  e.target.src = `/images/dashboard/tokens/empty-token-${
-                    selectedLP.chainId === 1 ? "eth" : "bsc"
-                  }.webp`;
-                }}
-              />
-              <div>{currencyAmountB && !currencyAmountB.equalTo(0) ? currencyAmountB.toFixed(2) : "0.00"}</div>
+          <div className="mt-1 flex flex-wrap items-center justify-between text-sm">
+            <div className="w-full xsm:w-[50%]">
+              {currencyB && currencyB.address === WETH_ADDR[selectedLP.chainId]
+                ? isGetWETH
+                  ? `W${NETWORKS[selectedLP.chainId].nativeCurrency.name}`
+                  : NETWORKS[selectedLP.chainId].nativeCurrency.name
+                : selectedLP.token1.symbol}
+            </div>
+            <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
+              <div className="flex items-center">
+                <img
+                  src={
+                    currencyB && currencyB.address === WETH_ADDR[selectedLP.chainId]
+                      ? isGetWETH
+                        ? getTokenLogoURL(WETH_ADDR[selectedLP.chainId], selectedLP.chainId)
+                        : getChainLogo(selectedLP.chainId)
+                      : getTokenLogoURL(token1Address, selectedLP.chainId)
+                  }
+                  alt={""}
+                  className="mr-2 h-5 w-5 rounded-full"
+                  onError={(e: any) => {
+                    e.target.src = `/images/dashboard/tokens/empty-token-${
+                      selectedLP.chainId === 1 ? "eth" : "bsc"
+                    }.webp`;
+                  }}
+                />
+                <div>{currencyAmountB && !currencyAmountB.equalTo(0) ? currencyAmountB.toFixed(2) : "0.00"}</div>
+              </div>
+              {currencyB && currencyB.address === WETH_ADDR[selectedLP.chainId] ? (
+                <div className="h-8 w-[110px]">
+                  <StyledButton type={"quinary"} onClick={() => setIsGetWETH(!isGetWETH)}>
+                    <div className="flex items-center justify-between">
+                      <img
+                        src={
+                          !isGetWETH
+                            ? getTokenLogoURL(WETH_ADDR[selectedLP.chainId], selectedLP.chainId)
+                            : getChainLogo(selectedLP.chainId)
+                        }
+                        alt={""}
+                        className="mr-2 h-5 w-5 rounded-full"
+                      />
+                      <div className="text-xs leading-none">
+                        GET{" "}
+                        {!isGetWETH
+                          ? `W${NETWORKS[selectedLP.chainId].nativeCurrency.name}`
+                          : NETWORKS[selectedLP.chainId].nativeCurrency.name}
+                      </div>
+                    </div>
+                  </StyledButton>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           <div className="mt-1 flex flex-wrap flex-wrap justify-between text-sm">
