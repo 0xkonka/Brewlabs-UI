@@ -7,7 +7,7 @@ import { useCurrency } from "hooks/Tokens";
 import { Field } from "state/mint/actions";
 import { Currency, TokenAmount } from "@brewlabs/sdk";
 import maxAmountSpend from "utils/maxAmountSpend";
-import { routers } from "utils/functions";
+import { getExplorerLogo, routers } from "utils/functions";
 import { useCallback, useState } from "react";
 import currencyId from "utils/currencyId";
 import router from "next/router";
@@ -261,12 +261,27 @@ export default function AddLiquidityPanel({ setCurAction }) {
             </div>
             <div className="mt-2 flex flex-wrap justify-between xsm:mt-0">
               <div className="w-full xsm:w-[60%]">Liquidity token address</div>
-              <div className="relative w-full xsm:w-[40%]">
-                <div className="absolute left-0 top-[1px] h-4 w-4 rounded-full border border-black bg-[#D9D9D9] xsm:-left-6" />
-                <div className="ml-6 mr-0 max-w-[200px] overflow-hidden text-ellipsis xsm:ml-0  sm:mr-4">
-                  {pair?.liquidityToken.address}
+              {pair ? (
+                <div className="relative flex w-full items-center xsm:w-[40%]">
+                  <img
+                    src={getExplorerLogo(chainId)}
+                    alt={""}
+                    className="absolute left-0 top-[1px] h-4 w-4 rounded-full xsm:-left-6"
+                  />
+                  <a
+                    className="ml-6 mr-0 max-w-[200px] flex-1 overflow-hidden text-ellipsis underline xsm:ml-0 sm:mr-4"
+                    target={"_blank"}
+                    href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/token/${
+                      pair.liquidityToken.address
+                    }`}
+                    rel="noreferrer"
+                  >
+                    {pair.liquidityToken.address}
+                  </a>
                 </div>
-              </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
@@ -304,19 +319,29 @@ export default function AddLiquidityPanel({ setCurAction }) {
               )}
             </div>
           )}
-        <SolidButton
-          className={`w-full ${
-            !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-              ? "bg-[#ed5249]"
-              : "bg-primary"
-          }`}
-          onClick={() => {
-            onAdd();
-          }}
-          disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-        >
-          {error ?? t("Supply")}
-        </SolidButton>
+        {!(
+          isValid &&
+          (approvalA === ApprovalState.NOT_APPROVED ||
+            approvalA === ApprovalState.PENDING ||
+            approvalB === ApprovalState.NOT_APPROVED ||
+            approvalB === ApprovalState.PENDING)
+        ) ? (
+          <SolidButton
+            className={`w-full ${
+              !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
+                ? "bg-[#ed5249]"
+                : "bg-primary"
+            }`}
+            onClick={() => {
+              onAdd();
+            }}
+            disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+          >
+            {error ?? t("Supply")}
+          </SolidButton>
+        ) : (
+          ""
+        )}
       </div>
       <OutlinedButton small onClick={() => setCurAction("default")}>
         Back
