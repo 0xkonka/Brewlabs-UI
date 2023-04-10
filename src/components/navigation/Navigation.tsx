@@ -59,7 +59,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
           </div>
           <div>
             <a
-              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm")}`}
+              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm items-center")}`}
               href="https://brewlabs-airdrop.tools/bsc"
               target={"_blank"}
               rel={"noreferrer"}
@@ -73,7 +73,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
               </span>
             </a>
             <a
-              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm")}
+              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm items-center")}
               href="https://brewlabs.info/factory"
               target={"_blank"}
               rel={"noreferrer"}
