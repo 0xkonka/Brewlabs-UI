@@ -114,3 +114,8 @@ export const getIndexName = (tokens) => {
   if (tokens.length === 2) return tokens.map((t) => t.symbol).join("-");
   return tokens.map((t, index) => (index > 0 ? t.symbol.substring(0, 1) : t.symbol)).join("-");
 };
+
+export const WETH_ADDR: any = {
+  1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  56: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+};
