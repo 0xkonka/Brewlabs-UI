@@ -219,7 +219,7 @@ export const fetchUserPendingReflections = async (account, chainId, pools) => {
     filters.map(async (batch) => {
       const nonLockupReflectionPools = batch.filter((p) => p.poolCategory.indexOf("Lockup") === -1);
       const lockupReflectionPools = batch.filter(
-        (p) => p.poolCategory === PoolCategory.LOCKUP && p.sousId !== 33 && p.sousId !== 34
+        (p) => p.poolCategory === PoolCategory.LOCKUP && ![13, 14, 33, 34].includes(p.sousId)
       );
       const multiReflectionPools = batch.filter(
         (p) => p.poolCategory === PoolCategory.MULTI || p.poolCategory === PoolCategory.MULTI_LOCKUP
