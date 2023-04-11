@@ -26,12 +26,12 @@ export const navigationData = [
     external: false,
     icon: "ArrowTrendingUpIcon",
   },
-  {
-    name: "Stable Indexes",
-    href: "/stables",
-    external: false,
-    icon: "Bars3CenterLeftIcon",
-  },
+  // {
+  //   name: "Stable Indexes",
+  //   href: "/stables",
+  //   external: false,
+  //   icon: "Bars3CenterLeftIcon",
+  // },
   {
     name: "Bridge",
     href: "/bridge",
