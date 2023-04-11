@@ -112,6 +112,11 @@ const EnterExitModal = ({
   };
 
   const handleZapIn = async () => {
+    if (percents.filter((p) => p < 0).length > 0 || percent < 0) {
+      toast.error("Cannot set negative percentage");
+      return;
+    }
+
     setPending(true);
     try {
       await onZapIn(amount, [percent, ...percents]);
@@ -234,7 +239,12 @@ const EnterExitModal = ({
 
               <div className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
                 {type === "enter" ? (
-                  <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-14" />
+                  <img
+                    src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
+                    onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                    alt={""}
+                    className="w-14 rounded-full"
+                  />
                 ) : (
                   <IndexLogo tokens={tokens} classNames="mr-0 scale-125" />
                 )}
@@ -256,7 +266,12 @@ const EnterExitModal = ({
               {type === "enter" ? (
                 tokens.slice(1).map((token, index) => (
                   <div key={token.address} className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
-                    <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="w-14" />
+                    <img
+                      src={getTokenLogoURL(token.address, token.chainId)}
+                      onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                      alt={""}
+                      className="w-14 rounded-full"
+                    />
                     <StyledSlider
                       value={percents[index]}
                       setValue={(v) => percentChanged(index + 1, v)}
