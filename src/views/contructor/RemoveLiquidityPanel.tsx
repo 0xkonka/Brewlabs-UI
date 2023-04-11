@@ -11,7 +11,7 @@ import { wrappedCurrency } from "utils/wrappedCurrency";
 import { useApproveCallback } from "hooks/useApproveCallback";
 import { useBurnActionHandlers, useDerivedBurnInfo } from "state/burn/hooks";
 import { Field } from "state/burn/actions";
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract, isAddress } from "utils";
+import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerAddress } from "utils/addressHelpers";
 import { ROUTER_ADDRESS } from "config/constants";
 import { useUserSlippageTolerance } from "state/user/hooks";
@@ -27,22 +27,27 @@ import { useTransactionAdder } from "state/transactions/hooks";
 import { TransactionResponse } from "alchemy-sdk";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { useAccount } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { NETWORKS } from "config/constants/networks";
+import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
+import { getNetworkLabel } from "lib/bridge/helpers";
+import { toast } from "react-toastify";
 
 export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
   const { address: account } = useAccount();
-  // const account = "0x442996e5dE18D79ab7cC8C0388D87059D64AAbe1";
-  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(
-    null
-  );
+  const { data: signer } = useSigner();
+
   const { chainId } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
+
+  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(
+    null
+  );
   const [currencyA, currencyB] = [
-    useCurrency(selectedLP.token0.address) ?? undefined,
-    useCurrency(selectedLP.token1.address) ?? undefined,
+    useCurrency(selectedLP?.token0.address) ?? undefined,
+    useCurrency(selectedLP?.token1.address) ?? undefined,
   ];
 
   const [tokenA, tokenB] = useMemo(
@@ -96,7 +101,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
       if (!currencyAmountA || !currencyAmountB) {
         throw new Error("missing currency amounts");
       }
-      const router = getRouterContract(chainId, library, account);
+      const router = getRouterContract(chainId, signer);
       const gasPrice = await getNetworkGasPrice(library, chainId);
 
       const amountsMin = {
@@ -140,7 +145,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
           ];
         }
       }
-      console.log(methodNames, args);
+
       const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
         methodNames.map((methodName) =>
           router.estimateGas[methodName](...args)
@@ -176,7 +181,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
                 currencyA?.symbol
               } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
             });
-
+            toast.success("Liquidity was removed");
             // setTxHash(response.hash);
           })
           .catch((err: Error) => {
@@ -189,6 +194,89 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
       console.log(e);
     }
     setPending(false);
+  }
+
+  async function onRemoveWithManager() {
+    if (!chainId || !signer || !account || !deadline) throw new Error("missing dependencies");
+    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts;
+    if (!currencyAmountA || !currencyAmountB) {
+      throw new Error("missing currency amounts");
+    }
+
+    const lpManagerContract = getLpManagerContract(chainId, signer);
+    const gasPrice = await getNetworkGasPrice(library, chainId);
+
+    if (!currencyA || !currencyB) throw new Error("missing tokens");
+    const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
+    if (!liquidityAmount) throw new Error("missing liquidity amount");
+
+    const currencyBIsETH = currencyB.isNative;
+    const oneCurrencyIsETH = currencyA.isNative || currencyBIsETH;
+
+    if (!tokenA || !tokenB) throw new Error("could not wrap");
+
+    let methodNames: string[];
+    let args: Array<string | string[] | number | boolean>;
+    // we have approval, use normal remove liquidity
+    if (approval === ApprovalState.APPROVED) {
+      // removeLiquidityETH
+      if (oneCurrencyIsETH) {
+        methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
+        args = [currencyBIsETH ? tokenA.address : tokenB.address, liquidityAmount.raw.toString()];
+      }
+      // removeLiquidity
+      else {
+        methodNames = ["removeLiquidity"];
+        args = [tokenA.address, tokenB.address, liquidityAmount.raw.toString()];
+      }
+    } else {
+      throw new Error("Attempting to confirm without approval. Please contact support.");
+    }
+
+    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      methodNames.map((methodName) =>
+        lpManagerContract.estimateGas[methodName](...args)
+          .then(calculateGasMargin)
+          .catch((err) => {
+            console.error(`estimateGas failed`, methodName, args, err);
+            return undefined;
+          })
+      )
+    );
+
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+      BigNumber.isBigNumber(safeGasEstimate)
+    );
+
+    // all estimations failed...
+    if (indexOfSuccessfulEstimation === -1) {
+      console.error("This transaction would fail. Please contact support.");
+    } else {
+      const methodName = methodNames[indexOfSuccessfulEstimation];
+      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
+
+      setPending(true);
+      await lpManagerContract[methodName](...args, {
+        gasLimit: safeGasEstimate,
+        gasPrice,
+      })
+        .then((response: TransactionResponse) => {
+          setPending(false);
+
+          addTransaction(response, {
+            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+              currencyA?.symbol
+            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+          });
+          toast.success("Liquidity was removed");
+          // setTxHash(response.hash)
+        })
+        .catch((err: Error) => {
+          setPending(false);
+          // we only care if the error is something _other_ than the user rejected the tx
+          console.error(err);
+        });
+    }
   }
 
   async function onAttemptToApprove() {
@@ -264,8 +352,8 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
     setPending(false);
   }
 
-  const token0Address: any = isAddress(selectedLP.token0.address);
-  const token1Address: any = isAddress(selectedLP.token1.address);
+  const token0Address: any = isAddress(selectedLP?.token0.address);
+  const token1Address: any = isAddress(selectedLP?.token1.address);
 
   return (
     <div>
@@ -434,7 +522,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
             approval === ApprovalState.APPROVED ? (
               <SolidButton
                 className="w-full"
-                onClick={() => onRemove()}
+                onClick={lpManager === "" ? onRemove : onRemoveWithManager}
                 disabled={pending || !library || !account || !tokenA || !tokenB || !parsedAmounts[Field.LIQUIDITY]}
               >
                 Remove Liquidity
@@ -450,7 +538,7 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
             )
           ) : (
             <SolidButton className="w-full" onClick={() => switchNetwork(selectedLP.chainId)}>
-              Switch To {selectedLP.chainId === 1 ? "Ethereum" : "BSC"} Network
+              Switch To {getNetworkLabel(selectedLP.chainId)} Network
             </SolidButton>
           )}
         </div>

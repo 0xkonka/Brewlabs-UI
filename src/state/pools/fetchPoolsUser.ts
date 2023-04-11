@@ -217,58 +217,63 @@ export const fetchUserPendingReflections = async (account, chainId, pools) => {
   const data = {};
   await Promise.all(
     filters.map(async (batch) => {
-      const nonLockupReflectionPools = batch.filter((p) => p.poolCategory.indexOf("Lockup") === -1);
-      const lockupReflectionPools = batch.filter(
-        (p) => p.poolCategory === PoolCategory.LOCKUP && ![13, 14, 33, 34].includes(p.sousId)
-      );
-      const multiReflectionPools = batch.filter(
-        (p) => p.poolCategory === PoolCategory.MULTI || p.poolCategory === PoolCategory.MULTI_LOCKUP
-      );
+      try {
+        const nonLockupReflectionPools = batch.filter((p) => p.poolCategory.indexOf("Lockup") === -1);
+        const lockupReflectionPools = batch.filter(
+          (p) => p.poolCategory === PoolCategory.LOCKUP && ![13, 14, 33, 34].includes(p.sousId)
+        );
+        const multiReflectionPools = batch.filter(
+          (p) => p.poolCategory === PoolCategory.MULTI || p.poolCategory === PoolCategory.MULTI_LOCKUP
+        );
 
-      const calls = nonLockupReflectionPools.map((p) => ({
-        address: p.contractAddress,
-        name: "pendingDividends",
-        params: [account],
-      }));
-      const lockupCalls = lockupReflectionPools.map((p) => ({
-        address: p.contractAddress,
-        name: "pendingDividends",
-        params: [account, p.lockup],
-      }));
+        const calls = nonLockupReflectionPools.map((p) => ({
+          address: p.contractAddress,
+          name: "pendingDividends",
+          params: [account],
+        }));
+        const lockupCalls = lockupReflectionPools.map((p) => ({
+          address: p.contractAddress,
+          name: "pendingDividends",
+          params: [account, p.lockup],
+        }));
 
-      const nonLockupRes = await multicall(singleStakingABI, calls, chainId);
-      const lockupRes = await multicall(lockupStakingABI, lockupCalls, chainId);
+        const nonLockupRes = await multicall(singleStakingABI, calls, chainId);
+        const lockupRes = await multicall(lockupStakingABI, lockupCalls, chainId);
 
-      nonLockupReflectionPools.forEach((pool, index) => {
-        data[pool.sousId] = [new BigNumber(nonLockupRes[index]).toJSON()];
-      });
-      lockupReflectionPools.forEach((pool, index) => {
-        data[pool.sousId] = [new BigNumber(lockupRes[index]).toJSON()];
-      });
+        nonLockupReflectionPools.forEach((pool, index) => {
+          data[pool.sousId] = [new BigNumber(nonLockupRes[index]).toJSON()];
+        });
+        lockupReflectionPools.forEach((pool, index) => {
+          data[pool.sousId] = [new BigNumber(lockupRes[index]).toJSON()];
+        });
 
-      await Promise.all(
-        multiReflectionPools.map(async (p) => {
-          const multiCalls = [
-            {
-              address: p.contractAddress,
-              name: "pendingDividends",
-              params: [account],
-            },
-          ];
+        await Promise.all(
+          multiReflectionPools.map(async (p) => {
+            const multiCalls = [
+              {
+                address: p.contractAddress,
+                name: "pendingDividends",
+                params: [account],
+              },
+            ];
 
-          try {
-            const multiRes = await multicall(brewlabsStakingMultiABI, multiCalls, chainId);
-            const pendings = [];
-            for (let i = 0; i < p.reflectionTokens.length; i++) {
-              pendings.push(new BigNumber(multiRes[0][0][i]._hex).toJSON());
+            try {
+              const multiRes = await multicall(brewlabsStakingMultiABI, multiCalls, chainId);
+              const pendings = [];
+              for (let i = 0; i < p.reflectionTokens.length; i++) {
+                pendings.push(new BigNumber(multiRes[0][0][i]._hex).toJSON());
+              }
+              data[p.sousId] = pendings;
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.log("no staked");
             }
-            data[p.sousId] = pendings;
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.log("no staked");
-          }
-        })
-      );
+          })
+        );
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log(e);
+      }
     })
   );
 
