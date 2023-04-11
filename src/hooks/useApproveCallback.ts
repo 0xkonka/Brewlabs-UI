@@ -25,7 +25,7 @@ export function useApproveCallback(
   spender?: string
 ): [ApprovalState, () => Promise<TransactionResponse>] {
   const { chainId, library, account } = useActiveWeb3React();
-  // const account = "0x442996e5dE18D79ab7cC8C0388D87059D64AAbe1";
+
   const token = amountToApprove && !amountToApprove?.currency.isNative ? amountToApprove.currency : undefined;
   const currentAllowance = useTokenAllowance(token, account ?? undefined, spender);
   const pendingApproval = useHasPendingApproval(token?.address, spender);

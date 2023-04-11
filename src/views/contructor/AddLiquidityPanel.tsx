@@ -19,9 +19,9 @@ import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import { getLpManagerAddress } from "utils/addressHelpers";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAccount, useConnect, useSigner } from "wagmi";
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from "utils";
+import { calculateGasMargin, calculateSlippageAmount } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import { getLpManagerContract } from "utils/contractHelpers";
+import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
 import useTransactionDeadline from "hooks/useTransactionDeadline";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { BigNumber, TransactionResponse } from "alchemy-sdk";
@@ -29,6 +29,7 @@ import { wrappedCurrency } from "utils/wrappedCurrency";
 import { useTransactionAdder } from "state/transactions/hooks";
 import Modal from "components/Modal";
 import WalletSelector from "components/wallet/WalletSelector";
+import { toast } from "react-toastify";
 
 export default function AddLiquidityPanel({ setCurAction }) {
   const { chainId } = useActiveChainId();
@@ -102,8 +103,9 @@ export default function AddLiquidityPanel({ setCurAction }) {
   const isValid = !error;
   async function onAdd() {
     if (!chainId || !library || !account) return;
-    const router = getRouterContract(chainId, library, account);
     const gasPrice = await getNetworkGasPrice(library, chainId);
+
+    const router = getRouterContract(chainId, signer);
     const lpManagerContract = getLpManagerContract(chainId, signer);
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;
@@ -188,6 +190,7 @@ export default function AddLiquidityPanel({ setCurAction }) {
           });
 
           // setTxHash(response.hash);
+          toast.success("Liquidity was added")
         })
       )
       .catch((err) => {

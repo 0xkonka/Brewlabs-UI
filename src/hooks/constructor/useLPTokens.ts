@@ -11,7 +11,6 @@ import PairABI from "config/abi/lpToken.json";
 
 export const useLPTokens = () => {
   const { isConnected , address: account } = useAccount();
-  // const account = "0x442996e5dE18D79ab7cC8C0388D87059D64AAbe1";
   const [ethLPTokens, setETHLPTokens] = useState(null);
   const [bscLPTokens, setBSCLpTokens] = useState(null);
 
@@ -130,7 +129,7 @@ export const useLPTokens = () => {
           })
         );
         setETHLPTokens(result);
-        console.log(result);
+        // console.log(result);
       } catch (e) {
         console.log(e);
         setETHLPTokens([]);
@@ -169,7 +168,7 @@ export const useLPTokens = () => {
             return result.data.data.pairs[0];
           })
         );
-        console.log(pairInfos);
+        // console.log(pairInfos);
         let _lpTokens = [];
         for (let i = 0; i < _lps.length; i++) {
           const filteredLP = bscLPTokens && bscLPTokens.find((data) => data.address === pairInfos[i].id);
@@ -197,7 +196,7 @@ export const useLPTokens = () => {
             chainId: 56,
           });
         }
-        console.log(_lpTokens);
+        // console.log(_lpTokens);
         setBSCLpTokens(_lpTokens);
         _lpTokens = await Promise.all(
           _lpTokens.map(async (data) => {
@@ -239,7 +238,7 @@ export const useLPTokens = () => {
           })
         );
         setBSCLpTokens(_lpTokens);
-        console.log(_lpTokens);
+        // console.log(_lpTokens);
       } catch (e) {
         console.log(e);
         setBSCLpTokens([]);

@@ -254,7 +254,6 @@ const DashboardContextProvider = ({ children }: any) => {
       );
     } else if (chainId === 56) {
       data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
-      // data = await axios.post("http://localhost:5000/api/tokenController/getTokenBalances", { address, chainId });
       data = data.data;
     }
     data.push({
