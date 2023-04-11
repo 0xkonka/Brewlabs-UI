@@ -355,7 +355,12 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mb-1 text-xl">Tokens</div>
                         {tokens.map((token, index) => (
                           <div className="mt-1 flex items-center leading-none" key={token.address}>
-                            <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="mr-1 w-3" />
+                            <img
+                              src={getTokenLogoURL(token.address, token.chainId)}
+                              onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                              alt={""}
+                              className="mr-1 w-3 rounded-full"
+                            />
                             <div className="flex text-[#FFFFFFBF]">
                               {userData?.stakedBalances.length ? (
                                 `${formatAmount(
