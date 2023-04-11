@@ -44,8 +44,10 @@ import DropDown from "./Dropdown";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 
-const aprTexts = ["YTD", "30D", "7D", "24hrs"];
+const aprTexts = ["Deploy", "30D", "7D", "24hrs"];
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -55,7 +57,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);
   const [curType, setCurType] = useState("enter");
-  const [curGraph, setCurGraph] = useState(0);
+  const [curGraph, setCurGraph] = useState(2);
   const [curAPR, setCurAPR] = useState(0);
 
   const { address } = useAccount();
@@ -150,7 +152,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
 
     return (
       <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
-        ${numberWithCommas(profit.toFixed(3))}
+        ${numberWithCommas(profit.toFixed(2))}
       </span>
     );
   };
@@ -164,7 +166,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     try {
       await onMintNft();
 
-      toast.success("Index NFT was mint")
+      toast.success("Index NFT was mint");
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -181,7 +183,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+          <div className="absolute top-0 left-0 max-h-screen w-full overflow-x-hidden overflow-y-scroll pb-[150px]">
             {address && data && (
               <EnterExitModal open={stakingModalOpen} setOpen={setStakingModalOpen} type={curType} data={data} />
             )}
@@ -212,14 +214,14 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
             ) : (
               <Container className="font-brand">
                 <div className="flex items-center justify-between font-roboto">
-                  <div className="h-[32px] w-[140px] ">
-                    <StyledButton onClick={() => setOpen(false)}>
-                      <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
-                      <div className="ml-2">Back to pool list</div>
-                    </StyledButton>
-                  </div>
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                  <div>
+                    <div className="h-[32px] w-[140px] ">
+                      <StyledButton onClick={() => setOpen(false)}>
+                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                        <div className="ml-2">Back to pool list</div>
+                      </StyledButton>
+                    </div>
+                    <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                       <StyledButton
                         disabled={!address || pending || chainId !== data.chainId || +userData.stakedUsdAmount <= 0}
                         onClick={handleMintNft}
@@ -227,7 +229,17 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         Mint Index NFT
                       </StyledButton>
                     </div>
-                    <div className="mx-0 mt-2 h-[32px] w-[140px] sm:mx-2.5 sm:mt-0">
+                  </div>
+                  <div className="flex flex-col sm:flex-row">
+                    <div className="mt-2 hidden h-[32px] w-[140px] sm:mt-0 sm:block">
+                      <StyledButton
+                        disabled={!address || pending || chainId !== data.chainId || +userData.stakedUsdAmount <= 0}
+                        onClick={handleMintNft}
+                      >
+                        Mint Index NFT
+                      </StyledButton>
+                    </div>
+                    <div className="mx-0 h-[32px] w-[140px] sm:mx-2.5">
                       <StyledButton
                         type="secondary"
                         disabled={!address || pending || chainId !== data.chainId}
@@ -287,26 +299,38 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                       <div className="text-xs leading-none text-[#FFFFFF80]">
-                        <div className="flex">
+                        <div className="relative flex">
                           Deposit Fee {data.fee}% {getNativeSybmol(data.chainId)}
-                          <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
-                            <div className="ml-1">{warningFarmerSVG("11px")}</div>
+                          <ReactTooltip
+                            anchorId={"Depositfees"}
+                            place="right"
+                            content="Deposit fees are sent to token owner nominated address."
+                          />
+                          <div className="absolute -left-4" id={"Depositfees"}>
+                            <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
-                        <div className="flex">
+                        <div className="relative flex">
                           Withdrawal Fee 0.00% / In Profit Withdrawal Fee {data.fee ?? ""}% of Profit
-                          <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
-                            <div className="ml-1">{warningFarmerSVG("11px")}</div>
+                          <ReactTooltip
+                            anchorId={"Withdrawfees"}
+                            place="right"
+                            content="Withdraw fees are sent to token owner nominated address."
+                          />
+                          <div className="absolute -left-4" id={"Withdrawfees"}>
+                            <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
-                        <div className="flex">
+                        <div className="relative flex">
                           Performance Fee {ethers.utils.formatEther(data.performanceFee ?? "0")}{" "}
                           {getNativeSybmol(data.chainId)}
-                          <div
-                            className="tooltip"
-                            data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
-                          >
-                            <div className="ml-1">{warningFarmerSVG("11px")}</div>
+                          <ReactTooltip
+                            anchorId={"Performancefee"}
+                            place="right"
+                            content="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
+                          />
+                          <div className="absolute -left-4" id={"Performancefee"}>
+                            <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                       </div>
@@ -348,7 +372,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Profit</div>
-                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">{renderProfit()}earned</div>
+                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">{renderProfit()}</div>
                       </div>
                     </InfoPanel>
                   </div>
@@ -366,7 +390,36 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <InfoPanel
-                      className="mt-[80px] flex cursor-pointer justify-between lg:mt-20"
+                      className="mt-20 flex cursor-pointer items-center justify-between"
+                      type={"secondary"}
+                      boxShadow={curGraph === 2 ? "primary" : null}
+                      onClick={() => setCurGraph(2)}
+                    >
+                      <div className="flex flex-wrap">
+                        <div>Index Performance</div>&nbsp;
+                        <span className="whitespace-nowrap text-[#FFFFFF80]">(Price - 24hrs)</span>
+                      </div>
+                      &nbsp;
+                      <div className="flex text-[#FFFFFF80]">
+                        {data.priceChanges !== undefined ? (
+                          <span className={data.priceChanges[3].percent < 0 ? "text-danger" : "text-green"}>
+                            {data.priceChanges[3].percent.toFixed(2)}%
+                          </span>
+                        ) : (
+                          <SkeletonComponent />
+                        )}
+                        &nbsp;
+                        <div>
+                          {data.priceChanges !== undefined ? (
+                            `(${formatDollar(data.priceChanges[3].value, 2)})`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                        </div>
+                      </div>
+                    </InfoPanel>
+                    <InfoPanel
+                      className="mt-2.5 flex cursor-pointer justify-between"
                       type={"secondary"}
                       boxShadow={curGraph === 0 ? "primary" : null}
                       onClick={() => setCurGraph(0)}
@@ -399,32 +452,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <SkeletonComponent />
                         )}
                         <span className="ml-1 text-[#FFFFFF80]">{getNativeSybmol(data.chainId)}</span>
-                      </div>
-                    </InfoPanel>
-                    <InfoPanel
-                      className="mt-2.5 flex cursor-pointer justify-between"
-                      type={"secondary"}
-                      boxShadow={curGraph === 2 ? "primary" : null}
-                      onClick={() => setCurGraph(2)}
-                    >
-                      <div>
-                        Index Performance&nbsp;<span className="text-[#FFFFFF80]">(Price - 24hrs)</span>
-                      </div>
-                      <div className="flex text-[#FFFFFF80]">
-                        {data.priceChanges !== undefined ? (
-                          <span className={data.priceChanges[3].percent < 0 ? "text-danger" : "text-green"}>
-                            {data.priceChanges[3].percent.toFixed(2)}%
-                          </span>
-                        ) : (
-                          <SkeletonComponent />
-                        )}
-                        &nbsp; (
-                        {data.priceChanges !== undefined ? (
-                          formatDollar(data.priceChanges[3].value, 2)
-                        ) : (
-                          <SkeletonComponent />
-                        )}
-                        )
                       </div>
                     </InfoPanel>
 
@@ -527,5 +554,13 @@ const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: stri
   :hover {
     border-color: ${({ type, boxShadow }) =>
       type === "secondary" && !boxShadow ? "rgba(255, 255, 255, 0.75)" : "rgba(255, 255, 255, 0.5)"};
+  }
+  .react-tooltip {
+    z-index: 100;
+    font-size: 13px;
+    line-height: 125%;
+    opacity: 1;
+    max-width: 300px;
+    text-align: center;
   }
 `;

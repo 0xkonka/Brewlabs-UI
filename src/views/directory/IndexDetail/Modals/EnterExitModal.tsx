@@ -214,6 +214,11 @@ const EnterExitModal = ({
                     />
                   </div>
                   <div className="mt-1 flex w-full flex-col items-end text-sm">
+                    <div className="text-[#FFFFFFBF]">
+                      My ETH <span className="text-yellow">:</span> {Number(ethbalance).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="mt-1 flex w-full flex-col items-end text-sm">
                     <div className="text-[#FFFFFF80]">${(+(amount ?? 0) * nativeTokenPrice).toFixed(2)} USD</div>
                   </div>
                 </>
