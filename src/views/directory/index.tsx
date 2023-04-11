@@ -65,7 +65,6 @@ const Directory = ({ page }: { page: number }) => {
     }),
     ...zappers,
   ];
-
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
       case "apr":
@@ -151,11 +150,11 @@ const Directory = ({ page }: { page: number }) => {
           !pool.isFinished &&
           ((pool.type === Category.POOL && +pool.startBlock > 0) ||
             (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
-            pool.type === Category.INDEXES)
+            pool.type === Category.INDEXES ||
+            pool.type === Category.ZAPPER)
       );
   }
   chosenPools = sortPools(chosenPools);
-
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:
