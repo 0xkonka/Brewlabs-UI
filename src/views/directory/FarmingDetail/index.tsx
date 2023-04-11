@@ -178,7 +178,6 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
   const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
 
-
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (

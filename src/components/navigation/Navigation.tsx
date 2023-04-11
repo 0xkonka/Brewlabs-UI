@@ -57,15 +57,17 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
               </Link>
             ))}
           </div>
-          <div>
+          <div className="hidden sm:block">
             <a
-              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm items-center")}`}
+              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex items-center text-sm")}`}
               href="https://brewlabs-airdrop.tools/bsc"
               target={"_blank"}
               rel={"noreferrer"}
             >
               <div>
-                <AirdropSVG className={`${slim ? "w-[22px] -ml-[1px] mb-1.5" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`} />
+                <AirdropSVG
+                  className={`${slim ? "-ml-[1px] mb-1.5 w-[22px]" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`}
+                />
               </div>
               <span className={clsx(slim && "sr-only", "ml-2")}>
                 Visit&nbsp;
@@ -73,13 +75,15 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
               </span>
             </a>
             <a
-              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex text-sm items-center")}
+              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex items-center text-sm")}
               href="https://brewlabs.info/factory"
               target={"_blank"}
               rel={"noreferrer"}
             >
               <div>
-                <FactorySVG className={`${slim ? "-ml-[1px] w-[22px] mb-1.5" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`} />
+                <FactorySVG
+                  className={`${slim ? "-ml-[1px] mb-1.5 w-[22px]" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`}
+                />
               </div>
               <span className={clsx(slim && "sr-only", "ml-2")}>
                 Visit&nbsp;
