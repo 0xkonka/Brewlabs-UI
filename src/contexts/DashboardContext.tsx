@@ -256,7 +256,6 @@ const DashboardContextProvider = ({ children }: any) => {
       data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
       // data = await axios.post("http://localhost:5000/api/tokenController/getTokenBalances", { address, chainId });
       data = data.data;
-      console.log(data);
     }
     data.push({
       address: WETH_ADDR,

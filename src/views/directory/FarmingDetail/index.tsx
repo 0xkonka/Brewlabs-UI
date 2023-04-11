@@ -46,6 +46,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(0);
 
   const { address } = useAccount();
+  // const address = "0x6ff9c26327842def99841354b5729250f0e5ce89";
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -176,6 +177,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
   const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
+
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -491,6 +493,39 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="relative mt-10 flex w-full flex-col justify-between md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
+                      <InfoPanel className="flex cursor-pointer justify-between" type={"secondary"}>
+                        <div>My Staked Tokens</div>
+                        <div className="flex ">
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.stakedBalance ? (
+                            `${formatAmount(getBalanceNumber(accountData.stakedBalance, 18))}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                          &nbsp;
+                          <span className="w-[80px] overflow-hidden text-ellipsis whitespace-nowrap text-primary">
+                            {data.lpSymbol.split(" ")[0]}
+                          </span>
+                        </div>
+                      </InfoPanel>
+                      <InfoPanel
+                        className="mt-2 flex cursor-pointer justify-between xsm:ml-4 xsm:mt-0"
+                        type={"secondary"}
+                      >
+                        <div>USD Value</div>
+                        <div className="flex">
+                          {!address ? (
+                            "$0.00"
+                          ) : accountData.stakedBalance ? (
+                            `$${formatAmount(getBalanceNumber(accountData.stakedBalance, 18) * (lpPrice ?? 0))}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                        </div>
+                      </InfoPanel>
+                    </div>
+                    <div className="mt-8 flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
                         <div className="mt-2 h-[56px]">
