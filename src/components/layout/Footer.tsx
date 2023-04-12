@@ -44,7 +44,7 @@ const navigation = {
     {
       name: "Constructor",
       href: "/constructor",
-      external: true,
+      external: false,
       status: "",
     },
     {
@@ -64,13 +64,13 @@ const navigation = {
     {
       name: "Staking",
       href: "/pools",
-      external: true,
+      external: false,
       status: "",
     },
     {
       name: "Farms",
       href: "/farms",
-      external: true,
+      external: false,
       status: "",
     },
   ],
