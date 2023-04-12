@@ -13,6 +13,7 @@ import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getLpManagerAddress } from "utils/addressHelpers";
+import { getExplorerLink } from "lib/bridge/helpers";
 
 export default function Constructor() {
   const [curAction, setCurAction] = useState("default");
@@ -41,7 +42,7 @@ export default function Constructor() {
           <a
             className="mt-9 flex cursor-pointer items-center justify-center rounded-[30px] border border-[#FFFFFF80] text-[#FFFFFFBF] transition hover:text-white"
             target="_blank"
-            href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/address/${getLpManagerAddress(chainId)}`}
+            href={getExplorerLink(chainId, "address", getLpManagerAddress(chainId))}
             rel="noreferrer"
           >
             <div className="flex w-full items-start justify-between p-[16px_12px_16px_12px] sm:p-[16px_40px_16px_40px]">
@@ -65,7 +66,7 @@ export default function Constructor() {
           ) : curAction === "Remove" ? (
             <RemoveLiquidityPanel selectedLP={sortedTokens[selectedLP]} setCurAction={setCurAction} />
           ) : curAction === "addLiquidity" ? (
-            <AddLiquidityPanel setCurAction={setCurAction} />
+            <AddLiquidityPanel onBack={() => setCurAction("default")} selectedChainId={chainId} />
           ) : (
             ""
           )}

@@ -30,8 +30,14 @@ import { useTransactionAdder } from "state/transactions/hooks";
 import Modal from "components/Modal";
 import WalletSelector from "components/wallet/WalletSelector";
 import { toast } from "react-toastify";
+import { useCurrencySelectRoute } from "./useCurrencySelectRoute";
 
-export default function AddLiquidityPanel({ setCurAction }) {
+export default function AddLiquidityPanel({
+  onBack,
+  selectedChainId,
+  currencyA: currencyA_ = undefined,
+  currencyB: currencyB_ = undefined,
+}) {
   const { chainId } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
@@ -56,7 +62,8 @@ export default function AddLiquidityPanel({ setCurAction }) {
     price,
     pair,
     error,
-  } = useDerivedMintInfo(undefined, undefined);
+  } = useDerivedMintInfo(currencyA_ ?? undefined, currencyB_ ?? undefined);
+  const { handleCurrencyASelect, handleCurrencyBSelect } = useCurrencySelectRoute();
 
   const lpManager = getLpManagerAddress(chainId);
 
@@ -190,7 +197,7 @@ export default function AddLiquidityPanel({ setCurAction }) {
           });
 
           // setTxHash(response.hash);
-          toast.success("Liquidity was added")
+          toast.success("Liquidity was added");
         })
       )
       .catch((err) => {
@@ -222,7 +229,11 @@ export default function AddLiquidityPanel({ setCurAction }) {
             onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
           }}
           showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-          onCurrencySelect={onCurrencySelection}
+          onCurrencySelect={(field, currency) => {
+            if (currencyA_) {
+              handleCurrencyASelect(currency);
+            } else onCurrencySelection(field, currency);
+          }}
           currency={currencies[Field.CURRENCY_A]}
           balance={currencyBalances[Field.CURRENCY_A]}
           type={"liquidity"}
@@ -241,7 +252,11 @@ export default function AddLiquidityPanel({ setCurAction }) {
             onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
           }}
           showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-          onCurrencySelect={onCurrencySelection}
+          onCurrencySelect={(field, currency) => {
+            if (currencyA_) {
+              handleCurrencyBSelect(currency);
+            } else onCurrencySelection(field, currency);
+          }}
           currency={currencies[Field.CURRENCY_B]}
           balance={currencyBalances[Field.CURRENCY_B]}
           inputCurrencySelect={false}
@@ -357,7 +372,7 @@ export default function AddLiquidityPanel({ setCurAction }) {
           ""
         )}
       </div>
-      <OutlinedButton small onClick={() => setCurAction("default")}>
+      <OutlinedButton small onClick={onBack}>
         Back
       </OutlinedButton>
     </div>

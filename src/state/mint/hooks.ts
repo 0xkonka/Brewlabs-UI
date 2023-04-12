@@ -105,8 +105,8 @@ export function useDerivedMintInfo(
   const outputCurrency = useCurrency(outputCurrencyId);
 
   const currencies: { [field in Field]?: Currency } = {
-    [Field.CURRENCY_A]: inputCurrency ?? undefined,
-    [Field.CURRENCY_B]: outputCurrency ?? undefined,
+    [Field.CURRENCY_A]: currencyA ?? inputCurrency ?? undefined,
+    [Field.CURRENCY_B]: currencyB ?? outputCurrency ?? undefined,
   };
 
   // pair
