@@ -2,6 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
@@ -46,7 +47,6 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(0);
 
   const { address } = useAccount();
-  // const address = "0x6ff9c26327842def99841354b5729250f0e5ce89";
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -270,10 +270,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </StyledButton>
                         </a>
                       )}
-                      <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
-                        target="_blank"
-                        href={`https://earn.brewlabs.info/add/${
+                      <Link
+                        href={`/add/${data.chainId}/${
                           quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
                             ? getNativeSybmol(data.chainId)
                             : quoteToken.address
@@ -282,13 +280,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             ? getNativeSybmol(data.chainId)
                             : token.address
                         }`}
-                        rel="noreferrer"
                       >
-                        <StyledButton>
-                          <div>Make LP</div>
-                          <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </a>
+                        <a className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
+                          <StyledButton>
+                            <div>Make LP</div>
+                            <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                          </StyledButton>
+                        </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
