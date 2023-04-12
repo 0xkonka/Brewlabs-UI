@@ -43,7 +43,7 @@ const navigation = {
     },
     {
       name: "Constructor",
-      href: "https://earn.brewlabs.info/liquidity",
+      href: "/constructor",
       external: true,
       status: "",
     },
