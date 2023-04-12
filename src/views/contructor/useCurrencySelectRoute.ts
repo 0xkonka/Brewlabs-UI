@@ -17,7 +17,7 @@ export const useCurrencySelectRoute = (type = "add", selectedChainId = undefined
 
   const handleCurrencyASelect = useCallback(
     (currencyA_: Currency) => {
-      const newCurrencyIdA = currencyId(currencyA_);
+      const newCurrencyIdA = currencyA_ ? currencyId(currencyA_) : "";
       if (newCurrencyIdA === currencyIdB) {
         router.replace(`/${type}/${chainId}/${currencyIdB}/${currencyIdA}`, undefined, { shallow: true });
       } else if (currencyIdB) {
@@ -30,7 +30,7 @@ export const useCurrencySelectRoute = (type = "add", selectedChainId = undefined
   );
   const handleCurrencyBSelect = useCallback(
     (currencyB_: Currency) => {
-      const newCurrencyIdB = currencyId(currencyB_);
+      const newCurrencyIdB = currencyB_ ? currencyId(currencyB_) : "";
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
           router.replace(`/${type}/${chainId}/${currencyIdB}/${newCurrencyIdB}`, undefined, { shallow: true });

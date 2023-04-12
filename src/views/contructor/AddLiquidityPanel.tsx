@@ -8,7 +8,7 @@ import { Field } from "state/mint/actions";
 import { Currency, TokenAmount } from "@brewlabs/sdk";
 import maxAmountSpend from "utils/maxAmountSpend";
 import { getExplorerLogo, routers } from "utils/functions";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import currencyId from "utils/currencyId";
 import router from "next/router";
 import { useTranslation } from "contexts/localization";
@@ -38,7 +38,7 @@ export default function AddLiquidityPanel({
   currencyA: currencyA_ = undefined,
   currencyB: currencyB_ = undefined,
 }) {
-  const { chainId } = useActiveChainId();
+  const { chainId, isWrongNetwork } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
@@ -106,6 +106,17 @@ export default function AddLiquidityPanel({
     },
     {}
   );
+
+  useEffect(() => {
+    if (!isWrongNetwork && router.query?.currency) {
+      if (currencyA_?.symbol !== router.query.currency[0] &&  currencyA_?.address !== router.query.currency[0]) {
+        handleCurrencyASelect(currencyA);
+      }
+      if (currencyB_?.symbol !== router.query.currency[1] && currencyB_?.address !== router.query.currency[1]) {
+        handleCurrencyBSelect(currencyB);
+      }
+    }
+  }, [chainId, isWrongNetwork, currencyA_, currencyB_]);
 
   const isValid = !error;
   async function onAdd() {
@@ -253,7 +264,7 @@ export default function AddLiquidityPanel({
           }}
           showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
           onCurrencySelect={(field, currency) => {
-            if (currencyA_) {
+            if (currencyB_) {
               handleCurrencyBSelect(currency);
             } else onCurrencySelection(field, currency);
           }}
