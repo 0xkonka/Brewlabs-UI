@@ -1,21 +1,20 @@
 import { useCurrency } from "hooks/Tokens";
-import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { useAppDispatch } from "state";
-import { CHAIN_IDS } from "utils/wagmi";
+import { WNATIVE } from "@brewlabs/sdk";
+
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { brewsToken, usdToken } from "config/constants/tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { WNATIVE } from "@brewlabs/sdk";
-import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { getExplorerLink } from "lib/bridge/helpers";
+import { getLpManagerAddress } from "utils/addressHelpers";
 
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
+
 import AddLiquidityPanel from "views/contructor/AddLiquidityPanel";
-import { getLpManagerAddress } from "utils/addressHelpers";
-import { getExplorerLink } from "lib/bridge/helpers";
 
 const AddLiquidityPage = () => {
   const router = useRouter();
