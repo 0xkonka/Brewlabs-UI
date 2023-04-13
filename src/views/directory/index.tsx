@@ -123,7 +123,8 @@ const Directory = ({ page }: { page: number }) => {
         (data) =>
           curFilter === Category.ALL ||
           data.type === curFilter ||
-          (curFilter === Category.MY_POSITION && data.userData?.stakedBalance.gt(0))
+          (curFilter === Category.MY_POSITION &&
+            (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
       );
   }
 

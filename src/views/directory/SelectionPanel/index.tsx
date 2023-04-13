@@ -52,9 +52,7 @@ const SelectionPanel = ({
       curFilter === Category.ALL ||
       data.type === curFilter ||
       (curFilter === Category.MY_POSITION &&
-        (data.type === Category.INDEXES
-          ? data.userData?.stakedBalances[0]?.gt(0) || data.userData?.stakedBalances[1]?.gt(0)
-          : data.userData?.stakedBalance.gt(0)))
+        (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
   );
   activityCnts["active"] = filteredPools.filter(
     (pool) =>
