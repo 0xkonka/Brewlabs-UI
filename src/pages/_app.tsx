@@ -41,7 +41,7 @@ import NavigationMobile from "components/navigation/NavigationMobile";
 import { Updaters } from "../index";
 import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
 import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
-// import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
+import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -56,9 +56,9 @@ function GlobalHooks() {
   useFetchPublicPoolsData();
   useFetchPoolsWithUserData();
 
-  // usePollIndexesFromApi();
-  // useFetchPublicIndexesData();
-  // useFetchIndexesWithUserData();
+  usePollIndexesFromApi();
+  useFetchPublicIndexesData();
+  useFetchIndexesWithUserData();
 
   return null;
 }
