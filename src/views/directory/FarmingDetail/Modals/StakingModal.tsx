@@ -143,7 +143,7 @@ const StakingModal = ({
                 </div>
                 <a
                   className="flex-1"
-                  href={`/add${data.chainId}/${
+                  href={`/add/${data.chainId}/${
                     data.quoteToken.isNative || data.quoteToken.symbol === WNATIVE[data.chainId].symbol
                       ? getNativeSybmol(data.chainId)
                       : data.quoteToken.address
