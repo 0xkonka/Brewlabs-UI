@@ -126,7 +126,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 1:
         return data.performanceFees ?? [];
       case 2:
-        return data.priceHistories;
+        return data.priceHistories ?? [];
       case 3:
         return data.commissions ?? [];
       default:

@@ -139,11 +139,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
         if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
         return _graphData;
       case 2:
-        return data.tokenFees;
+        return data.tokenFees ?? [];
       case 3:
-        return data.performanceFees;
+        return data.performanceFees ?? [];
       case 4:
-        return data.stakedAddresses;
+        return data.stakedAddresses ?? [];
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
@@ -217,8 +217,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const history =
-    data && data.userData?.deposits && address
-      ? data.userData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
+    data && accountData?.deposits && address
+      ? accountData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
       : [];
 
   return (
