@@ -128,10 +128,6 @@ export const fetchIndexPerformance = async (pool) => {
   let priceChanges = [
     getPriceChange(
       prices.map((p) => p[0]),
-      364 * 86400 * 1000000
-    ),
-    getPriceChange(
-      prices.map((p) => p[0]),
       30 * 86400 * 1000
     ),
     getPriceChange(

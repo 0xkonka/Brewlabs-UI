@@ -44,7 +44,7 @@ const IndexPerformance = () => {
     return <DotGroup active={active} onClick={() => onClick()} />;
   };
   return (
-    <StyledContainer className="-mt-2 w-full px-0 md:px-4">
+    <StyledContainer className="-mt-2 w-full">
       <div className="relative font-semibold text-yellow">
         Index Performance
         <div className="absolute -left-4 top-1.5" id={"Top9"}>
@@ -52,7 +52,7 @@ const IndexPerformance = () => {
         </div>
         <ReactTooltip anchorId={"Top9"} place="right" content="Top 9 Brewlabs Indexes based on performance." />
       </div>
-      <div className="w-full">
+      <div className="w-full mx-auto max-w-[620px]">
         <Carousel
           arrows={false}
           responsive={responsive}
@@ -76,7 +76,7 @@ const IndexPerformance = () => {
                   return (
                     <div
                       key={i}
-                      className="flex cursor-pointer items-center justify-between rounded py-3 px-0 transition hover:bg-[rgba(50,50,50,0.4)] md:px-2"
+                      className="flex cursor-pointer items-center justify-between rounded py-3 transition hover:bg-[rgba(50,50,50,0.4)] "
                       onClick={() => {
                         router.push(`/indexes/${data.pid}`);
                         setIsOpen(0);
@@ -103,12 +103,12 @@ const IndexPerformance = () => {
                       </div>
                       <div className="flex">
                         {sortedPercentChanges.map((data, i) => {
-                          if (i === 2 || (window.innerWidth < 550 && i != 0)) return;
-                          const names = ["DEPLOY", "30D", "7D", "1D"].reverse();
+                          if (window.innerWidth < 550 && i != 0) return;
+                          const names = ["30D", "7D", "1D"].reverse();
                           return (
-                            <div key={i} className="mr-5 text-xs font-semibold text-white">
+                            <div key={i} className="mr-5 text-xs font-semibold ">
                               {data ? (
-                                <div>
+                                <div className={data < 0 ? "text-danger" : "text-green"}>
                                   {data >= 0 ? "+" : ""} {data.toFixed(2)}% {names[i]}
                                 </div>
                               ) : (
