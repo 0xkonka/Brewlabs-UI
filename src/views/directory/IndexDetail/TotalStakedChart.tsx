@@ -185,7 +185,7 @@ const TotalStakedChart = ({
                   {priceChange.toFixed(2)}% {symbols[index]}
                 </span>
               ) : (
-                <SkeletonComponent />
+                <SkeletonComponent key={index} />
               );
             })}
           </>
