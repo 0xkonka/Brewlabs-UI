@@ -8,6 +8,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import IndexLogo from "components/logo/IndexLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
+import { useRouter } from "next/router";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",
@@ -27,6 +28,7 @@ const PoolCard = ({
   setSelectPoolDetail: any;
   setCurPool: any;
 }) => {
+  const router = useRouter();
   return (
     <StyledContainer
       index={index}
@@ -40,7 +42,8 @@ const PoolCard = ({
             setCurPool({ type: Category.FARM, pid: data.farmId });
             break;
           case Category.INDEXES:
-            setCurPool({ type: Category.INDEXES, pid: data.pid });
+            // setCurPool({ type: Category.INDEXES, pid: data.pid });
+            router.push(`/indexes/${data.pid}`);
             break;
           case Category.ZAPPER:
             setCurPool({ type: Category.ZAPPER, pid: data.pid });

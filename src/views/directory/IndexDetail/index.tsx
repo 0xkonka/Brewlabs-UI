@@ -46,11 +46,12 @@ import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import { useRouter } from "next/router";
 
 const aprTexts = ["Deploy", "30D", "7D", "24hrs"];
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data } = detailDatas;
+  const { data } = detailDatas;
   const { tokens, userData, priceHistories } = data;
   const dispatch = useAppDispatch();
 
@@ -60,6 +61,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(2);
   const [curAPR, setCurAPR] = useState(0);
 
+  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
@@ -187,7 +189,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/indexes")}>
                         <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -200,7 +202,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div>
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/indexes")}>
                         <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>

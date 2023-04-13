@@ -28,7 +28,7 @@ export const navigationData = [
   },
   {
     name: "Indexes",
-    href: "/stables",
+    href: "/indexes",
     external: false,
     icon: "Bars3CenterLeftIcon",
   },

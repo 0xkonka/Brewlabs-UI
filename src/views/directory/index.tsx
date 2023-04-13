@@ -180,8 +180,6 @@ const Directory = ({ page }: { page: number }) => {
         return (
           <IndexDetail
             detailDatas={{
-              open: selectPoolDetail,
-              setOpen: setSelectPoolDetail,
               data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
             }}
           />

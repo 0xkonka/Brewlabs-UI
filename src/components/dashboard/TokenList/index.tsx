@@ -458,7 +458,10 @@ const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
   height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 522px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
 
-  @media screen and (max-height: 940px) {
+  @media screen and (max-height: 920px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 515px)" : `${count * 28 + 27}px`)};
+  }
+  @media screen and (max-height: 790px) {
     height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 280px)" : `${count * 28 + 27}px`)};
   }
 `;

@@ -29,7 +29,8 @@ const UserDashboard = () => {
   const { viewType, setViewType }: any = useContext(SwapContext);
 
   useEffect(() => {
-    if (window.innerHeight < 940) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
+    if (window.innerHeight < 790) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
+    else if (window.innerHeight < 920) setItemsPerPage(Math.floor((window.innerHeight - 535) / 50));
     else setItemsPerPage(Math.floor((window.innerHeight - 548) / 50));
   }, [fullOpen]);
 
@@ -113,13 +114,13 @@ const StyledContainer = styled.div`
 `;
 
 const ChartPanel = styled.div`
-  @media screen and (max-height: 940px) {
+  @media screen and (max-height: 790px) {
     display: none;
   }
 `;
 
 const PricePanel = styled.div<{ viewType: number }>`
-  @media screen and (max-height: 710px) {
+  @media screen and (max-height: 920px) {
     display: none;
   }
   display: ${({ viewType }) => (viewType === 1 ? "none" : "")};

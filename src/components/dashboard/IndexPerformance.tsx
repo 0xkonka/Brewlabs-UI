@@ -9,6 +9,8 @@ import { SkeletonComponent } from "components/SkeletonComponent";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useGlobalState } from "state";
 
 const responsive = {
   desktop: {
@@ -28,7 +30,10 @@ const responsive = {
 const IndexPerformance = () => {
   const { indexes } = useIndexes();
   const carouselRef: any = useRef();
+  const router = useRouter();
   let splitIndex: any = [];
+  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
+
   for (let i = 0; i < Math.ceil(indexes.length / 3); i++) splitIndex.push(indexes.slice(i * 3, i * 3 + 3));
 
   const CustomDot = ({ onClick, ...rest }: any) => {
@@ -72,6 +77,10 @@ const IndexPerformance = () => {
                     <div
                       key={i}
                       className="flex cursor-pointer items-center justify-between rounded py-3 px-0 transition hover:bg-[rgba(50,50,50,0.4)] md:px-2"
+                      onClick={() => {
+                        router.push(`/indexes/${data.pid}`);
+                        setIsOpen(0);
+                      }}
                     >
                       <div className="flex items-center">
                         <div className="flex w-[60px]">
