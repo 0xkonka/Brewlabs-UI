@@ -51,7 +51,7 @@ const PoolCard = ({
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="max-w-[80px] pl-4">
+        <div className="min-w-[80px] pl-4">
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
@@ -68,7 +68,7 @@ const PoolCard = ({
           )}
           <div>
             {data.type === Category.INDEXES ? (
-              <div className="leading-none">{getIndexName(data.tokens)}</div>
+              <div className="text-sm leading-none">{getIndexName(data.tokens)}</div>
             ) : (
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
@@ -79,6 +79,19 @@ const PoolCard = ({
               {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
                 ? "Flexible"
                 : `${data.duration} days lock`}
+            </div>
+            <div className="text-xs leading-none">
+              {data.type === Category.INDEXES ? (
+                data.priceChanges ? (
+                  <div className={data.priceChanges[2].percent >= 0 ? "text-success" : "text-danger"}>
+                    Performance - {data.priceChanges[2].percent.toFixed(2)}%
+                  </div>
+                ) : (
+                  <SkeletonComponent />
+                )
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>

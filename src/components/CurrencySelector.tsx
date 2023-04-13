@@ -36,7 +36,7 @@ interface CurrencySelectorProps {
   filteredCurrencies?: Currency[];
   onUserInput: any;
   type: string;
-  onCurrencySelect: any;
+  handleCurrencySelect: any;
 }
 
 const tabs = [
@@ -60,14 +60,14 @@ const CurrencyRow = ({
   inputType,
   onUserInput,
   type,
-  onCurrencySelect,
+  handleCurrencySelect,
 }: {
   currency: Currency;
   marketData: any;
   inputType: "input" | "output";
   onUserInput: any;
   type: string;
-  onCurrencySelect: any;
+  handleCurrencySelect: any;
 }) => {
   const { account } = useActiveWeb3React();
 
@@ -81,22 +81,10 @@ const CurrencyRow = ({
     <button
       className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
       onClick={() => {
-        if (type === "liquidity") {
-          const input =
-            inputType === "input"
-              ? type === "liquidity"
-                ? LiquidityField.CURRENCY_A
-                : Field.INPUT
-              : type === "liquidity"
-              ? LiquidityField.CURRENCY_B
-              : Field.OUTPUT;
-          onUserInput("");
-          onCurrencySelect(input, currency);
-        } else {
-          const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
-          // onUserInput(input, "");
-          onCurrencySelection(input, currency);
-        }
+        const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
+        // onUserInput(input, "");
+        if (handleCurrencySelect) handleCurrencySelect(currency);
+        onCurrencySelection(input, currency);
 
         if (userSidebarOpen === 2) {
           setUserSidebarOpen(0);
@@ -148,7 +136,7 @@ const CurrencySelector = ({
   filteredCurrencies,
   onUserInput,
   type,
-  onCurrencySelect,
+  handleCurrencySelect,
 }: CurrencySelectorProps) => {
   const { chainId, account } = useActiveWeb3React();
 
@@ -331,7 +319,7 @@ const CurrencySelector = ({
                   marketData={tokenMarketData[tokenAddress] || defaultMarketData}
                   onUserInput={onUserInput}
                   type={type}
-                  onCurrencySelect={onCurrencySelect}
+                  handleCurrencySelect={handleCurrencySelect}
                 />
               );
             })

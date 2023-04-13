@@ -13,6 +13,7 @@ import { SwapContext } from "contexts/SwapContext";
 import PriceList from "./PriceList";
 import styled from "styled-components";
 import SwapBoard from "views/swap/SwapBoard";
+import IndexPerformance from "./IndexPerformance";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
@@ -28,9 +29,8 @@ const UserDashboard = () => {
   const { viewType, setViewType }: any = useContext(SwapContext);
 
   useEffect(() => {
-    if (window.innerHeight < 820) setItemsPerPage(Math.min(Math.floor((window.innerHeight - 297) / 50), 7));
-    else if (window.innerHeight < 890) setItemsPerPage(Math.min(Math.floor((window.innerHeight - 586) / 50), 7));
-    else setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
+    if (window.innerHeight < 940) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
+    else setItemsPerPage(Math.floor((window.innerHeight - 548) / 50));
   }, [fullOpen]);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const UserDashboard = () => {
 
         {viewType === 0 ? (
           <ChartPanel>
-            <div className={"mt-7"}>
+            <div className={"mt-4"}>
               <PerformanceChart tokens={filteredTokens} showType={showType} />
             </div>
             <div className={"relative z-10 flex w-full justify-center"}>
@@ -96,7 +96,10 @@ const UserDashboard = () => {
           </div>
         </>
       )}
-      <PricePanel className={`absolute bottom-8 w-full px-4 ${fullOpen ? "hidden" : ""}`} viewType={viewType}>
+      <div className={fullOpen ? "hidden" : "w-full"}>
+        <IndexPerformance />
+      </div>
+      <PricePanel className={`absolute bottom-10 w-full px-4 ${fullOpen ? "hidden" : ""}`} viewType={viewType}>
         <PriceList />
       </PricePanel>
     </>
@@ -106,21 +109,17 @@ const UserDashboard = () => {
 export default UserDashboard;
 
 const StyledContainer = styled.div`
-  padding-top: 64px;
-
-  @media screen and (max-height: 890px) {
-    padding-top: 0px;
-  }
+  padding-top: 20px;
 `;
 
 const ChartPanel = styled.div`
-  @media screen and (max-height: 820px) {
+  @media screen and (max-height: 940px) {
     display: none;
   }
 `;
 
 const PricePanel = styled.div<{ viewType: number }>`
-  @media screen and (max-height: 530px) {
+  @media screen and (max-height: 710px) {
     display: none;
   }
   display: ${({ viewType }) => (viewType === 1 ? "none" : "")};

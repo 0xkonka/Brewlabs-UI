@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
 
@@ -41,7 +41,6 @@ const Directory = ({ page }: { page: number }) => {
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
-
   const currentBlocks = useChainCurrentBlocks();
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 

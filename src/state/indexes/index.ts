@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_URL } from "config/constants";
 import { Category } from "config/constants/types";
 import { IndexesState } from "state/types";
-import { fetchIndexesTotalStaking } from "./fetchIndexes";
+import { fetchIndexPerformance, fetchIndexesTotalStaking } from "./fetchIndexes";
 import { fetchUserBalance, fetchUserNftAllowance, fetchUserNftData, fetchUserStakings } from "./fetchIndexesUser";
 
 import { SerializedIndex } from "./types";
@@ -79,6 +79,18 @@ export const fetchIndexesPublicDataAsync = (chainId: ChainId) => async (dispatch
     .map((pool) => totalStakings.find((entry) => entry.sousId === pool.sousId));
 
   dispatch(setIndexesPublicData(liveData));
+};
+
+export const fetchIndexesPriceChanges = (chainId: ChainId) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data;
+
+  const result = await Promise.all(indexes.map((data) => fetchIndexPerformance(data)));
+
+  const data = result.map((data, i) => {
+    return { ...data, pid: indexes[i].pid };
+  });
+
+  dispatch(setIndexesPublicData(data));
 };
 
 export const fetchIndexPublicDataAsync = (pid: number) => async (dispatch, getState) => {

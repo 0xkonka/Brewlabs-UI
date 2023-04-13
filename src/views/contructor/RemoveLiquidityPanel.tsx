@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/link-passhref */
 import { useCallback, useContext, useMemo, useState } from "react";
 import StyledSlider from "./StyledSlider";
 import StyledButton from "views/directory/StyledButton";
@@ -32,8 +33,10 @@ import { NETWORKS } from "config/constants/networks";
 import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
 import { getNetworkLabel } from "lib/bridge/helpers";
 import { toast } from "react-toastify";
+import { useMintActionHandlers } from "state/mint/hooks";
+import Link from "next/link";
 
-export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
+export default function RemoveLiquidityPanel({ selectedLP }) {
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
 
@@ -542,9 +545,9 @@ export default function RemoveLiquidityPanel({ selectedLP, setCurAction }) {
             </SolidButton>
           )}
         </div>
-        <OutlinedButton small onClick={() => setCurAction("default")}>
-          Back
-        </OutlinedButton>
+        <Link href={"/constructor"}>
+          <OutlinedButton small>Back</OutlinedButton>
+        </Link>
       </div>
     </div>
   );

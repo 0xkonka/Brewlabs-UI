@@ -11,6 +11,7 @@ interface CurrencyInputPanelProps {
   value: string;
   onUserInput: (value: string) => void;
   onMax?: () => void;
+  handleCurrencySelect?: any;
   showMaxButton: boolean;
   label?: string;
   currency: Currency | null;
@@ -29,9 +30,9 @@ const CurrencyInputPanel = ({
   currency,
   balance,
   type = "swap",
-  onCurrencySelect,
   inputCurrencySelect = true,
   currencies,
+  handleCurrencySelect,
 }: CurrencyInputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   let tokenPrice, wrappedPrice;
@@ -54,7 +55,7 @@ const CurrencyInputPanel = ({
             inputCurrencySelect={inputCurrencySelect}
             onUserInput={onUserInput}
             type={type}
-            onCurrencySelect={onCurrencySelect}
+            handleCurrencySelect={handleCurrencySelect}
             currencies={currencies}
           />
         </div>

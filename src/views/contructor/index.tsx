@@ -13,9 +13,9 @@ import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getLpManagerAddress } from "utils/addressHelpers";
+import { useDerivedMintInfo, useMintState } from "state/mint/hooks";
 
 export default function Constructor() {
-  const [curAction, setCurAction] = useState("default");
   const [selectedLP, setSelectedLP] = useState(0);
   const [showCount, setShowCount] = useState(3);
 
@@ -45,30 +45,29 @@ export default function Constructor() {
             rel="noreferrer"
           >
             <div className="flex w-full items-start justify-between p-[16px_12px_16px_12px] sm:p-[16px_40px_16px_40px]">
-              <div className="mt-2 scale-150 text-white">{InfoSVG}</div>
+              <div className="mt-2 scale-150 text-white"><InfoSVG/></div>
               <div className="ml-4 flex-1 text-sm xsm:ml-6">
                 Important message to project owners: To ensure tax-free liquidity token creation for users of this
                 constructor, please whitelist the following address
               </div>
             </div>
           </a>
-          {curAction === "default" ? (
-            <BasePanel
-              setCurAction={setCurAction}
-              setSelectedLP={setSelectedLP}
-              sortedTokens={sortedTokens}
-              lpTokens={lpTokens}
-              showCount={showCount}
-              setShowCount={setShowCount}
-              isLoading={isLoading}
-            />
-          ) : curAction === "Remove" ? (
-            <RemoveLiquidityPanel selectedLP={sortedTokens[selectedLP]} setCurAction={setCurAction} />
+          {/* {curAction === "default" ? ( */}
+          <BasePanel
+            setSelectedLP={setSelectedLP}
+            sortedTokens={sortedTokens}
+            lpTokens={lpTokens}
+            showCount={showCount}
+            setShowCount={setShowCount}
+            isLoading={isLoading}
+          />
+          {/* ) : curAction === "Remove" ? (
+            <RemoveLiquidityPanel selectedLP={sortedTokens[selectedLP]} />
           ) : curAction === "addLiquidity" ? (
-            <AddLiquidityPanel setCurAction={setCurAction} />
+            <AddLiquidityPanel />
           ) : (
             ""
-          )}
+          )} */}
         </div>
       </Container>
     </PageWrapper>
