@@ -103,9 +103,9 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
     let _graphData;
     switch (curGraph) {
       case 2:
-        return data.performanceFees;
+        return data.performanceFees ?? [];
       case 3:
-        return data.stakedAddresses;
+        return data.stakedAddresses ?? [];
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
