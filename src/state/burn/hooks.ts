@@ -1,16 +1,17 @@
 import { Currency, CurrencyAmount, JSBI, Pair, Percent, TokenAmount } from "@brewlabs/sdk";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import { useTranslation } from "contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { wrappedCurrency } from "utils/wrappedCurrency";
 import { usePair } from "hooks/usePairs";
 import useTotalSupply from "hooks/useTotalSupply";
+import { wrappedCurrency } from "utils/wrappedCurrency";
 
 import { AppDispatch, AppState } from "../index";
 import { tryParseAmount } from "../swap/hooks";
 import { useTokenBalances } from "../wallet/hooks";
 import { Field, typeInput } from "./actions";
-import { useTranslation } from "contexts/localization";
 
 export function useBurnState(): AppState["burn"] {
   return useSelector<AppState, AppState["burn"]>((state) => state.burn);
@@ -30,7 +31,6 @@ export function useDerivedBurnInfo(
   error?: string;
 } {
   const { account, chainId } = useActiveWeb3React();
-  // const account = "0x442996e5dE18D79ab7cC8C0388D87059D64AAbe1";
 
   const { independentField, typedValue } = useBurnState();
 
@@ -52,6 +52,7 @@ export function useDerivedBurnInfo(
 
   // liquidity values
   const totalSupply = useTotalSupply(pair?.liquidityToken);
+
   const liquidityValueA =
     pair &&
     totalSupply &&

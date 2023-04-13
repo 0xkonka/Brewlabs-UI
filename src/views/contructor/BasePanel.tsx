@@ -18,8 +18,6 @@ import OutlinedButton from "views/swap/components/button/OutlinedButton";
 import { useAccount, useConnect } from "wagmi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
-import { useMintActionHandlers } from "state/mint/hooks";
-import Link from "next/link";
 
 const LoadingText = () => {
   const [dotCount, setDotCount] = useState([]);
@@ -40,7 +38,7 @@ const LoadingText = () => {
   );
 };
 
-export function TokenItem({ data, i, setSelectedLP }) {
+export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
   const token0Address: any = isAddress(data.token0.address);
   const token1Address: any = isAddress(data.token1.address);
 
@@ -95,7 +93,7 @@ export function TokenItem({ data, i, setSelectedLP }) {
           <StyledButton
             type={"quinary"}
             onClick={() => {
-              // onActionChanged("Remove");
+              setCurAction("Remove");
               setSelectedLP(i);
             }}
           >
@@ -104,7 +102,7 @@ export function TokenItem({ data, i, setSelectedLP }) {
           </StyledButton>
           <div className="absolute left-2 -bottom-[18px] flex items-center">
             <div className="text-white" id={"appValue" + i}>
-              <InfoSVG/>
+              <InfoSVG />
             </div>
             <div className="ml-1 mt-0.5 text-[10px]">${numberWithCommas((data.balance * data.price).toFixed(2))}</div>
           </div>
@@ -123,7 +121,7 @@ export function TokenItem({ data, i, setSelectedLP }) {
           <StyledButton
             type={"quinary"}
             onClick={() => {
-              // onActionChanged("Remove");
+              setCurAction("Remove");
               setSelectedLP(i);
             }}
           >
@@ -132,7 +130,7 @@ export function TokenItem({ data, i, setSelectedLP }) {
           </StyledButton>
           <div className="absolute -bottom-[18px] z-10 flex w-full items-center justify-center">
             <div className="text-white" id={"appValue" + i}>
-              <InfoSVG/>
+              <InfoSVG />
             </div>
             <div className="ml-1 mt-0.5 text-[10px]">${numberWithCommas((data.balance * data.price).toFixed(2))}</div>
           </div>
@@ -143,6 +141,7 @@ export function TokenItem({ data, i, setSelectedLP }) {
 }
 
 export default function BasePanel({
+  setCurAction,
   setSelectedLP,
   sortedTokens,
   lpTokens,
@@ -162,12 +161,10 @@ export default function BasePanel({
       </Modal>
       <div
         className="mt-3.5 flex h-[140px] w-full cursor-pointer items-center justify-center rounded-[30px] border border-dashed border-[#FFFFFF80] hover:border-white hover:text-white"
-        // onClick={() => onActionChanged("addLiquidity")}
+        onClick={() => setCurAction("addLiquidity")}
       >
         <span className="-mt-1 text-xl leading-none">+</span>&nbsp;
-        <Link href={"/add"} className="leading-none">
-          Construct a liquidity pair
-        </Link>
+        <div className="leading-none">Construct a liquidity pair</div>
       </div>
       {!account ? (
         <div
@@ -185,7 +182,9 @@ export default function BasePanel({
             {!lpLoading ? (
               lpTokens.length ? (
                 sortedTokens.map((data: any, i: number) => {
-                  return <TokenItem key={i} data={data} i={i} setSelectedLP={setSelectedLP} />;
+                  return (
+                    <TokenItem key={i} data={data} i={i} setCurAction={setCurAction} setSelectedLP={setSelectedLP} />
+                  );
                 })
               ) : (
                 <div className="flex h-full max-h-[210px] min-h-[210px] w-full items-center justify-center">
@@ -222,7 +221,6 @@ const StyledContainer = styled.div<{ showCount: number }>`
       height: 16px;
       display: block !important;
     }
-
     ::-webkit-scrollbar-track {
     }
     ::-webkit-scrollbar-thumb:vertical {

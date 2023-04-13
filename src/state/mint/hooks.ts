@@ -1,4 +1,15 @@
-import { Currency, CurrencyAmount, JSBI, NATIVE_CURRENCIES, Pair, Percent, Price, TokenAmount } from "@brewlabs/sdk";
+/* eslint-disable react-hooks/exhaustive-deps */
+import {
+  Currency,
+  CurrencyAmount,
+  JSBI,
+  NATIVE_CURRENCIES,
+  Pair,
+  Percent,
+  Price,
+  Token,
+  TokenAmount,
+} from "@brewlabs/sdk";
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -10,7 +21,8 @@ import { wrappedCurrency, wrappedCurrencyAmount } from "utils/wrappedCurrency";
 import { AppDispatch, AppState } from "../index";
 import { tryParseAmount } from "../swap/hooks";
 import { useCurrencyBalances } from "../wallet/hooks";
-import { Field, typeInput } from "./actions";
+import { Field, selectCurrency, typeInput } from "./actions";
+import { useCurrency } from "hooks/Tokens";
 
 const ZERO = JSBI.BigInt(0);
 
@@ -21,6 +33,7 @@ export function useMintState(): AppState["mint"] {
 export function useMintActionHandlers(noLiquidity: boolean | undefined): {
   onFieldAInput: (typedValue: string) => void;
   onFieldBInput: (typedValue: string) => void;
+  onCurrencySelection: (field: Field, currency: Currency) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -37,9 +50,22 @@ export function useMintActionHandlers(noLiquidity: boolean | undefined): {
     [dispatch, noLiquidity]
   );
 
+  const onCurrencySelection = useCallback(
+    (field: Field, currency: Currency) => {
+      dispatch(
+        selectCurrency({
+          field,
+          currencyId: currency instanceof Token ? currency.address : currency.isNative ? "ETH" : "",
+        })
+      );
+    },
+    [dispatch]
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
+    onCurrencySelection,
   };
 }
 
@@ -63,18 +89,25 @@ export function useDerivedMintInfo(
 
   const { t } = useTranslation();
 
-  const { independentField, typedValue, otherTypedValue } = useMintState();
+  const {
+    independentField,
+    typedValue,
+    otherTypedValue,
+    [Field.CURRENCY_A]: { currencyId: inputCurrencyId },
+    [Field.CURRENCY_B]: { currencyId: outputCurrencyId },
+  } = useMintState();
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
 
   // tokens
-  const currencies: { [field in Field]?: Currency } = useMemo(
-    () => ({
-      [Field.CURRENCY_A]: currencyA ?? undefined,
-      [Field.CURRENCY_B]: currencyB ?? undefined,
-    }),
-    [currencyA, currencyB]
-  );
+
+  const inputCurrency = useCurrency(inputCurrencyId);
+  const outputCurrency = useCurrency(outputCurrencyId);
+
+  const currencies: { [field in Field]?: Currency } = {
+    [Field.CURRENCY_A]: currencyA ?? inputCurrency ?? undefined,
+    [Field.CURRENCY_B]: currencyB ?? outputCurrency ?? undefined,
+  };
 
   // pair
   const [pairState, pair] = usePair(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]);
@@ -106,9 +139,13 @@ export function useDerivedMintInfo(
     if (independentAmount) {
       // we wrap the currencies just to get the price in terms of the other token
       const wrappedIndependentAmount = wrappedCurrencyAmount(independentAmount, chainId);
-      const [tokenA, tokenB] = [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)];
+      const [tokenA, tokenB] = [
+        wrappedCurrency(currencies[Field.CURRENCY_A], chainId),
+        wrappedCurrency(currencies[Field.CURRENCY_B], chainId),
+      ];
       if (tokenA && tokenB && wrappedIndependentAmount && pair) {
-        const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA;
+        const dependentCurrency =
+          dependentField === Field.CURRENCY_B ? currencies[Field.CURRENCY_B] : currencies[Field.CURRENCY_A];
         const dependentTokenAmount =
           dependentField === Field.CURRENCY_B
             ? pair.priceOf(tokenA).quote(wrappedIndependentAmount)
@@ -148,9 +185,9 @@ export function useDerivedMintInfo(
       }
       return undefined;
     }
-    const wrappedCurrencyA = wrappedCurrency(currencyA, chainId);
+    const wrappedCurrencyA = wrappedCurrency(currencies[Field.CURRENCY_A], chainId);
     return pair && wrappedCurrencyA ? pair.priceOf(wrappedCurrencyA) : undefined;
-  }, [chainId, currencyA, noLiquidity, pair, parsedAmounts]);
+  }, [chainId, currencies[Field.CURRENCY_A], noLiquidity, pair, parsedAmounts]);
 
   // liquidity minted
   const liquidityMinted = useMemo(() => {

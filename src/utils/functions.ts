@@ -118,7 +118,3 @@ export const getIndexName = (tokens) => {
   // .join("-");
 };
 
-export const WETH_ADDR: any = {
-  1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  56: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-};

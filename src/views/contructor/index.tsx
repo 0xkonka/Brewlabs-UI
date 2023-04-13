@@ -1,21 +1,22 @@
-import { TransactionResponse } from "@ethersproject/providers";
+import { useState } from "react";
+import { NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
-import OutlinedButton from "views/swap/components/button/OutlinedButton";
-import { useState } from "react";
-import BasePanel from "./BasePanel";
 import { useLPTokens } from "hooks/constructor/useLPTokens";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
+import { getLpManagerAddress } from "utils/addressHelpers";
+
+import BasePanel from "./BasePanel";
 import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { getLpManagerAddress } from "utils/addressHelpers";
-import { useDerivedMintInfo, useMintState } from "state/mint/hooks";
 
 export default function Constructor() {
+  const [curAction, setCurAction] = useState("default");
   const [selectedLP, setSelectedLP] = useState(0);
   const [showCount, setShowCount] = useState(3);
 
@@ -26,6 +27,7 @@ export default function Constructor() {
     lpTokens && lpTokens.sort((a, b) => b.balance * b.price - a.balance * a.price).slice(0, showCount);
   const isLoading = !(lpTokens.length || (ethLPTokens !== null && bscLPTokens !== null));
   const { chainId } = useActiveChainId();
+
   return (
     <PageWrapper>
       <PageHeader
@@ -41,33 +43,60 @@ export default function Constructor() {
           <a
             className="mt-9 flex cursor-pointer items-center justify-center rounded-[30px] border border-[#FFFFFF80] text-[#FFFFFFBF] transition hover:text-white"
             target="_blank"
-            href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/address/${getLpManagerAddress(chainId)}`}
+            href={getExplorerLink(chainId, "address", getLpManagerAddress(chainId))}
             rel="noreferrer"
           >
             <div className="flex w-full items-start justify-between p-[16px_12px_16px_12px] sm:p-[16px_40px_16px_40px]">
-              <div className="mt-2 scale-150 text-white"><InfoSVG/></div>
+              <div className="mt-2 scale-150 text-white">
+                <InfoSVG />
+              </div>
               <div className="ml-4 flex-1 text-sm xsm:ml-6">
                 Important message to project owners: To ensure tax-free liquidity token creation for users of this
                 constructor, please whitelist the following address
               </div>
             </div>
           </a>
-          {/* {curAction === "default" ? ( */}
-          <BasePanel
-            setSelectedLP={setSelectedLP}
-            sortedTokens={sortedTokens}
-            lpTokens={lpTokens}
-            showCount={showCount}
-            setShowCount={setShowCount}
-            isLoading={isLoading}
-          />
-          {/* ) : curAction === "Remove" ? (
-            <RemoveLiquidityPanel selectedLP={sortedTokens[selectedLP]} />
+          {curAction === "default" ? (
+            <BasePanel
+              setCurAction={setCurAction}
+              setSelectedLP={setSelectedLP}
+              sortedTokens={sortedTokens}
+              lpTokens={lpTokens}
+              showCount={showCount}
+              setShowCount={setShowCount}
+              isLoading={isLoading}
+            />
+          ) : curAction === "Remove" ? (
+            <RemoveLiquidityPanel
+              onBack={() => setCurAction("default")}
+              selectedChainId={sortedTokens[selectedLP]?.chainId ?? chainId}
+              currencyA={
+                sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)
+                  ? NATIVE_CURRENCIES[sortedTokens[selectedLP]?.chainId]
+                  : new Token(
+                      sortedTokens[selectedLP]?.chainId,
+                      sortedTokens[selectedLP]?.token0.address,
+                      +sortedTokens[selectedLP]?.token0.decimals,
+                      sortedTokens[selectedLP]?.token0.symbol
+                    )
+              }
+              currencyB={
+                sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)
+                  ? NATIVE_CURRENCIES[sortedTokens[selectedLP]?.chainId]
+                  : new Token(
+                      sortedTokens[selectedLP]?.chainId,
+                      sortedTokens[selectedLP]?.token1.address,
+                      +sortedTokens[selectedLP]?.token1.decimals,
+                      sortedTokens[selectedLP]?.token1.symbol
+                    )
+              }
+              lpPrice={sortedTokens[selectedLP].price}
+            />
           ) : curAction === "addLiquidity" ? (
-            <AddLiquidityPanel />
+            <AddLiquidityPanel onBack={() => setCurAction("default")} selectedChainId={chainId} />
           ) : (
             ""
-          )} */}
+          )}
         </div>
       </Container>
     </PageWrapper>

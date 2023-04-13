@@ -143,8 +143,9 @@ const StakingModal = ({
                     </div>
                   </StyledButton>
                 </div>
-                <Link
-                  href={`/add/${
+                <a
+                  className="flex-1"
+                  href={`/add/${data.chainId}/${
                     data.quoteToken.isNative || data.quoteToken.symbol === WNATIVE[data.chainId].symbol
                       ? getNativeSybmol(data.chainId)
                       : data.quoteToken.address
@@ -164,7 +165,7 @@ const StakingModal = ({
                       </div>
                     </StyledButton>
                   </a>
-                </Link>
+                </a>
               </div>
               <div className="mt-[30px]">
                 <StyledInput

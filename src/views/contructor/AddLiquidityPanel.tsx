@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/link-passhref */
 import ChainSelect from "views/directory/DeployerModal/ChainSelect";
 import RouterSelect from "views/directory/DeployerModal/RouterSelect";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -9,9 +8,9 @@ import { Field } from "state/mint/actions";
 import { Currency, TokenAmount } from "@brewlabs/sdk";
 import maxAmountSpend from "utils/maxAmountSpend";
 import { getExplorerLogo, routers } from "utils/functions";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import currencyId from "utils/currencyId";
-import router, { useRouter } from "next/router";
+import router from "next/router";
 import { useTranslation } from "contexts/localization";
 import SolidButton from "views/swap/components/button/SolidButton";
 import OutlinedButton from "views/swap/components/button/OutlinedButton";
@@ -31,25 +30,18 @@ import { useTransactionAdder } from "state/transactions/hooks";
 import Modal from "components/Modal";
 import WalletSelector from "components/wallet/WalletSelector";
 import { toast } from "react-toastify";
-import WordHighlight from "components/text/WordHighlight";
-import PageHeader from "components/layout/PageHeader";
-import PageWrapper from "components/layout/PageWrapper";
-import Container from "components/layout/Container";
-import { InfoSVG } from "components/dashboard/assets/svgs";
-import Link from "next/link";
+import { useCurrencySelectRoute } from "./useCurrencySelectRoute";
 
 export default function AddLiquidityPanel({
-  match: {
-    params: { currencyIdA, currencyIdB },
-  },
-}: any) {
-  const { chainId } = useActiveChainId();
+  onBack,
+  selectedChainId,
+  currencyA: currencyA_ = undefined,
+  currencyB: currencyB_ = undefined,
+}) {
+  const { chainId, isWrongNetwork } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
-  const router = useRouter();
-  const currencyA = useCurrency(currencyIdA);
-  const currencyB = useCurrency(currencyIdB);
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const deadline = useTransactionDeadline();
@@ -70,9 +62,13 @@ export default function AddLiquidityPanel({
     price,
     pair,
     error,
-  } = useDerivedMintInfo(currencyA, currencyB);
+  } = useDerivedMintInfo(currencyA_ ?? undefined, currencyB_ ?? undefined);
+  const { handleCurrencyASelect, handleCurrencyBSelect } = useCurrencySelectRoute();
 
   const lpManager = getLpManagerAddress(chainId);
+
+  const currencyA = currencies[Field.CURRENCY_A];
+  const currencyB = currencies[Field.CURRENCY_B];
 
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
@@ -83,7 +79,7 @@ export default function AddLiquidityPanel({
     lpManager === "" ? ROUTER_ADDRESS[chainId] : lpManager
   );
 
-  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity);
+  const { onFieldAInput, onFieldBInput, onCurrencySelection } = useMintActionHandlers(noLiquidity);
   const { t } = useTranslation();
 
   const formattedAmounts = {
@@ -110,6 +106,17 @@ export default function AddLiquidityPanel({
     },
     {}
   );
+
+  useEffect(() => {
+    if (chainId && isWrongNetwork === false && router.query?.currency) {
+      if (currencyA_?.symbol !== router.query.currency[0] && currencyA_?.address !== router.query.currency[0]) {
+        handleCurrencyASelect(currencyA);
+      }
+      if (currencyB_?.symbol !== router.query.currency[1] && currencyB_?.address !== router.query.currency[1]) {
+        handleCurrencyBSelect(currencyB);
+      }
+    }
+  }, [chainId, isWrongNetwork, currencyA_, currencyB_]);
 
   const isValid = !error;
   async function onAdd() {
@@ -213,221 +220,172 @@ export default function AddLiquidityPanel({
       });
   }
 
-  const handleCurrencyASelect = useCallback(
-    (currencyA_: Currency) => {
-      const newCurrencyIdA = currencyId(currencyA_);
-      if (newCurrencyIdA === currencyIdB) {
-        router.push(`/add/${currencyIdB}/${currencyIdA}`);
-      } else if (currencyIdB) {
-        router.push(`/add/${newCurrencyIdA}/${currencyIdB}`);
-      } else {
-        router.push(`/add/${newCurrencyIdA}`);
-      }
-    },
-    [currencyIdB, router, currencyIdA]
-  );
-  const handleCurrencyBSelect = useCallback(
-    (currencyB_: Currency) => {
-      const newCurrencyIdB = currencyId(currencyB_);
-      if (currencyIdA === newCurrencyIdB) {
-        if (currencyIdB) {
-          router.push(`/add/${currencyIdB}/${newCurrencyIdB}`);
-        } else {
-          router.push(`/add/${newCurrencyIdB}`);
-        }
-      } else {
-        router.push(`/add/${currencyIdA || "ETH"}/${newCurrencyIdB}`);
-      }
-    },
-    [currencyIdA, router, currencyIdB]
-  );
-
   return (
-    <PageWrapper>
-      <PageHeader
-        title={
-          <>
-            Liquidity <WordHighlight content="best" /> Constructor.
-          </>
-        }
-      />
-      <Container className="font-Roboto overflow-hidden">
-        <div className="relative mx-auto mb-4 flex w-fit min-w-[90%] max-w-[660px] flex-col gap-1 rounded-3xl border-t px-4 pb-10 pt-4 dark:border-slate-600 dark:bg-zinc-900 sm:min-w-[540px] sm:px-10 md:mx-0">
-          <div className="mt-2 text-2xl text-white">Liquidity Constructor</div>
-          <a
-            className="mt-9 flex cursor-pointer items-center justify-center rounded-[30px] border border-[#FFFFFF80] text-[#FFFFFFBF] transition hover:text-white"
-            target="_blank"
-            href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/address/${getLpManagerAddress(chainId)}`}
-            rel="noreferrer"
-          >
-            <div className="flex w-full items-start justify-between p-[16px_12px_16px_12px] sm:p-[16px_40px_16px_40px]">
-              <div className="mt-2 scale-150 text-white"><InfoSVG/></div>
-              <div className="ml-4 flex-1 text-sm xsm:ml-6">
-                Important message to project owners: To ensure tax-free liquidity token creation for users of this
-                constructor, please whitelist the following address
+    <div>
+      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
+        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
+      </Modal>
+      <div className="mt-3">
+        <ChainSelect />
+      </div>
+      <div className="-mt-2">
+        <RouterSelect routers={routers[chainId ?? 1]} />
+      </div>
+      <div className="my-2 rounded-[30px] border border-[#FFFFFF80]">
+        <CurrencyInputPanel
+          label={t("TokenA")}
+          value={formattedAmounts[Field.CURRENCY_A]}
+          onUserInput={onFieldAInput}
+          onMax={() => {
+            onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
+          }}
+          showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+          onCurrencySelect={(field, currency) => {
+            if (currencyA_) {
+              handleCurrencyASelect(currency);
+            } else onCurrencySelection(field, currency);
+          }}
+          currency={currencies[Field.CURRENCY_A]}
+          balance={currencyBalances[Field.CURRENCY_A]}
+          type={"liquidity"}
+          currencies={currencies}
+        />
+      </div>
+      <div className="relative z-10 mx-auto -mt-4 -mb-4 flex h-7 w-10 items-center justify-center rounded-[10px] bg-primary text-2xl leading-none text-black">
+        <div className="-mt-1">+</div>
+      </div>
+      <div className="my-2 rounded-[30px] border border-dashed border-[#FFFFFF80]">
+        <CurrencyInputPanel
+          label={t("TokenB")}
+          value={formattedAmounts[Field.CURRENCY_B]}
+          onUserInput={onFieldBInput}
+          onMax={() => {
+            onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
+          }}
+          showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
+          onCurrencySelect={(field, currency) => {
+            if (currencyB_) {
+              handleCurrencyBSelect(currency);
+            } else onCurrencySelection(field, currency);
+          }}
+          currency={currencies[Field.CURRENCY_B]}
+          balance={currencyBalances[Field.CURRENCY_B]}
+          inputCurrencySelect={false}
+          type={"liquidity"}
+          currencies={currencies}
+        />
+      </div>
+      {currencyA && currencyB ? (
+        <div className="mt-6 rounded-[30px] border border-[#FFFFFF80] py-4 px-3 font-roboto font-bold text-[#FFFFFF80] sm:px-8">
+          <div className="text-xl text-white text-[#FFFFFFBF]">Create</div>
+          <div className="text-sm">
+            <div className="mt-2 flex flex-wrap justify-between">
+              <div className="w-full xsm:w-[60%]">Approximate LP tokens</div>
+              <div className="w-full xsm:w-[40%]">
+                {liquidityMinted ? liquidityMinted.toSignificant(6) : "0.000"}
+                &nbsp;{currencyA.symbol}-{currencyB.symbol}
               </div>
             </div>
-          </a>
-          <div>
-            <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
-              <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
-            </Modal>
-            <div className="mt-3">
-              <ChainSelect />
+            <div className="mt-2 flex flex-wrap justify-between xsm:mt-0">
+              <div className="w-full xsm:w-[60%]">Share of pool</div>
+              <div className="w-full xsm:w-[40%]">
+                {noLiquidity && price
+                  ? "100"
+                  : (poolTokenPercentage?.lessThan(ONE_BIPS) ? "<0.01" : poolTokenPercentage?.toFixed(2)) ?? "0"}
+                %
+              </div>
             </div>
-            <div className="-mt-2">
-              <RouterSelect routers={routers[chainId ?? 1]} />
-            </div>
-            <div className="my-2 rounded-[30px] border border-[#FFFFFF80]">
-              <CurrencyInputPanel
-                label={t("TokenA")}
-                value={formattedAmounts[Field.CURRENCY_A]}
-                onUserInput={onFieldAInput}
-                onMax={() => {
-                  onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
-                }}
-                handleCurrencySelect={handleCurrencyASelect}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-                currency={currencies[Field.CURRENCY_A]}
-                balance={currencyBalances[Field.CURRENCY_A]}
-                type={"liquidity"}
-                currencies={currencies}
-              />
-            </div>
-            <div className="relative z-10 mx-auto -mt-4 -mb-4 flex h-7 w-10 items-center justify-center rounded-[10px] bg-primary text-2xl leading-none text-black">
-              <div className="-mt-1">+</div>
-            </div>
-            <div className="my-2 rounded-[30px] border border-dashed border-[#FFFFFF80]">
-              <CurrencyInputPanel
-                label={t("TokenB")}
-                value={formattedAmounts[Field.CURRENCY_B]}
-                onUserInput={onFieldBInput}
-                onMax={() => {
-                  onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
-                }}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-                handleCurrencySelect={handleCurrencyBSelect}
-                currency={currencies[Field.CURRENCY_B]}
-                balance={currencyBalances[Field.CURRENCY_B]}
-                inputCurrencySelect={false}
-                type={"liquidity"}
-                currencies={currencies}
-              />
-            </div>
-            {currencyA && currencyB ? (
-              <div className="mt-6 rounded-[30px] border border-[#FFFFFF80] py-4 px-3 font-roboto font-bold text-[#FFFFFF80] sm:px-8">
-                <div className="text-xl text-white text-[#FFFFFFBF]">Create</div>
-                <div className="text-sm">
-                  <div className="mt-2 flex flex-wrap justify-between">
-                    <div className="w-full xsm:w-[60%]">Approximate LP tokens</div>
-                    <div className="w-full xsm:w-[40%]">
-                      {liquidityMinted ? liquidityMinted.toSignificant(6) : "0.000"}
-                      &nbsp;{currencyA.symbol}-{currencyB.symbol}
-                    </div>
-                  </div>
-                  <div className="mt-2 flex flex-wrap justify-between xsm:mt-0">
-                    <div className="w-full xsm:w-[60%]">Share of pool</div>
-                    <div className="w-full xsm:w-[40%]">
-                      {noLiquidity && price
-                        ? "100"
-                        : (poolTokenPercentage?.lessThan(ONE_BIPS) ? "<0.01" : poolTokenPercentage?.toFixed(2)) ?? "0"}
-                      %
-                    </div>
-                  </div>
-                  <div className="mt-2 flex flex-wrap justify-between xsm:mt-0">
-                    <div className="w-full xsm:w-[60%]">Liquidity token address</div>
-                    {pair ? (
-                      <div className="relative flex w-full items-center xsm:w-[40%]">
-                        <img
-                          src={getExplorerLogo(chainId)}
-                          alt={""}
-                          className="absolute left-0 top-[1px] h-4 w-4 rounded-full xsm:-left-6"
-                        />
-                        <a
-                          className="ml-6 mr-0 max-w-[200px] flex-1 overflow-hidden text-ellipsis underline xsm:ml-0 sm:mr-4"
-                          target={"_blank"}
-                          href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/token/${
-                            pair.liquidityToken.address
-                          }`}
-                          rel="noreferrer"
-                        >
-                          {pair.liquidityToken.address}
-                        </a>
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </div>
+            <div className="mt-2 flex flex-wrap justify-between xsm:mt-0">
+              <div className="w-full xsm:w-[60%]">Liquidity token address</div>
+              {pair ? (
+                <div className="relative flex w-full items-center xsm:w-[40%]">
+                  <img
+                    src={getExplorerLogo(chainId)}
+                    alt={""}
+                    className="absolute left-0 top-[1px] h-4 w-4 rounded-full xsm:-left-6"
+                  />
+                  <a
+                    className="ml-6 mr-0 max-w-[200px] flex-1 overflow-hidden text-ellipsis underline xsm:ml-0 sm:mr-4"
+                    target={"_blank"}
+                    href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/token/${
+                      pair.liquidityToken.address
+                    }`}
+                    rel="noreferrer"
+                  >
+                    {pair.liquidityToken.address}
+                  </a>
                 </div>
-              </div>
-            ) : (
-              ""
-            )}
-            <div className="mt-6 mb-3">
-              {isValid &&
-                (approvalA === ApprovalState.NOT_APPROVED ||
-                  approvalA === ApprovalState.PENDING ||
-                  approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING) && (
-                  <div className="flex w-full justify-between">
-                    {approvalA !== ApprovalState.APPROVED && (
-                      <SolidButton
-                        onClick={approveACallback}
-                        disabled={approvalA === ApprovalState.PENDING}
-                        className={`${approvalB !== ApprovalState.APPROVED ? "w-[48%]" : "w-full"}`}
-                      >
-                        {approvalA === ApprovalState.PENDING
-                          ? t("Enabling %asset%", { asset: currencies[Field.CURRENCY_A]?.symbol })
-                          : t("Enable %asset%", { asset: currencies[Field.CURRENCY_A]?.symbol })}
-                      </SolidButton>
-                    )}
-                    {approvalB !== ApprovalState.APPROVED && (
-                      <SolidButton
-                        onClick={approveBCallback}
-                        disabled={approvalB === ApprovalState.PENDING}
-                        className={`${approvalA !== ApprovalState.APPROVED ? "w-[48%]" : "w-full"}`}
-                      >
-                        {approvalB === ApprovalState.PENDING
-                          ? t("Enabling %asset%", { asset: currencies[Field.CURRENCY_B]?.symbol })
-                          : t("Enable %asset%", { asset: currencies[Field.CURRENCY_B]?.symbol })}
-                      </SolidButton>
-                    )}
-                  </div>
-                )}
-              {!(
-                isValid &&
-                (approvalA === ApprovalState.NOT_APPROVED ||
-                  approvalA === ApprovalState.PENDING ||
-                  approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING)
-              ) ? (
-                <SolidButton
-                  className={`w-full ${
-                    !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-                      ? "bg-[#ed5249]"
-                      : "bg-primary"
-                  }`}
-                  onClick={() => {
-                    onAdd();
-                    if (error === "Connect Wallet") setOpenWalletModal(true);
-                  }}
-                  disabled={
-                    (!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED) &&
-                    error !== "Connect Wallet"
-                  }
-                >
-                  {error ?? t("Supply")}
-                </SolidButton>
               ) : (
                 ""
               )}
             </div>
-            <Link href={"/constructor"}>
-              <OutlinedButton small>Back</OutlinedButton>
-            </Link>
           </div>
         </div>
-      </Container>
-    </PageWrapper>
+      ) : (
+        ""
+      )}
+      <div className="mt-6 mb-3">
+        {isValid &&
+          (approvalA === ApprovalState.NOT_APPROVED ||
+            approvalA === ApprovalState.PENDING ||
+            approvalB === ApprovalState.NOT_APPROVED ||
+            approvalB === ApprovalState.PENDING) && (
+            <div className="flex w-full justify-between">
+              {approvalA !== ApprovalState.APPROVED && (
+                <SolidButton
+                  onClick={approveACallback}
+                  disabled={approvalA === ApprovalState.PENDING}
+                  className={`${approvalB !== ApprovalState.APPROVED ? "w-[48%]" : "w-full"}`}
+                >
+                  {approvalA === ApprovalState.PENDING
+                    ? t("Enabling %asset%", { asset: currencies[Field.CURRENCY_A]?.symbol })
+                    : t("Enable %asset%", { asset: currencies[Field.CURRENCY_A]?.symbol })}
+                </SolidButton>
+              )}
+              {approvalB !== ApprovalState.APPROVED && (
+                <SolidButton
+                  onClick={approveBCallback}
+                  disabled={approvalB === ApprovalState.PENDING}
+                  className={`${approvalA !== ApprovalState.APPROVED ? "w-[48%]" : "w-full"}`}
+                >
+                  {approvalB === ApprovalState.PENDING
+                    ? t("Enabling %asset%", { asset: currencies[Field.CURRENCY_B]?.symbol })
+                    : t("Enable %asset%", { asset: currencies[Field.CURRENCY_B]?.symbol })}
+                </SolidButton>
+              )}
+            </div>
+          )}
+        {!(
+          isValid &&
+          (approvalA === ApprovalState.NOT_APPROVED ||
+            approvalA === ApprovalState.PENDING ||
+            approvalB === ApprovalState.NOT_APPROVED ||
+            approvalB === ApprovalState.PENDING)
+        ) ? (
+          <SolidButton
+            className={`w-full ${
+              !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
+                ? "bg-[#ed5249]"
+                : "bg-primary"
+            }`}
+            onClick={() => {
+              onAdd();
+              if (error === "Connect Wallet") setOpenWalletModal(true);
+            }}
+            disabled={
+              (!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED) &&
+              error !== "Connect Wallet"
+            }
+          >
+            {error ?? t("Supply")}
+          </SolidButton>
+        ) : (
+          ""
+        )}
+      </div>
+      <OutlinedButton small onClick={onBack}>
+        Back
+      </OutlinedButton>
+    </div>
   );
 }
