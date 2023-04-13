@@ -27,13 +27,16 @@ export default function Constructor() {
     lpTokens && lpTokens.sort((a, b) => b.balance * b.price - a.balance * a.price).slice(0, showCount);
   const isLoading = !(lpTokens.length || (ethLPTokens !== null && bscLPTokens !== null));
   const { chainId } = useActiveChainId();
-  
+
   return (
     <PageWrapper>
       <PageHeader
         title={
           <>
-            Liquidity <WordHighlight content="best" /> Constructor.
+            Manage your liquidity with the <WordHighlight content="Brewlabs" /> Constructor.
+            <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
+              Add or remove liquidity from a number of routers free from any token tax fees.
+            </div>
           </>
         }
       />
