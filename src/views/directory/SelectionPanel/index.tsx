@@ -31,7 +31,11 @@ const SelectionPanel = ({
     const filter = pools.filter((data: any) => data.type === i);
     counts[i] = filter.length;
   }
-  counts[5] = pools.filter((data) => data.userData?.stakedBalance.gt(0)).length;
+  counts[5] = pools.filter((data) =>
+    data.type === Category.INDEXES
+      ? data.userData?.stakedBalances[0]?.gt(0) || data.userData?.stakedBalances[1]?.gt(0)
+      : data.userData?.stakedBalance.gt(0)
+  ).length;
 
   const filters = [
     `All (${counts[1] + counts[2] + counts[3] + counts[4]})`,
@@ -47,13 +51,17 @@ const SelectionPanel = ({
     (data) =>
       curFilter === Category.ALL ||
       data.type === curFilter ||
-      (curFilter === Category.MY_POSITION && data.userData?.stakedBalance.gt(0))
+      (curFilter === Category.MY_POSITION &&
+        (data.type === Category.INDEXES
+          ? data.userData?.stakedBalances[0]?.gt(0) || data.userData?.stakedBalances[1]?.gt(0)
+          : data.userData?.stakedBalance.gt(0)))
   );
   activityCnts["active"] = filteredPools.filter(
     (pool) =>
       !pool.isFinished &&
       ((pool.type === Category.POOL && +pool.startBlock > 0) ||
-        (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]))
+        (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
+        pool.type === Category.INDEXES)
   ).length;
   activityCnts["finished"] = filteredPools.filter((pool) => pool.isFinished || pool.multiplier === 0).length;
   activityCnts["new"] = filteredPools.filter(
@@ -63,7 +71,8 @@ const SelectionPanel = ({
         (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
         (pool.type === Category.FARM &&
           (+pool.startBlock > currentBlocks[pool.chainId] ||
-            +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])))
+            +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
+        (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
   ).length;
 
   return (
@@ -73,7 +82,7 @@ const SelectionPanel = ({
           <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
         </div>
         <div className="ml-4 hidden w-[130px] md:block">
-          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts}/>
+          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
       <div className="flex w-fit flex-none items-center justify-between md:flex-1 xl:w-full">
@@ -90,7 +99,7 @@ const SelectionPanel = ({
           </div>
         </div>
         <div className="ml-4 hidden w-[130px] xl:block">
-          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts}/>
+          <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
       <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">

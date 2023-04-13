@@ -27,10 +27,10 @@ export const navigationData = [
     icon: "ArrowTrendingUpIcon",
   },
   // {
-  //   name: "Stables",
+  //   name: "Indexes",
   //   href: "/stables",
-  //   external: true,
-  //   icon: "BanknotesIcon",
+  //   external: false,
+  //   icon: "Bars3CenterLeftIcon",
   // },
   {
     name: "Bridge",
@@ -53,8 +53,8 @@ export const navigationData = [
   },
   {
     name: "Constructor",
-    href: "https://earn.brewlabs.info/liquidity",
-    external: true,
+    href: "/constructor",
+    external: false,
     icon: "ArrowDownOnSquareIcon",
   },
 ] as NavigationItem[];

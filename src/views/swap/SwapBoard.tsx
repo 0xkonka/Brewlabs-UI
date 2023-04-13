@@ -8,6 +8,7 @@ import Modal from "components/Modal";
 import { SwapContext } from "contexts/SwapContext";
 import SwapPanel from "./SwapPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
+import SwapRewards from "./components/SwapRewards";
 
 export default function SwapBoard({ type = "swap", disableChainSelect = false }) {
   const {
@@ -46,7 +47,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
 
       {!disableChainSelect && <ChainSelect id="chain-select" />}
 
-      {swapTab === 0 ? <SwapPanel /> : swapTab === 1 ? <AddLiquidityPanel /> : null}
+      {swapTab === 0 ? <SwapPanel /> : swapTab === 1 ? <AddLiquidityPanel /> : swapTab === 2 ? <SwapRewards /> : ""}
 
       {openSettingModal && (
         <Modal

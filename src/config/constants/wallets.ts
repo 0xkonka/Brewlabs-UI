@@ -42,9 +42,9 @@ const walletsConfig = ({
       icon: "/images/wallets/metamask.png",
       installed: typeof window !== "undefined" && Boolean(window.ethereum?.isMetaMask) && metaMaskConnector.ready,
       connectorId: ConnectorNames.MetaMask,
-      deepLink: "https://metamask.app.link/dapp/earn.brewlabs.info/",
+      deepLink: "https://metamask.app.link/dapp/bridge.brewlabs.info/",
       qrCode,
-      downloadLink: "https://metamask.app.link/dapp/earn.brewlabs.info/",
+      downloadLink: "https://metamask.app.link/dapp/bridge.brewlabs.info/",
     },
     {
       id: "binance",

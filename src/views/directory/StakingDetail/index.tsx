@@ -510,7 +510,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <InfoPanel
-                      className="mt-20 flex cursor-pointer justify-between"
+                      className="mt-[80px] flex cursor-pointer justify-between lg:mt-20"
                       type={"secondary"}
                       boxShadow={curGraph === 1 ? "primary" : null}
                       onClick={() => setCurGraph(1)}

@@ -43,8 +43,8 @@ const navigation = {
     },
     {
       name: "Constructor",
-      href: "https://earn.brewlabs.info/liquidity",
-      external: true,
+      href: "/constructor",
+      external: false,
       status: "",
     },
     {
@@ -64,13 +64,13 @@ const navigation = {
     {
       name: "Staking",
       href: "/pools",
-      external: true,
+      external: false,
       status: "",
     },
     {
       name: "Farms",
       href: "/farms",
-      external: true,
+      external: false,
       status: "",
     },
   ],

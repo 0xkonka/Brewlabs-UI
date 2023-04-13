@@ -2,6 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
@@ -269,10 +270,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </StyledButton>
                         </a>
                       )}
-                      <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
-                        target="_blank"
-                        href={`https://earn.brewlabs.info/add/${
+                      <Link
+                        href={`/add/${data.chainId}/${
                           quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
                             ? getNativeSybmol(data.chainId)
                             : quoteToken.address
@@ -281,13 +280,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             ? getNativeSybmol(data.chainId)
                             : token.address
                         }`}
-                        rel="noreferrer"
                       >
-                        <StyledButton>
-                          <div>Make LP</div>
-                          <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </a>
+                        <a className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
+                          <StyledButton>
+                            <div>Make LP</div>
+                            <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                          </StyledButton>
+                        </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -442,7 +442,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <InfoPanel
-                      className="mt-20 flex cursor-pointer justify-between"
+                      className="mt-[80px] flex cursor-pointer justify-between lg:mt-20"
                       type={"secondary"}
                       boxShadow={curGraph === 0 ? "primary" : null}
                       onClick={() => setCurGraph(0)}
@@ -491,6 +491,39 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="relative mt-10 flex w-full flex-col justify-between md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
+                      <InfoPanel className="flex cursor-pointer justify-between" type={"secondary"}>
+                        <div>My Staked Tokens</div>
+                        <div className="flex ">
+                          {!address ? (
+                            "0.00"
+                          ) : accountData.stakedBalance ? (
+                            `${formatAmount(getBalanceNumber(accountData.stakedBalance, 18))}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                          &nbsp;
+                          <span className="w-[80px] overflow-hidden text-ellipsis whitespace-nowrap text-primary">
+                            {data.lpSymbol.split(" ")[0]}
+                          </span>
+                        </div>
+                      </InfoPanel>
+                      <InfoPanel
+                        className="mt-2 flex cursor-pointer justify-between xsm:ml-4 xsm:mt-0"
+                        type={"secondary"}
+                      >
+                        <div>USD Value</div>
+                        <div className="flex">
+                          {!address ? (
+                            "$0.00"
+                          ) : accountData.stakedBalance ? (
+                            `$${formatAmount(getBalanceNumber(accountData.stakedBalance, 18) * (lpPrice ?? 0))}`
+                          ) : (
+                            <SkeletonComponent />
+                          )}
+                        </div>
+                      </InfoPanel>
+                    </div>
+                    <div className="mt-8 flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
                         <div className="text-xl text-[#FFFFFFBF]">Pool Rewards</div>
                         <div className="mt-2 h-[56px]">
