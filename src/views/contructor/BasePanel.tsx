@@ -188,7 +188,7 @@ export default function BasePanel({
                 })
               ) : (
                 <div className="flex h-full max-h-[210px] min-h-[210px] w-full items-center justify-center">
-                  No Lp Tokens
+                  No liquidity tokens found.
                 </div>
               )
             ) : (

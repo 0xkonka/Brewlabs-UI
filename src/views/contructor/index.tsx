@@ -33,7 +33,10 @@ export default function Constructor() {
       <PageHeader
         title={
           <>
-            Liquidity <WordHighlight content="best" /> Constructor.
+            Manage your liquidity with the <WordHighlight content="Brewlabs" /> Constructor.
+            <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
+              Add or remove liquidity from a number of routers free from any token tax fees.
+            </div>
           </>
         }
       />
