@@ -23,6 +23,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.CRONOS,
     ChainId.BRISE,
   ],
+  indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
@@ -30,7 +31,6 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  stables: [],
 };
 
 export const CHAIN_KEYS = {

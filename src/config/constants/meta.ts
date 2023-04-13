@@ -24,7 +24,7 @@ const getPathList = (): PathList => {
       "/liquidity": { title: "Liquidity" },
       "/find": { title: "Import Pool" },
       "/farms": { title: "Farms" },
-      "/indexes": { title: "Indexes" },
+      "/indexes": { title: "Stable Indexes" },
       "/staking": { title: "Staking pools" },
       "/bridge": { title: "Bridge", description: "Transfer tokens cross-chain with the Brewlabs bridge." },
       "/constructor": { title: "Constructor" },
