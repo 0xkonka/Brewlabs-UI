@@ -17,7 +17,7 @@ const TotalStakedChart = ({
   prices: number[];
   curGraph: number;
 }) => {
-  if (!data) return;
+  if (!data) return <div className="h-[250px]" />;
   let pricechange = 0;
   if (curGraph === 2) pricechange = getAverageHistory(data)[data[0].length - 1];
 
@@ -170,7 +170,7 @@ const TotalStakedChart = ({
             <span
               className={`mb-1 flex ${+getAverageHistory(data)[data[0].length - 1] < 0 ? "text-danger" : "text-green"}`}
             >
-              {+getAverageHistory(data)[data[0].length - 1].toFixed(2)} %
+              {(+getAverageHistory(data)[data[0].length - 1]).toFixed(2)}%
             </span>
             {data.map((d, index) => {
               let priceChange = ((d[d.length - 1] - d[0]) / d[d.length - 1]) * 100;

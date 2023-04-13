@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/link-passhref */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
@@ -22,6 +23,7 @@ import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";
 import { getBalanceAmount } from "utils/formatBalance";
+import Link from "next/link";
 
 const StakingModal = ({
   open,
@@ -152,17 +154,17 @@ const StakingModal = ({
                       ? getNativeSybmol(data.chainId)
                       : data.token.address
                   }`}
-                  target={"_blank"}
-                  rel="noreferrer"
                 >
-                  <StyledButton type="secondary">
-                    <div className="flex items-center text-[#FFFFFFBF]">
-                      <div>
-                        Get <span className="text-primary">{data.lpSymbol}</span>
+                  <a target="_blank" className="flex-1">
+                    <StyledButton type="secondary">
+                      <div className="flex items-center text-[#FFFFFFBF]">
+                        <div>
+                          Get <span className="text-primary">{data.lpSymbol}</span>
+                        </div>
+                        <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
                       </div>
-                      <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
-                    </div>
-                  </StyledButton>
+                    </StyledButton>
+                  </a>
                 </a>
               </div>
               <div className="mt-[30px]">

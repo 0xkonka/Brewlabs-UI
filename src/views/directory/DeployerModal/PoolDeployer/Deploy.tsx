@@ -90,7 +90,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         </div>
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
-            <div className="mr-1.5 -mt-0.5 scale-125 text-white">{InfoSVG}</div>
+            <div className="mr-1.5 -mt-0.5 scale-125 text-white"><InfoSVG/></div>
             <div>Withdrawal fee</div>
           </div>
           <div className="flex items-center">
