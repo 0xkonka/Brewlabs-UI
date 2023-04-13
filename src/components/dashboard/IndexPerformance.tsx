@@ -58,7 +58,7 @@ const IndexPerformance = () => {
           responsive={responsive}
           infinite={true}
           autoPlay={true}
-          autoPlaySpeed={100000}
+          autoPlaySpeed={4000}
           ref={carouselRef}
           customDot={<CustomDot onClick={() => {}} />}
           showDots={true}
@@ -142,6 +142,7 @@ const DotGroup = styled.div<{ active?: boolean }>`
     background: ${({ active }) => (active ? "#FFDE00" : "#ffdd004c")};
   }
   margin-right: 8px;
+  z-index: 100;
 `;
 
 const StyledContainer = styled.div`
