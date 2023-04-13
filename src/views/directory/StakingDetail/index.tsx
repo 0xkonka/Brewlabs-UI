@@ -387,10 +387,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                         <div className="flex">
                           Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
-                          {data.sousId === 203 && (
-                            <>
-                              <br />
-                              Early Withdraw Fee 10.00 %
+                          {(data.sousId === 203 || data.sousId === 216) && (
+                            <>                              
+                              {" "}(Early Withdraw Fee {data.sousId === 203 ? `10.00` : `5.00`} %)
                             </>
                           )}
                           <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">

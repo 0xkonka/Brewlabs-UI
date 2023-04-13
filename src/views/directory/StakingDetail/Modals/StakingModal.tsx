@@ -66,7 +66,7 @@ const StakingModal = ({
     if(!accountData) return "0"
     
     if (type !== "deposit") {
-      if (data.enableEmergencyWithdraw || data.sousId === 203) {
+      if (data.enableEmergencyWithdraw || data.sousId === 203 || data.sousId === 216) {
         balance = accountData.stakedBalance;
       } else {
         balance = accountData.stakedBalance.minus(accountData.lockedBalance);
