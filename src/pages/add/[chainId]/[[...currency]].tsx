@@ -29,6 +29,7 @@ const AddLiquidityPage = () => {
   const currencyA = useCurrency(currencyIdA);
   const currencyB = useCurrency(currencyIdB);
 
+  console.log(currencyA, currencyB);
   return (
     <PageWrapper>
       <PageHeader

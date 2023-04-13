@@ -12,13 +12,13 @@ const CurrencySelectButton = ({
   inputCurrencySelect,
   onUserInput,
   type,
-  handleCurrencySelect,
+  onCurrencySelect,
   currencies,
 }: {
   inputCurrencySelect: boolean;
   onUserInput?: any;
   type?: any;
-  handleCurrencySelect?: any;
+  onCurrencySelect?: any;
   currencies: any;
 }) => {
   const [inputValue, setInputValue] = useState(null);
@@ -47,7 +47,7 @@ const CurrencySelectButton = ({
             selectedCurrency={inputValue}
             onUserInput={onUserInput}
             type={type}
-            handleCurrencySelect={handleCurrencySelect}
+            onCurrencySelect={onCurrencySelect}
           />
         );
       }}
