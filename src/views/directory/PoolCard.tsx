@@ -122,11 +122,8 @@ const PoolCard = ({
       <div className="flex hidden flex-col px-6">
         <div className="flex  items-center justify-between ">
           <div className="flex items-center">
-            {data.type === 3 ? (
-              <div className="mr-3 flex">
-                <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
-                <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
-              </div>
+            {data.type === Category.INDEXES ? (
+              <IndexLogo tokens={data.tokens} />
             ) : (
               <img
                 src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
