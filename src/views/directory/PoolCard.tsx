@@ -86,8 +86,8 @@ const PoolCard = ({
             <div className="text-xs leading-none">
               {data.type === Category.INDEXES ? (
                 data.priceChanges ? (
-                  <div className={data.priceChanges[2].percent >= 0 ? "text-success" : "text-danger"}>
-                    Performance - {data.priceChanges[2].percent.toFixed(2)}% 24hrs
+                  <div className={data.priceChanges[0].percent >= 0 ? "text-success" : "text-danger"}>
+                    Performance - {data.priceChanges[0].percent.toFixed(2)}% 24hrs
                   </div>
                 ) : (
                   <SkeletonComponent />

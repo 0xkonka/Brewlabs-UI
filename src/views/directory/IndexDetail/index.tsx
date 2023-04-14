@@ -48,7 +48,7 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import { useRouter } from "next/router";
 
-const aprTexts = ["30D", "7D", "24hrs"];
+const aprTexts = ["24hrs", "7D", "30D"];
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -392,8 +392,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       &nbsp;
                       <div className="flex text-[#FFFFFF80]">
                         {data.priceChanges !== undefined ? (
-                          <span className={data.priceChanges[2].percent < 0 ? "text-danger" : "text-green"}>
-                            {data.priceChanges[2].percent.toFixed(2)}% 
+                          <span className={data.priceChanges[0].percent < 0 ? "text-danger" : "text-green"}>
+                            {data.priceChanges[0].percent.toFixed(2)}% 
                           </span>
                         ) : (
                           <SkeletonComponent />
@@ -401,7 +401,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         &nbsp;
                         <div>
                           {data.priceChanges !== undefined ? (
-                            `(${formatDollar(data.priceChanges[2].value, 2)})`
+                            `(${formatDollar(data.priceChanges[0].value, 2)})`
                           ) : (
                             <SkeletonComponent />
                           )}

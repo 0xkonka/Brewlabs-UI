@@ -71,7 +71,6 @@ const IndexPerformance = () => {
                   if (!sortedPercentChanges) sortedPercentChanges = [undefined, undefined, undefined, undefined];
                   else {
                     sortedPercentChanges = sortedPercentChanges.map((data) => data.percent);
-                    sortedPercentChanges = sortedPercentChanges.reverse();
                   }
                   return (
                     <div
@@ -104,7 +103,7 @@ const IndexPerformance = () => {
                       <div className="flex">
                         {sortedPercentChanges.map((data, i) => {
                           if (window.innerWidth < 550 && i != 0) return;
-                          const names = ["30D", "7D", "1D"].reverse();
+                          const names = ["1D", "7D", "30D"];
                           return (
                             <div key={i} className="mr-5 text-xs font-semibold ">
                               {data ? (
