@@ -36,7 +36,6 @@ const EnterExitModal = ({
   data: DeserializedIndex;
 }) => {
   const { tokens, priceHistories, userData } = data;
-
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
@@ -280,7 +279,7 @@ const EnterExitModal = ({
                     />
                     <div className="relative">
                       <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
-                        {percents[index].toFixed(2)}%
+                        {percents[index] ? percents[index].toFixed(2) : "0.00"}%
                       </div>
                       <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
                         ${((+(amount ?? 0) * nativeTokenPrice * percents[index]) / 100).toFixed(2)} USD

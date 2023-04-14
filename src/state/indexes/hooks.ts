@@ -8,6 +8,7 @@ import { State } from "state/types";
 
 import {
   fetchIndexesFromApiAsync,
+  fetchIndexesPriceChanges,
   fetchIndexesPublicDataAsync,
   fetchIndexesUserDataAsync,
   fetchIndexesUserHistoryDataAsync,
@@ -30,6 +31,7 @@ export const useFetchPublicIndexesData = () => {
 
   useSlowRefreshEffect(() => {
     dispatch(fetchIndexesPublicDataAsync(chainId));
+    dispatch(fetchIndexesPriceChanges(chainId));
   }, [chainId, indexes.length]);
 };
 

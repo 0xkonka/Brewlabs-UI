@@ -46,11 +46,12 @@ import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import { useRouter } from "next/router";
 
-const aprTexts = ["Deploy", "30D", "7D", "24hrs"];
+const aprTexts = ["24hrs", "7D", "30D"];
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data } = detailDatas;
+  const { data } = detailDatas;
   const { tokens, userData, priceHistories } = data;
   const dispatch = useAppDispatch();
 
@@ -60,6 +61,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(2);
   const [curAPR, setCurAPR] = useState(0);
 
+  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
@@ -70,21 +72,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { onMintNft } = useIndex(data.pid, data.address, data.performanceFee);
 
   useEffect(() => {
-    const fetchPriceHistoryAsync = async () => {
-      const { priceChanges, priceHistories, tokenPrices } = await fetchIndexPerformance(data);
-
-      dispatch(
-        setIndexesPublicData([
-          {
-            pid: data.pid,
-            priceChanges,
-            priceHistories,
-            tokenPrices,
-          },
-        ])
-      );
-    };
-
     const fetchFeeHistoriesAsync = async () => {
       const { performanceFees, commissions } = await fetchIndexFeeHistories(data);
 
@@ -100,7 +87,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     };
 
     fetchFeeHistoriesAsync();
-    fetchPriceHistoryAsync();
   }, [data.pid]);
 
   useEffect(() => {
@@ -126,7 +112,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 1:
         return data.performanceFees ?? [];
       case 2:
-        return data.priceHistories ?? [];
+        return data.priceHistories ?? [[]];
       case 3:
         return data.commissions ?? [];
       default:
@@ -138,23 +124,23 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     }
   };
 
-  const renderProfit = () => {
+  const getProfit = () => {
+    if (!userData?.stakedBalances?.length || !priceHistories?.length) return 0;
     let profit = 0;
-    if (!userData?.stakedBalances?.length || !priceHistories?.length)
-      return <span className="mr-1 text-green">$0.00</span>;
-
     for (let k = 0; k < data.numTokens; k++) {
       profit +=
         +ethers.utils.formatUnits(userData.stakedBalances[k], tokens[k].decimals) *
         priceHistories[k][priceHistories[k].length - 1];
     }
     profit -= +userData.stakedUsdAmount;
+    return profit;
+  };
 
-    return (
-      <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
-        ${numberWithCommas(profit.toFixed(2))}
-      </span>
-    );
+  const renderProfit = () => {
+    let profit = getProfit();
+    if (!userData?.stakedBalances?.length || !priceHistories?.length)
+      return <span className="mr-1 text-green">$0.00</span>;
+    return <span className={`${profit > 0 ? "text-green" : ""} mr-1`}>${numberWithCommas(profit.toFixed(2))}</span>;
   };
 
   const showError = (errorMsg: string) => {
@@ -203,7 +189,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/indexes")}>
                         <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -216,7 +202,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div>
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/indexes")}>
                         <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -290,8 +276,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80]">
                         <div>
-                          <span className="#FFFFFF80">Buy</span>{" "}
-                          {tokens.length === 2 ? tokens.map((t) => t.symbol).join(" & ") : `${tokens.length} Tokens`}
+                          <span className="#FFFFFF80">Buy</span> {getIndexName(tokens)}
                         </div>
                         <div className="flex items-center">
                           <img src="/images/explorer/etherscan.png" alt={""} className="mr-1 w-3" />
@@ -299,7 +284,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                       <div className="text-xs leading-none text-[#FFFFFF80]">
-                        <div className="relative flex">
+                        <div className="relative mt-1 flex">
                           Deposit Fee {data.fee}% {getNativeSybmol(data.chainId)}
                           <ReactTooltip
                             anchorId={"Depositfees"}
@@ -310,7 +295,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
-                        <div className="relative flex">
+                        <div className="relative mt-1 flex">
                           Withdrawal Fee 0.00% / In Profit Withdrawal Fee {data.fee ?? ""}% of Profit
                           <ReactTooltip
                             anchorId={"Withdrawfees"}
@@ -321,7 +306,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
-                        <div className="relative flex">
+                        <div className="relative mt-1 flex">
                           Performance Fee {ethers.utils.formatEther(data.performanceFee ?? "0")}{" "}
                           {getNativeSybmol(data.chainId)}
                           <ReactTooltip
@@ -407,8 +392,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       &nbsp;
                       <div className="flex text-[#FFFFFF80]">
                         {data.priceChanges !== undefined ? (
-                          <span className={data.priceChanges[3].percent < 0 ? "text-danger" : "text-green"}>
-                            {data.priceChanges[3].percent.toFixed(2)}%
+                          <span className={data.priceChanges[0].percent < 0 ? "text-danger" : "text-green"}>
+                            {data.priceChanges[0].percent.toFixed(2)}% 
                           </span>
                         ) : (
                           <SkeletonComponent />
@@ -416,7 +401,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         &nbsp;
                         <div>
                           {data.priceChanges !== undefined ? (
-                            `(${formatDollar(data.priceChanges[3].value, 2)})`
+                            `(${formatDollar(data.priceChanges[0].value, 2)})`
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -522,7 +507,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("exit");
                               }}
-                              disabled={pending || !address}
+                              disabled={pending || !address || getProfit() <= 0}
                             >
                               Exit &nbsp;{renderProfit()} Profit
                             </StyledButton>

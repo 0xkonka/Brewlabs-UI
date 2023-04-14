@@ -120,7 +120,7 @@ const DrawChart = ({ data }: { data: any }) => {
   return (
     <StyledChartPanel down={(priceChange < 0).toString()}>
       {typeof window !== "undefined" ? (
-        <Chart options={chartData.options} series={chartData.series} type="area" height={120} />
+        <Chart options={chartData.options} series={chartData.series} type="area" height={90} />
       ) : (
         ""
       )}
@@ -148,6 +148,7 @@ const PriceList = () => {
   };
   return (
     <StyledContainer>
+      <div className = 'font-semibold text-yellow mb-1 -ml-2'>Featured</div>
       <Carousel
         responsive={responsive}
         infinite={true}
@@ -202,7 +203,7 @@ export default PriceList;
 
 const StyledContainer = styled.div`
   width: calc(100% - 30px);
-  height: 160px;
+  height: 130px;
   margin: 0 auto;
   .react-multi-carousel-list {
     position: unset !important;
@@ -263,5 +264,5 @@ const StyledChartPanel = styled.div<{ down: String }>`
     min-height: unset !important;
     margin-top: -23px;
   }
-  height: 120px;
+  height: 90px;
 `;

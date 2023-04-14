@@ -109,7 +109,7 @@ export default function AddLiquidityPanel({
 
   useEffect(() => {
     if (chainId && isWrongNetwork === false && router.query?.currency) {
-      if (currencyA_?.symbol !== router.query.currency[0] &&  currencyA_?.address !== router.query.currency[0]) {
+      if (currencyA_?.symbol !== router.query.currency[0] && currencyA_?.address !== router.query.currency[0]) {
         handleCurrencyASelect(currencyA);
       }
       if (currencyB_?.symbol !== router.query.currency[1] && currencyB_?.address !== router.query.currency[1]) {
