@@ -36,6 +36,14 @@ const tokens = {
     "Crypto 4 A Cause Fund",
     "https://crypto4ac.com/"
   ),
+  aidi: new Token(
+    POLYGON,
+    "0xDFc2C4ce66561c3ee53dbeA9ff78550F395a25e2",
+    18,
+    "AIDI",
+    "Aidi Finance",
+    "https://aidiverse.com/"
+  ),
 };
 
 export default tokens;
