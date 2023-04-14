@@ -148,7 +148,7 @@ const PriceList = () => {
   };
   return (
     <StyledContainer>
-      <div className = 'font-semibold text-yellow mb-1'>Featured</div>
+      <div className = 'font-semibold text-yellow mb-1 -ml-2'>Featured</div>
       <Carousel
         responsive={responsive}
         infinite={true}
