@@ -3,9 +3,13 @@ import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
-import styled from "styled-components";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useAccount } from "wagmi";
+import styled from "styled-components";
+
+import "react-tooltip/dist/react-tooltip.css";
 
 import { chevronLeftSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
@@ -14,6 +18,7 @@ import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { CHAIN_ICONS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -44,9 +49,6 @@ import DropDown from "./Dropdown";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import "react-tooltip/dist/react-tooltip.css";
-import { useRouter } from "next/router";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 
@@ -257,7 +259,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex flex-col items-center justify-between md:flex-row">
                   <IndexLogo tokens={tokens} />
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
-                    <InfoPanel padding={"14px 25px 8px 25px"} className="mt-4 max-w-full md:max-w-[500px]">
+                    <InfoPanel padding={"14px 25px 8px 25px"} className="relative mt-4 max-w-full md:max-w-[500px]">
                       <div className="flex flex-wrap justify-between text-xl">
                         <div className="mr-4 whitespace-nowrap">Index: {getIndexName(tokens)}</div>
                         <div className="flex items-center">
@@ -318,6 +320,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
+                      </div>
+                      <div className="absolute bottom-1 right-1">
+                        {data ? (
+                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
 
@@ -393,7 +402,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex text-[#FFFFFF80]">
                         {data.priceChanges !== undefined ? (
                           <span className={data.priceChanges[0].percent < 0 ? "text-danger" : "text-green"}>
-                            {data.priceChanges[0].percent.toFixed(2)}% 
+                            {data.priceChanges[0].percent.toFixed(2)}%
                           </span>
                         ) : (
                           <SkeletonComponent />
