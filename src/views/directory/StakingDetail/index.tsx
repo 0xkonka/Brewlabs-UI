@@ -12,6 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -348,7 +349,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel
                       padding={"14px 25px 8px 25px"}
-                      className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                      className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                     >
                       <div className="flex justify-between text-xl">
                         <div>
@@ -401,6 +402,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
+                      </div>
+                      <div className="absolute bottom-1 right-1">
+                        {data ? (
+                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
 
