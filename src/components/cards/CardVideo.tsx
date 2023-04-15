@@ -1,9 +1,8 @@
-import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import LogoIcon from "@components/LogoIcon";
 
-import { ClockIcon, PlayCircleIcon } from "@heroicons/react/24/outline";
+import { PlayCircleIcon } from "@heroicons/react/24/outline";
 
 import Modal from "../MotionModal";
 
@@ -23,7 +22,7 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
         }}
         className="w-full overflow-hidden rounded-2xl border border-gray-700"
       >
-        <div className="w-100 flex h-64 items-center justify-center rounded-xl bg-gradient-to-tr from-zinc-800 to-zinc-900">
+        <div className="w-100 flex h-56 items-center justify-center rounded-xl bg-gradient-to-tr from-zinc-800 to-zinc-900 sm:h-64">
           <div>
             <LogoIcon classNames="w-10 text-dark dark:text-brand" />
             <h5 className="text-2xl">BREWLABS STAKING</h5>
@@ -41,7 +40,6 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
             className="aspect-video w-full"
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1`}
             title="YouTube video player"
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>

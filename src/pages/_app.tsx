@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
+
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
@@ -102,21 +103,21 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                               <div
                                 className={clsx(
                                   router?.pathname === "/" && "home",
-                                  "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                                  "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800 dark:to-slate-900"
                                 )}
                               >
                                 <Suspense>
                                   <Bubbles />
                                 </Suspense>
 
-                                <Image
+                                {/* <Image
                                   className="fixed top-0 -right-44 home:z-10 dark:opacity-50"
                                   src="/images/blur-indigo.png"
                                   alt="background blur"
                                   width={567}
                                   height={567}
                                   unoptimized={false}
-                                />
+                                /> */}
 
                                 <div className="flex h-full">
                                   <NavigationDesktop />

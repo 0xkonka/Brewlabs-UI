@@ -5,7 +5,7 @@ const VideoSection = () => (
   <section className="bg-gradient-to-b from-zinc-800 to-zinc-900 pb-16 pt-44">
     <Container>
       <div className="grid grid-cols-4 gap-16">
-        <div className="col-span-4 mr-24 md:col-span-2">
+        <div className="col-span-4 sm:mr-24 md:col-span-2">
           <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
             Smart tech for smart people
           </h2>
