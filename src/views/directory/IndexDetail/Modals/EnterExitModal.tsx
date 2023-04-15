@@ -207,7 +207,7 @@ const EnterExitModal = ({
                 <>
                   <div className="mt-[30px]">
                     <StyledInput
-                      placeholder={`Enter amount ETH...`}
+                      placeholder={`Enter amount ${getNativeSybmol(data.chainId)}...`}
                       value={amount}
                       onChange={(e) => {
                         if ((isNaN(+e.target.value) || !e.target.value) && e.target.value !== "") return;
@@ -219,7 +219,7 @@ const EnterExitModal = ({
                   </div>
                   <div className="mt-1 flex w-full flex-col items-end text-sm">
                     <div className="text-[#FFFFFFBF]">
-                      My ETH <span className="text-yellow">:</span> {Number(ethbalance).toFixed(2)}
+                      My {getNativeSybmol(data.chainId)} <span className="text-yellow">:</span> {Number(ethbalance).toFixed(2)}
                     </div>
                   </div>
                   <div className="mt-1 flex w-full flex-col items-end text-sm">
