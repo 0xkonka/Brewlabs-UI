@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import LogoIcon from "@components/LogoIcon";
+import useIsMobile from "@hooks/useIsMobile";
 
 import { PlayCircleIcon } from "@heroicons/react/24/outline";
 
 import Modal from "../MotionModal";
 
 const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string }) => {
+  const isMobile = useIsMobile();
   const [selected, setSelected] = useState(false);
 
   const closeSelected = () => {
@@ -18,6 +20,10 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
       <motion.div
         layoutId={cardId}
         onClick={() => {
+          if (isMobile) {
+            window.open(`https://www.youtube.com/watch?v=${youtubeId}`, "_blank");
+            return;
+          }
           setSelected(true);
         }}
         className="w-full overflow-hidden rounded-2xl border border-gray-700"
