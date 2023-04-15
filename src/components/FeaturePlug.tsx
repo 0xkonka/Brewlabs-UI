@@ -1,4 +1,4 @@
-import { CheckIcon, ArrowLongRightIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 const features = [
@@ -15,29 +15,28 @@ const features = [
   {
     name: "Construct liquidity",
     description: "Manage your liquidity across various decentralised exchanges.",
-    link: "",
-    external: true,
+    link: "https://earn.brewlabs.info/liquidity",
   },
   {
     name: "Index",
     description: "Purchase a basket of tokens to speculate performance and mitigate investment risk.",
-    link: "",
+    link: "/indexes",
   },
   {
     name: "Cross-chain bridging",
     description: "Move your tokens cross-chain between networks with the Brewlabs bridge.",
-    link: "",
+    link: "/bridge",
   },
   { name: "Zap", description: "Find the best performing yield farms and participate with a single click.", link: "" },
   {
     name: "Yield farming",
     description: "Discover yield farming opportunities through Brewlabs and partners.",
-    link: "",
+    link: "https://earn.brewlabs.info/zap",
   },
   {
     name: "NTFs",
     description: "Explore the TrueNFT marketplace for your favourite NFT’s, stake, mint and transfer NFTS plus more.",
-    link: "",
+    link: "https://truenft.io/home",
   },
 ];
 
@@ -56,12 +55,16 @@ const FeaturePlug = () => {
           </p>
         </div>
         <div className="mt-20 lg:col-span-2 lg:mt-0">
-          <dl className="grid grid-cols-1 gap-12 sm:grid-flow-col sm:grid-cols-2 sm:grid-rows-4">
+          <dl className="grid grid-cols-1 sm:grid-flow-col sm:grid-cols-2 sm:grid-rows-4">
             {features.map((feature) => (
-              <div key={feature.name} className="relative">
-                <Link className="" href={feature.link}>
+              <div key={feature.name} className="group relative w-full px-6 py-8">
+                <div className="absolute inset-0 border border-gray-700 bg-gradient-to-tr from-zinc-800 to-zinc-900 bg-[-45rem] opacity-0 transition-all duration-500 ease-in-out group-hover:bg-center group-hover:opacity-40"></div>
+                <Link className="relative" href={feature.link}>
                   <dt>
-                    <CheckIcon className="absolute mt-1 h-6 w-6 text-dark dark:text-brand" aria-hidden="true" />
+                    <CheckIcon
+                      className="absolute mt-1 h-6 w-6 text-dark transition-all duration-300 group-hover:scale-110 dark:text-brand"
+                      aria-hidden="true"
+                    />
                     <p className="ml-10 text-lg font-semibold leading-8 text-gray-900">{feature.name}</p>
                   </dt>
                   <dd className="mt-2 ml-10 text-base leading-7 text-gray-600">{feature.description}</dd>
