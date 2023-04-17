@@ -1,10 +1,8 @@
-import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useERC721 } from "hooks/useContract";
 import { useCallback } from "react";
 import { calculateGasMargin } from "utils";
 
 const useNftApprove = (nftAddr) => {
-  const { account, chainId } = useActiveWeb3React();
   const nftContract = useERC721(nftAddr);
 
   const handleApprove = useCallback(
@@ -16,7 +14,7 @@ const useNftApprove = (nftAddr) => {
       const receipt = await tx.wait();
       return receipt;
     },
-    [account, chainId, nftContract]
+    [nftContract]
   );
 
   return { onApprove: handleApprove };
