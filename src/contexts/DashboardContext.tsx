@@ -4,7 +4,6 @@ import axios from "axios";
 import { ethers } from "ethers";
 import { WNATIVE } from "@brewlabs/sdk";
 import { erc20ABI, useAccount, useSigner } from "wagmi";
-import { Alchemy, Network } from "alchemy-sdk";
 
 import ERC20ABI from "config/abi/erc20.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
@@ -13,6 +12,7 @@ import prices from "config/constants/prices";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
+import { getNativeSybmol } from "lib/bridge/helpers";
 
 const DashboardContext: any = React.createContext({
   tokens: [],
@@ -23,11 +23,6 @@ const DashboardContext: any = React.createContext({
   setPending: () => {},
 });
 
-const CHAIN_NAME: any = {
-  1: "ETH",
-  56: "BNB",
-};
-
 const apiKeyList = [
   "82fc55c0-9833-4d12-82bb-48ae9748bead",
   "10760947-8c9a-4a18-b20f-2be694baf496",
@@ -36,8 +31,9 @@ const apiKeyList = [
 ];
 
 const tokenList_URI: any = {
-  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
   1: "https://tokens.coingecko.com/ethereum/all.json",
+  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
+  137: "https://tokens.coingecko.com/polygon-pos/all.json",
 };
 
 const WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -49,12 +45,13 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const [priceHistory, setPriceHistory] = useState([]);
+
   const { address } = useAccount();
-  // const address = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
-  temp_addr = address;
   const { chainId } = useActiveChainId();
-  temp_id = chainId;
   const { data: signer }: any = useSigner();
+
+  temp_addr = address;
+  temp_id = chainId;
 
   async function multicall(abi: any, calls: any) {
     const itf = new ethers.utils.Interface(abi);
@@ -171,8 +168,8 @@ const DashboardContextProvider = ({ children }: any) => {
         } catch (e) {
           rewardToken = {
             address: "0x0",
-            name: CHAIN_NAME[chainId],
-            symbol: CHAIN_NAME[chainId],
+            name: getNativeSybmol(chainId),
+            symbol: getNativeSybmol(chainId),
             decimals: 18,
           };
         }
@@ -337,6 +334,10 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchTokenList() {
     try {
+      if(!tokenList_URI[chainId]) {
+        setTokenList([]);
+        return
+      }
       const result = await axios.get(tokenList_URI[chainId]);
       setTokenList(result.data.tokens);
     } catch (error) {
