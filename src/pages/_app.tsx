@@ -112,7 +112,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                             <div
                               className={clsx(
                                 router?.pathname === "/" && "home",
-                                "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800 dark:to-slate-900"
+                                "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
                               )}
                             >
                               <Suspense>
