@@ -54,7 +54,7 @@ const PoolCard = ({
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="min-w-[80px] pl-4">
+        <div className="flex min-w-[80px] items-center pl-4">
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
@@ -94,6 +94,9 @@ const PoolCard = ({
                 )
               ) : (
                 ""
+              )}
+              {data.type === Category.INDEXES && (data.pid === 3 || data.pid === 5) && (
+                <span className="text-warning">{data.pid === 3 ? "Attention needed" : "Migrated"}</span>
               )}
             </div>
           </div>
