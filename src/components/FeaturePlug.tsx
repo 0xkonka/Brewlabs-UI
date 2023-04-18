@@ -50,8 +50,15 @@ const FeaturePlug = () => {
           </h2>
           <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">All-in-one platform</p>
           <p className="mt-6 text-base leading-7 text-gray-600">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste
-            dolor cupiditate blanditiis ratione.
+            Brewlabs offers a range of decentralised on chain products for users and teams to utilise individually or as
+            a team.
+          </p>
+          <p className="mt-6 text-base leading-7 text-gray-600">
+            As a user you can find all the tools needed to support your decision making and revenue streams on chain
+            within the Brewlabs platform.
+          </p>
+          <p className="mt-6 text-base leading-7 text-gray-600">
+            Teams can also utilise Brewlabs platform as a source of web3 and deployable smart contract products.
           </p>
         </div>
         <div className="mt-20 lg:col-span-2 lg:mt-0">

@@ -48,29 +48,41 @@ const navigation = {
       status: "",
     },
     {
-      name: "Bot Yard",
-      href: "https://bot-yard-beta.netlify.app/",
+      name: "Bridge",
+      href: "https://bridge.brewlabs.info/bridge",
       external: true,
-      status: "soon",
+      status: "",
+    },
+    {
+      name: "Swap",
+      href: "https://bridge.brewlabs.info/swap",
+      external: true,
+      status: "",
     },
     {
       name: "Freezer",
-      href: "https://freezer.brewlabs.info/",
-      external: true,
+      href: "https://freezer.brewlabs.info",
+      external: false,
       status: "",
     },
   ],
   earn: [
     {
       name: "Staking",
-      href: "/pools",
+      href: "https://earn.brewlabs.info/pools",
       external: true,
       status: "",
     },
     {
       name: "Farms",
-      href: "/farms",
+      href: "https://earn.brewlabs.info/farms",
       external: true,
+      status: "",
+    },
+    {
+      name: "Zapper",
+      href: "https://earn.brewlabs.info/zap",
+      external: false,
       status: "",
     },
   ],
@@ -101,7 +113,6 @@ const navigation = {
     },
   ],
 };
-
 const Footer = () => (
   <div className="relative">
     <svg
