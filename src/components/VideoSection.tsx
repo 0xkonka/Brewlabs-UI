@@ -11,7 +11,7 @@ const VideoSection = () => (
           </h2>
           <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Investment suite</p>
 
-          <p className="mt-2 dark:text-gray-300">
+          <p className="mt-4 dark:text-gray-300">
             All of our staking and farming contracts are audited by a third party vendor, Certik. Safety and security
             are our priority.
           </p>
@@ -21,9 +21,9 @@ const VideoSection = () => (
             reward your community.
           </p>
 
-          <button className="btn-primary btn-sm btn mt-4">
+          <a className="btn-primary btn-sm btn mt-4" href="https://skynet.certik.com/projects/brewlabs" target="_blank">
             <img src="./images/certik-logo.svg" alt="certik logo" className="mr-4 h-6 w-6" /> View our Certik audit
-          </button>
+          </a>
         </div>
         <div className="col-span-4 max-w-md md:col-span-2">
           <CardVideo cardId="1" youtubeId="ZJgpQ9EpVvo" />
