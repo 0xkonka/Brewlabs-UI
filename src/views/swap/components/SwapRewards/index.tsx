@@ -119,7 +119,7 @@ const SwapRewards = () => {
         <div className="relative ml-4 text-2xl text-white sm:ml-0">
           <span className="ml-2 text-[#FCD34D]">Brew</span>Swap Rewards
           <div className="absolute top-2.5 -left-3 scale-150 text-white" id={"brewSwapInfo"}>
-            {InfoSVG}
+            <InfoSVG/>
           </div>
         </div>
         <div className="relative mt-4 h-[36px] w-[134px] xsm:mt-0">
@@ -130,7 +130,7 @@ const SwapRewards = () => {
             <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronDownSVG}</div>
           </StyledButton>
           <div className="absolute -bottom-5 left-2 flex items-center">
-            <div className="mr-2 scale-125 text-white">{InfoSVG}</div>
+            <div className="mr-2 scale-125 text-white"><InfoSVG/></div>
             <div className="text-xs text-[#FFFFFF80]">$4.42 USD</div>
           </div>
         </div>

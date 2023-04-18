@@ -102,7 +102,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           </StyledButton>
           <div className="absolute left-2 -bottom-[18px] flex items-center">
             <div className="text-white" id={"appValue" + i}>
-              {InfoSVG}
+              <InfoSVG />
             </div>
             <div className="ml-1 mt-0.5 text-[10px]">${numberWithCommas((data.balance * data.price).toFixed(2))}</div>
           </div>
@@ -130,7 +130,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           </StyledButton>
           <div className="absolute -bottom-[18px] z-10 flex w-full items-center justify-center">
             <div className="text-white" id={"appValue" + i}>
-              {InfoSVG}
+              <InfoSVG />
             </div>
             <div className="ml-1 mt-0.5 text-[10px]">${numberWithCommas((data.balance * data.price).toFixed(2))}</div>
           </div>
@@ -188,7 +188,7 @@ export default function BasePanel({
                 })
               ) : (
                 <div className="flex h-full max-h-[210px] min-h-[210px] w-full items-center justify-center">
-                  No Lp Tokens
+                  No liquidity tokens found.
                 </div>
               )
             ) : (
@@ -221,7 +221,6 @@ const StyledContainer = styled.div<{ showCount: number }>`
       height: 16px;
       display: block !important;
     }
-
     ::-webkit-scrollbar-track {
     }
     ::-webkit-scrollbar-thumb:vertical {

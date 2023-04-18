@@ -24,6 +24,7 @@ import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
 import IndexAbi from "config/abi/indexes/index.json";
+import IUniswapV2Router02ABI from "config/abi/swap/IUniswapV2Router02.json"
 
 // Addresses
 import {
@@ -39,6 +40,7 @@ import {
   getBrewlabsFeeManagerAddress,
 } from "utils/addressHelpers";
 import { provider } from "./wagmi";
+import { ROUTER_ADDRESS } from "config/constants";
 
 export const getContract = (
   chainId: ChainId,
@@ -160,6 +162,10 @@ export const getZapInContract = (chainId: ChainId, signer?: ethers.Signer | ethe
 
 export const getIndexContract = (chainId: ChainId, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, address, IndexAbi, signer);
+};
+
+export const getRouterContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, ROUTER_ADDRESS[chainId], IUniswapV2Router02ABI, signer);
 };
 
 export const getExternalMasterChefContract = (

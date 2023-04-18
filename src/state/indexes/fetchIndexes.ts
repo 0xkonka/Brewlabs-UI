@@ -83,7 +83,6 @@ const getPriceChange = (prices, time) => {
 
 export const getAverageHistory = (prices) => {
   let temp = [];
-
   for (let i = 0; i < prices[0].length; i++) {
     let currentPriceChange = 0,
       prevPriceChange = 0;
@@ -128,20 +127,16 @@ export const fetchIndexPerformance = async (pool) => {
 
   let priceChanges = [
     getPriceChange(
-      prices.map((p) => p[0]),
-      364 * 86400 * 1000
-    ),
-    getPriceChange(
-      prices.map((p) => p[0]),
-      30 * 86400 * 1000
+      prices.map((p) => p[1]),
+      3600 * 23 * 1000
     ),
     getPriceChange(
       prices.map((p) => p[0]),
       7 * 86400 * 1000
     ),
     getPriceChange(
-      prices.map((p) => p[1]),
-      3600 * 23 * 1000
+      prices.map((p) => p[0]),
+      30 * 86400 * 1000
     ),
   ];
 

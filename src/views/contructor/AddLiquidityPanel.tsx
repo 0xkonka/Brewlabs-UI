@@ -7,8 +7,8 @@ import { useCurrency } from "hooks/Tokens";
 import { Field } from "state/mint/actions";
 import { Currency, TokenAmount } from "@brewlabs/sdk";
 import maxAmountSpend from "utils/maxAmountSpend";
-import { routers } from "utils/functions";
-import { useCallback, useState } from "react";
+import { getExplorerLogo, routers } from "utils/functions";
+import { useCallback, useEffect, useState } from "react";
 import currencyId from "utils/currencyId";
 import router from "next/router";
 import { useTranslation } from "contexts/localization";
@@ -18,18 +18,27 @@ import { ONE_BIPS, ROUTER_ADDRESS } from "config/constants";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import { getLpManagerAddress } from "utils/addressHelpers";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useAccount, useSigner } from "wagmi";
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from "utils";
+import { useAccount, useConnect, useSigner } from "wagmi";
+import { calculateGasMargin, calculateSlippageAmount } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import { getLpManagerContract } from "utils/contractHelpers";
+import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
 import useTransactionDeadline from "hooks/useTransactionDeadline";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { BigNumber, TransactionResponse } from "alchemy-sdk";
 import { wrappedCurrency } from "utils/wrappedCurrency";
 import { useTransactionAdder } from "state/transactions/hooks";
+import Modal from "components/Modal";
+import WalletSelector from "components/wallet/WalletSelector";
+import { toast } from "react-toastify";
+import { useCurrencySelectRoute } from "./useCurrencySelectRoute";
 
-export default function AddLiquidityPanel({ setCurAction }) {
-  const { chainId } = useActiveChainId();
+export default function AddLiquidityPanel({
+  onBack,
+  selectedChainId,
+  currencyA: currencyA_ = undefined,
+  currencyB: currencyB_ = undefined,
+}) {
+  const { chainId, isWrongNetwork } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
@@ -39,6 +48,8 @@ export default function AddLiquidityPanel({ setCurAction }) {
   const [allowedSlippage] = useUserSlippageTolerance();
   const addTransaction = useTransactionAdder();
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
+  const { isLoading } = useConnect();
+  const [openWalletModal, setOpenWalletModal] = useState(false);
 
   const {
     dependentField,
@@ -51,7 +62,8 @@ export default function AddLiquidityPanel({ setCurAction }) {
     price,
     pair,
     error,
-  } = useDerivedMintInfo(undefined, undefined);
+  } = useDerivedMintInfo(currencyA_ ?? undefined, currencyB_ ?? undefined);
+  const { handleCurrencyASelect, handleCurrencyBSelect } = useCurrencySelectRoute();
 
   const lpManager = getLpManagerAddress(chainId);
 
@@ -95,11 +107,23 @@ export default function AddLiquidityPanel({ setCurAction }) {
     {}
   );
 
+  useEffect(() => {
+    if (chainId && isWrongNetwork === false && router.query?.currency) {
+      if (currencyA_?.symbol !== router.query.currency[0] && currencyA_?.address !== router.query.currency[0]) {
+        handleCurrencyASelect(currencyA);
+      }
+      if (currencyB_?.symbol !== router.query.currency[1] && currencyB_?.address !== router.query.currency[1]) {
+        handleCurrencyBSelect(currencyB);
+      }
+    }
+  }, [chainId, isWrongNetwork, currencyA_, currencyB_]);
+
   const isValid = !error;
   async function onAdd() {
     if (!chainId || !library || !account) return;
-    const router = getRouterContract(chainId, library, account);
     const gasPrice = await getNetworkGasPrice(library, chainId);
+
+    const router = getRouterContract(chainId, signer);
     const lpManagerContract = getLpManagerContract(chainId, signer);
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;
@@ -184,6 +208,7 @@ export default function AddLiquidityPanel({ setCurAction }) {
           });
 
           // setTxHash(response.hash);
+          toast.success("Liquidity was added");
         })
       )
       .catch((err) => {
@@ -197,6 +222,9 @@ export default function AddLiquidityPanel({ setCurAction }) {
 
   return (
     <div>
+      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
+        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
+      </Modal>
       <div className="mt-3">
         <ChainSelect />
       </div>
@@ -212,7 +240,11 @@ export default function AddLiquidityPanel({ setCurAction }) {
             onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
           }}
           showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-          onCurrencySelect={onCurrencySelection}
+          onCurrencySelect={(field, currency) => {
+            if (currencyA_) {
+              handleCurrencyASelect(currency);
+            } else onCurrencySelection(field, currency);
+          }}
           currency={currencies[Field.CURRENCY_A]}
           balance={currencyBalances[Field.CURRENCY_A]}
           type={"liquidity"}
@@ -231,7 +263,11 @@ export default function AddLiquidityPanel({ setCurAction }) {
             onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
           }}
           showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-          onCurrencySelect={onCurrencySelection}
+          onCurrencySelect={(field, currency) => {
+            if (currencyB_) {
+              handleCurrencyBSelect(currency);
+            } else onCurrencySelection(field, currency);
+          }}
           currency={currencies[Field.CURRENCY_B]}
           balance={currencyBalances[Field.CURRENCY_B]}
           inputCurrencySelect={false}
@@ -261,12 +297,27 @@ export default function AddLiquidityPanel({ setCurAction }) {
             </div>
             <div className="mt-2 flex flex-wrap justify-between xsm:mt-0">
               <div className="w-full xsm:w-[60%]">Liquidity token address</div>
-              <div className="relative w-full xsm:w-[40%]">
-                <div className="absolute left-0 top-[1px] h-4 w-4 rounded-full border border-black bg-[#D9D9D9] xsm:-left-6" />
-                <div className="ml-6 mr-0 max-w-[200px] overflow-hidden text-ellipsis xsm:ml-0  sm:mr-4">
-                  {pair?.liquidityToken.address}
+              {pair ? (
+                <div className="relative flex w-full items-center xsm:w-[40%]">
+                  <img
+                    src={getExplorerLogo(chainId)}
+                    alt={""}
+                    className="absolute left-0 top-[1px] h-4 w-4 rounded-full xsm:-left-6"
+                  />
+                  <a
+                    className="ml-6 mr-0 max-w-[200px] flex-1 overflow-hidden text-ellipsis underline xsm:ml-0 sm:mr-4"
+                    target={"_blank"}
+                    href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/token/${
+                      pair.liquidityToken.address
+                    }`}
+                    rel="noreferrer"
+                  >
+                    {pair.liquidityToken.address}
+                  </a>
                 </div>
-              </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
@@ -304,21 +355,35 @@ export default function AddLiquidityPanel({ setCurAction }) {
               )}
             </div>
           )}
-        <SolidButton
-          className={`w-full ${
-            !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-              ? "bg-[#ed5249]"
-              : "bg-primary"
-          }`}
-          onClick={() => {
-            onAdd();
-          }}
-          disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-        >
-          {error ?? t("Supply")}
-        </SolidButton>
+        {!(
+          isValid &&
+          (approvalA === ApprovalState.NOT_APPROVED ||
+            approvalA === ApprovalState.PENDING ||
+            approvalB === ApprovalState.NOT_APPROVED ||
+            approvalB === ApprovalState.PENDING)
+        ) ? (
+          <SolidButton
+            className={`w-full ${
+              !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
+                ? "bg-[#ed5249]"
+                : "bg-primary"
+            }`}
+            onClick={() => {
+              onAdd();
+              if (error === "Connect Wallet") setOpenWalletModal(true);
+            }}
+            disabled={
+              (!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED) &&
+              error !== "Connect Wallet"
+            }
+          >
+            {error ?? t("Supply")}
+          </SolidButton>
+        ) : (
+          ""
+        )}
       </div>
-      <OutlinedButton small onClick={() => setCurAction("default")}>
+      <OutlinedButton small onClick={onBack}>
         Back
       </OutlinedButton>
     </div>

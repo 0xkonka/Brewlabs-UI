@@ -8,6 +8,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import IndexLogo from "components/logo/IndexLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
+import { useRouter } from "next/router";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",
@@ -27,6 +28,7 @@ const PoolCard = ({
   setSelectPoolDetail: any;
   setCurPool: any;
 }) => {
+  const router = useRouter();
   return (
     <StyledContainer
       index={index}
@@ -40,7 +42,8 @@ const PoolCard = ({
             setCurPool({ type: Category.FARM, pid: data.farmId });
             break;
           case Category.INDEXES:
-            setCurPool({ type: Category.INDEXES, pid: data.pid });
+            // setCurPool({ type: Category.INDEXES, pid: data.pid });
+            router.push(`/indexes/${data.pid}`);
             break;
           case Category.ZAPPER:
             setCurPool({ type: Category.ZAPPER, pid: data.pid });
@@ -51,7 +54,7 @@ const PoolCard = ({
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="max-w-[80px] pl-4">
+        <div className="min-w-[80px] pl-4">
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
@@ -68,7 +71,7 @@ const PoolCard = ({
           )}
           <div>
             {data.type === Category.INDEXES ? (
-              <div className="leading-none">{getIndexName(data.tokens)}</div>
+              <div className="text-sm leading-none">{getIndexName(data.tokens)}</div>
             ) : (
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
@@ -79,6 +82,22 @@ const PoolCard = ({
               {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
                 ? "Flexible"
                 : `${data.duration} days lock`}
+            </div>
+            <div className="text-xs leading-none">
+              {data.type === Category.INDEXES ? (
+                data.priceChanges ? (
+                  <div className={data.priceChanges[0].percent >= 0 ? "text-success" : "text-danger"}>
+                    Performance - {data.priceChanges[0].percent.toFixed(2)}% 24hrs
+                  </div>
+                ) : (
+                  <SkeletonComponent />
+                )
+              ) : (
+                ""
+              )}
+              {data.type === Category.INDEXES && (data.pid === 3 || data.pid === 5) && (
+                <span className="text-warning">{data.pid === 3 ? "Attention needed" : "Migrated"}</span>
+              )}
             </div>
           </div>
         </div>
@@ -122,11 +141,8 @@ const PoolCard = ({
       <div className="flex hidden flex-col px-6">
         <div className="flex  items-center justify-between ">
           <div className="flex items-center">
-            {data.type === 3 ? (
-              <div className="mr-3 flex">
-                <img src={"/images/directory/ogv.svg"} alt={""} className="w-9 rounded-full" />
-                <img src={"/images/directory/ogn.svg"} alt={""} className="-ml-3 w-9 rounded-full" />
-              </div>
+            {data.type === Category.INDEXES ? (
+              <IndexLogo tokens={data.tokens} />
             ) : (
               <img
                 src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
@@ -146,6 +162,22 @@ const PoolCard = ({
               </div>
               <div className="text-xs">
                 {poolNames[data.type]} - {data.lockup === undefined ? "Flexible" : `${data.duration} day lock`}
+              </div>
+              <div className="text-xs leading-none">
+                {data.type === Category.INDEXES ? (
+                  data.priceChanges ? (
+                    <div className={data.priceChanges[0].percent >= 0 ? "text-success" : "text-danger"}>
+                      Performance - {data.priceChanges[0].percent.toFixed(2)}% 24hrs
+                    </div>
+                  ) : (
+                    <SkeletonComponent />
+                  )
+                ) : (
+                  ""
+                )}
+                {data.type === Category.INDEXES && (data.pid === 3 || data.pid === 5) && (
+                  <span className="text-warning">{data.pid === 3 ? "Attention needed" : "Migrated"}</span>
+                )}
               </div>
             </div>
           </div>

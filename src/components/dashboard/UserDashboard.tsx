@@ -13,6 +13,7 @@ import { SwapContext } from "contexts/SwapContext";
 import PriceList from "./PriceList";
 import styled from "styled-components";
 import SwapBoard from "views/swap/SwapBoard";
+import IndexPerformance from "./IndexPerformance";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
@@ -23,23 +24,25 @@ const UserDashboard = () => {
   const [archives, setArchives] = useState<any>([]);
   const [listType, setListType] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
+  const [filteredTokens, setFilteredTokens] = useState([]);
 
   const { viewType, setViewType }: any = useContext(SwapContext);
 
   useEffect(() => {
-    if (window.innerHeight < 820) setItemsPerPage(Math.min(Math.floor((window.innerHeight - 297) / 50), 7));
-    else if (window.innerHeight < 890) setItemsPerPage(Math.min(Math.floor((window.innerHeight - 586) / 50), 7));
-    else setItemsPerPage(Math.min(Math.floor((window.innerHeight - 650) / 50), 7));
+    if (window.innerHeight < 790) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
+    else if (window.innerHeight < 920) setItemsPerPage(Math.floor((window.innerHeight - 535) / 50));
+    else setItemsPerPage(Math.floor((window.innerHeight - 548) / 50));
   }, [fullOpen]);
 
   useEffect(() => {
-    let filteredTokens: any = [];
+    let _filteredTokens: any = [];
     if (listType === 0) {
-      filteredTokens = tokens.filter((data: any) => !archives.includes(data.address));
+      _filteredTokens = tokens.filter((data: any) => !archives.includes(data.address));
     } else {
-      filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
+      _filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
     }
-    setMaxPage(Math.ceil(filteredTokens.length / itemsPerPage));
+    setMaxPage(Math.ceil(_filteredTokens.length / itemsPerPage));
+    setFilteredTokens(_filteredTokens);
   }, [listType, tokens, archives, itemsPerPage]);
   return (
     <>
@@ -54,8 +57,8 @@ const UserDashboard = () => {
 
         {viewType === 0 ? (
           <ChartPanel>
-            <div className={"mt-7"}>
-              <PerformanceChart tokens={tokens} showType={showType} />
+            <div className={"mt-4"}>
+              <PerformanceChart tokens={filteredTokens} showType={showType} />
             </div>
             <div className={"relative z-10 flex w-full justify-center"}>
               <SwitchButton value={showType} setValue={setShowType} />
@@ -94,7 +97,10 @@ const UserDashboard = () => {
           </div>
         </>
       )}
-      <PricePanel className={`absolute bottom-8 w-full px-4 ${fullOpen ? "hidden" : ""}`} viewType={viewType}>
+      <div className={fullOpen ? "hidden" : "w-full"}>
+        <IndexPerformance />
+      </div>
+      <PricePanel className={`absolute bottom-10 w-full px-4 ${fullOpen ? "hidden" : ""}`} viewType={viewType}>
         <PriceList />
       </PricePanel>
     </>
@@ -104,21 +110,17 @@ const UserDashboard = () => {
 export default UserDashboard;
 
 const StyledContainer = styled.div`
-  padding-top: 64px;
-
-  @media screen and (max-height: 890px) {
-    padding-top: 0px;
-  }
+  padding-top: 20px;
 `;
 
 const ChartPanel = styled.div`
-  @media screen and (max-height: 820px) {
+  @media screen and (max-height: 790px) {
     display: none;
   }
 `;
 
 const PricePanel = styled.div<{ viewType: number }>`
-  @media screen and (max-height: 530px) {
+  @media screen and (max-height: 920px) {
     display: none;
   }
   display: ${({ viewType }) => (viewType === 1 ? "none" : "")};

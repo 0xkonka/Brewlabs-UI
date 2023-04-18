@@ -36,7 +36,6 @@ const EnterExitModal = ({
   data: DeserializedIndex;
 }) => {
   const { tokens, priceHistories, userData } = data;
-
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
@@ -112,6 +111,11 @@ const EnterExitModal = ({
   };
 
   const handleZapIn = async () => {
+    if (percents.filter((p) => p < 0).length > 0 || percent < 0) {
+      toast.error("Cannot set negative percentage");
+      return;
+    }
+
     setPending(true);
     try {
       await onZapIn(amount, [percent, ...percents]);
@@ -203,7 +207,7 @@ const EnterExitModal = ({
                 <>
                   <div className="mt-[30px]">
                     <StyledInput
-                      placeholder={`Enter amount ETH...`}
+                      placeholder={`Enter amount ${getNativeSybmol(data.chainId)}...`}
                       value={amount}
                       onChange={(e) => {
                         if ((isNaN(+e.target.value) || !e.target.value) && e.target.value !== "") return;
@@ -212,6 +216,11 @@ const EnterExitModal = ({
                         setMaxPressed(false);
                       }}
                     />
+                  </div>
+                  <div className="mt-1 flex w-full flex-col items-end text-sm">
+                    <div className="text-[#FFFFFFBF]">
+                      My {getNativeSybmol(data.chainId)} <span className="text-yellow">:</span> {Number(ethbalance).toFixed(2)}
+                    </div>
                   </div>
                   <div className="mt-1 flex w-full flex-col items-end text-sm">
                     <div className="text-[#FFFFFF80]">${(+(amount ?? 0) * nativeTokenPrice).toFixed(2)} USD</div>
@@ -229,7 +238,12 @@ const EnterExitModal = ({
 
               <div className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
                 {type === "enter" ? (
-                  <img src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} alt={""} className="w-14" />
+                  <img
+                    src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
+                    onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                    alt={""}
+                    className="w-14 rounded-full"
+                  />
                 ) : (
                   <IndexLogo tokens={tokens} classNames="mr-0 scale-125" />
                 )}
@@ -251,7 +265,12 @@ const EnterExitModal = ({
               {type === "enter" ? (
                 tokens.slice(1).map((token, index) => (
                   <div key={token.address} className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
-                    <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="w-14" />
+                    <img
+                      src={getTokenLogoURL(token.address, token.chainId)}
+                      onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                      alt={""}
+                      className="w-14 rounded-full"
+                    />
                     <StyledSlider
                       value={percents[index]}
                       setValue={(v) => percentChanged(index + 1, v)}
@@ -260,7 +279,7 @@ const EnterExitModal = ({
                     />
                     <div className="relative">
                       <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
-                        {percents[index].toFixed(2)}%
+                        {percents[index] ? percents[index].toFixed(2) : "0.00"}%
                       </div>
                       <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
                         ${((+(amount ?? 0) * nativeTokenPrice * percents[index]) / 100).toFixed(2)} USD

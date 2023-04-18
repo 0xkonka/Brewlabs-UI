@@ -20,7 +20,7 @@ const PoolList = ({
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
           Network
         </div>
-        <div className="min-w-[210px] cursor-pointer pl-10" onClick={() => setSortOrder("default")}>
+        <div className="min-w-[210px] cursor-pointer" onClick={() => setSortOrder("default")}>
           Pool
         </div>
         <div className="min-w-[70px] cursor-pointer" onClick={() => setSortOrder("tvl")}>
@@ -41,7 +41,7 @@ const PoolList = ({
             return (
               <PoolCard
                 data={data}
-                key={`${data.type}-${data.sousId}-${data.farmId}`}
+                key={`${data.type}-${data.sousId}-${data.farmId}-${data.pid}`}
                 index={i}
                 setSelectPoolDetail={setSelectPoolDetail}
                 setCurPool={setCurPool}

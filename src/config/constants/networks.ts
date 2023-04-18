@@ -23,12 +23,14 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.CRONOS,
     ChainId.BRISE,
   ],
+  indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  stables: [],
 };
 
 export const CHAIN_KEYS = {
@@ -62,12 +64,14 @@ export const EXPLORER_URLS = {
 
 export const EXPLORER_API_URLS = {
   [ChainId.ETHEREUM]: "https://api.etherscan.io/api",
-  [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api"
+  [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
+  [ChainId.POLYGON]: "https://api.polygonscan.com/api",
 }
 
 export const EXPLORER_API_KEYS = {
   [ChainId.ETHEREUM]: "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX",
-  [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND"
+  [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
+  [ChainId.POLYGON]: "F2KCC1VEPQC23GBVKATATP1V3ZQIC31D7Z",
 }
 
 export const CHAIN_LABLES = {

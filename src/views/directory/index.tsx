@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
 
@@ -41,7 +41,6 @@ const Directory = ({ page }: { page: number }) => {
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
-
   const currentBlocks = useChainCurrentBlocks();
   const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
 
@@ -65,7 +64,6 @@ const Directory = ({ page }: { page: number }) => {
     }),
     ...zappers,
   ];
-
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
       case "apr":
@@ -124,7 +122,8 @@ const Directory = ({ page }: { page: number }) => {
         (data) =>
           curFilter === Category.ALL ||
           data.type === curFilter ||
-          (curFilter === Category.MY_POSITION && data.userData?.stakedBalance.gt(0))
+          (curFilter === Category.MY_POSITION &&
+            (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
       );
   }
 
@@ -151,11 +150,11 @@ const Directory = ({ page }: { page: number }) => {
           !pool.isFinished &&
           ((pool.type === Category.POOL && +pool.startBlock > 0) ||
             (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
-            pool.type === Category.INDEXES)
+            pool.type === Category.INDEXES ||
+            pool.type === Category.ZAPPER)
       );
   }
   chosenPools = sortPools(chosenPools);
-
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:
@@ -182,8 +181,6 @@ const Directory = ({ page }: { page: number }) => {
         return (
           <IndexDetail
             detailDatas={{
-              open: selectPoolDetail,
-              setOpen: setSelectPoolDetail,
               data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
             }}
           />

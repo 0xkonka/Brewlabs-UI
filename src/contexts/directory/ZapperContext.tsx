@@ -115,7 +115,6 @@ const ZapperContextProvider = ({ children }: any) => {
 
   async function fetchPoolData(data: any) {
     const price: number = await fetchLPPrice(data);
-
     let calls: any = [
       {
         address: data.address,
