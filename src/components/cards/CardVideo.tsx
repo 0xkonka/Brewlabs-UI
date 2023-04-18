@@ -17,7 +17,7 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
 
   return (
     <>
-      <motion.div
+      <motion.button
         layoutId={cardId}
         onClick={() => {
           if (isMobile) {
@@ -26,7 +26,7 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
           }
           setSelected(true);
         }}
-        className="w-full overflow-hidden rounded-2xl border border-gray-700"
+        className="group relative w-full overflow-hidden rounded-2xl border border-gray-700"
       >
         <div className="w-100 flex h-56 items-center justify-center rounded-xl bg-gradient-to-tr from-zinc-800 to-zinc-900 sm:h-64">
           <div>
@@ -38,7 +38,7 @@ const CardVideo = ({ cardId, youtubeId }: { cardId: string; youtubeId: string })
             </div>
           </div>
         </div>
-      </motion.div>
+      </motion.button>
 
       {selected && (
         <Modal open={selected} closeFn={closeSelected} layoutId={cardId}>
