@@ -126,16 +126,16 @@ const Footer = () => (
         <path id="wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
       </defs>
       <g className="wave1">
-        <use xlinkHref="#wave-path" x="50" y="3" fill="rgba(17,24,39, .1)" />
+        <use xlinkHref="#wave-path" x="50" y="3" fill="rgba(9,9,11, .1)" />
       </g>
       <g className="wave2">
-        <use xlinkHref="#wave-path" x="50" y="0" fill="rgba(17,24,39, .2)" />
+        <use xlinkHref="#wave-path" x="50" y="0" fill="rgba(9,9,11, .2)" />
       </g>
       <g className="wave3">
-        <use xlinkHref="#wave-path" x="50" y="9" fill="#27272a" />
+        <use xlinkHref="#wave-path" x="50" y="9" fill="#09090b" />
       </g>
     </svg>
-    <footer className="bg-zinc-800" aria-labelledby="footer-heading">
+    <footer className="from-zinc-950 bg-gradient-to-b to-zinc-800" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Brewlabs Footer
       </h2>
