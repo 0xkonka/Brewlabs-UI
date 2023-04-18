@@ -54,7 +54,7 @@ const PoolCard = ({
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="flex min-w-[80px] items-center pl-4">
+        <div className="min-w-[80px] pl-4">
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="flex min-w-[210px] items-center">
