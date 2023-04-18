@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/link-passhref */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";

@@ -10,8 +10,8 @@ type NavigationItem = {
 export const navigationData = [
   {
     name: "Home",
-    href: "https://brewlabs.info/",
-    external: true,
+    href: "/",
+    external: false,
     icon: "HomeIcon",
   },
   {
@@ -56,5 +56,26 @@ export const navigationData = [
     href: "/constructor",
     external: false,
     icon: "ArrowDownOnSquareIcon",
+  },
+] as NavigationItem[];
+
+export const navigationExtraData = [
+  {
+    name: "Airdrop tools",
+    href: "https://brewlabs-airdrop.tools/bsc",
+    external: true,
+    icon: "PaperAirplaneIcon",
+  },
+  {
+    name: "Brewlabs Factory",
+    href: "https://brewlabs.info/factory",
+    external: true,
+    icon: "BuildingOffice2Icon",
+  },
+  {
+    name: "Brewlabs docs",
+    href: "https://brewlabs.gitbook.io/welcome-to-brewlabs/important-docs/brewlabs-dapp-terms-of-service",
+    external: true,
+    icon: "DocumentTextIcon",
   },
 ] as NavigationItem[];
