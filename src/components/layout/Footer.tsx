@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const navigation = {
   services: [
@@ -43,26 +44,26 @@ const navigation = {
     },
     {
       name: "Constructor",
-      href: "https://earn.brewlabs.info/liquidity",
-      external: true,
+      href: "/liquidity",
+      external: false,
       status: "",
     },
     {
       name: "Bridge",
-      href: "https://bridge.brewlabs.info/bridge",
-      external: true,
+      href: "/bridge",
+      external: false,
       status: "",
     },
     {
       name: "Swap",
-      href: "https://bridge.brewlabs.info/swap",
-      external: true,
+      href: "/swap",
+      external: false,
       status: "",
     },
     {
       name: "Freezer",
       href: "https://freezer.brewlabs.info",
-      external: false,
+      external: true,
       status: "",
     },
   ],
@@ -70,19 +71,19 @@ const navigation = {
     {
       name: "Staking",
       href: "/staking",
-      external: true,
+      external: false,
       status: "",
     },
     {
       name: "Farms",
       href: "/farms",
-      external: true,
+      external: false,
       status: "",
     },
     {
       name: "Zapper",
-      href: "/zap",
-      external: false,
+      href: "https://earn.brewlabs.info/zap",
+      external: true,
       status: "",
     },
     {
@@ -214,14 +215,20 @@ const Footer = () => (
                 <ul className="mt-4 space-y-4">
                   {navigation.tools.map((item) => (
                     <li className="flex items-center" key={item.name}>
-                      <a
-                        href={item.href}
-                        target={item.external ? "_blank" : "_self"}
-                        rel="noopener noreferrer"
-                        className="text-base text-gray-500 hover:text-gray-50"
-                      >
-                        {item.name}
-                      </a>
+                      {item.external ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-base text-gray-500 hover:text-gray-50"
+                        >
+                          {item.name}
+                        </a>
+                      ) : (
+                        <Link href={item.href} className="text-base text-gray-500 hover:text-gray-50">
+                          {item.name}
+                        </Link>
+                      )}
 
                       {item.status === "soon" && (
                         <span className="ml-2 rounded bg-white bg-opacity-40 p-1 text-sm">Soon</span>
@@ -235,14 +242,20 @@ const Footer = () => (
                 <ul className="mt-4 space-y-4">
                   {navigation.earn.map((item) => (
                     <li className="flex items-center" key={item.name}>
-                      <a
-                        href={item.href}
-                        target={item.external ? "_blank" : "_self"}
-                        rel="noopener noreferrer"
-                        className="text-base text-gray-500 hover:text-gray-50"
-                      >
-                        {item.name}
-                      </a>
+                      {item.external ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-base text-gray-500 hover:text-gray-50"
+                        >
+                          {item.name}
+                        </a>
+                      ) : (
+                        <Link href={item.href} className="text-base text-gray-500 hover:text-gray-50">
+                          {item.name}
+                        </Link>
+                      )}
 
                       {item.status === "soon" && (
                         <span className="ml-2 rounded bg-white bg-opacity-40 p-1 text-sm">Soon</span>
