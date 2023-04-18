@@ -74,7 +74,9 @@ const FeaturePlug = () => {
                     />
                     <p className="ml-10 text-lg font-semibold leading-8 text-gray-900">{feature.name}</p>
                   </dt>
-                  <dd className="mt-2 ml-10 text-base leading-7 text-gray-600">{feature.description}</dd>
+                  <dd className="mt-2 ml-10 text-base leading-7 text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </dd>
                 </Link>
               </div>
             ))}

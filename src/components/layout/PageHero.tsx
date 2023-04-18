@@ -12,12 +12,12 @@ const PageHero = () => {
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
           <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none xl:col-span-6">
             <header className="mt-4 mb-4 font-brand sm:mt-5 lg:mt-6">
-              <h1 className="bg-gradient-to-r from-amber-100 to-amber-400 bg-clip-text text-4xl text-transparent lg:text-5xl">
+              <h1 className="bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-4xl text-transparent lg:text-5xl">
                 Get ready for the next generation in blockchain utilities
               </h1>
             </header>
 
-            <p className="mb-12 max-w-sm text-base text-dark dark:text-gray-500 sm:mb-4">
+            <p className="mb-12 max-w-sm text-base text-dark dark:text-gray-400 sm:mb-4">
               Brewlabs Earn is where you can build your future. We have a unique set of tools and utilities to build
               your portfolio.
             </p>
