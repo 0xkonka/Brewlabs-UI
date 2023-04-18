@@ -362,7 +362,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                   4
                                 )}`
                               ) : (
-                                <SkeletonComponent />
+                                address ? <SkeletonComponent />: "0.00"
                               )}
                               <span className="ml-1 text-[#FFFFFF80]">{token.symbol}</span>
                             </div>
@@ -516,7 +516,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("exit");
                               }}
-                              disabled={pending || !address || +userData?.stakedUsdAmount <= 0}
+                              disabled={pending || !address || +userData.stakedUsdAmount <= 0}
                             >
                               Exit &nbsp;{renderProfit()} Profit
                             </StyledButton>
