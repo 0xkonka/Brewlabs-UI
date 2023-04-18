@@ -12,6 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -139,11 +140,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
         if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
         return _graphData;
       case 2:
-        return data.tokenFees;
+        return data.tokenFees ?? [];
       case 3:
-        return data.performanceFees;
+        return data.performanceFees ?? [];
       case 4:
-        return data.stakedAddresses;
+        return data.stakedAddresses ?? [];
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
@@ -217,8 +218,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const history =
-    data && data.userData?.deposits && address
-      ? data.userData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
+    data && accountData?.deposits && address
+      ? accountData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
       : [];
 
   return (
@@ -348,7 +349,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel
                       padding={"14px 25px 8px 25px"}
-                      className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                      className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                     >
                       <div className="flex justify-between text-xl">
                         <div>
@@ -387,12 +388,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                         <div className="flex">
                           Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
-                          {data.sousId === 203 && (
-                            <>
-                              <br />
-                              Early Withdraw Fee 10.00 %
-                            </>
-                          )}
+                          {data.penaltyFee && <> (Early Withdraw Fee {data.penaltyFee.toFixed(2)} %)</>}
                           <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
                             <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
@@ -406,6 +402,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
+                      </div>
+                      <div className="absolute bottom-1 right-1">
+                        {data ? (
+                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
 
@@ -510,7 +513,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <InfoPanel
-                      className="mt-20 flex cursor-pointer justify-between"
+                      className="mt-[80px] flex cursor-pointer justify-between lg:mt-20"
                       type={"secondary"}
                       boxShadow={curGraph === 1 ? "primary" : null}
                       onClick={() => setCurGraph(1)}

@@ -3,8 +3,8 @@ import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 
 import erc20 from "config/abi/erc20.json";
-import masterchefABI from "config/abi/masterchef.json";
-import masterchefV2ABI from "config/abi/masterchefV2.json";
+import masterchefABI from "config/abi/staking/masterchef.json";
+import masterchefV2ABI from "config/abi/staking/masterchefV2.json";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { SerializedFarmConfig, Version } from "config/constants/types";

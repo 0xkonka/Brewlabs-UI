@@ -113,6 +113,7 @@ const navigation = {
     },
   ],
 };
+
 const Footer = () => (
   <div className="relative">
     <svg

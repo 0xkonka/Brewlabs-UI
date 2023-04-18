@@ -9,10 +9,8 @@ const getTokenLogoURL = (address: string, chainId: ChainId, appId?: AppId, token
     ? BAD_SRCS.includes(tokenSymbol)
       ? `https://raw.githubusercontent.com/ApeSwapFinance/apeswap-token-lists/main/assets/${tokenSymbol?.toUpperCase()}.png`
       : `https://raw.githubusercontent.com/ApeSwapFinance/apeswap-token-lists/main/assets/${tokenSymbol?.toUpperCase()}.svg`
-    : appId === AppId.PANCAKESWAP ||
-      tokenSymbol?.toLocaleLowerCase() === "brewlabs" ||
-      tokenSymbol?.toLocaleLowerCase() === "usdt"
-    ? `/images/tokens/${address}.png`
+    : appId === AppId.PANCAKESWAP
+    ? `https://pancakeswap.finance/images/tokens/${address}.png`
     : appId === AppId.SUSHISWAP
     ? Object.keys(BAD_SRCS_SUSHI).includes(address)
       ? BAD_SRCS_SUSHI[address]

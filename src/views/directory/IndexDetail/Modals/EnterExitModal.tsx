@@ -1,42 +1,161 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { ethers } from "ethers";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 import styled from "styled-components";
-import { numberWithCommas } from "utils/functions";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import IndexLogo from "components/logo/IndexLogo";
 import LogoIcon from "components/LogoIcon";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import useTokenPrice from "hooks/useTokenPrice";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { DeserializedIndex } from "state/indexes/types";
+import { formatAmount } from "utils/formatApy";
+import { getIndexName, numberWithCommas } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import StyledButton from "../../StyledButton";
 import StyledSlider from "./StyledSlider";
+import useIndex from "../hooks/useIndex";
 
 const EnterExitModal = ({
   open,
   setOpen,
   type,
   data,
-  accountData,
 }: {
   open: boolean;
   setOpen: any;
   type: string;
-  data: any;
-  accountData: any;
+  data: DeserializedIndex;
 }) => {
+  const { tokens, priceHistories, userData } = data;
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
-  const [value1, setValue1] = useState(0);
-  const [value2, setValue2] = useState(0);
+  const [percent, setPercent] = useState(100);
+  const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(0));
 
-  const balance: any =
-    (type === "deposit" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { onZapIn, onZapOut, onClaim } = useIndex(data.pid, data.address, data.performanceFee);
+
+  const ethbalance = ethers.utils.formatEther(userData.ethBalance);
+  const stakedBalances = userData.stakedBalances?.length
+    ? userData.stakedBalances.map((a, index) => ethers.utils.formatUnits(a, tokens[index].decimals))
+    : new Array(data.numTokens).fill("0");
+
+  const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
   useEffect(() => {
-    if (Number(amount) > balance && !maxPressed) setInsufficient(true);
+    if (type === "enter" && Number(amount) > +ethbalance && !maxPressed) setInsufficient(true);
     else setInsufficient(false);
   }, [amount, maxPressed]);
+
+  const percentChanged = (idx, value) => {
+    if (idx === 0) {
+      setPercent(value);
+
+      let _percents = percents;
+      let total = value;
+      for (let k = 2; k < data.numTokens; k++) {
+        total += _percents[k - 1];
+      }
+      _percents[0] = 100 - total;
+      setPercents(_percents);
+    } else {
+      let _percents = percents;
+      _percents[idx - 1] = value;
+      setPercents(_percents);
+
+      let total = 0;
+      for (let k = 0; k < data.numTokens - 1; k++) {
+        total += _percents[k];
+      }
+      setPercent(100 - total);
+    }
+  };
+
+  const calcExitUsdAmount = () => {
+    let total = 0;
+    for (let k = 0; k < data.numTokens; k++) {
+      total += +stakedBalances[k] * data.tokenPrices[k];
+    }
+    return ((total * percent) / 100).toFixed(2);
+  };
+
+  const renderProfit = () => {
+    let profit = 0;
+    if (!priceHistories?.length) return <span className="mx-1 text-green">$0.00</span>;
+
+    for (let k = 0; k < data.numTokens; k++) {
+      profit += +stakedBalances[k] * priceHistories[k][priceHistories[k].length - 1];
+    }
+    profit -= +userData.stakedUsdAmount;
+
+    return (
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"} mx-1`}>
+        ${numberWithCommas(profit.toFixed(3))}
+      </span>
+    );
+  };
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleZapIn = async () => {
+    if (percents.filter((p) => p < 0).length > 0 || percent < 0) {
+      toast.error("Cannot set negative percentage");
+      return;
+    }
+
+    setPending(true);
+    try {
+      await onZapIn(amount, [percent, ...percents]);
+
+      toast.success(`Zapped in successfully`);
+      setOpen(false);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleZapOut = async () => {
+    setPending(true);
+    try {
+      await onZapOut();
+
+      toast.success(`Zapped out successfully`);
+      setOpen(false);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleClaimTokens = async () => {
+    setPending(true);
+    try {
+      await onClaim(percent);
+
+      toast.success(`Claimed ${percent}% tokens`);
+      setOpen(false);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -88,53 +207,114 @@ const EnterExitModal = ({
                 <>
                   <div className="mt-[30px]">
                     <StyledInput
-                      placeholder={`Enter amount ETH...`}
+                      placeholder={`Enter amount ${getNativeSybmol(data.chainId)}...`}
                       value={amount}
                       onChange={(e) => {
+                        if ((isNaN(+e.target.value) || !e.target.value) && e.target.value !== "") return;
+
                         setAmount(e.target.value);
                         setMaxPressed(false);
                       }}
                     />
                   </div>
                   <div className="mt-1 flex w-full flex-col items-end text-sm">
-                    <div className="text-[#FFFFFF80]">${(0).toFixed(2)} USD</div>
+                    <div className="text-[#FFFFFFBF]">
+                      My {getNativeSybmol(data.chainId)} <span className="text-yellow">:</span> {Number(ethbalance).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="mt-1 flex w-full flex-col items-end text-sm">
+                    <div className="text-[#FFFFFF80]">${(+(amount ?? 0) * nativeTokenPrice).toFixed(2)} USD</div>
                   </div>
                 </>
               ) : (
-                <div className="mb-6" />
+                <div className="mt-5 mb-[10px] sm:mb-[20px]">
+                  {tokens.map((token, index) => (
+                    <div key={token.address} className="text-center">
+                      {formatAmount(stakedBalances[index], 6)} {token.symbol}
+                    </div>
+                  ))}
+                </div>
               )}
-              <div className="mx-auto mt-4 flex w-full max-w-[480px] items-center">
-                <img src={"/images/directory/ogv.svg"} alt={""} className="w-14" />
-                <StyledSlider value={value1} setValue={setValue1} balance={500} symbol={"OGV"} />
+
+              <div className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
+                {type === "enter" ? (
+                  <img
+                    src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
+                    onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                    alt={""}
+                    className="w-14 rounded-full"
+                  />
+                ) : (
+                  <IndexLogo tokens={tokens} classNames="mr-0 scale-125" />
+                )}
+                <StyledSlider value={percent} setValue={(v) => percentChanged(0, v)} balance={100} symbol={"%"} />
                 <div className="relative">
                   <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
-                    {value1.toFixed(2)}%
+                    {percent.toFixed(2)}%
                   </div>
-                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">$4,531.00 USD</div>
+                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
+                    {type === "enter" ? (
+                      <>${((+(amount ?? 0) * nativeTokenPrice * percent) / 100).toFixed(2)} USD</>
+                    ) : (
+                      <>${calcExitUsdAmount()} USD</>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="mx-auto mt-8 mb-4 flex w-full max-w-[480px] items-center">
-                <img src={"/images/directory/ogn.svg"} alt={""} className="w-14" />
-                <StyledSlider value={value2} setValue={setValue2} balance={600} symbol={"OGN"} />
-                <div className="relative">
-                  <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
-                    {value2.toFixed(2)}%
+              {type === "enter" ? (
+                tokens.slice(1).map((token, index) => (
+                  <div key={token.address} className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
+                    <img
+                      src={getTokenLogoURL(token.address, token.chainId)}
+                      onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                      alt={""}
+                      className="w-14 rounded-full"
+                    />
+                    <StyledSlider
+                      value={percents[index]}
+                      setValue={(v) => percentChanged(index + 1, v)}
+                      balance={100}
+                      symbol={"%"}
+                    />
+                    <div className="relative">
+                      <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
+                        {percents[index] ? percents[index].toFixed(2) : "0.00"}%
+                      </div>
+                      <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
+                        ${((+(amount ?? 0) * nativeTokenPrice * percents[index]) / 100).toFixed(2)} USD
+                      </div>
+                    </div>
                   </div>
-                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">$4,531.00 USD</div>
-                </div>
-              </div>
+                ))
+              ) : (
+                <div className={type !== "enter" ? "mt-[30px] sm:mt-[70px]" : ""}></div>
+              )}
 
               <div className="my-6 h-[1px] w-full bg-[#FFFFFF80]" />
               <div className="mx-auto w-full max-w-[480px]">
                 {type === "enter" ? (
                   <div className="h-12">
-                    <StyledButton type="quaternary">Enter OGN-OGV Index</StyledButton>
+                    <StyledButton type="quaternary" onClick={handleZapIn} disabled={!amount || pending || insufficient}>
+                      {insufficient ? `Insufficient balance` : `Enter ${getIndexName(tokens)} Index`}
+                    </StyledButton>
                   </div>
                 ) : (
-                  <div className="h-12">
-                    <StyledButton type="quaternary">
-                      Exit <span className="text-green">$150.52 Profit</span>
+                  <div className="flex h-12">
+                    <StyledButton
+                      type="quaternary"
+                      onClick={handleClaimTokens}
+                      disabled={pending || !percent || +userData.stakedUsdAmount <= 0}
+                    >
+                      Exit {renderProfit()} Profit
+                    </StyledButton>
+                    <div className="mx-1" />
+                    <StyledButton
+                      type="quaternary"
+                      onClick={handleZapOut}
+                      disabled={pending || +userData.stakedUsdAmount <= 0}
+                    >
+                      Zap Out
                     </StyledButton>
                   </div>
                 )}

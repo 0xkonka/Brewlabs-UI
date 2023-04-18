@@ -15,6 +15,7 @@ interface CorePoolProps {
   duration?: number;
   depositFee?: number;
   withdrawFee?: number;
+  penaltyFee?: number;
   apr?: number;
   stakingTokenPrice?: number;
   earningTokenPrice?: number;

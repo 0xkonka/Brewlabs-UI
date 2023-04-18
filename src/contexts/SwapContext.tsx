@@ -1,4 +1,5 @@
 import { CurrencyAmount, Price } from "@brewlabs/sdk";
+import { slippageDefault } from "config/constants";
 import { BigNumber } from "ethers";
 import React, { useState } from "react";
 import { useDefaultsFromURLSearch } from "state/swap/hooks";
@@ -14,7 +15,7 @@ const SwapContext: any = React.createContext({
   parsedAmount: "",
   buyTax: 0,
   sellTax: 0,
-  slippage: 50,
+  slippage: slippageDefault,
   verified: false,
   apporveStep: 0,
   viewType: 0,
@@ -51,7 +52,7 @@ const SwapContextProvider = ({ children }: any) => {
   const [parsedAmount, setParsedAmount] = useState<BigNumber>();
   const [buyTax, setBuyTax] = useState(0);
   const [sellTax, setSellTax] = useState(0);
-  const [slippage, setSlippage] = useState(50);
+  const [slippage, setSlippage] = useState(slippageDefault);
   const [verified, setVerified] = useState(false);
   const [apporveStep, setApproveStep] = useState(0);
 

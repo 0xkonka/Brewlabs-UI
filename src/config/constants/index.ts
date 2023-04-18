@@ -240,7 +240,7 @@ export const INITIAL_ALLOWED_SLIPPAGE = 50;
 export const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 
 export const SECONDS_PER_YEAR = 365 * 86400; // 10512000
-export const BASE_URL = "https://earn.brewlabs.info";
+export const BASE_URL = "https://bridge.brewlabs.info";
 
 export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
 export const DEFAULT_GAS_LIMIT = 200000;
@@ -277,4 +277,4 @@ export const ZERO_PERCENT = new Percent("0");
 export const ONE_HUNDRED_PERCENT = new Percent("1");
 
 export const slippageWithTVL = 200;
-export const slippageDefault = 50;
+export const slippageDefault = 5000;

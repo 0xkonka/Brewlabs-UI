@@ -63,10 +63,10 @@ const StakingModal = ({
 
   const getCalculatedStakingLimit = () => {
     let balance;
-    if(!accountData) return "0"
-    
+    if (!accountData) return "0";
+
     if (type !== "deposit") {
-      if (data.enableEmergencyWithdraw || data.sousId === 203) {
+      if (data.enableEmergencyWithdraw || data.penaltyFee) {
         balance = accountData.stakedBalance;
       } else {
         balance = accountData.stakedBalance.minus(accountData.lockedBalance);

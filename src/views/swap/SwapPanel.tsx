@@ -12,7 +12,7 @@ import { useTranslation } from "contexts/localization";
 import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
 import { usdToken } from "config/constants/tokens";
 import contracts from "config/constants/contracts";
-import AggregaionRouterV2Abi from "config/abi/AggregationRouterV5.json";
+import AggregaionRouterV2Abi from "config/abi/swap/AggregationRouterV5.json";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import {
@@ -239,13 +239,15 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           const totalTax =
             (Math.max(baseTokenInfo.BuyTax, baseTokenInfo.SellTax) + Math.max(tokenInfo.BuyTax, tokenInfo.SellTax)) *
             100;
-          setSlippage(Math.floor(totalTax + (totalTax ? slippageWithTVL : slippageDefault)));
+          if (totalTax && !isNaN(totalTax)) {
+            setSlippage(Math.floor(totalTax + slippageWithTVL));
+          }
         } catch (err) {
           console.error(err);
           setSlippage(slippageDefault);
         }
       };
-      fetchData();
+      // fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT]]);
@@ -440,6 +442,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           showMaxButton={!atMaxAmount}
           currency={currencies[Field.INPUT]}
           balance={currencyBalances[Field.INPUT]}
+          currencies={currencies}
         />
       </div>
 
@@ -463,6 +466,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           buyTax={buyTax}
           sellTax={sellTax}
           verified={verified}
+          currencies={currencies}
         />
       </div>
       {account &&
