@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/link-passhref */
 import { useCallback, useContext, useMemo, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { TransactionResponse } from "alchemy-sdk";
