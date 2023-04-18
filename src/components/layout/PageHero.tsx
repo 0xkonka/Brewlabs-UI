@@ -1,7 +1,8 @@
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import PhoneFrame from "@components/PhoneFrame";
-import { PlayCircleIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { ArrowPathRoundedSquareIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Container from "./Container";
 
 const PageHero = () => {
@@ -23,14 +24,18 @@ const PageHero = () => {
 
             <div className="mt-4">
               <div className="flex flex-wrap gap-2">
-                <button className="btn-outline btn grow border-amber-200 text-amber-200 sm:grow-0">
+                <a
+                  className="btn-outline btn grow border-amber-200 text-amber-200 sm:grow-0"
+                  href="https://t.me/brewlabs"
+                  target="_blank"
+                >
                   <ChatBubbleLeftRightIcon className="mr-1 h-6 w-6 text-amber-200" />
                   Join our community
-                </button>
-                <button className="btn-outline btn grow border-gray-400 sm:grow-0">
-                  <PlayCircleIcon className="mr-1 h-6 w-6" />
-                  Watch the video
-                </button>
+                </a>
+                <Link className="btn-outline btn grow border-gray-400 sm:grow-0" href="/swap">
+                  <ArrowPathRoundedSquareIcon className="mr-1 h-6 w-6" />
+                  Swap tokens
+                </Link>
               </div>
             </div>
           </div>
