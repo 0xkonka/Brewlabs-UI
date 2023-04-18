@@ -8,8 +8,8 @@ import ConnectWallet from "../wallet/ConnectWallet";
 // import ThemeSwitcher from "../ThemeSwitcher";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
-import { navigationData } from "../../config/constants/navigation";
-import { AirdropSVG, FactorySVG } from "components/dashboard/assets/svgs";
+import { navigationData, navigationExtraData } from "../../config/constants/navigation";
+import { BuildingOffice2Icon, DocumentTextIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
@@ -56,51 +56,24 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
               </Link>
             ))}
           </div>
-          <div className="hidden sm:block">
-            <a
-              className={`${clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex items-center text-sm")}`}
-              href="https://brewlabs-airdrop.tools/bsc"
-              target={"_blank"}
-              rel={"noreferrer"}
-            >
-              <div>
-                <AirdropSVG
-                  className={`${slim ? "-ml-[1px] mb-1.5 w-[22px]" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`}
-                />
-              </div>
-              <span className={clsx(slim && "sr-only", "ml-2")}>
-                Visit&nbsp;
-                <span className="dark:text-primary">Airdrop tool</span>
-              </span>
-            </a>
-            <a
-              className={clsx(slim ? "ml-4" : "ml-6 ", "mb-1 flex items-center text-sm")}
-              href="https://brewlabs.info/factory"
-              target={"_blank"}
-              rel={"noreferrer"}
-            >
-              <div>
-                <FactorySVG
-                  className={`${slim ? "-ml-[1px] mb-1.5 w-[22px]" : "-ml-0.5 w-3.5"} flex-shrink-0 text-primary`}
-                />
-              </div>
-              <span className={clsx(slim && "sr-only", "ml-2")}>
-                Visit&nbsp;
-                <span className="dark:text-primary">Brewlabs Factory</span>
-              </span>
-            </a>
-            <a
-              className={clsx(slim ? "ml-4" : "ml-6 ", "flex text-sm")}
-              href="https://brewlabs.gitbook.io/welcome-to-brewlabs/important-docs/brewlabs-dapp-terms-of-service"
-              target={"_blank"}
-              rel={"noreferrer"}
-            >
-              <img src="/images/dashboard/docs.svg" alt="" className={clsx(slim && "h-5 w-5")}></img>
-              <span className={clsx(slim && "sr-only", "ml-2")}>
-                Visit&nbsp;
-                <span className="dark:text-primary">Brewlabs docs</span>
-              </span>
-            </a>
+          <div className={clsx(slim ? "items-center p-2" : "px-5", "flex flex-col justify-end")}>
+            {navigationExtraData.map((item) => (
+              <a
+                className="mb-2 flex items-center gap-2 text-sm"
+                href={item.href}
+                target={"_blank"}
+                rel={"noreferrer"}
+                key={item.name}
+              >
+                <div>
+                  <DynamicHeroIcon icon={item.icon} className="h-5 w-5  flex-shrink-0 text-gray-400" />
+                </div>
+                <span className={clsx(slim && "sr-only")}>
+                  Visit&nbsp;
+                  <span className="dark:text-primary">{item.name}</span>
+                </span>
+              </a>
+            ))}
           </div>
         </nav>
       </div>
