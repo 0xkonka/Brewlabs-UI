@@ -516,7 +516,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("exit");
                               }}
-                              disabled={pending || !address || +userData.stakedUsdAmount <= 0}
+                              disabled={pending || !address || +userData?.stakedUsdAmount <= 0}
                             >
                               Exit &nbsp;{renderProfit()} Profit
                             </StyledButton>
