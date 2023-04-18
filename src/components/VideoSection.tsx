@@ -11,12 +11,12 @@ const VideoSection = () => (
           </h2>
           <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Investment suite</p>
 
-          <p className="mt-2 dark:text-gray-600">
+          <p className="mt-2 dark:text-gray-300">
             All of our staking and farming contracts are audited by a third party vendor, Certik. Safety and security
             are our priority.
           </p>
 
-          <p className="mt-2 dark:text-gray-600">
+          <p className="mt-2 dark:text-gray-300">
             Staking is a great way to earn passive income or if you are the contract owner it&apos;s a great way to
             reward your community.
           </p>
