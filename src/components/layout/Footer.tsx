@@ -69,19 +69,25 @@ const navigation = {
   earn: [
     {
       name: "Staking",
-      href: "https://earn.brewlabs.info/pools",
+      href: "/staking",
       external: true,
       status: "",
     },
     {
       name: "Farms",
-      href: "https://earn.brewlabs.info/farms",
+      href: "/farms",
       external: true,
       status: "",
     },
     {
       name: "Zapper",
-      href: "https://earn.brewlabs.info/zap",
+      href: "/zap",
+      external: false,
+      status: "",
+    },
+    {
+      name: "Indexes",
+      href: "/indexes",
       external: false,
       status: "",
     },
