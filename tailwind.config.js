@@ -34,7 +34,6 @@ module.exports = {
       },
     },
     fontFamily: {
-      script: ['"Caveat"'],
       brand: ['"Questrial"'],
       roboto: ['"Roboto"'],
       dash: ['"Roboto"'],

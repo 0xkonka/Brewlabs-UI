@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
 
@@ -9,10 +9,20 @@ import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 
 import { BLOCKS_PER_DAY } from "config/constants";
-import { Category } from "config/constants/types";
+import { AppId, Category } from "config/constants/types";
 import { ZapperContext } from "contexts/directory/ZapperContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
+import {
+  useAppId,
+  useFarmLpAprsFromAppId,
+  useFetchFarmLpAprs,
+  usePollFarms,
+  usePollFarmsWithUserData,
+  usePriceCakeBusd,
+  useSetFarms,
+  useFarms as useZaps,
+} from "state/zap/hooks";
 import { usePools } from "state/pools/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { useChainCurrentBlocks } from "state/block/hooks";
@@ -27,6 +37,12 @@ import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
 import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
+import { useAccount } from "wagmi";
+import BigNumber from "bignumber.js";
+import { getFarmApr } from "utils/apr";
+import { ChainId } from "@brewlabs/sdk";
+import { latinise } from "utils/latinise";
+import { useActiveChainId } from "@hooks/useActiveChainId";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -37,13 +53,54 @@ const Directory = ({ page }: { page: number }) => {
   const [status, setStatus] = useState("active");
   const [deployerOpen, setDeployerOpen] = useState(false);
 
+  const { address: account } = useAccount();
   const { pools, dataFetched } = usePools();
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
+  const { data: zaps, regularCakePerBlock } = useZaps(account);
+
+  const cakePrice = usePriceCakeBusd();
+  const pancakeLpAprs = useFarmLpAprsFromAppId(AppId.PANCAKESWAP);
+  const [query, setQuery] = useState("");
+
+  useSetFarms();
+  usePollFarms();
+  usePollFarmsWithUserData();
+  useFetchFarmLpAprs(ChainId.BSC_MAINNET);
+
+  const farmsList = useCallback(
+    (farmsToDisplay) => {
+      let farmsToDisplayWithAPR = farmsToDisplay.map((farm) => {
+        if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) {
+          return { ...farm, liquidity: new BigNumber(farm.liquidity) };
+        }
+        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd);
+        const { cakeRewardsApr } = getFarmApr(
+          new BigNumber(farm.poolWeight),
+          cakePrice,
+          totalLiquidity,
+          farm.lpAddress,
+          new BigNumber(regularCakePerBlock),
+          ChainId.BSC_MAINNET
+        );
+
+        const lpRewardsApr = pancakeLpAprs[farm.lpAddress?.toLocaleLowerCase()] ?? 0;
+        return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity };
+      });
+
+      if (query) {
+        const lowercaseQuery = latinise(query.toLowerCase());
+        farmsToDisplayWithAPR = farmsToDisplayWithAPR.filter((farm) => {
+          return latinise(farm.lpSymbol.toLowerCase()).includes(lowercaseQuery);
+        });
+      }
+      return farmsToDisplayWithAPR;
+    },
+    [query, cakePrice, regularCakePerBlock, pancakeLpAprs]
+  );
+
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const currentBlocks = useChainCurrentBlocks();
-  const { data: zappers, accountData: accountZapperDatas }: any = useContext(ZapperContext);
-
   const allPools = [
     ...pools.map((pool) => {
       let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
@@ -62,7 +119,14 @@ const Directory = ({ page }: { page: number }) => {
       }
       return { ..._index, tvl };
     }),
-    ...zappers,
+    // ...farmsList(zaps).map((zap) => {
+    //   return {
+    //     ...zap,
+    //     type: 4,
+    //     tvl: zap.liquidity.toNumber(),
+    //     totalStaked: zap.totalSupply === undefined ? undefined : zap.totalSupply / Math.pow(10, 18),
+    //   };
+    // }),
   ];
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
@@ -122,13 +186,19 @@ const Directory = ({ page }: { page: number }) => {
         (data) =>
           curFilter === Category.ALL ||
           data.type === curFilter ||
-          (curFilter === Category.MY_POSITION && data.userData?.stakedBalance.gt(0))
+          (curFilter === Category.MY_POSITION &&
+            (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
       );
   }
 
   switch (status) {
     case "finished":
-      chosenPools = chosenPools.filter((pool) => pool.isFinished || pool.multiplier === 0);
+      chosenPools = chosenPools.filter(
+        (pool) =>
+          pool.isFinished ||
+          pool.multiplier === 0 ||
+          (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier === "0X")
+      );
       break;
     case "new":
       chosenPools = chosenPools.filter(
@@ -150,7 +220,7 @@ const Directory = ({ page }: { page: number }) => {
           ((pool.type === Category.POOL && +pool.startBlock > 0) ||
             (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
             pool.type === Category.INDEXES ||
-            pool.type === Category.ZAPPER)
+            (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier !== "0X"))
       );
   }
   chosenPools = sortPools(chosenPools);
@@ -192,7 +262,6 @@ const Directory = ({ page }: { page: number }) => {
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
               data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
-              accountData: accountZapperDatas,
             }}
           />
         );

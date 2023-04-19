@@ -1,6 +1,7 @@
-import { ChainId } from "@brewlabs/sdk";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
 import { EXPLORER_NAMES, EXPLORER_URLS } from "config/constants/networks";
+import { getNativeSybmol } from "lib/bridge/helpers";
 
 export function numberWithCommas(x: any) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -112,7 +113,7 @@ export const routers = {
 
 export const getIndexName = (tokens) => {
   // if (tokens.length === 2)
-  return tokens.map((t) => t.symbol.replace("WBNB", "BNB").replace("WETH", "ETH").toUpperCase()).join("-");
+  return tokens.map((t) => t.symbol.replace(WNATIVE[t.chainId].symbol, getNativeSybmol(t.chainId)).toUpperCase()).join("-");
   // return tokens
   // .map((t, index) => (index > 0 ? t.symbol.substring(0, 1) : t.symbol.replace("WBNB", "BNB").replace("WETH", "ETH")))
   // .join("-");

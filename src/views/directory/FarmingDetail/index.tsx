@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/link-passhref */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
@@ -13,6 +14,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { CHAIN_ICONS } from "config/constants/networks";
 import { Version } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -103,9 +105,9 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
     let _graphData;
     switch (curGraph) {
       case 2:
-        return data.performanceFees;
+        return data.performanceFees ?? [];
       case 3:
-        return data.stakedAddresses;
+        return data.stakedAddresses ?? [];
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
@@ -281,12 +283,12 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             : token.address
                         }`}
                       >
-                        <a className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
+                        <div className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
                           <StyledButton>
                             <div>Make LP</div>
                             <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
-                        </a>
+                        </div>
                       </Link>
                     </div>
                   </div>
@@ -302,7 +304,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel
                       padding={"14px 25px 8px 25px"}
-                      className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                      className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                     >
                       <div className="flex justify-between text-xl">
                         <div>
@@ -349,6 +351,13 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         >
                           <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
                         </div>
+                      </div>
+                      <div className="absolute bottom-1 right-1">
+                        {data ? (
+                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
 

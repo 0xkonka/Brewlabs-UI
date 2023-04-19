@@ -17,6 +17,8 @@ import burn from "./burn/reducer";
 import mint from "./mint/reducer";
 import swap from "./swap/reducer";
 import lists from "./lists/reducer";
+import zap from "./zap";
+import lpPricesReducer from "./lpPrices";
 import multicall from "./multicall/reducer";
 import { BridgeToken } from "config/constants/types";
 
@@ -36,13 +38,15 @@ const persistedReducer = persistReducer(
     farms,
     pools,
     indexes,
+    zap,
     user,
     lists,
+    lpTokenPrices: lpPricesReducer,
     multicall,
     swap,
     transactions,
     burn,
-    mint
+    mint,
   })
 );
 
@@ -104,6 +108,7 @@ store = initializeStore();
 export type AppDispatch = typeof store.dispatch;
 export type AppState = ReturnType<typeof store.getState>;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+// export const useAppDispatch = () => useDispatch();
 
 export default store;
 

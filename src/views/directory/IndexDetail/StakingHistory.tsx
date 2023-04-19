@@ -16,14 +16,14 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
     for (let i = 0; i < _histories.length; i++) {
       let _history = _histories[i];
       switch (_history.method) {
-        case "ZapOut":
+        case "Exit Index":
         case "Mint NFT":
           for (let k = 0; k <= i; k++) {
             _histories[k].realAmounts = new Array(data.numTokens).fill(0);
             _histories[k].realUsdAmount = 0;
           }
           break;
-        case "ZapIn":
+        case "Enter Index":
         case "Stake NFT":
           _histories[i].realAmounts = _histories[i].amounts.map((amount) => +amount);
           _histories[i].realUsdAmount = +_histories[i].usdAmount;

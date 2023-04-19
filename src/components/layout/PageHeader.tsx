@@ -6,8 +6,8 @@ import Container from "./Container";
 const PageHeader = ({ title, summary, children }: PageHeaderProps) => (
   <section>
     <Container className="pt-20 pb-16">
-      <header className="font-brand sm:pr-0">
-        <h1 className="text-3xl font-extrabold text-slate-700 dark:text-slate-400 sm:text-4xl">{title}</h1>
+      <header className="max-w-md font-brand sm:pr-0">
+        <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">{title}</h1>
         {summary && <p className="mt-4 text-slate-800">{summary}</p>}
       </header>
       {children}

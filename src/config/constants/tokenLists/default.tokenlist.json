@@ -2371,6 +2371,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0x8Fd0195469b51a935dC3C48617ced6B400E38C9C/logo.png"
     },
     {
+      "name": "Aidi Finance",
+      "symbol": "AIDI",
+      "address": "0xDFc2C4ce66561c3ee53dbeA9ff78550F395a25e2",
+      "chainId": 137,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0xDFc2C4ce66561c3ee53dbeA9ff78550F395a25e2/logo.png"
+    },
+    {
       "name": "Wrapped Fantom",
       "symbol": "WFTM",
       "address": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",

@@ -1,13 +1,14 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
-import Image from "next/future/image";
+import Image from "next/image";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
+
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
@@ -111,7 +112,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                             <div
                               className={clsx(
                                 router?.pathname === "/" && "home",
-                                "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                                "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
                               )}
                             >
                               <Suspense>
@@ -119,7 +120,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                               </Suspense>
 
                               <Image
-                                className="fixed top-0 -right-44 dark:opacity-50"
+                                className="fixed top-0 -right-44 home:z-10 dark:opacity-50"
                                 src="/images/blur-indigo.png"
                                 alt="background blur"
                                 width={567}

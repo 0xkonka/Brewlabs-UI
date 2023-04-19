@@ -6,7 +6,7 @@ export const avalandche: Chain = {
   name: 'Avalanche C-Chain',
   network: 'avalanche',
   rpcUrls: {
-    default: 'https://rpc.ankr.com/avalanche',
+    default: 'https://api.avax.network/ext/bc/C/rpc',
   },
   nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
   blockExplorers: {
@@ -22,7 +22,7 @@ export const avalandcheFuji: Chain = {
   name: 'Avalanche Fuji',
   network: 'avalanche-fuji',
   rpcUrls: {
-    default: 'https://rpc.ankr.com/avalanche_fuji',
+    default: 'https://api.avax-test.network/ext/bc/C/rpc',
   },
   nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
   blockExplorers: {
