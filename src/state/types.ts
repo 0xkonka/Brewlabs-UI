@@ -209,6 +209,7 @@ export interface SerializedFarm extends SerializedFarmConfig {
   withdrawFee?: string;
   performanceFee?: string;
   userData?: SerializedFarmUserData;
+  totalSupply?: string;
 }
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>;

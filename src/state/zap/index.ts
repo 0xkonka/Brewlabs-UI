@@ -278,7 +278,6 @@ export const fetchSushiFarmsPublicDataAsync = (chainId) => async (dispatch, getS
   try {
     const farmsConfig = getState().zap.data[AppId.SUSHISWAP];
     const farms = await fetchSushiFarms(chainId, farmsConfig);
-    console.log(farms);
     dispatch(setFarmsPublicData({ appId: AppId.SUSHISWAP, farms }));
   } catch (error) {
     console.warn(error);

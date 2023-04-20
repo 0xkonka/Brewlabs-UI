@@ -42,17 +42,17 @@ const PoolCard = ({
         setSelectPoolDetail(true);
         switch (data.type) {
           case Category.POOL:
-            setCurPool({ type: Category.POOL, pid: data.sousId });
+            setCurPool({ type: Category.POOL, pid: data.sousId, chainId: data.chainId });
             break;
           case Category.FARM:
-            setCurPool({ type: Category.FARM, pid: data.farmId });
+            setCurPool({ type: Category.FARM, pid: data.farmId, chainId: data.chainId });
             break;
           case Category.INDEXES:
             // setCurPool({ type: Category.INDEXES, pid: data.pid });
             router.push(`/indexes/${data.pid}`);
             break;
           case Category.ZAPPER:
-            setCurPool({ type: Category.ZAPPER, pid: data.pid });
+            setCurPool({ type: Category.ZAPPER, pid: data.pid, chainId: data.chainId });
             break;
           default:
             setSelectPoolDetail(false);

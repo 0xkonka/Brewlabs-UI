@@ -140,7 +140,6 @@ export const farmsSelector = createSelector(
     //     : appId === AppId.APESWAP
     //     ? farms.map(deserializeApeFarm)
     //     : farms.map(deserializeSushiFarm);
-
     const deserializedFarmsData = [
       ...data[AppId.PANCAKESWAP].map(deserializePancakeFarm),
       ...data[AppId.APESWAP].map(deserializeApeFarm),

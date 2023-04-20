@@ -75,19 +75,20 @@ export const useFarms = (account) => {
   const dispatch = useAppDispatch();
   const { chainId } = useActiveWeb3React();
   const { data: farms } = useSelector(farmsSelector);
-  const farmsLoaded = farms.length > 0;
+  const apeFarmLoaded = farms.filter((data) => data.appId === AppId.APESWAP).length > 0;
+  const sushiFarmLoaded = farms.filter((data) => data.appId === AppId.SUSHISWAP).length > 0;
 
   useSlowRefreshEffect(() => {
     if (account /*&& chainId === ChainId.BSC_MAINNET*/) {
       dispatch(fetchApeFarmUserDataAsync(ChainId.BSC_MAINNET, account));
     }
-  }, [account, dispatch, chainId, farmsLoaded]);
+  }, [account, dispatch, chainId, apeFarmLoaded]);
 
   useSlowRefreshEffect(() => {
     if (account) {
       dispatch(fetchSushiFarmUserDataAsync(account));
     }
-  }, [account, dispatch, chainId, farmsLoaded]);
+  }, [account, dispatch, chainId, sushiFarmLoaded]);
   return useSelector(farmsSelector);
 };
 

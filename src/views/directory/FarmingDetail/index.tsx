@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/link-passhref */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
@@ -180,6 +179,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
   const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
 
+  console.log("ASDFASDFADSf");
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (
@@ -282,6 +282,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             ? getNativeSybmol(data.chainId)
                             : token.address
                         }`}
+                        passHref
                       >
                         <div className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
                           <StyledButton>

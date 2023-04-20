@@ -107,7 +107,7 @@ store = initializeStore();
  */
 export type AppDispatch = typeof store.dispatch;
 export type AppState = ReturnType<typeof store.getState>;
-export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppDispatch = () => useDispatch<any>();
 // export const useAppDispatch = () => useDispatch();
 
 export default store;

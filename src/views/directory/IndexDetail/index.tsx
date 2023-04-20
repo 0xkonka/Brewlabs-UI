@@ -45,10 +45,12 @@ import useIndex from "./hooks/useIndex";
 import StyledButton from "../StyledButton";
 import EnterExitModal from "./Modals/EnterExitModal";
 import AddNFTModal from "./Modals/AddNFTModal";
-import DropDown from "./Dropdown";
+import DropDown from "./Dropdowns/Dropdown";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
+import { LinkSVG } from "components/dashboard/assets/svgs";
+import OptionDropdown from "./Dropdowns/OptionDropdown";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 
@@ -138,11 +140,39 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     return profit;
   };
 
-  const renderProfit = () => {
+  const renderProfit = (isProfit = false) => {
     let profit = getProfit();
+    const profitChanged = (profit ? (userData.stakedUsdAmount / 1 - profit) / profit : 0) * 100;
     if (!userData?.stakedBalances?.length || !priceHistories?.length)
-      return <span className="mr-1 text-green">$0.00</span>;
-    return <span className={`${profit > 0 ? "text-green" : ""} mr-1`}>${numberWithCommas(profit.toFixed(2))}</span>;
+      return (
+        <span className="mr-1 text-green">
+          $0.00 <span className="text-[#FFFFFF80]">earned</span>
+          {isProfit ? (
+            <>
+              <br />
+              0.00% <span className="text-[#FFFFFF80]">gain</span>
+            </>
+          ) : (
+            ""
+          )}
+        </span>
+      );
+    return (
+      <span className={`${profit >= 0 ? "text-green" : ""} mr-1`}>
+        ${numberWithCommas(profit.toFixed(2))} <span className="text-[#FFFFFF80]">earned</span>
+        {isProfit ? (
+          <>
+            <br />
+            <span className={`${profitChanged >= 0 ? "text-green" : ""}`}>
+              {(profitChanged > 0 ? profitChanged : -profitChanged).toFixed(2)}%&nbsp;
+              <span className="text-[#FFFFFF80]">{profitChanged >= 0 ? "gain" : "loss"}</span>
+            </span>
+          </>
+        ) : (
+          ""
+        )}
+      </span>
+    );
   };
 
   const showError = (errorMsg: string) => {
@@ -209,17 +239,22 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
-                    <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
+                    <div className="mt-3 block sm:mt-0 sm:hidden">
                       <StyledButton
-                        disabled={!address || pending || chainId !== data.chainId || +userData.stakedUsdAmount <= 0}
-                        onClick={handleMintNft}
+                        className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                        type={"primary"}
                       >
-                        Mint Index NFT
+                        <div className="flex items-center">
+                          <div className="mr-1.5">Share Index</div> {LinkSVG}
+                        </div>
+                        <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                          Soon
+                        </div>
                       </StyledButton>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row">
-                    <div className="mt-2 hidden h-[32px] w-[140px] sm:mt-0 sm:block">
+                    {/* <div className="mt-2 hidden h-[32px] w-[140px] sm:mt-0 sm:block">
                       <StyledButton
                         disabled={!address || pending || chainId !== data.chainId || +userData.stakedUsdAmount <= 0}
                         onClick={handleMintNft}
@@ -235,9 +270,27 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       >
                         Add Index NFT
                       </StyledButton>
+                    </div> */}
+                    <div className="mt-2  mr-4 hidden sm:mt-0 sm:flex">
+                      <StyledButton
+                        className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                        type={"default"}
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-1.5">Share Index</div> {LinkSVG}
+                        </div>
+                        <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                          Soon
+                        </div>
+                      </StyledButton>
+                      <div className="mr-4" />
+                      <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
+                    </div>
+                    <div className="block sm:hidden">
+                      <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
                     </div>
                     <a
-                      className=" mt-2 h-[32px] w-[140px] sm:mt-0 "
+                      className=" mt-3 h-[32px] w-[140px] sm:mt-0 "
                       target="_blank"
                       href={`https://bridge.brewlabs.info/swap?outputCurrency=${tokens[0].address}`}
                       rel="noreferrer"
@@ -279,10 +332,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80]">
                         <div>
                           <span className="#FFFFFF80">Buy</span> {getIndexName(tokens)}
-                        </div>
-                        <div className="flex items-center">
-                          <img src="/images/explorer/etherscan.png" alt={""} className="mr-1 w-3" />
-                          <div className="#FFFFFF80">Perpetual Index</div>
                         </div>
                       </div>
                       <div className="text-xs leading-none text-[#FFFFFF80]">
@@ -361,8 +410,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                   ethers.utils.formatUnits(userData.stakedBalances[index], token.decimals),
                                   4
                                 )}`
+                              ) : address ? (
+                                <SkeletonComponent />
                               ) : (
-                                address ? <SkeletonComponent />: "0.00"
+                                "0.00"
                               )}
                               <span className="ml-1 text-[#FFFFFF80]">{token.symbol}</span>
                             </div>
@@ -371,7 +422,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="mt-2">
                         <div className="text-xl">Profit</div>
-                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">{renderProfit()}</div>
+                        <div className="mt-1 flex leading-none text-[#FFFFFF80]">{renderProfit(true)}</div>
                       </div>
                     </InfoPanel>
                   </div>
@@ -516,7 +567,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("exit");
                               }}
-                              disabled={pending || !address || +userData.stakedUsdAmount <= 0}
+                              disabled={
+                                pending ||
+                                !address ||
+                                !userData?.stakedBalances?.length ||
+                                !priceHistories?.length ||
+                                getProfit() <= 0
+                              }
                             >
                               Exit &nbsp;{renderProfit()} Profit
                             </StyledButton>

@@ -107,7 +107,7 @@ const CorePool = ({
               <StyledButton
                 onClick={() => {
                   setSelectPoolDetail(true);
-                  setCurPool({ type: data.type, pid: data.sousId });
+                  setCurPool({ type: data.type, pid: data.sousId, chainId: data.chainId });
                 }}
               >
                 Deposit {data.stakingToken.symbol}

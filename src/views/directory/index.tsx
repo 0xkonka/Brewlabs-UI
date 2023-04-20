@@ -15,6 +15,7 @@ import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
 import {
   useAppId,
+  useBananaPrice,
   useFarmLpAprsFromAppId,
   useFetchFarmLpAprs,
   usePollFarms,
@@ -48,7 +49,11 @@ const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
   const [sortOrder, setSortOrder] = useState("default");
-  const [curPool, setCurPool] = useState<{ type: Category; pid: number }>({ type: 0, pid: 0 });
+  const [curPool, setCurPool] = useState<{ type: Category; pid: number; chainId: number }>({
+    type: 0,
+    pid: 0,
+    chainId: 0,
+  });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
   const [status, setStatus] = useState("active");
   const [deployerOpen, setDeployerOpen] = useState(false);
@@ -60,6 +65,7 @@ const Directory = ({ page }: { page: number }) => {
   const { data: zaps, regularCakePerBlock } = useZaps(account);
 
   const cakePrice = usePriceCakeBusd();
+  const bananaPrice = useBananaPrice();
   const pancakeLpAprs = useFarmLpAprsFromAppId(AppId.PANCAKESWAP);
   const [query, setQuery] = useState("");
 
@@ -119,14 +125,14 @@ const Directory = ({ page }: { page: number }) => {
       }
       return { ..._index, tvl };
     }),
-    // ...farmsList(zaps).map((zap) => {
-    //   return {
-    //     ...zap,
-    //     type: 4,
-    //     tvl: zap.liquidity.toNumber(),
-    //     totalStaked: zap.totalSupply === undefined ? undefined : zap.totalSupply / Math.pow(10, 18),
-    //   };
-    // }),
+    ...farmsList(zaps).map((zap) => {
+      return {
+        ...zap,
+        type: 4,
+        tvl: zap.liquidity.toNumber(),
+        totalStaked: zap.totalSupply === undefined ? undefined : zap.totalSupply / Math.pow(10, 18),
+      };
+    }),
   ];
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
@@ -151,7 +157,7 @@ const Directory = ({ page }: { page: number }) => {
           poolsToSort,
           (pool) => {
             let totalStaked = Number.NaN;
-            if (pool.totalStaked?.isFinite()) {
+            if (pool.totalStaked !== Infinity && pool.totalStaked !== undefined) {
               totalStaked = +pool.totalStaked.toString();
             }
             return Number.isFinite(totalStaked) ? totalStaked : 0;
@@ -172,7 +178,7 @@ const Directory = ({ page }: { page: number }) => {
     const lowercaseQuery = criteria.toLowerCase();
     chosenPools = allPools
       .filter(
-        (pool) =>
+        (pool: any) =>
           pool.stakingToken?.name.toLowerCase().includes(lowercaseQuery) ||
           pool.stakingToken?.symbol.toLowerCase().includes(lowercaseQuery) ||
           pool.lpSymbol?.toLowerCase().includes(lowercaseQuery) ||
@@ -183,7 +189,7 @@ const Directory = ({ page }: { page: number }) => {
           ).length
       )
       .filter(
-        (data) =>
+        (data: any) =>
           curFilter === Category.ALL ||
           data.type === curFilter ||
           (curFilter === Category.MY_POSITION &&
@@ -232,7 +238,10 @@ const Directory = ({ page }: { page: number }) => {
             detailDatas={{
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
-              data: allPools.find((pool) => pool.type === curPool.type && pool.sousId === curPool.pid),
+              data: allPools.find(
+                (pool: any) =>
+                  pool.type === curPool.type && pool.sousId === curPool.pid && pool.chainId === curPool.chainId
+              ),
             }}
           />
         );
@@ -242,7 +251,10 @@ const Directory = ({ page }: { page: number }) => {
             detailDatas={{
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
-              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              data: allPools.find(
+                (pool: any) =>
+                  pool.type === curPool.type && pool["pid"] === curPool.pid && pool.chainId === curPool.chainId
+              ),
             }}
           />
         );
@@ -250,7 +262,10 @@ const Directory = ({ page }: { page: number }) => {
         return (
           <IndexDetail
             detailDatas={{
-              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              data: allPools.find(
+                (pool: any) =>
+                  pool.type === curPool.type && pool["pid"] === curPool.pid && pool.chainId === curPool.chainId
+              ),
             }}
           />
         );
@@ -261,7 +276,12 @@ const Directory = ({ page }: { page: number }) => {
             detailDatas={{
               open: selectPoolDetail,
               setOpen: setSelectPoolDetail,
-              data: allPools.find((pool) => pool.type === curPool.type && pool["pid"] === curPool.pid),
+              data: allPools.find(
+                (pool: any) =>
+                  pool.type === curPool.type && pool["pid"] === curPool.pid && pool.chainId === curPool.chainId
+              ),
+              cakePrice,
+              bananaPrice,
             }}
           />
         );

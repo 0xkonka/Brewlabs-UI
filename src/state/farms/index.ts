@@ -197,15 +197,15 @@ export const farmsSlice = createSlice({
       state.userDataLoaded = true;
     },
     updateFarmsUserData: (state, action) => {
-      const { field, value, pid, farmId } = action.payload
-      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId)
+      const { field, value, pid, farmId } = action.payload;
+      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId);
 
       if (index >= 0) {
         state.data[index] = { ...state.data[index], userData: { ...state.data[index].userData, [field]: value } };
       }
     },
-    setFarmTVLData: (state, action) => {
-      action.payload.forEach((tvlDataEl) => {
+    setFarmTVLData: (state: any, action) => {
+      action.payload.forEach((tvlDataEl: any) => {
         const { pid, data } = tvlDataEl;
         const index = state.data.findIndex((farm) => farm.pid === pid);
         state.data[index] = { ...state.data[index], TVLData: data };

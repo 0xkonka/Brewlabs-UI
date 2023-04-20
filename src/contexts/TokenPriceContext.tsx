@@ -57,7 +57,6 @@ const TokenPriceContextProvider = ({ children }: any) => {
       .then((result) => setETHPrice(result.data.c[result.data.c.length - 1]))
       .catch((e) => console.log(e));
   }, []);
-
   return (
     <TokenPriceContext.Provider value={{ prices, tokenPrices, lpPrices, ethPrice }}>
       {children}
