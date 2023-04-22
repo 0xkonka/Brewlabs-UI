@@ -64,21 +64,56 @@ const EnterExitModal = ({
 
       let _percents = percents;
       let total = value;
-      for (let k = 2; k < data.numTokens; k++) {
-        total += _percents[k - 1];
+      for (let k = 1; k < data.numTokens - 1; k++) {
+        total += _percents[k];
       }
-      _percents[0] = 100 - total;
+
+      if (total <= 100) {
+        _percents[0] = 100 - total;
+      } else {
+        _percents[0] = 0;
+        for (let k = 1; k < data.numTokens - 1; k++) {
+          if (_percents[k] >= total - 100) {
+            _percents[k] -= total - 100;
+            break;
+          } else {
+            total -= _percents[k];
+            _percents[k] = 0;
+          }
+        }
+      }
       setPercents(_percents);
     } else {
       let _percents = percents;
       _percents[idx - 1] = value;
-      setPercents(_percents);
 
       let total = 0;
       for (let k = 0; k < data.numTokens - 1; k++) {
         total += _percents[k];
       }
-      setPercent(100 - total);
+
+      if (total <= 100) {
+        setPercent(100 - total);
+      } else {
+        setPercent(0);
+        for (let k = 0; k < data.numTokens - 1; k++) {
+          if (k === idx - 1 || _percents[k] === 0) continue;
+
+          if (_percents[k] >= total - 100) {
+            _percents[k] -= total - 100;
+            break;
+          } else {
+            total -= _percents[k];
+            _percents[k] = 0;
+          }
+        }
+        setPercents((vs) =>
+          vs.map((v, i) => {
+            if (i === idx - 1) return value
+            return _percents[i]
+          }),
+        )
+      }
     }
   };
 
