@@ -156,9 +156,9 @@ const CurrencySelector = ({
   const debouncedQuery = useDebounce(searchQuery, 200);
 
   const [invertSearchOrder] = useState<boolean>(false);
-  const { viewType, setViewType }: any = useContext(SwapContext);
-  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
-  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
+  const { setViewType }: any = useContext(SwapContext);
+  const [setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const allTokens = useAllTokens();
 

@@ -5,10 +5,6 @@ import { formatUnits } from "ethers/lib/utils";
 import {
   ChevronDownIcon,
   ExclamationCircleIcon,
-  BoltIcon,
-  LockClosedIcon,
-  BeakerIcon,
-  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
 import { ETH_ADDRESSES } from "config/constants";
@@ -23,15 +19,13 @@ interface TradeCardProps {
   price: any;
   buyTax?: number;
   sellTax?: number;
-  verified: boolean;
 }
 
-const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax, verified }) => {
+const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax }) => {
   const { t } = useTranslation();
 
   const [priceInverted, setPriceInverted] = useState<boolean>(false);
   const [tradePanelToggled, setTradePanelToggled] = useState<boolean>(undefined);
-  const customConditionMatched = useMemo(() => verified && slippage, [verified, slippage]);
 
   const currency = useCurrency(ETH_ADDRESSES.includes(data.toToken.address) ? "ETH" : data.toToken.address);
   const minAmount = BigNumber.from(data.toTokenAmount)
@@ -103,17 +97,6 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
           {tradePanelToggled ? (
             <div className="mt-1 flex justify-between">
               <div className="min-w-[190px]">
-                {/* {customConditionMatched ? (
-                  <span className="mb-2 flex max-w-fit items-center gap-1 rounded-2xl border border-green px-2">
-                    <BoltIcon className="h-3 w-3 dark:text-green" />
-                    <p className="text-[13px]">Custom conditions</p>
-                  </span>
-                ) : (
-                  <span className="mb-2 flex max-w-fit items-center gap-1 rounded-2xl border border-amber-300 px-2">
-                    <BoltIcon className="h-3 w-3 dark:text-primary" />
-                    <p className="text-[13px]">Custom conditions</p>
-                  </span>
-                )} */}
                 <div className="ml-1">
                   <span className="flex justify-between">
                     <p className="text-[11px]">
@@ -149,18 +132,6 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                       {data.toToken.symbol}
                     </p>
                   </span>
-                  {/* <span className="flex items-center justify-start gap-1">
-                    <LockClosedIcon className="h-3 w-3 dark:text-green" />
-                    <p className="text-[11px]">Liquidity Locked</p>
-                  </span>
-                  <span className="flex items-center justify-start gap-1">
-                    {verified ? (
-                      <BeakerIcon className="h-3 w-3 dark:text-green" />
-                    ) : (
-                      <ExclamationTriangleIcon className="h-3 w-3 dark:text-danger" />
-                    )}
-                    <p className="text-[11px]">Brewlabs Verified</p>
-                  </span> */}
                 </div>
               </div>
             </div>

@@ -21,7 +21,6 @@ interface CurrencyOutputPanelProps {
   price?: any;
   buyTax?: number;
   sellTax?: number;
-  verified: boolean;
   currencies: any;
 }
 
@@ -37,7 +36,6 @@ const CurrencyOutputPanel = ({
   price,
   buyTax,
   sellTax,
-  verified,
   currencies,
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
@@ -103,7 +101,6 @@ const CurrencyOutputPanel = ({
             price={price}
             buyTax={buyTax}
             sellTax={sellTax}
-            verified={verified}
           />
         </div>
       ) : null}
