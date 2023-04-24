@@ -6,8 +6,6 @@ import { useChainCurrentBlocks } from "state/block/hooks";
 
 import DropDown from "./Dropdown";
 import ActivityDropdown from "./ActivityDropdown";
-import { useAppId } from "state/zap/hooks";
-import { useActiveChainId } from "@hooks/useActiveChainId";
 
 const SelectionPanel = ({
   pools,
@@ -40,12 +38,12 @@ const SelectionPanel = ({
   ).length;
 
   const filters = [
-    `All (${counts[1] + counts[2] + counts[3] + counts[4]})`,
-    `Staking Pools (${counts[1]})`,
-    `Yield Farms (${counts[2]})`,
-    `Indexes (${counts[3]})`,
-    `Zapper Pools (${counts[4]})`,
-    `My positions (${counts[5]})`,
+    <>All <span className="text-[11px]">({counts[1] + counts[2] + counts[3] + counts[4]})</span></>,
+    <>Staking Pools <span className="text-[11px]">({counts[1]})</span></>,
+    <>Yield Farms <span className="text-[11px]">({counts[2]})</span></>,
+    <>Indexes <span className="text-[11px]">({counts[3]})</span></>,
+    <>Zapper Pools <span className="text-[11px]">({counts[4]})</span></>,
+    <>My positions <span className="text-[11px]">({counts[5]})</span></>,
   ];
 
   let activityCnts = {};
@@ -104,7 +102,7 @@ const SelectionPanel = ({
             <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
           </div>
         </div>
-        <div className="ml-4 hidden w-[130px] xl:block">
+        <div className="ml-4 hidden w-[140px] xl:block">
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
