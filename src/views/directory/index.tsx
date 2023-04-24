@@ -44,6 +44,8 @@ import { getFarmApr } from "utils/apr";
 import { ChainId } from "@brewlabs/sdk";
 import { latinise } from "utils/latinise";
 import { useActiveChainId } from "@hooks/useActiveChainId";
+import StyledButton from "./StyledButton";
+import { chevronLeftSVG } from "@components/dashboard/assets/svgs";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -315,7 +317,7 @@ const Directory = ({ page }: { page: number }) => {
                 }
               />
               <Container className="font-brand">
-                {/* <div className="mb-4 flex justify-end">
+                <div className="mb-4 flex justify-end">
                   <div className="h-[32px] w-[140px] font-roboto">
                     <StyledButton onClick={() => setDeployerOpen(true)}>
                       <div className="flex items-center">
@@ -324,7 +326,7 @@ const Directory = ({ page }: { page: number }) => {
                       </div>
                     </StyledButton>
                   </div>
-                </div> */}
+                </div>
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
 
                 <div className="mt-8">
