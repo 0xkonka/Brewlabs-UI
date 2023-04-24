@@ -179,6 +179,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
   const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
 
+  console.log("ASDFASDFADSf");
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (
@@ -281,13 +282,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             ? getNativeSybmol(data.chainId)
                             : token.address
                         }`}
+                        passHref
                       >
-                        <a className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
+                        <div className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
                           <StyledButton>
                             <div>Make LP</div>
                             <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
-                        </a>
+                        </div>
                       </Link>
                     </div>
                   </div>

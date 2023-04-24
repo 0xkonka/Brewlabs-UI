@@ -6,6 +6,8 @@ import { useChainCurrentBlocks } from "state/block/hooks";
 
 import DropDown from "./Dropdown";
 import ActivityDropdown from "./ActivityDropdown";
+import { useAppId } from "state/zap/hooks";
+import { useActiveChainId } from "@hooks/useActiveChainId";
 
 const SelectionPanel = ({
   pools,
@@ -34,7 +36,7 @@ const SelectionPanel = ({
   counts[5] = pools.filter((data) =>
     data.type === Category.INDEXES
       ? data.userData?.stakedBalances[0]?.gt(0) || data.userData?.stakedBalances[1]?.gt(0)
-      : data.userData?.stakedBalance.gt(0)
+      : Number(data.userData?.stakedBalance) > 0
   ).length;
 
   const filters = [
@@ -59,9 +61,15 @@ const SelectionPanel = ({
       !pool.isFinished &&
       ((pool.type === Category.POOL && +pool.startBlock > 0) ||
         (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
-        pool.type === Category.INDEXES)
+        pool.type === Category.INDEXES ||
+        (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier !== "0X"))
   ).length;
-  activityCnts["finished"] = filteredPools.filter((pool) => pool.isFinished || pool.multiplier === 0).length;
+  activityCnts["finished"] = filteredPools.filter(
+    (pool) =>
+      pool.isFinished ||
+      pool.multiplier === 0 ||
+      (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier === "0X")
+  ).length;
   activityCnts["new"] = filteredPools.filter(
     (pool) =>
       !pool.isFinished &&

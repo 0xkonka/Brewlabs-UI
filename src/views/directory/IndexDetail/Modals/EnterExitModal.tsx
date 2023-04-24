@@ -252,7 +252,33 @@ const EnterExitModal = ({
                       }}
                     />
                   </div>
-                  <div className="mt-1 flex w-full flex-col items-end text-sm">
+                  <div className="mt-2 flex w-full items-center justify-between text-sm">
+                    <div className="flex">
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount((Number(ethbalance) / 4).toFixed(5))}
+                      >
+                        25.00%
+                      </div>
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount(((Number(ethbalance) / 4) * 2).toFixed(5))}
+                      >
+                        50.00%
+                      </div>
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount(((Number(ethbalance) / 4) * 3).toFixed(5))}
+                      >
+                        75.00%
+                      </div>
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount(Number(ethbalance).toFixed(5))}
+                      >
+                        Max
+                      </div>
+                    </div>
                     <div className="text-[#FFFFFFBF]">
                       My {getNativeSybmol(data.chainId)} <span className="text-yellow">:</span>{" "}
                       {Number(ethbalance).toFixed(2)}

@@ -6,12 +6,14 @@ const StyledButton = ({
   children,
   type,
   boxShadow,
+  className,
 }: {
   onClick?: any;
   disabled?: boolean;
   children?: any;
   type?: string;
   boxShadow?: boolean;
+  className?: string;
 }): ReactElement =>
   type === "secondary" ? (
     <button
@@ -84,6 +86,15 @@ const StyledButton = ({
       onClick={onClick}
       disabled={disabled}
       className="relative flex h-full w-full items-center justify-center rounded border border-[#FFFFFF40] bg-transparent text-sm text-[#FFFFFFBF] transition disabled:cursor-[not-allowed] disabled:opacity-70"
+    >
+      {children}
+    </button>
+  ) : type === "default" ? (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`${className} flex justify-center items-center disabled:cursor-[not-allowed] disabled:opacity-70`}
     >
       {children}
     </button>

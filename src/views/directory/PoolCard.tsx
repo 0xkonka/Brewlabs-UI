@@ -9,6 +9,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import IndexLogo from "components/logo/IndexLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { useRouter } from "next/router";
+import { isAddress } from "utils";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",
@@ -29,6 +30,11 @@ const PoolCard = ({
   setCurPool: any;
 }) => {
   const router = useRouter();
+  let token: any, quoteToken: any;
+  if (data.type === Category.ZAPPER) {
+    token = isAddress(data.token.address);
+    quoteToken = isAddress(data.quoteToken.address);
+  }
   return (
     <StyledContainer
       index={index}
@@ -36,17 +42,17 @@ const PoolCard = ({
         setSelectPoolDetail(true);
         switch (data.type) {
           case Category.POOL:
-            setCurPool({ type: Category.POOL, pid: data.sousId });
+            setCurPool({ type: Category.POOL, pid: data.sousId, chainId: data.chainId });
             break;
           case Category.FARM:
-            setCurPool({ type: Category.FARM, pid: data.farmId });
+            setCurPool({ type: Category.FARM, pid: data.farmId, chainId: data.chainId });
             break;
           case Category.INDEXES:
             // setCurPool({ type: Category.INDEXES, pid: data.pid });
             router.push(`/indexes/${data.pid}`);
             break;
           case Category.ZAPPER:
-            setCurPool({ type: Category.ZAPPER, pid: data.pid });
+            setCurPool({ type: Category.ZAPPER, pid: data.pid, chainId: data.chainId });
             break;
           default:
             setSelectPoolDetail(false);
@@ -60,6 +66,8 @@ const PoolCard = ({
         <div className="flex min-w-[210px] items-center">
           {data.type === Category.INDEXES ? (
             <IndexLogo tokens={data.tokens} />
+          ) : data.type === Category.ZAPPER ? (
+            <IndexLogo tokens={[data.token, data.quoteToken]} />
           ) : (
             <div className="mr-3 h-7 w-7 rounded-full border border-white bg-white">
               <img
@@ -72,6 +80,11 @@ const PoolCard = ({
           <div>
             {data.type === Category.INDEXES ? (
               <div className="text-sm leading-none">{getIndexName(data.tokens)}</div>
+            ) : data.type === Category.ZAPPER ? (
+              <div className="text-sm leading-none">
+                <div>{getIndexName([data.token, data.quoteToken])}</div>
+                <div>Earning : {data.earningToken.symbol}</div>
+              </div>
             ) : (
               <div className="leading-none">
                 <span className="text-primary">Earn</span> {data.earningToken.symbol}
