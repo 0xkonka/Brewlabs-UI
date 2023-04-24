@@ -54,11 +54,11 @@ const DashboardContextProvider = ({ children }: any) => {
   const [tokenList, setTokenList] = useState([]);
   const [priceHistory, setPriceHistory] = useState([]);
   const { address } = useAccount();
-  // const address = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
-  temp_addr = address;
   const { chainId } = useActiveChainId();
-  temp_id = chainId;
   const { data: signer }: any = useSigner();
+
+  temp_addr = address;
+  temp_id = chainId;
 
   async function multicall(abi: any, calls: any) {
     const itf = new ethers.utils.Interface(abi);
