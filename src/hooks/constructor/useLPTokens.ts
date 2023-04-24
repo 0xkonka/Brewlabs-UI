@@ -1,20 +1,16 @@
-import { useContext, useMemo, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
-
-import { bsc } from "contexts/wagmi";
-import { useFastRefreshEffect } from "hooks/useRefreshEffect";
+import { useState } from "react";
 import axios from "axios";
-import { DashboardContext } from "contexts/DashboardContext";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import multicall from "utils/multicall";
+import { useAccount } from "wagmi";
+
 import PairABI from "config/abi/lpToken.json";
+import { useFastRefreshEffect } from "hooks/useRefreshEffect";
+import multicall from "utils/multicall";
 
 export const useLPTokens = () => {
-  const { isConnected , address: account } = useAccount();
+  const {  address: account } = useAccount();
+
   const [ethLPTokens, setETHLPTokens] = useState(null);
   const [bscLPTokens, setBSCLpTokens] = useState(null);
-
-  const { chainId } = useActiveChainId();
 
   async function fetchPrice(address: any, chainID: number, resolution: number) {
     const to = Math.floor(Date.now() / 1000);
@@ -250,5 +246,5 @@ export const useLPTokens = () => {
     fetchLPTokens(56);
   }, [account]);
 
-  return { ethLPTokens, bscLPTokens };
+  return { ethLPTokens, bscLPTokens, fetchLPTokens };
 };
