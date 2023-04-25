@@ -84,7 +84,6 @@ const useTotalStakedHistory = (data) => {
         amount -= _withdraws[i].amount * prices[prices.length - 1];
         _history.push(amount);
       }
-      console.log(_history);
       setHistory(_history.length ? _history : [0, 0, 0, 0, 0, 0]);
     } catch (e) {
       console.log(e);

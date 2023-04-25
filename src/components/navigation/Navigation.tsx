@@ -51,7 +51,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                         : "mr-3 h-7 w-7 text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
                     )}
                   />
-                  <span className={`${clsx(slim && "sr-only")} relative`}>
+                  <span className={`${clsx(slim ? "sr-only" : 'relative')}`}>
                     {item.name}
                     {item.coming ? (
                       <div className="absolute -right-10 -top-2 z-10 flex h-3 w-8 tracking-normal	 items-center justify-center rounded-[30px] bg-primary font-roboto text-[10px] font-bold text-black">

@@ -16,7 +16,7 @@ const NavigationDesktop = () => {
       setSlimVersion(false);
     }
   }, [router.pathname]);
-
+console.log(slimVersion);
   const spring = {
     type: "spring",
     stiffness: 700,
