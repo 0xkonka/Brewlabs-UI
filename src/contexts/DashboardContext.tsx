@@ -66,6 +66,7 @@ const DashboardContextProvider = ({ children }: any) => {
 
   temp_addr = address;
   const { chainId } = useActiveChainId();
+  temp_id = chainId;
   const { data: signer }: any = useSigner();
 
   const fetchTokenBaseInfo = async (address: any, type = "name symbol decimals", accountAddress: string = null) => {
@@ -289,6 +290,7 @@ const DashboardContextProvider = ({ children }: any) => {
           isReward: filter.length ? filter[0].isReward : false,
         });
       }
+      console.log(temp_addr, address, chainId, temp_id);
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);

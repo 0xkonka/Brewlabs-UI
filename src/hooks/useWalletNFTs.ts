@@ -122,6 +122,7 @@ const useWalletNFTs = (account: string) => {
     }
   }
   useSlowRefreshEffect(() => {
+    if(!account) return;
     fetchBSCNFTs();
     fetchETHNFTs();
   }, [account]);
