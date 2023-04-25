@@ -7,8 +7,9 @@ import React, { useState } from "react";
 import { useDefaultsFromURLSearch } from "state/swap/hooks";
 import { useAccount } from "wagmi";
 
+export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const UserContext: any = React.createContext({ userData: {}, fetchUserData: () => {}, changeAvatar: () => {} });
-const instance = axios.create({ baseURL: "http://localhost:5050" });
+const instance = axios.create({ baseURL: API_URL });
 
 const UserContextProvider = ({ children }: any) => {
   const { address: account } = useAccount();
@@ -16,7 +17,7 @@ const UserContextProvider = ({ children }: any) => {
 
   async function fetchUserData() {
     try {
-      const result = await instance.post("/api/getuserinfo", { userId: account.toLowerCase() });
+      const result = await instance.post("/getuserinfo", { userId: account.toLowerCase() });
       if (result.data) setUserData(result.data);
       else setUserData({});
     } catch (e) {
@@ -26,7 +27,7 @@ const UserContextProvider = ({ children }: any) => {
 
   async function changeAvatar(deployer: string, logo: string) {
     try {
-      const result = await instance.post("/api/setuserdeployer", {
+      const result = await instance.post("/setuserdeployer", {
         userId: account.toLowerCase(),
         deployer: deployer.toLowerCase(),
         logo,
