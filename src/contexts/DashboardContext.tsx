@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { ethers } from "ethers";
 import { WNATIVE } from "@brewlabs/sdk";
-import { erc20ABI, useAccount, useSigner } from "wagmi";
-import { Alchemy, Network } from "alchemy-sdk";
+import { useAccount, useSigner } from "wagmi";
 
 import ERC20ABI from "config/abi/erc20.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
@@ -13,13 +11,20 @@ import prices from "config/constants/prices";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
+import multicall from "utils/multicall";
+import useWalletNFTs from "@hooks/useWalletNFTs";
 
 const DashboardContext: any = React.createContext({
   tokens: [],
   priceHistory: [],
   marketHistory: [],
   tokenList: [],
+  nfts: [],
   pending: false,
+  selectedDeployer: "",
+  viewType: 0,
+  setViewType: () => {},
+  setSelectedDeployer: () => {},
   setPending: () => {},
 });
 
@@ -49,26 +54,16 @@ const DashboardContextProvider = ({ children }: any) => {
   const [pending, setPending] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const [priceHistory, setPriceHistory] = useState([]);
+  const [selectedDeployer, setSelectedDeployer] = useState("");
+  const [viewType, setViewType] = useState(0);
   const { address } = useAccount();
-  // const address = "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F";
+  // const address = "0x713121a3d124e860a576b1cf271026064e92c322";
+  const nfts = useWalletNFTs(address);
+
   temp_addr = address;
   const { chainId } = useActiveChainId();
   temp_id = chainId;
   const { data: signer }: any = useSigner();
-
-  async function multicall(abi: any, calls: any) {
-    const itf = new ethers.utils.Interface(abi);
-    const multi = getMulticallContract(chainId);
-    const calldata = calls.map((call: any) => [
-      call.address.toLowerCase(),
-      itf.encodeFunctionData(call.name, call.params),
-    ]);
-
-    const { returnData } = await multi.aggregate(calldata);
-    const res = returnData.map((call: any, i: number) => itf.decodeFunctionResult(calls[i].name, call));
-
-    return res;
-  }
 
   const fetchTokenBaseInfo = async (address: any, type = "name symbol decimals", accountAddress: string = null) => {
     let calls: any = [];
@@ -84,7 +79,7 @@ const DashboardContextProvider = ({ children }: any) => {
         name: "balanceOf",
         params: [accountAddress],
       });
-    const result = await multicall(erc20ABI, calls);
+    const result = await multicall(ERC20ABI, calls, chainId);
     return result;
   };
 
@@ -152,7 +147,7 @@ const DashboardContextProvider = ({ children }: any) => {
             params: [],
           },
         ];
-        const claimableResult = await multicall(claimableTokenAbi, calls);
+        const claimableResult = await multicall(claimableTokenAbi, calls, chainId);
         const dividendTracker = claimableResult[0][0];
         if (token.address === "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()) console.log(balance);
         let rewardToken: any,
@@ -188,7 +183,7 @@ const DashboardContextProvider = ({ children }: any) => {
             params: [address],
           },
         ];
-        const rewardResult = await multicall(dividendTrackerAbi, calls);
+        const rewardResult = await multicall(dividendTrackerAbi, calls, chainId);
         pendingRewards = rewardResult[0][0];
         totalRewards = rewardResult[1][0];
         reward.pendingRewards =
@@ -197,8 +192,7 @@ const DashboardContextProvider = ({ children }: any) => {
           totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
         reward.symbol = rewardToken.symbol;
         isReward = true;
-      } catch (e) {
-      }
+      } catch (e) {}
 
       let scamResult: any = await Promise.all([await isScamToken(token)]);
       scamResult = scamResult[0];
@@ -232,8 +226,9 @@ const DashboardContextProvider = ({ children }: any) => {
   };
 
   async function fetchTokenBalances() {
+    let ethBalance = 0;
     const multicallContract = getMulticallContract(chainId);
-    const ethBalance = await multicallContract.getEthBalance(address);
+    ethBalance = await multicallContract.getEthBalance(address);
     let data: any = [];
     if (chainId === 1) {
       const result = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${address}/tokens`);
@@ -373,7 +368,21 @@ const DashboardContextProvider = ({ children }: any) => {
   }, []);
 
   return (
-    <DashboardContext.Provider value={{ tokens, marketHistory, pending, setPending, tokenList, priceHistory }}>
+    <DashboardContext.Provider
+      value={{
+        tokens,
+        marketHistory,
+        pending,
+        setPending,
+        tokenList,
+        priceHistory,
+        nfts,
+        selectedDeployer,
+        setSelectedDeployer,
+        viewType,
+        setViewType,
+      }}
+    >
       {children}
     </DashboardContext.Provider>
   );

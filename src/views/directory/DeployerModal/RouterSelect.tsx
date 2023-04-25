@@ -7,8 +7,9 @@ import { useState } from "react";
 
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { routers } from "utils/functions";
 
-const RouterSelect = ({ routers }) => {
+const RouterSelect = () => {
   const { switchNetwork } = useSwitchNetwork();
   const { chainId } = useActiveChainId();
 
@@ -52,25 +53,26 @@ const RouterSelect = ({ routers }) => {
                   <p className="dark:text-gray-500">Select a router</p>
 
                   <ul role="list" className="mt-4 divide-y divide-gray-200 dark:divide-gray-700">
-                    {routers.map((router: any) => (
-                      <li key={router.name}>
-                        <button className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900">
-                          <img className="h-10 w-10 rounded-full" src={router.image} alt={router.name} />
-                          <div className="ml-4 flex-col text-left">
-                            <p className="text-sm font-medium text-gray-900">{router.name}</p>
-                          </div>
+                    {routers[chainId] &&
+                      routers[chainId].map((router: any) => (
+                        <li key={router.name}>
+                          <button className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900">
+                            <img className="h-10 w-10 rounded-full" src={router.image} alt={router.name} />
+                            <div className="ml-4 flex-col text-left">
+                              <p className="text-sm font-medium text-gray-900">{router.name}</p>
+                            </div>
 
-                          <div className="ml-auto">
-                            <CheckIcon className="text-green-600 mr-2 h-6 w-6" />
-                          </div>
-                        </button>
-                      </li>
-                    ))}
+                            <div className="ml-auto">
+                              <CheckIcon className="text-green-600 mr-2 h-6 w-6" />
+                            </div>
+                          </button>
+                        </li>
+                      ))}
                   </ul>
                 </div>
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                  className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
                 >
                   <span className="sr-only">Close</span>
                   <XMarkIcon className="h-6 w-6 dark:text-slate-400" />
@@ -91,10 +93,10 @@ const RouterSelect = ({ routers }) => {
           <div
             className="-mr-4 h-6 w-6 overflow-hidden rounded-full bg-cover bg-no-repeat dark:bg-slate-800"
             style={{
-              backgroundImage: `url(${routers[0].image})`,
+              backgroundImage: `url(${routers[chainId] && routers[chainId][0].image})`,
             }}
           ></div>
-          <span className="pl-4 pr-1">{routers[0].name}</span>
+          <span className="pl-4 pr-1">{routers[chainId] && routers[chainId][0].name}</span>
         </div>
         <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
       </button>

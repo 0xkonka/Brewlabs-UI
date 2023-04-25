@@ -48,6 +48,7 @@ interface PoolConfigBaseProps {
   forceEndblock?: number;
   headerSuffix?: string;
   externalSwap?: string;
+  deployer?: string;
 }
 
 export interface SerializedPoolConfig extends PoolConfigBaseProps {

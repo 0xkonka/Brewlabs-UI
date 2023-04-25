@@ -7,26 +7,23 @@ import TokenList from "./TokenList";
 import FullOpenVector from "./FullOpenVector";
 
 import { DashboardContext } from "contexts/DashboardContext";
-import SwapPanel from "views/swap/SwapPanel";
 import NavButton from "./NavButton";
-import { SwapContext } from "contexts/SwapContext";
 import PriceList from "./PriceList";
 import styled from "styled-components";
 import SwapBoard from "views/swap/SwapBoard";
 import IndexPerformance from "./IndexPerformance";
+import NFTList from "./NFTList";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
   const [fullOpen, setFullOpen] = useState(false);
-  const { tokens }: any = useContext(DashboardContext);
+  const { tokens, viewType, setViewType }: any = useContext(DashboardContext);
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(0);
   const [archives, setArchives] = useState<any>([]);
   const [listType, setListType] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
   const [filteredTokens, setFilteredTokens] = useState([]);
-
-  const { viewType, setViewType }: any = useContext(SwapContext);
 
   useEffect(() => {
     if (window.innerHeight < 790) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
@@ -72,7 +69,7 @@ const UserDashboard = () => {
         <div className="mt-4 flex justify-center">
           <SwapBoard type={"draw"} disableChainSelect />
         </div>
-      ) : (
+      ) : viewType === 0 ? (
         <>
           <TokenList
             tokens={tokens}
@@ -96,8 +93,10 @@ const UserDashboard = () => {
             />
           </div>
         </>
+      ) : (
+        <NFTList />
       )}
-      <div className={fullOpen ? "hidden" : "w-full"}>
+      <div className={fullOpen || viewType !== 0 ? "hidden" : "w-full"}>
         <IndexPerformance />
       </div>
       <PricePanel className={`absolute bottom-10 w-full px-4 ${fullOpen ? "hidden" : ""}`} viewType={viewType}>

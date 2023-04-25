@@ -12,6 +12,7 @@ module.exports = {
       xs: "380px",
       xsm: "450px",
       xmd: "610px",
+      ls: "1440px",
       ...defaultTheme.screens,
     },
     fontSize: {

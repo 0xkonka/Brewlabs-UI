@@ -5,6 +5,7 @@ type NavigationItem = {
   href: string;
   external: boolean;
   icon: IconName;
+  coming?: boolean;
 };
 
 export const navigationData = [
@@ -55,6 +56,13 @@ export const navigationData = [
     name: "Constructor",
     href: "/constructor",
     external: false,
+    icon: "ArrowDownOnSquareIcon",
+  },
+  {
+    name: "Product deployer",
+    href: "/deployer",
+    external: false,
+    coming: true,
     icon: "ArrowDownOnSquareIcon",
   },
 ] as NavigationItem[];

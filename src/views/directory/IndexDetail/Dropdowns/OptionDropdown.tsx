@@ -21,11 +21,11 @@ const OptionDropdown = ({ handleMintNft, setAddNFTModalOpen }: { handleMintNft: 
       className="relative z-10 flex h-8 w-[140px] cursor-pointer items-center justify-between bg-[rgb(46,47,56)] text-sm text-[#FFFFFF80]"
       ref={dropRef}
       onClick={() => setOpen(!open)}
-      open={open.toString()}
+      open={open}
     >
       <div>Index Options</div>
       <div>{!open ? <ChevronDownIcon className={"h-3"} /> : <ChevronUpIcon className={"h-3 "} />}</div>
-      <DropDownBody className={"absolute transition-all"} open={open.toString()}>
+      <DropDownBody className={"absolute transition-all"} open={open}>
         {data.map((data, i) => {
           return (
             <div
@@ -44,23 +44,23 @@ const OptionDropdown = ({ handleMintNft, setAddNFTModalOpen }: { handleMintNft: 
 
 export default OptionDropdown;
 
-const StyledDropDown = styled.div<{ open: String }>`
+const StyledDropDown = styled.div<{ open: boolean }>`
   border-radius: 6px;
-  border-bottom-left-radius: ${({ open }) => (open === "true" ? 0 : "6px")};
-  border-bottom-right-radius: ${({ open }) => (open === "true" ? 0 : "6px")};
+  border-bottom-left-radius: ${({ open }) => (open ? 0 : "6px")};
+  border-bottom-right-radius: ${({ open }) => (open ? 0 : "6px")};
   border: 0.5px solid rgba(255, 255, 255, 0.5);
   color: #ffffffbf;
   padding: 0 8px 0 12px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
-const DropDownBody = styled.div<{ open: String }>`
-  height: ${({ open }) => (open === "true" ? "65px" : 0)};
+const DropDownBody = styled.div<{ open: boolean }>`
+  height: ${({ open }) => (open ? "65px" : 0)};
   overflow: hidden;
   background: rgb(46, 47, 56);
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  border: ${({ open }) => (open === "true" ? "0.5px solid rgba(255, 255, 255, 0.5)" : "none")};
+  border: ${({ open }) => (open ? "0.5px solid rgba(255, 255, 255, 0.5)" : "none")};
   border-top: none;
   width: calc(100% + 2px);
   left: -1px;

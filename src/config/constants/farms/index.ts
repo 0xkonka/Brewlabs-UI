@@ -21,6 +21,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.BSC_MAINNET).wbnb,
     earningToken: serializeTokens(ChainId.BSC_MAINNET).brews,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).busd,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 1,
@@ -35,6 +36,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.BSC_MAINNET).wbnb,
     earningToken: serializeTokens(ChainId.BSC_MAINNET).brews,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).busd,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 2,
@@ -50,6 +52,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).mbc,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).busd,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 3,
@@ -66,6 +69,7 @@ const farms: SerializedFarmConfig[] = [
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).bnb,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 4,
@@ -81,6 +85,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).svt,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).svt,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 5,
@@ -96,6 +101,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).setc,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).bnb,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 6,
@@ -111,6 +117,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).kodi,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).bnb,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 9,
@@ -126,6 +133,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).riv2,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).bnb,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 10,
@@ -140,6 +148,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.BSC_MAINNET).wbnb,
     earningToken: serializeTokens(ChainId.BSC_MAINNET).gvr,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 11,
@@ -156,6 +165,7 @@ const farms: SerializedFarmConfig[] = [
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).busd,
     isServiceFee: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 13,
@@ -171,6 +181,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).plnt,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).busd,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 14,
@@ -187,6 +198,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).lyst,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).busd,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 15,
@@ -203,6 +215,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).mtx,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).mtx,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 16,
@@ -219,6 +232,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).lol,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).lol,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 17,
@@ -235,6 +249,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.BSC_MAINNET).renteez,
     reflectionToken: serializeTokens(ChainId.BSC_MAINNET).renteez,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 18,
@@ -250,6 +265,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.BSC_MAINNET).wbnb,
     earningToken: serializeTokens(ChainId.BSC_MAINNET).vlk,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 19,
@@ -267,6 +283,7 @@ const farms: SerializedFarmConfig[] = [
     reflectionToken: serializeTokens(ChainId.ETHEREUM).viralLP,
     compoundRelection: true,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 20,
@@ -285,6 +302,7 @@ const farms: SerializedFarmConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 24,
@@ -301,6 +319,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.ETHEREUM).kpets,
     // reflectionToken: serializeTokens(ChainId.ETHEREUM).kpets,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 21,
@@ -317,6 +336,7 @@ const farms: SerializedFarmConfig[] = [
     earningToken: serializeTokens(ChainId.ETHEREUM).gvr,
     // reflectionToken: serializeTokens(ChainId.ETHEREUM).gvr,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 22,
@@ -335,6 +355,7 @@ const farms: SerializedFarmConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 23,
@@ -350,6 +371,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
     earningToken: serializeTokens(ChainId.ETHEREUM).wpt,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     pid: 25,
@@ -367,6 +389,7 @@ const farms: SerializedFarmConfig[] = [
     reflectionToken: serializeTokens(ChainId.ETHEREUM).rkt,
     isServiceFee: true,
     isFinished: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     pid: 26,
@@ -382,6 +405,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
     earningToken: serializeTokens(ChainId.ETHEREUM).ly,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     pid: 27,
@@ -397,6 +421,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.BSC_MAINNET).wbnb,
     earningToken: serializeTokens(ChainId.BSC_MAINNET).balto,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     pid: 28,
@@ -412,6 +437,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
     earningToken: serializeTokens(ChainId.ETHEREUM).ixp,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     pid: 29,
@@ -427,6 +453,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
     earningToken: serializeTokens(ChainId.ETHEREUM).met,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     pid: 30,
@@ -442,6 +469,7 @@ const farms: SerializedFarmConfig[] = [
     quoteToken: serializeTokens(ChainId.ETHEREUM).weth,
     earningToken: serializeTokens(ChainId.ETHEREUM).gcc,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
 ];
 

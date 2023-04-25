@@ -51,6 +51,7 @@ import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
 import { LinkSVG } from "components/dashboard/assets/svgs";
 import OptionDropdown from "./Dropdowns/OptionDropdown";
+import Profile from "./Profile";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 
@@ -193,15 +194,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   return (
-    <AnimatePresence exitBeforeEnter>
-      {open && (
+    <>
+      <AnimatePresence exitBeforeEnter>
+        (
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute top-0 left-0 max-h-screen w-full overflow-x-hidden overflow-y-scroll pb-[150px]">
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-x-hidden overflow-y-scroll pb-[150px]">
             {address && data && (
               <EnterExitModal open={stakingModalOpen} setOpen={setStakingModalOpen} type={curType} data={data} />
             )}
@@ -222,7 +224,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/indexes")}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                        <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
@@ -233,47 +235,65 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
               <Container className="font-brand">
                 <div className="flex items-center justify-between font-roboto">
                   <div>
-                    <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => router.push("/indexes")}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
-                        <div className="ml-2">Back to pool list</div>
-                      </StyledButton>
-                    </div>
-                    <div className="mt-3 block sm:mt-0 sm:hidden">
-                      <StyledButton
-                        className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
-                        type={"primary"}
-                      >
-                        <div className="flex items-center">
-                          <div className="mr-1.5">Share Index</div> {LinkSVG}
-                        </div>
-                        <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
-                          Soon
-                        </div>
-                      </StyledButton>
+                    <div className="min-w-fit sm:min-w-[160px]">
+                      <div className="h-[32px] w-[140px] ">
+                        <StyledButton onClick={() => router.push("/indexes")}>
+                          <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
+                          <div className="ml-2">Back to pool list</div>
+                        </StyledButton>
+                      </div>
+                      <div className="block xl:hidden">
+                        <div className="mt-2" />
+                        <StyledButton
+                          className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                          type={"default"}
+                        >
+                          <div className="flex items-center">
+                            <div className="mr-1.5">Share Index</div> {LinkSVG}
+                          </div>
+                          <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                            Soon
+                          </div>
+                        </StyledButton>
+                        <div className="mt-2" />
+                        <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row">
-                    {/* <div className="mt-2 hidden h-[32px] w-[140px] sm:mt-0 sm:block">
+                  <div className="flex flex-1 justify-end">
+                    <div className="hidden w-full max-w-[480px] items-center sm:flex">
+                      <img src={"/images/nfts/default.png"} alt={""} className="mr-2 h-10 w-10 rounded-full" />
                       <StyledButton
-                        disabled={!address || pending || chainId !== data.chainId || +userData.stakedUsdAmount <= 0}
-                        onClick={handleMintNft}
+                        className="h-8 w-[140px] flex-1 cursor-pointer items-center justify-center rounded border border-primary bg-[#B9B8B81A] px-2 font-roboto text-sm font-semibold text-primary shadow-[0px_4px_4px_#00000040] transition hover:border-white hover:text-white xl:flex"
+                        type={"default"}
+                        onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
                       >
-                        Mint Index NFT
+                        <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                          View {data.deployer}
+                        </div>
+                        <div className="ml-2">{LinkSVG}</div>
                       </StyledButton>
                     </div>
-                    <div className="mx-0 h-[32px] w-[140px] sm:mx-2.5">
+                    <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
+                      <div className="mb-2 block flex w-full max-w-[480px] items-center sm:hidden">
+                        <img
+                          src={"/images/nfts/default.png"}
+                          alt={""}
+                          className="mr-2 hidden h-10 w-10 rounded-full xs:block"
+                        />
+                        <StyledButton
+                          className="h-8 w-[140px] flex-1 cursor-pointer items-center justify-center rounded border border-primary bg-[#B9B8B81A] px-2 font-roboto text-sm font-semibold text-primary shadow-[0px_4px_4px_#00000040] transition hover:border-white hover:text-white xl:flex"
+                          type={"default"}
+                          onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
+                        >
+                          <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                            View {data.deployer}
+                          </div>
+                          <div className="ml-2">{LinkSVG}</div>
+                        </StyledButton>
+                      </div>
                       <StyledButton
-                        type="secondary"
-                        disabled={!address || pending || chainId !== data.chainId}
-                        onClick={() => setAddNFTModalOpen(true)}
-                      >
-                        Add Index NFT
-                      </StyledButton>
-                    </div> */}
-                    <div className="mt-2  mr-4 hidden sm:mt-0 sm:flex">
-                      <StyledButton
-                        className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                        className="relative hidden h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] xl:flex"
                         type={"default"}
                       >
                         <div className="flex items-center">
@@ -283,33 +303,26 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           Soon
                         </div>
                       </StyledButton>
-                      <div className="mr-4" />
-                      <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
+                      <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
+                      <div className="hidden xl:block">
+                        <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
+                      </div>
+                      <a
+                        className=" ml-0 h-[32px] w-[140px] xl:ml-4 "
+                        target="_blank"
+                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${tokens[0].address}`}
+                        rel="noreferrer"
+                      >
+                        <StyledButton>
+                          <div>Swap</div>
+                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
+                        </StyledButton>
+                      </a>
                     </div>
-                    <div className="block sm:hidden">
-                      <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
-                    </div>
-                    <a
-                      className=" mt-3 h-[32px] w-[140px] sm:mt-0 "
-                      target="_blank"
-                      href={`https://bridge.brewlabs.info/swap?outputCurrency=${tokens[0].address}`}
-                      rel="noreferrer"
-                    >
-                      <StyledButton>
-                        <div>Swap</div>
-                        <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
-                      </StyledButton>
-                    </a>
                   </div>
                 </div>
-                <div className="mt-10 mb-0 flex justify-between xl:-mb-3 xl:mt-2">
-                  <div className="hidden min-w-[160px] md:block" />
-                  <div className="ml-2 flex w-full items-center justify-center md:w-[500px] md:justify-start xl:md:w-[1030px]">
-                    <LogoIcon classNames="w-6 text-dark dark:text-brand mr-2" />
-                    <div className="text-[#FFFFFFBF]">Brewlabs: Origin Index Series</div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-between md:flex-row">
+
+                <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
                   <IndexLogo tokens={tokens} />
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel padding={"14px 25px 8px 25px"} className="relative mt-4 max-w-full md:max-w-[500px]">
@@ -587,8 +600,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
             )}
           </div>
         </motion.div>
-      )}
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 };
 

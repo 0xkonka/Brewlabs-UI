@@ -42,6 +42,7 @@ import BigNumber from "bignumber.js";
 import { useAppDispatch } from "state";
 import { useLpTokenPrices } from "state/lpPrices/hooks";
 import { useTranslation } from "contexts/localization";
+import useTotalStakedHistory from "./hooks/useTotalStakedHistory";
 
 const CHAIN_SYMBOL = {
   1: "ETH",
@@ -50,7 +51,9 @@ const CHAIN_SYMBOL = {
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
-  const { lpAddress, pid, earningToken, chef, appId, lpSymbol } = data;
+  const { lpAddress, pid, earningToken, chef, appId, lpSymbol, chainId } = data;
+
+  const { history } = useTotalStakedHistory(data);
 
   const [zapInModalOpen, setZapInModalOpen] = useState(false);
   const [zapOutModalOpen, setZapOutModalOpen] = useState(false);
@@ -59,7 +62,6 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { t } = useTranslation();
   const { address: account } = useAccount();
   const { data: signer }: any = useSigner();
-  const { chainId } = useActiveChainId();
   const { pending, setPending }: any = useContext(DashboardContext);
   const { ethPrice } = useContext(TokenPriceContext);
 
@@ -124,9 +126,6 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
     }
   };
 
-  const history =
-    data && data.history && account ? data.history.filter((data: any) => data.address === account.toLowerCase()) : [];
-
   return (
     <>
       <ZapInModal open={zapInModalOpen} setOpen={setZapInModalOpen} data={data} />
@@ -140,7 +139,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
               <PageHeader
                 title={
                   <div className="text-[40px]">
@@ -157,7 +156,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-[160px] flex-col sm:flex-row">
                       <div className="h-[32px] w-[140px] ">
                         <StyledButton onClick={() => setOpen(false)}>
-                          <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                          <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                           <div className="ml-2">Back to pool list</div>
                         </StyledButton>
                       </div>
@@ -170,14 +169,14 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-[160px] flex-col">
                       <div className="h-[32px] w-[140px] ">
                         <StyledButton onClick={() => setOpen(false)}>
-                          <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                          <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                           <div className="ml-2">Back to pool list</div>
                         </StyledButton>
                       </div>
                       {data.isCustody ? (
                         <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                           <StyledButton>
-                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                            <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
@@ -190,7 +189,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="hidden w-full max-w-[470px] sm:block">
                           <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                             <StyledButton>
-                              <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                              <div className="absolute left-2 top-2.5">{lockSVG}</div>
                               <div className="ml-3">Brewlabs Custody</div>
                             </StyledButton>
                           </div>
@@ -206,14 +205,14 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </StyledButton>
                         </a>
                         <a
-                          className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
+                          className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
                           href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.lpAddress}`}
                           rel="noreferrer"
                         >
                           <StyledButton>
                             <div>Swap</div>
-                            <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                            <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
                         </a>
                       </div>
@@ -323,58 +322,16 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                     <div className="w-full md:w-[40%]">
-                      <TotalStakedChart
-                        data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                        symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.lpSymbol : CHAIN_SYMBOL[chainId]}
-                        price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
-                        curGraph={curGraph}
-                      />
+                      <TotalStakedChart data={history} symbol={lpSymbol} />
                       <InfoPanel
                         className="mt-20 flex cursor-pointer justify-between"
                         type={"secondary"}
                         boxShadow={curGraph === 0 ? "primary" : null}
-                        onClick={() => setCurGraph(0)}
                       >
                         <div>Total Staked Value</div>
                         <div className="flex">
-                          {data.totalStaked !== undefined && data.price !== undefined ? (
-                            `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                        </div>
-                      </InfoPanel>
-                      <InfoPanel
-                        className="mt-2.5 flex cursor-pointer justify-between"
-                        type={"secondary"}
-                        boxShadow={curGraph === 2 ? "primary" : null}
-                        onClick={() => setCurGraph(2)}
-                      >
-                        <div>
-                          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-                        </div>
-                        <div className="flex">
-                          {data.totalPerformanceFee !== undefined ? (
-                            numberWithCommas(data.totalPerformanceFee.toFixed(2))
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;<span className="text-primary">BNB</span>
-                        </div>
-                      </InfoPanel>
-
-                      <InfoPanel
-                        className="mt-2.5 flex cursor-pointer justify-between"
-                        type={"secondary"}
-                        boxShadow={curGraph === 3 ? "primary" : null}
-                        onClick={() => setCurGraph(3)}
-                      >
-                        <div>
-                          Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
-                        </div>
-                        <div className="flex">
-                          {data.totalStakedAddresses !== undefined ? (
-                            numberWithCommas(data.totalStakedAddresses)
+                          {history !== undefined && history.length ? (
+                            `$${numberWithCommas(history[history.length - 1].toFixed(2))}`
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -433,9 +390,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-7">
-                        <StakingHistory history={history} />
-                      </div>
+                      <div className="mt-7">{/* <StakingHistory history={history} /> */}</div>
                       <div className="absolute bottom-0 left-0 flex h-12 w-full">
                         {data.chainId !== chainId ? (
                           <StyledButton

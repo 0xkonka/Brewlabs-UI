@@ -229,7 +229,7 @@ export default function AddLiquidityPanel({
         <ChainSelect />
       </div>
       <div className="-mt-2">
-        <RouterSelect routers={routers[chainId ?? 1]} />
+        <RouterSelect />
       </div>
       <div className="my-2 rounded-[30px] border border-[#FFFFFF80]">
         <CurrencyInputPanel
@@ -251,7 +251,7 @@ export default function AddLiquidityPanel({
           currencies={currencies}
         />
       </div>
-      <div className="relative z-10 mx-auto -mt-4 -mb-4 flex h-7 w-10 items-center justify-center rounded-[10px] bg-primary text-2xl leading-none text-black">
+      <div className="relative z-10 mx-auto -mb-4 -mt-4 flex h-7 w-10 items-center justify-center rounded-[10px] bg-primary text-2xl leading-none text-black">
         <div className="-mt-1">+</div>
       </div>
       <div className="my-2 rounded-[30px] border border-dashed border-[#FFFFFF80]">
@@ -276,8 +276,8 @@ export default function AddLiquidityPanel({
         />
       </div>
       {currencyA && currencyB ? (
-        <div className="mt-6 rounded-[30px] border border-[#FFFFFF80] py-4 px-3 font-roboto font-bold text-[#FFFFFF80] sm:px-8">
-          <div className="text-xl text-white text-[#FFFFFFBF]">Create</div>
+        <div className="mt-6 rounded-[30px] border border-[#FFFFFF80] px-3 py-4 font-roboto font-bold text-[#FFFFFF80] sm:px-8">
+          <div className="text-xl text-[#FFFFFFBF] text-white">Create</div>
           <div className="text-sm">
             <div className="mt-2 flex flex-wrap justify-between">
               <div className="w-full xsm:w-[60%]">Approximate LP tokens</div>
@@ -324,7 +324,7 @@ export default function AddLiquidityPanel({
       ) : (
         ""
       )}
-      <div className="mt-6 mb-3">
+      <div className="mb-3 mt-6">
         {isValid &&
           (approvalA === ApprovalState.NOT_APPROVED ||
             approvalA === ApprovalState.PENDING ||
