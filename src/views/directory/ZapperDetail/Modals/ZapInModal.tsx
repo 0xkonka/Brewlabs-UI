@@ -45,7 +45,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
   const [currency, setCurrency] = useState<Currency>(NATIVE_CURRENCIES[chainId]);
 
   const { address: account } = useAccount();
-  const performanceFee = usePerformanceFee();
+  const performanceFee = usePerformanceFee(data.chainId);
   const dispatch = useAppDispatch();
   const { lpTokenPrices } = useLpTokenPrices();
   const bananaPrice = useBananaPrice();
@@ -106,11 +106,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
       dispatch(fetchSushiFarmsPublicDataAsync(chainId));
     }
   };
-  console.log(
-    currencyBalance?.toFixed(8),
-    ethPrice?.toSignificant(),
-    +currencyBalance?.toFixed(8) * +ethPrice?.toSignificant()
-  );
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog

@@ -26,7 +26,7 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
 import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
-import { fetchIndexFeeHistories, fetchIndexPerformance } from "state/indexes/fetchIndexes";
+import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -51,7 +51,6 @@ import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
 import { LinkSVG } from "components/dashboard/assets/svgs";
 import OptionDropdown from "./Dropdowns/OptionDropdown";
-import Profile from "./Profile";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 

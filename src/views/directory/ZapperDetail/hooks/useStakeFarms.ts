@@ -79,11 +79,10 @@ const useStakeFarms = (
   return { onStake: handleStake };
 };
 
-export const usePerformanceFee = (shouldFetch = true) => {
-  const { chainId } = useActiveWeb3React();
+export const usePerformanceFee = (chainId) => {
   const [appId] = useAppId();
   const masterChefContract = useMemo(() => getExternalMasterChefContract(chainId, appId), [chainId, appId]);
-  const { data } = useSWR(shouldFetch ? "farmsReward" : null, async () => {
+  const { data } = useSWR([appId, "farmsReward"], async () => {
     const performanceFee = await masterChefContract.feeAmount();
     return performanceFee;
   });
