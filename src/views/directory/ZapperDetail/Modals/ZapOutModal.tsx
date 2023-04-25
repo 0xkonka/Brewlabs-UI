@@ -29,7 +29,7 @@ import { useLpTokenPrices } from "state/lpPrices/hooks";
 import { DashboardContext } from "contexts/DashboardContext";
 
 const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
-  const { lpAddress, pid, earningToken, chef, appId, lpSymbol } = data;
+  const { lpAddress, pid, earningToken, chef, appId } = data;
 
   const [val, setVal] = useState("");
   const [pendingTx, setPendingTx] = useState(false);
@@ -51,6 +51,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
   const { lpTokenPrices } = useLpTokenPrices();
   const bananaPrice = useBananaPrice();
   const farmLpAprs = useFarmLpAprs();
+  const lpSymbol = data.lpSymbol.split(" ")[0]
 
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
