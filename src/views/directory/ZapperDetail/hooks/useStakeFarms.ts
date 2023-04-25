@@ -2,15 +2,16 @@ import { Currency } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
-import { BIG_TEN, BIG_ZERO } from "utils/bigNumber";
-import { getNetworkGasPrice } from "utils/getGasPrice";
+
+import { NULL_ADDRESS } from "config/constants";
+import { Chef } from "config/constants/types";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useExternalMasterchef } from "hooks/useContract";
 import { calculateGasMargin } from "utils";
+import { BIG_TEN, BIG_ZERO } from "utils/bigNumber";
 import { getExternalMasterChefContract } from "utils/contractHelpers";
+import { getNetworkGasPrice } from "utils/getGasPrice";
 import { useAppId } from "state/zap/hooks";
-import { NULL_ADDRESS } from "config/constants";
-import { Chef } from "config/constants/types";
 
 const stakeFarm = async (
   currency,

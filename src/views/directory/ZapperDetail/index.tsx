@@ -1,34 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { ethers } from "ethers";
+import BigNumber from "bignumber.js";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
 
+import { chevronLeftSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
-import WordHighlight from "components/text/WordHighlight";
-import StyledButton from "../StyledButton";
-import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG, lockSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import ProgressBar from "./ProgressBar";
-import TotalStakedChart from "./TotalStakedChart";
-// import StakingHistory from "./FarmingHistory";
-// import StakingModal from "./Modals/StakingModal";
-import { useContext, useEffect, useState } from "react";
-import { numberWithCommas } from "utils/functions";
-import { useAccount } from "wagmi";
-import { DashboardContext } from "contexts/DashboardContext";
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import { useAppId, useFarmLpAprs } from "state/zap/hooks";
-import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import WordHighlight from "components/text/WordHighlight";
+
 import { AppId, Chef } from "config/constants/types";
-import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
-import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
-import ZapInModal from "./Modals/ZapInModal";
-import ZapOutModal from "./Modals/ZapOutModal";
-import useHarvestFarm from "./hooks/useHarvestFarm";
 import { earningTokens, quoteTokens } from "config/constants/tokens";
-import { RewardType } from "./types";
-import { toast } from "react-toastify";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useTranslation } from "contexts/localization";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
+import { useLpTokenPrices } from "state/lpPrices/hooks";
+import { useAppId, useFarmLpAprs } from "state/zap/hooks";
 import {
   fetchApeFarmUserDataAsync,
   fetchApeFarmsPublicDataAsync,
@@ -36,15 +33,23 @@ import {
   fetchSushiFarmUserDataAsync,
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
-import BigNumber from "bignumber.js";
-import { useAppDispatch } from "state";
-import { useLpTokenPrices } from "state/lpPrices/hooks";
-import { useTranslation } from "contexts/localization";
+import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import { numberWithCommas } from "utils/functions";
+
+import useHarvestFarm from "./hooks/useHarvestFarm";
 import useTotalStakedHistory from "./hooks/useTotalStakedHistory";
 import { usePerformanceFee } from "./hooks/useStakeFarms";
-import { ethers } from "ethers";
-import Link from "next/link";
-import { WNATIVE } from "@brewlabs/sdk";
+
+import ZapInModal from "./Modals/ZapInModal";
+import ZapOutModal from "./Modals/ZapOutModal";
+// import StakingHistory from "./FarmingHistory";
+// import StakingModal from "./Modals/StakingModal";
+import ProgressBar from "./ProgressBar";
+import StyledButton from "../StyledButton";
+import TotalStakedChart from "./TotalStakedChart";
+import { RewardType } from "./types";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+import { CHAIN_ICONS } from "config/constants/networks";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
@@ -126,6 +131,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
       dispatch(fetchSushiFarmUserDataAsync(account));
       dispatch(fetchSushiFarmsPublicDataAsync(chainId));
     }
+  };
+
+  const onError = (data) => {
+    data.target.src = "/images/unknown.png";
   };
 
   return (
@@ -229,13 +238,24 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     </div>
                   </div>
                   <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
-                    <div className="mt-4 flex w-[160px] items-center justify-center ">
-                      <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
+                    <div className="mt-4 flex w-fit items-center justify-center md:w-[160px]">
+                      <img
+                        src={getTokenLogoURL(token.address, data.chainId, data.appId)}
+                        onError={onError}
+                        alt={""}
+                        className="w-[70px] rounded-full"
+                      />
+                      <img
+                        src={getTokenLogoURL(quoteToken.address, data.chainId, data.appId)}
+                        onError={onError}
+                        alt={""}
+                        className="-ml-3 w-[70px] rounded-full"
+                      />
                     </div>
                     <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                       <InfoPanel
                         padding={"14px 25px 8px 25px"}
-                        className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                        className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                       >
                         <div className="flex justify-between text-xl">
                           <div>
@@ -260,8 +280,17 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <br />
                           Withdraw Fee 0.00%
                           <br />
-                          Peformance Fee {performanceFee ? ethers.utils.formatEther(performanceFee.toString()) : "0.00"}{" "}
+                          Peformance Fee {performanceFee
+                            ? ethers.utils.formatEther(performanceFee.toString())
+                            : "0.00"}{" "}
                           {getNativeSybmol(data.chainId)}
+                        </div>
+                        <div className="absolute bottom-2 right-2">
+                          {data ? (
+                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                         </div>
                       </InfoPanel>
 

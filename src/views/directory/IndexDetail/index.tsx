@@ -11,10 +11,9 @@ import styled from "styled-components";
 
 import "react-tooltip/dist/react-tooltip.css";
 
-import { chevronLeftSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
+import { chevronLeftSVG, LinkSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
-import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
@@ -43,14 +42,13 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import useIndex from "./hooks/useIndex";
 
 import StyledButton from "../StyledButton";
-import EnterExitModal from "./Modals/EnterExitModal";
-import AddNFTModal from "./Modals/AddNFTModal";
 import DropDown from "./Dropdowns/Dropdown";
+import OptionDropdown from "./Dropdowns/OptionDropdown";
+import AddNFTModal from "./Modals/AddNFTModal";
+import EnterExitModal from "./Modals/EnterExitModal";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
-import { LinkSVG } from "components/dashboard/assets/svgs";
-import OptionDropdown from "./Dropdowns/OptionDropdown";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 
@@ -382,7 +380,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="absolute bottom-1 right-1">
+                      <div className="absolute bottom-2 right-2">
                         {data ? (
                           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
                         ) : (
