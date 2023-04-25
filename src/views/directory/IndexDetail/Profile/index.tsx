@@ -105,6 +105,23 @@ const Profile = ({ deployer }: { deployer: string }) => {
     getPerformanceFees();
   }, [allPools.length]);
 
+  let chosenPools = allPools;
+  switch (status) {
+    case "finished":
+      chosenPools = chosenPools.filter((pool: any) => pool.isFinished || pool.multiplier === 0);
+      break;
+    case "new":
+      chosenPools = chosenPools.filter(
+        (pool: any) =>
+          !pool.isFinished &&
+          pool.type === Category.INDEXES &&
+          new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()
+      );
+      break;
+    default:
+      chosenPools = chosenPools.filter((pool) => !pool.isFinished);
+  }
+
   return (
     <AnimatePresence exitBeforeEnter>
       {open && (
@@ -154,10 +171,10 @@ const Profile = ({ deployer }: { deployer: string }) => {
                       type={"default"}
                     >
                       <div className="flex items-center">
-                        <div className="mr-1.5 w-[150px] overflow-hidden whitespace-nowrap text-ellipsis xl:w-[170px]">
+                        <div className="mr-1.5 w-[150px] overflow-hidden text-ellipsis whitespace-nowrap xl:w-[170px]">
                           Follow & get notifications
                         </div>
-                        <div className = 'scale-[125%]'>{UserAddSVG}</div>
+                        <div className="scale-[125%]">{UserAddSVG}</div>
                       </div>
                       <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
                         Soon
@@ -249,11 +266,11 @@ const Profile = ({ deployer }: { deployer: string }) => {
               />
               <div className="mb-[100px] mt-[18px]">
                 <PoolList
-                  pools={allPools}
+                  pools={chosenPools}
                   setSelectPoolDetail={setSelectPoolDetail}
                   setCurPool={setCurPool}
                   setSortOrder={setSortOrder}
-                  loading={userDataLoaded}
+                  loading={true}
                 />
               </div>
             </Container>
