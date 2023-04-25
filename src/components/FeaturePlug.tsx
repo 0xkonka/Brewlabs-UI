@@ -15,7 +15,7 @@ const features = [
   {
     name: "Construct liquidity",
     description: "Manage your liquidity across various decentralised exchanges.",
-    link: "https://earn.brewlabs.info/liquidity",
+    link: "/constructor",
   },
   {
     name: "Index",
@@ -31,7 +31,7 @@ const features = [
   {
     name: "Yield farming",
     description: "Discover yield farming opportunities through Brewlabs and partners.",
-    link: "https://earn.brewlabs.info/zap",
+    link: "/zapper",
   },
   {
     name: "NTFs",

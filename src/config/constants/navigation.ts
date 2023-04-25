@@ -41,7 +41,6 @@ export const navigationData = [
   },
   {
     name: "Zap",
-    // href: "https://earn.brewlabs.info/zap",
     href: "/zapper",
     external: false,
     icon: "BoltIcon",
