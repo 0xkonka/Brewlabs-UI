@@ -68,7 +68,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
 
   const lpTokensToStake = usdToStake.dividedBy(lpPrice ?? BIG_ONE);
 
-  const currencyBalance = useCurrencyBalance("0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799", currency);
+  const currencyBalance = useCurrencyBalance(account, currency);
   const max = useMemo(
     () => (currencyBalance ? new BigNumber(currencyBalance.raw.toString()) : BIG_ZERO),
     [currencyBalance]

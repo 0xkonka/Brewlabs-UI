@@ -125,7 +125,7 @@ const Directory = ({ page }: { page: number }) => {
     ...farmsList(zaps).map((zap) => {
       return {
         ...zap,
-        type: 4,
+        type: Category.ZAPPER,
         tvl: zap.liquidity.toNumber(),
         totalStaked: zap.totalSupply === undefined ? undefined : zap.totalSupply / Math.pow(10, 18),
       };
@@ -190,7 +190,7 @@ const Directory = ({ page }: { page: number }) => {
           curFilter === Category.ALL ||
           data.type === curFilter ||
           (curFilter === Category.MY_POSITION &&
-            (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
+            (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance?.gt(0)))
       );
   }
 

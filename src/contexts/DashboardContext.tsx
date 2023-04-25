@@ -41,8 +41,12 @@ const apiKeyList = [
 ];
 
 const tokenList_URI: any = {
-  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
   1: "https://tokens.coingecko.com/ethereum/all.json",
+  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
+  137: "https://tokens.coingecko.com/polygon-pos/all.json",
+  250: "https://tokens.coingecko.com/fantom/all.json",
+  43114: "https://tokens.coingecko.com/avalanche/all.json",
+  25: "https://tokens.coingecko.com/cronos/all.json",
 };
 
 const WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -62,7 +66,6 @@ const DashboardContextProvider = ({ children }: any) => {
 
   temp_addr = address;
   const { chainId } = useActiveChainId();
-  temp_id = chainId;
   const { data: signer }: any = useSigner();
 
   const fetchTokenBaseInfo = async (address: any, type = "name symbol decimals", accountAddress: string = null) => {
@@ -332,6 +335,10 @@ const DashboardContextProvider = ({ children }: any) => {
 
   async function fetchTokenList() {
     try {
+      if (!tokenList_URI[chainId]) {
+        setTokenList([]);
+        return;
+      }
       const result = await axios.get(tokenList_URI[chainId]);
       setTokenList(result.data.tokens);
     } catch (error) {

@@ -67,7 +67,7 @@ const PoolCard = ({
           {data.type === Category.INDEXES ? (
             <IndexLogo tokens={data.tokens} />
           ) : data.type === Category.ZAPPER ? (
-            <IndexLogo tokens={[data.token, data.quoteToken]} />
+            <IndexLogo tokens={[data.token, data.quoteToken]} appId={data.appId}/>
           ) : (
             <div className="mr-3 h-7 w-7 rounded-full border border-white bg-white">
               <img

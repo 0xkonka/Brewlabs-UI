@@ -62,6 +62,7 @@ const deserializeApeFarm = (farm: Farm) => {
       quoteTokenSymbol
     ),
     earningToken: tokens[ChainId.BSC_MAINNET].banana,
+    userData: deserializeFarmUserData(farm),
   };
 };
 
@@ -85,6 +86,7 @@ const deserializeSushiFarm = (farm) => {
       decimals: Number(token1.decimals),
     }),
     earningToken: tokens[ChainId.ETHEREUM].sushi,
+    userData: deserializeFarmUserData(farm),
   };
 };
 
