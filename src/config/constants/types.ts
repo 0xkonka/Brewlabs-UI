@@ -74,6 +74,7 @@ interface FarmConfigBaseProps {
     endBlock: number;
   };
   externalSwap?: string;
+  deployer?: string;
 }
 
 export interface SerializedFarmConfig extends FarmConfigBaseProps {

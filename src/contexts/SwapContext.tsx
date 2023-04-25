@@ -18,7 +18,6 @@ const SwapContext: any = React.createContext({
   slippage: slippageDefault,
   verified: false,
   apporveStep: 0,
-  viewType: 0,
   swapTab: 0,
   addLiquidityStep: 0,
   openSettingModal: false,
@@ -35,7 +34,6 @@ const SwapContext: any = React.createContext({
   setSlippage: () => {},
   setVerified: () => {},
   setApproveStep: () => {},
-  setViewType: () => {},
   setSwapTab: () => {},
   setAddLiquidityStep: () => {},
   setOpenSettingModal: () => {},
@@ -56,7 +54,6 @@ const SwapContextProvider = ({ children }: any) => {
   const [verified, setVerified] = useState(false);
   const [apporveStep, setApproveStep] = useState(0);
 
-  const [viewType, setViewType] = useState(0);
   const [swapTab, setSwapTab] = useState(0);
   const [addLiquidityStep, setAddLiquidityStep] = useState(0);
   const [openSettingModal, setOpenSettingModal] = useState(false);
@@ -79,7 +76,6 @@ const SwapContextProvider = ({ children }: any) => {
         slippage,
         verified,
         apporveStep,
-        viewType,
         swapTab,
         addLiquidityStep,
         openSettingModal,
@@ -96,7 +92,6 @@ const SwapContextProvider = ({ children }: any) => {
         setSlippage,
         setVerified,
         setApproveStep,
-        setViewType,
         setSwapTab,
         setAddLiquidityStep,
         setOpenSettingModal,

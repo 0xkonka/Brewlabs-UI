@@ -24,6 +24,6 @@
     "noImplicitAny": false,
     "strictNullChecks": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/indexes/profile"],
   "exclude": ["node_modules"]
 }

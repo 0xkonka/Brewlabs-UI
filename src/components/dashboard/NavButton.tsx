@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { DashboardSVG, NavSVG, SwapSVG } from "./assets/svgs";
+import { DashboardSVG, NFTSVG, NavSVG, SwapSVG } from "./assets/svgs";
 
 const NavButton = ({ setValue, value }: { setValue?: any; value: number }) => {
   const [open, setOpen] = useState(false);
@@ -13,6 +13,10 @@ const NavButton = ({ setValue, value }: { setValue?: any; value: number }) => {
     {
       icon: SwapSVG,
       text: "Swap",
+    },
+    {
+      icon: NFTSVG,
+      text: "NFT",
     },
   ];
 
@@ -35,7 +39,7 @@ const NavButton = ({ setValue, value }: { setValue?: any; value: number }) => {
       </div>
       <div
         className={`absolute -right-[7px] top-[57px]  overflow-hidden rounded-lg  bg-brand transition-all ${
-          open ? "h-20 w-[144px]" : "h-0 w-0"
+          open ? "h-20 w-[208px]" : "h-0 w-0"
         }`}
       >
         <div className="flex px-2 py-1.5">
