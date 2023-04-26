@@ -50,7 +50,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import { RewardType } from "./types";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { CHAIN_ICONS } from "config/constants/networks";
-import IndexLogo from "@components/logo/IndexLogo";
+import IndexLogo from "../IndexDetail/IndexLogo";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;

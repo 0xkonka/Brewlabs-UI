@@ -350,7 +350,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                         <div className="absolute  -left-4 top-1.5">
                           {data ? (
-                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-3" />
+                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-[11px]" />
                           ) : (
                             <SkeletonComponent />
                           )}

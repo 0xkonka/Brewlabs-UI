@@ -37,6 +37,7 @@ import { Category } from "config/constants/types";
 import { useGlobalState } from "state";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
+import useWalletNFTs from "@hooks/useWalletNFTs";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([]);
@@ -57,6 +58,9 @@ const Profile = ({ deployer }: { deployer: string }) => {
   const { setSelectedDeployer, setViewType }: any = useContext(DashboardContext);
   const { userData }: any = useContext(UserContext);
   const { indexes, userDataLoaded } = useIndexes();
+  const nfts = useWalletNFTs(deployer);
+  const isKYC =
+    nfts.filter((data) => data.address.toLowerCase() === "0x2B09d47D550061f995A3b5C6F0Fd58005215D7c8").length > 0;
 
   const deployerData = userData.visitedIndexes
     ? userData.visitedIndexes.find((data: any) => data.address === deployer.toLowerCase())
@@ -207,7 +211,11 @@ const Profile = ({ deployer }: { deployer: string }) => {
                 <div className="mt-8  min-w-fit md:mt-0 md:min-w-[180px]">
                   <div className="relative h-fit w-fit">
                     <img
-                      src={deployerData ? deployerData.logo : "https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
+                      src={
+                        deployerData
+                          ? deployerData.logo
+                          : "https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"
+                      }
                       alt={""}
                       className="h-36 w-36 rounded-full"
                     />
@@ -230,11 +238,21 @@ const Profile = ({ deployer }: { deployer: string }) => {
                       <div className="absolute -left-6 top-2 text-primary">{KYCSVG}</div>
                     </div>
                     <div className="overflow-hidden text-ellipsis text-lg text-[#FFFFFF80]">{deployer}</div>
-                    <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 scale-[200%] text-primary">{UserSVG}</div>
-                      <div className="text-sm">
-                        0 <span className="text-green">(+0) 24HR</span>
+                    <div className="mt-1.5 flex max-w-[260px] items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="mr-3 scale-[200%] text-primary">{UserSVG}</div>
+                        <div className="text-sm">
+                          0 <span className="text-green">(+0) 24HR</span>
+                        </div>
                       </div>
+                      {isKYC ? (
+                        <div className="flex items-center">
+                          <div className="text-primary">{KYCSVG}</div>
+                          <div className="ml-2">KYC</div>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                     <div className="mt-1.5 flex items-center">
                       <div className="mr-3 scale-[200%] text-primary">{DetailSVG}</div>

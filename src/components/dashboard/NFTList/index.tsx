@@ -82,13 +82,13 @@ const NFTList = () => {
                 return (
                   <div
                     key={i}
-                    className="mx-5 my-5 w-[135px] overflow-hidden rounded-[12px] font-roboto text-xs font-medium"
+                    className="mx-5 my-5 w-[135px] overflow-hidden rounded-[12px] font-roboto text-xs font-medium transition-all duration-700 hover:scale-[120%]"
                   >
                     <div className="flex h-[135px] items-center justify-center overflow-hidden">
                       <img
                         src={data.logo}
                         alt={""}
-                        className="h-full max-w-fit cursor-pointer transition-all duration-700 hover:scale-125"
+                        className="h-full max-w-fit cursor-pointer"
                         onClick={(e: any) => {
                           if (isOpen === 2) {
                             changeAvatar(selectedDeployer, e.target.src);
