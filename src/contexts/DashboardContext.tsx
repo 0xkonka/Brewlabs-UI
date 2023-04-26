@@ -60,8 +60,8 @@ const DashboardContextProvider = ({ children }: any) => {
   const [priceHistory, setPriceHistory] = useState([]);
   const [selectedDeployer, setSelectedDeployer] = useState("");
   const [viewType, setViewType] = useState(0);
-  // const { address } = useAccount();
-  const address = "0x2c4F487acf3ac72a4Ec9aa4D7a9059246Ff46fE4";
+  const { address } = useAccount();
+  // const address = "0x2c4F487acf3ac72a4Ec9aa4D7a9059246Ff46fE4";
   const nfts = useWalletNFTs(address);
 
   temp_addr = address;

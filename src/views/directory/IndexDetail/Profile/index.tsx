@@ -100,7 +100,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
     for (let i = 0; i < 24; i++) {
       let pF = 0;
       for (let j = 0; j < result.length; j++) pF += result[j].performanceFees[i];
-      _performanceFees.push(pF);
+      _performanceFees.push(isNaN(pF) ? 0 : pF);
     }
     setPerformanceFees(_performanceFees);
   };
