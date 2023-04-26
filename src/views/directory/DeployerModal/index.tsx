@@ -8,7 +8,9 @@ import { checkCircleSVG, chevronLeftSVG, UploadSVG } from "components/dashboard/
 import { useEffect, useState } from "react";
 
 import Carousel from "react-multi-carousel";
+import FarmDeployer from "./FarmDeployer";
 import PoolDeployer from "./PoolDeployer";
+import IndexDeployer from "./IndexDeployer";
 
 const responsive = {
   desktop: {
@@ -83,14 +85,17 @@ const HeroSection = ({
           })}
         </Carousel>
       </CarouselPanel>
-      <div className="mt-5 mb-4 text-sm text-[#FFFFFF80]">
+      <div className="mb-4 mt-5 text-sm text-[#FFFFFF80]">
         *Staking pools, yield farms and indexes will deploy also the Brewlabs directory, you can find the latest pools
         easily be filtering with the “New” category.
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="primary" onClick={() => setStep(1)}>
+        <StyledButton type="primary" onClick={() => setStep(1)} className="relative">
           Next
+          <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
+            Soon
+          </div>
         </StyledButton>
       </div>
     </div>
@@ -139,7 +144,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               <div className="flex items-center justify-between border-b border-[#FFFFFF80] pb-2.5">
                 <div className="text-primary">Brewlabs Project Deployer</div>
                 <div className="h-10 min-w-[150px]">
-                  <StyledButton type="secondary" onClick={() => setOpen(false)}>
+                  <StyledButton type="secondary" onClick={() => (step > 0 ? setStep(step - 1) : setOpen(false))}>
                     <div className="flex items-center text-[#FFFFFFBF]">
                       {chevronLeftSVG}
                       <div className="ml-2">Back a page</div>
@@ -149,13 +154,19 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               </div>
               {step === 0 ? (
                 <HeroSection deployType={deployType} setDeployType={setDeployType} setStep={setStep} />
-              ) : (
+              ) : deployType === "Staking Pool" ? (
                 <PoolDeployer step={step} setStep={setStep} setOpen={setOpen} />
+              ) : deployType === "Yield Farm" ? (
+                <FarmDeployer step={step} setStep={setStep} setOpen={setOpen} />
+              ) : deployType === "Token Index" ? (
+                <IndexDeployer step={step} setStep={setStep} setOpen={setOpen} />
+              ) : (
+                ""
               )}
 
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

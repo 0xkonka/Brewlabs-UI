@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, useEffect } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo, useContext } from "react";
 import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
@@ -25,9 +25,8 @@ import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
 import UserDashboard from "components/dashboard/UserDashboard";
-import DropDown from "./dashboard/TokenList/Dropdown";
-import { SwapContext } from "contexts/SwapContext";
 import NavButton from "./dashboard/NavButton";
+import { DashboardContext } from "contexts/DashboardContext";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -156,9 +155,9 @@ const CurrencySelector = ({
   const debouncedQuery = useDebounce(searchQuery, 200);
 
   const [invertSearchOrder] = useState<boolean>(false);
-  const { setViewType }: any = useContext(SwapContext);
-  const [setSidebarContent] = useGlobalState("userSidebarContent");
-  const [userSidebarOpen] = useGlobalState("userSidebarOpen");
+  const { viewType, setViewType }: any = useContext(DashboardContext);
+  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const allTokens = useAllTokens();
 
@@ -344,7 +343,7 @@ const CurrencySelector = ({
         </div>
       </div>
       {listingTokens.length > 0 && (
-        <div className="mt-3 mb-2 flex justify-center gap-5">
+        <div className="mb-2 mt-3 flex justify-center gap-5">
           <PrimaryOutlinedButton disabled={page === 0} onClick={prevPage}>
             Back
           </PrimaryOutlinedButton>

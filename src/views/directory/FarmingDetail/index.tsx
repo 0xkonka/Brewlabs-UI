@@ -281,13 +281,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             ? getNativeSybmol(data.chainId)
                             : token.address
                         }`}
+                        passHref
                       >
-                        <a className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
+                        <div className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5">
                           <StyledButton>
                             <div>Make LP</div>
                             <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
-                        </a>
+                        </div>
                       </Link>
                     </div>
                   </div>
@@ -351,7 +352,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
                         </div>
                       </div>
-                      <div className="absolute bottom-1 right-1">
+                      <div className="absolute bottom-2 right-2">
                         {data ? (
                           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
                         ) : (

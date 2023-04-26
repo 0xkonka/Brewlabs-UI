@@ -35,6 +35,7 @@ import {
 } from "utils/addressHelpers";
 
 import { useActiveChainId } from "./useActiveChainId";
+import { useAppId } from "state/zap/hooks";
 
 /**
  * Helper hooks to get specific contracts (by ABI)
@@ -151,11 +152,6 @@ export function useTokenTransferContract(withSignerIfPossible?: boolean): Contra
   return useContract(getTokenTransferAddress(chainId), ConstructorABI, withSignerIfPossible);
 }
 
-// export function useExternalMasterchef(withSignerIfPossible?: boolean, chef = Chef.MASTERCHEF): Contract | null {
-//   const [appId] = useAppId();
-//   return useContract(getExternalMasterChefAddress(appId, chef), ExternalMasterChefABI, withSignerIfPossible);
-// }
-
 export const useBrewlabsFeeManager = (chainId: ChainId) => {
   const { data: signer } = useSigner();
   return useMemo(
@@ -163,3 +159,7 @@ export const useBrewlabsFeeManager = (chainId: ChainId) => {
     [chainId, signer]
   );
 };
+export function useExternalMasterchef(withSignerIfPossible?: boolean, chef = Chef.MASTERCHEF): Contract | null {
+  const [appId] = useAppId();
+  return useContract(getExternalMasterChefAddress(appId, chef), ExternalMasterChefABI, withSignerIfPossible);
+}

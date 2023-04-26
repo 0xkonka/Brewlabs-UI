@@ -403,7 +403,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="absolute bottom-1 right-1">
+                      <div className="absolute bottom-2 right-2">
                         {data ? (
                           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
                         ) : (

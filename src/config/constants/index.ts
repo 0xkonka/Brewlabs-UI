@@ -281,3 +281,5 @@ export const ONE_HUNDRED_PERCENT = new Percent("1");
 
 export const slippageWithTVL = 200;
 export const slippageDefault = 5000;
+
+export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";

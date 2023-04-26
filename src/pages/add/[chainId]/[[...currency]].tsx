@@ -15,10 +15,12 @@ import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
 
 import AddLiquidityPanel from "views/contructor/AddLiquidityPanel";
+import { useLPTokens } from "@hooks/constructor/useLPTokens";
 
 const AddLiquidityPage = () => {
   const router = useRouter();
   const { chainId } = useActiveChainId();
+  const { fetchLPTokens }: any = useLPTokens();
 
   const selectedChainId = +router.query.chainId ?? chainId;
 
@@ -63,6 +65,7 @@ const AddLiquidityPage = () => {
 
           <AddLiquidityPanel
             onBack={() => router.back()}
+            fetchLPTokens={fetchLPTokens}
             selectedChainId={chainId}
             currencyA={currencyA}
             currencyB={currencyB}

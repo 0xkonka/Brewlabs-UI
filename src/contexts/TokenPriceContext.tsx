@@ -25,11 +25,14 @@ const TokenPriceContextProvider = ({ children }: any) => {
   const { chainId } = useActiveChainId();
 
   useSlowRefreshEffect(() => {
+    const to = Math.floor(Date.now() / 1000);
     axios
-      .get(`https://api.coingecko.com/api/v3/simple/price?ids=brewlabs&vs_currencies=usd`)
-      .then((res) => {
-        setPrices(res.data);
-      })
+      .get(
+        `https://api.dex.guru/v1/tradingview/history?symbol=0x6aac56305825f712fd44599e59f2ede51d42c3e7-bsc_USD&resolution=10&from=${
+          to - 3600 * 24
+        }&to=${to}`
+      )
+      .then((result) => setPrices({ brewlabs: { usd: result.data.c[result.data.c.length - 1] } }))
       .catch((e) => console.log(e));
   }, []);
 
@@ -54,7 +57,6 @@ const TokenPriceContextProvider = ({ children }: any) => {
       .then((result) => setETHPrice(result.data.c[result.data.c.length - 1]))
       .catch((e) => console.log(e));
   }, []);
-
   return (
     <TokenPriceContext.Provider value={{ prices, tokenPrices, lpPrices, ethPrice }}>
       {children}

@@ -83,6 +83,7 @@ const getPriceChange = (prices, time) => {
 
 export const getAverageHistory = (prices) => {
   let temp = [];
+  if (!prices[0]) return [];
   for (let i = 0; i < prices[0].length; i++) {
     let currentPriceChange = 0,
       prevPriceChange = 0;

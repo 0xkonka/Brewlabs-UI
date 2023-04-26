@@ -103,7 +103,7 @@ const IndexPerformance = () => {
                       <div className="flex">
                         {sortedPercentChanges.map((data, i) => {
                           if (window.innerWidth < 550 && i != 0) return;
-                          const names = ["1D", "7D", "30D"];
+                          const names = ["24hrs", "7D", "30D"];
                           return (
                             <div key={i} className="mr-5 text-xs font-semibold ">
                               {data ? (

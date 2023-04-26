@@ -15,6 +15,7 @@ interface IndexConfigBaseProps {
   isCustody?: boolean;
   isServiceFee?: boolean;
   isFinished?: boolean;
+  deployer?: string;
 }
 
 export interface SerializedIndexConfig extends IndexConfigBaseProps {
