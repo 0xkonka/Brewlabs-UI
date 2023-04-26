@@ -66,13 +66,13 @@ export const EXPLORER_API_URLS = {
   [ChainId.ETHEREUM]: "https://api.etherscan.io/api",
   [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
   [ChainId.POLYGON]: "https://api.polygonscan.com/api",
-}
+};
 
 export const EXPLORER_API_KEYS = {
   [ChainId.ETHEREUM]: "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX",
   [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.POLYGON]: "F2KCC1VEPQC23GBVKATATP1V3ZQIC31D7Z",
-}
+};
 
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",

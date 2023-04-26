@@ -36,19 +36,23 @@ export const fetchFarmUserTokenBalances = async (
   chainId: ChainId,
   farmsToFetch: SerializedFarmConfig[]
 ) => {
-  const calls = farmsToFetch.map((farm) => {
-    return {
-      address: farm.lpAddress,
-      name: "balanceOf",
-      params: [account],
-    };
-  });
+  try {
+    const calls = farmsToFetch.map((farm) => {
+      return {
+        address: farm.lpAddress,
+        name: "balanceOf",
+        params: [account],
+      };
+    });
 
-  const rawTokenBalances = await multicall(erc20ABI, calls, chainId);
-  const parsedTokenBalances = rawTokenBalances.map((tokenBalance) => {
-    return new BigNumber(tokenBalance).toJSON();
-  });
-  return parsedTokenBalances;
+    const rawTokenBalances = await multicall(erc20ABI, calls, chainId);
+    const parsedTokenBalances = rawTokenBalances.map((tokenBalance) => {
+      return new BigNumber(tokenBalance).toJSON();
+    });
+    return parsedTokenBalances;
+  } catch (e) {
+    return [];
+  }
 };
 
 export const fetchFarmUserStakedBalances = async (
@@ -78,23 +82,27 @@ export const fetchFarmUserEarnings = async (
   chainId: ChainId,
   farmsToFetch: SerializedFarmConfig[]
 ) => {
-  const masterChefAddress = getMasterChefAddress(chainId);
+  try {
+    const masterChefAddress = getMasterChefAddress(chainId);
 
-  const calls = farmsToFetch
-    .filter((f) => !f.enableEmergencyWithdraw)
-    .map((farm) => {
-      return {
-        address: farm.contractAddress ?? masterChefAddress,
-        name: "pendingRewards",
-        params: [farm.poolId, account],
-      };
+    const calls = farmsToFetch
+      .filter((f) => !f.enableEmergencyWithdraw)
+      .map((farm) => {
+        return {
+          address: farm.contractAddress ?? masterChefAddress,
+          name: "pendingRewards",
+          params: [farm.poolId, account],
+        };
+      });
+
+    const rawEarnings = await multicall(masterchefABI, calls, chainId);
+    const parsedEarnings = rawEarnings.map((earnings) => {
+      return new BigNumber(earnings).toJSON();
     });
-
-  const rawEarnings = await multicall(masterchefABI, calls, chainId);
-  const parsedEarnings = rawEarnings.map((earnings) => {
-    return new BigNumber(earnings).toJSON();
-  });
-  return parsedEarnings;
+    return parsedEarnings;
+  } catch (e) {
+    return [];
+  }
 };
 
 export const fetchFarmUserReflections = async (

@@ -6,7 +6,7 @@ import { Dialog } from "@headlessui/react";
 import StyledButton from "../../StyledButton";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import styled from "styled-components";
-import { Currency, NATIVE_CURRENCIES } from "@brewlabs/sdk";
+import { Currency, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import useStakeFarms from "../hooks/useStakeFarms";
 import { AppId, Chef } from "config/constants/types";
@@ -35,15 +35,17 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { getExternalMasterChefAddress } from "utils/addressHelpers";
 import { useNativeTokenPrice } from "@hooks/useUsdPrice";
 import useUnstakeFarms from "../hooks/useUnstakeFarms";
+import Link from "next/link";
+import { getNativeSybmol } from "lib/bridge/helpers";
 
 const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const { chainId } = useActiveChainId();
   const [amount, setAmount] = useState("");
-  const { lpAddress, pid, earningToken, chef, appId, lpSymbol } = data;
+  const { lpAddress, pid, earningToken, chef, appId, token, quoteToken } = data;
   const [currency, setCurrency] = useState<Currency>(NATIVE_CURRENCIES[chainId]);
 
   const { address: account } = useAccount();
-  const performanceFee = usePerformanceFee();
+  const performanceFee = usePerformanceFee(data.chainId);
   const dispatch = useAppDispatch();
   const { lpTokenPrices } = useLpTokenPrices();
   const bananaPrice = useBananaPrice();
@@ -59,7 +61,8 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
   const [approval, approveCallback] = useApproveCallback(parsedAmount, masterChefAddress);
 
   const ethPrice = useNativeTokenPrice();
-  const lpPrice = useLpTokenPrice(lpSymbol, appId);
+  const lpPrice = useLpTokenPrice(data.lpSymbol, appId);
+  const lpSymbol = data.lpSymbol.split(" ")[0];
 
   const tokensToStake = new BigNumber(amount !== "" ? amount : 0);
   const usdToStake = currency.isNative
@@ -158,20 +161,28 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                 <div className="mr-2 flex-1">
                   <StyledButton type="secondary">
                     <div className="flex items-center text-[#FFFFFFBF]">
-                      Zap&nbsp;<span className="text-primary"> {lpSymbol} LP</span>
+                      Zap<span className="mx-1 text-primary">{lpSymbol}</span> LP
                     </div>
                   </StyledButton>
                 </div>
-                <a
+                <Link
                   className="flex-1"
-                  href={`https://bridge.brewlabs.info/swap?outputCurrency=#`}
+                  href={`/add/${data.chainId}/${
+                    quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
+                      ? getNativeSybmol(data.chainId)
+                      : quoteToken.address
+                  }/${
+                    token.isNative || token.symbol === WNATIVE[data.chainId].symbol
+                      ? getNativeSybmol(data.chainId)
+                      : token.address
+                  }`}
                   target={"_blank"}
                   rel="noreferrer"
                 >
                   <StyledButton type="secondary">
                     <div className="text-[#FFFFFF59] hover:text-white">Classic {lpSymbol} LP</div>
                   </StyledButton>
-                </a>
+                </Link>
               </div>
               <div className="mt-[30px]">
                 <StyledInput
@@ -182,9 +193,16 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
               </div>
               <div className="mt-1 text-right text-sm">
                 <div>
-                  My <span className="text-primary">BNB</span> : {currencyBalance ? currencyBalance.toFixed(2) : "0.00"}
+                  My <span className="text-primary">{getNativeSybmol(chainId)}</span> :{" "}
+                  {currencyBalance ? currencyBalance.toFixed(2) : "0.00"}
                 </div>
-                <div>$4,531.00 USD</div>
+                <div>
+                  $
+                  {currencyBalance && ethPrice
+                    ? (+currencyBalance?.toFixed(8) * +ethPrice?.toSignificant()).toFixed(2)
+                    : "0.00"}{" "}
+                  USD
+                </div>
               </div>
 
               <div className="mt-2.5 flex justify-between rounded border border-[#FFFFFF] bg-[#B9B8B81A] px-5 py-2.5 text-[#FFFFFF59]">
@@ -222,13 +240,11 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                       {pending ? t("Confirming") : t("Zap")} {lpSymbol}
                     </StyledButton>
                   )}
-
-                  {/* <StyledButton type="primary">Zap CAKE-BNB LP</StyledButton> */}
                 </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

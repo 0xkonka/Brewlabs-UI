@@ -1,36 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { ethers } from "ethers";
+import BigNumber from "bignumber.js";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
 
+import { chevronLeftSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
-import WordHighlight from "components/text/WordHighlight";
-import StyledButton from "../StyledButton";
-import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import ProgressBar from "./ProgressBar";
-import TotalStakedChart from "./TotalStakedChart";
-import StakingHistory from "./FarmingHistory";
-import StakingModal from "./Modals/StakingModal";
-import { useContext, useState } from "react";
-import { numberWithCommas } from "utils/functions";
-import { useAccount, useSigner } from "wagmi";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getUnLockStakingContract } from "utils/contractHelpers";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import { useBananaPrice, useFarmLpAprs, usePriceCakeBusd } from "state/zap/hooks";
-import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import WordHighlight from "components/text/WordHighlight";
+
 import { AppId, Chef } from "config/constants/types";
-import { getNetworkLabel } from "lib/bridge/helpers";
-import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
-import ZapInModal from "./Modals/ZapInModal";
-import ZapOutModal from "./Modals/ZapOutModal";
-import useHarvestFarm from "./hooks/useHarvestFarm";
 import { earningTokens, quoteTokens } from "config/constants/tokens";
-import { RewardType } from "./types";
-import { toast } from "react-toastify";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useTranslation } from "contexts/localization";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
+import { useLpTokenPrices } from "state/lpPrices/hooks";
+import { useAppId, useFarmLpAprs } from "state/zap/hooks";
 import {
   fetchApeFarmUserDataAsync,
   fetchApeFarmsPublicDataAsync,
@@ -38,19 +33,31 @@ import {
   fetchSushiFarmUserDataAsync,
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
-import BigNumber from "bignumber.js";
-import { useAppDispatch } from "state";
-import { useLpTokenPrices } from "state/lpPrices/hooks";
-import { useTranslation } from "contexts/localization";
+import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import { numberWithCommas } from "utils/functions";
 
-const CHAIN_SYMBOL = {
-  1: "ETH",
-  56: "BNB",
-};
+import useHarvestFarm from "./hooks/useHarvestFarm";
+import useTotalStakedHistory from "./hooks/useTotalStakedHistory";
+import { usePerformanceFee } from "./hooks/useStakeFarms";
+
+import ZapInModal from "./Modals/ZapInModal";
+import ZapOutModal from "./Modals/ZapOutModal";
+// import StakingHistory from "./FarmingHistory";
+// import StakingModal from "./Modals/StakingModal";
+import ProgressBar from "./ProgressBar";
+import StyledButton from "../StyledButton";
+import TotalStakedChart from "./TotalStakedChart";
+import { RewardType } from "./types";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+import { CHAIN_ICONS } from "config/constants/networks";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
-  const { lpAddress, pid, earningToken, chef, appId, lpSymbol } = data;
+  const { lpAddress, pid, chef, appId, lpSymbol, chainId, token, quoteToken } = data;
+
+  const { history } = useTotalStakedHistory(data);
+  const performanceFee = usePerformanceFee(data.chainId);
+  const [, setAppId] = useAppId();
 
   const [zapInModalOpen, setZapInModalOpen] = useState(false);
   const [zapOutModalOpen, setZapOutModalOpen] = useState(false);
@@ -58,12 +65,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const { t } = useTranslation();
   const { address: account } = useAccount();
-  const { data: signer }: any = useSigner();
-  const { chainId } = useActiveChainId();
-  const { pending, setPending }: any = useContext(DashboardContext);
-  const { ethPrice } = useContext(TokenPriceContext);
-
+  const { chainId: activeChainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
+  const { pending, setPending }: any = useContext(DashboardContext);
+
   const dispatch = useAppDispatch();
 
   const { data: sushiPrice } = useSushiPrice();
@@ -75,6 +80,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const [tokenId, setTokenId] = useState<number>(0);
+
+  useEffect(() => {
+    setAppId(data.appId);
+  }, [data.appId]);
 
   const { onReward } = useHarvestFarm(chef ?? Chef.MASTERCHEF, pid, [
     earningTokens[appId].address,
@@ -124,8 +133,9 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
     }
   };
 
-  const history =
-    data && data.history && account ? data.history.filter((data: any) => data.address === account.toLowerCase()) : [];
+  const onError = (data) => {
+    data.target.src = "/images/unknown.png";
+  };
 
   return (
     <>
@@ -140,7 +150,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
               <PageHeader
                 title={
                   <div className="text-[40px]">
@@ -157,7 +167,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-[160px] flex-col sm:flex-row">
                       <div className="h-[32px] w-[140px] ">
                         <StyledButton onClick={() => setOpen(false)}>
-                          <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                          <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                           <div className="ml-2">Back to pool list</div>
                         </StyledButton>
                       </div>
@@ -170,14 +180,14 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex w-[160px] flex-col">
                       <div className="h-[32px] w-[140px] ">
                         <StyledButton onClick={() => setOpen(false)}>
-                          <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                          <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                           <div className="ml-2">Back to pool list</div>
                         </StyledButton>
                       </div>
                       {data.isCustody ? (
                         <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                           <StyledButton>
-                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                            <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
@@ -190,7 +200,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="hidden w-full max-w-[470px] sm:block">
                           <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                             <StyledButton>
-                              <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                              <div className="absolute left-2 top-2.5">{lockSVG}</div>
                               <div className="ml-3">Brewlabs Custody</div>
                             </StyledButton>
                           </div>
@@ -199,34 +209,53 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         ""
                       )}
                       <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
-                        <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
+                        {/* <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
                           <StyledButton>
                             <div>Website</div>
                             <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
                           </StyledButton>
-                        </a>
-                        <a
-                          className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
+                        </a> */}
+                        <Link
+                          className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
-                          href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.lpAddress}`}
+                          href={`/add/${data.chainId}/${
+                            quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
+                              ? getNativeSybmol(data.chainId)
+                              : quoteToken.address
+                          }/${
+                            token.isNative || token.symbol === WNATIVE[data.chainId].symbol
+                              ? getNativeSybmol(data.chainId)
+                              : token.address
+                          }`}
                           rel="noreferrer"
                         >
                           <StyledButton>
-                            <div>Swap</div>
-                            <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                            <div>Make LP</div>
+                            <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
                   <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
-                    <div className="mt-4 flex w-[160px] items-center justify-center ">
-                      <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
+                    <div className="mt-4 flex w-fit items-center justify-center md:w-[160px]">
+                      <img
+                        src={getTokenLogoURL(token.address, data.chainId, data.appId)}
+                        onError={onError}
+                        alt={""}
+                        className="w-[70px] rounded-full"
+                      />
+                      <img
+                        src={getTokenLogoURL(quoteToken.address, data.chainId, data.appId)}
+                        onError={onError}
+                        alt={""}
+                        className="-ml-3 w-[70px] rounded-full"
+                      />
                     </div>
                     <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                       <InfoPanel
                         padding={"14px 25px 8px 25px"}
-                        className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                        className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                       >
                         <div className="flex justify-between text-xl">
                           <div>
@@ -251,7 +280,17 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <br />
                           Withdraw Fee 0.00%
                           <br />
-                          Peformance Fee 0.0035 BNB
+                          Peformance Fee {performanceFee
+                            ? ethers.utils.formatEther(performanceFee.toString())
+                            : "0.00"}{" "}
+                          {getNativeSybmol(data.chainId)}
+                        </div>
+                        <div className="absolute bottom-2 right-2">
+                          {data ? (
+                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                         </div>
                       </InfoPanel>
 
@@ -323,58 +362,16 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="mt-10 flex w-full flex-col justify-between md:flex-row">
                     <div className="w-full md:w-[40%]">
-                      <TotalStakedChart
-                        data={data.graphData === undefined ? [] : data.graphData[curGraph]}
-                        symbol={curGraph === 3 ? "" : curGraph !== 2 ? data.lpSymbol : CHAIN_SYMBOL[chainId]}
-                        price={curGraph === 3 ? 1 : curGraph !== 2 ? data.price : ethPrice}
-                        curGraph={curGraph}
-                      />
+                      <TotalStakedChart data={history} symbol={lpSymbol} />
                       <InfoPanel
                         className="mt-20 flex cursor-pointer justify-between"
                         type={"secondary"}
                         boxShadow={curGraph === 0 ? "primary" : null}
-                        onClick={() => setCurGraph(0)}
                       >
                         <div>Total Staked Value</div>
                         <div className="flex">
-                          {data.totalStaked !== undefined && data.price !== undefined ? (
-                            `$${numberWithCommas((data.totalStaked * data.price).toFixed(0))}`
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                        </div>
-                      </InfoPanel>
-                      <InfoPanel
-                        className="mt-2.5 flex cursor-pointer justify-between"
-                        type={"secondary"}
-                        boxShadow={curGraph === 2 ? "primary" : null}
-                        onClick={() => setCurGraph(2)}
-                      >
-                        <div>
-                          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-                        </div>
-                        <div className="flex">
-                          {data.totalPerformanceFee !== undefined ? (
-                            numberWithCommas(data.totalPerformanceFee.toFixed(2))
-                          ) : (
-                            <SkeletonComponent />
-                          )}
-                          &nbsp;<span className="text-primary">BNB</span>
-                        </div>
-                      </InfoPanel>
-
-                      <InfoPanel
-                        className="mt-2.5 flex cursor-pointer justify-between"
-                        type={"secondary"}
-                        boxShadow={curGraph === 3 ? "primary" : null}
-                        onClick={() => setCurGraph(3)}
-                      >
-                        <div>
-                          Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
-                        </div>
-                        <div className="flex">
-                          {data.totalStakedAddresses !== undefined ? (
-                            numberWithCommas(data.totalStakedAddresses)
+                          {history !== undefined && history.length ? (
+                            `$${numberWithCommas(history[history.length - 1].toFixed(2))}`
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -433,11 +430,9 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-7">
-                        <StakingHistory history={history} />
-                      </div>
+                      <div className="mt-7">{/* <StakingHistory history={history} /> */}</div>
                       <div className="absolute bottom-0 left-0 flex h-12 w-full">
-                        {data.chainId !== chainId ? (
+                        {data.chainId !== activeChainId ? (
                           <StyledButton
                             onClick={() => {
                               if (canSwitch) switchNetwork(data.chainId);

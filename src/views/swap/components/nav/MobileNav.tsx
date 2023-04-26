@@ -50,6 +50,7 @@ export default function MobileNav() {
                         setSwapTab(1);
                         setAddLiquidityStep(0);
                       }}
+                      disabled
                     >
                       Add liquidity
                     </button>
@@ -62,6 +63,7 @@ export default function MobileNav() {
                         swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                       onClick={() => setSwapTab(2)}
+                      disabled
                     >
                       Swap Rewards
                     </button>

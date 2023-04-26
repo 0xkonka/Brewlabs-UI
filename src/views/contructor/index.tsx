@@ -16,17 +16,18 @@ import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
 
 export default function Constructor() {
+  const { chainId } = useActiveChainId();
+
   const [curAction, setCurAction] = useState("default");
   const [selectedLP, setSelectedLP] = useState(0);
   const [showCount, setShowCount] = useState(3);
 
-  const { ethLPTokens, bscLPTokens }: any = useLPTokens();
+  const { ethLPTokens, bscLPTokens, fetchLPTokens }: any = useLPTokens();
 
   const lpTokens = [...(ethLPTokens ?? []), ...(bscLPTokens ?? [])];
   const sortedTokens =
     lpTokens && lpTokens.sort((a, b) => b.balance * b.price - a.balance * a.price).slice(0, showCount);
   const isLoading = !(lpTokens.length || (ethLPTokens !== null && bscLPTokens !== null));
-  const { chainId } = useActiveChainId();
 
   return (
     <PageWrapper>
@@ -72,6 +73,7 @@ export default function Constructor() {
           ) : curAction === "Remove" ? (
             <RemoveLiquidityPanel
               onBack={() => setCurAction("default")}
+              fetchLPTokens={fetchLPTokens}
               selectedChainId={sortedTokens[selectedLP]?.chainId ?? chainId}
               currencyA={
                 sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)
@@ -96,7 +98,11 @@ export default function Constructor() {
               lpPrice={sortedTokens[selectedLP].price}
             />
           ) : curAction === "addLiquidity" ? (
-            <AddLiquidityPanel onBack={() => setCurAction("default")} selectedChainId={chainId} />
+            <AddLiquidityPanel
+              onBack={() => setCurAction("default")}
+              fetchLPTokens={fetchLPTokens}
+              selectedChainId={chainId}
+            />
           ) : (
             ""
           )}

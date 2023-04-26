@@ -36,7 +36,14 @@ import SolidButton from "views/swap/components/button/SolidButton";
 
 import StyledSlider from "./StyledSlider";
 
-export default function RemoveLiquidityPanel({ onBack, selectedChainId, currencyA, currencyB, lpPrice = undefined }) {
+export default function RemoveLiquidityPanel({
+  onBack,
+  fetchLPTokens,
+  selectedChainId,
+  currencyA,
+  currencyB,
+  lpPrice = undefined,
+}) {
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
 
@@ -178,6 +185,9 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
               } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
             });
             toast.success("Liquidity was removed");
+
+            fetchLPTokens(chainId);
+            onBack();
             // setTxHash(response.hash);
           })
           .catch((err: Error) => {
@@ -265,6 +275,9 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
             } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
           });
           toast.success("Liquidity was removed");
+
+          fetchLPTokens(chainId);
+          onBack();
           // setTxHash(response.hash)
         })
         .catch((err: Error) => {
@@ -371,7 +384,7 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
           }}
         />
       </div>
-      <div className="mt-6 mr-6 flex items-center justify-between">
+      <div className="mr-6 mt-6 flex items-center justify-between">
         <div className="mr-5 flex-1">
           <StyledSlider value={innerLiquidityPercentage} setValue={setInnerLiquidityPercentage} />
         </div>
@@ -402,7 +415,7 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
           </div>
         </div>
       </div>
-      <div className="mx-0 mt-[60px] rounded-[30px] border border-[#FFFFFF80] py-4 px-4 font-bold text-[#FFFFFF80] sm:mx-4 sm:px-8">
+      <div className="mx-0 mt-[60px] rounded-[30px] border border-[#FFFFFF80] px-4 py-4 font-bold text-[#FFFFFF80] sm:mx-4 sm:px-8">
         <div className="text-lg text-[#FFFFFFBF]">Receive</div>
         <div>
           <div className="flex flex-wrap items-center justify-between text-sm">

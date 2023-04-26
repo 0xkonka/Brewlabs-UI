@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
 
@@ -10,11 +10,9 @@ import WordHighlight from "components/text/WordHighlight";
 
 import { BLOCKS_PER_DAY } from "config/constants";
 import { AppId, Category } from "config/constants/types";
-import { ZapperContext } from "contexts/directory/ZapperContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
 import {
-  useAppId,
   useBananaPrice,
   useFarmLpAprsFromAppId,
   useFetchFarmLpAprs,
@@ -305,7 +303,7 @@ const Directory = ({ page }: { page: number }) => {
             exit={{ opacity: 0, scale: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll">
+            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
               <PageHeader
                 title={
                   <div className="text-[40px]">
@@ -340,7 +338,7 @@ const Directory = ({ page }: { page: number }) => {
                     setActivity={setStatus}
                   />
                 </div>
-                <div className="mt-[18px] mb-[100px]">
+                <div className="mb-[100px] mt-[18px]">
                   <PoolList
                     pools={chosenPools}
                     setSelectPoolDetail={setSelectPoolDetail}
