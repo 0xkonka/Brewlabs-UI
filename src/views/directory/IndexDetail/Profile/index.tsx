@@ -243,7 +243,10 @@ const Profile = ({ deployer }: { deployer: string }) => {
                     <div className="overflow-hidden text-ellipsis text-lg text-[#FFFFFF80]">{deployer}</div>
                     <div className="mt-1.5 flex max-w-[260px] items-center justify-between">
                       <div className="flex items-center">
-                        <div className="mr-3 text-primary">{UserSVG}</div>
+                        <div className="mr-3 cursor-pointer text-primary" id={"numberoffollowers"}>
+                          {UserSVG}
+                        </div>
+                        <ReactTooltip anchorId={"numberoffollowers"} place="top" content="Number of followers" />
                         <div className="text-sm">
                           0 <span className="text-green">(+0) 24HR</span>
                         </div>
@@ -271,11 +274,17 @@ const Profile = ({ deployer }: { deployer: string }) => {
                       )}
                     </div>
                     <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 text-primary">{DetailSVG}</div>
+                      <div className="mr-3 cursor-pointer text-primary" id={"deployedindexes"}>
+                        {DetailSVG}
+                      </div>
+                      <ReactTooltip anchorId={"deployedindexes"} place="top" content="Deployed indexes" />
                       <div className="text-sm">{allPools.length}</div>
                     </div>
                     <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 text-primary">{BarChartSVG}</div>
+                      <div className="mr-3 cursor-pointer text-primary" id={"bestperformingindex"}>
+                        {BarChartSVG}
+                      </div>
+                      <ReactTooltip anchorId={"bestperformingindex"} place="top" content="Best performing index" />
                       <div className="ml-2">
                         <IndexLogo type={"line"} tokens={bestPool.tokens ?? []} />
                       </div>
