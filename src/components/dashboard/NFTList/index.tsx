@@ -41,12 +41,12 @@ const NFTList = () => {
   const carouselRef = useRef();
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [nftCount, setNFTCount] = useState(1);
-  const [curPage, setCurPage] = useState(0);
   const { nfts, selectedDeployer }: any = useContext(DashboardContext);
   const { changeAvatar }: any = useContext(UserContext);
 
   useEffect(() => {
-    setNFTCount(Math.max(1, Math.floor((window.innerHeight - 265) / 227) * 3));
+    const _colCount = window.innerWidth >= 590 ? 3 : window.innerWidth >= 415 ? 2 : 1;
+    setNFTCount(Math.max(1, Math.floor((window.innerHeight - 400) / 227) * _colCount));
   }, []);
 
   let nftList = [];

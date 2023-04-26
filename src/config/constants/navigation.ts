@@ -71,7 +71,7 @@ export const navigationData = [
 
 export const navigationExtraData = [
   {
-    name: "Visit TrueNFT",
+    name: "TrueNFT",
     href: "https://truenft.io",
     external: true,
     icon: "PaperAirplaneIcon",

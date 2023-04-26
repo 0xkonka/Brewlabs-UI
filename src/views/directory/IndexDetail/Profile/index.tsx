@@ -12,6 +12,7 @@ import {
   chevronLeftSVG,
   DetailSVG,
   KYCSVG,
+  NoneKYCSVG,
   UserAddSVG,
   UserSVG,
 } from "components/dashboard/assets/svgs";
@@ -38,6 +39,8 @@ import { useGlobalState } from "state";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
 import useWalletNFTs from "@hooks/useWalletNFTs";
+import "react-tooltip/dist/react-tooltip.css";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([]);
@@ -214,7 +217,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                       src={
                         deployerData
                           ? deployerData.logo
-                          : "https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"
+                          : "https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"
                       }
                       alt={""}
                       className="h-36 w-36 rounded-full"
@@ -235,31 +238,44 @@ const Profile = ({ deployer }: { deployer: string }) => {
                   <div className="w-full ls:w-[calc(100%-556px)]">
                     <div className="relative text-[25px] text-white">
                       <div>Brewlabs</div>
-                      <div className="absolute -left-6 top-2 text-primary">{KYCSVG}</div>
+                      {/* <div className="absolute -left-6 top-2 text-primary">{KYCSVG}</div> */}
                     </div>
                     <div className="overflow-hidden text-ellipsis text-lg text-[#FFFFFF80]">{deployer}</div>
                     <div className="mt-1.5 flex max-w-[260px] items-center justify-between">
                       <div className="flex items-center">
-                        <div className="mr-3 scale-[200%] text-primary">{UserSVG}</div>
+                        <div className="mr-3 text-primary">{UserSVG}</div>
                         <div className="text-sm">
                           0 <span className="text-green">(+0) 24HR</span>
                         </div>
                       </div>
                       {isKYC ? (
                         <div className="flex items-center">
-                          <div className="text-primary">{KYCSVG}</div>
+                          <div className="cursor-pointer text-primary" id={"KYC"}>
+                            {KYCSVG}
+                          </div>
                           <div className="ml-2">KYC</div>
+                          <ReactTooltip anchorId={"KYC"} place="top" content="This wallet is KYC with Binance." />
                         </div>
                       ) : (
-                        ""
+                        <div className="flex items-center">
+                          <div className="cursor-pointer opacity-70" id={"NoneKYC"}>
+                            {NoneKYCSVG}
+                          </div>
+                          <div className="ml-2 opacity-70">KYC</div>
+                          <ReactTooltip
+                            anchorId={"NoneKYC"}
+                            place="top"
+                            content="This wallet is not KYC with Binance."
+                          />
+                        </div>
                       )}
                     </div>
                     <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 scale-[200%] text-primary">{DetailSVG}</div>
+                      <div className="mr-3 text-primary">{DetailSVG}</div>
                       <div className="text-sm">{allPools.length}</div>
                     </div>
                     <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 scale-[200%] text-primary">{BarChartSVG}</div>
+                      <div className="mr-3 text-primary">{BarChartSVG}</div>
                       <div className="ml-2">
                         <IndexLogo type={"line"} tokens={bestPool.tokens ?? []} />
                       </div>

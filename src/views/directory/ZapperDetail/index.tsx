@@ -50,7 +50,6 @@ import TotalStakedChart from "./TotalStakedChart";
 import { RewardType } from "./types";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { CHAIN_ICONS } from "config/constants/networks";
-import IndexLogo from "../IndexDetail/IndexLogo";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
@@ -233,9 +232,19 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     </div>
                   </div>
                   <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
-                    <div className="mt-4 flex w-[160px] items-center justify-center ">
-                      <IndexLogo tokens={[data.token, data.quoteToken]} />
-                      <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
+                    <div className="flex w-[160px] items-center justify-center md:mb-0 mb-4 mt-4">
+                      <img
+                        src={getTokenLogoURL(data.token.address, data.token.chainId)}
+                        onError={onError}
+                        alt={""}
+                        className="w-[70px] rounded-full"
+                      />
+                      <img
+                        src={getTokenLogoURL(data.quoteToken.address, data.quoteToken.chainId)}
+                        onError={onError}
+                        alt={""}
+                        className="-ml-3 w-[70px] rounded-full"
+                      />
                     </div>
                     <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                       <InfoPanel

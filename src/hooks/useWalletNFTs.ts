@@ -42,7 +42,6 @@ const useWalletNFTs = (account: string) => {
           pageSize: 50,
           pageToken: nextPageToken,
         });
-        console.log(result);
         nextPageToken = result.nextPageToken;
         pageSize = result.assets.length;
         nfts.push(...result.assets);

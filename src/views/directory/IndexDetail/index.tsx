@@ -62,6 +62,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curType, setCurType] = useState("enter");
   const [curGraph, setCurGraph] = useState(2);
   const [curAPR, setCurAPR] = useState(0);
+  const [isCopied, setIsCopied] = useState(false);
 
   const router = useRouter();
   const { address } = useAccount();
@@ -191,6 +192,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(false);
   };
 
+  const onShareIndex = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(`https://bridge.brewlabs.info${location.pathname}`);
+  };
   return (
     <>
       <AnimatePresence exitBeforeEnter>
@@ -243,15 +251,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="block xl:hidden">
                         <div className="mt-2" />
                         <StyledButton
-                          className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                          className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]  transition hover:border-white hover:text-white"
                           type={"default"}
+                          onClick={() => onShareIndex()}
                         >
                           <div className="flex items-center">
-                            <div className="mr-1.5">Share Index</div> {LinkSVG}
+                            <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                           </div>
-                          <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                          {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
                             Soon
-                          </div>
+                          </div> */}
                         </StyledButton>
                         <div className="mt-2" />
                         <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
@@ -261,7 +270,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 justify-end">
                     <div className="hidden w-full max-w-[480px] items-center sm:flex">
                       <img
-                        src={"https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
+                        src={"https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
                         alt={""}
                         className="mr-2 h-10 w-10 rounded-full"
                       />
@@ -279,7 +288,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
                       <div className="mb-2 block flex w-full max-w-[480px] items-center sm:hidden">
                         <img
-                          src={"https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
+                          src={"https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
                           alt={""}
                           className="mr-2 hidden h-10 w-10 rounded-full xs:block"
                         />
@@ -295,15 +304,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </StyledButton>
                       </div>
                       <StyledButton
-                        className="relative hidden h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] xl:flex"
+                        className="relative hidden h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white hover:text-white xl:flex"
                         type={"default"}
+                        onClick={() => onShareIndex()}
                       >
                         <div className="flex items-center">
-                          <div className="mr-1.5">Share Index</div> {LinkSVG}
+                          <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                         </div>
-                        <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                        {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
                           Soon
-                        </div>
+                        </div> */}
                       </StyledButton>
                       <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
                       <div className="hidden xl:block">

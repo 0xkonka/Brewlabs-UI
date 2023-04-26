@@ -53,7 +53,7 @@ const HeroSection = ({
   };
   return (
     <div className="text-white">
-      <div className="mt-3.5">
+      <div className="mt-3.5 mb-2">
         Welcome to the Brewlabs product deployer wizard. Using this wizard will allow you to deploy a range of Brewlabs
         products.
       </div>
@@ -69,7 +69,7 @@ const HeroSection = ({
           customRightArrow={<CustomRightArrow onClick={undefined} />}
           customLeftArrow={<CustomLeftArrow onClick={undefined} />}
         >
-          {["Staking Pool", "Yield Farm", "Token Index", "Zapper"].map((data, i) => {
+          {["Staking Pool", "Yield Farm", "Zapper", "Token Index"].map((data, i) => {
             return (
               <DeployItem
                 key={i}
