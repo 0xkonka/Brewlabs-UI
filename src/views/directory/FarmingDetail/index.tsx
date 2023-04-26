@@ -352,7 +352,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="mt-[2px] ml-1">{warningFarmerSVG("11px")}</div>
                         </div>
                       </div>
-                      <div className="absolute bottom-1 right-1">
+                      <div className="absolute bottom-2 right-2">
                         {data ? (
                           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
                         ) : (

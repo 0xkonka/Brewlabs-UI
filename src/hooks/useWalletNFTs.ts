@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { formatIPFSString } from "utils/functions";
 import multicall from "utils/multicall";
@@ -9,6 +9,7 @@ import { useSlowRefreshEffect } from "./useRefreshEffect";
 const useWalletNFTs = (account: string) => {
   const [bscNFTs, setBSCNFTs] = useState([]);
   const [ethNFTs, setETHNFTs] = useState([]);
+
   async function fetchBaseData(address, chainId) {
     try {
       let calls = [

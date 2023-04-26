@@ -13,10 +13,12 @@ import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
 
 import RemoveLiquidityPanel from "views/contructor/RemoveLiquidityPanel";
+import { useLPTokens } from "@hooks/constructor/useLPTokens";
 
 const RemoveLiquidityPage = () => {
   const router = useRouter();
   const { chainId } = useActiveChainId();
+  const { fetchLPTokens }: any = useLPTokens();
 
   const [currencyIdA, currencyIdB] = router.query.currency || [];
 
@@ -57,6 +59,7 @@ const RemoveLiquidityPage = () => {
 
           <RemoveLiquidityPanel
             selectedChainId={selectedChainId}
+            fetchLPTokens={fetchLPTokens}
             currencyA={currencyA}
             currencyB={currencyB}
             onBack={() => router.back()}

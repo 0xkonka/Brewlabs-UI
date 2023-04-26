@@ -11,10 +11,9 @@ import styled from "styled-components";
 
 import "react-tooltip/dist/react-tooltip.css";
 
-import { chevronLeftSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
+import { chevronLeftSVG, LinkSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
-import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
@@ -26,7 +25,7 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
 import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
-import { fetchIndexFeeHistories, fetchIndexPerformance } from "state/indexes/fetchIndexes";
+import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -43,15 +42,13 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import useIndex from "./hooks/useIndex";
 
 import StyledButton from "../StyledButton";
-import EnterExitModal from "./Modals/EnterExitModal";
-import AddNFTModal from "./Modals/AddNFTModal";
 import DropDown from "./Dropdowns/Dropdown";
+import OptionDropdown from "./Dropdowns/OptionDropdown";
+import AddNFTModal from "./Modals/AddNFTModal";
+import EnterExitModal from "./Modals/EnterExitModal";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
-import { LinkSVG } from "components/dashboard/assets/svgs";
-import OptionDropdown from "./Dropdowns/OptionDropdown";
-import Profile from "./Profile";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 
@@ -347,11 +344,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80] relative">
+                      <div className="relative flex flex-wrap justify-between text-base text-[#FFFFFF80]">
                         <div>
                           <span className="#FFFFFF80">Buy</span> {getIndexName(tokens)}
                         </div>
-                        <div className="absolute  top-1.5 -left-4">
+                        <div className="absolute  -left-4 top-1.5">
                           {data ? (
                             <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-3" />
                           ) : (

@@ -1,33 +1,22 @@
-import BigNumber from "bignumber.js";
-import { useCallback, useState } from "react";
-import { getNetworkGasPrice } from "utils/getGasPrice";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useExternalMasterchef } from "hooks/useContract";
-import { DEFAULT_TOKEN_DECIMAL } from "config";
-import { calculateGasMargin } from "utils";
-import { AppId, Chef } from "config/constants/types";
-import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
+import { useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { getExternalMasterChefAddress } from "utils/addressHelpers";
-import { EXPLORER_API_URLS, EXPLORER_API_KEYS } from "config/constants/networks";
-import ExternalMasterChefABI from "config/abi/externalMasterchef.json";
 import { ethers } from "ethers";
 
-const WETH_ADDR: any = {
-  1: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-};
+import { EXPLORER_API_URLS, EXPLORER_API_KEYS } from "config/constants/networks";
+import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import { getExternalMasterChefAddress } from "utils/addressHelpers";
 
 const useTotalStakedHistory = (data) => {
   const [history, setHistory] = useState([]);
-  const [feeHistory, setFeeHistory] = useState([]);
+  // const [feeHistory, setFeeHistory] = useState([]);
   const { appId, lpAddress, chainId, pid } = data;
 
   async function fetchPrice(address, chainId) {
     const to = Math.floor(Date.now() / 1000);
     const result = await axios.get(
       `https://api.dex.guru/v1/tradingview/history?symbol=${
-        address === ethers.constants.AddressZero ? WETH_ADDR[chainId] : address
+        address === ethers.constants.AddressZero ? WNATIVE[chainId].address : address
       }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
     );
     return result.data.c[result.data.c.length - 1];

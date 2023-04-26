@@ -1,36 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { ethers } from "ethers";
+import BigNumber from "bignumber.js";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
 
+import { chevronLeftSVG, lockSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
-import WordHighlight from "components/text/WordHighlight";
-import StyledButton from "../StyledButton";
-import { motion, AnimatePresence } from "framer-motion";
-import { chevronLeftSVG, LinkSVG, lockSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import ProgressBar from "./ProgressBar";
-import TotalStakedChart from "./TotalStakedChart";
-import StakingHistory from "./FarmingHistory";
-import StakingModal from "./Modals/StakingModal";
-import { useContext, useState } from "react";
-import { numberWithCommas } from "utils/functions";
-import { useAccount, useSigner } from "wagmi";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getUnLockStakingContract } from "utils/contractHelpers";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import { useBananaPrice, useFarmLpAprs, usePriceCakeBusd } from "state/zap/hooks";
-import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import WordHighlight from "components/text/WordHighlight";
+
 import { AppId, Chef } from "config/constants/types";
-import { getNetworkLabel } from "lib/bridge/helpers";
-import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
-import ZapInModal from "./Modals/ZapInModal";
-import ZapOutModal from "./Modals/ZapOutModal";
-import useHarvestFarm from "./hooks/useHarvestFarm";
-import { earningTokens, quoteTokens } from "config/constants/tokens";
-import { RewardType } from "./types";
-import { toast } from "react-toastify";
+import { earningTokens, quoteTokens, tokens } from "config/constants/tokens";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useTranslation } from "contexts/localization";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
+import { useLpTokenPrices } from "state/lpPrices/hooks";
+import { useAppId, useFarmLpAprs } from "state/zap/hooks";
 import {
   fetchApeFarmUserDataAsync,
   fetchApeFarmsPublicDataAsync,
@@ -38,23 +33,32 @@ import {
   fetchSushiFarmUserDataAsync,
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
-import BigNumber from "bignumber.js";
-import { useAppDispatch } from "state";
-import { useLpTokenPrices } from "state/lpPrices/hooks";
-import { useTranslation } from "contexts/localization";
-import useTotalStakedHistory from "./hooks/useTotalStakedHistory";
-import IndexLogo from "../IndexDetail/IndexLogo";
+import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import { numberWithCommas } from "utils/functions";
 
-const CHAIN_SYMBOL = {
-  1: "ETH",
-  56: "BNB",
-};
+import useHarvestFarm from "./hooks/useHarvestFarm";
+import useTotalStakedHistory from "./hooks/useTotalStakedHistory";
+import { usePerformanceFee } from "./hooks/useStakeFarms";
+
+import ZapInModal from "./Modals/ZapInModal";
+import ZapOutModal from "./Modals/ZapOutModal";
+// import StakingHistory from "./FarmingHistory";
+// import StakingModal from "./Modals/StakingModal";
+import ProgressBar from "./ProgressBar";
+import StyledButton from "../StyledButton";
+import TotalStakedChart from "./TotalStakedChart";
+import { RewardType } from "./types";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+import { CHAIN_ICONS } from "config/constants/networks";
+import IndexLogo from "@components/logo/IndexLogo";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
-  console.log(data);
-  const { lpAddress, pid, earningToken, chef, appId, lpSymbol, chainId } = data;
+  const { lpAddress, pid, chef, appId, lpSymbol, chainId, token, quoteToken } = data;
+
   const { history } = useTotalStakedHistory(data);
+  const performanceFee = usePerformanceFee(data.chainId);
+  const [, setAppId] = useAppId();
 
   const [zapInModalOpen, setZapInModalOpen] = useState(false);
   const [zapOutModalOpen, setZapOutModalOpen] = useState(false);
@@ -62,11 +66,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const { t } = useTranslation();
   const { address: account } = useAccount();
-  const { data: signer }: any = useSigner();
-  const { pending, setPending }: any = useContext(DashboardContext);
-  const { ethPrice } = useContext(TokenPriceContext);
-
+  const { chainId: activeChainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
+  const { pending, setPending }: any = useContext(DashboardContext);
+
   const dispatch = useAppDispatch();
 
   const { data: sushiPrice } = useSushiPrice();
@@ -78,6 +81,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const [tokenId, setTokenId] = useState<number>(0);
+
+  useEffect(() => {
+    setAppId(data.appId);
+  }, [data.appId]);
 
   const { onReward } = useHarvestFarm(chef ?? Chef.MASTERCHEF, pid, [
     earningTokens[appId].address,
@@ -125,6 +132,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
       dispatch(fetchSushiFarmUserDataAsync(account));
       dispatch(fetchSushiFarmsPublicDataAsync(chainId));
     }
+  };
+
+  const onError = (data) => {
+    data.target.src = "/images/unknown.png";
   };
 
   return (
@@ -199,15 +210,22 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         ""
                       )}
                       <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
-                       
                         <a
                           className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
-                          href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.lpAddress}`}
+                          href={`/add/${data.chainId}/${
+                            quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
+                              ? getNativeSybmol(data.chainId)
+                              : quoteToken.address
+                          }/${
+                            token.isNative || token.symbol === WNATIVE[data.chainId].symbol
+                              ? getNativeSybmol(data.chainId)
+                              : token.address
+                          }`}
                           rel="noreferrer"
                         >
                           <StyledButton>
-                            <div>Swap</div>
+                            <div>Make LP</div>
                             <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
                         </a>
@@ -222,7 +240,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                       <InfoPanel
                         padding={"14px 25px 8px 25px"}
-                        className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                        className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                       >
                         <div className="flex justify-between text-xl">
                           <div>
@@ -247,7 +265,17 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <br />
                           Withdraw Fee 0.00%
                           <br />
-                          Peformance Fee 0.0035 BNB
+                          Peformance Fee {performanceFee
+                            ? ethers.utils.formatEther(performanceFee.toString())
+                            : "0.00"}{" "}
+                          {getNativeSybmol(data.chainId)}
+                        </div>
+                        <div className="absolute bottom-2 right-2">
+                          {data ? (
+                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                         </div>
                       </InfoPanel>
 
@@ -362,7 +390,10 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                               type="teritary"
                               disabled={!data.userData || !Number(data.userData.earnings) || pending}
                               boxShadow={!(!data.userData || !Number(data.userData.earnings))}
-                              onClick={() => handleHarvest(RewardType.QUOTE_TOKEN)}
+                              onClick={() => {
+                                setTokenId(0);
+                                handleHarvest(RewardType.QUOTE_TOKEN);
+                              }}
                             >
                               <div className="whitespace-nowrap text-sm">
                                 Convert
@@ -377,7 +408,37 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 {prices[data.appId] && data.userData !== undefined ? (
                                   <span className="text-primary">
                                     ${(prices[data.appId] * data.userData.earnings).toFixed(2)}{" "}
-                                    {data.chainId === 1 ? "USDT" : "BUSD"}
+                                    {data.chainId === 1 ? "USDC" : "BUSD"}
+                                  </span>
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                              </div>
+                            </StyledButton>
+                          </div>
+                          <div className="mt-1.5 h-[56px] w-full">
+                            <StyledButton
+                              type="teritary"
+                              disabled={!data.userData || !Number(data.userData.earnings) || pending}
+                              boxShadow={!(!data.userData || !Number(data.userData.earnings))}
+                              onClick={() => {
+                                setTokenId(1);
+                                handleHarvest(RewardType.QUOTE_TOKEN);
+                              }}
+                            >
+                              <div className="whitespace-nowrap text-sm">
+                                Convert
+                                {data.userData !== undefined ? (
+                                  <span className="text-primary">
+                                    &nbsp;{Number(data.userData.earnings).toFixed(0)} {data.earningToken.symbol}&nbsp;
+                                  </span>
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                &nbsp;to&nbsp;
+                                {prices[data.appId] && data.userData !== undefined ? (
+                                  <span className="text-primary">
+                                    ${(prices[data.appId] * data.userData.earnings).toFixed(2)} USDT
                                   </span>
                                 ) : (
                                   <SkeletonComponent />
@@ -389,7 +450,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="mt-7">{/* <StakingHistory history={history} /> */}</div>
                       <div className="absolute bottom-0 left-0 flex h-12 w-full">
-                        {data.chainId !== chainId ? (
+                        {data.chainId !== activeChainId ? (
                           <StyledButton
                             onClick={() => {
                               if (canSwitch) switchNetwork(data.chainId);

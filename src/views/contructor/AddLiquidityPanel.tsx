@@ -3,13 +3,11 @@ import RouterSelect from "views/directory/DeployerModal/RouterSelect";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { useCurrency } from "hooks/Tokens";
 import { Field } from "state/mint/actions";
-import { Currency, TokenAmount } from "@brewlabs/sdk";
+import { TokenAmount } from "@brewlabs/sdk";
 import maxAmountSpend from "utils/maxAmountSpend";
 import { getExplorerLogo, routers } from "utils/functions";
-import { useCallback, useEffect, useState } from "react";
-import currencyId from "utils/currencyId";
+import { useEffect, useState } from "react";
 import router from "next/router";
 import { useTranslation } from "contexts/localization";
 import SolidButton from "views/swap/components/button/SolidButton";
@@ -34,6 +32,7 @@ import { useCurrencySelectRoute } from "./useCurrencySelectRoute";
 
 export default function AddLiquidityPanel({
   onBack,
+  fetchLPTokens,
   selectedChainId,
   currencyA: currencyA_ = undefined,
   currencyB: currencyB_ = undefined,
@@ -209,6 +208,9 @@ export default function AddLiquidityPanel({
 
           // setTxHash(response.hash);
           toast.success("Liquidity was added");
+
+          fetchLPTokens(chainId);
+          onBack();
         })
       )
       .catch((err) => {

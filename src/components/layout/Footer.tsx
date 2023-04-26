@@ -82,8 +82,8 @@ const navigation = {
     },
     {
       name: "Zapper",
-      href: "https://earn.brewlabs.info/zap",
-      external: true,
+      href: "/zapper",
+      external: false,
       status: "",
     },
     {
