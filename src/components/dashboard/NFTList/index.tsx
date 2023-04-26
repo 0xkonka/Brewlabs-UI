@@ -97,7 +97,7 @@ const NFTList = () => {
                         }}
                         onError={(e: any) =>
                           (e.target.src =
-                            "https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs")
+                            "https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs")
                         }
                       />
                     </div>
