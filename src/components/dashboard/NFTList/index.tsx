@@ -37,7 +37,6 @@ const responsive = {
   },
 };
 
-const NFTCard = ({ data }) => {};
 const NFTList = () => {
   const carouselRef = useRef();
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
@@ -90,12 +89,16 @@ const NFTList = () => {
                         src={data.logo}
                         alt={""}
                         className="h-full max-w-fit cursor-pointer transition-all duration-700 hover:scale-125"
-                        onClick={() => {
+                        onClick={(e: any) => {
                           if (isOpen === 2) {
-                            changeAvatar(selectedDeployer, data.logo);
+                            changeAvatar(selectedDeployer, e.target.src);
                             setIsOpen(0);
                           }
                         }}
+                        onError={(e: any) =>
+                          (e.target.src =
+                            "https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs")
+                        }
                       />
                     </div>
                     <div className="flex w-full items-center bg-white px-1.5 py-1">

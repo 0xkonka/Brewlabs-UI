@@ -43,6 +43,7 @@ import { useAppDispatch } from "state";
 import { useLpTokenPrices } from "state/lpPrices/hooks";
 import { useTranslation } from "contexts/localization";
 import useTotalStakedHistory from "./hooks/useTotalStakedHistory";
+import IndexLogo from "../IndexDetail/IndexLogo";
 
 const CHAIN_SYMBOL = {
   1: "ETH",
@@ -51,8 +52,8 @@ const CHAIN_SYMBOL = {
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
+  console.log(data);
   const { lpAddress, pid, earningToken, chef, appId, lpSymbol, chainId } = data;
-
   const { history } = useTotalStakedHistory(data);
 
   const [zapInModalOpen, setZapInModalOpen] = useState(false);
@@ -198,12 +199,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         ""
                       )}
                       <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
-                        <a className="h-[32px] w-[140px]" href={data?.website} target="_blank" rel="noreferrer">
-                          <StyledButton>
-                            <div>Website</div>
-                            <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
-                          </StyledButton>
-                        </a>
+                       
                         <a
                           className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
@@ -220,6 +216,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                     <div className="mt-4 flex w-[160px] items-center justify-center ">
+                      <IndexLogo tokens={[data.token, data.quoteToken]} />
                       <img src={data.earningToken.logo} alt={""} className="w-[100px] rounded-full" />
                     </div>
                     <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
@@ -328,7 +325,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         type={"secondary"}
                         boxShadow={curGraph === 0 ? "primary" : null}
                       >
-                        <div>Total Staked Value</div>
+                        <div>Total Zapper Position Value</div>
                         <div className="flex">
                           {history !== undefined && history.length ? (
                             `$${numberWithCommas(history[history.length - 1].toFixed(2))}`

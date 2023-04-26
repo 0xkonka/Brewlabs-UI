@@ -159,12 +159,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
         </span>
       );
     return (
-      <span className={`${profit >= 0 ? "text-green" : ""} mr-1`}>
-        ${numberWithCommas(profit.toFixed(2))} <span className="text-[#FFFFFF80]">earned</span>
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
+        ${numberWithCommas((profit >= 0 ? profit : -profit).toFixed(2))}{" "}
+        <span className="text-[#FFFFFF80]">earned</span>
         {isProfit ? (
           <>
             <br />
-            <span className={`${profitChanged >= 0 ? "text-green" : ""}`}>
+            <span className={`${profitChanged >= 0 ? "text-green" : "text-danger"}`}>
               {(profitChanged > 0 ? profitChanged : -profitChanged).toFixed(2)}%&nbsp;
               <span className="text-[#FFFFFF80]">{profitChanged >= 0 ? "gain" : "loss"}</span>
             </span>
@@ -262,7 +263,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-1 justify-end">
                     <div className="hidden w-full max-w-[480px] items-center sm:flex">
-                      <img src={"/images/nfts/default.png"} alt={""} className="mr-2 h-10 w-10 rounded-full" />
+                      <img
+                        src={"https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
+                        alt={""}
+                        className="mr-2 h-10 w-10 rounded-full"
+                      />
                       <StyledButton
                         className="h-8 w-[140px] flex-1 cursor-pointer items-center justify-center rounded border border-primary bg-[#B9B8B81A] px-2 font-roboto text-sm font-semibold text-primary shadow-[0px_4px_4px_#00000040] transition hover:border-white hover:text-white xl:flex"
                         type={"default"}
@@ -277,7 +282,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
                       <div className="mb-2 block flex w-full max-w-[480px] items-center sm:hidden">
                         <img
-                          src={"/images/nfts/default.png"}
+                          src={"https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
                           alt={""}
                           className="mr-2 hidden h-10 w-10 rounded-full xs:block"
                         />
@@ -342,9 +347,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80]">
+                      <div className="flex flex-wrap justify-between text-base text-[#FFFFFF80] relative">
                         <div>
                           <span className="#FFFFFF80">Buy</span> {getIndexName(tokens)}
+                        </div>
+                        <div className="absolute  top-1.5 -left-4">
+                          {data ? (
+                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-3" />
+                          ) : (
+                            <SkeletonComponent />
+                          )}
                         </div>
                       </div>
                       <div className="text-xs leading-none text-[#FFFFFF80]">
@@ -382,13 +394,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div>{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
-                      </div>
-                      <div className="absolute bottom-1 right-1">
-                        {data ? (
-                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
-                        ) : (
-                          <SkeletonComponent />
-                        )}
                       </div>
                     </InfoPanel>
 

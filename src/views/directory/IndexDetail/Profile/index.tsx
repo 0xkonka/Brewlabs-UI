@@ -207,7 +207,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                 <div className="mt-8  min-w-fit md:mt-0 md:min-w-[180px]">
                   <div className="relative h-fit w-fit">
                     <img
-                      src={deployerData ? deployerData.logo : "/images/nfts/default.png"}
+                      src={deployerData ? deployerData.logo : "https://gateway.pinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
                       alt={""}
                       className="h-36 w-36 rounded-full"
                     />
@@ -233,7 +233,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                     <div className="mt-1.5 flex items-center">
                       <div className="mr-3 scale-[200%] text-primary">{UserSVG}</div>
                       <div className="text-sm">
-                        42 <span className="text-green">(+3) 24HR</span>
+                        0 <span className="text-green">(+0) 24HR</span>
                       </div>
                     </div>
                     <div className="mt-1.5 flex items-center">

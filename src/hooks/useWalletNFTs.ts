@@ -41,6 +41,7 @@ const useWalletNFTs = (account: string) => {
           pageSize: 50,
           pageToken: nextPageToken,
         });
+        console.log(result);
         nextPageToken = result.nextPageToken;
         pageSize = result.assets.length;
         nfts.push(...result.assets);
@@ -122,7 +123,7 @@ const useWalletNFTs = (account: string) => {
     }
   }
   useSlowRefreshEffect(() => {
-    if(!account) return;
+    if (!account) return;
     fetchBSCNFTs();
     fetchETHNFTs();
   }, [account]);
