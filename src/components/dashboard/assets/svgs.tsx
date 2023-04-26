@@ -372,7 +372,7 @@ export const BarChartSVG = (
 );
 
 export const KYCSVG = (
-  <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ height: "20px" }}>
+  <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ height: "18px" }}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -405,7 +405,7 @@ export const CameraSVG = (
 );
 
 export const DeployerSVG = (
-  <svg viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ height: "18px" }}>
+  <svg viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ height: "16px" }}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -425,7 +425,12 @@ export const PencilSVG = (
 );
 
 export const NoneKYCSVG = (
-  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    viewBox="0 0 20 21"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ height: "16px" }}
+  >
     <path
       d="M10 7.99997V9.99997M10 14H10.01M18.618 4.98397C15.4561 5.15189 12.3567 4.05858 10 1.94397C7.64327 4.05858 4.5439 5.15189 1.382 4.98397C1.12754 5.96908 0.999177 6.98252 1 7.99997C1 13.591 4.824 18.29 10 19.622C15.176 18.29 19 13.592 19 7.99997C19 6.95797 18.867 5.94797 18.618 4.98397Z"
       stroke="currentColor"

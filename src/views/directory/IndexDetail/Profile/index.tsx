@@ -248,7 +248,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                         </div>
                         <ReactTooltip anchorId={"numberoffollowers"} place="top" content="Number of followers" />
                         <div className="text-sm">
-                          0 <span className="text-green">(+0) 24HR</span>
+                          0 <span >(+0) 24HR</span>
                         </div>
                       </div>
                       {isKYC ? (
