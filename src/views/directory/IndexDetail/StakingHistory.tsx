@@ -80,6 +80,10 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
     );
   };
 
+  const onError = (data) => {
+    data.target.src = "/images/unknown.png";
+  };
+
   return (
     <div className="h-[450px] overflow-x-scroll text-[#FFFFFFBF]">
       <div className="flex justify-between text-xl">
@@ -98,7 +102,12 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
                 <div className="min-w-[100px]">
                   {tokens.map((token, index) => (
                     <div key={index} className="flex items-center leading-none">
-                      <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="mr-1 w-3" />
+                      <img
+                        src={getTokenLogoURL(token.address, token.chainId)}
+                        onError={onError}
+                        alt={""}
+                        className="mr-1 w-3 rounded-full"
+                      />
                       <div className="text-[#FFFFFFBF]">{formatAmount(item.amounts[index], 6)}</div>
                     </div>
                   ))}
