@@ -76,7 +76,7 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
     profit -= +item.realUsdAmount;
 
     return (
-      <span className={`${profit >= 0 ? "text-green" : "text-danger"}`}>${numberWithCommas(profit.toFixed(3))}</span>
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"}`}>${numberWithCommas(Math.abs(profit).toFixed(3))}</span>
     );
   };
 

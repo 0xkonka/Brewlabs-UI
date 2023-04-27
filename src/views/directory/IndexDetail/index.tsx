@@ -141,7 +141,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const renderProfit = (isProfit = false) => {
     let profit = getProfit();
-    const profitChanged = (profit ? (userData.stakedUsdAmount / 1 - profit) / profit : 0) * 100;
+
+    const profitChanged = (profit ? profit / userData.stakedUsdAmount : 0) * 100;
     if (!userData?.stakedBalances?.length || !priceHistories?.length)
       return (
         <span className="mr-1 text-green">
@@ -158,13 +159,12 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       );
     return (
       <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
-        ${numberWithCommas((profit >= 0 ? profit : -profit).toFixed(2))}{" "}
-        <span className="text-[#FFFFFF80]">earned</span>
+        ${numberWithCommas(Math.abs(profit).toFixed(2))} <span className="text-[#FFFFFF80]">earned</span>
         {isProfit ? (
           <>
             <br />
             <span className={`${profitChanged >= 0 ? "text-green" : "text-danger"}`}>
-              {(profitChanged > 0 ? profitChanged : -profitChanged).toFixed(2)}%&nbsp;
+              {Math.abs(profitChanged).toFixed(2)}%&nbsp;
               <span className="text-[#FFFFFF80]">{profitChanged >= 0 ? "gain" : "loss"}</span>
             </span>
           </>
