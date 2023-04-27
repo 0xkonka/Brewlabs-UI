@@ -12,6 +12,7 @@ import {
   chevronLeftSVG,
   DetailSVG,
   KYCSVG,
+  NoneKYCSVG,
   UserAddSVG,
   UserSVG,
 } from "components/dashboard/assets/svgs";
@@ -37,6 +38,9 @@ import { Category } from "config/constants/types";
 import { useGlobalState } from "state";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
+import useWalletNFTs from "@hooks/useWalletNFTs";
+import "react-tooltip/dist/react-tooltip.css";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([]);
@@ -57,6 +61,9 @@ const Profile = ({ deployer }: { deployer: string }) => {
   const { setSelectedDeployer, setViewType }: any = useContext(DashboardContext);
   const { userData }: any = useContext(UserContext);
   const { indexes, userDataLoaded } = useIndexes();
+  const nfts = useWalletNFTs(deployer);
+  const isKYC =
+    nfts.filter((data) => data.address.toLowerCase() === "0x2B09d47D550061f995A3b5C6F0Fd58005215D7c8").length > 0;
 
   const deployerData = userData.visitedIndexes
     ? userData.visitedIndexes.find((data: any) => data.address === deployer.toLowerCase())
@@ -96,7 +103,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
     for (let i = 0; i < 24; i++) {
       let pF = 0;
       for (let j = 0; j < result.length; j++) pF += result[j].performanceFees[i];
-      _performanceFees.push(pF);
+      _performanceFees.push(isNaN(pF) ? 0 : pF);
     }
     setPerformanceFees(_performanceFees);
   };
@@ -207,7 +214,11 @@ const Profile = ({ deployer }: { deployer: string }) => {
                 <div className="mt-8  min-w-fit md:mt-0 md:min-w-[180px]">
                   <div className="relative h-fit w-fit">
                     <img
-                      src={deployerData ? deployerData.logo : "/images/nfts/default.png"}
+                      src={
+                        deployerData
+                          ? deployerData.logo
+                          : "https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"
+                      }
                       alt={""}
                       className="h-36 w-36 rounded-full"
                     />
@@ -227,21 +238,53 @@ const Profile = ({ deployer }: { deployer: string }) => {
                   <div className="w-full ls:w-[calc(100%-556px)]">
                     <div className="relative text-[25px] text-white">
                       <div>Brewlabs</div>
-                      <div className="absolute -left-6 top-2 text-primary">{KYCSVG}</div>
+                      {/* <div className="absolute -left-6 top-2 text-primary">{KYCSVG}</div> */}
                     </div>
                     <div className="overflow-hidden text-ellipsis text-lg text-[#FFFFFF80]">{deployer}</div>
-                    <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 scale-[200%] text-primary">{UserSVG}</div>
-                      <div className="text-sm">
-                        42 <span className="text-green">(+3) 24HR</span>
+                    <div className="mt-1.5 flex max-w-[260px] items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="mr-3 cursor-pointer text-primary" id={"numberoffollowers"}>
+                          {UserSVG}
+                        </div>
+                        <ReactTooltip anchorId={"numberoffollowers"} place="top" content="Number of followers" />
+                        <div className="text-sm">
+                          0 <span >(+0) 24HR</span>
+                        </div>
                       </div>
+                      {isKYC ? (
+                        <div className="flex items-center">
+                          <div className="cursor-pointer text-primary" id={"KYC"}>
+                            {KYCSVG}
+                          </div>
+                          <div className="ml-2">KYC</div>
+                          <ReactTooltip anchorId={"KYC"} place="top" content="This wallet is KYC with Binance." />
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <div className="cursor-pointer opacity-70" id={"NoneKYC"}>
+                            {NoneKYCSVG}
+                          </div>
+                          <div className="ml-2 opacity-70">KYC</div>
+                          <ReactTooltip
+                            anchorId={"NoneKYC"}
+                            place="top"
+                            content="This wallet is not KYC with Binance."
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 scale-[200%] text-primary">{DetailSVG}</div>
+                      <div className="mr-3 cursor-pointer text-primary" id={"deployedindexes"}>
+                        {DetailSVG}
+                      </div>
+                      <ReactTooltip anchorId={"deployedindexes"} place="top" content="Deployed indexes" />
                       <div className="text-sm">{allPools.length}</div>
                     </div>
                     <div className="mt-1.5 flex items-center">
-                      <div className="mr-3 scale-[200%] text-primary">{BarChartSVG}</div>
+                      <div className="mr-3 cursor-pointer text-primary" id={"bestperformingindex"}>
+                        {BarChartSVG}
+                      </div>
+                      <ReactTooltip anchorId={"bestperformingindex"} place="top" content="Best performing index" />
                       <div className="ml-2">
                         <IndexLogo type={"line"} tokens={bestPool.tokens ?? []} />
                       </div>

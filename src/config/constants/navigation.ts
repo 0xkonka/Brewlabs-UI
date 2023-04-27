@@ -1,3 +1,4 @@
+import { DeployerSVG, NFTSVG } from "@components/dashboard/assets/svgs";
 import { IconName } from "../../components/DynamicHeroIcon";
 
 type NavigationItem = {
@@ -6,6 +7,7 @@ type NavigationItem = {
   external: boolean;
   icon: IconName;
   coming?: boolean;
+  svg?: boolean;
 };
 
 export const navigationData = [
@@ -63,10 +65,18 @@ export const navigationData = [
     external: false,
     coming: true,
     icon: "ArrowDownOnSquareIcon",
+    svg: DeployerSVG,
   },
 ] as NavigationItem[];
 
 export const navigationExtraData = [
+  {
+    name: "TrueNFT",
+    href: "https://truenft.io",
+    external: true,
+    icon: "PaperAirplaneIcon",
+    svg: NFTSVG,
+  },
   {
     name: "Airdrop tools",
     href: "https://brewlabs-airdrop.tools/bsc",
