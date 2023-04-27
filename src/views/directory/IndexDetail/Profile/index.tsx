@@ -43,7 +43,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Profile = ({ deployer }: { deployer: string }) => {
-  const [performanceFees, setPerformanceFees] = useState([]);
+  const [performanceFees, setPerformanceFees] = useState([[0], [0], [0]]);
   const [curFilter, setCurFilter] = useState(0);
   const [criteria, setCriteria] = useState("");
   const [status, setStatus] = useState("active");
@@ -84,28 +84,46 @@ const Profile = ({ deployer }: { deployer: string }) => {
   const bestPool: any = allPools.length ? allPools[0] : [];
 
   const getPriceChange = () => {
+    if (allPools.length === 0) return [[0], [0], [0]];
+
     let priceHistories = [],
       combinedHistories = [];
     for (let i = 0; i < allPools.length; i++) {
-      priceHistories.push(getAverageHistory(allPools[i].priceHistories ?? [[]]));
+      let _histories = [];
+      for (let k = 0; k < 3; k++) {
+        _histories.push(getAverageHistory(allPools[i].price3Histories?.[k] ?? [[]]));
+      }
+      priceHistories.push(_histories);
     }
-    for (let i = 0; i < 24; i++) {
-      combinedHistories.push(0);
-      for (let j = 0; j < allPools.length; j++) combinedHistories[i] += priceHistories[j][i];
-      combinedHistories[i] = !isNaN(combinedHistories[i]) ? combinedHistories[i] / allPools.length : 0;
+    for (let k = 0; k < 3; k++) {
+      let _histories = [];
+      for (let i = 0; i < priceHistories[0]?.[k].length; i++) {
+        _histories.push(0);
+        for (let j = 0; j < allPools.length; j++) _histories[i] += priceHistories[j][k][i];
+        _histories[i] = !isNaN(_histories[i]) ? _histories[i] / allPools.length : 0;
+      }
+      combinedHistories.push(_histories.length === 0 ? [0] : _histories);
     }
     return combinedHistories;
   };
 
   const getPerformanceFees = async () => {
-    let _performanceFees: any = [];
-    const result = await Promise.all(allPools.map((index: any) => fetchIndexFeeHistories(index)));
-    for (let i = 0; i < 24; i++) {
-      let pF = 0;
-      for (let j = 0; j < result.length; j++) pF += result[j].performanceFees[i];
-      _performanceFees.push(isNaN(pF) ? 0 : pF);
+    if (allPools.length === 0) {
+      setPerformanceFees([[0], [0], [0]]);
+      return;
     }
-    setPerformanceFees(_performanceFees);
+    const result = await Promise.all(allPools.map((index: any) => fetchIndexFeeHistories(index)));
+    let histories = [];
+    for (let k = 0; k < 3; k++) {
+      let _performanceFees: any = [];
+      for (let i = 0; i < result[0].pFee3Histories[k].length; i++) {
+        let pF = 0;
+        for (let j = 0; j < result.length; j++) pF += result[j].pFee3Histories[k][i];
+        _performanceFees.push(isNaN(pF) ? 0 : pF);
+      }
+      histories.push(_performanceFees);
+    }
+    setPerformanceFees(histories);
   };
 
   useEffect(() => {
@@ -248,7 +266,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                         </div>
                         <ReactTooltip anchorId={"numberoffollowers"} place="top" content="Number of followers" />
                         <div className="text-sm">
-                          0 <span >(+0) 24HR</span>
+                          0 <span>(+0) 24HR</span>
                         </div>
                       </div>
                       {isKYC ? (
