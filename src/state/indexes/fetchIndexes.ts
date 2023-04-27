@@ -160,7 +160,9 @@ export const fetchIndexFeeHistories = async (pool) => {
   const curTime = Math.floor(new Date().getTime() / 1000);
 
   for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
-    _performanceFees.push(sumOfArray(performanceFees.filter((v) => v.timestamp <= t).map((v) => +v.value)));
+    _performanceFees.push(
+      sumOfArray(performanceFees.filter((v) => v.timestamp <= t && v.timestamp >= timeBefore24Hrs).map((v) => +v.value))
+    );
   }
 
   for (let t = timeBefore24Hrs; t <= curTime; t += 3600) {
