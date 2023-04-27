@@ -234,13 +234,13 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                     <div className="flex w-[160px] items-center justify-center md:mb-0 mb-4 mt-4">
                       <img
-                        src={getTokenLogoURL(data.token.address, data.token.chainId)}
+                        src={getTokenLogoURL(data.token.address, data.token.chainId, data.appId)}
                         onError={onError}
                         alt={""}
                         className="w-[70px] rounded-full"
                       />
                       <img
-                        src={getTokenLogoURL(data.quoteToken.address, data.quoteToken.chainId)}
+                        src={getTokenLogoURL(data.quoteToken.address, data.quoteToken.chainId, data.appId)}
                         onError={onError}
                         alt={""}
                         className="-ml-3 w-[70px] rounded-full"
