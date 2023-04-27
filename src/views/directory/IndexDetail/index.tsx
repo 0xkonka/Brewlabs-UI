@@ -269,11 +269,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-1 justify-end">
                     <div className="hidden w-full max-w-[480px] items-center sm:flex">
-                      {/* <img
-                        src={"https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
-                        alt={""}
-                        className="mr-2 h-10 w-10 rounded-full"
-                      /> */}
+                      <img src={"/images/non-logo.png"} alt={""} className="mr-2 hidden h-10 w-10 rounded-full" />
                       <StyledButton
                         className="h-8 w-[140px] flex-1 cursor-pointer items-center justify-center rounded border border-primary bg-[#B9B8B81A] px-2 font-roboto text-sm font-semibold text-primary shadow-[0px_4px_4px_#00000040] transition hover:border-white hover:text-white xl:flex"
                         type={"default"}
@@ -287,11 +283,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     </div>
                     <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
                       <div className="mb-2 block flex w-full max-w-[480px] items-center sm:hidden">
-                        {/* <img
-                          src={"https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"}
+                        <img
+                          src={"/images/non-logo.png"}
                           alt={""}
                           className="mr-2 hidden h-10 w-10 rounded-full xs:block"
-                        /> */}
+                        />
                         <StyledButton
                           className="h-8 w-[140px] flex-1 cursor-pointer items-center justify-center rounded border border-primary bg-[#B9B8B81A] px-2 font-roboto text-sm font-semibold text-primary shadow-[0px_4px_4px_#00000040] transition hover:border-white hover:text-white xl:flex"
                           type={"default"}
@@ -336,10 +332,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
 
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
                   <IndexLogo tokens={tokens} />
-                  <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
+                  <div className="flex max-w-full flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel padding={"14px 25px 8px 25px"} className="relative mt-4 max-w-full md:max-w-[500px]">
                       <div className="flex flex-wrap justify-between text-xl">
-                        <div className="mr-4 whitespace-nowrap">Index: {getIndexName(tokens)}</div>
+                        <div className="mr-4 whitespace-nowrap">
+                          <span className="mr-1 hidden sm:inline-block">Index: </span>
+                          {getIndexName(tokens)}
+                        </div>
                         <div className="ml-auto flex items-center">
                           {/* Performance:&nbsp; */}
                           {data.priceChanges !== undefined ? (
@@ -465,7 +464,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <InfoPanel
-                      className="mt-20 flex cursor-pointer items-center justify-between"
+                      className="mt-24 flex cursor-pointer items-center justify-between"
                       type={"secondary"}
                       boxShadow={curGraph === 2 ? "primary" : null}
                       onClick={() => setCurGraph(2)}

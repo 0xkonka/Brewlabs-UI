@@ -232,11 +232,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                 <div className="mt-8  min-w-fit md:mt-0 md:min-w-[180px]">
                   <div className="relative h-fit w-fit">
                     <img
-                      src={
-                        deployerData
-                          ? deployerData.logo
-                          : "https://maverickbl.mypinata.cloud/ipfs/QmbQXSQQETMcQkAeaMFH5NBNGbYW7Q5QE5476XVbaW3XRs"
-                      }
+                      src={deployerData ? deployerData.logo : "/images/non-logo.png"}
                       alt={""}
                       className="h-36 w-36 rounded-full"
                     />
