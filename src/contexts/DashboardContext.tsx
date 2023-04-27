@@ -290,7 +290,6 @@ const DashboardContextProvider = ({ children }: any) => {
           isReward: filter.length ? filter[0].isReward : false,
         });
       }
-      console.log(temp_addr, address, chainId, temp_id);
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);

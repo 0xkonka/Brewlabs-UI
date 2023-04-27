@@ -340,7 +340,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <InfoPanel padding={"14px 25px 8px 25px"} className="relative mt-4 max-w-full md:max-w-[500px]">
                       <div className="flex flex-wrap justify-between text-xl">
                         <div className="mr-4 whitespace-nowrap">Index: {getIndexName(tokens)}</div>
-                        <div className="flex items-center">
+                        <div className="ml-auto flex items-center">
                           {/* Performance:&nbsp; */}
                           {data.priceChanges !== undefined ? (
                             <span className={data.priceChanges[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
@@ -592,13 +592,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("exit");
                               }}
-                              disabled={
-                                pending ||
-                                !address ||
-                                !userData?.stakedBalances?.length ||
-                                !priceHistories?.length ||
-                                getProfit() <= 0
-                              }
+                              disabled={pending || !address || +userData.stakedUsdAmount <= 0}
                             >
                               Exit &nbsp;{renderProfit()} Profit
                             </StyledButton>
