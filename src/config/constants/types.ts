@@ -38,13 +38,6 @@ export enum Version {
   "V3" = "V3",
 }
 
-export enum AppId {
-  PANCAKESWAP = "pancakeswap",
-  APESWAP = "apeswap",
-  // KNIGHT = 'knight',
-  SUSHISWAP = "sushiswap",
-}
-
 export enum Chef {
   MASTERCHEF,
   MASTERCHEF_V2,
@@ -81,6 +74,7 @@ interface FarmConfigBaseProps {
     endBlock: number;
   };
   externalSwap?: string;
+  deployer?: string;
 }
 
 export interface SerializedFarmConfig extends FarmConfigBaseProps {
@@ -159,3 +153,20 @@ export type WalletConfig<T = unknown> = {
   mobileOnly?: boolean;
   qrCode?: () => Promise<string>;
 };
+
+export interface Address {
+  1?: string;
+  56?: string;
+  97?: string;
+  137?: string;
+  250?: string;
+  43114?: string;
+  25?: string;
+}
+
+export enum AppId {
+  PANCAKESWAP = "pancakeswap",
+  APESWAP = "apeswap",
+  // KNIGHT = "knight",
+  SUSHISWAP = "sushiswap",
+}

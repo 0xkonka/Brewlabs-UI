@@ -84,13 +84,12 @@ export const fetchUserNftAllowance = async (account, chainId, indexes) => {
       }
     })
   );
-  return data
+  return data;
 };
 
 export const fetchUserBalance = async (account, chainId) => {
   const provider = simpleRpcProvider(chainId);
   if (!account || !provider) return "0";
-
   const ethBalance = await provider.getBalance(account);
   return ethBalance;
 };

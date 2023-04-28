@@ -15,6 +15,7 @@ interface IndexConfigBaseProps {
   isCustody?: boolean;
   isServiceFee?: boolean;
   isFinished?: boolean;
+  deployer?: string;
 }
 
 export interface SerializedIndexConfig extends IndexConfigBaseProps {
@@ -59,6 +60,8 @@ export interface DeserializedIndex extends DeserializedIndexConfig {
   tokenPrices?: number[];
   priceChanges?: any;
   priceHistories?: any;
+  pFee3Histories?: number[][];
+  price3Histories?: any;
 }
 
 export interface SerializedIndex extends SerializedIndexConfig {
@@ -78,4 +81,6 @@ export interface SerializedIndex extends SerializedIndexConfig {
   tokenPrices?: number[];
   priceChanges?: any;
   priceHistories?: any;
+  pFee3Histories?: number[][];
+  price3Histories?: any;
 }

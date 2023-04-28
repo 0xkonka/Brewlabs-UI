@@ -17,6 +17,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.902587518",
     sortOrder: 1,
     featured: false,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 4,
@@ -33,6 +34,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.902587518",
     sortOrder: 2,
     isFinished: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 10,
@@ -48,6 +50,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.951293759",
     sortOrder: 3,
     featured: false,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 11,
@@ -63,6 +66,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.426940638",
     sortOrder: 4,
     featured: false,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 12,
@@ -78,6 +82,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.902587518",
     sortOrder: 5,
     featured: false,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 15,
@@ -93,6 +98,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 6,
     isServiceFee: false,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 6,
@@ -108,6 +114,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 7,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 7,
@@ -123,6 +130,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 8,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 13,
@@ -138,6 +146,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 9,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 14,
@@ -153,6 +162,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 10,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 16,
@@ -168,6 +178,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 11,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 17,
@@ -184,6 +195,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 0,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 18,
@@ -198,6 +210,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "190.2587519025",
     sortOrder: 18,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 19,
@@ -215,6 +228,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 20,
@@ -229,6 +243,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1902587.519025875",
     sortOrder: 20,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 21,
@@ -244,6 +259,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 21,
     isServiceFee: true,
     forceEndblock: 20627506,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 22,
@@ -259,6 +275,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 22,
     isServiceFee: true,
     isFinished: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 23,
@@ -275,6 +292,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 0,
     isServiceFee: true,
     isFinished: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 24,
@@ -291,6 +309,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 0,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 25,
@@ -307,6 +326,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 1,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 26,
@@ -323,6 +343,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 2,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 27,
@@ -338,6 +359,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 27,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 28,
@@ -353,6 +375,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 28,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 29,
@@ -369,6 +392,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 30,
@@ -385,6 +409,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 31,
@@ -401,6 +426,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 32,
@@ -415,6 +441,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "951.293759512",
     sortOrder: 32,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 33,
@@ -430,6 +457,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 33,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 34,
@@ -445,6 +473,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 34,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 36,
@@ -459,6 +488,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "118,762,505.06620277",
     sortOrder: 36,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 37,
@@ -474,6 +504,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 37,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 38,
@@ -489,6 +520,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 38,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 39,
@@ -504,6 +536,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 39,
     lockup: 2,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 40,
@@ -518,6 +551,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.951293759",
     sortOrder: 40,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 41,
@@ -533,6 +567,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 41,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 42,
@@ -547,6 +582,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.951293759",
     sortOrder: 42,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 43,
@@ -562,6 +598,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 43,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 44,
@@ -576,6 +613,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "9512.937595129",
     sortOrder: 44,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 45,
@@ -591,6 +629,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 45,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 46,
@@ -606,6 +645,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 46,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 47,
@@ -621,6 +661,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 47,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 48,
@@ -637,6 +678,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 0,
     isServiceFee: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 50,
@@ -657,6 +699,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "771.604938271",
     sortOrder: 50,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 51,
@@ -677,6 +720,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1157.407407407",
     sortOrder: 51,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 52,
@@ -691,6 +735,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.1891",
     sortOrder: 52,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 53,
@@ -708,6 +753,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 54,
@@ -724,6 +770,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 55,
@@ -741,6 +788,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 56,
@@ -758,6 +806,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 57,
@@ -772,6 +821,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "475646.879756468",
     sortOrder: 57,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 58,
@@ -786,6 +836,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1463.014981273",
     sortOrder: 58,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 59,
@@ -800,6 +851,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "4161.910197869",
     sortOrder: 59,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 60,
@@ -814,6 +866,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "5826.674277016",
     sortOrder: 59,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 65,
@@ -830,6 +883,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 60,
     isServiceFee: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 61,
@@ -845,6 +899,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "213,175,072.159761926",
     sortOrder: 61,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 62,
@@ -860,6 +915,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "213,175,072.159761926",
     sortOrder: 62,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 63,
@@ -875,6 +931,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "213,175,072.159761926",
     sortOrder: 63,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 64,
@@ -890,6 +947,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "213,175,072.159761926",
     sortOrder: 64,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 66,
@@ -907,6 +965,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 66,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 67,
@@ -924,6 +983,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 67,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 68,
@@ -939,6 +999,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "213175072.159761926",
     sortOrder: 68,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 69,
@@ -955,6 +1016,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "213175072.159761926",
     sortOrder: 69,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 70,
@@ -971,6 +1033,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "266468840.199702407",
     sortOrder: 70,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 71,
@@ -987,6 +1050,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "319762608.239642889",
     sortOrder: 71,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 72,
@@ -1003,6 +1067,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "951293.759512937",
     sortOrder: 72,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 73,
@@ -1019,6 +1084,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "951293.759512937",
     sortOrder: 73,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 74,
@@ -1035,6 +1101,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "951293.759512937",
     sortOrder: 74,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 75,
@@ -1051,6 +1118,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "713.470319634",
     sortOrder: 75,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 76,
@@ -1067,6 +1135,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1189.11719939",
     sortOrder: 76,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 77,
@@ -1082,6 +1151,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "4.263501443",
     sortOrder: 77,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 78,
@@ -1098,6 +1168,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "6.395252164",
     sortOrder: 78,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 79,
@@ -1114,6 +1185,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "10.658753607",
     sortOrder: 79,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 80,
@@ -1130,6 +1202,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.426350144",
     sortOrder: 80,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 81,
@@ -1146,6 +1219,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.639525216",
     sortOrder: 81,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 82,
@@ -1162,6 +1236,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.852700288",
     sortOrder: 82,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 83,
@@ -1178,6 +1253,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.852700288",
     sortOrder: 83,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 84,
@@ -1194,6 +1270,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.852700288",
     sortOrder: 84,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 85,
@@ -1210,6 +1287,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "9.512937595",
     sortOrder: 85,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 86,
@@ -1226,6 +1304,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "9.512937595",
     sortOrder: 86,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 87,
@@ -1242,6 +1321,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "14.269406392",
     sortOrder: 87,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 88,
@@ -1260,6 +1340,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 89,
@@ -1278,6 +1359,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 90,
@@ -1294,6 +1376,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "951.293759512",
     sortOrder: 90,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 91,
@@ -1310,6 +1393,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1426.940639269",
     sortOrder: 91,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 92,
@@ -1328,6 +1412,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 93,
@@ -1344,6 +1429,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "5329376.803994048",
     sortOrder: 93,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 94,
@@ -1360,6 +1446,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "42635.014431952",
     sortOrder: 94,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 95,
@@ -1376,6 +1463,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "53293.76803994",
     sortOrder: 95,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 96,
@@ -1392,6 +1480,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "63952.521647928",
     sortOrder: 96,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 97,
@@ -1408,6 +1497,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "74611.275255916",
     sortOrder: 97,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 98,
@@ -1424,6 +1514,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "74611.275255916",
     sortOrder: 98,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 105,
@@ -1439,6 +1530,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.057077625",
     sortOrder: 98,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 99,
@@ -1455,6 +1547,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.03805175",
     sortOrder: 99,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 100,
@@ -1471,6 +1564,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.057077625",
     sortOrder: 100,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 101,
@@ -1487,6 +1581,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.0761035",
     sortOrder: 101,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 102,
@@ -1502,6 +1597,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.03472222222222",
     sortOrder: 102,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 103,
@@ -1518,6 +1614,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1426940.639269406",
     sortOrder: 103,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 104,
@@ -1534,6 +1631,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1426.940639269",
     sortOrder: 104,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 106,
@@ -1551,6 +1649,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "42.635014431",
     sortOrder: 106,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 107,
@@ -1568,6 +1667,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 107,
     isServiceFee: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 108,
@@ -1585,6 +1685,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 108,
     isServiceFee: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 109,
@@ -1602,6 +1703,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 109,
     isServiceFee: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 110,
@@ -1618,6 +1720,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.959287824",
     sortOrder: 110,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 111,
@@ -1634,6 +1737,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.119169128",
     sortOrder: 111,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 112,
@@ -1652,6 +1756,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 113,
@@ -1670,6 +1775,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 114,
@@ -1685,6 +1791,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "95.129375951",
     sortOrder: 114,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 115,
@@ -1701,6 +1808,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "142.694063926",
     sortOrder: 115,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 116,
@@ -1717,6 +1825,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "190.258751902",
     sortOrder: 116,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 117,
@@ -1733,6 +1842,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "4263501.443195238",
     sortOrder: 117,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 118,
@@ -1749,6 +1859,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "6395252.164792857",
     sortOrder: 118,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 119,
@@ -1765,6 +1876,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "7461127.525591666",
     sortOrder: 119,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 120,
@@ -1781,6 +1893,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "85270.028863904",
     sortOrder: 120,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 121,
@@ -1797,6 +1910,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "5329.376803993",
     sortOrder: 121,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 122,
@@ -1813,6 +1927,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "6395.252164792",
     sortOrder: 122,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 123,
@@ -1829,6 +1944,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "8527.00288639",
     sortOrder: 123,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 124,
@@ -1845,6 +1961,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "4263.501443195",
     sortOrder: 124,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 125,
@@ -1861,6 +1978,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "6395.252164792",
     sortOrder: 125,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 126,
@@ -1877,6 +1995,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "13.794154657",
     sortOrder: 126,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 127,
@@ -1892,6 +2011,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.029965753",
     sortOrder: 127,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 128,
@@ -1908,6 +2028,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 128,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 129,
@@ -1924,6 +2045,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 129,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 130,
@@ -1941,6 +2063,7 @@ const pools: SerializedPoolConfig[] = [
     lockup: 0,
     isServiceFee: true,
     unverified: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 131,
@@ -1957,6 +2080,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 131,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 158,
@@ -1973,6 +2097,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 131,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x6219B6b621E6E66a6c5a86136145E6E5bc6e4672",
   },
   {
     sousId: 132,
@@ -1989,6 +2114,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 132,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 133,
@@ -2007,6 +2133,7 @@ const pools: SerializedPoolConfig[] = [
     headerSuffix: "Arctic",
     isServiceFee: true,
     externalSwap: "apeswap",
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 134,
@@ -2025,6 +2152,7 @@ const pools: SerializedPoolConfig[] = [
     headerSuffix: "Southern",
     isServiceFee: true,
     externalSwap: "apeswap",
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 135,
@@ -2043,6 +2171,7 @@ const pools: SerializedPoolConfig[] = [
     headerSuffix: "Indian",
     isServiceFee: true,
     externalSwap: "apeswap",
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 136,
@@ -2061,6 +2190,7 @@ const pools: SerializedPoolConfig[] = [
     headerSuffix: "Atlantic",
     isServiceFee: true,
     externalSwap: "apeswap",
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 137,
@@ -2079,6 +2209,7 @@ const pools: SerializedPoolConfig[] = [
     headerSuffix: "Pacific",
     isServiceFee: true,
     externalSwap: "apeswap",
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 138,
@@ -2095,6 +2226,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 138,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 139,
@@ -2111,6 +2243,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 139,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 140,
@@ -2127,6 +2260,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 140,
     lockup: 2,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 180,
@@ -2143,6 +2277,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.025581008659171431",
     sortOrder: 140,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
   {
     sousId: 141,
@@ -2159,6 +2294,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 141,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 142,
@@ -2175,6 +2311,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 142,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 143,
@@ -2191,6 +2328,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 143,
     lockup: 2,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 144,
@@ -2206,6 +2344,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "63334585.067481421792461276",
     sortOrder: 144,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 145,
@@ -2222,6 +2361,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 145,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 146,
@@ -2238,6 +2378,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 146,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 147,
@@ -2254,6 +2395,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 147,
     lockup: 2,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 148,
@@ -2270,6 +2412,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.951293759512937595",
     sortOrder: 148,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 149,
@@ -2286,6 +2429,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.426940639269406392",
     sortOrder: 149,
     isServiceFee: true,
+    deployer: "0x885A73F551FcC946C688eEFbC10023f4B7Cc48f3",
   },
   {
     sousId: 150,
@@ -2302,6 +2446,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1342275.494672754946727549",
     sortOrder: 150,
     isServiceFee: true,
+    deployer: "0x6219B6b621E6E66a6c5a86136145E6E5bc6e4672",
   },
   {
     sousId: 151,
@@ -2319,6 +2464,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 151,
     isServiceFee: true,
     headerSuffix: "Private",
+    deployer: "0x6219B6b621E6E66a6c5a86136145E6E5bc6e4672",
   },
   {
     sousId: 152,
@@ -2335,6 +2481,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 152,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 153,
@@ -2351,6 +2498,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 153,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 154,
@@ -2367,6 +2515,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 154,
     lockup: 0,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 155,
@@ -2383,6 +2532,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 155,
     lockup: 1,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 156,
@@ -2399,6 +2549,7 @@ const pools: SerializedPoolConfig[] = [
     sortOrder: 156,
     lockup: 2,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 157,
@@ -2417,6 +2568,7 @@ const pools: SerializedPoolConfig[] = [
     isServiceFee: true,
     isFinished: true,
     enableEmergencyWithdraw: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 159,
@@ -2432,6 +2584,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.713470319634703196",
     sortOrder: 159,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 160,
@@ -2448,6 +2601,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.951293759512937595",
     sortOrder: 160,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 161,
@@ -2464,6 +2618,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.000006751543209876",
     sortOrder: 161,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 162,
@@ -2480,6 +2635,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "5.329376803994048151",
     sortOrder: 162,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 163,
@@ -2496,6 +2652,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "7.461127525591667412",
     sortOrder: 163,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 164,
@@ -2513,6 +2670,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.009511167",
     sortOrder: 164,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 165,
@@ -2530,6 +2688,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.028533501",
     sortOrder: 165,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 166,
@@ -2546,6 +2705,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "0.6395252164792857",
     sortOrder: 166,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 167,
@@ -2562,6 +2722,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "95129375.951293759",
     sortOrder: 167,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 168,
@@ -2578,6 +2739,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "190258751.902587519",
     sortOrder: 168,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 169,
@@ -2594,6 +2756,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "426350144.319523852",
     sortOrder: 169,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
   {
     sousId: 170,
@@ -2610,6 +2773,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "852700288.639047704",
     sortOrder: 170,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
   {
     sousId: 171,
@@ -2626,6 +2790,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "74611.275255916674127794",
     sortOrder: 171,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 172,
@@ -2642,6 +2807,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "85270.028863904770431764",
     sortOrder: 172,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 173,
@@ -2658,6 +2824,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1.664764079147640791",
     sortOrder: 173,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 174,
@@ -2674,6 +2841,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "16647.640791476407914764",
     sortOrder: 174,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 175,
@@ -2690,6 +2858,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "19025.875190258751902587",
     sortOrder: 175,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 176,
@@ -2711,6 +2880,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "1141.552511415525114155",
     sortOrder: 176,
     isServiceFee: true,
+    deployer: "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672",
   },
   {
     sousId: 177,
@@ -2727,6 +2897,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "4.263501443195238521",
     sortOrder: 177,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
   {
     sousId: 178,
@@ -2743,6 +2914,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "6.395252164792857782",
     sortOrder: 178,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
   {
     sousId: 179,
@@ -2759,6 +2931,7 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: "5.116201731834286225",
     sortOrder: 179,
     isServiceFee: true,
+    deployer: "0x78aBE4Eb5e17A66aED9c6a1db029862850dEEf5F",
   },
 ];
 

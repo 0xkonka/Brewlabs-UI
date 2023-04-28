@@ -59,24 +59,24 @@ const multicall: MultiCall = async (abi: any[], calls: Call[], chainId = ChainId
   return res as any;
 };
 
-const multicallv2: MultiCallV2 = async ({ abi, calls, chainId = ChainId.ETHEREUM, options, provider: _provider }) => {
-  const { requireSuccess = true, ...overrides } = options || {};
-  const multi = getMulticallContract(chainId, _provider || provider({ chainId }));
-  if (!multi) throw new Error(`Multicall Provider missing for ${chainId}`);
-  const itf = new Interface(abi);
+const multicallv2 = async <T = any>(
+  chainId: ChainId,
+  abi: any[],
+  calls: Call[],
+  options: MulticallOptions = { requireSuccess: true }
+): Promise<MultiCallResponse<T>> => {
+  const { requireSuccess } = options;
+  const multi = getMulticallContract(chainId);
+  const itf = new ethers.utils.Interface(abi);
 
-  const calldata = calls.map((call) => ({
-    target: call.address.toLowerCase(),
-    callData: itf.encodeFunctionData(call.name, call.params),
-  }));
-
-  const returnData = await multi.callStatic.tryAggregate(requireSuccess, calldata, overrides);
-  const res = returnData.map((call: any, i: number) => {
+  const calldata = calls.map((call) => [call.address.toLowerCase(), itf.encodeFunctionData(call.name, call.params)]);
+  const returnData = await multi.tryAggregate(requireSuccess, calldata);
+  const res = returnData.map((call, i) => {
     const [result, data] = call;
-    return result && data !== "0x" ? itf.decodeFunctionResult(calls[i].name, data) : null;
+    return result ? itf.decodeFunctionResult(calls[i].name, data) : null;
   });
 
-  return res as any;
+  return res;
 };
 
 const multicallv3 = async ({ calls, chainId = ChainId.ETHEREUM, allowFailure, overrides }: MulticallV3Params) => {

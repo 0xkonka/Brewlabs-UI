@@ -9,27 +9,18 @@ import styled from "styled-components";
 import { makeBigNumber, numberWithCommas } from "utils/functions";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
-import { useSigner } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { ethers } from "ethers";
-import GetLPModal from "./GetLPModal";
+import GetLPModal from "./ZapInModal";
+import { useCurrencyBalance } from "state/wallet/hooks";
+import { useCurrency } from "@hooks/Tokens";
 
-const StakingModal = ({
-  open,
-  setOpen,
-  type,
-  data,
-  accountData,
-}: {
-  open: boolean;
-  setOpen: any;
-  type: string;
-  data: any;
-  accountData: any;
-}) => {
+const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: any; type: string; data: any }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
   const { data: signer }: any = useSigner();
   const { chainId } = useActiveChainId();
+  const { address: account } = useAccount();
 
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
@@ -37,8 +28,8 @@ const StakingModal = ({
 
   const [getOpen, setGetOpen] = useState(false);
 
-  const balance: any =
-    (type === "zapin" ? accountData.balance : accountData.stakedAmount) / Math.pow(10, data.stakingToken.decimals);
+  const lpCurrency = useCurrency(data.lpAddress);
+  const balance: any = useCurrencyBalance(account, lpCurrency);
 
   useEffect(() => {
     if (Number(amount) > balance && !maxPressed) setInsufficient(true);
@@ -63,46 +54,13 @@ const StakingModal = ({
 
   const onConfirm = async () => {
     setPending(true);
-    try {
-      const poolContract = await getUnLockStakingContract(chainId, data.address, signer);
-      let ttx;
-      if (type === "zapin") {
-        const _amount = maxPressed ? accountData.balance : makeBigNumber(amount, data.stakingToken.decimals);
-        console.log("Lock type = ", type);
-        console.log("Amount = ", _amount.toString());
-        const estimateGas: any = await poolContract.estimateGas.deposit(_amount, {
-          value: data.performanceFee,
-        });
-        console.log("EstimateGas = ", estimateGas.toString());
-        const tx = {
-          value: data.performanceFee,
-          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
-        };
-        ttx = await poolContract.deposit(_amount, tx);
-      } else {
-        const _amount = maxPressed ? accountData.stakedAmount : makeBigNumber(amount, data.stakingToken.decimals);
-        console.log("Lock type = ", type);
-        console.log("Amount = ", _amount.toString());
-        const estimateGas: any = await poolContract.estimateGas.withdraw(_amount, {
-          value: data.performanceFee,
-        });
-        console.log("EstimateGas = ", estimateGas.toString());
-        const tx = {
-          value: data.performanceFee,
-          gasLimit: Math.ceil(estimateGas.toString() * 1.2),
-        };
-        ttx = await poolContract.withdraw(_amount, tx);
-      }
-      await ttx.wait();
-    } catch (error) {
-      console.log(error);
-    }
+
     setPending(false);
   };
 
   return (
     <AnimatePresence exitBeforeEnter>
-      <GetLPModal open={getOpen} setOpen={setGetOpen} setStakingOpen={setOpen} />
+      {/* <GetLPModal open={getOpen} setOpen={setGetOpen} setStakingOpen={setOpen} /> */}
       <Dialog
         open={open}
         className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"

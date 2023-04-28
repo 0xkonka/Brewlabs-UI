@@ -231,7 +231,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
             {address && data ? (
               <StakingModal
                 open={stakingModalOpen}
@@ -262,7 +262,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => setOpen(false)}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                        <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
@@ -275,14 +275,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex w-[160px] flex-col">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => setOpen(false)}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                        <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
                     {data.isCustody && (
                       <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                         <StyledButton>
-                          <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                          <div className="absolute left-2 top-2.5">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
@@ -293,7 +293,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="hidden w-full max-w-[470px] sm:block">
                         <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                           <StyledButton>
-                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                            <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
@@ -325,14 +325,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </a>
                       )}
                       <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
+                        className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                         target="_blank"
                         href={`https://bridge.brewlabs.info/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>
                           <div>Swap</div>
-                          <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
                         </StyledButton>
                       </a>
                     </div>
@@ -383,14 +383,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="flex">
                           Deposit Fee {(+data.depositFee).toFixed(2)}%
                           <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
-                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                         <div className="flex">
                           Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
                           {data.penaltyFee && <> (Early Withdraw Fee {data.penaltyFee.toFixed(2)} %)</>}
                           <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
-                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                         <div className="flex">
@@ -399,11 +399,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             className="tooltip"
                             data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
                           >
-                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                       </div>
-                      <div className="absolute bottom-1 right-1">
+                      <div className="absolute bottom-2 right-2">
                         {data ? (
                           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
                         ) : (
@@ -471,8 +471,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.reflection &&
-                          data.availableReflections?.map((t, index) => (
+                        {data.reflection && data.availableReflections ? (
+                          data.availableReflections.map((t, index) => (
                             <div key={index} className="flex text-primary">
                               {!address ? (
                                 "0.00"
@@ -484,7 +484,10 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               &nbsp;
                               {data.reflectionTokens[index].symbol}
                             </div>
-                          ))}
+                          ))
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
                   </div>
@@ -744,7 +747,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         setStakingModalOpen(true);
                       }}
                     />
-                    <div className="relative mt-2 mb-[150px] flex h-12 w-full md:mb-0">
+                    <div className="relative mb-[150px] mt-2 flex h-12 w-full md:mb-0">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton

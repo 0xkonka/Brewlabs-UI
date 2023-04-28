@@ -113,9 +113,20 @@ export const routers = {
 
 export const getIndexName = (tokens) => {
   // if (tokens.length === 2)
-  return tokens.map((t) => t.symbol.replace(WNATIVE[t.chainId].symbol, getNativeSybmol(t.chainId)).toUpperCase()).join("-");
+  return tokens
+    .map((t) => t.symbol.replace(WNATIVE[t.chainId].symbol, getNativeSybmol(t.chainId)).toUpperCase())
+    .join("-");
   // return tokens
   // .map((t, index) => (index > 0 ? t.symbol.substring(0, 1) : t.symbol.replace("WBNB", "BNB").replace("WETH", "ETH")))
   // .join("-");
 };
 
+export const formatIPFSString = (url) => {
+  let _url = url;
+  if (url.includes("ipfs://")) _url = "https://maverickbl.mypinata.cloud/ipfs/" + _url.replace("ipfs://", "");
+  else if (url.includes("https://ipfs.io/ipfs/"))
+    _url = "https://maverickbl.mypinata.cloud/ipfs/" + _url.replace("https://ipfs.io/ipfs/", "");
+  else if (url.includes("ipfs://ipfs/"))
+    _url = "https://maverickbl.mypinata.cloud/ipfs/" + _url.replace("ipfs://ipfs/", "");
+  return _url;
+};

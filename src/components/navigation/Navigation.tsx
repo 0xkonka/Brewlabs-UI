@@ -21,7 +21,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
-      <div className="flex flex-1 flex-col pt-5 pb-4">
+      <div className="flex flex-1 flex-col pb-4 pt-5">
         <div className="flex flex-shrink-0 items-center px-4">
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
         </div>
@@ -43,15 +43,36 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     "group flex items-center rounded-md px-2 py-2 text-sm font-medium home:tooltip home:tooltip-right"
                   )}
                 >
-                  <DynamicHeroIcon
-                    icon={item.icon as IconName}
-                    className={clsx(
-                      slim
-                        ? "h-5 w-5 text-gray-500 dark:text-gray-400"
-                        : "mr-3 h-7 w-7 text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
+                  {item.svg ? (
+                    <div
+                      className={clsx(
+                        slim
+                          ? "flex h-5 w-5 scale-[85%] items-center justify-center text-gray-500 dark:text-gray-400"
+                          : "mr-3 flex h-7 w-7 items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
+                      )}
+                    >
+                      {item.svg}
+                    </div>
+                  ) : (
+                    <DynamicHeroIcon
+                      icon={item.icon as IconName}
+                      className={clsx(
+                        slim
+                          ? "h-5 w-5 text-gray-500 dark:text-gray-400"
+                          : "mr-3 h-7 w-7 text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
+                      )}
+                    />
+                  )}
+                  <span className={`${clsx(slim ? "sr-only" : "relative")}`}>
+                    {item.name}
+                    {item.coming ? (
+                      <div className="absolute -right-10 -top-2 z-10 flex h-3 w-8 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-[10px] font-bold tracking-normal text-black">
+                        Soon
+                      </div>
+                    ) : (
+                      ""
                     )}
-                  />
-                  <span className={clsx(slim && "sr-only")}>{item.name}</span>
+                  </span>
                 </motion.a>
               </Link>
             ))}
@@ -66,7 +87,13 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                 key={item.name}
               >
                 <div>
-                  <DynamicHeroIcon icon={item.icon} className="h-5 w-5  flex-shrink-0 text-gray-400" />
+                  {item.svg ? (
+                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center text-gray-600 scale-[90%]">
+                      {item.svg}
+                    </div>
+                  ) : (
+                    <DynamicHeroIcon icon={item.icon} className="h-5 w-5  flex-shrink-0 text-gray-400" />
+                  )}
                 </div>
                 <span className={clsx(slim && "sr-only")}>
                   Visit&nbsp;

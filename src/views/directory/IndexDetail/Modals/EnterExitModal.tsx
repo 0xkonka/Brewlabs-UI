@@ -40,8 +40,8 @@ const EnterExitModal = ({
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
 
-  const [percent, setPercent] = useState(100);
-  const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(0));
+  const [percent, setPercent] = useState(100 - (data.numTokens - 1) * Math.floor(100 / data.numTokens));
+  const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(Math.floor(100 / data.numTokens)));
 
   const { pending, setPending }: any = useContext(DashboardContext);
   const { onZapIn, onZapOut, onClaim } = useIndex(data.pid, data.address, data.performanceFee);
@@ -109,10 +109,10 @@ const EnterExitModal = ({
         }
         setPercents((vs) =>
           vs.map((v, i) => {
-            if (i === idx - 1) return value
-            return _percents[i]
-          }),
-        )
+            if (i === idx - 1) return value;
+            return _percents[i];
+          })
+        );
       }
     }
   };
@@ -252,7 +252,33 @@ const EnterExitModal = ({
                       }}
                     />
                   </div>
-                  <div className="mt-1 flex w-full flex-col items-end text-sm">
+                  <div className="mt-2 flex w-full items-center justify-between text-sm">
+                    <div className="flex">
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount((Number(ethbalance) / 4).toFixed(5))}
+                      >
+                        25.00%
+                      </div>
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount(((Number(ethbalance) / 4) * 2).toFixed(5))}
+                      >
+                        50.00%
+                      </div>
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount(((Number(ethbalance) / 4) * 3).toFixed(5))}
+                      >
+                        75.00%
+                      </div>
+                      <div
+                        className="mr-2  flex h-5 w-14 cursor-pointer items-center justify-center rounded-xl border border-[#FFFFFF80] bg-[#FFFFFF0D] text-xs text-[#FFFFFFBF] transition hover:opacity-70"
+                        onClick={() => setAmount(Number(ethbalance).toFixed(5))}
+                      >
+                        Max
+                      </div>
+                    </div>
                     <div className="text-[#FFFFFFBF]">
                       My {getNativeSybmol(data.chainId)} <span className="text-yellow">:</span>{" "}
                       {Number(ethbalance).toFixed(2)}
@@ -263,7 +289,7 @@ const EnterExitModal = ({
                   </div>
                 </>
               ) : (
-                <div className="mt-5 mb-[10px] sm:mb-[20px]">
+                <div className="mb-[10px] mt-5 sm:mb-[20px]">
                   {tokens.map((token, index) => (
                     <div key={token.address} className="text-center">
                       {formatAmount(stakedBalances[index], 6)} {token.symbol}
@@ -272,7 +298,7 @@ const EnterExitModal = ({
                 </div>
               )}
 
-              <div className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
+              <div className="mx-auto mb-4 mt-4 flex w-full max-w-[480px] items-center">
                 {type === "enter" ? (
                   <img
                     src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
@@ -288,7 +314,7 @@ const EnterExitModal = ({
                   <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
                     {percent.toFixed(2)}%
                   </div>
-                  <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
+                  <div className="absolute -bottom-5 right-0 text-xs text-[#FFFFFF80]">
                     {type === "enter" ? (
                       <>${((+(amount ?? 0) * nativeTokenPrice * percent) / 100).toFixed(2)} USD</>
                     ) : (
@@ -300,7 +326,7 @@ const EnterExitModal = ({
 
               {type === "enter" ? (
                 tokens.slice(1).map((token, index) => (
-                  <div key={token.address} className="mx-auto mt-4 mb-4 flex w-full max-w-[480px] items-center">
+                  <div key={token.address} className="mx-auto mb-4 mt-4 flex w-full max-w-[480px] items-center">
                     <img
                       src={getTokenLogoURL(token.address, token.chainId)}
                       onError={(data) => (data.target["src"] = "/images/unknown.png")}
@@ -317,7 +343,7 @@ const EnterExitModal = ({
                       <div className="flex h-[36px] w-[100px] items-center justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B81A] text-[#FFFFFFBF]">
                         {percents[index] ? percents[index].toFixed(2) : "0.00"}%
                       </div>
-                      <div className="absolute right-0 -bottom-5 text-xs text-[#FFFFFF80]">
+                      <div className="absolute -bottom-5 right-0 text-xs text-[#FFFFFF80]">
                         ${((+(amount ?? 0) * nativeTokenPrice * percents[index]) / 100).toFixed(2)} USD
                       </div>
                     </div>
@@ -357,7 +383,7 @@ const EnterExitModal = ({
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />
