@@ -1,7 +1,9 @@
-import { configureChains, createClient } from "wagmi";
-import memoize from "lodash/memoize";
-
 import { SafeConnector } from "@gnosis.pm/safe-apps-wagmi";
+import memoize from "lodash/memoize";
+import { configureChains, createClient } from "wagmi";
+
+import { BASE_URL } from "config";
+import { SupportedChains } from "config/constants/networks";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
@@ -9,7 +11,6 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
-import { SupportedChains } from "config/constants/networks";
 
 export const { provider, webSocketProvider, chains } = configureChains(SupportedChains, [
   jsonRpcProvider({
@@ -36,7 +37,7 @@ export const coinbaseConnector = new CoinbaseWalletConnector({
   chains,
   options: {
     appName: "Brewlabs Earn",
-    appLogoUrl: "https://bridge.brewlabs.info/logo.png",
+    appLogoUrl: `${BASE_URL}/logo.png`,
   },
 });
 

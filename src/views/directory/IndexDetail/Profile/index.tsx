@@ -42,6 +42,7 @@ import useWalletNFTs from "@hooks/useWalletNFTs";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { WNATIVE } from "@brewlabs/sdk";
+import { BASE_URL } from "config";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([[0], [0], [0]]);
@@ -56,6 +57,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
   });
   const [, setSortOrder] = useState("default");
   const [, setIsOpen] = useGlobalState("userSidebarOpen");
+  const [isCopied, setIsCopied] = useState(false);
 
   const router = useRouter();
   const { tokenPrices } = useContext(TokenPriceContext);
@@ -129,6 +131,14 @@ const Profile = ({ deployer }: { deployer: string }) => {
       histories.push(_performanceFees);
     }
     setPerformanceFees(histories);
+  };
+
+  const onSharePortfolio = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
   };
 
   useEffect(() => {

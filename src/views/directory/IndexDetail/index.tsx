@@ -17,6 +17,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BASE_URL } from "config";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
@@ -197,7 +198,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     setTimeout(() => {
       setIsCopied(false);
     }, 1000);
-    navigator.clipboard.writeText(`https://bridge.brewlabs.info${location.pathname}`);
+    navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
   };
   return (
     <>
@@ -318,7 +319,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <a
                         className=" ml-0 h-[32px] w-[140px] xl:ml-4 "
                         target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${tokens[0].address}`}
+                        href={`${BASE_URL}/swap?outputCurrency=${tokens[0].address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>

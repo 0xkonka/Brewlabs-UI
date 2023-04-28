@@ -12,6 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BASE_URL } from "config";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -327,7 +328,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <a
                         className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                         target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${stakingToken.address}`}
+                        href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>
