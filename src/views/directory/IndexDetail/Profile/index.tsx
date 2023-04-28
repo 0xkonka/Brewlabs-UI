@@ -41,6 +41,7 @@ import { UserContext } from "contexts/UserContext";
 import useWalletNFTs from "@hooks/useWalletNFTs";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { WNATIVE } from "@brewlabs/sdk";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([[0], [0], [0]]);
@@ -61,6 +62,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
   const { setSelectedDeployer, setViewType }: any = useContext(DashboardContext);
   const { userData }: any = useContext(UserContext);
   const { indexes, userDataLoaded } = useIndexes();
+
   const nfts = useWalletNFTs(deployer);
   const isKYC =
     nfts.filter((data) => data.address.toLowerCase() === "0x2B09d47D550061f995A3b5C6F0Fd58005215D7c8").length > 0;
@@ -118,7 +120,10 @@ const Profile = ({ deployer }: { deployer: string }) => {
       let _performanceFees: any = [];
       for (let i = 0; i < result[0].pFee3Histories[k].length; i++) {
         let pF = 0;
-        for (let j = 0; j < result.length; j++) pF += result[j].pFee3Histories[k][i];
+        for (let j = 0; j < result.length; j++)
+          pF +=
+            result[j].pFee3Histories[k][i] *
+            tokenPrices[getCurrencyId(allPools[j].chainId, WNATIVE[allPools[j].chainId].address)];
         _performanceFees.push(isNaN(pF) ? 0 : pF);
       }
       histories.push(_performanceFees);
@@ -261,9 +266,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                           {UserSVG}
                         </div>
                         <ReactTooltip anchorId={"numberoffollowers"} place="top" content="Number of followers" />
-                        <div className="text-sm">
-                          0 <span>(+0) 24HR</span>
-                        </div>
+                        <div className="text-sm">0</div>
                       </div>
                       {isKYC ? (
                         <div className="flex items-center">
