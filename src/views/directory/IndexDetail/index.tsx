@@ -254,7 +254,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <StyledButton
                           className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)]  transition hover:border-white hover:text-white"
                           type={"default"}
-                          onClick={() => onShareIndex()}
+                          onClick={onShareIndex}
                         >
                           <div className="flex items-center">
                             <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}

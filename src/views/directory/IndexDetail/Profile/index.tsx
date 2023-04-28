@@ -224,12 +224,10 @@ const Profile = ({ deployer }: { deployer: string }) => {
                     <StyledButton
                       className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white hover:text-white xl:flex"
                       type={"default"}
+                      onClick={onSharePortfolio}
                     >
                       <div className="flex items-center">
-                        <div className="mr-1.5">Share portfolio</div> {LinkSVG}
-                      </div>
-                      <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
-                        Soon
+                        <div className="mr-1.5">{isCopied ? "Copied" : "Share portfolio"}</div> {LinkSVG}
                       </div>
                     </StyledButton>
 
