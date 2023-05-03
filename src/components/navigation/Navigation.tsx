@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import clsx from "clsx";
@@ -13,11 +14,17 @@ import { BuildingOffice2Icon, DocumentTextIcon, PaperAirplaneIcon } from "@heroi
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
-
+  const [short, setShort] = useState(false);
   // Close the mobile navigation when navigating
   useEffect(() => {
     router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
   }, [router.events]);
+
+  useEffect(() => {
+    if (window && window.innerHeight < 700) {
+      setShort(true);
+    } else setShort(false);
+  }, [window]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
@@ -77,7 +84,12 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
               </Link>
             ))}
           </div>
-          <div className={clsx(slim ? "items-center p-2" : "px-5", "flex flex-col justify-end")}>
+          <div
+            className={clsx(
+              slim ? "items-center p-2" : "px-5",
+              `flex ${short ? "mx-auto w-full max-w-[200px] justify-between" : "flex-col justify-end"}`
+            )}
+          >
             {navigationExtraData.map((item) => (
               <a
                 className="mb-2 flex items-center gap-2 text-sm"
@@ -88,14 +100,23 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
               >
                 <div>
                   {item.svg ? (
-                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center text-gray-600 scale-[90%]">
+                    <div
+                      className={`flex h-5 w-5 flex-shrink-0 scale-[90%] items-center justify-center ${
+                        short ? "text-[#d1d5db] hover:text-primary" : "text-gray-600"
+                      }`}
+                    >
                       {item.svg}
                     </div>
                   ) : (
-                    <DynamicHeroIcon icon={item.icon} className="h-5 w-5  flex-shrink-0 text-gray-400" />
+                    <DynamicHeroIcon
+                      icon={item.icon}
+                      className={`h-5 w-5  flex-shrink-0 ${
+                        short ? "text-[#d1d5db] hover:text-primary" : "text-gray-400"
+                      }`}
+                    />
                   )}
                 </div>
-                <span className={clsx(slim && "sr-only")}>
+                <span className={short ? "hidden" : clsx(slim && "sr-only")}>
                   Visit&nbsp;
                   <span className="dark:text-primary">{item.name}</span>
                 </span>
