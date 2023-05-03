@@ -472,23 +472,24 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.reflection && data.availableReflections ? (
-                          data.availableReflections.map((t, index) => (
-                            <div key={index} className="flex text-primary">
-                              {!address ? (
-                                "0.00"
-                              ) : data.availableReflections[index] !== undefined ? (
-                                formatAmount(data.availableReflections[index].toFixed(2))
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              &nbsp;
-                              {data.reflectionTokens[index].symbol}
-                            </div>
-                          ))
-                        ) : (
-                          <SkeletonComponent />
-                        )}
+                        {data.reflection &&
+                          (data.availableReflections ? (
+                            data.availableReflections.map((t, index) => (
+                              <div key={index} className="flex text-primary">
+                                {!address ? (
+                                  "0.00"
+                                ) : data.availableReflections[index] !== undefined ? (
+                                  formatAmount(data.availableReflections[index].toFixed(2))
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                &nbsp;
+                                {data.reflectionTokens[index].symbol}
+                              </div>
+                            ))
+                          ) : (
+                            <SkeletonComponent />
+                          ))}
                       </div>
                     </InfoPanel>
                   </div>
