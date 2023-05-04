@@ -36,6 +36,7 @@ import { BIG_ZERO } from "utils/bigNumber";
 import { numberWithCommas } from "utils/functions";
 import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
+import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import ProgressBar from "./ProgressBar";
@@ -46,7 +47,6 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
-import getCurrencyId from "utils/getCurrencyId";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;

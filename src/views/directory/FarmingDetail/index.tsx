@@ -28,6 +28,7 @@ import { BIG_ZERO } from "utils/bigNumber";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
 import { numberWithCommas } from "utils/functions";
+import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../StyledButton";
@@ -36,7 +37,6 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
 import useFarm from "./hooks/useFarm";
-import getCurrencyId from "utils/getCurrencyId";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
