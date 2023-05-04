@@ -512,7 +512,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <TotalStakedChart
                       data={graphData()}
                       symbol={
-                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSybmol[chainId]
+                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSybmol(data.chainId)
                       }
                       price={curGraph === 4 ? 1 : curGraph !== 3 ? tokenPrice : nativeTokenPrice}
                       curGraph={curGraph}
