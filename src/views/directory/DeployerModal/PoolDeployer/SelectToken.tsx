@@ -17,23 +17,6 @@ const SelectToken = ({ step, setStep }) => {
     else setTokenAddress(null);
   }, [contractAddress]);
 
-  const routers = {
-    1: [
-      {
-        name: "Uniswap",
-        address: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-        image: "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
-      },
-    ],
-    56: [
-      {
-        name: "Pancakeswap",
-        address: "0x10ed43c718714eb63d5aa57b78b54704e256024e",
-        image: "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
-      },
-    ],
-  };
-
   return (
     <div>
       <div>
@@ -67,10 +50,6 @@ const SelectToken = ({ step, setStep }) => {
         ) : (
           "Pending..."
         )}
-      </div>
-      <div className="mb-8">
-        <div className="mb-1">3. Select router:</div>
-        <RouterSelect routers={routers[chainId ?? 1]} />
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">

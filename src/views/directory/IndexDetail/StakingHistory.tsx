@@ -16,14 +16,14 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
     for (let i = 0; i < _histories.length; i++) {
       let _history = _histories[i];
       switch (_history.method) {
-        case "ZapOut":
+        case "Exit Index":
         case "Mint NFT":
           for (let k = 0; k <= i; k++) {
             _histories[k].realAmounts = new Array(data.numTokens).fill(0);
             _histories[k].realUsdAmount = 0;
           }
           break;
-        case "ZapIn":
+        case "Enter Index":
         case "Stake NFT":
           _histories[i].realAmounts = _histories[i].amounts.map((amount) => +amount);
           _histories[i].realUsdAmount = +_histories[i].usdAmount;
@@ -76,8 +76,12 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
     profit -= +item.realUsdAmount;
 
     return (
-      <span className={`${profit >= 0 ? "text-green" : "text-danger"}`}>${numberWithCommas(profit.toFixed(3))}</span>
+      <span className={`${profit >= 0 ? "text-green" : "text-danger"}`}>${numberWithCommas(Math.abs(profit).toFixed(3))}</span>
     );
+  };
+
+  const onError = (data) => {
+    data.target.src = "/images/unknown.png";
   };
 
   return (
@@ -98,7 +102,12 @@ const StakingHistory = ({ data, history, setOpen }: { data: any; history: any; s
                 <div className="min-w-[100px]">
                   {tokens.map((token, index) => (
                     <div key={index} className="flex items-center leading-none">
-                      <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="mr-1 w-3" />
+                      <img
+                        src={getTokenLogoURL(token.address, token.chainId)}
+                        onError={onError}
+                        alt={""}
+                        className="mr-1 w-3 rounded-full"
+                      />
                       <div className="text-[#FFFFFFBF]">{formatAmount(item.amounts[index], 6)}</div>
                     </div>
                   ))}

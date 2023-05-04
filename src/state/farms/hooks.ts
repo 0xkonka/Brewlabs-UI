@@ -114,7 +114,7 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
 };
 
 export const useFarms = (): DeserializedFarmsState => {
-  const farms = useSelector((state: State) => state.farms);
+  const farms: any = useSelector((state: State) => state.farms);
   const deserializedFarmsData = farms.data.map(deserializeFarm);
   const { userDataLoaded } = farms;
 
@@ -125,17 +125,19 @@ export const useFarms = (): DeserializedFarmsState => {
 };
 
 export const useFarmFromPid = (pid: number): DeserializedFarm => {
-  const farm = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid));
+  const farm: any = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid));
   return deserializeFarm(farm);
 };
 
 export const useFarmFromFarmIdAndPoolId = (farmId: number, poolId: number): DeserializedFarm => {
-  const farm = useSelector((state: State) => state.farms.data.find((f) => f.farmId === farmId && f.poolId === poolId));
+  const farm: any = useSelector((state: State) =>
+    state.farms.data.find((f) => f.farmId === farmId && f.poolId === poolId)
+  );
   return deserializeFarm(farm);
 };
 
 export const useFarmFromLpSymbol = (lpSymbol: string): DeserializedFarm => {
-  const farm = useSelector((state: State) => state.farms.data.find((f) => f.lpSymbol === lpSymbol));
+  const farm: any = useSelector((state: State) => state.farms.data.find((f) => f.lpSymbol === lpSymbol));
   return deserializeFarm(farm);
 };
 

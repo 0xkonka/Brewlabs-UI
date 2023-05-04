@@ -148,7 +148,12 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                       const selectedNft = userData.nftItems?.find((nft) => nft.tokenId === tokenId);
                       return (
                         <div className="mb-3 flex items-center" key={token.address}>
-                          <img src={getTokenLogoURL(token.address, token.chainId)} alt={""} className="w-12" />
+                          <img
+                            src={getTokenLogoURL(token.address, token.chainId)}
+                            onError={(data) => (data.target["src"] = "/images/unknown.png")}
+                            alt={""}
+                            className="w-12 rounded-full"
+                          />
                           <div className="ml-3 leading-none">
                             <div className="text-xl text-[#FFFFFFBF]">
                               {selectedNft

@@ -5,7 +5,7 @@ export const simpleRpcProvider = (chainId: number) =>
   new ethers.providers.JsonRpcProvider(
     chainId === 1
       ? "https://cloudflare-eth.com"
-      : SupportedChains.find((chain) => chain.id === chainId)?.rpcUrls.default
+      : SupportedChains.find((chain) => chain.id === chainId)?.rpcUrls.default.http[0]
   );
 // eslint-disable-next-line import/no-anonymous-default-export
 export default null;

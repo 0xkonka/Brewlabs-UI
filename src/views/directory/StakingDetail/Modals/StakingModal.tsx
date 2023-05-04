@@ -6,6 +6,7 @@ import { Dialog } from "@headlessui/react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 
+import { BASE_URL } from "config";
 import { PoolCategory } from "config/constants/types";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -63,10 +64,10 @@ const StakingModal = ({
 
   const getCalculatedStakingLimit = () => {
     let balance;
-    if(!accountData) return "0"
-    
+    if (!accountData) return "0";
+
     if (type !== "deposit") {
-      if (data.enableEmergencyWithdraw || data.sousId === 203) {
+      if (data.enableEmergencyWithdraw || data.penaltyFee) {
         balance = accountData.stakedBalance;
       } else {
         balance = accountData.stakedBalance.minus(accountData.lockedBalance);
@@ -169,7 +170,7 @@ const StakingModal = ({
                 </div>
                 <a
                   className="flex-1"
-                  href={`https://bridge.brewlabs.info/swap?outputCurrency=${data.stakingToken.address}`}
+                  href={`${BASE_URL}/swap?outputCurrency=${data.stakingToken.address}`}
                   target={"_blank"}
                   rel="noreferrer"
                 >

@@ -22,6 +22,7 @@ import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";
 import { getBalanceAmount } from "utils/formatBalance";
+import Link from "next/link";
 
 const StakingModal = ({
   open,
@@ -143,7 +144,7 @@ const StakingModal = ({
                 </div>
                 <a
                   className="flex-1"
-                  href={`https://earn.brewlabs.info/add/${
+                  href={`/add/${data.chainId}/${
                     data.quoteToken.isNative || data.quoteToken.symbol === WNATIVE[data.chainId].symbol
                       ? getNativeSybmol(data.chainId)
                       : data.quoteToken.address
@@ -152,17 +153,17 @@ const StakingModal = ({
                       ? getNativeSybmol(data.chainId)
                       : data.token.address
                   }`}
-                  target={"_blank"}
-                  rel="noreferrer"
                 >
-                  <StyledButton type="secondary">
-                    <div className="flex items-center text-[#FFFFFFBF]">
-                      <div>
-                        Get <span className="text-primary">{data.lpSymbol}</span>
+                  <a target="_blank" className="flex-1">
+                    <StyledButton type="secondary">
+                      <div className="flex items-center text-[#FFFFFFBF]">
+                        <div>
+                          Get <span className="text-primary">{data.lpSymbol}</span>
+                        </div>
+                        <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
                       </div>
-                      <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
-                    </div>
-                  </StyledButton>
+                    </StyledButton>
+                  </a>
                 </a>
               </div>
               <div className="mt-[30px]">

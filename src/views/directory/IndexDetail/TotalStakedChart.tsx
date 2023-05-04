@@ -3,6 +3,8 @@ import styled from "styled-components";
 import dynamic from "next/dynamic";
 import { getAverageHistory } from "state/indexes/fetchIndexes";
 import { formatAmount } from "utils/formatApy";
+import Skeleton from "react-loading-skeleton";
+import { SkeletonComponent } from "components/SkeletonComponent";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -17,6 +19,7 @@ const TotalStakedChart = ({
   prices: number[];
   curGraph: number;
 }) => {
+  if (!data) return <div className="h-[250px]" />;
   let pricechange = 0;
   if (curGraph === 2) pricechange = getAverageHistory(data)[data[0].length - 1];
 
@@ -169,14 +172,20 @@ const TotalStakedChart = ({
             <span
               className={`mb-1 flex ${+getAverageHistory(data)[data[0].length - 1] < 0 ? "text-danger" : "text-green"}`}
             >
-              {+getAverageHistory(data)[data[0].length - 1].toFixed(2)} %
+              {data[0].length > 0 ? (
+                <>{(+getAverageHistory(data)[data[0].length - 1]).toFixed(2)}%</>
+              ) : (
+                <SkeletonComponent />
+              )}
             </span>
             {data.map((d, index) => {
               let priceChange = ((d[d.length - 1] - d[0]) / d[d.length - 1]) * 100;
-              return (
+              return d.length > 0 ? (
                 <span key={index} className={`flex ${priceChange < 0 ? "text-danger" : "text-green"}`}>
                   {priceChange.toFixed(2)}% {symbols[index]}
                 </span>
+              ) : (
+                <SkeletonComponent key={index} />
               );
             })}
           </>
@@ -198,7 +207,7 @@ const TotalStakedChart = ({
           options={chartData.options}
           series={chartData.series}
           type="area"
-          height={curGraph === 0 ? 250 - 10 * data[0].length : curGraph === 2 ? 250 - 10 * data.length : 250}
+          height={curGraph === 0 ? 250 - 10 * data[0].length : curGraph === 2 ? 250 - 12 * data.length : 250}
         />
       </div>
     </StyledContainer>

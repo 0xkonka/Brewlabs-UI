@@ -163,7 +163,7 @@ const PerformanceChart = ({ tokens, showType }: { tokens?: any; showType: number
             options={chartData.options}
             series={chartData.series}
             type="area"
-            height={innerHeight < 725 ? 170 : 220}
+            height={innerHeight < 725 ? 170 : 190}
           />
         ) : (
           <Loading />
@@ -205,9 +205,9 @@ const StyledContainer = styled.div<{ down: String }>`
   }
   > div:nth-child(2) > div {
     min-height: unset !important;
-    margin-top: -23px;
+    margin-top: -35px;
   }
-  height: 250px;
+  height: 220px;
   @media screen and (max-height: 725px) {
     height: 200px;
   }

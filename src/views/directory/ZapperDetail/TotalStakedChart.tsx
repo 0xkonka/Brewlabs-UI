@@ -7,39 +7,9 @@ import { SkeletonComponent } from "components/SkeletonComponent";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const TotalStakedChart = ({
-  data,
-  symbol,
-  price,
-  curGraph,
-}: {
-  data: any;
-  symbol: string;
-  price: number;
-  curGraph: number;
-}) => {
-  const getTitle = (type: number) => {
-    if (type === 0) {
-      return "Total Staked Value";
-    } else if (type === 1) {
-      return (
-        <div>
-          Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 2) {
-      return (
-        <div>
-          Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    } else if (type === 3) {
-      return (
-        <div>
-          Staked Addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
-        </div>
-      );
-    }
+const TotalStakedChart = ({ data, symbol }: { data: any; symbol: string }) => {
+  const getTitle = () => {
+    return "Total Zapper Position Value";
   };
 
   const chartData: any = {
@@ -99,7 +69,7 @@ const TotalStakedChart = ({
         y: {
           format: "",
           formatter: (value: any) => {
-            return (curGraph !== 3 ? "$" : "") + BigNumberFormat(value * price, curGraph !== 3 ? 2 : 0);
+            return "$" + BigNumberFormat(value);
           },
         },
       },
@@ -113,29 +83,13 @@ const TotalStakedChart = ({
   };
   return (
     <StyledContainer>
-      <div className="text-xl text-[#FFFFFFBF]">{getTitle(curGraph)}</div>
+      <div className="text-xl text-[#FFFFFFBF]">{getTitle()}</div>
       <div className="leading-none text-[#FFFFFF80]">
-        {curGraph !== 3 ? (
-          <span>
-            {data !== undefined && data.length ? (
-              `$${BigNumberFormat(data[data.length - 1] * price)}`
-            ) : (
-              <SkeletonComponent />
-            )}
-            <br />
-          </span>
-        ) : (
-          ""
-        )}
-        <span className="flex text-primary">
-          {data !== undefined && data.length ? (
-            numberWithCommas(data[data.length - 1].toFixed(curGraph === 2 ? 2 : 0))
-          ) : (
-            <SkeletonComponent />
-          )}
-          &nbsp;
-          {symbol}
+        <span>
+          {data !== undefined && data.length ? `$${BigNumberFormat(data[data.length - 1])}` : <SkeletonComponent />}
+          <br />
         </span>
+
         <span className="text-[#B9B8B8]">{new Date().toDateString()}</span>
       </div>
       <div className="-mt-12">
@@ -176,7 +130,7 @@ const StyledContainer = styled.div`
     min-height: unset !important;
     margin-top: -23px;
   }
-  height: 250px;
+  height: 290px;
   @media screen and (max-height: 725px) {
     height: 200px;
   }

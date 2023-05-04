@@ -6,6 +6,7 @@ import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import StyledButton from "../StyledButton";
+import { BASE_URL } from "config";
 
 const CorePool = ({
   setSelectPoolDetail,
@@ -83,13 +84,6 @@ const CorePool = ({
     );
   };
 
-  // if (!data)
-  //   return (
-  //     <div className="flex justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 text-xl text-brand sm:px-5">
-  //       No Pool
-  //     </div>
-  //   );
-
   return (
     <div className="rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[22px] px-3 sm:px-5">
       <div className="flex max-w-[1120px] items-center justify-between">
@@ -99,7 +93,7 @@ const CorePool = ({
 
         <div className="w-[50%] max-w-[200px] md:w-[340px] md:max-w-full">
           <a
-            href={`https://bridge.brewlabs.info/swap?outputCurrency=${data?.stakingToken.address}`}
+            href={`${BASE_URL}/swap?outputCurrency=${data?.stakingToken.address}`}
             target={"_blank"}
             rel="noreferrer"
           >
@@ -114,7 +108,7 @@ const CorePool = ({
               <StyledButton
                 onClick={() => {
                   setSelectPoolDetail(true);
-                  setCurPool({ type: data.type, pid: data.sousId });
+                  setCurPool({ type: data.type, pid: data.sousId, chainId: data.chainId });
                 }}
               >
                 Deposit {data.stakingToken.symbol}

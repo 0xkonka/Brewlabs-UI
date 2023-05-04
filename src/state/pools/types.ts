@@ -15,6 +15,7 @@ interface CorePoolProps {
   duration?: number;
   depositFee?: number;
   withdrawFee?: number;
+  penaltyFee?: number;
   apr?: number;
   stakingTokenPrice?: number;
   earningTokenPrice?: number;
@@ -47,6 +48,7 @@ interface PoolConfigBaseProps {
   forceEndblock?: number;
   headerSuffix?: string;
   externalSwap?: string;
+  deployer?: string;
 }
 
 export interface SerializedPoolConfig extends PoolConfigBaseProps {

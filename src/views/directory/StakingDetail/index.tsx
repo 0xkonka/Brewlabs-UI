@@ -12,11 +12,13 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BASE_URL } from "config";
+import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import useTokenPrice from "hooks/useTokenPrice";
+import useTokenPrice, { useTokenPrices } from "hooks/useTokenPrice";
 import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
@@ -34,6 +36,7 @@ import { BIG_ZERO } from "utils/bigNumber";
 import { numberWithCommas } from "utils/functions";
 import { formatTvl, formatAmount } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
+import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import ProgressBar from "./ProgressBar";
@@ -64,6 +67,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   const tokenPrice = useTokenPrice(data.chainId, stakingToken.address);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
+  const tokenPrices = useTokenPrices();
 
   const isLockup = data.poolCategory === PoolCategory.LOCKUP;
   const {
@@ -79,12 +83,16 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   );
 
   let hasReflections = false;
+  let reflectionUsdAmount = 0;
   const reflectionTokenBalances = [];
   for (let i = 0; i < reflectionTokens.length; i++) {
     reflectionTokenBalances.push(
       getBalanceNumber(accountData.reflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals)
     );
     if (accountData.reflections[i]?.gt(0)) hasReflections = true;
+
+    reflectionUsdAmount +=
+      reflectionTokenBalances[i] * (tokenPrices[getCurrencyId(data.chainId, reflectionTokens[i].address)] ?? 0);
   }
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
 
@@ -139,11 +147,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
         if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
         return _graphData;
       case 2:
-        return data.tokenFees;
+        return data.tokenFees ?? [];
       case 3:
-        return data.performanceFees;
+        return data.performanceFees ?? [];
       case 4:
-        return data.stakedAddresses;
+        return data.stakedAddresses ?? [];
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
@@ -217,8 +225,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const history =
-    data && data.userData?.deposits && address
-      ? data.userData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
+    data && accountData?.deposits && address
+      ? accountData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
       : [];
 
   return (
@@ -230,7 +238,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute top-0 left-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
             {address && data ? (
               <StakingModal
                 open={stakingModalOpen}
@@ -261,7 +269,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => setOpen(false)}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                        <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
@@ -274,14 +282,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex w-[160px] flex-col">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => setOpen(false)}>
-                        <div className="absolute top-[7px] left-2">{chevronLeftSVG}</div>
+                        <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
                     {data.isCustody && (
                       <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                         <StyledButton>
-                          <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                          <div className="absolute left-2 top-2.5">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
@@ -292,7 +300,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="hidden w-full max-w-[470px] sm:block">
                         <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                           <StyledButton>
-                            <div className="absolute top-2.5 left-2">{lockSVG}</div>
+                            <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
@@ -324,14 +332,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </a>
                       )}
                       <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] sm:mt-0 sm:ml-5"
+                        className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                         target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${stakingToken.address}`}
+                        href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>
                           <div>Swap</div>
-                          <div className="absolute top-[7px] right-2 -scale-100">{chevronLeftSVG}</div>
+                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
                         </StyledButton>
                       </a>
                     </div>
@@ -348,7 +356,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <InfoPanel
                       padding={"14px 25px 8px 25px"}
-                      className="mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
+                      className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
                     >
                       <div className="flex justify-between text-xl">
                         <div>
@@ -382,19 +390,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="flex">
                           Deposit Fee {(+data.depositFee).toFixed(2)}%
                           <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
-                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                         <div className="flex">
                           Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
-                          {data.sousId === 203 && (
-                            <>
-                              <br />
-                              Early Withdraw Fee 10.00 %
-                            </>
-                          )}
+                          {data.penaltyFee && <> (Early Withdraw Fee {data.penaltyFee.toFixed(2)} %)</>}
                           <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
-                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                         <div className="flex">
@@ -403,9 +406,16 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             className="tooltip"
                             data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
                           >
-                            <div className="mt-[1.3px] ml-1">{warningFarmerSVG("11px")}</div>
+                            <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
+                      </div>
+                      <div className="absolute bottom-2 right-2">
+                        {data ? (
+                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                        ) : (
+                          <SkeletonComponent />
+                        )}
                       </div>
                     </InfoPanel>
 
@@ -469,18 +479,22 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           {data.earningToken.symbol}
                         </div>
                         {data.reflection &&
-                          data.availableReflections?.map((t, index) => (
-                            <div key={index} className="flex text-primary">
-                              {!address ? (
-                                "0.00"
-                              ) : data.availableReflections[index] !== undefined ? (
-                                formatAmount(data.availableReflections[index].toFixed(2))
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              &nbsp;
-                              {data.reflectionTokens[index].symbol}
-                            </div>
+                          (data.availableReflections ? (
+                            data.availableReflections.map((t, index) => (
+                              <div key={index} className="flex text-primary">
+                                {!address ? (
+                                  "0.00"
+                                ) : data.availableReflections[index] !== undefined ? (
+                                  formatAmount(data.availableReflections[index].toFixed(2))
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                &nbsp;
+                                {data.reflectionTokens[index].symbol}
+                              </div>
+                            ))
+                          ) : (
+                            <SkeletonComponent />
                           ))}
                       </div>
                     </InfoPanel>
@@ -504,7 +518,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <TotalStakedChart
                       data={graphData()}
                       symbol={
-                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSybmol[chainId]
+                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSybmol(data.chainId)
                       }
                       price={curGraph === 4 ? 1 : curGraph !== 3 ? tokenPrice : nativeTokenPrice}
                       curGraph={curGraph}
@@ -625,16 +639,19 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             }
                             onClick={onCompoundReward}
                           >
-                            <div className="flex">
-                              Compound&nbsp;
-                              {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                "0.00"
-                              ) : accountData.earnings !== undefined ? (
-                                formatAmount(earningTokenBalance.toFixed(4))
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
+                            <div className="flex w-full items-center justify-between px-4">
+                              <div className="flex">
+                                Compound&nbsp;
+                                {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                  "0.00"
+                                ) : accountData.earnings !== undefined ? (
+                                  formatAmount(earningTokenBalance.toFixed(4))
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
+                              </div>
+                              <div className="text-sm">${(+earningTokenBalance * tokenPrice).toFixed(2)}</div>
                             </div>
                           </StyledButton>
                         </div>
@@ -651,16 +668,19 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               }
                               onClick={onHarvestReward}
                             >
-                              <div className="flex">
-                                Harvest&nbsp;
-                                {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                  "0.00"
-                                ) : accountData.earnings !== undefined ? (
-                                  formatAmount(earningTokenBalance.toFixed(4))
-                                ) : (
-                                  <SkeletonComponent />
-                                )}
-                                <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
+                              <div className="flex w-full items-center justify-between px-4">
+                                <div className="flex">
+                                  Harvest&nbsp;
+                                  {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                    "0.00"
+                                  ) : accountData.earnings !== undefined ? (
+                                    formatAmount(earningTokenBalance.toFixed(4))
+                                  ) : (
+                                    <SkeletonComponent />
+                                  )}
+                                  <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
+                                </div>
+                                <div className="text-sm">${(+earningTokenBalance * tokenPrice).toFixed(2)}</div>
                               </div>
                             </StyledButton>
                           </div>
@@ -682,21 +702,26 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 }
                                 onClick={onCompoundReflection}
                               >
-                                Compound&nbsp;
-                                {reflectionTokens.length > 1 ? (
-                                  <span className="text-primary">&nbsp;Multiple</span>
-                                ) : (
-                                  <>
-                                    {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                      "0.00"
-                                    ) : accountData.reflections[0] !== undefined ? (
-                                      formatAmount(reflectionTokenBalances[0].toFixed(4))
+                                <div className="flex w-full items-center justify-between px-4">
+                                  <div className="flex">
+                                    Compound&nbsp;
+                                    {reflectionTokens.length > 1 ? (
+                                      <span className="text-primary">&nbsp;Multiple</span>
                                     ) : (
-                                      <SkeletonComponent />
+                                      <>
+                                        {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                          "0.00"
+                                        ) : accountData.reflections[0] !== undefined ? (
+                                          formatAmount(reflectionTokenBalances[0].toFixed(4))
+                                        ) : (
+                                          <SkeletonComponent />
+                                        )}
+                                        <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                                      </>
                                     )}
-                                    <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
-                                  </>
-                                )}
+                                  </div>
+                                  <div className="text-sm">${reflectionUsdAmount.toFixed(2)}</div>
+                                </div>
                               </StyledButton>
                             </div>
                           )}
@@ -712,21 +737,26 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               }
                               onClick={onHarvestReflection}
                             >
-                              Harvest&nbsp;
-                              {reflectionTokens.length > 1 ? (
-                                <span className="text-primary">&nbsp;Multiple</span>
-                              ) : (
-                                <>
-                                  {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                    "0.00"
-                                  ) : accountData.reflections[0] !== undefined ? (
-                                    formatAmount(reflectionTokenBalances[0].toFixed(4))
+                              <div className="flex w-full items-center justify-between px-4">
+                                <div className="flex">
+                                  Harvest&nbsp;
+                                  {reflectionTokens.length > 1 ? (
+                                    <span className="text-primary">&nbsp;Multiple</span>
                                   ) : (
-                                    <SkeletonComponent />
+                                    <>
+                                      {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                        "0.00"
+                                      ) : accountData.reflections[0] !== undefined ? (
+                                        formatAmount(reflectionTokenBalances[0].toFixed(4))
+                                      ) : (
+                                        <SkeletonComponent />
+                                      )}
+                                      <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
+                                    </>
                                   )}
-                                  <span className="text-primary">&nbsp;{data.reflectionTokens[0].symbol}</span>
-                                </>
-                              )}
+                                </div>
+                                <div className="text-sm">${reflectionUsdAmount.toFixed(2)}</div>
+                              </div>
                             </StyledButton>
                           </div>
                         </div>
@@ -741,7 +771,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         setStakingModalOpen(true);
                       }}
                     />
-                    <div className="relative mt-2 mb-[150px] flex h-12 w-full md:mb-0">
+                    <div className="relative mb-[150px] mt-2 flex h-12 w-full md:mb-0">
                       {data.chainId !== chainId ? (
                         <div className="flex-1">
                           <StyledButton

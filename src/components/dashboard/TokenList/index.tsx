@@ -1,33 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import ToolBar from "./ToolBar";
 import { useContext, useEffect, useRef, useState } from "react";
-import { StarIcon as StarOutlineIcon, CheckCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { StarIcon as StarOutlineIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
-import StyledButton from "../StyledButton";
 import styled from "styled-components";
 import { claimSVG, disabledClaimSVG, NoneSVG, warningSVG } from "../assets/svgs";
-import { chain, isArray } from "lodash";
+import { isArray } from "lodash";
 import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
-import { BigNumberFormat, getBlockExplorerLink } from "utils/functions";
+import { BigNumberFormat, getBlockExplorerLink, getChainLogo } from "utils/functions";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { SwapContext } from "contexts/SwapContext";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { Field } from "state/swap/actions";
-import { Currency, Token, NATIVE_CURRENCIES } from "@brewlabs/sdk";
-import { NativeCurrency } from "@brewlabs/sdk/dist/entities/NativeCurrency";
+import { Token, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
 const emptyLogos = {
   1: "/images/dashboard/tokens/empty-token-eth.webp",
   56: "/images/dashboard/tokens/empty-token-bsc.webp",
-};
-
-const CHAIN_LOGO = {
-  1: "/images/dashboard/tokens/ETH.png",
-  56: "/images/dashboard/tokens/BNB.png",
 };
 
 const TokenList = ({
@@ -63,10 +55,9 @@ const TokenList = ({
   const { chainId } = useActiveChainId();
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
-  const { pending, setPending, tokenList }: any = useContext(DashboardContext);
+  const { pending, setPending, tokenList, viewType, setViewType }: any = useContext(DashboardContext);
   const valueRef: any = useRef();
 
-  const { viewType, setViewType }: any = useContext(SwapContext);
   const { onCurrencySelection } = useSwapActionHandlers();
 
   const sortData = (data: any) => {
@@ -230,7 +221,7 @@ const TokenList = ({
   ethPrice = ethPrice.length ? ethPrice[0].price : 0;
 
   return (
-    <StyledContainer className={`mt-4 w-full`} fullOpen={fullOpen} count={showData.length}>
+    <StyledContainer className={`w-full`} fullOpen={fullOpen} count={showData.length}>
       <ToolBar
         setFilterType={setFilterType}
         filterType={filterType}
@@ -248,7 +239,7 @@ const TokenList = ({
             );
             const logo =
               data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                ? CHAIN_LOGO[chainId]
+                ? getChainLogo(chainId)
                 : logoFilter.length
                 ? logoFilter[0].logoURI
                 : emptyLogos[chainId];
@@ -460,22 +451,14 @@ export const ValuePanel = styled.div`
 `;
 
 const StyledContainer = styled.div<{ fullOpen: boolean; count: number }>`
-  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 618px)" : `${count * 30 + 27}px`)};
+  height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 522px)" : `${count * 30 + 27}px`)};
   transition: all 0.15s;
-  @media screen and (max-width: 650px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 618px)" : `${count * 28 + 27}px`)};
+
+  @media screen and (max-height: 920px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 515px)" : `${count * 28 + 27}px`)};
   }
-  @media screen and (max-height: 725px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 518px)" : `${count * 30 + 27}px`)};
-    @media screen and (max-width: 650px) {
-      height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 518px)" : `${count * 28 + 27}px`)};
-    }
-  }
-  @media screen and (max-height: 890px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 554px)" : `${count * 28 + 27}px`)};
-  }
-  @media screen and (max-height: 820px) {
-    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 265px)" : `${count * 28 + 27}px`)};
+  @media screen and (max-height: 790px) {
+    height: ${({ fullOpen, count }) => (fullOpen ? "calc(100vh - 280px)" : `${count * 28 + 27}px`)};
   }
 `;
 
