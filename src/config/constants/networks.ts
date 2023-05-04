@@ -1,7 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
-import { bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli } from "contexts/wagmi";
+import { bsc, mainnet, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
 
-export const SupportedChains = [bsc, mainnet, polygon, avalandche, fantomOpera, cronos, brise, bscTest, goerli];
+export const SupportedChains = [bsc, mainnet, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
