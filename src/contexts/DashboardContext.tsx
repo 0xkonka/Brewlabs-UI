@@ -61,7 +61,7 @@ const DashboardContextProvider = ({ children }: any) => {
   const [selectedDeployer, setSelectedDeployer] = useState("");
   const [viewType, setViewType] = useState(0);
   const { address } = useAccount();
-
+  // const address = "0x2c4F487acf3ac72a4Ec9aa4D7a9059246Ff46fE4";
   const nfts = useWalletNFTs(address);
 
   temp_addr = address;
@@ -290,7 +290,6 @@ const DashboardContextProvider = ({ children }: any) => {
           isReward: filter.length ? filter[0].isReward : false,
         });
       }
-      console.log(temp_addr, address, chainId, temp_id);
 
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
