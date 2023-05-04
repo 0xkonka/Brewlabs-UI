@@ -92,7 +92,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
     if (accountData.reflections[i]?.gt(0)) hasReflections = true;
 
     reflectionUsdAmount +=
-      reflectionTokenBalances[i] * tokenPrices[getCurrencyId(data.chainId, reflectionTokens[i].address)];
+      reflectionTokenBalances[i] * (tokenPrices[getCurrencyId(data.chainId, reflectionTokens[i].address)] ?? 0);
   }
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
 
