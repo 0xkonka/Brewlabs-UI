@@ -41,6 +41,8 @@ import { UserContext } from "contexts/UserContext";
 import useWalletNFTs from "@hooks/useWalletNFTs";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { WNATIVE } from "@brewlabs/sdk";
+import { BASE_URL } from "config";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([[0], [0], [0]]);
@@ -55,12 +57,14 @@ const Profile = ({ deployer }: { deployer: string }) => {
   });
   const [, setSortOrder] = useState("default");
   const [, setIsOpen] = useGlobalState("userSidebarOpen");
+  const [isCopied, setIsCopied] = useState(false);
 
   const router = useRouter();
   const { tokenPrices } = useContext(TokenPriceContext);
   const { setSelectedDeployer, setViewType }: any = useContext(DashboardContext);
   const { userData }: any = useContext(UserContext);
   const { indexes, userDataLoaded } = useIndexes();
+
   const nfts = useWalletNFTs(deployer);
   const isKYC =
     nfts.filter((data) => data.address.toLowerCase() === "0x2B09d47D550061f995A3b5C6F0Fd58005215D7c8").length > 0;
@@ -118,12 +122,23 @@ const Profile = ({ deployer }: { deployer: string }) => {
       let _performanceFees: any = [];
       for (let i = 0; i < result[0].pFee3Histories[k].length; i++) {
         let pF = 0;
-        for (let j = 0; j < result.length; j++) pF += result[j].pFee3Histories[k][i];
+        for (let j = 0; j < result.length; j++)
+          pF +=
+            result[j].pFee3Histories[k][i] *
+            tokenPrices[getCurrencyId(allPools[j].chainId, WNATIVE[allPools[j].chainId].address)];
         _performanceFees.push(isNaN(pF) ? 0 : pF);
       }
       histories.push(_performanceFees);
     }
     setPerformanceFees(histories);
+  };
+
+  const onSharePortfolio = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
   };
 
   useEffect(() => {
@@ -209,12 +224,10 @@ const Profile = ({ deployer }: { deployer: string }) => {
                     <StyledButton
                       className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white hover:text-white xl:flex"
                       type={"default"}
+                      onClick={onSharePortfolio}
                     >
                       <div className="flex items-center">
-                        <div className="mr-1.5">Share portfolio</div> {LinkSVG}
-                      </div>
-                      <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
-                        Soon
+                        <div className="mr-1.5">{isCopied ? "Copied" : "Share portfolio"}</div> {LinkSVG}
                       </div>
                     </StyledButton>
 
@@ -261,9 +274,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                           {UserSVG}
                         </div>
                         <ReactTooltip anchorId={"numberoffollowers"} place="top" content="Number of followers" />
-                        <div className="text-sm">
-                          0 <span>(+0) 24HR</span>
-                        </div>
+                        <div className="text-sm">0</div>
                       </div>
                       {isKYC ? (
                         <div className="flex items-center">

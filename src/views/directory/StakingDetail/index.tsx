@@ -12,6 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BASE_URL } from "config";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -327,7 +328,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <a
                         className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                         target="_blank"
-                        href={`https://bridge.brewlabs.info/swap?outputCurrency=${stakingToken.address}`}
+                        href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>
@@ -471,23 +472,24 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {data.earningToken.symbol}
                         </div>
-                        {data.reflection && data.availableReflections ? (
-                          data.availableReflections.map((t, index) => (
-                            <div key={index} className="flex text-primary">
-                              {!address ? (
-                                "0.00"
-                              ) : data.availableReflections[index] !== undefined ? (
-                                formatAmount(data.availableReflections[index].toFixed(2))
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                              &nbsp;
-                              {data.reflectionTokens[index].symbol}
-                            </div>
-                          ))
-                        ) : (
-                          <SkeletonComponent />
-                        )}
+                        {data.reflection &&
+                          (data.availableReflections ? (
+                            data.availableReflections.map((t, index) => (
+                              <div key={index} className="flex text-primary">
+                                {!address ? (
+                                  "0.00"
+                                ) : data.availableReflections[index] !== undefined ? (
+                                  formatAmount(data.availableReflections[index].toFixed(2))
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                                &nbsp;
+                                {data.reflectionTokens[index].symbol}
+                              </div>
+                            ))
+                          ) : (
+                            <SkeletonComponent />
+                          ))}
                       </div>
                     </InfoPanel>
                   </div>
