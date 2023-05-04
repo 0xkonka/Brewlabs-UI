@@ -640,7 +640,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             onClick={onCompoundReward}
                           >
                             <div className="flex w-full items-center justify-between px-4">
-                              <div>
+                              <div className="flex">
                                 Compound&nbsp;
                                 {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                   "0.00"
@@ -669,7 +669,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               onClick={onHarvestReward}
                             >
                               <div className="flex w-full items-center justify-between px-4">
-                                <div>
+                                <div className="flex">
                                   Harvest&nbsp;
                                   {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                     "0.00"
@@ -703,7 +703,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 onClick={onCompoundReflection}
                               >
                                 <div className="flex w-full items-center justify-between px-4">
-                                  <div>
+                                  <div className="flex">
                                     Compound&nbsp;
                                     {reflectionTokens.length > 1 ? (
                                       <span className="text-primary">&nbsp;Multiple</span>
@@ -738,7 +738,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               onClick={onHarvestReflection}
                             >
                               <div className="flex w-full items-center justify-between px-4">
-                                <div>
+                                <div className="flex">
                                   Harvest&nbsp;
                                   {reflectionTokens.length > 1 ? (
                                     <span className="text-primary">&nbsp;Multiple</span>

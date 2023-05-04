@@ -550,7 +550,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             onClick={handleHarvest}
                           >
                             <div className="flex w-full items-center justify-between px-4">
-                              <div>
+                              <div className="flex">
                                 Harvest&nbsp;
                                 {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                   0
@@ -585,7 +585,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               onClick={handleCompound}
                             >
                               <div className="flex w-full items-center justify-between px-4">
-                                <div>
+                                <div className="flex">
                                   Compound&nbsp;
                                   {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                     0
@@ -626,7 +626,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 onClick={handleHarvestDividned}
                               >
                                 <div className="flex w-full items-center justify-between px-4">
-                                  <div>
+                                  <div className="flex">
                                     Harvest&nbsp;
                                     {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                       0
@@ -661,7 +661,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                   onClick={handleCompoundDividend}
                                 >
                                   <div className="flex w-full items-center justify-between px-4">
-                                    <div>
+                                    <div className="flex">
                                       Compound&nbsp;
                                       {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                         0
