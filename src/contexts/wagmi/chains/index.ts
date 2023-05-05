@@ -1,5 +1,6 @@
-export * from "wagmi/chains";
 import { Chain } from "wagmi";
+import { bsc as bscMainnet } from "wagmi/chains";
+export { mainnet, polygon, avalanche, fantom, cronos, bscTestnet, goerli } from "wagmi/chains";
 
 export const brise: Chain = {
   id: 32520,
@@ -14,6 +15,26 @@ export const brise: Chain = {
     default: {
       name: "Bitgert",
       url: "https://brisescan.com",
+    },
+  },
+};
+
+export const bsc = {
+  ...bscMainnet,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://bsc-dataseed1.defibit.io",
+        "https://bsc-dataseed1.ninicoin.io",
+        "https://bsc-dataseed.binance.org",
+      ],
+    },
+    public: {
+      http: [
+        "https://bsc-dataseed1.defibit.io",
+        "https://bsc-dataseed1.ninicoin.io",
+        "https://bsc-dataseed.binance.org",
+      ],
     },
   },
 };
