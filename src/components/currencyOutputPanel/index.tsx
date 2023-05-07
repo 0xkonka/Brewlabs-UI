@@ -22,6 +22,7 @@ interface CurrencyOutputPanelProps {
   buyTax?: number;
   sellTax?: number;
   currencies: any;
+  disable: boolean;
 }
 
 const CurrencyOutputPanel = ({
@@ -37,6 +38,7 @@ const CurrencyOutputPanel = ({
   buyTax,
   sellTax,
   currencies,
+  disable,
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
@@ -55,6 +57,7 @@ const CurrencyOutputPanel = ({
                 onUserInput(val);
               }}
               decimals={currency?.decimals}
+              disable={disable}
             />
             <CurrencySelectButton inputCurrencySelect={false} currencies={currencies} />
           </div>

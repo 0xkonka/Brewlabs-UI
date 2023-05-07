@@ -1,9 +1,11 @@
-import { Currency, CurrencyAmount } from "@brewlabs/sdk";
+import { Currency, CurrencyAmount, TokenAmount, Token } from "@brewlabs/sdk";
 import useENS from "@hooks/ENS/useENS";
 import { ethers } from "ethers";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useMemo } from "react";
+import common from "mocha/lib/interfaces/common";
+import { useEffect, useMemo, useState } from "react";
 import { Field } from "state/swap/actions";
+import { tryParseAmount } from "state/swap/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, isAddress, shortenAddress } from "utils";
 import { getAggregatorContract } from "utils/contractHelpers";
@@ -21,32 +23,68 @@ export const useSwapAggregator = (
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient = recipientAddressOrName === null ? account : recipientAddress;
-  const addTransaction = useTransactionAdder()
+
+  const contract = useMemo(() => {
+    if (!chainId || !signer) return null;
+    return getAggregatorContract(chainId, signer);
+  }, [chainId, signer]);
+
+  const callParams = useMemo(() => {
+    if (!amountIn || !currencies) return null;
+    const amountInWei = makeBigNumber(amountIn.toExact(), amountIn.currency.decimals);
+    return {
+      args: [
+        amountInWei, // amountIn
+        currencies[Field.INPUT]?.wrapped.address, // tokenIn
+        currencies[Field.OUTPUT]?.wrapped.address, // tokenOut
+        3, // maxSteps
+      ],
+      value: currencies[Field.INPUT].isNative ? amountInWei : null,
+    };
+  }, [amountIn, currencies]);
+
+  const [query, setQuery] = useState<{ amount: CurrencyAmount }>();
+
+  useEffect(() => {
+    if (!contract || !callParams) return;
+    const methodName = "findBestPath";
+    contract[methodName](...callParams.args)
+      .then((response: any) => {
+        const outputValue = response.amounts[response.amounts.length - 1];
+        const outputAmount =
+          currencies[Field.OUTPUT] instanceof Token
+            ? new TokenAmount(currencies[Field.OUTPUT], outputValue)
+            : new CurrencyAmount(currencies[Field.OUTPUT], outputValue);
+        if (outputAmount) setQuery({ amount: outputAmount });
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }, [contract, callParams]);
+
+  const addTransaction = useTransactionAdder();
   return useMemo(() => {
+    if (!chainId || !library || !account || !signer || !contract || !callParams) {
+      return { callback: null, query: null, error: "Missing dependencies" };
+    }
     return {
       callback: async function onSwap() {
-        const contract = getAggregatorContract(chainId, signer);
-        const amountInWei = makeBigNumber(amountIn.toExact(), amountIn.currency.decimals);
-        const args = [
-          amountInWei, // amountIn
-          currencies[Field.INPUT].wrapped.address, // tokenIn
-          currencies[Field.OUTPUT].wrapped.address, // tokenOut
-          5, // maxSteps
-        ];
-    
-        const options = currencies[Field.INPUT].isNative ? {value: amountInWei} : {};
+        const { args, value } = callParams;
+        console.log(args);
+        const options = value ? { value } : {};
         const methodName = "swapAggregationCall";
-        const gasEstimate = await contract.estimateGas[methodName](...args, options);
-        return contract[methodName](...args, {
-            gasLimit: calculateGasMargin(gasEstimate),
-            ...(options.value) ? {value: options.value, from: account} : {from: account}
-        }).then((response: any) => {
+        const gasEstimate = await contract.estimateGas[methodName](...[...args, recipient], options);
+        return contract[methodName](...[...args, recipient], {
+          gasLimit: calculateGasMargin(gasEstimate),
+          ...(options.value ? { value: options.value, from: account } : { from: account }),
+        })
+          .then((response: any) => {
             const inputSymbol = currencies[Field.INPUT].wrapped.symbol;
             const outputSymbol = currencies[Field.OUTPUT].wrapped.symbol;
             const inputAmount = amountIn.toSignificant(3);
             const outputAmount = ethers.utils.formatUnits(response.data, currencies[Field.OUTPUT].decimals);
 
-            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`
+            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
             const withRecipient =
               recipient === account
                 ? base
@@ -54,25 +92,26 @@ export const useSwapAggregator = (
                     recipientAddressOrName && isAddress(recipientAddressOrName)
                       ? shortenAddress(recipientAddressOrName)
                       : recipientAddressOrName
-                  }`
+                  }`;
 
             addTransaction(response, {
-                summary: withRecipient,
-            })
+              summary: withRecipient,
+            });
 
-            return response.hash
+            return response.hash;
           })
           .catch((error: any) => {
             // if the user rejected the tx, pass this along
             if (error?.code === 4001) {
-              throw new Error('Transaction rejected.')
+              throw new Error("Transaction rejected.");
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              console.error(`Swap failed`, error, methodName, args, options.value)
-              throw new Error(`Swap failed: ${error.message}`)
+              console.error(`Swap failed`, error, methodName, args, options.value);
+              throw new Error(`Swap failed: ${error.message}`);
             }
-          })
+          });
       },
+      query,
     };
-  }, [library, account, chainId, recipient, recipientAddressOrName, addTransaction]);
+  }, [library, account, chainId, recipient, contract, query, callParams, recipientAddressOrName, addTransaction]);
 };

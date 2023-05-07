@@ -11,6 +11,7 @@ import { useTransactionAdder, useHasPendingApproval } from "state/transactions/h
 import { computeSlippageAdjustedAmounts } from "utils/prices";
 import { calculateGasMargin } from "utils";
 import { useTokenContract } from "./useContract";
+import { getAggregatorAddress } from "utils/addressHelpers";
 
 export enum ApprovalState {
   UNKNOWN,
@@ -104,12 +105,20 @@ export function useApproveCallback(
 }
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTrade(trade?: Trade, allowedSlippage = 0) {
+export function useApproveCallbackFromTrade(
+  amountIn: CurrencyAmount,
+  trade?: Trade,
+  allowedSlippage = 0,
+  noLiquidity = false
+) {
   const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
     () => (trade ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT] : undefined),
     [trade, allowedSlippage]
   );
 
-  return useApproveCallback(amountToApprove, ROUTER_ADDRESS[chainId]);
+  return useApproveCallback(
+    noLiquidity ? amountIn : amountToApprove,
+    noLiquidity ? getAggregatorAddress(chainId) : ROUTER_ADDRESS[chainId]
+  );
 }

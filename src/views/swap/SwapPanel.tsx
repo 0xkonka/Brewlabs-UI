@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo, useCallback, useContext } from "react";
-import { toast } from "react-toastify";
-import { CurrencyAmount, Percent } from "@brewlabs/sdk";
+import { useState, useMemo, useCallback, useContext } from "react";
+import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -9,14 +8,10 @@ import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ALLOWED_PRICE_IMPACT_HIGH } from 
 import contracts from "config/constants/contracts";
 import { useUserSlippageTolerance, useUserTransactionTTL } from "state/user/hooks";
 import { Field } from "state/swap/actions";
-import {
-  useSwapState,
-  useSwapActionHandlers,
-  useDerivedSwapInfo,
-} from "state/swap/hooks";
+import { useSwapState, useSwapActionHandlers, useDerivedSwapInfo } from "state/swap/hooks";
 
 import maxAmountSpend from "utils/maxAmountSpend";
-import {computeTradePriceBreakdown, warningSeverity} from "utils/prices";
+import { computeTradePriceBreakdown, warningSeverity } from "utils/prices";
 
 import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
@@ -31,7 +26,6 @@ import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
 
 export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
   const { account, chainId } = useActiveWeb3React();
-  const { data: signer } = useSigner();
 
   const { t } = useTranslation();
 
@@ -42,12 +36,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   // ----------------- ROUTER SWAP --------------------- //
 
-  const {
-    autoMode,
-    buyTax,
-    sellTax,
-    slippage,
-  }: any = useContext(SwapContext);
+  const { autoMode, buyTax, sellTax, slippage }: any = useContext(SwapContext);
   // swap state
   const { independentField, typedValue, recipient } = useSwapState();
   const { currencies, currencyBalances, parsedAmount, inputError, v2Trade: trade } = useDerivedSwapInfo();
@@ -57,31 +46,25 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  const parsedAmounts = {
-    [Field.INPUT]:
-        independentField === Field.INPUT
-            ? parsedAmount
-            : trade?.inputAmount,
-    [Field.OUTPUT]:
-        independentField === Field.OUTPUT
-            ? parsedAmount
-            : trade?.outputAmount,
-  };
+  const noLiquidity = useMemo(() => {
+    return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
 
   const [approval, approveCallback] = useApproveCallbackFromTrade(
+    parsedAmount,
     trade,
-    userSlippageTolerance
+    userSlippageTolerance,
+    noLiquidity
   );
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(
-    currencyBalances[Field.INPUT]
-  );
-  const atMaxAmountInput = Boolean(
-    maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput)
-  );
+  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT]);
 
-  const { callback: swapCallbackUsingRouter, error: swapCallbackError } =
-        useSwapCallback(trade, userSlippageTolerance, deadline, recipient);
+  const { callback: swapCallbackUsingRouter, error: swapCallbackError } = useSwapCallback(
+    trade,
+    userSlippageTolerance,
+    deadline,
+    recipient
+  );
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
 
@@ -92,27 +75,25 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           `This swap has a price impact of at least ${PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
             0
           )}%. Please type the word "confirm" to continue with this swap.`
-        ) === 'confirm'
-      )
-    } if (!priceImpactWithoutFee.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) {
+        ) === "confirm"
+      );
+    }
+    if (!priceImpactWithoutFee.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) {
       return window.confirm(
         `This swap has a price impact of at least ${ALLOWED_PRICE_IMPACT_HIGH.toFixed(
           0
         )}%. Please confirm that you would like to continue with this swap.`
-      )
+      );
     }
     return true;
-  }
+  };
 
   const handleSwapUsingRouter = async () => {
-    if (
-      priceImpactWithoutFee &&
-      !confirmPriceImpactWithoutFee(priceImpactWithoutFee)
-    ) {
-        return;
+    if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
+      return;
     }
     if (!swapCallbackUsingRouter) {
-        return;
+      return;
     }
     setAttemptingTxn(true);
     setTxConfirmInfo({
@@ -138,15 +119,13 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
-  
   const handleMaxInput = useCallback(() => {
     if (maxAmountInput) {
-        onUserInput(Field.INPUT, maxAmountInput.toExact());
+      onUserInput(Field.INPUT, maxAmountInput.toExact());
     }
-}, [maxAmountInput, onUserInput]);
+  }, [maxAmountInput, onUserInput]);
 
-  const dependentField: Field =
-        independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+  const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -156,28 +135,22 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
-        onUserInput(Field.OUTPUT, value);
+      onUserInput(Field.OUTPUT, value);
     },
     [onUserInput]
   );
 
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: parsedAmounts[dependentField]?.toSignificant(6) ?? "",
-  };
-
-  const noLiquidity = useMemo(() => {
-    return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade])
-
-
   // ----------------- AGGREGATION SWAP --------------------- //
 
-  const {callback: swapCallbackUsingAggregator} = useSwapAggregator(currencies, parsedAmount, recipient);
+  const {
+    callback: swapCallbackUsingAggregator,
+    query,
+    error: aggregationCallbackError,
+  } = useSwapAggregator(currencies, parsedAmount, recipient);
 
   const handleSwapUsingAggregator = async () => {
     if (!swapCallbackUsingAggregator) {
-        return;
+      return;
     }
     setAttemptingTxn(true);
     setTxConfirmInfo({
@@ -199,10 +172,26 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
       setAttemptingTxn(false);
       onUserInput(Field.INPUT, "");
     }
-  }
+  };
+
+  const parsedAmounts = {
+    [Field.INPUT]: noLiquidity ? parsedAmount : independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+    [Field.OUTPUT]: noLiquidity
+      ? query?.amount
+      : independentField === Field.OUTPUT
+      ? parsedAmount
+      : trade?.outputAmount,
+  };
+
+  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput));
+
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [dependentField]: parsedAmounts[dependentField]?.toSignificant(6) ?? "",
+  };
 
   return (
-    <> 
+    <>
       <ConfirmationModal
         open={openConfirmationModal}
         setOpen={setOpenConfirmationModal}
@@ -243,12 +232,13 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           buyTax={buyTax}
           sellTax={sellTax}
           currencies={currencies}
+          disable={noLiquidity}
         />
       </div>
       {account &&
         (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
           <>
-            { inputError ? (
+            {inputError ? (
               <button className="btn-outline btn" disabled={true}>
                 {t(inputError)}
               </button>
@@ -261,7 +251,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                 {/* <ApproveStatusBar step={apporveStep} url={currencies[Field.INPUT]} /> */}
                 <PrimarySolidButton
                   onClick={() => {
-                    // handleApprove();
                     approveCallback();
                   }}
                 >
@@ -283,7 +272,11 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                     handleSwapUsingRouter();
                   }
                 }}
-                disabled={attemptingTxn || !swapCallbackError || priceImpactSeverity > 3}
+                disabled={
+                  attemptingTxn ||
+                  (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
+                  (noLiquidity && !!aggregationCallbackError)
+                }
               >
                 {t("Swap")}
               </PrimarySolidButton>

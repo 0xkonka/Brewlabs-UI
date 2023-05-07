@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../../config/constants'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { calculateGasMargin, isAddress, shortenAddress } from '../../utils'
-import { getRouterContract } from 'utils/contractHelpers'
+import { getBrewlabsRouterContract } from 'utils/contractHelpers'
 import isZero from '../../utils/isZero'
 import useActiveWeb3React from '@hooks/useActiveWeb3React'
 import useENS from '../ENS/useENS'
@@ -56,7 +56,7 @@ function useSwapCallArguments(
   return useMemo(() => {
     if (!trade || !recipient || !library || !account || !chainId) return []
 
-    const contract: Contract | null = getRouterContract(chainId, signer)
+    const contract: Contract | null = getBrewlabsRouterContract(chainId, signer)
     if (!contract) {
       return []
     }

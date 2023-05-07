@@ -19,6 +19,27 @@ const tokens = {
     "TEST",
     "TestToken"
   ),
+  tokenA: new Token(
+    BSC_TESTNET,
+    "0xC15BA1a077F6B2ecF51b8AAfbC31E04dC9CbC578",
+    18,
+    "TOKENA",
+    "TOKENA"
+  ),
+  tokenB: new Token(
+    BSC_TESTNET,
+    "0xC15BA1a077F6B2ecF51b8AAfbC31E04dC9CbC578",
+    18,
+    "TOKENB",
+    "TOKENB"
+  ),
+  tokenC: new Token(
+    BSC_TESTNET,
+    "0xC15BA1a077F6B2ecF51b8AAfbC31E04dC9CbC578",
+    18,
+    "TOKENC",
+    "TOKENC"
+  )
 };
 
 export default tokens;

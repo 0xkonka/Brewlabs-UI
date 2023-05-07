@@ -2433,6 +2433,30 @@
       "chainId": 25,
       "decimals": 6,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/cronos/assets/0xc21223249CA28397B4B6541dfFaEcC539BfF0c59/logo.png"
+    },
+    {
+      "name": "TOKENA",
+      "symbol": "TOKENA",
+      "address": "0xC15BA1a077F6B2ecF51b8AAfbC31E04dC9CbC578",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/cronos/assets/0xc21223249CA28397B4B6541dfFaEcC539BfF0c59/logo.png"
+    },
+    {
+      "name": "TOKENB",
+      "symbol": "TOKENB",
+      "address": "0x9C7C28A281B7F30796dC4d1831AF5FCB422a554A",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/cronos/assets/0xc21223249CA28397B4B6541dfFaEcC539BfF0c59/logo.png"
+    },
+    {
+      "name": "TOKENC",
+      "symbol": "TOKENC",
+      "address": "0xB8Dc3ef9eB65A2d66ee4a133C836929c952c9D37",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/cronos/assets/0xc21223249CA28397B4B6541dfFaEcC539BfF0c59/logo.png"
     }
   ]
 }
