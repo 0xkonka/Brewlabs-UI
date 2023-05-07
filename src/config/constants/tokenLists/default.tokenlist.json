@@ -2275,6 +2275,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x09c704c1EB9245Af48f058878e72129557a10F04/logo.png"
     },
     {
+      "name": "NanoMatic",
+      "symbol": "NANO",
+      "address": "0xB15488af39bD1de209D501672a293Bcd05f82Ab4",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xB15488af39bD1de209D501672a293Bcd05f82Ab4/logo.png"
+    },
+    {
       "name": "Matic Token",
       "symbol": "MATIC",
       "address": "0xCC42724C6683B7E57334c4E856f4c9965ED682bD",
