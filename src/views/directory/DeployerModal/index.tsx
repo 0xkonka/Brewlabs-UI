@@ -145,11 +145,11 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               {step === 0 ? (
                 <HeroSection deployType={deployType} setDeployType={setDeployType} setStep={setStep} />
               ) : deployType === "Staking Pool" ? (
-                <PoolDeployer step={step} setStep={setStep} setOpen={setOpen} />
+                <PoolDeployer setOpen={setOpen} />
               ) : deployType === "Yield Farm" ? (
                 <FarmDeployer setOpen={setOpen} />
-              ) : deployType === "Token Index" ? (
-                <IndexDeployer step={step} setStep={setStep} setOpen={setOpen} />
+              ) : deployType === "Index" ? (
+                <IndexDeployer setOpen={setOpen} />
               ) : (
                 ""
               )}
