@@ -74,7 +74,7 @@ const HeroSection = ({
               <DeployItem
                 key={i}
                 className="flex h-[140px] w-[140px] cursor-pointer flex-col items-center justify-center rounded-[8px] border border-dashed border-[#FFFFFFBF] transition-all hover:border-solid hover:border-primary"
-                onClick={() => setDeployType(data)}
+                onClick={() => setDeployType("Yield Farm")}
                 active={deployType === data}
               >
                 <div>{data}</div>
@@ -91,11 +91,11 @@ const HeroSection = ({
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" disabled={true}>
+        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative">
           Next
-          <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
+          {/* <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
             Soon
-          </div>
+          </div> */}
         </StyledButton>
       </div>
     </div>
@@ -103,12 +103,13 @@ const HeroSection = ({
 };
 
 const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
-  const [deployType, setDeployType] = useState("Staking Pool");
+  const [deployType, setDeployType] = useState("Yield Farm");
   const [step, setStep] = useState(0);
 
   useEffect(() => {
     setStep(0);
   }, [open]);
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog

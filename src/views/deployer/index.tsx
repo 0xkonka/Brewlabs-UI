@@ -20,12 +20,10 @@ import getCurrencyId from "utils/getCurrencyId";
 import Banner from "views/directory/Banner";
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
-import DeployerModal from "views/directory/DeployerModal";
 
 import IndexDetail from "views/directory/IndexDetail";
 import FarmingDetail from "views/directory/FarmingDetail";
 import StakingDetail from "views/directory/StakingDetail";
-import ZapperDetail from "views/directory/ZapperDetail";
 import { useAccount } from "wagmi";
 
 const Deployer = ({ page }: { page: number }) => {
@@ -45,7 +43,6 @@ const Deployer = ({ page }: { page: number }) => {
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
   const { address: account } = useAccount();
-  // const account = "0x6219b6b621e6e66a6c5a86136145e6e5bc6e4672";
 
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const currentBlocks = useChainCurrentBlocks();
@@ -213,7 +210,6 @@ const Deployer = ({ page }: { page: number }) => {
 
   return (
     <PageWrapper>
-      <DeployerModal open={deployerOpen} setOpen={setDeployerOpen} />
       {renderDetailPage()}
 
       <AnimatePresence>
