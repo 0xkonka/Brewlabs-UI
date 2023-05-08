@@ -93,9 +93,6 @@ const HeroSection = ({
       <div className="mx-auto h-12 max-w-[500px]">
         <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative">
           Next
-          {/* <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
-            Soon
-          </div> */}
         </StyledButton>
       </div>
     </div>
@@ -150,7 +147,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               ) : deployType === "Staking Pool" ? (
                 <PoolDeployer step={step} setStep={setStep} setOpen={setOpen} />
               ) : deployType === "Yield Farm" ? (
-                <FarmDeployer step={step} setStep={setStep} setOpen={setOpen} />
+                <FarmDeployer setOpen={setOpen} />
               ) : deployType === "Token Index" ? (
                 <IndexDeployer step={step} setStep={setStep} setOpen={setOpen} />
               ) : (

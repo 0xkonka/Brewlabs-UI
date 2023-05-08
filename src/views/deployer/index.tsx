@@ -37,7 +37,6 @@ const Deployer = ({ page }: { page: number }) => {
   });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
   const [status, setStatus] = useState("active");
-  const [deployerOpen, setDeployerOpen] = useState(false);
 
   const { pools, dataFetched } = usePools();
   const { data: farms } = useFarms();
@@ -163,6 +162,7 @@ const Deployer = ({ page }: { page: number }) => {
       );
   }
   chosenPools = sortPools(chosenPools);
+  
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:

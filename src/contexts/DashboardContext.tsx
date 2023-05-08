@@ -53,6 +53,10 @@ const WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 let temp_addr: any, temp_id: any;
 const DashboardContextProvider = ({ children }: any) => {
+  const { address } = useAccount();
+  const { chainId } = useActiveChainId();
+  const { data: signer }: any = useSigner();
+
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
   const [pending, setPending] = useState(false);
@@ -60,14 +64,11 @@ const DashboardContextProvider = ({ children }: any) => {
   const [priceHistory, setPriceHistory] = useState([]);
   const [selectedDeployer, setSelectedDeployer] = useState("");
   const [viewType, setViewType] = useState(0);
-  const { address } = useAccount();
-  // const address = "0x2c4F487acf3ac72a4Ec9aa4D7a9059246Ff46fE4";
+  
   const nfts = useWalletNFTs(address);
 
   temp_addr = address;
-  const { chainId } = useActiveChainId();
   temp_id = chainId;
-  const { data: signer }: any = useSigner();
 
   const fetchTokenBaseInfo = async (address: any, type = "name symbol decimals", accountAddress: string = null) => {
     let calls: any = [];

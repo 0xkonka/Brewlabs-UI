@@ -5,7 +5,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "index",
+        "name": "farm",
         "type": "address"
       },
       {
@@ -22,27 +22,45 @@
       },
       {
         "indexed": false,
-        "internalType": "address[]",
-        "name": "tokens",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
         "internalType": "address",
-        "name": "indexNft",
+        "name": "lpToken",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "deployerNft",
+        "name": "rewardToken",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "swapRouter",
+        "name": "dividendToken",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rewardPerBlock",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "depositFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "withdrawFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "hasDividend",
+        "type": "bool"
       },
       {
         "indexed": false,
@@ -51,37 +69,52 @@
         "type": "address"
       }
     ],
-    "name": "IndexCreated",
+    "name": "FarmCreated",
     "type": "event"
   },
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "tokens",
-        "type": "address[]"
-      },
-      {
         "internalType": "address",
-        "name": "swapRouter",
+        "name": "lpToken",
         "type": "address"
       },
       {
-        "internalType": "address[][]",
-        "name": "swapPaths",
-        "type": "address[][]"
+        "internalType": "address",
+        "name": "rewardToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "dividendToken",
+        "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "fee",
+        "name": "rewardPerBlock",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "depositFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "hasDividend",
+        "type": "bool"
       }
     ],
-    "name": "createBrewlabsIndex",
+    "name": "createBrewlabsFarm",
     "outputs": [
       {
         "internalType": "address",
-        "name": "index",
+        "name": "farm",
         "type": "address"
       }
     ],
@@ -112,19 +145,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "name": "setServiceFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
