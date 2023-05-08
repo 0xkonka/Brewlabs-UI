@@ -1,37 +1,50 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import StyledButton from "../../StyledButton";
-import { useEffect, useState } from "react";
-import ChainSelect from "../ChainSelect";
-import RouterSelect from "../RouterSelect";
+
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-const SelectToken = ({ step, setStep }) => {
-  const [contractAddress, setContractAddress] = useState("");
-  const [tokenAddress, setTokenAddress] = useState(null);
-  const [routerAddress, setRouterAddress] = useState(null);
+import StyledButton from "../../StyledButton";
+import ChainSelect from "../ChainSelect";
+import RouterSelect from "../RouterSelect";
+
+import { useFarmDeploymentInfo } from "./hooks";
+import { DashboardContext } from "contexts/DashboardContext";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+const SelectToken = ({ setStep }) => {
   const { chainId } = useActiveChainId();
+  const { tokenList: supportedTokens }: any = useContext(DashboardContext);
+  const { tokenAddress, setTokenAddress, routerAddress, setRouterAddress } = useFarmDeploymentInfo();
+
+  const [token, setToken] = useState("");
+  const [selectedToken, setSelectedToken] = useState(null);
 
   useEffect(() => {
-    if (contractAddress.length) setTokenAddress("0x330518cc95c92881bCaC1526185a514283A5584D");
-    else setTokenAddress(null);
-  }, [contractAddress]);
+    const _candidate = supportedTokens.find((t) => t.chainId === chainId && t.address === token);
+    if (_candidate) {
+      setTokenAddress(_candidate.address);
+      setSelectedToken(_candidate);
+    } else {
+      setTokenAddress(null);
+      setSelectedToken(null);
+    }
+  }, [token, chainId, supportedTokens.length]);
 
   return (
     <div>
       <div>
         <div className="mt-2 text-white">
           <div className="mb-1">1.Select deployment network:</div>
-          {/* <ChainSelect id="chain-select" /> */}
           <ChainSelect />
         </div>
         <div className={tokenAddress ? "text-white" : "text-[#FFFFFF40]"}>
           <div className="mb-1">2. Select token:</div>
           <StyledInput
             placeholder={`Search by contract address...`}
-            value={contractAddress}
+            value={token}
             onChange={(e) => {
-              setContractAddress(e.target.value);
+              setToken(e.target.value);
             }}
           />
         </div>
@@ -41,14 +54,24 @@ const SelectToken = ({ step, setStep }) => {
           <div className="w-full text-sm text-white">
             <div className="text-center">Token found!</div>
             <div className="mt-3 flex w-full items-center justify-center">
-              <div className="mr-1.5 h-7 w-7 rounded-full bg-[#D9D9D9]" />
+              <img
+                src={
+                  selectedToken.logoURI
+                    ? selectedToken.logoURI
+                    : getTokenLogoURL(selectedToken.address, selectedToken.chainId)
+                }
+                className="mr-1.5 h-7 w-7 rounded-full bg-[#D9D9D9]"
+                alt="logo"
+              />
               <div className="flex-1 overflow-hidden  text-ellipsis whitespace-nowrap xsm:flex-none">
                 {tokenAddress}
               </div>
             </div>
           </div>
-        ) : (
+        ) : token === "" ? (
           "Pending..."
+        ) : (
+          "Not Found"
         )}
       </div>
       <div className="mb-8">

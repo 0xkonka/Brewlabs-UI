@@ -5,12 +5,10 @@ import { Dialog } from "@headlessui/react";
 import styled from "styled-components";
 import { useState } from "react";
 
-import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { routers } from "utils/functions";
 
 const RouterSelect = () => {
-  const { switchNetwork } = useSwitchNetwork();
   const { chainId } = useActiveChainId();
 
   const [open, setOpen] = useState(false);

@@ -100,8 +100,8 @@ const HeroSection = ({
 };
 
 const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
-  const [deployType, setDeployType] = useState("Yield Farm");
   const [step, setStep] = useState(0);
+  const [deployType, setDeployType] = useState("Yield Farm");
 
   useEffect(() => {
     setStep(0);

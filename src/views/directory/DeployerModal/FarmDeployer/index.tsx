@@ -1,14 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import SelectToken from "./SelectToken";
 import Deploy from "./Deploy";
-import { useState } from "react";
+import { useEffect } from "react";
+import { useFarmDeploymentInfo } from "./hooks";
 
 const FarmDeployer = ({ setOpen }) => {
-  const [step, setStep] = useState(1);
+  const {step, setStep} = useFarmDeploymentInfo()
+  
+  useEffect(() => {setStep(1)}, [])
+
   return (
     <div>
       {step === 1 ? (
-        <SelectToken step={step} setStep={setStep} />
+        <SelectToken setStep={setStep} />
       ) : (
         <Deploy step={step} setStep={setStep} setOpen={setOpen} />
       )}
