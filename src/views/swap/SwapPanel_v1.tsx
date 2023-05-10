@@ -473,7 +473,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           price={price}
           buyTax={buyTax}
           sellTax={sellTax}
-          verified={verified}
           currencies={currencies}
         />
       </div>
