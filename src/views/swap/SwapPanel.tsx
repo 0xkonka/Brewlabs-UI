@@ -40,15 +40,17 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   // swap state
   const { independentField, typedValue, recipient } = useSwapState();
   const { currencies, currencyBalances, parsedAmount, inputError, v2Trade: trade } = useDerivedSwapInfo();
+
   const { onUserInput, onSwitchTokens, onCurrencySelection } = useSwapActionHandlers();
 
   // txn values
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  const noLiquidity = useMemo(() => {
-    return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
+  // const noLiquidity = useMemo(() => {
+  //   return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
+  // }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
+  const noLiquidity = true;
 
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     parsedAmount,
