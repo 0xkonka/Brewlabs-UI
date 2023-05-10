@@ -153,7 +153,6 @@ export type WalletConfig<T = unknown> = {
   guide?: LinkOfDevice;
   downloadLink?: LinkOfDevice;
   mobileOnly?: boolean;
-  qrCode?: () => Promise<string>;
 };
 
 export interface BrewlabsToken {

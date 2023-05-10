@@ -53,7 +53,7 @@ const HeroSection = ({
   };
   return (
     <div className="text-white">
-      <div className="mt-3.5">
+      <div className="mt-3.5 mb-2">
         Welcome to the Brewlabs product deployer wizard. Using this wizard will allow you to deploy a range of Brewlabs
         products.
       </div>
@@ -69,7 +69,7 @@ const HeroSection = ({
           customRightArrow={<CustomRightArrow onClick={undefined} />}
           customLeftArrow={<CustomLeftArrow onClick={undefined} />}
         >
-          {["Staking Pool", "Yield Farm", "Token Index", "Zapper"].map((data, i) => {
+          {["Staking Pool", "Yield Farm", "Index", "Token"].map((data, i) => {
             return (
               <DeployItem
                 key={i}
@@ -91,7 +91,7 @@ const HeroSection = ({
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="primary" onClick={() => setStep(1)} className="relative">
+        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" disabled={true}>
           Next
           <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
             Soon
@@ -143,14 +143,6 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
             <StyledPanel>
               <div className="flex items-center justify-between border-b border-[#FFFFFF80] pb-2.5">
                 <div className="text-primary">Brewlabs Project Deployer</div>
-                <div className="h-10 min-w-[150px]">
-                  <StyledButton type="secondary" onClick={() => (step > 0 ? setStep(step - 1) : setOpen(false))}>
-                    <div className="flex items-center text-[#FFFFFFBF]">
-                      {chevronLeftSVG}
-                      <div className="ml-2">Back a page</div>
-                    </div>
-                  </StyledButton>
-                </div>
               </div>
               {step === 0 ? (
                 <HeroSection deployType={deployType} setDeployType={setDeployType} setStep={setStep} />

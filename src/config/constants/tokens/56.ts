@@ -490,6 +490,14 @@ const tokens = {
     'Sweeptoken',
     'https://sweepproject.com/',
   ),
+  nano: new Token(
+    BSC_MAINNET,
+    '0xB15488af39bD1de209D501672a293Bcd05f82Ab4',
+    18,
+    'NANO',
+    'NanoMatic',
+    'https://www.nanomatic.io/',
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
