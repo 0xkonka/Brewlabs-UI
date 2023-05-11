@@ -1,4 +1,6 @@
 import { ChainId, Currency, Token } from "@brewlabs/sdk";
+import { BigNumber } from "ethers";
+import { Address as ETHAddress } from "wagmi";
 
 export interface SerializedToken {
   chainId: ChainId;
@@ -153,6 +155,24 @@ export type WalletConfig<T = unknown> = {
   mobileOnly?: boolean;
 };
 
+export interface BrewlabsToken {
+  id: ETHAddress;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+}
+
+export interface BrewlabsPair {
+  id: ETHAddress;
+  token0: BrewlabsToken;
+  token1: BrewlabsToken;
+  token0Owner?: ETHAddress;
+  token1Owner?: ETHAddress;
+  referrer?: ETHAddress;
+  volumeToken0: BigNumber;
+  volumeToken1: BigNumber;
+  volumeUSD: BigNumber;
+}
 export interface Address {
   1?: string;
   56?: string;

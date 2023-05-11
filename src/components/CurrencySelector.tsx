@@ -286,7 +286,7 @@ const CurrencySelector = ({
     <div className="relative w-full">
       <div className="mb-6 flex items-center justify-between">
         <div className="font-brand">
-          <h2 className="text-3xl">Select token {inputType}</h2>
+          <h2 className="text-3xl">Select token</h2>
         </div>
         {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
       </div>
