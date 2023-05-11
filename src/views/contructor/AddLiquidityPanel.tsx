@@ -19,7 +19,7 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAccount, useConnect, useSigner } from "wagmi";
 import { calculateGasMargin, calculateSlippageAmount } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
+import { getLpManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
 import useTransactionDeadline from "hooks/useTransactionDeadline";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { BigNumber, TransactionResponse } from "alchemy-sdk";
@@ -122,7 +122,7 @@ export default function AddLiquidityPanel({
     if (!chainId || !library || !account) return;
     const gasPrice = await getNetworkGasPrice(library, chainId);
 
-    const router = getRouterContract(chainId, signer);
+    const router = getBrewlabsRouterContract(chainId, signer);
     const lpManagerContract = getLpManagerContract(chainId, signer);
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;

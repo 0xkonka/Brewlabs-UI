@@ -1,5 +1,5 @@
 import CurrencyInputPanel from "components/currencyInputPanel";
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import SolidButton from "../button/SolidButton";
 import OutlinedButton from "../button/OutlinedButton";
 import CheckIcon from "../CheckIcon";
@@ -15,9 +15,16 @@ export const CheckStatus = ({ status }: { status: number }) => {
   );
 };
 
-export default function DeployYieldFarm() {
+export default function DeployYieldFarm({
+  onAddLiquidity,
+  attemptingTxn,
+  hash,
+}: {
+  onAddLiquidity: () => void;
+  attemptingTxn: boolean;
+  hash: string | undefined;
+}) {
   const { setAddLiquidityStep }: any = useContext(SwapContext);
-  const [step, setStep] = useState(0);
 
   const [initialReward, setInitialReward] = useState(0.1);
 
@@ -26,14 +33,13 @@ export default function DeployYieldFarm() {
     setInitialReward(Math.min(Math.max(newValue, 0), 100));
   };
 
-  const onNext = (e) => {
-    e.preventDefault();
-    setStep(step + 1);
-  };
+  const justEntered = useMemo(() => {
+    return !attemptingTxn && !hash;
+  }, [attemptingTxn, hash]);
 
   const onBack = (e) => {
     e.preventDefault();
-    if (step === 0) {
+    if (justEntered) {
       setAddLiquidityStep(3);
     } else {
       setAddLiquidityStep(0);
@@ -160,19 +166,19 @@ export default function DeployYieldFarm() {
           ))}
 
           <div className="mt-3 flex items-center justify-between">
-            <div className={`${step > 0 ? "text-[#2FD35D]" : ""}`}>
-              {step === 0 ? "Deployment transactions remaining" : step === 1 ? "Deploying..." : "Deployed"}
+            <div className={`${!justEntered ? "text-[#2FD35D]" : ""}`}>
+              {attemptingTxn ? "Deploying..." : hash ? "Deployed" : "Deployment transactions remaining"}
             </div>
             <div className="ml-2 flex min-w-[100px] items-center">
-              <CheckStatus status={step === 0 ? 0 : 2}></CheckStatus>
-              <div className={`h-0 w-4 border sm:w-4 ${step === 0 ? "border-gray-600" : "border-[#2FD35D]"}`}></div>
-              <CheckStatus status={step < 2 ? 1 : 2}></CheckStatus>
+              <CheckStatus status={justEntered ? 0 : 2}></CheckStatus>
+              <div className={`h-0 w-4 border sm:w-4 ${justEntered ? "border-gray-600" : "border-[#2FD35D]"}`}></div>
+              <CheckStatus status={!hash ? 1 : 2}></CheckStatus>
             </div>
           </div>
         </div>
         <div className="mt-2 mb-6 rounded-3xl border border-gray-600 px-5 pt-3 pb-4 font-['Roboto'] text-xs font-bold sm:text-sm">
           <div className="text-lg text-gray-300">Summary</div>
-          {step === 0 ? (
+          {justEntered ? (
             <div>Available after deployment</div>
           ) : (
             <>
@@ -191,12 +197,19 @@ export default function DeployYieldFarm() {
           )}
         </div>
       </div>
-      {step < 2 && (
-        <SolidButton onClick={onNext}>{step === 0 ? "Create pair & yield farm" : "Deploying..."}</SolidButton>
+      {justEntered && (
+        <SolidButton disabled={false} onClick={onAddLiquidity}>
+          Create pair & yield farm
+        </SolidButton>
       )}
-      {step != 1 && (
+      {attemptingTxn && (
+        <SolidButton disabled={false}>
+          Deploying...
+        </SolidButton>
+      )}
+      {!attemptingTxn && (
         <OutlinedButton className="mt-1 font-bold" small onClick={onBack}>
-          {step === 0 ? "Back" : "Close window"}
+          {justEntered ? "Back" : "Close window"}
         </OutlinedButton>
       )}
     </>

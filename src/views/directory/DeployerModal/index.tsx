@@ -91,7 +91,7 @@ const HeroSection = ({
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative">
+        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" /*disabled={true}*/>
           Next
         </StyledButton>
       </div>

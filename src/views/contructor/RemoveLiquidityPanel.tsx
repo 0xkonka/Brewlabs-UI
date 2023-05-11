@@ -24,7 +24,7 @@ import { useUserSlippageTolerance } from "state/user/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerAddress } from "utils/addressHelpers";
-import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
+import { getLpManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
 import { formatAmount } from "utils/formatApy";
 import { getChainLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -104,7 +104,7 @@ export default function RemoveLiquidityPanel({
       if (!currencyAmountA || !currencyAmountB) {
         throw new Error("missing currency amounts");
       }
-      const router = getRouterContract(chainId, signer);
+      const router = getBrewlabsRouterContract(chainId, signer);
       const gasPrice = await getNetworkGasPrice(library, chainId);
 
       const amountsMin = {

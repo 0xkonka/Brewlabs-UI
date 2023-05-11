@@ -3,16 +3,20 @@ import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
-
+import TokenSelect from "../TokenSelect";
+import { ethers } from "ethers";
+import useLPTokenInfo from "@hooks/useLPTokenInfo";
+import { isAddress } from "utils";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+import { routers } from "utils/functions";
 import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
 import RouterSelect from "../RouterSelect";
 
 import { useFarmDeploymentInfo } from "./hooks";
 import { DashboardContext } from "contexts/DashboardContext";
-import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const SelectToken = ({ setStep }) => {
+const SelectToken = ({ step, setStep, lpInfo, lpAddress, setLPAddress }) => {
   const { chainId } = useActiveChainId();
   const { tokenList: supportedTokens }: any = useContext(DashboardContext);
   const { tokenAddress, setTokenAddress, routerAddress, setRouterAddress } = useFarmDeploymentInfo();
@@ -30,7 +34,9 @@ const SelectToken = ({ setStep }) => {
       setSelectedToken(null);
     }
   }, [token, chainId, supportedTokens.length]);
-
+  
+  const token0Address: any = lpInfo && isAddress(lpInfo.token0.address);
+  const token1Address: any = lpInfo && isAddress(lpInfo.token1.address);
   return (
     <div>
       <div>
@@ -38,33 +44,64 @@ const SelectToken = ({ setStep }) => {
           <div className="mb-1">1.Select deployment network:</div>
           <ChainSelect />
         </div>
-        <div className={tokenAddress ? "text-white" : "text-[#FFFFFF40]"}>
-          <div className="mb-1">2. Select token:</div>
-          <StyledInput
-            placeholder={`Search by contract address...`}
-            value={token}
-            onChange={(e) => {
-              setToken(e.target.value);
-            }}
-          />
+        <div>
+          <div className="mb-1 text-white">2. Select router:</div>
+          <RouterSelect />
         </div>
       </div>
-      <div className="flex h-[130px] items-center justify-center text-[#FFFFFF40]">
-        {tokenAddress ? (
+
+      <div className="mt-6">
+        <div className={`mb-1 ${lpInfo ? "text-white" : ""}`}>3. Select token:</div>
+        <input
+          className="h-[55px] w-full rounded-lg bg-[#FFFFFF0D] p-[16px_14px] text-base text-white outline-none"
+          placeholder={`Search by contract address...`}
+          value={lpAddress}
+          onChange={(e) => {
+            setLPAddress(e.target.value);
+          }}
+        />
+      </div>
+      <div className="mb-3 flex h-[130px] items-center justify-center text-[#FFFFFF40]">
+        {lpInfo ? (
           <div className="w-full text-sm text-white">
-            <div className="text-center">Token found!</div>
-            <div className="mt-3 flex w-full items-center justify-center">
+            <div className="text-center">LP Token found!</div>
+            <div className="mt-3 flex items-center">
               <img
-                src={
-                  selectedToken.logoURI
-                    ? selectedToken.logoURI
-                    : getTokenLogoURL(selectedToken.address, selectedToken.chainId)
-                }
-                className="mr-1.5 h-7 w-7 rounded-full bg-[#D9D9D9]"
-                alt="logo"
+                src={routers[lpInfo.chainId][0].image}
+                alt={""}
+                className="mr-4 block h-7 w-7 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)] sm:hidden"
+                onError={(e: any) => {
+                  e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                }}
               />
-              <div className="flex-1 overflow-hidden  text-ellipsis whitespace-nowrap xsm:flex-none">
-                {tokenAddress}
+              <div className="relative mx-auto flex w-fit items-center overflow-hidden text-ellipsis whitespace-nowrap sm:flex sm:overflow-visible">
+                <img
+                  src={routers[lpInfo.chainId][0].image}
+                  alt={""}
+                  className="absolute -left-12 top-0 hidden h-7 w-7 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)] sm:block"
+                  onError={(e: any) => {
+                    e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                  }}
+                />
+                <img
+                  src={getTokenLogoURL(token0Address, lpInfo.chainId)}
+                  alt={""}
+                  className="h-7 w-7 rounded-full"
+                  onError={(e: any) => {
+                    e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                  }}
+                />
+                <img
+                  src={getTokenLogoURL(token1Address, lpInfo.chainId)}
+                  alt={""}
+                  className="-ml-3 h-7 w-7 rounded-full"
+                  onError={(e: any) => {
+                    e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                  }}
+                />
+                <div className="ml-2 flex-1  overflow-hidden text-ellipsis whitespace-nowrap xsm:flex-none">
+                  {lpInfo.address}
+                </div>
               </div>
             </div>
           </div>
@@ -74,13 +111,9 @@ const SelectToken = ({ setStep }) => {
           "Not Found"
         )}
       </div>
-      <div className="mb-8">
-        <div className="mb-1">3. Select router:</div>
-        <RouterSelect />
-      </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="primary" onClick={() => setStep(2)} disabled={!tokenAddress}>
+        <StyledButton type="primary" onClick={() => setStep(2)} disabled={!lpInfo}>
           Next
         </StyledButton>
       </div>
@@ -88,14 +121,4 @@ const SelectToken = ({ setStep }) => {
   );
 };
 
-const StyledInput = styled.input`
-  width: 100%;
-  height: 55px;
-  padding: 16px 14px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  color: white;
-  outline: none;
-`;
 export default SelectToken;

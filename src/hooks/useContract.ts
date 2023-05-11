@@ -25,6 +25,7 @@ import {
   getLockupStakingContract,
   getContract,
   getIndexContract,
+  getBrewlabsFeeManagerContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -151,6 +152,13 @@ export function useTokenTransferContract(withSignerIfPossible?: boolean): Contra
   return useContract(getTokenTransferAddress(chainId), ConstructorABI, withSignerIfPossible);
 }
 
+export const useBrewlabsFeeManager = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(
+    () => getBrewlabsFeeManagerContract(chainId, signer ?? undefined),
+    [chainId, signer]
+  );
+};
 export function useExternalMasterchef(withSignerIfPossible?: boolean, chef = Chef.MASTERCHEF): Contract | null {
   const [appId] = useAppId();
   return useContract(getExternalMasterChefAddress(appId, chef), ExternalMasterChefABI, withSignerIfPossible);
