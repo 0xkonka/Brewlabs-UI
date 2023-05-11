@@ -29,7 +29,7 @@ const FarmDeployer = ({ setOpen }) => {
           setRewardToken={setRewardToken}
         />
       ) : (
-        <Deploy step={step} setStep={setStep} setOpen={setOpen} />
+        ""
       )}
     </div>
   );
