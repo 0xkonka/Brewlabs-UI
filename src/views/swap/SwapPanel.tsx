@@ -179,7 +179,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const parsedAmounts = {
     [Field.INPUT]: noLiquidity ? parsedAmount : independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
     [Field.OUTPUT]: noLiquidity
-      ? query?.amount
+      ? query?.amountOut
       : independentField === Field.OUTPUT
       ? parsedAmount
       : trade?.outputAmount,

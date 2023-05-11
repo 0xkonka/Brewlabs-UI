@@ -2,10 +2,8 @@ import { Currency, CurrencyAmount, TokenAmount, Token } from "@brewlabs/sdk";
 import useENS from "@hooks/ENS/useENS";
 import { ethers } from "ethers";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import common from "mocha/lib/interfaces/common";
 import { useEffect, useMemo, useState } from "react";
 import { Field } from "state/swap/actions";
-import { tryParseAmount } from "state/swap/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, isAddress, shortenAddress } from "utils";
 import { getAggregatorContract } from "utils/contractHelpers";
@@ -43,7 +41,7 @@ export const useSwapAggregator = (
     };
   }, [amountIn, currencies]);
 
-  const [query, setQuery] = useState<{ amount: CurrencyAmount }>();
+  const [query, setQuery] = useState<any>();
 
   useEffect(() => {
     if (!contract || !callParams) return;
@@ -55,7 +53,13 @@ export const useSwapAggregator = (
           currencies[Field.OUTPUT] instanceof Token
             ? new TokenAmount(currencies[Field.OUTPUT], outputValue)
             : new CurrencyAmount(currencies[Field.OUTPUT], outputValue);
-        if (outputAmount) setQuery({ amount: outputAmount });
+        if (outputAmount)
+          setQuery({
+            amountOut: outputAmount,
+            amounts: response.amounts,
+            path: response.path,
+            adapters: response.adapters,
+          });
       })
       .catch((error: any) => {
         console.error(error);
@@ -69,12 +73,20 @@ export const useSwapAggregator = (
     }
     return {
       callback: async function onSwap() {
-        const { args, value } = callParams;
+        const args = [
+          [
+            query.amounts[0],
+            query.amounts[query.amounts.length - 1],
+            query.path,
+            query.adapters
+          ],
+          recipient
+        ]
         console.log(args);
-        const options = value ? { value } : {};
-        const methodName = "swapAggregationCall";
-        const gasEstimate = await contract.estimateGas[methodName](...[...args, recipient], options);
-        return contract[methodName](...[...args, recipient], {
+        const options = callParams.value ? { value: callParams.value } : {};
+        const methodName = currencies[Field.INPUT].isNative ? "swapNoSplitFromETH" : currencies[Field.OUTPUT].isNative ? "swapNoSplitToETH" : "swapNoSplit";
+        const gasEstimate = await contract.estimateGas[methodName](...args, options);
+        return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           ...(options.value ? { value: options.value, from: account } : { from: account }),
         })
