@@ -28,7 +28,7 @@ export default {
   },
   aggregator: {
     1: '0x9d14a2ca0fa173c0db039c6bcc638c2903382bf7',
-    56: '0x34Fb087D17D269F67852834Cdf63868554b6dc07',
+    56: '0x64E5394ab105c0fa06fA1F57194254DCcA4B2966',
     97: '0x7F14B8B4Cc043d9e38723bb24449AB7013512252',
   },
   zapper: {

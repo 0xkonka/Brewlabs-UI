@@ -1,18 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import React, { useEffect, useState } from "react";
 
-import {
-  ChevronDownIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/24/outline";
-
-import { ETH_ADDRESSES } from "config/constants";
-import { useCurrency } from "hooks/Tokens";
-import { tryParseAmount } from "state/swap/hooks";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "contexts/localization";
 import { formatDecimals } from "utils/formatBalance";
-
+import { Adapters } from "config/constants/aggregator";
+import useActiveWeb3React from "@hooks/useActiveWeb3React";
 interface TradeCardProps {
   data: any;
   slippage: number;
@@ -22,22 +14,11 @@ interface TradeCardProps {
 }
 
 const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax }) => {
+  const { chainId } = useActiveWeb3React();
   const { t } = useTranslation();
 
   const [priceInverted, setPriceInverted] = useState<boolean>(false);
   const [tradePanelToggled, setTradePanelToggled] = useState<boolean>(undefined);
-
-  const currency = useCurrency(ETH_ADDRESSES.includes(data.toToken.address) ? "ETH" : data.toToken.address);
-  const minAmount = BigNumber.from(data.toTokenAmount)
-    .mul(10000 - slippage)
-    .div(10000);
-  const formattedMinAmount = formatUnits(minAmount, data.toToken.decimals);
-  const minCurrencyAmount = tryParseAmount(formattedMinAmount, currency);
-  const minimumReceived = Number(minCurrencyAmount?.toExact());
-  const formattedMiniumReceived =
-    minimumReceived > 1
-      ? formatDecimals(Math.floor(minimumReceived).toString())
-      : formatDecimals(minCurrencyAmount?.toSignificant());
 
   useEffect(() => {
     if (!price) setTradePanelToggled(undefined);
@@ -85,57 +66,19 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
               </p>
             </div>
             <div
-              className="flex items-center gap-2 hover:opacity-70"
+              className="flex items-center"
               onClick={() => setTradePanelToggled(!tradePanelToggled)}
             >
-              <button className="btn-protocol-shadow hidden rounded rounded-2xl bg-primary px-3 text-xs text-black sm:block">
-                {data.protocols[0][0][0].name.split("_")[0]}
-              </button>
-              <ChevronDownIcon className="h-4 w-4 dark:text-primary" />
+              {[...new Set(data.adapters)].map((address, index) => (
+                <img
+                  className={`${index > 0 ? '-ml-3' : ''} h-8 w-8 rounded-full`}
+                  src={Adapters[chainId][address].logo}
+                  alt={Adapters[chainId][address].name}
+                  key={index}
+                />
+              ))}
             </div>
           </div>
-          {tradePanelToggled ? (
-            <div className="mt-1 flex justify-between">
-              <div className="min-w-[190px]">
-                <div className="ml-1">
-                  <span className="flex justify-between">
-                    <p className="text-[11px]">
-                      <span className="text-primary">Buy</span>&nbsp;tax
-                    </p>
-                    <p className="text-[11px]">{buyTax ? `${buyTax}%` : "-"}</p>
-                  </span>
-                  <span className="flex justify-between">
-                    <p className="text-[11px]">
-                      <span className="text-primary">Sell</span>&nbsp;tax
-                    </p>
-                    <p className="text-[11px]">{sellTax ? `${sellTax}%` : "-"}</p>
-                  </span>
-                  <span className="flex justify-between">
-                    <p className="text-[11px]">{t("Minimum Received")}</p>
-                    <p className="text-[11px]">
-                      {formattedMiniumReceived.includes("sub") ? (
-                        <>
-                          0.0
-                          <span style={{ fontSize: "9px" }}>
-                            <sub>
-                              {formattedMiniumReceived[3] === "0"
-                                ? formattedMiniumReceived[9]
-                                : formattedMiniumReceived.slice(8, 10)}
-                            </sub>
-                          </span>
-                          {formattedMiniumReceived.slice(16)}
-                        </>
-                      ) : (
-                        formattedMiniumReceived
-                      )}
-                      &nbsp;
-                      {data.toToken.symbol}
-                    </p>
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : null}
         </div>
       ) : null}
     </>
