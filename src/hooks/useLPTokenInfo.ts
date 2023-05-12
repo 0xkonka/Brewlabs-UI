@@ -1,80 +1,88 @@
-import { Currency, CurrencyAmount } from "@brewlabs/sdk";
-import { useMemo, useState } from "react";
-
-import { useTokenContract } from "./useContract";
-import { useSingleCallResult } from "../state/multicall/hooks";
-import { useSlowRefreshEffect } from "./useRefreshEffect";
-import axios from "axios";
+import { useState } from "react";
 import { ethers } from "ethers";
-import { getBep20Contract } from "utils/contractHelpers";
+
+import erc20Abi from "config/abi/erc20.json";
+import lpTokenAbi from "config/abi/lpToken.json";
+import multicall from "utils/multicall";
+
+import { useSlowRefreshEffect } from "./useRefreshEffect";
 
 function useLPTokenInfo(address: string, chainId: number) {
   const [pair, setPair] = useState(null);
+
   async function fetchInfo() {
     try {
-      if (chainId === 1) {
-        let result: any = await axios.post("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", {
-          query: `{
-          pair(id: "${address.toLowerCase()}") {
-            id
-            totalSupply
-            token0 {
-              decimals
-              name
-              symbol
-              id
-            }
-            token1 {
-              decimals
-              name
-              symbol
-              id
-            }
-          }
-        }`,
-        });
-        result = result.data.data.pair;
-        setPair({
+      const calls = [
+        {
           address,
-          chainId,
-          token0: { ...result.token0, address: result.token0.id },
-          token1: { ...result.token0, address: result.token1.id },
-          totalSupply: result.totalSupply,
-        });
-      }
-      if (chainId === 56) {
-        const tokenContract = getBep20Contract(chainId, address);
-        let result: any = await Promise.all([
-          axios.post("https://api.thegraph.com/subgraphs/name/bluesea321/pancakeswap-pair", {
-            query: `{
-          pair(id: "${address}") {
-            token0 {
-              name
-              symbol
-              decimals
-              id
-            }
-            token1 {
-              decimals
-              id
-              name
-              symbol
-            }
-          }
-        }`,
-          }),
-          tokenContract.totalSupply(),
-        ]);
-        const pair = result[0].data.data.pair;
-        setPair({
+          name: "token0",
+        },
+        {
           address,
-          chainId,
-          token0: { ...pair.token0, address: pair.token0.id },
-          token1: { ...pair.token1, address: pair.token1.id },
-          totalSupply: result[1] / Math.pow(10, 18),
-        });
-      }
+          name: "token1",
+        },
+        {
+          address,
+          name: "totalSupply",
+        },
+        {
+          address,
+          name: "factory",
+        },
+      ];
+      const result = await multicall(lpTokenAbi, calls, chainId);
+
+      const tokenInfos = await multicall(
+        erc20Abi,
+        [
+          {
+            address: result[0][0],
+            name: "name",
+          },
+          {
+            address: result[0][0],
+            name: "symbol",
+          },
+          {
+            address: result[0][0],
+            name: "decimals",
+          },
+          {
+            address: result[1][0],
+            name: "name",
+          },
+          {
+            address: result[1][0],
+            name: "symbol",
+          },
+          {
+            address: result[1][0],
+            name: "decimals",
+          },
+        ],
+        chainId
+      );
+
+      let data = {
+        address,
+        token0: {
+          address: result[0][0],
+          name: tokenInfos[0][0],
+          symbol: tokenInfos[1][0],
+          decimals: tokenInfos[2][0] / 1,
+        },
+        token1: {
+          address: result[1][0],
+          name: tokenInfos[3][0],
+          symbol: tokenInfos[4][0],
+          decimals: tokenInfos[5][0] / 1,
+        },
+        totalSupply: result[2][0] / Math.pow(10, 18),
+        factory: result[3][0],
+      };
+      setPair(data);
     } catch (e) {
+      setPair(null);
       console.log(e);
     }
   }

@@ -1,17 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
-import StyledButton from "../../StyledButton";
-import {  useEffect, useState } from "react";
-import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
-import { numberWithCommas, routers } from "utils/functions";
-import getTokenLogoURL from "utils/getTokenLogoURL";
-import { isAddress } from "utils";
-import DropDown from "components/dashboard/TokenList/Dropdown";
-import TokenSelect from "../TokenSelect";
-import useTotalSupply from "@hooks/useTotalSupply";
-import { useCurrency } from "@hooks/Tokens";
+import { useEffect, useState } from "react";
 
-const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken }) => {
+import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
+import { useCurrency } from "hooks/Tokens";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import useTotalSupply from "hooks/useTotalSupply";
+import { isAddress } from "utils";
+import { getDexLogo, numberWithCommas } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import DropDown from "components/dashboard/TokenList/Dropdown";
+
+import StyledButton from "../../StyledButton";
+import TokenSelect from "../TokenSelect";
+
+const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
+  const { chainId } = useActiveChainId();
+
+  const [rewardToken, setRewardToken] = useState(null);
   const [withdrawFee, setWithdrawFee] = useState(1);
   const [initialSupply, setInitialSupply] = useState(1);
   const [duration, setDuration] = useState(0);
@@ -20,6 +27,19 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
   totalSupply = totalSupply ?? 0;
   const token0Address: any = lpInfo && isAddress(lpInfo.token0.address);
   const token1Address: any = lpInfo && isAddress(lpInfo.token1.address);
+
+  const [token, setToken] = useState("");
+  const [selectedToken, setSelectedToken] = useState(null);
+  // useEffect(() => {
+  //   const _candidate = supportedTokens.find((t) => t.chainId === chainId && t.address === token);
+  //   if (_candidate) {
+  //     setTokenAddress(_candidate.address);
+  //     setSelectedToken(_candidate);
+  //   } else {
+  //     setTokenAddress(null);
+  //     setSelectedToken(null);
+  //   }
+  // }, [token, chainId, supportedTokens.length]);
 
   useEffect(() => {
     if (step === 3) {
@@ -49,36 +69,36 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
         <div className="mx-auto flex items-center justify-between sm:mx-0">
           <img
-            src={routers[lpInfo.chainId][0].image}
+            src={getDexLogo(router?.id)}
             alt={""}
             className="h-8 w-8 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)]"
             onError={(e: any) => {
-              e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+              e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
             }}
           />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>
           <div className="flex items-center">
             <img
-              src={getTokenLogoURL(token0Address, lpInfo.chainId)}
+              src={getTokenLogoURL(token0Address, chainId)}
               alt={""}
               className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
               onError={(e: any) => {
-                e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
               }}
             />
 
             <div className="-ml-2 mr-2">
               <img
-                src={getTokenLogoURL(token1Address, lpInfo.chainId)}
+                src={getTokenLogoURL(token1Address, chainId)}
                 alt={""}
                 className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
                 onError={(e: any) => {
-                  e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                  e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
                 }}
               />
             </div>
             <div>
-              {lpInfo.token0.symbol}-{lpInfo.token1.symbol} Yield farm
+              {lpInfo?.token0?.symbol}-{lpInfo?.token1?.symbol} Yield farm
             </div>
           </div>
         </div>

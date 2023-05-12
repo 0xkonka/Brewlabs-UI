@@ -1,17 +1,12 @@
 import { CurrencyAmount, JSBI, Percent } from "@brewlabs/sdk";
 import { getAddress } from "@ethersproject/address";
 import { BigNumber } from "@ethersproject/bignumber";
-import { AddressZero } from "@ethersproject/constants";
-import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
-import { Contract } from "ethers";
-import { ROUTER_ADDRESS } from "config/constants";
-import IUniswapV2Router02ABI from "config/abi/swap/IUniswapV2Router02.json"
 
-export function isAddress(value: any): string | false {
+export function isAddress(value: any): string {
   try {
     return getAddress(value);
   } catch {
-    return false;
+    return "";
   }
 }
 

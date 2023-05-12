@@ -2,32 +2,32 @@
 import SelectToken from "./SelectToken";
 import Deploy from "./Deploy";
 
-import { useEffect } from "react";
-import { useFarmDeploymentInfo } from "./hooks";
 import { useState } from "react";
 import useLPTokenInfo from "@hooks/useLPTokenInfo";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 
-
 const FarmDeployer = ({ setOpen }) => {
   const { chainId } = useActiveChainId();
-  const [lpAddress, setLPAddress] = useState("");
-  const [rewardToken, setRewardToken] = useState(null);
+
+  const [step, setStep] = useState(1);
+  const [router, setRouter] = useState<any>({ name: "" });
+  const [lpAddress, setLpAddress] = useState("");
+
   const lpInfo = useLPTokenInfo(lpAddress, chainId);
-  const {step, setStep} = useFarmDeploymentInfo()
+
   return (
     <div>
       {step === 1 ? (
-        <SelectToken step={step} setStep={setStep} lpInfo={lpInfo} lpAddress={lpAddress} setLPAddress={setLPAddress} />
-      ) : step > 1 ? (
-        <Deploy
-          step={step}
+        <SelectToken
           setStep={setStep}
-          setOpen={setOpen}
+          router={router}
+          setRouter={setRouter}
+          lpAddress={lpAddress}
+          setLpAddress={setLpAddress}
           lpInfo={lpInfo}
-          rewardToken={rewardToken}
-          setRewardToken={setRewardToken}
         />
+      ) : step > 1 ? (
+        <Deploy setOpen={setOpen} step={step} setStep={setStep} router={router} lpInfo={lpInfo} />
       ) : (
         ""
       )}
