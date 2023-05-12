@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useContext } from "react";
-import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP } from "@brewlabs/sdk";
+import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -179,7 +179,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const parsedAmounts = {
     [Field.INPUT]: noLiquidity ? parsedAmount : independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
     [Field.OUTPUT]: noLiquidity
-      ? query?.amountOut
+      ? query?.outputAmount
       : independentField === Field.OUTPUT
       ? parsedAmount
       : trade?.outputAmount,
@@ -191,6 +191,19 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     [independentField]: typedValue,
     [dependentField]: parsedAmounts[dependentField]?.toSignificant(6) ?? "",
   };
+
+  const price = useMemo(() => {
+    if (
+      !query ||
+      !query.inputAmount ||
+      !query.outputAmount ||
+      !currencies[Field.INPUT] ||
+      !currencies[Field.OUTPUT] ||
+      query.inputAmount.equalTo(0)
+    )
+      return undefined;
+    return new Price(currencies[Field.INPUT], currencies[Field.OUTPUT], query.inputAmount.raw, query.outputAmount.raw);
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], query]);
 
   return (
     <>
@@ -228,9 +241,9 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
           balance={currencyBalances[Field.OUTPUT]}
-          data={undefined}
+          data={query}
           slippage={autoMode ? slippage : userSlippageTolerance}
-          price={0} // hardcoded to 0
+          price={price}
           buyTax={buyTax}
           sellTax={sellTax}
           currencies={currencies}

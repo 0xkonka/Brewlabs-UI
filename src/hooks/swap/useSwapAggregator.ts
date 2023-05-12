@@ -53,9 +53,15 @@ export const useSwapAggregator = (
           currencies[Field.OUTPUT] instanceof Token
             ? new TokenAmount(currencies[Field.OUTPUT], outputValue)
             : new CurrencyAmount(currencies[Field.OUTPUT], outputValue);
+        const inputValue = response.amounts[0];
+        const inputAmount =
+          currencies[Field.INPUT] instanceof Token
+            ? new TokenAmount(currencies[Field.INPUT], inputValue)
+            : new CurrencyAmount(currencies[Field.INPUT], inputValue);
         if (outputAmount)
           setQuery({
-            amountOut: outputAmount,
+            inputAmount,
+            outputAmount,
             amounts: response.amounts,
             path: response.path,
             adapters: response.adapters,
@@ -82,7 +88,6 @@ export const useSwapAggregator = (
           ],
           recipient
         ]
-        console.log(args);
         const options = callParams.value ? { value: callParams.value } : {};
         const methodName = currencies[Field.INPUT].isNative ? "swapNoSplitFromETH" : currencies[Field.OUTPUT].isNative ? "swapNoSplitToETH" : "swapNoSplit";
         const gasEstimate = await contract.estimateGas[methodName](...args, options);
