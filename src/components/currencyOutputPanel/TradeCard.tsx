@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "contexts/localization";
@@ -26,6 +26,8 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
 
   const formattedPrice = formatDecimals(price?.toSignificant(6) ?? "0.0");
   const formattedInvertedPrice = formatDecimals(price?.invert()?.toSignificant(6) ?? "0.0");
+
+  const adapters = useMemo(() => [...new Set(data.adapters)], [data.adapters]);
 
   return (
     <>
@@ -65,13 +67,15 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                 )}
               </p>
             </div>
-            <div
-              className="flex items-center"
-              onClick={() => setTradePanelToggled(!tradePanelToggled)}
-            >
-              {[...new Set(data.adapters)].map((address, index) => (
+            <div className="flex items-center" onClick={() => setTradePanelToggled(!tradePanelToggled)}>
+              {adapters.length > 1 && (
+                <button className="btn-protocol-shadow hidden rounded rounded-2xl bg-primary px-3 mr-2 text-xs text-black sm:block">
+                  MULTI
+                </button>
+              )}
+              {adapters.map((address, index) => (
                 <img
-                  className={`${index > 0 ? '-ml-3' : ''} h-8 w-8 rounded-full`}
+                  className={`${index > 0 ? "-ml-2" : ""} h-6 w-6 rounded-full`}
                   src={Adapters[chainId][address].logo}
                   alt={Adapters[chainId][address].name}
                   key={index}
