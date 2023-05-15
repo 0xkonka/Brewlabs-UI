@@ -9,8 +9,10 @@ import { useSlowRefreshEffect } from "./useRefreshEffect";
 
 function useLPTokenInfo(address: string, chainId: number) {
   const [pair, setPair] = useState(null);
+  const [pending, setPending] = useState(false)
 
   async function fetchInfo() {
+    setPending(true)
     try {
       const calls = [
         {
@@ -85,6 +87,7 @@ function useLPTokenInfo(address: string, chainId: number) {
       setPair(null);
       console.log(e);
     }
+    setPending(false)
   }
   useSlowRefreshEffect(() => {
     if (!ethers.utils.isAddress(address)) {
@@ -93,7 +96,7 @@ function useLPTokenInfo(address: string, chainId: number) {
     }
     fetchInfo();
   }, [address]);
-  return pair;
+  return {pair, pending};
 }
 
 export default useLPTokenInfo;

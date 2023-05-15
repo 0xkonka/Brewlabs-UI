@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import { useCurrency } from "hooks/Tokens";
@@ -64,6 +64,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       </div>
     );
   };
+
   return (
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">

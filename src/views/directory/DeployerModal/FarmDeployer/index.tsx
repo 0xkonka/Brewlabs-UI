@@ -27,7 +27,7 @@ const FarmDeployer = ({ setOpen }) => {
           lpInfo={lpInfo}
         />
       ) : step > 1 ? (
-        <Deploy setOpen={setOpen} step={step} setStep={setStep} router={router} lpInfo={lpInfo} />
+        <Deploy setOpen={setOpen} step={step} setStep={setStep} router={router} lpInfo={lpInfo?.pair} />
       ) : (
         ""
       )}

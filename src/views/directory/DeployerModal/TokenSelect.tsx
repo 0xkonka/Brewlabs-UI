@@ -9,17 +9,20 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 const TokenSelect = ({ token, setToken }) => {
+  const { chainId } = useActiveChainId();
+  const { tokens, tokenList: supportedTokens }: any = useContext(DashboardContext);
+
   const [criteria, setCriteria] = useState("");
   const [open, setOpen] = useState(false);
-  const { tokens }: any = useContext(DashboardContext);
-  const { chainId } = useActiveChainId();
   const dropdownRef: any = useRef();
-  const filteredList = tokens.filter(
-    (data) =>
-      data.address.includes(criteria.toLowerCase()) ||
-      data.name.toLowerCase().includes(criteria.toLowerCase()) ||
-      data.symbol.toLowerCase().includes(criteria.toLowerCase())
-  );
+  const filteredList = tokens
+    .filter((t) => supportedTokens.map((st) => st.address.toLowerCase()).includes(t.address.toLowerCase()))
+    .filter(
+      (data) =>
+        data.address.includes(criteria.toLowerCase()) ||
+        data.name.toLowerCase().includes(criteria.toLowerCase()) ||
+        data.symbol.toLowerCase().includes(criteria.toLowerCase())
+    );
 
   useEffect(() => {
     document.addEventListener("mouseup", function (event) {

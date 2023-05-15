@@ -15,10 +15,10 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
   const { chainId } = useActiveChainId();
   const { tokenList: supportedTokens }: any = useContext(DashboardContext);
 
-  const token0Address = isAddress(lpInfo?.token0.address);
-  const token1Address = isAddress(lpInfo?.token1.address);
+  const token0Address = isAddress(lpInfo?.pair?.token0.address);
+  const token1Address = isAddress(lpInfo?.pair?.token1.address);
   const notSupported =
-    router?.factory?.toLowerCase() !== lpInfo?.factory?.toLowerCase() ||
+    router?.factory?.toLowerCase() !== lpInfo?.pair?.factory?.toLowerCase() ||
     supportedTokens
       .filter((t) => t.chainId === chainId)
       .map(
@@ -41,7 +41,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
       </div>
 
       <div className="mt-6">
-        <div className={`mb-1 ${lpInfo ? "text-white" : ""}`}>3. Select token:</div>
+        <div className={`mb-1 ${lpInfo.pair ? "text-white" : ""}`}>3. Select token:</div>
         <input
           className="h-[55px] w-full rounded-lg bg-[#FFFFFF0D] p-[16px_14px] text-base text-white outline-none"
           placeholder={`Search by contract address...`}
@@ -52,7 +52,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
         />
       </div>
       <div className="mb-3 flex h-[130px] items-center justify-center text-[#FFFFFF40]">
-        {lpInfo ? (
+        {lpInfo.pair ? (
           <div className="w-full text-sm text-white">
             <div className="text-center">{notSupported ? "Provided LP token is not supported" : `LP Token found!`}</div>
             {!notSupported && (
@@ -91,13 +91,13 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
                     }}
                   />
                   <div className="ml-2 flex-1  overflow-hidden text-ellipsis whitespace-nowrap xsm:flex-none">
-                    {lpInfo.address}
+                    {lpInfo.pair.address}
                   </div>
                 </div>
               </div>
             )}
           </div>
-        ) : lpAddress === "" ? (
+        ) : (lpAddress === "" || lpInfo.pending) ? (
           "Pending..."
         ) : (
           "Not Found"
@@ -111,7 +111,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
             setStep(2);
             console.log("##########");
           }}
-          disabled={!lpInfo || notSupported}
+          disabled={!lpInfo?.pair || notSupported}
         >
           Next
         </StyledButton>
