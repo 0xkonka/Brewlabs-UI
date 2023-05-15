@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
-import { Dialog } from "@headlessui/react";
-import styled from "styled-components";
-import StyledButton from "../StyledButton";
-import { checkCircleSVG, chevronLeftSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import { useEffect, useState } from "react";
-
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Dialog } from "@headlessui/react";
+import { AnimatePresence, motion } from "framer-motion";
 import Carousel from "react-multi-carousel";
+import styled from "styled-components";
+
+import { checkCircleSVG, chevronLeftSVG, UploadSVG } from "components/dashboard/assets/svgs";
+
+import StyledButton from "../StyledButton";
 import FarmDeployer from "./FarmDeployer";
 import PoolDeployer from "./PoolDeployer";
 import IndexDeployer from "./IndexDeployer";
@@ -53,7 +54,7 @@ const HeroSection = ({
   };
   return (
     <div className="text-white">
-      <div className="mt-3.5 mb-2">
+      <div className="mb-2 mt-3.5">
         Welcome to the Brewlabs product deployer wizard. Using this wizard will allow you to deploy a range of Brewlabs
         products.
       </div>
@@ -112,7 +113,9 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
       <Dialog
         open={open}
         className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          step <= 2 && setOpen(false);
+        }}
       >
         <div className="flex min-h-full items-center justify-center p-4 ">
           <motion.div
@@ -147,7 +150,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               ) : deployType === "Staking Pool" ? (
                 <PoolDeployer setOpen={setOpen} />
               ) : deployType === "Yield Farm" ? (
-                <FarmDeployer setOpen={setOpen} />
+                <FarmDeployer setOpen={setOpen} step={step} setStep={setStep} />
               ) : deployType === "Index" ? (
                 <IndexDeployer setOpen={setOpen} />
               ) : (
@@ -155,7 +158,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               )}
 
               <button
-                onClick={() => setOpen(false)}
+                onClick={() => step <= 2 && setOpen(false)}
                 className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>

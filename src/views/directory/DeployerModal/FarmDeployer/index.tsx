@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useState } from "react";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import useLPTokenInfo from "@hooks/useLPTokenInfo";
 import SelectToken from "./SelectToken";
 import Deploy from "./Deploy";
 
-import { useState } from "react";
-import useLPTokenInfo from "@hooks/useLPTokenInfo";
-import { useActiveChainId } from "@hooks/useActiveChainId";
 
-const FarmDeployer = ({ setOpen }) => {
+const FarmDeployer = ({ setOpen, step, setStep }) => {
   const { chainId } = useActiveChainId();
 
-  const [step, setStep] = useState(1);
   const [router, setRouter] = useState<any>({ name: "" });
   const [lpAddress, setLpAddress] = useState("");
 
@@ -27,7 +26,13 @@ const FarmDeployer = ({ setOpen }) => {
           lpInfo={lpInfo}
         />
       ) : step > 1 ? (
-        <Deploy setOpen={setOpen} step={step} setStep={setStep} router={router} lpInfo={lpInfo?.pair} />
+        <Deploy
+          setOpen={setOpen}
+          step={step}
+          setStep={setStep}
+          router={router}
+          lpInfo={lpInfo?.pair}
+        />
       ) : (
         ""
       )}

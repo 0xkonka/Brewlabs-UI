@@ -1,71 +1,178 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState } from "react";
+import { ethers } from "ethers";
+import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useSigner } from "wagmi";
 
-import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
+import FarmFactoryAbi from "config/abi/farm/factory.json";
+import FarmImplAbi from "config/abi/farm/farmImpl.json";
+
 import { DashboardContext } from "contexts/DashboardContext";
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { useCurrency } from "hooks/Tokens";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useTokenApprove } from "hooks/useApprove";
 import useTotalSupply from "hooks/useTotalSupply";
-import { isAddress } from "utils";
-import { getDexLogo, numberWithCommas } from "utils/functions";
+import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
+import { useFarmFactories } from "state/deploy/hooks";
+import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
+import { calculateGasMargin, isAddress } from "utils";
+import { getContract } from "utils/contractHelpers";
+import { getDexLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
+import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import DropDown from "components/dashboard/TokenList/Dropdown";
-
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
-import { ethers } from "ethers";
+import { useFarmFactory } from "./hooks";
 
 const DURATIONS = [60, 90, 180, 365];
-const DEPLOY_FEE = 0;
 
 const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
+  const dispatch = useAppDispatch();
   const { chainId } = useActiveChainId();
-  const { pending, setPending }: any = useContext(DashboardContext);
+  const { data: signer } = useSigner();
+
+  const { pending, setPending, tokens }: any = useContext(DashboardContext);
+
+  const factory = useFarmFactories(chainId);
+  const { onCreate } = useFarmFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const { onApprove } = useTokenApprove();
 
   const [duration, setDuration] = useState(0);
   const [rewardToken, setRewardToken] = useState(null);
   const [initialSupply, setInitialSupply] = useState(1);
   const [depositFee, setDepositFee] = useState(0);
   const [withdrawFee, setWithdrawFee] = useState(0);
-  const [farmAddr, setFarmAddr] = useState("")
+  const [farmAddr, setFarmAddr] = useState("");
 
   const rewardCurrency: any = useCurrency(rewardToken?.address);
+  const rewardTokenBalance = tokens.find((t) => t.address === rewardCurrency?.address.toLowerCase())?.balance ?? 0;
+
   let totalSupply: any = useTotalSupply(rewardCurrency);
   totalSupply = totalSupply ?? 0;
   const token0Address: any = lpInfo && isAddress(lpInfo.token0.address);
   const token1Address: any = lpInfo && isAddress(lpInfo.token1.address);
 
-  const handleDeploy = async () => {
-    setStep(3);
-    // approve paying token for deployment
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
 
-    // deploy farm contract
+  const handleDeploy = async () => {
+    if (rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100) {
+      toast.error("Insufficient reward token");
+      return;
+    }
+
+    if (step === 4) {
+      handleTransferRewards(farmAddr);
+      return;
+    } else if (step === 5) {
+      handleStartFarming(farmAddr);
+      return;
+    }
+
+    setStep(3);
+
     const rewardPerBlock = ethers.utils.parseUnits(
-      ((totalSupply * initialSupply) / 100).toString(),
+      ((totalSupply.toFixed(2) * initialSupply) / 100).toString(),
       rewardCurrency.decimals
     );
     const hasDividend = false;
     const dividendToken = ethers.constants.AddressZero;
 
-    setTimeout(handleTransferRewards, 5000);
+    setPending(true);
+    setFarmAddr("");
+
+    try {
+      // approve paying token for deployment
+      if (factory.payingToken.isToken && +factory.serviceFee > 0) {
+        await onApprove(factory.payingToken.address, factory.address);
+      }
+
+      // deploy farm contract
+      const tx = await onCreate(
+        lpInfo.address,
+        rewardCurrency.address,
+        dividendToken,
+        rewardPerBlock.toString(),
+        depositFee * 100,
+        withdrawFee * 100,
+        hasDividend
+      );
+
+      let farm = "";
+      const iface = new ethers.utils.Interface(FarmFactoryAbi);
+      for (let i = 0; i < tx.logs.length; i++) {
+        try {
+          const log = iface.parseLog(tx.logs[i]);
+          if (log.name === "FarmCreated") {
+            console.log(log.args.farm);
+            farm = log.args.farm;
+            setFarmAddr(log.args.farm);
+            break;
+          }
+        } catch (e) {}
+      }
+
+      handleTransferRewards(farm);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(chainId));
+      setStep(2);
+    }
+    setPending(false);
   };
 
-  const handleTransferRewards = async () => {
+  const handleTransferRewards = async (farm) => {
     setStep(4);
+    setPending(true);
 
-    // approve reward token 
+    try {
+      const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
 
-    // calls depositRewards method
-    
-    setTimeout(handleStartFarming, 5000);
+      // approve reward token
+      await onApprove(rewardCurrency.address, farm);
+
+      // calls depositRewards method
+      let amount = await farmContract.insufficientRewards();
+      let gasLimit = await farmContract.estimateGas.depositRewards(amount);
+      gasLimit = calculateGasMargin(gasLimit);
+
+      const tx = await farmContract.depositRewards(amount, { gasLimit });
+      await tx.wait();
+
+      handleStartFarming(farm);
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
   };
 
-  const handleStartFarming = async () => {
+  const handleStartFarming = async (farm) => {
     setStep(5);
+    setPending(true);
 
-    setTimeout(() => setStep(6), 5000);
+    try {
+      const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
+
+      // calls startRewards
+      let gasLimit = await farmContract.estimateGas.startReward();
+      gasLimit = calculateGasMargin(gasLimit);
+
+      const tx = await farmContract.startReward({ gasLimit });
+      await tx.wait();
+
+      setStep(6);
+      dispatch(fetchFarmsPublicDataFromApiAsync());
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
   };
 
   const makePendingText = () => {
@@ -214,7 +321,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         </div>
         <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Deployment fee</div>
-          <div>{DEPLOY_FEE.toFixed(2)} USDC</div>
+          <div>{ethers.utils.parseUnits(factory.serviceFee, factory.payingToken.decimals).toString()} USDC</div>
         </div>
       </div>
 
@@ -233,9 +340,9 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           ""
         )}
         <div className="flex items-center">
-          <div className={step > 2 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
-          <div className="h-[1px] w-4 bg-[#B9B8B8]" />
           <div className={step > 3 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
+          <div className="h-[1px] w-4 bg-[#B9B8B8]" />
+          <div className={step > 4 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
           <div className="h-[1px] w-4 bg-[#B9B8B8]" />
           <div className={step > 5 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
         </div>
@@ -247,15 +354,19 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Yield farm contract address</div>
             <div className="flex w-full max-w-[140px] items-center">
-              <CircleImage className="mr-2 h-5 w-5" />
-              <div>0x8793192319....</div>
+              <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
+              <a href={getExplorerLink(chainId, "address", farmAddr)} target="_blank" rel="noreferrer">
+                {farmAddr.slice(0, 12)}....
+              </a>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Liquidity token address</div>
             <div className="flex w-full  max-w-[140px] items-center">
-              <CircleImage className="mr-2 h-5 w-5" />
-              <div>{lpInfo.address.slice(0, 12)}....</div>
+              <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
+              <a href={getExplorerLink(chainId, "address", lpInfo.address)} target="_blank" rel="noreferrer">
+                {lpInfo.address.slice(0, 12)}....
+              </a>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
@@ -270,8 +381,30 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       {step !== 6 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
       <div className="mx-auto h-12 max-w-[500px]">
         {step === 2 ? (
-          <StyledButton type="primary" onClick={handleDeploy} disabled={pending || !rewardToken}>
+          <StyledButton
+            type="primary"
+            onClick={handleDeploy}
+            disabled={
+              pending || !rewardToken /* || rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100 */
+            }
+          >
             Deploy
+          </StyledButton>
+        ) : step === 4 ? (
+          <StyledButton
+            type="primary"
+            onClick={() => handleTransferRewards(farmAddr)}
+            disabled={pending || !rewardToken || farmAddr === ""}
+          >
+            Transfer rewards to Farm
+          </StyledButton>
+        ) : step === 5 ? (
+          <StyledButton
+            type="primary"
+            onClick={() => handleStartFarming(farmAddr)}
+            disabled={pending || !rewardToken || farmAddr === ""}
+          >
+            Start farming
           </StyledButton>
         ) : step === 6 ? (
           <StyledButton type="deployer" onClick={() => setOpen(false)}>

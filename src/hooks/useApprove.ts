@@ -1,23 +1,26 @@
 import { useCallback } from "react";
 import { ethers } from "ethers";
+import { useSigner } from "wagmi";
 
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useTokenContract } from "hooks/useContract";
-import { useAppDispatch } from "state";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getErc721Contract } from "utils/contractHelpers";
 
-export const useTokenApprove = (tokenAddress, spender) => {
+export const useTokenApprove = () => {
   const { account, chainId, library } = useActiveWeb3React();
+  const { data: signer } = useSigner();
 
-  const tokenContract = useTokenContract(tokenAddress);
+  const handleApprove = useCallback(
+    async (tokenAddress, spender) => {
+      const tokenContract = getErc721Contract(chainId, tokenAddress, signer);
+      const gasPrice = await getNetworkGasPrice(library, chainId);
 
-  const handleApprove = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-
-    const tx = await tokenContract.approve(spender, ethers.constants.MaxUint256, { gasPrice });
-    const receipt = await tx.wait();
-    return receipt;
-  }, [account, chainId, library, spender, tokenContract]);
+      const tx = await tokenContract.approve(spender, ethers.constants.MaxUint256, { gasPrice });
+      const receipt = await tx.wait();
+      return receipt;
+    },
+    [account, chainId, signer]
+  );
 
   return { onApprove: handleApprove };
 };
