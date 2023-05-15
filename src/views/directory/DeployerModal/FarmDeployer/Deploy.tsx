@@ -15,6 +15,7 @@ import DropDown from "components/dashboard/TokenList/Dropdown";
 
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
+import { ethers } from "ethers";
 
 const DURATIONS = [60, 90, 180, 365];
 const DEPLOY_FEE = 0;
@@ -28,6 +29,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const [initialSupply, setInitialSupply] = useState(1);
   const [depositFee, setDepositFee] = useState(0);
   const [withdrawFee, setWithdrawFee] = useState(0);
+  const [farmAddr, setFarmAddr] = useState("")
 
   const rewardCurrency: any = useCurrency(rewardToken?.address);
   let totalSupply: any = useTotalSupply(rewardCurrency);
@@ -37,6 +39,15 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
   const handleDeploy = async () => {
     setStep(3);
+    // approve paying token for deployment
+
+    // deploy farm contract
+    const rewardPerBlock = ethers.utils.parseUnits(
+      ((totalSupply * initialSupply) / 100).toString(),
+      rewardCurrency.decimals
+    );
+    const hasDividend = false;
+    const dividendToken = ethers.constants.AddressZero;
 
     setTimeout(handleTransferRewards, 5000);
   };
@@ -44,6 +55,10 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const handleTransferRewards = async () => {
     setStep(4);
 
+    // approve reward token 
+
+    // calls depositRewards method
+    
     setTimeout(handleStartFarming, 5000);
   };
 
