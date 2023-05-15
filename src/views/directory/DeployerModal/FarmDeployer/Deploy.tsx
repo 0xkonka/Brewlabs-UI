@@ -101,7 +101,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         try {
           const log = iface.parseLog(tx.logs[i]);
           if (log.name === "FarmCreated") {
-            console.log(log.args.farm);
+            console.log(log);
             farm = log.args.farm;
             setFarmAddr(log.args.farm);
             break;
