@@ -1,28 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { DashboardContext } from "contexts/DashboardContext";
 import { useContext, useEffect, useRef, useState } from "react";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import styled from "styled-components";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
 import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 const TokenSelect = ({ token, setToken }) => {
   const { chainId } = useActiveChainId();
   const { tokens, tokenList: supportedTokens }: any = useContext(DashboardContext);
 
+  const dropdownRef: any = useRef();
   const [criteria, setCriteria] = useState("");
   const [open, setOpen] = useState(false);
-  const dropdownRef: any = useRef();
-  const filteredList = tokens
-    .filter((t) => supportedTokens.map((st) => st.address.toLowerCase()).includes(t.address.toLowerCase()))
+
+  const filteredList = supportedTokens
+    // .filter((t) => supportedTokens.map((st) => st.address.toLowerCase()).includes(t.address.toLowerCase()))
+    .map(t => ({...t, logo: supportedTokens.find(st => st.address.toLowerCase() === t.address.toLowerCase())?.logoURI}))
     .filter(
       (data) =>
         data.address.includes(criteria.toLowerCase()) ||
         data.name.toLowerCase().includes(criteria.toLowerCase()) ||
         data.symbol.toLowerCase().includes(criteria.toLowerCase())
-    );
+    ).slice(0, 30);
 
   useEffect(() => {
     document.addEventListener("mouseup", function (event) {
@@ -44,7 +46,7 @@ const TokenSelect = ({ token, setToken }) => {
           <div className="flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap">
             <div className="flex items-center ">
               <img
-                src={getTokenLogoURL(token.address, chainId)}
+                src={getTokenLogoURL(token.address, chainId, token.logo)}
                 alt={""}
                 className="h-8 w-8 rounded-full"
                 onError={(e: any) => (e.target.src = "/images/unknown.png")}
@@ -94,7 +96,7 @@ const TokenSelect = ({ token, setToken }) => {
               >
                 <div className="flex items-center">
                   <img
-                    src={getTokenLogoURL(tokenAddress, chainId)}
+                    src={getTokenLogoURL(tokenAddress, chainId, data.logo)}
                     alt={""}
                     className="h-8 w-8 rounded-full"
                     onError={(e: any) => (e.target.src = "/images/unknown.png")}

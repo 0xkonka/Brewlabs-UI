@@ -109,7 +109,6 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
           type="primary"
           onClick={() => {
             setStep(2);
-            console.log("##########");
           }}
           disabled={!lpInfo?.pair || notSupported}
         >
