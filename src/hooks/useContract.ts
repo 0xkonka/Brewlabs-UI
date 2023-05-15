@@ -26,6 +26,7 @@ import {
   getContract,
   getIndexContract,
   getBrewlabsFeeManagerContract,
+  getFarmFactoryContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -85,6 +86,10 @@ export const useIndexContract = (chainId: ChainId, contractAddress: string) => {
   );
 };
 
+export const useFarmFactoryContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getFarmFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+};
 // Code below migrated from Exchange useContract.ts
 
 // returns null on errors
@@ -154,10 +159,7 @@ export function useTokenTransferContract(withSignerIfPossible?: boolean): Contra
 
 export const useBrewlabsFeeManager = (chainId: ChainId) => {
   const { data: signer } = useSigner();
-  return useMemo(
-    () => getBrewlabsFeeManagerContract(chainId, signer ?? undefined),
-    [chainId, signer]
-  );
+  return useMemo(() => getBrewlabsFeeManagerContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 export function useExternalMasterchef(withSignerIfPossible?: boolean, chef = Chef.MASTERCHEF): Contract | null {
   const [appId] = useAppId();
