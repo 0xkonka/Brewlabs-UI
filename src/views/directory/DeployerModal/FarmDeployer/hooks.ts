@@ -16,6 +16,7 @@ export const useFarmFactory = (chainId, performanceFee) => {
       rewardPerBlock: string,
       depositFee: number,
       withdrawFee: number,
+      duration: number,
       hasDividend: boolean
     ) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
@@ -26,6 +27,7 @@ export const useFarmFactory = (chainId, performanceFee) => {
         rewardPerBlock,
         depositFee,
         withdrawFee,
+        duration,
         hasDividend,
         { value: performanceFee }
       );
@@ -38,6 +40,7 @@ export const useFarmFactory = (chainId, performanceFee) => {
         rewardPerBlock,
         depositFee,
         withdrawFee,
+        duration,
         hasDividend,
         { value: performanceFee, gasLimit }
       );

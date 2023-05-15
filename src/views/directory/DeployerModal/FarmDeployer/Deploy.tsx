@@ -28,7 +28,7 @@ import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
 import { useFarmFactory } from "./hooks";
 
-const DURATIONS = [60, 90, 180, 365];
+const DURATIONS = [365, 180, 90, 60];
 
 const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const dispatch = useAppDispatch();
@@ -66,27 +66,18 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       return;
     }
 
-    if (step === 4) {
-      handleTransferRewards(farmAddr);
-      return;
-    } else if (step === 5) {
-      handleStartFarming(farmAddr);
-      return;
-    }
-
     setStep(3);
-
-    const rewardPerBlock = ethers.utils.parseUnits(
-      ((totalSupply.toFixed(2) * initialSupply) / 100).toString(),
-      rewardCurrency.decimals
-    );
-    const hasDividend = false;
-    const dividendToken = ethers.constants.AddressZero;
-
     setPending(true);
     setFarmAddr("");
 
     try {
+      const rewardPerBlock = ethers.utils.parseUnits(
+        ((totalSupply.toFixed(2) * initialSupply) / 100).toString(),
+        rewardCurrency.decimals
+      );
+      const hasDividend = false;
+      const dividendToken = ethers.constants.AddressZero;
+
       // approve paying token for deployment
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
         await onApprove(factory.payingToken.address, factory.address);
@@ -100,6 +91,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         rewardPerBlock.toString(),
         depositFee * 100,
         withdrawFee * 100,
+        DURATIONS[duration],
         hasDividend
       );
 
