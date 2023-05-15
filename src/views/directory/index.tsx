@@ -1,7 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useContext, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ChainId } from "@brewlabs/sdk";
+import BigNumber from "bignumber.js";
 import orderBy from "lodash/orderBy";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAccount } from "wagmi";
 
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -25,7 +28,9 @@ import {
 import { usePools } from "state/pools/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { useChainCurrentBlocks } from "state/block/hooks";
+import { getFarmApr } from "utils/apr";
 import getCurrencyId from "utils/getCurrencyId";
+import { latinise } from "utils/latinise";
 
 import Banner from "./Banner";
 import PoolList from "./PoolList";
@@ -36,14 +41,6 @@ import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
 import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
-import { useAccount } from "wagmi";
-import BigNumber from "bignumber.js";
-import { getFarmApr } from "utils/apr";
-import { ChainId } from "@brewlabs/sdk";
-import { latinise } from "utils/latinise";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import StyledButton from "./StyledButton";
-import { chevronLeftSVG } from "@components/dashboard/assets/svgs";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -67,7 +64,6 @@ const Directory = ({ page }: { page: number }) => {
   const cakePrice = usePriceCakeBusd();
   const bananaPrice = useBananaPrice();
   const pancakeLpAprs = useFarmLpAprsFromAppId(AppId.PANCAKESWAP);
-  const [query, setQuery] = useState("");
 
   useSetFarms();
   usePollFarms();
@@ -94,30 +90,24 @@ const Directory = ({ page }: { page: number }) => {
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity };
       });
 
-      if (query) {
-        const lowercaseQuery = latinise(query.toLowerCase());
-        farmsToDisplayWithAPR = farmsToDisplayWithAPR.filter((farm) => {
-          return latinise(farm.lpSymbol.toLowerCase()).includes(lowercaseQuery);
-        });
-      }
       return farmsToDisplayWithAPR;
     },
-    [query, cakePrice, regularCakePerBlock, pancakeLpAprs]
+    [cakePrice, regularCakePerBlock, pancakeLpAprs]
   );
 
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const currentBlocks = useChainCurrentBlocks();
   const allPools = [
-    ...pools.map((pool) => {
+    ...pools.filter(p => p.visible).map((pool) => {
       let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
       if (price > 500000) price = 0;
       return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
     }),
-    ...farms.map((farm) => {
+    ...farms.filter(p => p.visible).map((farm) => {
       let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
       return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
     }),
-    ...indexes.map((_index) => {
+    ...indexes.filter(p => p.visible).map((_index) => {
       let tvl = 0;
       for (let i = 0; i < _index.tokens.length; i++) {
         let price = _index.tokenPrices?.[i] ?? tokenPrices[getCurrencyId(_index.chainId, _index.tokens[i].address)];
