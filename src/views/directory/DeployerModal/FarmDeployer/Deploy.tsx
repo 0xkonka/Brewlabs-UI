@@ -101,7 +101,6 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         try {
           const log = iface.parseLog(tx.logs[i]);
           if (log.name === "FarmCreated") {
-            console.log(log);
             farm = log.args.farm;
             setFarmAddr(log.args.farm);
             break;
@@ -376,9 +375,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <StyledButton
             type="primary"
             onClick={handleDeploy}
-            disabled={
-              pending || !rewardToken /* || rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100 */
-            }
+            disabled={pending || !rewardToken || rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100}
           >
             Deploy
           </StyledButton>

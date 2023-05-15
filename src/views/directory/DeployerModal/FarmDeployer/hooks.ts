@@ -29,7 +29,7 @@ export const useFarmFactory = (chainId, performanceFee) => {
         withdrawFee,
         duration,
         hasDividend,
-        { value: performanceFee }
+        { value: performanceFee, gasPrice }
       );
       gasLimit = calculateGasMargin(gasLimit);
 
@@ -42,7 +42,7 @@ export const useFarmFactory = (chainId, performanceFee) => {
         withdrawFee,
         duration,
         hasDividend,
-        { value: performanceFee, gasLimit }
+        { value: performanceFee, gasPrice, gasLimit }
       );
       const receipt = await tx.wait();
 
