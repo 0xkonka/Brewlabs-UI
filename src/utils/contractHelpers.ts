@@ -146,8 +146,8 @@ export const getBrewlabsAggregationRouterContract = (
   return getContract(chainId, getBrewlabsAggregationRouterAddress(chainId), brewlabsAggregationRouterAbi, signer);
 };
 
-export const getBrewlabsRouterContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, getBrewlabsRouterAddress(chainId), brewlabsRouterAbi, signer);
+export const getBrewlabsRouterContract = (chainId: ChainId, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, address, brewlabsRouterAbi, signer);
 };
 
 export const getBrewlabsFeeManagerContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
