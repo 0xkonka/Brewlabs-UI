@@ -66,6 +66,7 @@ function useLPTokenInfo(address: string, chainId: number) {
       );
 
       let data = {
+        chainId,
         address,
         token0: {
           address: result[0][0],
@@ -89,6 +90,7 @@ function useLPTokenInfo(address: string, chainId: number) {
     }
     setPending(false)
   }
+
   useSlowRefreshEffect(() => {
     if (!ethers.utils.isAddress(address)) {
       setPair(null);

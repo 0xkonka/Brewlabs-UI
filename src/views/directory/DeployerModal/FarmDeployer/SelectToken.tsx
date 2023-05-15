@@ -2,7 +2,7 @@
 import { useContext } from "react";
 
 import { DashboardContext } from "contexts/DashboardContext";
-import { useActiveChainId } from "hooks/useActiveChainId";
+import { useActiveChainId } from "@hooks/useActiveChainId";
 import { isAddress } from "utils";
 import { getDexLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -21,7 +21,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
     router?.factory?.toLowerCase() !== lpInfo?.pair?.factory?.toLowerCase() ||
     supportedTokens
       .filter((t) => t.chainId === chainId)
-      .map(
+      .filter(
         (t) =>
           t.address.toLowerCase() === token0Address?.toLowerCase() ||
           t.address.toLowerCase() === token1Address?.toLowerCase()
@@ -97,7 +97,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
               </div>
             )}
           </div>
-        ) : (lpAddress === "" || lpInfo.pending) ? (
+        ) : lpAddress === "" || lpInfo.pending ? (
           "Pending..."
         ) : (
           "Not Found"

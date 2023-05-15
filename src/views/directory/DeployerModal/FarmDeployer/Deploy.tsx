@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useState } from "react";
 import styled from "styled-components";
-import { useContext, useEffect, useState } from "react";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
-import { useCurrency } from "hooks/Tokens";
+import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useCurrency } from "hooks/Tokens";
 import useTotalSupply from "hooks/useTotalSupply";
 import { isAddress } from "utils";
 import { getDexLogo, numberWithCommas } from "utils/functions";
@@ -15,42 +16,42 @@ import DropDown from "components/dashboard/TokenList/Dropdown";
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
 
+const DURATIONS = [60, 90, 180, 365];
+const DEPLOY_FEE = 0;
+
 const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const { chainId } = useActiveChainId();
+  const { pending, setPending }: any = useContext(DashboardContext);
 
-  const [rewardToken, setRewardToken] = useState(null);
-  const [withdrawFee, setWithdrawFee] = useState(1);
-  const [initialSupply, setInitialSupply] = useState(1);
   const [duration, setDuration] = useState(0);
+  const [rewardToken, setRewardToken] = useState(null);
+  const [initialSupply, setInitialSupply] = useState(1);
+  const [depositFee, setDepositFee] = useState(0);
+  const [withdrawFee, setWithdrawFee] = useState(0);
+
   const rewardCurrency: any = useCurrency(rewardToken?.address);
   let totalSupply: any = useTotalSupply(rewardCurrency);
   totalSupply = totalSupply ?? 0;
   const token0Address: any = lpInfo && isAddress(lpInfo.token0.address);
   const token1Address: any = lpInfo && isAddress(lpInfo.token1.address);
 
-  const [token, setToken] = useState("");
-  const [selectedToken, setSelectedToken] = useState(null);
-  // useEffect(() => {
-  //   const _candidate = supportedTokens.find((t) => t.chainId === chainId && t.address === token);
-  //   if (_candidate) {
-  //     setTokenAddress(_candidate.address);
-  //     setSelectedToken(_candidate);
-  //   } else {
-  //     setTokenAddress(null);
-  //     setSelectedToken(null);
-  //   }
-  // }, [token, chainId, supportedTokens.length]);
+  const handleDeploy = async () => {
+    setStep(3);
 
-  useEffect(() => {
-    if (step === 3) {
-      setTimeout(() => {
-        setStep(4);
-      }, 5000);
-      setTimeout(() => {
-        setStep(5);
-      }, 10000);
-    }
-  }, [step]);
+    setTimeout(handleTransferRewards, 5000);
+  };
+
+  const handleTransferRewards = async () => {
+    setStep(4);
+
+    setTimeout(handleStartFarming, 5000);
+  };
+
+  const handleStartFarming = async () => {
+    setStep(5);
+
+    setTimeout(() => setStep(6), 5000);
+  };
 
   const makePendingText = () => {
     return (
@@ -123,13 +124,13 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
             <DropDown
               value={duration}
               setValue={setDuration}
-              values={["30 Days", "60 Days", "90 Days", "120 Days"]}
+              values={DURATIONS.map((d) => `${d} Days`)}
               width={"w-28"}
             />
           </div>
         </div>
         <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
-          <div>Initial reward supply for 12 months</div>
+          <div>Reward supply for {DURATIONS[duration]} Days</div>
           <div className="flex items-center">
             <div
               className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
@@ -151,7 +152,30 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <div>{numberWithCommas(((totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}</div>
         </div>
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+          <div className="tooltip flex items-center" data-tip="Deposit fees are sent to deployer address.">
+            <div className=" -mt-0.5 mr-1.5 scale-125 text-sm text-white">
+              <InfoSVG />
+            </div>
+            <div>Deposit fee</div>
+          </div>
           <div className="flex items-center">
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setDepositFee(Math.min(2, depositFee + 0.1))}
+            >
+              {PlusSVG}
+            </div>
+            <div className="mx-2">{depositFee.toFixed(2)}%</div>
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setDepositFee(Math.max(0, depositFee - 0.1))}
+            >
+              {MinusSVG}
+            </div>
+          </div>
+        </div>
+        <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+          <div className="tooltip flex items-center" data-tip="Withdraw fees are sent to deployer address.">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
               <InfoSVG />
             </div>
@@ -175,7 +199,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         </div>
         <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Deployment fee</div>
-          <div>0.00 USDC</div>
+          <div>{DEPLOY_FEE.toFixed(2)} USDC</div>
         </div>
       </div>
 
@@ -187,18 +211,22 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         ) : step === 4 ? (
           <div className="text-sm font-semibold text-[#2FD35DBF]">Transfer of rewards (transaction two)...</div>
         ) : step === 5 ? (
+          <div className="text-sm font-semibold text-[#2FD35DBF]">Start farming (transaction three)...</div>
+        ) : step === 6 ? (
           <div className="text-sm font-semibold text-[#2FD35DBF]">Complete</div>
         ) : (
           ""
         )}
         <div className="flex items-center">
           <div className={step > 2 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
-          <div className="h-[1px] w-5 bg-[#B9B8B8]" />
+          <div className="h-[1px] w-4 bg-[#B9B8B8]" />
           <div className={step > 3 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
+          <div className="h-[1px] w-4 bg-[#B9B8B8]" />
+          <div className={step > 5 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
         </div>
       </div>
 
-      {step === 5 ? (
+      {step === 6 ? (
         <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
@@ -209,28 +237,28 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
-            <div>Yield farm reward start</div>
-            <div className=" w-full max-w-[140px] pl-7">Immediate</div>
-          </div>
-          <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Liquidity token address</div>
             <div className="flex w-full  max-w-[140px] items-center">
               <CircleImage className="mr-2 h-5 w-5" />
-              <div>0x8793192319....</div>
+              <div>{lpInfo.address.slice(0, 12)}....</div>
             </div>
+          </div>
+          <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
+            <div>Yield farm reward start</div>
+            <div className=" w-full max-w-[140px] pl-7">After 100 blocks</div>
           </div>
         </div>
       ) : (
         ""
       )}
 
-      {step !== 5 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
+      {step !== 6 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
       <div className="mx-auto h-12 max-w-[500px]">
         {step === 2 ? (
-          <StyledButton type="primary" onClick={() => setStep(3)}>
+          <StyledButton type="primary" onClick={handleDeploy} disabled={pending || !rewardToken}>
             Deploy
           </StyledButton>
-        ) : step === 5 ? (
+        ) : step === 6 ? (
           <StyledButton type="deployer" onClick={() => setOpen(false)}>
             Close window
           </StyledButton>
