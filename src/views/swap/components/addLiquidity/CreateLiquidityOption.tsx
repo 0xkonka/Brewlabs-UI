@@ -36,7 +36,7 @@ export default function CreateLiquidityOption() {
         <span className="text-white">Swap</span>&nbsp;rewards
       </OutlinedButton>
 
-      <OutlinedButton href="https://brewlabs.info/" image="/images/swap/logout.svg" className="mt-2" small>
+      <OutlinedButton href="https://earn.brewlabs.info/liquidity" image="/images/swap/logout.svg" className="mt-2" small>
         Visit my pools
       </OutlinedButton>
     </>

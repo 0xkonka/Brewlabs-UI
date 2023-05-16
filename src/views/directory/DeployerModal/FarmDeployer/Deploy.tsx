@@ -4,17 +4,23 @@ import StyledButton from "../../StyledButton";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { useEffect, useState } from "react";
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
+import { numberWithCommas, routers } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+import { isAddress } from "utils";
+import DropDown from "components/dashboard/TokenList/Dropdown";
+import TokenSelect from "../TokenSelect";
+import useTotalSupply from "@hooks/useTotalSupply";
+import { useCurrency } from "@hooks/Tokens";
 
-const Deploy = ({ step, setStep, setOpen }) => {
-  const [contractAddress, setContractAddress] = useState("");
-  const [tokenAddress, setTokenAddress] = useState(null);
+const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken }) => {
   const [withdrawFee, setWithdrawFee] = useState(1);
   const [initialSupply, setInitialSupply] = useState(1);
-
-  useEffect(() => {
-    if (contractAddress.length) setTokenAddress("0x330518cc95c92881bCaC1526185a514283A5584D");
-    else setTokenAddress(null);
-  }, [contractAddress]);
+  const [duration, setDuration] = useState(0);
+  const rewardCurrency: any = useCurrency(rewardToken?.address);
+  let totalSupply: any = useTotalSupply(rewardCurrency);
+  totalSupply = totalSupply ?? 0;
+  const token0Address: any = lpInfo && isAddress(lpInfo.token0.address);
+  const token1Address: any = lpInfo && isAddress(lpInfo.token1.address);
 
   useEffect(() => {
     if (step === 3) {
@@ -42,31 +48,67 @@ const Deploy = ({ step, setStep, setOpen }) => {
   return (
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
-        <div className="mx-auto flex w-full max-w-[280px] items-center justify-between sm:mx-0">
-          <CircleImage className="h-8 w-8" />
+        <div className="mx-auto flex items-center justify-between sm:mx-0">
+          <img
+            src={routers[lpInfo.chainId][0].image}
+            alt={""}
+            className="h-8 w-8 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)]"
+            onError={(e: any) => {
+              e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+            }}
+          />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>
           <div className="flex items-center">
-            <CircleImage className="h-8 w-8" />
+            <img
+              src={getTokenLogoURL(token0Address, lpInfo.chainId)}
+              alt={""}
+              className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
+              onError={(e: any) => {
+                e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+              }}
+            />
+
             <div className="-ml-2 mr-2">
-              <CircleImage className="h-8 w-8" />
+              <img
+                src={getTokenLogoURL(token1Address, lpInfo.chainId)}
+                alt={""}
+                className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
+                onError={(e: any) => {
+                  e.target.src = `/images/dashboard/tokens/empty-token-${lpInfo.chainId === 1 ? "eth" : "bsc"}.webp`;
+                }}
+              />
             </div>
-            <div>TICKER Yield farm</div>
+            <div>
+              {lpInfo.token0.symbol}-{lpInfo.token1.symbol} Yield farm
+            </div>
           </div>
         </div>
         <div className="hidden sm:block">{makePendingText()}</div>
       </div>
-      <div className=" mt-3 mb-5 flex w-full justify-end sm:hidden">{makePendingText()}</div>
+      <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div>
 
       <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
-        <div className="ml-4 flex flex-col items-center justify-between xs:flex-row xs:items-start">
-          <div>Total BREWLABS token supply</div>
-          <div>1,000,000,000.00</div>
+        <div className="ml-0 xs:ml-4">
+          <div className="mb-1">Reward Token</div>
+          <TokenSelect token={rewardToken} setToken={setRewardToken} />
         </div>
-        <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+
+        <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:flex-row xs:items-start">
+          <div>Total {rewardToken?.symbol} token supply</div>
+          <div>{numberWithCommas(totalSupply.toFixed(2))}</div>
+        </div>
+        <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row">
           <div>Yield farm duration</div>
-          <div>Perpetual</div>
+          <div>
+            <DropDown
+              value={duration}
+              setValue={setDuration}
+              values={["30 Days", "60 Days", "90 Days", "120 Days"]}
+              width={"w-28"}
+            />
+          </div>
         </div>
-        <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+        <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Initial reward supply for 12 months</div>
           <div className="flex items-center">
             <div
@@ -84,13 +126,15 @@ const Deploy = ({ step, setStep, setOpen }) => {
             </div>
           </div>
         </div>
-        <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+        <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Tokens required</div>
-          <div>10,000,000.00</div>
+          <div>{numberWithCommas(((totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}</div>
         </div>
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
-            <div className="mr-1.5 -mt-0.5 scale-125 text-white"><InfoSVG/></div>
+            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
+              <InfoSVG />
+            </div>
             <div>Withdrawal fee</div>
           </div>
           <div className="flex items-center">
@@ -109,13 +153,13 @@ const Deploy = ({ step, setStep, setOpen }) => {
             </div>
           </div>
         </div>
-        <div className="ml-4 mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+        <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Deployment fee</div>
-          <div>1600.00 USDC</div>
+          <div>0.00 USDC</div>
         </div>
       </div>
 
-      <div className="mt-4 mb-5 flex items-center justify-between text-[#FFFFFF80]">
+      <div className="mb-5 mt-4 flex items-center justify-between text-[#FFFFFF80]">
         {step === 2 ? (
           <div className="text-sm font-semibold text-[#FFFFFF40]">Waiting for deploy...</div>
         ) : step === 3 ? (

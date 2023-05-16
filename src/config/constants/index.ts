@@ -17,11 +17,12 @@ export const ETH_ADDRESSES = [
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   "0x0000000000000000000000000000000000000000",
 ];
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export const ROUTER_ADDRESS = {
   [ChainId.ETHEREUM]: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   [ChainId.BSC_MAINNET]: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-  [ChainId.BSC_TESTNET]: "0x29edBC55A8a77Ff74b3a1D924351eEF5ECd4de33",
+  [ChainId.BSC_TESTNET]: "0x200D85bc80816DB40a0A088dd261F8AFc29CC3b7",
   [ChainId.POLYGON]: "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
   [ChainId.FANTOM]: "0xF491e7B69E4244ad4002BC14e878a34207E38c29",
   [ChainId.AVALANCHE]: "0x60aE616a2155Ee3d9A68541Ba4544862310933d4",
@@ -265,7 +266,8 @@ export const BIPS_BASE = JSBI.BigInt(10000);
 export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), BIPS_BASE); // 1%
 export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE); // 3%
 export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(JSBI.BigInt(500), BIPS_BASE); // 5%
-
+// if the price slippage exceeds this number, force the user to type 'confirm' to execute
+export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(JSBI.BigInt(1000), BIPS_BASE) // 10%
 // for non expert mode disable swaps above this
 export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(JSBI.BigInt(1500), BIPS_BASE); // 15%
 

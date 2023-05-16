@@ -91,7 +91,7 @@ const HeroSection = ({
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" disabled={true}>
+        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" /*disabled={true}*/>
           Next
           <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
             Soon
