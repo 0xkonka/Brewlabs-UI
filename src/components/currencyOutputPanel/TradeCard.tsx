@@ -27,7 +27,10 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
   const formattedPrice = formatDecimals(price?.toSignificant(6) ?? "0.0");
   const formattedInvertedPrice = formatDecimals(price?.invert()?.toSignificant(6) ?? "0.0");
 
-  const adapters = useMemo(() => [...new Set(data.adapters)], [data.adapters]);
+  const adapters = useMemo(() => {
+    const usedAdapters = Adapters[chainId].filter((x) => data.adapters.includes(x.address));
+    return usedAdapters.filter((x, i) => usedAdapters.findIndex((y) => y.name == x.name) == i);
+  }, [data.adapters, chainId]);
 
   return (
     <>
@@ -69,15 +72,15 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
             </div>
             <div className="flex items-center" onClick={() => setTradePanelToggled(!tradePanelToggled)}>
               {adapters.length > 1 && (
-                <button className="btn-protocol-shadow hidden rounded rounded-2xl bg-primary px-3 mr-2 text-xs text-black sm:block">
+                <button className="btn-protocol-shadow mr-2 hidden rounded rounded-2xl bg-primary px-3 text-xs text-black sm:block">
                   MULTI
                 </button>
               )}
-              {adapters.map((address, index) => (
+              {adapters.map((adapter, index) => (
                 <img
                   className={`${index > 0 ? "-ml-2" : ""} h-6 w-6 rounded-full`}
-                  src={Adapters[chainId][address].logo}
-                  alt={Adapters[chainId][address].name}
+                  src={adapter.logo}
+                  alt={adapter.name}
                   key={index}
                 />
               ))}
