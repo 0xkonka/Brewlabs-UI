@@ -1,5 +1,23 @@
 export const Adapters = {
-  1: [],
+  1: [
+    {
+      address: "0xB2a44B07c67C017f5BE17dE7Dd59db9E734407Bf",
+      name: "Uniswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
+      meta: "v2",
+    },
+    {
+      address: "0xb12Ab9Ded05D9378489256fd5adC07962D232436",
+      name: "Uniswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
+      meta: "v3",
+    },
+    {
+      address: "0x01c9bBA623380D0F2BD802664F2D02c43b499cE8",
+      name: "Pancakeswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
+    }
+  ],
   56: [
     {
       address: "0xA31c745DC9D61D7840622e4Df490bAF44dF1Fc5B",
