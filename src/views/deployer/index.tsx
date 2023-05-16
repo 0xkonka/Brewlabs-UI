@@ -143,10 +143,11 @@ const Deployer = ({ page }: { page: number }) => {
         (pool) =>
           !pool.isFinished &&
           ((pool.type === Category.POOL &&
-            (+pool.startBlock === 0 ||
+            (!pool.startBlock ||
+              +pool.startBlock === 0 ||
               +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
             (pool.type === Category.FARM &&
-              (+pool.startBlock > currentBlocks[pool.chainId] ||
+              (!pool.startBlock || +pool.startBlock > currentBlocks[pool.chainId] ||
                 +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
             (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
       );
@@ -162,7 +163,7 @@ const Deployer = ({ page }: { page: number }) => {
       );
   }
   chosenPools = sortPools(chosenPools);
-  
+
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:

@@ -98,23 +98,29 @@ const Directory = ({ page }: { page: number }) => {
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const currentBlocks = useChainCurrentBlocks();
   const allPools = [
-    ...pools.filter(p => p.visible).map((pool) => {
-      let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
-      if (price > 500000) price = 0;
-      return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
-    }),
-    ...farms.filter(p => p.visible).map((farm) => {
-      let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-      return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
-    }),
-    ...indexes.filter(p => p.visible).map((_index) => {
-      let tvl = 0;
-      for (let i = 0; i < _index.tokens.length; i++) {
-        let price = _index.tokenPrices?.[i] ?? tokenPrices[getCurrencyId(_index.chainId, _index.tokens[i].address)];
-        tvl += _index.totalStaked?.[i] && price ? +_index.totalStaked[i] * price : 0;
-      }
-      return { ..._index, tvl };
-    }),
+    ...pools
+      .filter((p) => p.visible)
+      .map((pool) => {
+        let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
+        if (price > 500000) price = 0;
+        return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
+      }),
+    ...farms
+      .filter((p) => p.visible)
+      .map((farm) => {
+        let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
+        return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
+      }),
+    ...indexes
+      .filter((p) => p.visible)
+      .map((_index) => {
+        let tvl = 0;
+        for (let i = 0; i < _index.tokens.length; i++) {
+          let price = _index.tokenPrices?.[i] ?? tokenPrices[getCurrencyId(_index.chainId, _index.tokens[i].address)];
+          tvl += _index.totalStaked?.[i] && price ? +_index.totalStaked[i] * price : 0;
+        }
+        return { ..._index, tvl };
+      }),
     ...farmsList(zaps).map((zap) => {
       return {
         ...zap,
@@ -183,7 +189,9 @@ const Directory = ({ page }: { page: number }) => {
           curFilter === Category.ALL ||
           data.type === curFilter ||
           (curFilter === Category.MY_POSITION &&
-            (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance?.gt(0)))
+            (data.type === Category.INDEXES
+              ? +data.userData?.stakedUsdAmount > 0
+              : data.userData?.stakedBalance?.gt(0)))
       );
   }
 
@@ -201,10 +209,12 @@ const Directory = ({ page }: { page: number }) => {
         (pool) =>
           !pool.isFinished &&
           ((pool.type === Category.POOL &&
-            (+pool.startBlock === 0 ||
+            (!pool.startBlock ||
+              +pool.startBlock === 0 ||
               +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
             (pool.type === Category.FARM &&
-              (+pool.startBlock > currentBlocks[pool.chainId] ||
+              (!pool.startBlock ||
+                +pool.startBlock > currentBlocks[pool.chainId] ||
                 +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
             (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
       );

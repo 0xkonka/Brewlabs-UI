@@ -38,12 +38,24 @@ const SelectionPanel = ({
   ).length;
 
   const filters = [
-    <>All <span className="text-[11px]">({counts[1] + counts[2] + counts[3] + counts[4]})</span></>,
-    <>Staking Pools <span className="text-[11px]">({counts[1]})</span></>,
-    <>Yield Farms <span className="text-[11px]">({counts[2]})</span></>,
-    <>Indexes <span className="text-[11px]">({counts[3]})</span></>,
-    <>Zapper Pools <span className="text-[11px]">({counts[4]})</span></>,
-    <>My positions <span className="text-[11px]">({counts[5]})</span></>,
+    <>
+      All <span className="text-[11px]">({counts[1] + counts[2] + counts[3] + counts[4]})</span>
+    </>,
+    <>
+      Staking Pools <span className="text-[11px]">({counts[1]})</span>
+    </>,
+    <>
+      Yield Farms <span className="text-[11px]">({counts[2]})</span>
+    </>,
+    <>
+      Indexes <span className="text-[11px]">({counts[3]})</span>
+    </>,
+    <>
+      Zapper Pools <span className="text-[11px]">({counts[4]})</span>
+    </>,
+    <>
+      My positions <span className="text-[11px]">({counts[5]})</span>
+    </>,
   ];
 
   let activityCnts = {};
@@ -54,6 +66,7 @@ const SelectionPanel = ({
       (curFilter === Category.MY_POSITION &&
         (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
   );
+
   activityCnts["active"] = filteredPools.filter(
     (pool) =>
       !pool.isFinished &&
@@ -62,19 +75,24 @@ const SelectionPanel = ({
         pool.type === Category.INDEXES ||
         (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier !== "0X"))
   ).length;
+
   activityCnts["finished"] = filteredPools.filter(
     (pool) =>
       pool.isFinished ||
       pool.multiplier === 0 ||
       (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier === "0X")
   ).length;
+
   activityCnts["new"] = filteredPools.filter(
     (pool) =>
       !pool.isFinished &&
       ((pool.type === Category.POOL &&
-        (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
+        (!pool.startBlock ||
+          +pool.startBlock === 0 ||
+          +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
         (pool.type === Category.FARM &&
-          (+pool.startBlock > currentBlocks[pool.chainId] ||
+          (!pool.startBlock ||
+            +pool.startBlock > currentBlocks[pool.chainId] ||
             +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
         (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
   ).length;
