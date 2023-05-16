@@ -2,12 +2,12 @@
 import { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import styled from "styled-components";
 import { useSigner } from "wagmi";
 
 import FarmFactoryAbi from "config/abi/farm/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
 
+import { BLOCKS_PER_DAY } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useCurrency } from "hooks/Tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -71,10 +71,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     setFarmAddr("");
 
     try {
-      const rewardPerBlock = ethers.utils.parseUnits(
-        ((totalSupply.toFixed(2) * initialSupply) / 100).toString(),
+      let rewardPerBlock = ethers.utils.parseUnits(
+        ((+totalSupply.toFixed(2) * initialSupply) / 100).toString(),
         rewardCurrency.decimals
       );
+      rewardPerBlock = rewardPerBlock
+        .div(ethers.BigNumber.from(DURATIONS[duration]))
+        .div(ethers.BigNumber.from(BLOCKS_PER_DAY[chainId]));
+
       const hasDividend = false;
       const dividendToken = ethers.constants.AddressZero;
 
@@ -406,11 +410,5 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     </div>
   );
 };
-
-const CircleImage = styled.div`
-  background: #d9d9d9;
-  border: 1px solid #000000;
-  border-radius: 50%;
-`;
 
 export default Deploy;
