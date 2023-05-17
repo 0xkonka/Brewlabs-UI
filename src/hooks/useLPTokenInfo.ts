@@ -38,7 +38,7 @@ function useLPTokenInfo(address: string, chainId: number) {
           address,
           chainId,
           token0: { ...result.token0, address: result.token0.id },
-          token1: { ...result.token0, address: result.token1.id },
+          token1: { ...result.token1, address: result.token1.id },
           totalSupply: result.totalSupply,
         });
       }

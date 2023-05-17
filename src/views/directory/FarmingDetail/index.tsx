@@ -37,6 +37,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
 import useFarm from "./hooks/useFarm";
+import { BASE_URL } from "config";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -47,6 +48,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
   const [curGraph, setCurGraph] = useState(0);
+  const [isCopied, setIsCopied] = useState(false);
 
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
@@ -173,6 +175,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(false);
   };
 
+  const onShareFarm = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
+  };
+
   const history =
     data && data.userData?.deposits && address
       ? data.userData?.deposits.map((deposit) => ({ ...deposit, symbol: data.lpSymbol.split("_")[0] }))
@@ -236,7 +246,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </StyledButton>
                     </div>
                     {data.isCustody ? (
-                      <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
+                      <div className="mt-2 block h-[32px] w-[140px] lg:mt-0 lg:hidden">
                         <StyledButton>
                           <div className="absolute left-2 top-2.5">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
@@ -248,8 +258,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-1 justify-end">
                     {data.isCustody ? (
-                      <div className="hidden w-full max-w-[470px] sm:block">
-                        <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                      <div className="hidden w-full max-w-[470px] lg:block">
+                        <div className="mt-2 h-[32px] w-[140px] lg:mt-0 ml-5">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
@@ -259,7 +269,17 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     ) : (
                       ""
                     )}
-                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
+
+                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
+                      <StyledButton
+                        className="relative mb-2 lg:mr-5 mr-0 h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition  hover:border-white hover:text-white lg:mb-0"
+                        type={"default"}
+                        onClick={onShareFarm}
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-1.5">{isCopied ? "Copied" : "Share Farm"}</div> {LinkSVG}
+                        </div>
+                      </StyledButton>
                       {earningToken.projectLink && (
                         <a
                           className="h-[32px] w-[140px]"
@@ -285,7 +305,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         }`}
                         passHref
                       >
-                        <div className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0">
+                        <div className="ml-0 mt-2 h-[32px] w-[140px] lg:ml-5 lg:mt-0">
                           <StyledButton>
                             <div>Make LP</div>
                             <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
