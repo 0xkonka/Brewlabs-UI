@@ -32,7 +32,7 @@ interface CurrencySelectorProps {
   inputType: "input" | "output";
   selectedCurrency?: Currency | null;
   otherSelectedCurrency?: Currency | null;
-  filteredCurrencies?: Currency[];
+  filteredCurrencies?: Token[];
   onUserInput: any;
   type: string;
   onCurrencySelect: any;
@@ -94,15 +94,15 @@ const CurrencyRow = ({
         } else {
           const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
           // onUserInput(input, "");
+          if (onCurrencySelect) onCurrencySelect(input, currency);
           onCurrencySelection(input, currency);
         }
 
         if (userSidebarOpen === 2) {
           setUserSidebarOpen(0);
 
-          setTimeout(() => {
-            setSidebarContent(<UserDashboard />);
-          }, 1000);
+          // setSidebarContent(<UserDashboard />);
+
           return;
         }
 
@@ -215,7 +215,7 @@ const CurrencySelector = ({
 
   const currencies =
     filteredCurrencies?.length > 0
-      ? filteredCurrencies
+      ? filterTokens(filteredCurrencies, debouncedQuery)
       : filteredInactiveTokens
       ? filteredSortedTokens.concat(filteredInactiveTokens)
       : filteredSortedTokens;

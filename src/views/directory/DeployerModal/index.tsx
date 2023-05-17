@@ -112,10 +112,8 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
     <AnimatePresence exitBeforeEnter>
       <Dialog
         open={open}
-        className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
-        onClose={() => {
-          step <= 2 && setOpen(false);
-        }}
+        className="fixed inset-0 z-10 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
+        onClose={() => step <= 2 && setOpen(false)}
       >
         <div className="flex min-h-full items-center justify-center p-4 ">
           <motion.div
