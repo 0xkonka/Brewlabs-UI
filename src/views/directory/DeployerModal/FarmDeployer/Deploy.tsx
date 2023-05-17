@@ -272,30 +272,6 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         </div>
 
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
-          <div className="flex items-center">
-            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
-            </div>
-            <div>Deposit fee</div>
-          </div>
-          <div className="flex items-center">
-            <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
-              onClick={() => setDepositFee(Math.min(2, depositFee + 0.1))}
-            >
-              {PlusSVG}
-            </div>
-            <div className="mx-2">{depositFee.toFixed(2)}%</div>
-            <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
-              onClick={() => setDepositFee(Math.max(0, depositFee - 0.1))}
-            >
-              {MinusSVG}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="tooltip flex items-center" data-tip="Deposit fees are sent to deployer address.">
             <div className=" -mt-0.5 mr-1.5 scale-125 text-sm text-white">
               <InfoSVG />
