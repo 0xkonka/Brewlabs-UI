@@ -23,12 +23,12 @@ export const useSwapAggregator = (
   const recipient = recipientAddressOrName === null ? account : recipientAddress;
 
   const contract = useMemo(() => {
-    if (!chainId || !signer) return null;
+    if (!chainId) return null;
     return getAggregatorContract(chainId, signer);
   }, [chainId, signer]);
 
   const callParams = useMemo(() => {
-    if (!amountIn || !currencies) return null;
+    if (!amountIn || !currencies || !currencies[Field.INPUT] || !currencies[Field.OUTPUT]) return null;
     const amountInWei = makeBigNumber(amountIn.toExact(), amountIn.currency.decimals);
     return {
       args: [
@@ -75,21 +75,20 @@ export const useSwapAggregator = (
   const addTransaction = useTransactionAdder();
   return useMemo(() => {
     if (!chainId || !library || !account || !signer || !contract || !callParams) {
-      return { callback: null, query: null, error: "Missing dependencies" };
+      return { callback: null, query: query, error: "Missing dependencies" };
     }
     return {
       callback: async function onSwap() {
         const args = [
-          [
-            query.amounts[0],
-            query.amounts[query.amounts.length - 1],
-            query.path,
-            query.adapters
-          ],
-          recipient
-        ]
+          [query.amounts[0], query.amounts[query.amounts.length - 1], query.path, query.adapters],
+          recipient,
+        ];
         const options = callParams.value ? { value: callParams.value } : {};
-        const methodName = currencies[Field.INPUT].isNative ? "swapNoSplitFromETH" : currencies[Field.OUTPUT].isNative ? "swapNoSplitToETH" : "swapNoSplit";
+        const methodName = currencies[Field.INPUT].isNative
+          ? "swapNoSplitFromETH"
+          : currencies[Field.OUTPUT].isNative
+          ? "swapNoSplitToETH"
+          : "swapNoSplit";
         const gasEstimate = await contract.estimateGas[methodName](...args, options);
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
