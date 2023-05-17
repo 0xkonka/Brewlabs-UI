@@ -498,6 +498,14 @@ const tokens = {
     'NanoMatic',
     'https://www.nanomatic.io/',
   ),
+  msgo: new Token(
+    BSC_MAINNET,
+    '0xd4bC850c0B3cDcb2417cfD77fAABEa1f47F09fd8',
+    9,
+    'MSGO',
+    'MetaSetGO',
+    'https://msgo.io/',
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
