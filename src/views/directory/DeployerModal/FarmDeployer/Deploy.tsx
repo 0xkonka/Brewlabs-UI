@@ -11,13 +11,14 @@ import DropDown from "components/dashboard/TokenList/Dropdown";
 import TokenSelect from "../TokenSelect";
 import useTotalSupply from "@hooks/useTotalSupply";
 import { useCurrency } from "@hooks/Tokens";
+import LoadingText from "@components/LoadingText";
 
 const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken }) => {
-  const [withdrawFee, setWithdrawFee] = useState(1);
-  const [initialSupply, setInitialSupply] = useState(1);
+  const [withdrawFee, setWithdrawFee] = useState(0);
+  const [depositFee, setDepositFee] = useState(0);
+  const [initialSupply, setInitialSupply] = useState(0.5);
   const [duration, setDuration] = useState(0);
-  const rewardCurrency: any = useCurrency(rewardToken?.address);
-  let totalSupply: any = useTotalSupply(rewardCurrency);
+  let totalSupply: any = useTotalSupply(rewardToken);
   totalSupply = totalSupply ?? 0;
   const token0Address: any = lpInfo && isAddress(lpInfo.token0.address);
   const token1Address: any = lpInfo && isAddress(lpInfo.token1.address);
@@ -30,14 +31,17 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
       setTimeout(() => {
         setStep(5);
       }, 10000);
+      setTimeout(() => {
+        setStep(6);
+      }, 15000);
     }
   }, [step]);
 
   const makePendingText = () => {
     return (
       <div className="flex w-28 items-center justify-between rounded-lg border border-[#FFFFFF80] bg-[#B9B8B81A] px-2 py-1 text-sm">
-        <div className="text-[#FFFFFFBF]">{step === 2 ? "Pending" : step === 5 ? "Deployed" : "Deploying"}</div>
-        {step === 5 ? (
+        <div className="text-[#FFFFFFBF]">{step === 2 ? "Pending" : step === 6 ? "Deployed" : "Deploying"}</div>
+        {step === 6 ? (
           <div className="ml-3 scale-50 text-primary">{checkCircleSVG}</div>
         ) : (
           <div className="text-primary">{UploadSVG}</div>
@@ -89,9 +93,10 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
 
       <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
         <div className="ml-0 xs:ml-4">
-          <div className="mb-1">Reward Token</div>
-          <TokenSelect token={rewardToken} setToken={setRewardToken} />
+          <div className="mb-1 text-white">*Please select the token reward for the yield farm</div>
+          <TokenSelect selectedCurrency={rewardToken} setSelectedCurrency={setRewardToken} />
         </div>
+        <div className="mb-6 mt-4 h-[1px] w-[calc(100%+18px)] bg-[#FFFFFF80]" />
 
         <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:flex-row xs:items-start">
           <div>Total {rewardToken?.symbol} token supply</div>
@@ -103,8 +108,8 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
             <DropDown
               value={duration}
               setValue={setDuration}
-              values={["30 Days", "60 Days", "90 Days", "120 Days"]}
-              width={"w-28"}
+              values={["12 Months", "9 Months", "6 Months", "3 Months"]}
+              width={"w-32"}
             />
           </div>
         </div>
@@ -130,6 +135,31 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
           <div>Tokens required</div>
           <div>{numberWithCommas(((totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}</div>
         </div>
+
+        <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
+          <div className="flex items-center">
+            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
+              <InfoSVG />
+            </div>
+            <div>Deposit fee</div>
+          </div>
+          <div className="flex items-center">
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setDepositFee(Math.min(2, depositFee + 0.1))}
+            >
+              {PlusSVG}
+            </div>
+            <div className="mx-2">{depositFee.toFixed(2)}%</div>
+            <div
+              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              onClick={() => setDepositFee(Math.max(0, depositFee - 0.1))}
+            >
+              {MinusSVG}
+            </div>
+          </div>
+        </div>
+
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
@@ -153,7 +183,7 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
             </div>
           </div>
         </div>
-        <div className="ml-0 mt-4 flex flex-col items-center justify-between xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
+        <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Deployment fee</div>
           <div>0.00 USDC</div>
         </div>
@@ -163,10 +193,18 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
         {step === 2 ? (
           <div className="text-sm font-semibold text-[#FFFFFF40]">Waiting for deploy...</div>
         ) : step === 3 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">Deploying smart contract (transaction one)...</div>
+          <div className="text-sm font-semibold text-[#2FD35DBF]">
+            <LoadingText text={"Deploying yield farm contract"} />
+          </div>
         ) : step === 4 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">Transfer of rewards (transaction two)...</div>
+          <div className="text-sm font-semibold text-[#2FD35DBF]">
+            <LoadingText text={"Adding yield farm rewards"} />
+          </div>
         ) : step === 5 ? (
+          <div className="text-sm font-semibold text-[#2FD35DBF]">
+            <LoadingText text={"Starting yield farm"} />
+          </div>
+        ) : step === 6 ? (
           <div className="text-sm font-semibold text-[#2FD35DBF]">Complete</div>
         ) : (
           ""
@@ -175,10 +213,12 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
           <div className={step > 2 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
           <div className="h-[1px] w-5 bg-[#B9B8B8]" />
           <div className={step > 3 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
+          <div className="h-[1px] w-5 bg-[#B9B8B8]" />
+          <div className={step > 4 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
         </div>
       </div>
 
-      {step === 5 ? (
+      {step === 6 ? (
         <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
@@ -204,13 +244,13 @@ const Deploy = ({ step, setStep, setOpen, lpInfo, rewardToken, setRewardToken })
         ""
       )}
 
-      {step !== 5 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
+      {step !== 6 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
       <div className="mx-auto h-12 max-w-[500px]">
         {step === 2 ? (
           <StyledButton type="primary" onClick={() => setStep(3)}>
             Deploy
           </StyledButton>
-        ) : step === 5 ? (
+        ) : step === 6 ? (
           <StyledButton type="deployer" onClick={() => setOpen(false)}>
             Close window
           </StyledButton>
