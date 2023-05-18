@@ -11,7 +11,6 @@ import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 
-import { BLOCKS_PER_DAY } from "config/constants";
 import { AppId, Category } from "config/constants/types";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
@@ -28,9 +27,9 @@ import {
 import { usePools } from "state/pools/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { useChainCurrentBlocks } from "state/block/hooks";
+import { filterPoolsByStatus } from "utils";
 import { getFarmApr } from "utils/apr";
 import getCurrencyId from "utils/getCurrencyId";
-import { latinise } from "utils/latinise";
 
 import Banner from "./Banner";
 import PoolList from "./PoolList";
@@ -130,6 +129,7 @@ const Directory = ({ page }: { page: number }) => {
       };
     }),
   ];
+
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
       case "apr":
@@ -194,42 +194,8 @@ const Directory = ({ page }: { page: number }) => {
               : data.userData?.stakedBalance?.gt(0)))
       );
   }
+  chosenPools = sortPools(filterPoolsByStatus(chosenPools, currentBlocks, status));
 
-  switch (status) {
-    case "finished":
-      chosenPools = chosenPools.filter(
-        (pool) =>
-          pool.isFinished ||
-          pool.multiplier === 0 ||
-          (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier === "0X")
-      );
-      break;
-    case "new":
-      chosenPools = chosenPools.filter(
-        (pool) =>
-          !pool.isFinished &&
-          ((pool.type === Category.POOL &&
-            (!pool.startBlock ||
-              +pool.startBlock === 0 ||
-              +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
-            (pool.type === Category.FARM &&
-              (!pool.startBlock ||
-                +pool.startBlock > currentBlocks[pool.chainId] ||
-                +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
-            (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
-      );
-      break;
-    default:
-      chosenPools = chosenPools.filter(
-        (pool) =>
-          !pool.isFinished &&
-          ((pool.type === Category.POOL && +pool.startBlock > 0) ||
-            (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
-            pool.type === Category.INDEXES ||
-            (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier !== "0X"))
-      );
-  }
-  chosenPools = sortPools(chosenPools);
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:
