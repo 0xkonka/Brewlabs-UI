@@ -62,6 +62,10 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   };
 
   const handleDeploy = async () => {
+    if (initialSupply === 0) {
+      toast.error("Should be set rewards");
+      return;
+    }
     if (rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100) {
       toast.error("Insufficient reward token");
       return;
@@ -388,7 +392,12 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <StyledButton
             type="primary"
             onClick={handleDeploy}
-            disabled={pending || !rewardToken || rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100}
+            disabled={
+              pending ||
+              !rewardToken ||
+              initialSupply === 0 ||
+              rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100
+            }
           >
             Deploy
           </StyledButton>
