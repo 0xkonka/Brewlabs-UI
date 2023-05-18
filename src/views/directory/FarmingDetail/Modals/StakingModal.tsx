@@ -199,8 +199,8 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  {accountData.allowance.toString() >
-                  ethers.utils.parseEther(amount && amount !== "" ? amount : "0") ? (
+                  {+accountData.allowance.toString() >
+                  +ethers.utils.parseEther(amount && amount !== "" ? amount : "0") ? (
                     <StyledButton type="primary" disabled={!amount || insufficient || pending} onClick={handleConfirm}>
                       {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"} {data.lpSymbol}
                     </StyledButton>
