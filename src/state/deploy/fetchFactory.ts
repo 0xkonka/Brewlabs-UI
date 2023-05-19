@@ -1,4 +1,4 @@
-import { ChainId } from "@brewlabs/sdk";
+import { ChainId, Currency } from "@brewlabs/sdk";
 
 import FarmFactoryAbi from "config/abi/farm/factory.json";
 import { tokens } from "config/constants/tokens";
@@ -21,7 +21,7 @@ export const fetchFarmFactoryData = async (chainId: ChainId) => {
   const result = await multicall(FarmFactoryAbi, calls, chainId);
   return {
     chainId,
-    payingToken: serializeToken(Object.values(tokens[chainId]).find((t) => t.address === result[0][0])),
+    payingToken: serializeToken(Object.values(tokens[chainId]).find((t: any) => t.address === result[0][0])),
     serviceFee: result[1][0].toString(),
   };
 };
