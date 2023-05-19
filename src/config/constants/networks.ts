@@ -35,7 +35,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
 
 export const CHAIN_KEYS = {
   [ChainId.ETHEREUM]: "ethereum",
-  // [ChainId.ABITRUM]: "arbitrum",
+  [ChainId.ARBITRUM]: "arbitrum",
   [ChainId.GOERLI]: "goerli",
   [ChainId.BSC_MAINNET]: "smartchain",
   [ChainId.BSC_TESTNET]: "chapel",
@@ -48,7 +48,7 @@ export const CHAIN_KEYS = {
 
 export const EXPLORER_NAMES = {
   [ChainId.ETHEREUM]: "Etherscan",
-  // [ChainId.ABITRUM]: "Arbiscan",
+  [ChainId.ARBITRUM]: "Arbiscan",
   [ChainId.GOERLI]: "Etherscan",
   [ChainId.BSC_MAINNET]: "BscScan",
   [ChainId.BSC_TESTNET]: "BscScan",
@@ -61,6 +61,7 @@ export const EXPLORER_NAMES = {
 
 export const EXPLORER_URLS = {
   [ChainId.ETHEREUM]: "https://etherscan.io",
+  [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
 };
 
@@ -78,6 +79,7 @@ export const EXPLORER_API_KEYS = {
 
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
+  [ChainId.ARBITRUM]: "Arbitrum",
   [ChainId.GOERLI]: "Goerli",
   [ChainId.BSC_MAINNET]: "BNB Smart Chain",
   [ChainId.BSC_TESTNET]: "BSC Testnet",
@@ -90,6 +92,7 @@ export const CHAIN_LABLES = {
 
 export const CHAIN_ICONS = {
   [ChainId.ETHEREUM]: "/images/networks/eth.svg",
+  [ChainId.ARBITRUM]: "/images/networks/arbitrum.svg",
   [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_MAINNET]: "/images/networks/bsc.png",
   [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
@@ -130,6 +133,17 @@ export const NETWORKS = {
       decimals: 18,
     },
     rpcUrls: ["https://api.nodes-brewlabs.info/rpc/eth"],
+    blockExplorerUrls: ["https://etherscan.io"],
+  },
+  [ChainId.ARBITRUM]: {
+    chainId: `0x${Number(ChainId.ARBITRUM).toString(16)}`,
+    chainName: "Arbitrum One Mainnet",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.BSC_MAINNET]: {
