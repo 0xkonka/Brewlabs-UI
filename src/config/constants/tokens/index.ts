@@ -88,5 +88,5 @@ export const popularTokens = {
 
 export const customTokensForDeploy = {
   [ChainId.ETHEREUM]: [],
-  [ChainId.BSC_MAINNET]: [bscTokens.nano]
+  [ChainId.BSC_MAINNET]: []
 }
