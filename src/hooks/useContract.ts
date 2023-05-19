@@ -27,6 +27,7 @@ import {
   getIndexContract,
   getBrewlabsFeeManagerContract,
   getFarmFactoryContract,
+  getFarmImplContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -61,6 +62,12 @@ export const useMasterchef = (address: string) => {
   const { chainId } = useActiveChainId();
   const { data: signer } = useSigner();
   return useMemo(() => getMasterchefContract(chainId, address, signer ?? undefined), [address, signer, chainId]);
+};
+
+export const useFarmContract = (address: string) => {
+  const { chainId } = useActiveChainId();
+  const { data: signer } = useSigner();
+  return useMemo(() => getFarmImplContract(chainId, address, signer ?? undefined), [address, signer, chainId]);
 };
 
 export const useSingleStaking = (chainId: ChainId, contractAddress: string) => {
