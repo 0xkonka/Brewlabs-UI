@@ -13,7 +13,7 @@ import Card from "./Card";
 
 const Row = (data: any) => {
   const {
-    data: { id, caller, srcToken, dstToken, spentAmount, returnAmount, transactionHash },
+    data: { _tokenIn: srcToken, _tokenOut: dstToken, _amountIn: spentAmount, _amountOut: returnAmount, transactionHash },
   } = data;
   const inputCurrency = useCurrency(ETH_ADDRESSES.includes(srcToken) ? "ETH" : srcToken);
   const outputCurrency = useCurrency(ETH_ADDRESSES.includes(dstToken) ? "ETH" : dstToken);
