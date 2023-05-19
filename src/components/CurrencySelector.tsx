@@ -1,32 +1,31 @@
 import React, { KeyboardEvent, useCallback, useState, useMemo, useContext } from "react";
-import BigNumber from "bignumber.js";
-import clsx from "clsx";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
+import BigNumber from "bignumber.js";
+import clsx from "clsx";
 
 import { MORALIS_CHAIN_NAME } from "config/constants/networks";
 import { factoryTokens, popularTokens } from "config/constants/tokens";
+import { DashboardContext } from "contexts/DashboardContext";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 import useWalletTokens from "hooks/useWalletTokens";
-
-import { CurrencyLogo } from "components/logo";
-import { PrimaryOutlinedButton } from "components/button/index";
-import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
-
 import { useGlobalState } from "state";
-
 import { Field } from "state/swap/actions";
 import { Field as LiquidityField } from "state/mint/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
+
+import { CurrencyLogo } from "components/logo";
+import { PrimaryOutlinedButton } from "components/button/index";
+import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
 import UserDashboard from "components/dashboard/UserDashboard";
+
 import NavButton from "./dashboard/NavButton";
-import { DashboardContext } from "contexts/DashboardContext";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -155,9 +154,9 @@ const CurrencySelector = ({
   const debouncedQuery = useDebounce(searchQuery, 200);
 
   const [invertSearchOrder] = useState<boolean>(false);
-  const { viewType, setViewType }: any = useContext(DashboardContext);
-  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
-  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
+  const { setViewType }: any = useContext(DashboardContext);
+  const [, setSidebarContent] = useGlobalState("userSidebarContent");
+  const [userSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const allTokens = useAllTokens();
 

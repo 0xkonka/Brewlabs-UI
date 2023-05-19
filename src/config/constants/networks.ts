@@ -24,6 +24,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
