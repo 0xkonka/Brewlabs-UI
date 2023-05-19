@@ -1,6 +1,6 @@
 import { Chain } from "wagmi";
 import { bsc as bscMainnet } from "wagmi/chains";
-export { mainnet, polygon, avalanche, fantom, cronos, bscTestnet, goerli } from "wagmi/chains";
+export { mainnet, arbitrum, polygon, avalanche, fantom, cronos, bscTestnet, goerli } from "wagmi/chains";
 
 export const brise: Chain = {
   id: 32520,

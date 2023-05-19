@@ -91,7 +91,7 @@ const HeroSection = ({
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
-        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" disabled={true}>
+        <StyledButton type="quaternary" onClick={() => setStep(1)} className="relative" /*disabled={true}*/>
           Next
           <div className="absolute -right-4 -top-2 z-10 flex h-5 w-10 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold tracking-normal text-black">
             Soon
@@ -113,7 +113,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
     <AnimatePresence exitBeforeEnter>
       <Dialog
         open={open}
-        className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
+        className="fixed inset-0 z-10 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
         onClose={() => setOpen(false)}
       >
         <div className="flex min-h-full items-center justify-center p-4 ">

@@ -1699,6 +1699,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0xb8b4b66852275355d591B90E5B75f84cAeffF392/logo.png"
     },
     {
+      "name": "JACY",
+      "symbol": "JACY",
+      "address": "0x916c5DE09cF63f6602d1e1793FB41F6437814A62",
+      "chainId": 1,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x916c5DE09cF63f6602d1e1793FB41F6437814A62/logo.png"
+    },
+    {
       "name": "Pomeranian",
       "symbol": "POM",
       "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
@@ -2281,6 +2289,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xB15488af39bD1de209D501672a293Bcd05f82Ab4/logo.png"
+    },
+    {
+      "name": "MetaSetGO",
+      "symbol": "MSGO",
+      "address": "0xd4bC850c0B3cDcb2417cfD77fAABEa1f47F09fd8",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xd4bC850c0B3cDcb2417cfD77fAABEa1f47F09fd8/logo.png"
     },
     {
       "name": "Matic Token",
