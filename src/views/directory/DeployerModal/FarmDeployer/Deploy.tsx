@@ -323,7 +323,10 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         </div>
         <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Deployment fee</div>
-          <div>{ethers.utils.parseUnits(factory.serviceFee, factory.payingToken.decimals).toString()} USDC</div>
+          <div>
+            {ethers.utils.parseUnits(factory.serviceFee, factory.payingToken.decimals).toString()}{" "}
+            {factory.payingToken.symbol}
+          </div>
         </div>
       </div>
 
