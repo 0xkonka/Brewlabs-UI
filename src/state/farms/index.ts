@@ -154,10 +154,10 @@ export const fetchFarmUserDataAsync =
     await fetchFarmUserReflections(
       account,
       chainId,
-      farmsToFetch.filter((f) => ![15, 17].includes(f.farmId))
+      farmsToFetch.filter((f) => ![15, 16, 17].includes(f.farmId))
     ).then((userFarmReflections) => {
       const data = farmsToFetch
-        .filter((f) => ![15, 17].includes(f.farmId))
+        .filter((f) => ![15, 16, 17].includes(f.farmId))
         .filter((f) => !f.enableEmergencyWithdraw)
         .map((farm, index) => {
           return {
