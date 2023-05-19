@@ -133,8 +133,20 @@ export const fetchFarmUserDataAsync =
     await fetchFarmUserReflections(
       account,
       chainId,
-      farmsToFetch.filter((f) => ![15, 17].includes(f.farmId))
-    ).then((data) => {
+      farmsToFetch.filter((f) => ![15, 16, 17].includes(f.farmId))
+    ).then((userFarmReflections) => {
+      const data = farmsToFetch
+        .filter((f) => ![15, 16, 17].includes(f.farmId))
+        .filter((f) => !f.enableEmergencyWithdraw)
+        .map((farm, index) => {
+          return {
+            pid: farm.pid,
+            farmId: farm.farmId,
+            poolId: farm.poolId,
+            chainId: farm.chainId,
+            reflections: userFarmReflections[index] ?? "0",
+          };
+        });
       dispatch(setFarmUserData(data));
     });
   };
