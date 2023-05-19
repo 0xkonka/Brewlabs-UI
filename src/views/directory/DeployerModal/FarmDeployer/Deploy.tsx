@@ -399,7 +399,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
               rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100
             }
           >
-            Deploy
+            {rewardTokenBalance < (totalSupply.toFixed(2) * initialSupply) / 100 ? `Insufficent rewards` : `Deploy`}
           </StyledButton>
         ) : step === 4 ? (
           <StyledButton
