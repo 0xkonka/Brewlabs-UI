@@ -7,6 +7,7 @@ export default {
     56: "0x479EBabB0e8870188Aa1700489054Ec489a6AB28",
   },
   farmFactory: {
+    1: "0xB35dB6963Ee19Fad44bA2a30aA6D3730572F894d",
     56: "0xe8F5d6E471CDd8Bc1Ec180DD2bf31cF16A8b72cc",
   },
   lpManager: {
