@@ -28,7 +28,7 @@ const Row = (data: any) => {
       </p>
       <p className="flex items-center justify-between gap-2">
         <span className="opacity-40">
-          {amount}&nbsp;{outputCurrency?.symbol}
+          {Number(amount).toFixed(4)}&nbsp;{outputCurrency?.symbol}
         </span>
         <a href={getBlockExplorerLink(transactionHash, "transaction", chainId)} target="_blank" rel="noreferrer">
           <img src={getBlockExplorerLogo(chainId)} alt="" className="h-3 w-3" />
