@@ -1,7 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
-import { bsc, mainnet, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
+import { bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
 
-export const SupportedChains = [bsc, mainnet, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
+export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
@@ -36,6 +36,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
 
 export const CHAIN_KEYS = {
   [ChainId.ETHEREUM]: "ethereum",
+  // [ChainId.ABITRUM]: "arbitrum",
   [ChainId.GOERLI]: "goerli",
   [ChainId.BSC_MAINNET]: "smartchain",
   [ChainId.BSC_TESTNET]: "chapel",
@@ -48,6 +49,7 @@ export const CHAIN_KEYS = {
 
 export const EXPLORER_NAMES = {
   [ChainId.ETHEREUM]: "Etherscan",
+  // [ChainId.ABITRUM]: "Arbiscan",
   [ChainId.GOERLI]: "Etherscan",
   [ChainId.BSC_MAINNET]: "BscScan",
   [ChainId.BSC_TESTNET]: "BscScan",
