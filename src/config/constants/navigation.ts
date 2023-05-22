@@ -67,6 +67,13 @@ export const navigationData = [
     icon: "ArrowDownOnSquareIcon",
     svg: DeployerSVG,
   },
+  {
+    name: "Chart",
+    href: "/chart",
+    external: false,
+    coming: false,
+    icon: "ArrowDownOnSquareIcon",
+  }
 ] as NavigationItem[];
 
 export const navigationExtraData = [

@@ -16,6 +16,7 @@ import transactions from "./transactions/reducer";
 import burn from "./burn/reducer";
 import mint from "./mint/reducer";
 import swap from "./swap/reducer";
+import chart from './charts/reducer';
 import lists from "./lists/reducer";
 import zap from "./zap";
 import lpPricesReducer from "./lpPrices";
@@ -44,6 +45,7 @@ const persistedReducer = persistReducer(
     lpTokenPrices: lpPricesReducer,
     multicall,
     swap,
+    chart,
     transactions,
     burn,
     mint,
