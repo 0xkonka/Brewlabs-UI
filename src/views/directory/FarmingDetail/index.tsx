@@ -38,6 +38,7 @@ import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
 import useFarm from "./hooks/useFarm";
 import { BASE_URL } from "config";
+import useFarmImpl from "./hooks/useFarmImpl";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data } = detailDatas;
@@ -60,6 +61,20 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const tokenPrices = useTokenPrices();
 
   const { onReward, onHarvest, onCompound, onHarvestDividend, onCompoundDividend } = useFarm(
+    data.poolId,
+    data.farmId,
+    data.chainId,
+    data.contractAddress,
+    data.performanceFee,
+    data.enableEmergencyWithdraw
+  );
+
+  const {
+    onHarvest: onHarvestImpl,
+    onCompound: onCompoundImpl,
+    onHarvestDividend: onHarvestDividendImpl,
+    onCompoundDividend: onCompoundDividendImpl,
+  } = useFarmImpl(
     data.poolId,
     data.farmId,
     data.chainId,
@@ -127,7 +142,11 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(true);
     try {
       if (data.version > Version.V2) {
-        await onHarvest();
+        if (data.category) {
+          await onHarvestImpl();
+        } else {
+          await onHarvest();
+        }
       } else {
         await onReward();
       }
@@ -142,7 +161,11 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const handleHarvestDividned = async () => {
     setPending(true);
     try {
-      await onHarvestDividend();
+      if (data.category) {
+        await onHarvestDividendImpl();
+      } else {
+        await onHarvestDividend();
+      }
       dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
@@ -154,7 +177,11 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const handleCompound = async () => {
     setPending(true);
     try {
-      await onCompound();
+      if (data.category) {
+        await onCompoundImpl();
+      } else {
+        await onCompound();
+      }
       dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
@@ -166,7 +193,11 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const handleCompoundDividend = async () => {
     setPending(true);
     try {
-      await onCompoundDividend();
+      if (data.category) {
+        await onCompoundDividendImpl();
+      } else {
+        await onCompoundDividend();
+      }
       dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
@@ -259,7 +290,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 justify-end">
                     {data.isCustody ? (
                       <div className="hidden w-full max-w-[470px] lg:block">
-                        <div className="mt-2 h-[32px] w-[140px] lg:mt-0 ml-5">
+                        <div className="ml-5 mt-2 h-[32px] w-[140px] lg:mt-0">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
@@ -272,7 +303,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
                     <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
                       <StyledButton
-                        className="relative mb-2 lg:mr-5 mr-0 h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition  hover:border-white hover:text-white lg:mb-0"
+                        className="relative mb-2 mr-0 h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white  hover:text-white lg:mb-0 lg:mr-5"
                         type={"default"}
                         onClick={onShareFarm}
                       >
@@ -544,7 +575,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       >
                         <div>USD Value</div>
                         <div className="flex">
-                          {!address ? (
+                          {!address || !lpPrice ? (
                             "$0.00"
                           ) : accountData.stakedBalance ? (
                             `$${formatAmount(getBalanceNumber(accountData.stakedBalance, 18) * (lpPrice ?? 0))}`

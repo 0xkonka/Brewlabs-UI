@@ -1,42 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { DashboardContext } from "contexts/DashboardContext";
-import { useContext, useRef, useState } from "react";
-import getTokenLogoURL from "utils/getTokenLogoURL";
-import { useGlobalState } from "state";
-import CurrencySelector from "@components/CurrencySelector";
-
+import { useContext, useMemo, useRef } from "react";
 import { Token } from "@brewlabs/sdk";
 import { getAddress } from "@ethersproject/address";
-import { DrawSVG } from "@components/dashboard/assets/svgs";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useGlobalState } from "state";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import CurrencySelector from "components/CurrencySelector";
+import { DrawSVG } from "components/dashboard/assets/svgs";
 
 const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
-  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
-  const [inputValue, setInputValue] = useState(null);
-
-  const { tokens }: any = useContext(DashboardContext);
   const { chainId } = useActiveChainId();
+  const { tokens, tokenList: supportedTokens }: any = useContext(DashboardContext);
+
   const dropdownRef: any = useRef();
+  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
+  const [, setSidebarContent] = useGlobalState("userSidebarContent");
+
+  const filteredTokenList = useMemo(
+    () =>
+      tokens
+        .filter((t) => supportedTokens.map((st) => st.address.toLowerCase()).includes(t.address.toLowerCase()))
+        .map(
+          (t) =>
+            new Token(
+              chainId,
+              getAddress(t.address),
+              t.decimals,
+              t.symbol,
+              t.name,
+              undefined,
+              supportedTokens.find((st) => st.address.toLowerCase() === t.address.toLowerCase())?.logoURI
+            )
+        ),
+    [supportedTokens.length, tokens.length]
+  );
 
   function onUserInput(input, currency) {}
   function onCurrencySelect(input, currency) {
     setSelectedCurrency(currency);
   }
-
-  let wrappedTokens = [];
-  for (let i = 0; i < tokens.length; i++) {
-    if (tokens[i].address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") continue;
-    const token = new Token(
-      chainId,
-      getAddress(tokens[i].address),
-      tokens[i].decimals,
-      tokens[i].symbol,
-      tokens[i].name
-    );
-    wrappedTokens.push(token);
-  }
+ 
   return (
     <div className="relative z-20" ref={dropdownRef}>
       <div
@@ -46,11 +52,11 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
           setSidebarContent(
             <CurrencySelector
               inputType={"input"}
-              selectedCurrency={inputValue}
+              selectedCurrency={null}
               onUserInput={onUserInput}
               type={""}
               onCurrencySelect={onCurrencySelect}
-              filteredCurrencies={wrappedTokens}
+              filteredCurrencies={filteredTokenList}
             />
           );
         }}
@@ -58,7 +64,7 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
         {selectedCurrency ? (
           <div className="flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap">
             <img
-              src={getTokenLogoURL(selectedCurrency.address, chainId)}
+              src={getTokenLogoURL(selectedCurrency.address, chainId, selectedCurrency.logo)}
               alt={""}
               className="h-6 w-6 rounded-full"
               onError={(e: any) => (e.target.src = "/images/unknown.png")}
