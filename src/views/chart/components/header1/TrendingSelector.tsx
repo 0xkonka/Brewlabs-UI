@@ -67,7 +67,7 @@ const TrendingSelector = () => {
               <Menu.Items className="absolute mt-2 w-56 divide-y divide-gray-100 rounded-md bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-0">
                 <div className="px-1 py-1 ">
                   {[1, 2, 3, 4, 5].map((id, index) => (
-                    <Row targetTrending = {id as TrendingId} setFilter={setFilter} />
+                    <Row targetTrending = {id as TrendingId} setFilter={setFilter} key={`trending${index}`}/>
                   ))}
                 </div>
               </Menu.Items>

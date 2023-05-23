@@ -13,8 +13,8 @@ export default function Favorite () {
                     <button>{Inboxin}</button>
                 </Button>
             </div>
-            {[1, 2, 3, 4, 5, 6].map((id) => (
-                <div className="flex items-center justify-between bg-[#1E1E21] rounded-[6px] mt-[5px] mb-[5px] pt-[13px] pb-[13px] pl-[19px] pr-[15px]">
+            {[1, 2, 3, 4, 5, 6].map((id, index) => (
+                <div className="flex items-center justify-between bg-[#1E1E21] rounded-[6px] mt-[5px] mb-[5px] pt-[13px] pb-[13px] pl-[19px] pr-[15px]" key={`favorite${index}`}>
                     <div className="flex items-center justify-center gap-1">
                         <CircleSVG />
                         <p className="!text-white items-center text-[10px] leading-[12px] font-[500] max-[480px]:text-[14px]">BREWLABS</p>

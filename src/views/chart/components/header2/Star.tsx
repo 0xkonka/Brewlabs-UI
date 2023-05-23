@@ -34,7 +34,7 @@ export default function Star() {
             <div className="flex">
                 <div className="flex items-center justify-center gap-[3px] ml-[-30px] pl-[10px]">
                     {[1, 2, 3, 4, 5, 6].map((id) => (
-                        <div className="flex items-center justify-center border-1 border-solid border-black">
+                        <div className="flex items-center justify-center border-1 border-solid border-black" key={`star${id}`}>
                             <CircleSVG size="14"/>
                         </div>
                     ))}

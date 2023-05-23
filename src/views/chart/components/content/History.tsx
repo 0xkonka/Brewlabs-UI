@@ -218,7 +218,7 @@ export default function Histroy() {
                 {
                     fake_data.map((data: any, i: number) => {
                         return(
-                            <HistoryCard data={data} index={i} length={fake_data.length}/>
+                            <HistoryCard data={data} index={i} length={fake_data.length} key={`history${i}`}/>
                         )
                     })
                 }

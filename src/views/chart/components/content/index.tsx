@@ -32,9 +32,6 @@ const Container = styled.div`
     display: flex;
     width: 100%;
     gap: 12px;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    margin-top: -47px;
     @media screen and (max-width: 1400px) {
         flex-direction: column;
         padding-left: 0px;

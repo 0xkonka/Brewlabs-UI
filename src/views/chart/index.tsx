@@ -14,9 +14,12 @@ export default function Chart() {
         title={
           <Header1 />
         }
-        children={<Header2 />}
       />
-      <ChartContent />
+      <div className="flex flex-col mt-[-57px] pl-[2rem] pr-[2rem] gap-[21px] max-[480px]:pl-[1rem] max-[480px]:pr-[1rem] ">
+        <Header2/>
+        <ChartContent />
+      </div>
+
     </PageWrapper>
   );
 }
