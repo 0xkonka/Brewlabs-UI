@@ -25,7 +25,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
@@ -45,6 +45,7 @@ export const CHAIN_KEYS = {
   [ChainId.AVALANCHE]: "avalanchec",
   [ChainId.CRONOS]: "cronos",
   [ChainId.BRISE]: "brise",
+  [ChainId.ARBITRUM]: "arbitrum"
 };
 
 export const EXPLORER_NAMES = {
@@ -58,6 +59,7 @@ export const EXPLORER_NAMES = {
   [ChainId.AVALANCHE]: "Snowtrace",
   [ChainId.CRONOS]: "CronoScan",
   [ChainId.BRISE]: "BriseScan",
+  [ChainId.ARBITRUM]: "ArbiScan"
 };
 
 export const EXPLORER_URLS = {
@@ -117,6 +119,7 @@ export const MORALIS_CHAIN_NAME = {
 
 export const SUPPORTED_CHAINS = [
   ChainId.ETHEREUM,
+  ChainId.ARBITRUM,
   ChainId.BSC_MAINNET,
   ChainId.POLYGON,
   ChainId.FANTOM,
