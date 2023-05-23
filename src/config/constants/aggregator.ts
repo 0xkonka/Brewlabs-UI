@@ -52,5 +52,37 @@ export const Adapters = {
       meta: "v3",
     },
   ],
+  42161: [
+    {
+      address: "0x0E6c86988af7186033D6b1F6C960cc6eB7E8225b",
+      name: "Uniswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
+      meta: "v3",
+    },
+    {
+      address: "0x49Ba5E1cB0911935E35245085b2916b85868752d",
+      name: "Dodo",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.dodoex.io.png",
+      meta: "v1",
+    },
+    {
+      address: "0xF605925Dc46436e0d6916ceb9700A68F3EE78A0c",
+      name: "Curve",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/curve.fi.png",
+      meta: "2pool",
+    },
+    {
+      address: "0xd4B1Fc5fA08ccd715C646cE4FD78722F61295bf7",
+      name: "Curve",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/curve.fi.png",
+      meta: "mim3pool",
+    },
+    {
+      address: "0x5bd12749E6A88740c066ED7E6A230462023DE971",
+      name: "Curve",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/curve.fi.png",
+      meta: "tricrypto",
+    }
+  ],
   97: [],
 };
