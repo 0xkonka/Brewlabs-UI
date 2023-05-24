@@ -16,6 +16,12 @@ export const Adapters = {
       address: "0x01c9bBA623380D0F2BD802664F2D02c43b499cE8",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
+    },
+    {
+      address: "0x9c9bEaD2170C3ea31d40081b99C9e086F99F5e41",
+      name: "Dodo",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.dodoex.io.png",
+      meta: "v1"
     }
   ],
   56: [
