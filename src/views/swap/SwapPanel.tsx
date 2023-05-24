@@ -132,6 +132,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
+      if (value === "") onUserInput(Field.OUTPUT, "");
     },
     [onUserInput]
   );
@@ -179,7 +180,9 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const parsedAmounts = {
     [Field.INPUT]: noLiquidity ? parsedAmount : independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
     [Field.OUTPUT]: noLiquidity
-      ? query?.outputAmount
+      ? parsedAmount
+        ? query?.outputAmount
+        : undefined
       : independentField === Field.OUTPUT
       ? parsedAmount
       : trade?.outputAmount,
@@ -188,8 +191,10 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput));
 
   const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: parsedAmounts[dependentField]?.toSignificant(6) ?? "",
+    [Field.INPUT]: typedValue,
+    [Field.OUTPUT]: noLiquidity
+      ? parsedAmounts[Field.OUTPUT]?.toSignificant(6) ?? ""
+      : parsedAmounts[dependentField]?.toSignificant(6) ?? "",
   };
 
   const price = useMemo(() => {
@@ -241,7 +246,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
           balance={currencyBalances[Field.OUTPUT]}
-          data={query}
+          data={parsedAmounts[Field.INPUT] ? query : undefined}
           slippage={autoMode ? slippage : userSlippageTolerance}
           price={price}
           buyTax={buyTax}
