@@ -46,13 +46,13 @@ export const Adapters = {
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.sushi.com.png",
     },
     {
-      address: "0x372Ba972B7337773d6040953De8aeEa72181Cb7d",
+      address: "0x55C0D0EBA206088E57A90f1460033271DAb251ef",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
       meta: "v3",
     },
     {
-      address: "0xbf46bE5EFc78234d34BFF0BF6dD6D33AeC66989a",
+      address: "0x3E01db4bbb07561121f069F4b5578dA015E19783",
       name: "Uniswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
       meta: "v3",
@@ -60,7 +60,7 @@ export const Adapters = {
   ],
   42161: [
     {
-      address: "0x0E6c86988af7186033D6b1F6C960cc6eB7E8225b",
+      address: "0xD2ef0Df8c3cBeFBa84FAb4fdA674f704C4215FC6",
       name: "Uniswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
       meta: "v3",
