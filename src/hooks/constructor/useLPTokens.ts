@@ -68,7 +68,7 @@ export const useLPTokens = () => {
           },
           price: lpInfo.priceUSD,
           volume: lpInfo.volume24hUSD,
-          chainId: 56,
+          chainId: chain === "eth" ? 1 : 56,
         };
       })
     );
@@ -82,7 +82,6 @@ export const useLPTokens = () => {
         const nonZeroBalances = result1.data.tokenAccounts.filter(
           (data: any) => data.balance / 1 > 0 && data.tokenSymbol === "UNI-V2"
         );
-        console.log(nonZeroBalances);
         const addresses = nonZeroBalances.map((data) => {
           return {
             address: data.tokenHash,
@@ -90,7 +89,6 @@ export const useLPTokens = () => {
           };
         });
         const info = await fetchLPInfo(addresses, "eth");
-        console.log(info);
         setETHLPTokens(info);
       } catch (e) {
         console.log(e);
