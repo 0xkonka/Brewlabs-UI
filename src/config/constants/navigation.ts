@@ -1,5 +1,5 @@
 import { DeployerSVG, NFTSVG } from "@components/dashboard/assets/svgs";
-import { IconName } from "../../components/DynamicHeroIcon";
+import { IconName } from "@components/DynamicHeroIcon";
 
 type NavigationItem = {
   name: string;
@@ -72,8 +72,8 @@ export const navigationData = [
     href: "/chart",
     external: false,
     coming: false,
-    icon: "ArrowDownOnSquareIcon",
-  }
+    icon: "PresentationChartLineIcon",
+  },
 ] as NavigationItem[];
 
 export const navigationExtraData = [
