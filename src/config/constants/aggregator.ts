@@ -7,15 +7,21 @@ export const Adapters = {
       meta: "v2",
     },
     {
-      address: "0xb12Ab9Ded05D9378489256fd5adC07962D232436",
+      address: "0xE52e232FE3Aea0dFA783F06Af7e070DEb3F3f1c5",
       name: "Uniswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
       meta: "v3",
     },
     {
-      address: "0x01c9bBA623380D0F2BD802664F2D02c43b499cE8",
+      address: "0xB816A711b7D40AAcb1B9bB5FC70d179320540Fa1",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
+    },
+    {
+      address: "0x9c9bEaD2170C3ea31d40081b99C9e086F99F5e41",
+      name: "Dodo",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.dodoex.io.png",
+      meta: "v1"
     }
   ],
   56: [
@@ -40,17 +46,49 @@ export const Adapters = {
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.sushi.com.png",
     },
     {
-      address: "0x372Ba972B7337773d6040953De8aeEa72181Cb7d",
+      address: "0x55C0D0EBA206088E57A90f1460033271DAb251ef",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
       meta: "v3",
     },
     {
-      address: "0xbf46bE5EFc78234d34BFF0BF6dD6D33AeC66989a",
+      address: "0x3E01db4bbb07561121f069F4b5578dA015E19783",
       name: "Uniswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
       meta: "v3",
     },
+  ],
+  42161: [
+    {
+      address: "0xD2ef0Df8c3cBeFBa84FAb4fdA674f704C4215FC6",
+      name: "Uniswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
+      meta: "v3",
+    },
+    {
+      address: "0x49Ba5E1cB0911935E35245085b2916b85868752d",
+      name: "Dodo",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.dodoex.io.png",
+      meta: "v1",
+    },
+    {
+      address: "0xF605925Dc46436e0d6916ceb9700A68F3EE78A0c",
+      name: "Curve",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/curve.fi.png",
+      meta: "2pool",
+    },
+    {
+      address: "0xd4B1Fc5fA08ccd715C646cE4FD78722F61295bf7",
+      name: "Curve",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/curve.fi.png",
+      meta: "mim3pool",
+    },
+    {
+      address: "0x5bd12749E6A88740c066ED7E6A230462023DE971",
+      name: "Curve",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/curve.fi.png",
+      meta: "tricrypto",
+    }
   ],
   97: [],
 };
