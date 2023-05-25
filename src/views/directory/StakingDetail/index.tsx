@@ -416,7 +416,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="text-xs text-[#FFFFFF80]">
                         <div className="flex">
                           Deposit Fee{" "}
-                          {data.depositFee ? (
+                          {data.depositFee !== undefined ? (
                             (+data.depositFee).toFixed(2)
                           ) : (
                             <div className="ml-1">
@@ -430,7 +430,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                         <div className="flex">
                           Withdraw Fee{" "}
-                          {data.withdrawFee ? (
+                          {data.withdrawFee !== undefined ? (
                             (+data.withdrawFee).toFixed(2)
                           ) : (
                             <div className="ml-1">
@@ -444,7 +444,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                         <div className="flex">
                           Peformance Fee{" "}
-                          {data.performanceFee ? (
+                          {data.performanceFee !== undefined ? (
                             data.performanceFee / Math.pow(10, 18)
                           ) : (
                             <div className="ml-1">
