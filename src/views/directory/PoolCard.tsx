@@ -94,7 +94,7 @@ const PoolCard = ({
               {poolNames[data.type]} -{" "}
               {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
                 ? "Flexible"
-                : `${data.duration} days lock`}
+                : `${data.duration ? data.duration : "__"} days lock`}
             </div>
             <div className="text-xs leading-none">
               {data.type === Category.INDEXES ? (
