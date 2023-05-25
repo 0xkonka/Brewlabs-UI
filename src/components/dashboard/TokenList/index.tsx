@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import ToolBar from "./ToolBar";
 import { useContext, useEffect, useRef, useState } from "react";
-import { StarIcon as StarOutlineIcon, CheckCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { StarIcon as StarOutlineIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
-import StyledButton from "../StyledButton";
 import styled from "styled-components";
 import { claimSVG, disabledClaimSVG, NoneSVG, warningSVG } from "../assets/svgs";
-import { chain, isArray } from "lodash";
+import { isArray } from "lodash";
 import { getClaimableTokenContract } from "utils/contractHelpers";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
@@ -14,11 +13,9 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat, getBlockExplorerLink, getChainLogo } from "utils/functions";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { SwapContext } from "contexts/SwapContext";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { Field } from "state/swap/actions";
-import { Currency, Token, NATIVE_CURRENCIES } from "@brewlabs/sdk";
-import { NativeCurrency } from "@brewlabs/sdk/dist/entities/NativeCurrency";
+import { Token, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
 const emptyLogos = {
   1: "/images/dashboard/tokens/empty-token-eth.webp",
@@ -58,10 +55,9 @@ const TokenList = ({
   const { chainId } = useActiveChainId();
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
-  const { pending, setPending, tokenList }: any = useContext(DashboardContext);
+  const { pending, setPending, tokenList, viewType, setViewType }: any = useContext(DashboardContext);
   const valueRef: any = useRef();
 
-  const { viewType, setViewType }: any = useContext(SwapContext);
   const { onCurrencySelection } = useSwapActionHandlers();
 
   const sortData = (data: any) => {

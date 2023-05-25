@@ -1,13 +1,14 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
-import Image from "next/future/image";
+import Image from "next/image";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
+
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
@@ -21,7 +22,6 @@ import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { SwapContextProvider } from "contexts/SwapContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
-import { ZapperContextProvider } from "contexts/directory/ZapperContext";
 import { LanguageProvider } from "contexts/localization";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
@@ -42,6 +42,8 @@ import { Updaters } from "../index";
 import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
 import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
 import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
+import { UserContextProvider } from "contexts/UserContext";
+import { usePollFarmFactoryData } from "state/deploy/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -59,6 +61,8 @@ function GlobalHooks() {
   usePollIndexesFromApi();
   useFetchPublicIndexesData();
   useFetchIndexesWithUserData();
+
+  usePollFarmFactoryData();
 
   return null;
 }
@@ -97,9 +101,9 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
         <Provider store={store}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <TokenPriceContextProvider>
-              <DashboardContextProvider>
-                <SwapContextProvider>
-                  <ZapperContextProvider>
+              <UserContextProvider>
+                <DashboardContextProvider>
+                  <SwapContextProvider>
                     <LanguageProvider>
                       <BridgeProvider>
                         <SWRConfig>
@@ -111,7 +115,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                             <div
                               className={clsx(
                                 router?.pathname === "/" && "home",
-                                "relative min-h-screen bg-gray-100 dark:bg-gradient-to-b dark:from-slate-800 dark:via-slate-800  dark:to-slate-900"
+                                "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
                               )}
                             >
                               <Suspense>
@@ -119,7 +123,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                               </Suspense>
 
                               <Image
-                                className="fixed top-0 -right-44 dark:opacity-50"
+                                className="fixed -right-44 top-0 home:z-10 dark:opacity-50"
                                 src="/images/blur-indigo.png"
                                 alt="background blur"
                                 width={567}
@@ -148,9 +152,9 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                         </SWRConfig>
                       </BridgeProvider>
                     </LanguageProvider>
-                  </ZapperContextProvider>
-                </SwapContextProvider>
-              </DashboardContextProvider>
+                  </SwapContextProvider>
+                </DashboardContextProvider>
+              </UserContextProvider>
             </TokenPriceContextProvider>
           </ThemeProvider>
         </Provider>

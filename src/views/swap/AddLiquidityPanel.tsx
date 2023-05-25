@@ -12,10 +12,8 @@ export default function AddLiquidityPanel() {
     <>
       {addLiquidityStep < 2 ? (
         <CreateLiquidityOption></CreateLiquidityOption>
-      ) : addLiquidityStep < 4 ? (
-        <BasicLiquidity></BasicLiquidity>
       ) : (
-        <DeployYieldFarm></DeployYieldFarm>
+        <BasicLiquidity></BasicLiquidity>
       )}
     </>
   );

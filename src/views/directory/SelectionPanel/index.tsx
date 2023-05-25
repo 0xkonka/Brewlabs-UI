@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 import { Category } from "config/constants/types";
-import { BLOCKS_PER_DAY } from "config/constants";
 import { useChainCurrentBlocks } from "state/block/hooks";
+import { filterPoolsByStatus } from "utils";
 
 import DropDown from "./Dropdown";
 import ActivityDropdown from "./ActivityDropdown";
@@ -34,19 +34,30 @@ const SelectionPanel = ({
   counts[5] = pools.filter((data) =>
     data.type === Category.INDEXES
       ? data.userData?.stakedBalances[0]?.gt(0) || data.userData?.stakedBalances[1]?.gt(0)
-      : data.userData?.stakedBalance.gt(0)
+      : Number(data.userData?.stakedBalance) > 0
   ).length;
 
   const filters = [
-    `All (${counts[1] + counts[2] + counts[3] + counts[4]})`,
-    `Staking Pools (${counts[1]})`,
-    `Yield Farms (${counts[2]})`,
-    `Indexes (${counts[3]})`,
-    `Zapper Pools (${counts[4]})`,
-    `My positions (${counts[5]})`,
+    <>
+      All <span className="text-[11px]">({counts[1] + counts[2] + counts[3] + counts[4]})</span>
+    </>,
+    <>
+      Staking Pools <span className="text-[11px]">({counts[1]})</span>
+    </>,
+    <>
+      Yield Farms <span className="text-[11px]">({counts[2]})</span>
+    </>,
+    <>
+      Indexes <span className="text-[11px]">({counts[3]})</span>
+    </>,
+    <>
+      Zapper Pools <span className="text-[11px]">({counts[4]})</span>
+    </>,
+    <>
+      My positions <span className="text-[11px]">({counts[5]})</span>
+    </>,
   ];
 
-  let activityCnts = {};
   let filteredPools = pools.filter(
     (data) =>
       curFilter === Category.ALL ||
@@ -54,24 +65,12 @@ const SelectionPanel = ({
       (curFilter === Category.MY_POSITION &&
         (data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)))
   );
-  activityCnts["active"] = filteredPools.filter(
-    (pool) =>
-      !pool.isFinished &&
-      ((pool.type === Category.POOL && +pool.startBlock > 0) ||
-        (pool.type === Category.FARM && pool.multiplier > 0 && +pool.startBlock < currentBlocks[pool.chainId]) ||
-        pool.type === Category.INDEXES)
-  ).length;
-  activityCnts["finished"] = filteredPools.filter((pool) => pool.isFinished || pool.multiplier === 0).length;
-  activityCnts["new"] = filteredPools.filter(
-    (pool) =>
-      !pool.isFinished &&
-      ((pool.type === Category.POOL &&
-        (+pool.startBlock === 0 || +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
-        (pool.type === Category.FARM &&
-          (+pool.startBlock > currentBlocks[pool.chainId] ||
-            +pool.startBlock + BLOCKS_PER_DAY[pool.chainId] > currentBlocks[pool.chainId])) ||
-        (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
-  ).length;
+
+  let activityCnts = {
+    active: filterPoolsByStatus(filteredPools, currentBlocks, "active").length,
+    finished: filterPoolsByStatus(filteredPools, currentBlocks, "finished").length,
+    new: filterPoolsByStatus(filteredPools, currentBlocks, "new").length
+  };
 
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
@@ -96,7 +95,7 @@ const SelectionPanel = ({
             <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
           </div>
         </div>
-        <div className="ml-4 hidden w-[130px] xl:block">
+        <div className="ml-4 hidden w-[140px] xl:block">
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>

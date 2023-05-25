@@ -1,4 +1,6 @@
-import { ChainId, Currency, Token } from "@brewlabs/sdk";
+import { ChainId, Currency } from "@brewlabs/sdk";
+import { BigNumber } from "ethers";
+import { Address as ETHAddress } from "wagmi";
 
 export interface SerializedToken {
   chainId: ChainId;
@@ -36,13 +38,8 @@ export enum Version {
   "V1" = "V1",
   "V2" = "V2",
   "V3" = "V3",
-}
-
-export enum AppId {
-  PANCAKESWAP = "pancakeswap",
-  APESWAP = "apeswap",
-  // KNIGHT = 'knight',
-  SUSHISWAP = "sushiswap",
+  "V4" = "V4",
+  "V5" = "V5",
 }
 
 export enum Chef {
@@ -58,6 +55,7 @@ interface FarmConfigBaseProps {
   v1pid?: number;
   chainId?: ChainId;
   version?: Version;
+  category?: number;
   lpSymbol: string;
   lpDecimals?: number;
   lpAddress: string;
@@ -75,12 +73,14 @@ interface FarmConfigBaseProps {
   unverified?: boolean;
   featured?: boolean;
   isFinished?: boolean;
+  visible?: boolean;
   dual?: {
     rewardPerBlock: number;
     earnLabel: string;
     endBlock: number;
   };
   externalSwap?: string;
+  deployer?: string;
 }
 
 export interface SerializedFarmConfig extends FarmConfigBaseProps {
@@ -157,5 +157,39 @@ export type WalletConfig<T = unknown> = {
   guide?: LinkOfDevice;
   downloadLink?: LinkOfDevice;
   mobileOnly?: boolean;
-  qrCode?: () => Promise<string>;
 };
+
+export interface BrewlabsToken {
+  id: ETHAddress;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+}
+
+export interface BrewlabsPair {
+  id: ETHAddress;
+  token0: BrewlabsToken;
+  token1: BrewlabsToken;
+  token0Owner?: ETHAddress;
+  token1Owner?: ETHAddress;
+  referrer?: ETHAddress;
+  volumeToken0: BigNumber;
+  volumeToken1: BigNumber;
+  volumeUSD: BigNumber;
+}
+export interface Address {
+  1?: string;
+  56?: string;
+  97?: string;
+  137?: string;
+  250?: string;
+  43114?: string;
+  25?: string;
+}
+
+export enum AppId {
+  PANCAKESWAP = "pancakeswap",
+  APESWAP = "apeswap",
+  // KNIGHT = "knight",
+  SUSHISWAP = "sushiswap",
+}

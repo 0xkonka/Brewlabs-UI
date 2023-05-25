@@ -1,13 +1,11 @@
-/* eslint-disable @next/next/link-passhref */
 import { useCallback, useContext, useMemo, useState } from "react";
-import { WNATIVE } from "@brewlabs/sdk";
+import { EXCHANGE_MAP, ROUTER_ADDRESS_MAP, WNATIVE } from "@brewlabs/sdk";
 import { TransactionResponse } from "alchemy-sdk";
 import { BigNumber, Contract, ethers } from "ethers";
 import { splitSignature } from "ethers/lib/utils";
 import { toast } from "react-toastify";
 import { useAccount, useSigner } from "wagmi";
 
-import { ROUTER_ADDRESS } from "config/constants";
 import { NETWORKS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -25,7 +23,7 @@ import { useUserSlippageTolerance } from "state/user/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerAddress } from "utils/addressHelpers";
-import { getLpManagerContract, getRouterContract } from "utils/contractHelpers";
+import { getLpManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
 import { formatAmount } from "utils/formatApy";
 import { getChainLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -37,7 +35,14 @@ import SolidButton from "views/swap/components/button/SolidButton";
 
 import StyledSlider from "./StyledSlider";
 
-export default function RemoveLiquidityPanel({ onBack, selectedChainId, currencyA, currencyB, lpPrice = undefined }) {
+export default function RemoveLiquidityPanel({
+  onBack,
+  fetchLPTokens,
+  selectedChainId,
+  currencyA,
+  currencyB,
+  lpPrice = undefined,
+}) {
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
 
@@ -57,13 +62,15 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
   const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts;
 
   const [allowedSlippage] = useUserSlippageTolerance();
+
+  const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId][0]?.key][chainId]?.address;
   const lpManager = getLpManagerAddress(chainId);
   const deadline = useTransactionDeadline();
-  const [isGetWETH, setIsGetWETH] = useState(false);
 
+  const [isGetWETH, setIsGetWETH] = useState(false);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
-    lpManager === "" ? ROUTER_ADDRESS[chainId] : lpManager
+    lpManager === "" ? routerAddr : lpManager
   );
 
   const { onUserInput: _onUserInput } = useBurnActionHandlers();
@@ -98,7 +105,7 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
       if (!currencyAmountA || !currencyAmountB) {
         throw new Error("missing currency amounts");
       }
-      const router = getRouterContract(chainId, signer);
+      const router = getBrewlabsRouterContract(chainId, routerAddr, signer);
       const gasPrice = await getNetworkGasPrice(library, chainId);
 
       const amountsMin = {
@@ -179,6 +186,9 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
               } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
             });
             toast.success("Liquidity was removed");
+
+            fetchLPTokens(chainId);
+            onBack();
             // setTxHash(response.hash);
           })
           .catch((err: Error) => {
@@ -266,6 +276,9 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
             } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
           });
           toast.success("Liquidity was removed");
+
+          fetchLPTokens(chainId);
+          onBack();
           // setTxHash(response.hash)
         })
         .catch((err: Error) => {
@@ -307,7 +320,7 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
       ];
       const message = {
         owner: account,
-        spender: lpManager === "" ? ROUTER_ADDRESS[chainId] : lpManager,
+        spender: lpManager === "" ? routerAddr : lpManager,
         value: liquidityAmount.raw.toString(),
         nonce: nonce.toHexString(),
         deadline: deadline.toNumber(),
@@ -372,7 +385,7 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
           }}
         />
       </div>
-      <div className="mt-6 mr-6 flex items-center justify-between">
+      <div className="mr-6 mt-6 flex items-center justify-between">
         <div className="mr-5 flex-1">
           <StyledSlider value={innerLiquidityPercentage} setValue={setInnerLiquidityPercentage} />
         </div>
@@ -386,12 +399,10 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
             {lpPrice ? (
               <>
                 $
-                {
-                  +formatAmount(
-                    +ethers.utils.formatEther(parsedAmounts[Field.LIQUIDITY]?.raw.toString() ?? "0") * lpPrice,
-                    2
-                  )
-                }
+                {(
+                  +formatAmount(+ethers.utils.formatEther(parsedAmounts[Field.LIQUIDITY]?.raw.toString() ?? "0"), 10) *
+                  lpPrice
+                ).toFixed(2)}
                 &nbsp; USD
               </>
             ) : (
@@ -403,7 +414,7 @@ export default function RemoveLiquidityPanel({ onBack, selectedChainId, currency
           </div>
         </div>
       </div>
-      <div className="mx-0 mt-[60px] rounded-[30px] border border-[#FFFFFF80] py-4 px-4 font-bold text-[#FFFFFF80] sm:mx-4 sm:px-8">
+      <div className="mx-0 mt-[60px] rounded-[30px] border border-[#FFFFFF80] px-4 py-4 font-bold text-[#FFFFFF80] sm:mx-4 sm:px-8">
         <div className="text-lg text-[#FFFFFFBF]">Receive</div>
         <div>
           <div className="flex flex-wrap items-center justify-between text-sm">

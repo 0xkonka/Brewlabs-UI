@@ -120,44 +120,23 @@ export const fetchFarmUserDataAsync =
       });
       dispatch(setFarmUserData(data));
     });
-    fetchFarmUserStakedBalances(account, chainId, farmsToFetch).then((userStakedBalances) => {
-      const data = farmsToFetch.map((farm, index) => {
-        return {
-          pid: farm.pid,
-          farmId: farm.farmId,
-          poolId: farm.poolId,
-          chainId: farm.chainId,
-          stakedBalance: userStakedBalances[index],
-        };
-      });
+    fetchFarmUserStakedBalances(account, chainId, farmsToFetch).then((data) => {
       dispatch(setFarmUserData(data));
     });
     fetchFarmUserEarnings(
       account,
       chainId,
-      farmsToFetch.filter((f) => f.farmId !== 17)
-    ).then((userFarmEarnings) => {
-      const data = farmsToFetch
-        .filter((f) => f.farmId !== 17)
-        .filter((f) => !f.enableEmergencyWithdraw)
-        .map((farm, index) => {
-          return {
-            pid: farm.pid,
-            farmId: farm.farmId,
-            poolId: farm.poolId,
-            chainId: farm.chainId,
-            earnings: userFarmEarnings[index] ?? "0",
-          };
-        });
+      farmsToFetch.filter((f) => ![15, 17].includes(f.farmId))
+    ).then((data) => {
       dispatch(setFarmUserData(data));
     });
     await fetchFarmUserReflections(
       account,
       chainId,
-      farmsToFetch.filter((f) => f.farmId !== 17)
+      farmsToFetch.filter((f) => ![15, 16, 17].includes(f.farmId))
     ).then((userFarmReflections) => {
       const data = farmsToFetch
-        .filter((f) => f.farmId !== 17)
+        .filter((f) => ![15, 16, 17].includes(f.farmId))
         .filter((f) => !f.enableEmergencyWithdraw)
         .map((farm, index) => {
           return {
@@ -197,15 +176,15 @@ export const farmsSlice = createSlice({
       state.userDataLoaded = true;
     },
     updateFarmsUserData: (state, action) => {
-      const { field, value, pid, farmId } = action.payload
-      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId)
+      const { field, value, pid, farmId } = action.payload;
+      const index = state.data.findIndex((p) => p.poolId === pid && p.farmId === farmId);
 
       if (index >= 0) {
         state.data[index] = { ...state.data[index], userData: { ...state.data[index].userData, [field]: value } };
       }
     },
-    setFarmTVLData: (state, action) => {
-      action.payload.forEach((tvlDataEl) => {
+    setFarmTVLData: (state: any, action) => {
+      action.payload.forEach((tvlDataEl: any) => {
         const { pid, data } = tvlDataEl;
         const index = state.data.findIndex((farm) => farm.pid === pid);
         state.data[index] = { ...state.data[index], TVLData: data };

@@ -40,6 +40,7 @@ interface PoolConfigBaseProps {
   lockup?: number;
   isServiceFee?: boolean;
   isFinished?: boolean;
+  visible?: boolean;
   migration?: boolean;
   unverified?: boolean;
   featured?: boolean;
@@ -48,6 +49,7 @@ interface PoolConfigBaseProps {
   forceEndblock?: number;
   headerSuffix?: string;
   externalSwap?: string;
+  deployer?: string;
 }
 
 export interface SerializedPoolConfig extends PoolConfigBaseProps {

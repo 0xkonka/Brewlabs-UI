@@ -3,12 +3,8 @@ import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
 import styled from "styled-components";
-import StyledButton from "../StyledButton";
-import { checkCircleSVG, chevronLeftSVG, UploadSVG } from "components/dashboard/assets/svgs";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import Carousel from "react-multi-carousel";
-import PoolDeployer from "./PoolDeployer";
 import ChainSelector from "components/ChainSelector";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
@@ -67,7 +63,7 @@ const ChainSelect = () => {
                 />
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                  className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
                 >
                   <span className="sr-only">Close</span>
                   <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

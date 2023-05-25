@@ -1,3 +1,4 @@
+import { Currency } from "@brewlabs/sdk";
 import CurrencySelector from "./CurrencySelector";
 import { CurrencyLogo } from "./logo";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";

@@ -1,8 +1,24 @@
-import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
-import Bridge from "views/bridge";
+import type { NextPage } from "next";
 
-const BridgePage = () => <Bridge />;
+import Footer from "@components/layout/Footer";
 
-BridgePage.chains = PAGE_SUPPORTED_CHAINS["bridge"];
+import PageWrapper from "@components/layout/PageWrapper";
+import PageHero from "@components/layout/PageHero";
+import FeaturePlug from "@components/FeaturePlug";
+import VideoSection from "@components/VideoSection";
 
-export default BridgePage;
+const Home: NextPage = () => (
+  <PageWrapper>
+    <PageHero />
+
+    <main className="min-h-screen">
+      <VideoSection />
+
+      <FeaturePlug />
+    </main>
+
+    <Footer />
+  </PageWrapper>
+);
+
+export default Home;

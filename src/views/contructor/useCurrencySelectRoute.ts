@@ -26,7 +26,7 @@ export const useCurrencySelectRoute = (type = "add", selectedChainId = undefined
         router.replace(`/${type}/${chainId}/${newCurrencyIdA}`, undefined, { shallow: true });
       }
     },
-    [currencyIdB, router, currencyIdA, chainId]
+    [currencyIdB, router, currencyIdA, chainId, type]
   );
   const handleCurrencyBSelect = useCallback(
     (currencyB_: Currency) => {

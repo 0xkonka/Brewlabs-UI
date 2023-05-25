@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import { useMediumRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
 import { State } from "state/types";
 
@@ -31,6 +31,9 @@ export const useFetchPublicIndexesData = () => {
 
   useSlowRefreshEffect(() => {
     dispatch(fetchIndexesPublicDataAsync(chainId));
+  }, [chainId, indexes.length]);
+
+  useMediumRefreshEffect(() => {
     dispatch(fetchIndexesPriceChanges(chainId));
   }, [chainId, indexes.length]);
 };

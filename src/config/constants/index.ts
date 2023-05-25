@@ -5,6 +5,7 @@ import { BIG_TEN } from "utils/bigNumber";
 import { tokens } from "./tokens";
 
 export const FAST_INTERVAL = 10000;
+export const MEDIUM_INTERVAL = 30000;
 export const SLOW_INTERVAL = 60000;
 export const BIGSLOW_INTERVAL = 60000 * 2;
 export const DAY_INTERVAL = 60000 * 24 * 60;
@@ -16,16 +17,19 @@ export const ETH_ADDRESSES = [
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   "0x0000000000000000000000000000000000000000",
 ];
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export const ROUTER_ADDRESS = {
   [ChainId.ETHEREUM]: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   [ChainId.BSC_MAINNET]: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-  [ChainId.BSC_TESTNET]: "0x29edBC55A8a77Ff74b3a1D924351eEF5ECd4de33",
   [ChainId.POLYGON]: "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
   [ChainId.FANTOM]: "0xF491e7B69E4244ad4002BC14e878a34207E38c29",
   [ChainId.AVALANCHE]: "0x60aE616a2155Ee3d9A68541Ba4544862310933d4",
   [ChainId.CRONOS]: "0x145677FC4d9b8F19B5D56d1820c48e0443049a30",
   [ChainId.BRISE]: "0xBb5e1777A331ED93E07cF043363e48d320eb96c4",
+
+  [ChainId.GOERLI]: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  [ChainId.BSC_TESTNET]: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
 };
 
 export const AggregationRouterV4 = {
@@ -240,7 +244,6 @@ export const INITIAL_ALLOWED_SLIPPAGE = 50;
 export const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 
 export const SECONDS_PER_YEAR = 365 * 86400; // 10512000
-export const BASE_URL = "https://bridge.brewlabs.info";
 
 export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
 export const DEFAULT_GAS_LIMIT = 200000;
@@ -265,7 +268,8 @@ export const BIPS_BASE = JSBI.BigInt(10000);
 export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), BIPS_BASE); // 1%
 export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE); // 3%
 export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(JSBI.BigInt(500), BIPS_BASE); // 5%
-
+// if the price slippage exceeds this number, force the user to type 'confirm' to execute
+export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(JSBI.BigInt(1000), BIPS_BASE) // 10%
 // for non expert mode disable swaps above this
 export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(JSBI.BigInt(1500), BIPS_BASE); // 15%
 
@@ -278,3 +282,5 @@ export const ONE_HUNDRED_PERCENT = new Percent("1");
 
 export const slippageWithTVL = 200;
 export const slippageDefault = 5000;
+
+export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
