@@ -58,6 +58,37 @@ export const Adapters = {
       meta: "v3",
     },
   ],
+  137: [
+    {
+      address: '0x8bd826b08ed6D95bB53F1C980a38559C003489CF',
+      name: "Uniswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
+      meta: "v3",
+    },
+    {
+      address: "0x8dcd7a61101Cd522457F0Ef414B00d896cC95043",
+      name: "Dodo",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.dodoex.io.png",
+      meta: "v2",
+    },
+    {
+      address: "0xc18F7338Baeea1C539E97CE0B35aa2611B1cE784",
+      name: "Quickswap",
+      logo: "https://dexscreener.com/img/dexes/quickswap.png",
+      meta: "v2",
+    },
+    {
+      address: "0x58Ae3C69B846abed8bd4344192d3B39416f60e3f",
+      name: "Quickswap",
+      logo: "https://dexscreener.com/img/dexes/quickswap.png",
+      meta: "v3",
+    },
+    {
+      address: "0xdd98619165ce0947E43DACE1baD5D391fD693C76",
+      name: "Sushiswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.sushi.com.png",
+    }
+  ],
   42161: [
     {
       address: "0xD2ef0Df8c3cBeFBa84FAb4fdA674f704C4215FC6",
