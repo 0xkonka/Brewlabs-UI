@@ -317,7 +317,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     )}
                     <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
                       {data.enableEmergencyWithdraw && (
-                        <div className="h-[32px] w-[180px]">
+                        <div className="mr-0 h-[32px] w-[180px] lg:mr-5">
                           <StyledButton
                             type={"danger"}
                             onClick={() => setEmergencyOpen(true)}
