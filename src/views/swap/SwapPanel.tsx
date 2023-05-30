@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useContext } from "react";
-import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price } from "@brewlabs/sdk";
+import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price, ChainId } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -47,10 +47,12 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  // const noLiquidity = useMemo(() => {
-  //   return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
-  // }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
-  const noLiquidity = true;
+  const noLiquidity = useMemo(() => {
+    if (chainId === ChainId.BSC_TESTNET)
+      return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
+    return true; // use aggregator for non bsc testnet
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
+  // const noLiquidity = true;
 
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     parsedAmount,
@@ -194,16 +196,21 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   const price = useMemo(() => {
     if (
-      !query ||
-      !query.inputAmount ||
-      !query.outputAmount ||
+      !parsedAmounts ||
+      !parsedAmounts[Field.INPUT] ||
+      !parsedAmounts[Field.OUTPUT] ||
       !currencies[Field.INPUT] ||
       !currencies[Field.OUTPUT] ||
-      query.inputAmount.equalTo(0)
+      parsedAmounts[Field.INPUT].equalTo(0)
     )
       return undefined;
-    return new Price(currencies[Field.INPUT], currencies[Field.OUTPUT], query.inputAmount.raw, query.outputAmount.raw);
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], query]);
+    return new Price(
+      currencies[Field.INPUT],
+      currencies[Field.OUTPUT],
+      parsedAmounts[Field.INPUT].raw,
+      parsedAmounts[Field.OUTPUT].raw
+    );
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]]);
 
   return (
     <>
