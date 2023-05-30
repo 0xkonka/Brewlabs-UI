@@ -200,8 +200,10 @@ export default function Histroy() {
         },
     ]
     return(
-        <StyledContainer>
-            <Header className="flex justify-between text-xl bg-[#323235] rounded-[6px]">
+        <div className="bg-[rgba(185, 184, 184, 0.05)] border-[0.5px] border-solid p-[6px]
+            border-[#575759] rounded-[6px] pl-[6px] pr-[11px] mt-[-5px] text-[#FFFFFFBF] text-[14px] 
+            max-[1080px]:first:hidden max-[1080px]:border-[0px] max-[1080px]:bg-[none] max-[1080px]:p-9[px]">
+            <div className="flex justify-between text-[18px] text-[#ffffff80] pt-[11px] pb-[11px] pl-[6px] pr-[6px] max-[1080px]:hidden bg-[#323235] rounded-[6px] ">
                 <div className="flex pl-[11px] min-w-[140px] text-[10px] leading-[12px] font-[900] text-white items-center justify-start">Time</div>
                 <div className="flex min-w-[60px] text-[10px] leading-[12px] font-[900] text-white items-center justify-start">Action</div>
                 <div className="flex min-w-[70px] text-[10px] leading-[12px] font-[900] text-white items-center justify-start">USD.Val</div>
@@ -212,7 +214,7 @@ export default function Histroy() {
                 <div className="flex min-w-[70px] text-[10px] leading-[12px] font-[900] text-white items-center justify-center">Ago</div>
                 <div className="flex min-w-[70px] text-[10px] leading-[12px] font-[900] text-white items-center justify-start">Wallet</div>
                 <div className="flex min-w-[70px] text-[10px] leading-[12px] font-[900] text-white items-center justify-center">Info</div>
-            </Header>
+            </div>
             <Panel>
                 {!history && <div className="text-center">loading...</div>}
                 {
@@ -223,22 +225,9 @@ export default function Histroy() {
                     })
                 }
             </Panel>
-
-        </StyledContainer>
+        </div>
     )
 }
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 11px;
-  font-size: 18px;
-  color: #ffffff80;
-
-  @media screen and (max-width: 1080px) {
-    display: none;
-  }
-`;
 
 const Panel = styled.div`
   overflow-y: scroll;
@@ -246,44 +235,24 @@ const Panel = styled.div`
   height: 297px;
   flex-direction: column;
   padding: 8px 0px;
+
   ::-webkit-scrollbar {
     width: 16px;
     height: 16px;
     display: block !important;
   }
 
-  ::-webkit-scrollbar-track {
-  }
   ::-webkit-scrollbar-thumb:vertical {
     border: 4px solid rgba(0, 0, 0, 0);
     background-clip: padding-box;
     border-radius: 9999px;
     background-color: #eebb19;
   }
+
   @media screen and (max-width: 1080px) {
     height: fit-content;
     ::-webkit-scrollbar {
       display: none !important;
     }
-  }
-`;
-
-const StyledContainer = styled.div`
-  background: rgba(185, 184, 184, 0.05);
-  border: 0.5px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  padding-top: 6px;
-  padding-left: 6px;
-  padding-right: 11px;
-  margin-top: -5px;
-  color: #FFFFFFBF;
-  font-size: 14px;
-  @media screen and (max-width: 1080px) {
-    > div:nth-child(1) {
-      display: none;
-    }
-    border: none;
-    background: none;
-    padding: 0;
   }
 `;

@@ -1,49 +1,14 @@
-import styled from "styled-components";
 import { CircleSVG } from "@components/dashboard/assets/svgs";
 
 export const CakeSelector = () => {
     return (
-        <CakeSelectorBox>
+        <div className="flex flex-wrap flex-row items-center justify-center h-[50px] rounded-[120px] bg-[#18181B] pt-[20px] pb-[20px] pl-[9px] pr-[9px] drop-shadow-[0_4px_4px_rgba(0, 0, 0, 0.25)] max-[480px]:w-full gap-[6px]">
             {[1, 1, 1, 1, 1, 1].map((text, index) => (
-                <div key={index}>
+                <div key={index} className="flex gap-[6px]">
                     <CircleSVG size="11px"/>
-                    <p>CAKE</p>                
+                    <p className="text-[10px] leading-[12px] font-[600]">CAKE</p>                
                 </div>
             ))}
-        </CakeSelectorBox>
+        </div>
     )
-}
-
-const CakeSelectorBox = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    height: 50px;
-    align-items: center;
-    border-radius: 120px;
-    background: #18181B;
-    padding: 9px 20px;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-    gap: 5px;
-    z-index: -1;
-
-    @media screen and (max-width: 480px) {
-        width: 100%
-    }
-
-    >div {
-        display: flex;
-        flex-direction: row;
-        gap: 6px;
-        img {
-            width: 11px;
-            height: 11px;
-        }
-        p {
-            font-size: 10px;
-            line-height: 12px;
-            font-weight: 600;
-        }
-    }
-`;
+};

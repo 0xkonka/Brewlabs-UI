@@ -5,6 +5,15 @@ export const SupportedChains = [bsc, mainnet, polygon, avalanche, fantom, cronos
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
+  chart: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.POLYGON,
+    ChainId.FANTOM,
+    ChainId.AVALANCHE,
+    ChainId.CRONOS,
+    ChainId.BRISE,
+  ],
   farms: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,

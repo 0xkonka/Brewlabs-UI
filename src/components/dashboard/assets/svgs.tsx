@@ -462,10 +462,10 @@ export const ViewListSVG = (
   </svg>
 );
 
-export const CircleSVG = ({ size = "11" }) => {
+export const CircleSVG = ({ size = "11", color="#D9D9D9" }) => {
   return (
     <svg width={size} height={size} viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="5.5" cy="5.5" r="5.5" fill="#D9D9D9"/>
+      <circle cx="5.5" cy="5.5" r="5.5" fill={color}/>
     </svg>
   );
 };

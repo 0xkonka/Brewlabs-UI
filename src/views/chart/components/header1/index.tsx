@@ -1,6 +1,4 @@
 import { DeployerSVG } from "@components/dashboard/assets/svgs";
-import WordHighlight from "@components/text/WordHighlight";
-import clsx from "clsx";
 import CurrencySelectButton from "./CurrencySelectButton";
 import { SearchInput } from "./SearchInput";
 import TrendingSelector from "./TrendingSelector";
@@ -19,8 +17,8 @@ export default function Header1() {
         <div className="flex items-center flex-wrap justify-start gap-1.5">
             <div className="flex flex-col justify-end mr-1.5">
                 <div className="flex items-center">
-                    <DeployerSVG height="17px" fill="#EEBB19"/>
-                    <p className="!text-[#EEBB19] text-[20px] leading-[21px] max-[480px]:text-[32px]">BrewCharts</p>
+                    <DeployerSVG height="28px" fill="#EEBB19"/>
+                    <p className="!text-[#EEBB19] text-[40px]">BrewCharts</p>
                 </div>
                 <div className="flex justify-end text-white text-[8px] leading-[9px] max-[480px]:text-[12px]">Beta 1.0.0</div>
             </div>
@@ -40,4 +38,3 @@ export default function Header1() {
         </div>
     );
   }
-  

@@ -1,12 +1,11 @@
 import PageHeader from "components/layout/PageHeader";
-import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import Header1 from "./components/header1";
 import Header2 from "./components/header2";
 import ChartContent from "./components/content";
+import SearchModal from "./components/modal";
 
 export default function Chart() {
-
   return (
     <PageWrapper>
       <PageHeader
@@ -19,9 +18,7 @@ export default function Chart() {
         <Header2/>
         <ChartContent />
       </div>
-
+      <SearchModal />
     </PageWrapper>
   );
 }
-
-

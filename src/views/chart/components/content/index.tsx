@@ -14,7 +14,7 @@ export default function ChartContent () {
     }: any = useContext(ChartContext);
 
     return(
-        <Container>
+        <div className="flex w-[100%] gap-[12px] max-[1400px]:flex-col max-[1400px]:pl-[0px] max-[1400px]:pr-[0px]">
             <Nav />
             <div className="flex flex-col flex-1 gap-3 max-[1400px]:w-full max-[1400px]:p-4 pb-5">
                 <div className="inline max-[1400px]:inline-grid min-h-[600px] max-[480px]:min-h-[360px]">
@@ -24,18 +24,6 @@ export default function ChartContent () {
                 <Histroy />
             </div>
             {showFavorite && <Favorite />}
-        </Container>
+        </div>
     )
 }
-
-const Container = styled.div`
-    display: flex;
-    width: 100%;
-    gap: 12px;
-    @media screen and (max-width: 1400px) {
-        flex-direction: column;
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-`
-

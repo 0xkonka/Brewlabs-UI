@@ -19,8 +19,8 @@ const HistoryCard = ({
 }) => {
     return (
         <StyledContainer
-        length={length}
-        index={index}>
+            length={length}
+            index={index}>
             <div className="flex justify-between">
                 <div className={`flex justify-start pl-[11px] min-w-[140px] ${data.action == 'Buy' ? 'text-[#32FFB5]' : 'text-[#DC4545]'}`}>
                     {data.time}
