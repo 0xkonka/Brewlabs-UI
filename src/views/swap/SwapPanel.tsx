@@ -141,6 +141,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
+      if (value === "") onUserInput(Field.OUTPUT, "");
     },
     [onUserInput]
   );
@@ -266,7 +267,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
           balance={currencyBalances[Field.OUTPUT]}
-          data={query}
+          data={parsedAmounts[Field.INPUT] ? query : undefined}
           slippage={autoMode ? slippage : userSlippageTolerance}
           price={price}
           buyTax={buyTax}
