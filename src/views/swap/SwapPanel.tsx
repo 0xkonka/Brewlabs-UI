@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useContext } from "react";
-import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price } from "@brewlabs/sdk";
+import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price, ChainId } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -23,6 +23,7 @@ import ConfirmationModal from "./components/modal/ConfirmationModal";
 import { SwapContext } from "contexts/SwapContext";
 import useSwapCallback from "@hooks/swap/useSwapCallback";
 import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
+import useWrapCallback, { WrapType } from "@hooks/swap/useWrapCallback";
 
 export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
   const { account, chainId } = useActiveWeb3React();
@@ -39,7 +40,14 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const { autoMode, buyTax, sellTax, slippage }: any = useContext(SwapContext);
   // swap state
   const { independentField, typedValue, recipient } = useSwapState();
-  const { currencies, currencyBalances, parsedAmount, inputError, v2Trade: trade } = useDerivedSwapInfo();
+  const { currencies, currencyBalances, parsedAmount, inputError, v2Trade } = useDerivedSwapInfo();
+  const {
+    wrapType,
+    execute: onWrap,
+    inputError: wrapInputError,
+  } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue);
+  const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
+  const trade = showWrap ? undefined : v2Trade;
 
   const { onUserInput, onSwitchTokens, onCurrencySelection } = useSwapActionHandlers();
 
@@ -47,10 +55,11 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  // const noLiquidity = useMemo(() => {
-  //   return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
-  // }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
-  const noLiquidity = true;
+  const noLiquidity = useMemo(() => {
+    if (chainId === ChainId.BSC_TESTNET) return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
+    return true; // use aggregator for non bsc testnet
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
+  // const noLiquidity = true;
 
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     parsedAmount,
@@ -177,38 +186,50 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     }
   };
 
-  const parsedAmounts = {
-    [Field.INPUT]: noLiquidity ? parsedAmount : independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
-    [Field.OUTPUT]: noLiquidity
-      ? parsedAmount
-        ? query?.outputAmount
-        : undefined
-      : independentField === Field.OUTPUT
-      ? parsedAmount
-      : trade?.outputAmount,
-  };
+  const parsedAmounts = showWrap
+    ? {
+        [Field.INPUT]: parsedAmount,
+        [Field.OUTPUT]: parsedAmount,
+      }
+    : {
+        [Field.INPUT]: noLiquidity
+          ? parsedAmount
+          : independentField === Field.INPUT
+          ? parsedAmount
+          : trade?.inputAmount,
+        [Field.OUTPUT]: noLiquidity
+          ? query?.outputAmount
+          : independentField === Field.OUTPUT
+          ? parsedAmount
+          : trade?.outputAmount,
+      };
 
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput));
 
   const formattedAmounts = {
-    [Field.INPUT]: typedValue,
-    [Field.OUTPUT]: noLiquidity
-      ? parsedAmounts[Field.OUTPUT]?.toSignificant(6) ?? ""
+    [independentField]: typedValue,
+    [dependentField]: showWrap
+      ? parsedAmounts[independentField]?.toExact() ?? ""
       : parsedAmounts[dependentField]?.toSignificant(6) ?? "",
   };
 
   const price = useMemo(() => {
     if (
-      !query ||
-      !query.inputAmount ||
-      !query.outputAmount ||
+      !parsedAmounts ||
+      !parsedAmounts[Field.INPUT] ||
+      !parsedAmounts[Field.OUTPUT] ||
       !currencies[Field.INPUT] ||
       !currencies[Field.OUTPUT] ||
-      query.inputAmount.equalTo(0)
+      parsedAmounts[Field.INPUT].equalTo(0)
     )
       return undefined;
-    return new Price(currencies[Field.INPUT], currencies[Field.OUTPUT], query.inputAmount.raw, query.outputAmount.raw);
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], query]);
+    return new Price(
+      currencies[Field.INPUT],
+      currencies[Field.OUTPUT],
+      parsedAmounts[Field.INPUT].raw,
+      parsedAmounts[Field.OUTPUT].raw
+    );
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]]);
 
   return (
     <>
@@ -266,6 +287,11 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
               <button className="btn-outline btn" disabled={true}>
                 {t("Loading")}
               </button>
+            ) : showWrap ? (
+              <PrimarySolidButton disabled={Boolean(wrapInputError)} onClick={onWrap}>
+                {wrapInputError ??
+                  (wrapType === WrapType.WRAP ? "Wrap" : wrapType === WrapType.UNWRAP ? "Unwrap" : null)}
+              </PrimarySolidButton>
             ) : approval <= ApprovalState.PENDING ? (
               <>
                 {/* <ApproveStatusBar step={apporveStep} url={currencies[Field.INPUT]} /> */}
