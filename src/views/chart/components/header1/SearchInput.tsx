@@ -1,6 +1,6 @@
 import CurrencySelector from "@components/CurrencySelector";
 import { useGlobalState } from "state";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Modal from "@components/Modal";
 
 import { ArrowCircleSVG, ViewListSVG } from "@components/dashboard/assets/svgs"
@@ -9,22 +9,34 @@ import { ChartContext } from "contexts/ChartContext";
 export const SearchInput = () => {
     const {
         openModal,
-        setOpenModal
+        setOpenModal,
+        inputValue,
+        setInputValue,
+        fetchTokenData,
     }: any = useContext(ChartContext);
+
+    useEffect(() => {
+        fetchTokenData();
+      }, []);
     const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
     const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
-    const [inputValue, setInputValue] = useState(null);
 
     return (
         <div className="flex just-between h-[34px] min-w-[500px] items-center rounded-[10px] bg-[#191d24] max-[480px]:min-w-[100%]">
             <input
                 type="text"
+                value={inputValue}
                 placeholder="Search by contract, name, symbol..."
                 className="bg-[#191d24] text-[#9a9fa5] font-[400] text-[10px] leading-[10px] max-[480px]:text-[14px] max-[480px]:leading-[16px] w-full input border-transparent focus:border-transparent focus:ring-0 focus:outline-0 h-[34px]"
-                onMouseDown={() => {setOpenModal(true)}}
+                // onMouseDown={() => {setOpenModal(true)}}
+                onChange={(e) => {
+                    setInputValue(e.target.value);
+                }}
             />
             <div className="mr-3">
-                <button>
+                <button onClick={() => {
+                    fetchTokenData();
+                }}>
                     {ArrowCircleSVG}
                 </button>
             </div>

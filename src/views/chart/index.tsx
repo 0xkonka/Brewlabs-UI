@@ -8,13 +8,14 @@ import SearchModal from "./components/modal";
 export default function Chart() {
   return (
     <PageWrapper>
-      <PageHeader
+      {/* <PageHeader
         fullWidth={true}
         title={
           <Header1 />
         }
-      />
-      <div className="flex flex-col mt-[-57px] pl-[2rem] pr-[2rem] gap-[21px] max-[480px]:pl-[1rem] max-[480px]:pr-[1rem] ">
+      /> */}
+      <div className="flex flex-col mt-[5rem] pl-[2rem] pr-[2rem] gap-[21px] max-[480px]:pl-[1rem] max-[480px]:pr-[1rem] ">
+        <Header1 />
         <Header2/>
         <ChartContent />
       </div>
