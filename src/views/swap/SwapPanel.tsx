@@ -235,7 +235,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
       parsedAmounts[Field.INPUT].raw,
       parsedAmounts[Field.OUTPUT].raw
     );
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]]);
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmounts[Field.INPUT]]);
 
   return (
     <>
