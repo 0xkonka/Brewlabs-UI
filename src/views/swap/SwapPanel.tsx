@@ -99,6 +99,12 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     return true;
   };
 
+  const handleApproveUsingRouter = async () => {
+    setAttemptingTxn(true);
+    await approveCallback();
+    setAttemptingTxn(false);
+  };
+
   const handleSwapUsingRouter = async () => {
     if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
       return;
@@ -297,8 +303,10 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                 {/* <ApproveStatusBar step={apporveStep} url={currencies[Field.INPUT]} /> */}
                 <PrimarySolidButton
                   onClick={() => {
-                    approveCallback();
+                    handleApproveUsingRouter();
                   }}
+                  pending={attemptingTxn}
+                  disabled={attemptingTxn}
                 >
                   {approval === ApprovalState.PENDING ? (
                     <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
@@ -318,6 +326,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                     handleSwapUsingRouter();
                   }
                 }}
+                pending={attemptingTxn}
                 disabled={
                   attemptingTxn ||
                   (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
