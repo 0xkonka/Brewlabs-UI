@@ -1,5 +1,5 @@
-import { Currency, TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP } from "@brewlabs/sdk";
-import { utils } from "ethers";
+import { useMemo } from "react";
+import { Currency, TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { TransactionResponse } from "@ethersproject/providers";
 import DeployYieldFarm from "./DeployYieldFarm";
@@ -20,8 +20,12 @@ import { calculateSlippageAmount, calculateGasMargin } from "utils";
 import { maxAmountSpend } from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
 import { getBrewlabsRouterContract } from "utils/contractHelpers";
-import { ROUTER_ADDRESS, ZERO_ADDRESS } from "config/constants";
 import { useTransactionAdder } from "state/transactions/hooks";
+import { CurrencyLogo } from "@components/logo";
+import useTokenMarketChart, {defaultMarketData} from "@hooks/useTokenMarketChart";
+import useTotalSupply from "@hooks/useTotalSupply";
+import { useTokenPrices } from "hooks/useTokenPrice";
+import getCurrencyId from "utils/getCurrencyId";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -50,12 +54,13 @@ export default function BasicLiquidity() {
     poolTokenPercentage,
     error,
   } = useDerivedMintInfo(undefined, undefined);
+
   const { onFieldAInput, onFieldBInput, onCurrencySelection } = useMintActionHandlers(noLiquidity);
 
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];
 
-  const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId][0]?.key][chainId]?.address;
+  const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId][0]?.key][chainId];
   const isValid = !error;
 
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
@@ -92,8 +97,8 @@ export default function BasicLiquidity() {
   );
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS[chainId]);
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS[chainId]);
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], routerAddr);
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], routerAddr);
 
   const addTransaction = useTransactionAdder();
 
@@ -102,6 +107,7 @@ export default function BasicLiquidity() {
     const router = getBrewlabsRouterContract(chainId, routerAddr, signer);
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;
+
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB) {
       return;
     }
@@ -187,14 +193,42 @@ export default function BasicLiquidity() {
     }
   };
 
+  const [baseToken, quoteToken] =
+    currencies[Field.CURRENCY_B] === NATIVE_CURRENCIES[chainId]
+      ? [currencies[Field.CURRENCY_B], currencies[Field.CURRENCY_A]]
+      : [currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]];
+
+  const tokenMarketData = useTokenMarketChart([baseToken?.wrapped.address], chainId);
+  const { usd } = tokenMarketData[baseToken?.wrapped.address];
+  const tokenPrices = useTokenPrices()
+  const quoteTotalSupply = useTotalSupply(quoteToken as Token);
+  const baseTokenPrice = tokenPrices[getCurrencyId(chainId, baseToken?.wrapped.address)]
+  const [marketcap, poolTokenPrice] = useMemo(() => {
+    if (
+      !baseTokenPrice ||
+      !quoteTotalSupply ||
+      !parsedAmounts ||
+      !parsedAmounts[Field.CURRENCY_A] ||
+      !parsedAmounts[Field.CURRENCY_B]
+    )
+      return [0, 0];
+    const [numerator, denominator] =
+      baseToken === currencies[Field.CURRENCY_A]
+        ? [Number(parsedAmounts[Field.CURRENCY_A].toExact()), Number(parsedAmounts[Field.CURRENCY_B].toExact())]
+        : [Number(parsedAmounts[Field.CURRENCY_B].toExact()), Number(parsedAmounts[Field.CURRENCY_A].toExact())];
+    const marketcap = baseTokenPrice * numerator * Number(quoteTotalSupply.toExact()) / denominator;
+    // const price = marketcap / Number(quoteTotalSupply.toExact());
+    return [marketcap, marketcap / Number(quoteTotalSupply.toExact())];
+  }, [baseTokenPrice, quoteTotalSupply, parsedAmounts]);
+
   const data = [
     {
       key: "Estimated token price",
-      value: "$0.42",
+      value: `$${poolTokenPrice.toFixed(2)}`,
     },
     {
       key: "Estimated pool starting marketcap",
-      value: "$204,000.00",
+      value: `$${marketcap.toFixed(2)}`,
     },
     {
       key: "Pool fee for token owner",
@@ -266,29 +300,23 @@ export default function BasicLiquidity() {
               ></CurrencyInputPanel>
             </div>
 
-            <div className="mt-3 mb-6 rounded-3xl border border-gray-300 px-5 py-3 font-['Roboto'] text-xs font-bold text-gray-400 sm:px-8 sm:text-sm ">
+            <div className="mb-6 mt-3 rounded-3xl border border-gray-300 px-5 py-3 font-['Roboto'] text-xs font-bold text-gray-400 sm:px-8 sm:text-sm ">
               <div className="mb-3 flex justify-between">
                 <div className="text-base text-gray-300 sm:text-xl">New pool metrics</div>
                 <div className="flex min-w-[100px] items-center">
-                  <img
-                    src="https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7/logo.png"
-                    className="h-8 w-8 rounded-full border border-black"
-                    alt=""
-                  ></img>
-                  <img
-                    src="https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png"
-                    className=" -ml-3 h-8 w-8 rounded-full border border-black"
-                    alt=""
-                  ></img>
+                  {currencies[Field.CURRENCY_A] && <CurrencyLogo currency={currencies[Field.CURRENCY_A]} size="30px" />}
+                  {currencies[Field.CURRENCY_B] && (
+                    <div className="-ml-2">
+                      <CurrencyLogo currency={currencies[Field.CURRENCY_B]} size="30px" />
+                    </div>
+                  )}
                 </div>
               </div>
               {data.map((item) => (
                 <div key={item.key} className="mt-1 flex justify-between">
                   <div>{item.key}</div>
                   <div className="ml-2 flex min-w-[120px]">
-                    <div className="ml-[12px]">
-                      {item.value}
-                    </div>
+                    <div className="ml-[12px]">{item.value}</div>
                   </div>
                 </div>
               ))}
@@ -323,10 +351,19 @@ export default function BasicLiquidity() {
           ) : (
             <SolidButton
               onClick={onNext}
-              // disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-              disabled={false}
+              disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
             >
-              {addLiquidityStep === 2 ? "Create pool" : "Next: Select yield farm metrics"}
+              {error
+                ? error
+                : addLiquidityStep === 2
+                ? noLiquidity
+                  ? attemptingTxn
+                    ? "Creating..."
+                    : "Create pool"
+                  : attemptingTxn
+                  ? "Adding..."
+                  : "Add liquidity"
+                : "Next: Select yield farm metrics"}
             </SolidButton>
           )}
           <OutlinedButton className="mt-1 font-bold" small onClick={() => setAddLiquidityStep(1)}>
@@ -334,7 +371,12 @@ export default function BasicLiquidity() {
           </OutlinedButton>
         </>
       ) : (
-        <DeployYieldFarm onAddLiquidity={onAdd} attemptingTxn={attemptingTxn} hash={txHash}></DeployYieldFarm>
+        <DeployYieldFarm
+          onAddLiquidity={onAdd}
+          attemptingTxn={attemptingTxn}
+          hash={txHash}
+          currencies={currencies}
+        ></DeployYieldFarm>
       )}
     </>
   );
