@@ -24,6 +24,7 @@ import { SwapContext } from "contexts/SwapContext";
 import useSwapCallback from "@hooks/swap/useSwapCallback";
 import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
 import useWrapCallback, { WrapType } from "@hooks/swap/useWrapCallback";
+import WarningModal from "@components/warningModal";
 
 export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
   const { account, chainId } = useActiveWeb3React();
@@ -31,6 +32,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const { t } = useTranslation();
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
   const [txConfirmInfo, setTxConfirmInfo] = useState({ type: "confirming", tx: "" });
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
@@ -70,7 +72,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT]);
 
-  const { callback: swapCallbackUsingRouter, error: swapCallbackError } = useSwapCallback(
+  const { callback: swapCallbackUsingRouter, error: swapCallbackError }: any = useSwapCallback(
     trade,
     userSlippageTolerance,
     deadline,
@@ -101,7 +103,10 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   const handleApproveUsingRouter = async () => {
     setAttemptingTxn(true);
-    await approveCallback();
+    try {
+      const response = await approveCallback();
+      await response.wait();
+    } catch (e) {}
     setAttemptingTxn(false);
   };
 
@@ -118,11 +123,13 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
       tx: undefined,
     });
     try {
-      const txHash = await swapCallbackUsingRouter();
+      const response = await swapCallbackUsingRouter();
+      console.log(response);
       setTxConfirmInfo({
         type: "confirming",
-        tx: txHash,
+        tx: response.hash,
       });
+      // await response.wait();
     } catch (err) {
       setTxConfirmInfo({
         type: "failed",
@@ -237,8 +244,17 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     );
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmounts[Field.INPUT]]);
 
+  const onConfirm = () => {
+    if (noLiquidity) {
+      handleSwapUsingAggregator();
+    } else {
+      handleSwapUsingRouter();
+    }
+  };
+
   return (
     <>
+      <WarningModal open={warningOpen} setOpen={setWarningOpen} type={"highpriceimpact"} onClick={onConfirm} />
       <ConfirmationModal
         open={openConfirmationModal}
         setOpen={setOpenConfirmationModal}
@@ -320,11 +336,8 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
             ) : (
               <PrimarySolidButton
                 onClick={() => {
-                  if (noLiquidity) {
-                    handleSwapUsingAggregator();
-                  } else {
-                    handleSwapUsingRouter();
-                  }
+                  if (priceImpactSeverity === 3) setWarningOpen(true);
+                  else onConfirm();
                 }}
                 pending={attemptingTxn}
                 disabled={
