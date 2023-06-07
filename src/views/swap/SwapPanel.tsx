@@ -289,7 +289,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
           balance={currencyBalances[Field.OUTPUT]}
-          data={parsedAmounts[Field.INPUT] ? query : undefined}
+          data={parsedAmounts[Field.INPUT] && !showWrap ? query : undefined}
           slippage={autoMode ? slippage : userSlippageTolerance}
           price={price}
           buyTax={buyTax}
