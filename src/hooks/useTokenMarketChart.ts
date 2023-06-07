@@ -1,8 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
-import { CG_API, CG_PRO_API } from "config/constants/endpoints";
-import CG_ASSET_PLATFORMS from "config/constants/tokens/CGAssetPlatforms.json";
 import { ChainId } from "@brewlabs/sdk";
 import { API_URL } from "config/constants";
 
