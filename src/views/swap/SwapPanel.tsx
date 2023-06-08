@@ -13,6 +13,7 @@ import { useSwapState, useSwapActionHandlers, useDerivedSwapInfo } from "state/s
 import maxAmountSpend from "utils/maxAmountSpend";
 import { computeTradePriceBreakdown, warningSeverity } from "utils/prices";
 
+import { TailSpin } from "react-loader-spinner";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
 import { PrimarySolidButton } from "components/button/index";
@@ -61,7 +62,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     if (chainId === ChainId.BSC_TESTNET) return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
     return true; // use aggregator for non bsc testnet
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
-  // const noLiquidity = true;
 
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     parsedAmount,
@@ -124,7 +124,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     });
     try {
       const response = await swapCallbackUsingRouter();
-      console.log(response);
       setTxConfirmInfo({
         type: "confirming",
         tx: response.hash,
@@ -289,7 +288,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
           balance={currencyBalances[Field.OUTPUT]}
-          data={parsedAmounts[Field.INPUT] ? query : undefined}
+          data={parsedAmounts[Field.INPUT] && !showWrap ? query : undefined}
           slippage={autoMode ? slippage : userSlippageTolerance}
           price={price}
           buyTax={buyTax}
@@ -316,7 +315,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
               </PrimarySolidButton>
             ) : approval <= ApprovalState.PENDING ? (
               <>
-                {/* <ApproveStatusBar step={apporveStep} url={currencies[Field.INPUT]} /> */}
                 <PrimarySolidButton
                   onClick={() => {
                     handleApproveUsingRouter();
@@ -346,7 +344,21 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                   (noLiquidity && !!aggregationCallbackError)
                 }
               >
-                {t("Swap")}
+                {attemptingTxn ? (
+                  <TailSpin width={30} height={30} color={"rgba(255,255,255,0.5"} />
+                ) : !noLiquidity ? (
+                  !!swapCallbackError ? (
+                    swapCallbackError
+                  ) : priceImpactSeverity > 3 ? (
+                    "Price Impact Too High"
+                  ) : (
+                    "Swap"
+                  )
+                ) : !!aggregationCallbackError ? (
+                  aggregationCallbackError
+                ) : (
+                  "Swap"
+                )}
               </PrimarySolidButton>
             )}
           </>
