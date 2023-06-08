@@ -10,6 +10,7 @@ export const SUBGRAPH_NAMES = {
 export const SUPPORTED_DEXES = {
   [ChainId.ETHEREUM]: ["uniswap-v2"],
   [ChainId.BSC_MAINNET]: ["pcs-v2"],
+  [ChainId.BSC_TESTNET]: ["brewlabs", "pcs-v2"],
 };
 
 export const DEX_LOGOS = {
