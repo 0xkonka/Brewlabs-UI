@@ -37,7 +37,6 @@ export default function BasicLiquidity() {
   const referralFee = 0.0;
   const brewlabsFee = 0.05;
   const tokenOwnerFee = 0.0;
-  const FEE_PRECISION = 100;
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState();
@@ -236,10 +235,6 @@ export default function BasicLiquidity() {
       key: "Pool fee for liquidity providers",
       value: liquidityProviderFee.toFixed(2) + "%",
     },
-    // {
-    //   key: "Pool fee for token holders",
-    //   value: tokenHoldersFee.toFixed(2) + "%",
-    // },
     {
       key: "Pool fee for Brewlabs protocol",
       value: "0.05%",

@@ -124,7 +124,6 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     });
     try {
       const response = await swapCallbackUsingRouter();
-      console.log(response);
       setTxConfirmInfo({
         type: "confirming",
         tx: response.hash,
