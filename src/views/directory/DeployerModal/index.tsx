@@ -70,12 +70,12 @@ const HeroSection = ({
           customRightArrow={<CustomRightArrow onClick={undefined} />}
           customLeftArrow={<CustomLeftArrow onClick={undefined} />}
         >
-          {["Staking Pool", "Yield Farm", "Index", "Token"].map((data, i) => {
+          {[/*"Staking Pool",*/ "Yield Farm", "Index" /*, "Token"*/].map((data, i) => {
             return (
               <DeployItem
                 key={i}
                 className="primary-shadow flex h-[140px] w-[140px] cursor-pointer flex-col items-center justify-center rounded-[8px] border border-dashed border-[#FFFFFFBF] transition-all hover:border-solid hover:border-primary"
-                onClick={() => setDeployType("Yield Farm")}
+                onClick={() => setDeployType(data)}
                 active={deployType === data}
               >
                 <div>{data}</div>
@@ -183,7 +183,7 @@ const CarouselPanel = styled.div`
   margin: 0 auto;
   .react-multi-carousel-list {
     position: unset !important;
-    padding : 8px 0;
+    padding: 8px 0;
   }
   position: relative;
   .react-multi-carousel-item {
