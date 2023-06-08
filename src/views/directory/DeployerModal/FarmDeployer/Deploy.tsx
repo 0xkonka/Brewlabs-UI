@@ -24,10 +24,11 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import DropDown from "components/dashboard/TokenList/Dropdown";
+import LoadingText from "@components/LoadingText";
+
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
 import { useFarmFactory } from "./hooks";
-import LoadingText from "@components/LoadingText";
 
 const DURATIONS = [365, 180, 90, 60];
 

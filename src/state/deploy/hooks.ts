@@ -5,7 +5,8 @@ import contracts from "config/constants/contracts";
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useAppDispatch } from "state";
 import { State } from "state/types";
-import { fetchFarmFactoryDataAsync } from ".";
+
+import { fetchFarmFactoryDataAsync, fetchIndexFactoryDataAsync } from ".";
 
 export const usePollFarmFactoryData = () => {
   const dispatch = useAppDispatch();
@@ -21,5 +22,22 @@ export const usePollFarmFactoryData = () => {
   }, [dispatch]);
 };
 
+export const usePollIndexFactoryData = () => {
+  const dispatch = useAppDispatch();
+
+  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+    Object.keys(contracts.indexFactory)
+      .map((c) => +c)
+      .includes(chainId)
+  );
+
+  useEffect(() => {
+    supportedChains.forEach((chainId) => dispatch(fetchIndexFactoryDataAsync(chainId)));
+  }, [dispatch]);
+};
+
 export const useFarmFactories = (chainId) =>
   useSelector((state: State) => state.deploy.farm.find((data) => data.chainId === chainId));
+
+export const useIndexFactories = (chainId) =>
+  useSelector((state: State) => state.deploy.indexes.find((data) => data.chainId === chainId));
