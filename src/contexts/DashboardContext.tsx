@@ -7,12 +7,15 @@ import { useAccount, useSigner } from "wagmi";
 import ERC20ABI from "config/abi/erc20.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
+
 import prices from "config/constants/prices";
+import { customTokensForDeploy } from "config/constants/tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useDailyRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
+import useWalletNFTs from "hooks/useWalletNFTs";
 import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
-import useWalletNFTs from "@hooks/useWalletNFTs";
+import { getNativeSybmol } from "lib/bridge/helpers";
 
 const DashboardContext: any = React.createContext({
   tokens: [],
@@ -28,11 +31,6 @@ const DashboardContext: any = React.createContext({
   setPending: () => {},
 });
 
-const CHAIN_NAME: any = {
-  1: "ETH",
-  56: "BNB",
-};
-
 const apiKeyList = [
   "82fc55c0-9833-4d12-82bb-48ae9748bead",
   "10760947-8c9a-4a18-b20f-2be694baf496",
@@ -46,6 +44,7 @@ const tokenList_URI: any = {
   137: "https://tokens.coingecko.com/polygon-pos/all.json",
   250: "https://tokens.coingecko.com/fantom/all.json",
   43114: "https://tokens.coingecko.com/avalanche/all.json",
+  42161: "https://tokens.coingecko.com/arbitrum-one/all.json",
   25: "https://tokens.coingecko.com/cronos/all.json",
 };
 
@@ -53,6 +52,10 @@ const WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 let temp_addr: any, temp_id: any;
 const DashboardContextProvider = ({ children }: any) => {
+  const { address } = useAccount();
+  const { chainId } = useActiveChainId();
+  const { data: signer }: any = useSigner();
+
   const [tokens, setTokens] = useState([]);
   const [marketHistory, setMarketHistory] = useState([]);
   const [pending, setPending] = useState(false);
@@ -60,14 +63,11 @@ const DashboardContextProvider = ({ children }: any) => {
   const [priceHistory, setPriceHistory] = useState([]);
   const [selectedDeployer, setSelectedDeployer] = useState("");
   const [viewType, setViewType] = useState(0);
-  const { address } = useAccount();
-  // const address = "0x2c4F487acf3ac72a4Ec9aa4D7a9059246Ff46fE4";
+
   const nfts = useWalletNFTs(address);
 
   temp_addr = address;
-  const { chainId } = useActiveChainId();
   temp_id = chainId;
-  const { data: signer }: any = useSigner();
 
   const fetchTokenBaseInfo = async (address: any, type = "name symbol decimals", accountAddress: string = null) => {
     let calls: any = [];
@@ -170,8 +170,8 @@ const DashboardContextProvider = ({ children }: any) => {
         } catch (e) {
           rewardToken = {
             address: "0x0",
-            name: CHAIN_NAME[chainId],
-            symbol: CHAIN_NAME[chainId],
+            name: getNativeSybmol[chainId],
+            symbol: getNativeSybmol[chainId],
             decimals: 18,
           };
         }
@@ -337,11 +337,11 @@ const DashboardContextProvider = ({ children }: any) => {
   async function fetchTokenList() {
     try {
       if (!tokenList_URI[chainId]) {
-        setTokenList([]);
+        setTokenList(customTokensForDeploy[chainId] ?? []);
         return;
       }
       const result = await axios.get(tokenList_URI[chainId]);
-      setTokenList(result.data.tokens);
+      setTokenList([...(customTokensForDeploy[chainId] ?? []), ...result.data.tokens]);
     } catch (error) {
       console.log(error);
     }

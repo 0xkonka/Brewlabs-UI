@@ -1,7 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
-import { bsc, mainnet, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
+import { bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
 
-export const SupportedChains = [bsc, mainnet, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
+export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
@@ -24,7 +24,8 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
@@ -35,6 +36,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
 
 export const CHAIN_KEYS = {
   [ChainId.ETHEREUM]: "ethereum",
+  [ChainId.ARBITRUM]: "arbitrum",
   [ChainId.GOERLI]: "goerli",
   [ChainId.BSC_MAINNET]: "smartchain",
   [ChainId.BSC_TESTNET]: "chapel",
@@ -43,10 +45,12 @@ export const CHAIN_KEYS = {
   [ChainId.AVALANCHE]: "avalanchec",
   [ChainId.CRONOS]: "cronos",
   [ChainId.BRISE]: "brise",
+  [ChainId.ARBITRUM]: "arbitrum"
 };
 
 export const EXPLORER_NAMES = {
   [ChainId.ETHEREUM]: "Etherscan",
+  [ChainId.ARBITRUM]: "Arbiscan",
   [ChainId.GOERLI]: "Etherscan",
   [ChainId.BSC_MAINNET]: "BscScan",
   [ChainId.BSC_TESTNET]: "BscScan",
@@ -55,27 +59,32 @@ export const EXPLORER_NAMES = {
   [ChainId.AVALANCHE]: "Snowtrace",
   [ChainId.CRONOS]: "CronoScan",
   [ChainId.BRISE]: "BriseScan",
+  [ChainId.ARBITRUM]: "ArbiScan"
 };
 
 export const EXPLORER_URLS = {
   [ChainId.ETHEREUM]: "https://etherscan.io",
+  [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
 };
 
 export const EXPLORER_API_URLS = {
   [ChainId.ETHEREUM]: "https://api.etherscan.io/api",
   [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
+  [ChainId.BSC_TESTNET]: "https://api.bscscan.com/api",
   [ChainId.POLYGON]: "https://api.polygonscan.com/api",
 };
 
 export const EXPLORER_API_KEYS = {
   [ChainId.ETHEREUM]: "47I5RB52NG9GZ95TEA38EXNKCAT4DMV5RX",
   [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
+  [ChainId.BSC_TESTNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.POLYGON]: "F2KCC1VEPQC23GBVKATATP1V3ZQIC31D7Z",
 };
 
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
+  [ChainId.ARBITRUM]: "Arbitrum",
   [ChainId.GOERLI]: "Goerli",
   [ChainId.BSC_MAINNET]: "BNB Smart Chain",
   [ChainId.BSC_TESTNET]: "BSC Testnet",
@@ -88,6 +97,7 @@ export const CHAIN_LABLES = {
 
 export const CHAIN_ICONS = {
   [ChainId.ETHEREUM]: "/images/networks/eth.svg",
+  [ChainId.ARBITRUM]: "/images/networks/arbitrum.svg",
   [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_MAINNET]: "/images/networks/bsc.png",
   [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
@@ -106,11 +116,13 @@ export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
 
 export const MORALIS_CHAIN_NAME = {
   [ChainId.ETHEREUM]: "mainnet",
+  [ChainId.ARBITRUM]: "arbitrum",
   [ChainId.BSC_MAINNET]: "bsc",
 };
 
 export const SUPPORTED_CHAINS = [
   ChainId.ETHEREUM,
+  ChainId.ARBITRUM,
   ChainId.BSC_MAINNET,
   ChainId.POLYGON,
   ChainId.FANTOM,
@@ -128,6 +140,17 @@ export const NETWORKS = {
       decimals: 18,
     },
     rpcUrls: ["https://api.nodes-brewlabs.info/rpc/eth"],
+    blockExplorerUrls: ["https://etherscan.io"],
+  },
+  [ChainId.ARBITRUM]: {
+    chainId: `0x${Number(ChainId.ARBITRUM).toString(16)}`,
+    chainName: "Arbitrum One Mainnet",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.BSC_MAINNET]: {

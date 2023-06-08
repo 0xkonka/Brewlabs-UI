@@ -474,6 +474,14 @@ const tokens = {
     'Dark Tavern Token',
     'https://darktavern.online/',
   ),
+  wpt: new Token(
+    BSC_MAINNET,
+    "0x8466BB37bde898E0820E0d9CFe2EB68fbB90cE9b",
+    18,
+    "WPT",
+    "WPT Investing Corp",
+    "https://www.warpigs.io/"
+  ),
   bvst: new Token(
     BSC_MAINNET,
     '0x592032513b329a0956b3f14d661119880F2361a6',
@@ -489,6 +497,22 @@ const tokens = {
     'SWEEP',
     'Sweeptoken',
     'https://sweepproject.com/',
+  ),
+  nano: new Token(
+    BSC_MAINNET,
+    '0xB15488af39bD1de209D501672a293Bcd05f82Ab4',
+    18,
+    'NANO',
+    'NanoMatic',
+    'https://www.nanomatic.io/',
+  ),
+  msgo: new Token(
+    BSC_MAINNET,
+    '0xd4bC850c0B3cDcb2417cfD77fAABEa1f47F09fd8',
+    9,
+    'MSGO',
+    'MetaSetGO',
+    'https://msgo.io/',
   ),
   cake: new Token(
     BSC_MAINNET,

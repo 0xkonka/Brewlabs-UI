@@ -15,6 +15,7 @@ interface IndexConfigBaseProps {
   isCustody?: boolean;
   isServiceFee?: boolean;
   isFinished?: boolean;
+  visible?: boolean;
   deployer?: string;
 }
 

@@ -1,431 +1,259 @@
-import { useState, useEffect, useMemo, useCallback, useContext } from "react";
-import { toast } from "react-toastify";
-import { CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
+import { useState, useMemo, useCallback, useContext } from "react";
+import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price, ChainId } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
-import { ethers, BigNumber } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { MaxUint256 } from "@ethersproject/constants";
-import { TransactionResponse } from "@ethersproject/providers";
-import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
+import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useTranslation } from "contexts/localization";
-import { AggregationRouterV5, slippageWithTVL, slippageDefault } from "config/constants";
-import { usdToken } from "config/constants/tokens";
+import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ALLOWED_PRICE_IMPACT_HIGH } from "config/constants";
 import contracts from "config/constants/contracts";
-import AggregaionRouterV2Abi from "config/abi/swap/AggregationRouterV5.json";
-import { useUserSlippageTolerance } from "state/user/hooks";
+import { useUserSlippageTolerance, useUserTransactionTTL } from "state/user/hooks";
 import { Field } from "state/swap/actions";
-import {
-  useSwapState,
-  useSwapActionHandlers,
-  useDerivedSwapInfo,
-  tryParseAmount,
-  useDefaultsFromURLSearch,
-} from "state/swap/hooks";
+import { useSwapState, useSwapActionHandlers, useDerivedSwapInfo } from "state/swap/hooks";
 
-import { calculateTotalGas } from "utils";
-import { getBrewlabsAggregationRouterAddress, addressWithout0x } from "utils/addressHelpers";
-import { quote, swap, ETHER_ADDRESS } from "utils/aggregator";
-import { BIG_ONE } from "utils/bigNumber";
-import { getTokenInfo } from "utils/getTokenInfo";
-import { getBrewlabsAggregationRouterContract, getBep20Contract, getVerificationContract } from "utils/contractHelpers";
 import maxAmountSpend from "utils/maxAmountSpend";
+import { computeTradePriceBreakdown, warningSeverity } from "utils/prices";
 
+import { TailSpin } from "react-loader-spinner";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
 import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
-import SubNav from "./components/nav/SubNav";
-import ChainSelect from "./components/ChainSelect";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
-import SettingModal from "./components/modal/SettingModal";
-import Modal from "components/Modal";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
-import ApproveStatusBar from "./components/ApproveStatusBar";
 import { SwapContext } from "contexts/SwapContext";
-
-type TxResponse = TransactionResponse | null;
+import useSwapCallback from "@hooks/swap/useSwapCallback";
+import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
+import useWrapCallback, { WrapType } from "@hooks/swap/useWrapCallback";
+import WarningModal from "@components/warningModal";
 
 export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
-  const { account, library, chainId } = useActiveWeb3React();
-  const { data: signer } = useSigner();
+  const { account, chainId } = useActiveWeb3React();
 
   const { t } = useTranslation();
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
   const [txConfirmInfo, setTxConfirmInfo] = useState({ type: "confirming", tx: "" });
-
-  const {
-    quoteData,
-    outputAmount,
-    slippageInput,
-    autoMode,
-    basePrice,
-    quotePrice,
-    onTyping,
-    parsedAmount,
-    buyTax,
-    sellTax,
-    slippage,
-    verified,
-    apporveStep,
-    setQuoteData,
-    setOutputAmount,
-    setSlippageInput,
-    setAutoMode,
-    setBasePrice,
-    setQuotePrice,
-    setTyping,
-    setParsedAmount,
-    setBuyTax,
-    setSellTax,
-    setSlippage,
-    setVerified,
-    setApproveStep,
-  }: any = useContext(SwapContext);
-  // swap state
-  const { typedValue } = useSwapState();
-  const { currencies, currencyBalances, parsedAmount: inputAmount, inputError } = useDerivedSwapInfo();
-  const [quoteError, setQuoteError] = useState<string | undefined>();
-  const { onUserInput, onSwitchTokens } = useSwapActionHandlers();
-
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
 
+  // ----------------- ROUTER SWAP --------------------- //
+
+  const { autoMode, buyTax, sellTax, slippage }: any = useContext(SwapContext);
+  // swap state
+  const { independentField, typedValue, recipient } = useSwapState();
+  const { currencies, currencyBalances, parsedAmount, inputError, v2Trade } = useDerivedSwapInfo();
+  const {
+    wrapType,
+    execute: onWrap,
+    inputError: wrapInputError,
+  } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue);
+  const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
+  const trade = showWrap ? undefined : v2Trade;
+
+  const { onUserInput, onSwitchTokens, onCurrencySelection } = useSwapActionHandlers();
+
   // txn values
+  const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  useEffect(() => {
-    setTyping(true);
-    const timer = setTimeout(() => {
-      setTyping(false);
-    }, 500);
+  const noLiquidity = useMemo(() => {
+    if (chainId === ChainId.BSC_TESTNET) return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
+    return true; // use aggregator for non bsc testnet
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], trade]);
 
-    return () => clearTimeout(timer);
-  }, [typedValue]);
-
-  useEffect(() => {
-    if (onTyping) return;
-    const inputedValue = !typedValue || typedValue === "" || typedValue === "." ? "0" : typedValue;
-    const _amount = parseUnits(inputedValue, currencies[Field.INPUT]?.decimals);
-    setParsedAmount(_amount);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onTyping, typedValue, currencies[Field.INPUT]]);
-
-  // get the max amounts user can swap
-  const maxAmounts = maxAmountSpend(currencyBalances[Field.INPUT]);
-  const atMaxAmount = maxAmounts?.equalTo(inputAmount ?? "0");
-
-  const aggregatorAddress = getBrewlabsAggregationRouterAddress(chainId);
-  const [approval, approveCallback] = useApproveCallback(inputAmount, AggregationRouterV5[chainId]);
-
-  const price = useMemo(() => {
-    if (
-      !inputAmount ||
-      !outputAmount ||
-      !currencies[Field.INPUT] ||
-      !currencies[Field.OUTPUT] ||
-      inputAmount.equalTo(0)
-    )
-      return undefined;
-    return new Price(currencies[Field.INPUT], currencies[Field.OUTPUT], inputAmount.raw, outputAmount.raw);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], inputAmount, outputAmount]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT] || !parsedAmount || parsedAmount?.isZero()) {
-        setQuoteData({});
-        setOutputAmount(undefined);
-        return;
-      }
-
-      const data = await quote(chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount);
-      if (data) {
-        if (!data.statusCode) {
-          setQuoteError(undefined);
-          setQuoteData(data);
-          const formattedAmount = formatUnits(data.toTokenAmount, data.toToken.decimals);
-          const _outputAmount = tryParseAmount(formattedAmount, currencies[Field.OUTPUT]);
-          setOutputAmount(_outputAmount);
-        } else {
-          setQuoteError(data.description);
-          setQuoteData({});
-          const _outputAmount = tryParseAmount("0", currencies[Field.OUTPUT]);
-          setOutputAmount(_outputAmount);
-        }
-      }
-    };
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount]);
-
-  useEffect(() => {
-    if (currencies[Field.INPUT]) {
-      const oneEther = parseUnits(BIG_ONE.toString(), currencies[Field.INPUT].decimals);
-      if (currencies[Field.INPUT].equals(usdToken[chainId])) {
-        const usdPrice = new Price(
-          currencies[Field.INPUT],
-          usdToken[chainId],
-          oneEther.toString(),
-          oneEther.toString()
-        );
-        setBasePrice(usdPrice);
-      } else {
-        const fetchData = async () => {
-          const data = await quote(chainId, currencies[Field.INPUT], usdToken[chainId], oneEther);
-          if (!data.statusCode) {
-            setQuoteError(undefined);
-            const _price = new Price(
-              currencies[Field.INPUT],
-              usdToken[chainId],
-              oneEther.toString(),
-              data.toTokenAmount
-            );
-            setBasePrice(_price);
-          } else {
-            setQuoteError(data.description);
-          }
-        };
-        fetchData();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencies[Field.INPUT]]);
-
-  useEffect(() => {
-    if (currencies[Field.OUTPUT]) {
-      const oneEther = parseUnits(BIG_ONE.toString(), currencies[Field.OUTPUT].decimals);
-      if (currencies[Field.OUTPUT].equals(usdToken[chainId])) {
-        const usdPrice = new Price(
-          currencies[Field.OUTPUT],
-          usdToken[chainId],
-          oneEther.toString(),
-          oneEther.toString()
-        );
-        setQuotePrice(usdPrice);
-      } else {
-        const fetchData = async () => {
-          const data = await quote(chainId, currencies[Field.OUTPUT], usdToken[chainId], oneEther);
-          if (!data.statusCode) {
-            setQuoteError(undefined);
-            const _price = new Price(
-              currencies[Field.OUTPUT],
-              usdToken[chainId],
-              oneEther.toString(),
-              data.toTokenAmount
-            );
-            setQuotePrice(_price);
-          } else {
-            setQuoteError(data.description);
-          }
-        };
-        fetchData();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencies[Field.OUTPUT]]);
-
-  useEffect(() => {
-    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      const fetchData = async () => {
-        try {
-          const baseTokenInfo = await getTokenInfo(chainId, currencies[Field.INPUT]);
-          const tokenInfo = await getTokenInfo(chainId, currencies[Field.OUTPUT]);
-
-          setBuyTax(tokenInfo?.BuyTax ?? 0);
-          setSellTax(tokenInfo?.SellTax ?? 0);
-          const totalTax =
-            (Math.max(baseTokenInfo.BuyTax, baseTokenInfo.SellTax) + Math.max(tokenInfo.BuyTax, tokenInfo.SellTax)) *
-            100;
-          if (totalTax && !isNaN(totalTax)) {
-            setSlippage(Math.floor(totalTax + slippageWithTVL));
-          }
-        } catch (err) {
-          console.error(err);
-          setSlippage(slippageDefault);
-        }
-      };
-      // fetchData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]]);
-
-  useEffect(() => {
-    if (currencies[Field.OUTPUT]) {
-      const checkVerification = async () => {
-        try {
-          const verificationContract = getVerificationContract(chainId, library);
-          const balance = await verificationContract.balanceOf(
-            currencies[Field.OUTPUT].isNative ? WNATIVE[chainId].address : currencies[Field.OUTPUT].address
-          );
-          if (balance.toNumber()) {
-            setVerified(true);
-          } else {
-            setVerified(false);
-          }
-        } catch (err) {
-          console.error(err);
-          setVerified(false);
-        }
-      };
-      checkVerification();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencies[Field.OUTPUT]]);
-
-  const handleTypeInput = useCallback(
-    (value: string) => {
-      onUserInput(Field.INPUT, value);
-    },
-    [onUserInput]
+  const [approval, approveCallback] = useApproveCallbackFromTrade(
+    parsedAmount,
+    trade,
+    userSlippageTolerance,
+    noLiquidity
   );
 
-  const handleApprove = async () => {
-    setAttemptingTxn(true);
-    let tx: any = { hash: "" };
-    setOpenConfirmationModal(true);
-    setTxConfirmInfo({
-      type: "confirming",
-      tx: tx.hash,
-    });
-    try {
-      tx = await approveCallback();
-      setApproveStep(1);
-      setTxConfirmInfo({
-        type: "confirming",
-        tx: tx.hash,
-      });
-      await tx.wait();
-      setTxConfirmInfo({
-        type: "confirmed",
-        tx: tx.hash,
-      });
-      setTimeout(() => {
-        setOpenConfirmationModal(false);
-      }, 5000);
-      setApproveStep(2);
-    } catch (err: any) {
-      // if (err?.code === 4001) {
-      //   toast.error(t("Transaction rejected."));
-      // } else {
-      //   toast.error(t("Please try again. Confirm the transaction and make sure you are paying enough gas!"));
-      // }
-      setTxConfirmInfo({
-        type: "failed",
-        tx: tx.hash,
-      });
-      setTimeout(() => {
-        setOpenConfirmationModal(false);
-      }, 5000);
-    } finally {
-      setAttemptingTxn(false);
+  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT]);
+
+  const { callback: swapCallbackUsingRouter, error: swapCallbackError }: any = useSwapCallback(
+    trade,
+    userSlippageTolerance,
+    deadline,
+    recipient
+  );
+
+  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
+
+  const confirmPriceImpactWithoutFee = (priceImpactWithoutFee: Percent) => {
+    if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
+      return (
+        window.prompt(
+          `This swap has a price impact of at least ${PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+            0
+          )}%. Please type the word "confirm" to continue with this swap.`
+        ) === "confirm"
+      );
     }
+    if (!priceImpactWithoutFee.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) {
+      return window.confirm(
+        `This swap has a price impact of at least ${ALLOWED_PRICE_IMPACT_HIGH.toFixed(
+          0
+        )}%. Please confirm that you would like to continue with this swap.`
+      );
+    }
+    return true;
   };
 
-  const handleSwap = async () => {
+  const handleApproveUsingRouter = async () => {
     setAttemptingTxn(true);
     try {
-      if (!currencies[Field.INPUT].isNative) {
-        const tokenContract = getBep20Contract(chainId, currencies[Field.INPUT].address, signer);
-        const allowance = await tokenContract.allowance(account, aggregatorAddress);
-        if (allowance.lt(parsedAmount)) {
-          const tx = await tokenContract.approve(aggregatorAddress, MaxUint256);
-          const receipt = await tx.wait();
-          if (!receipt.status) console.error("Failed to approve token");
-        }
-      }
+      const response = await approveCallback();
+      await response.wait();
+    } catch (e) {}
+    setAttemptingTxn(false);
+  };
 
-      const aggregatorContract = getBrewlabsAggregationRouterContract(chainId, signer);
-      const treasuryFee = await aggregatorContract.treasuryFee();
-      const strategyFeeNumerator = await aggregatorContract.strategyFeeNumerator();
-      const strategyFeeDenominator = await aggregatorContract.strategyFeeDenominator();
-      const strategyFee = parsedAmount.mul(strategyFeeNumerator).div(strategyFeeDenominator);
-
-      const swapTransaction = await swap(
-        chainId,
-        currencies[Field.INPUT],
-        currencies[Field.OUTPUT],
-        parsedAmount.sub(strategyFee),
-        account,
-        autoMode ? slippage / 100 : userSlippageTolerance / 100
-      );
-
-      const txData = swapTransaction.tx;
-      let estimatedGasLimit: BigNumber;
-      let args: any[];
-      let tx: TxResponse = null;
-      const inter = new ethers.utils.Interface(AggregaionRouterV2Abi);
-      const decodedInput = inter.parseTransaction({ data: txData.data, value: txData.value });
-      const value = currencies[Field.INPUT].isNative ? parsedAmount.add(treasuryFee) : treasuryFee;
-      if (decodedInput.name === "swap") {
-        let callData = decodedInput.args.data.replace(
-          addressWithout0x(AggregationRouterV5[chainId]),
-          addressWithout0x(aggregatorAddress)
-        );
-        args = [decodedInput.args.executor, decodedInput.args.desc, decodedInput.args.permit, callData, parsedAmount];
-
-        estimatedGasLimit = await aggregatorContract.estimateGas.swapAggregateCall(...args, { value });
-        tx = await aggregatorContract.swapAggregateCall(...args, {
-          value,
-          gasLimit: calculateTotalGas(estimatedGasLimit),
-        });
-      } else if (decodedInput.name === "unoswap") {
-        args = [
-          decodedInput.args.srcToken,
-          currencies[Field.OUTPUT].address ?? ETHER_ADDRESS,
-          parsedAmount,
-          0,
-          decodedInput.args.pools,
-        ];
-
-        estimatedGasLimit = await aggregatorContract.estimateGas.unoswapAggregateCall(...args, { value });
-        tx = await aggregatorContract.unoswapAggregateCall(...args, {
-          value,
-          gasLimit: calculateTotalGas(estimatedGasLimit),
-        });
-      } else {
-        args = [
-          currencies[Field.INPUT].address ?? ETHER_ADDRESS,
-          currencies[Field.OUTPUT].address ?? ETHER_ADDRESS,
-          account,
-          parsedAmount,
-          0,
-          decodedInput.args.pools,
-        ];
-
-        estimatedGasLimit = await aggregatorContract.estimateGas.uniswapV3SwapAggregateCall(...args, { value });
-        tx = await aggregatorContract.uniswapV3SwapAggregateCall(...args, {
-          value,
-          gasLimit: calculateTotalGas(estimatedGasLimit),
-        });
-      }
+  const handleSwapUsingRouter = async () => {
+    if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
+      return;
+    }
+    if (!swapCallbackUsingRouter) {
+      return;
+    }
+    setAttemptingTxn(true);
+    setTxConfirmInfo({
+      type: "confirming",
+      tx: undefined,
+    });
+    try {
+      const response = await swapCallbackUsingRouter();
       setTxConfirmInfo({
         type: "confirming",
-        tx: tx.hash,
+        tx: response.hash,
       });
-      const receipt = await tx.wait();
-      if (receipt?.status) {
-        setTxConfirmInfo({
-          type: "confirmed",
-          tx: tx.hash,
-        });
-      }
-    } catch (err: any) {
-      if (err?.code === "ACTION_REJECTED") {
-        toast.error(t("Transaction rejected."));
-      } else {
-        toast.error(t("Please try again. Confirm the transaction and make sure you are paying enough gas!"));
-      }
+      // await response.wait();
+    } catch (err) {
+      setTxConfirmInfo({
+        type: "failed",
+        tx: undefined,
+      });
     } finally {
       setAttemptingTxn(false);
       onUserInput(Field.INPUT, "");
     }
   };
 
+  // warnings on slippage
+  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
+  const handleMaxInput = useCallback(() => {
+    if (maxAmountInput) {
+      onUserInput(Field.INPUT, maxAmountInput.toExact());
+    }
+  }, [maxAmountInput, onUserInput]);
+
+  const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+
+  const handleTypeInput = useCallback(
+    (value: string) => {
+      onUserInput(Field.INPUT, value);
+      if (value === "") onUserInput(Field.OUTPUT, "");
+    },
+    [onUserInput]
+  );
+  const handleTypeOutput = useCallback(
+    (value: string) => {
+      onUserInput(Field.OUTPUT, value);
+    },
+    [onUserInput]
+  );
+
+  // ----------------- AGGREGATION SWAP --------------------- //
+
+  const {
+    callback: swapCallbackUsingAggregator,
+    query,
+    error: aggregationCallbackError,
+  } = useSwapAggregator(currencies, parsedAmount, recipient);
+
+  const handleSwapUsingAggregator = async () => {
+    if (!swapCallbackUsingAggregator) {
+      return;
+    }
+    setAttemptingTxn(true);
+    setTxConfirmInfo({
+      type: "confirming",
+      tx: undefined,
+    });
+    try {
+      const txHash = await swapCallbackUsingAggregator();
+      setTxConfirmInfo({
+        type: "confirming",
+        tx: txHash,
+      });
+    } catch (err) {
+      setTxConfirmInfo({
+        type: "failed",
+        tx: undefined,
+      });
+    } finally {
+      setAttemptingTxn(false);
+      onUserInput(Field.INPUT, "");
+    }
+  };
+
+  const parsedAmounts = showWrap
+    ? {
+        [Field.INPUT]: parsedAmount,
+        [Field.OUTPUT]: parsedAmount,
+      }
+    : {
+        [Field.INPUT]: noLiquidity
+          ? parsedAmount
+          : independentField === Field.INPUT
+          ? parsedAmount
+          : trade?.inputAmount,
+        [Field.OUTPUT]: noLiquidity
+          ? query?.outputAmount
+          : independentField === Field.OUTPUT
+          ? parsedAmount
+          : trade?.outputAmount,
+      };
+
+  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput));
+
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [dependentField]: showWrap
+      ? parsedAmounts[independentField]?.toExact() ?? ""
+      : parsedAmounts[dependentField]?.toSignificant(6) ?? "",
+  };
+
+  const price = useMemo(() => {
+    if (
+      !parsedAmounts ||
+      !parsedAmounts[Field.INPUT] ||
+      !parsedAmounts[Field.OUTPUT] ||
+      !currencies[Field.INPUT] ||
+      !currencies[Field.OUTPUT] ||
+      parsedAmounts[Field.INPUT].equalTo(0)
+    )
+      return undefined;
+    return new Price(
+      currencies[Field.INPUT],
+      currencies[Field.OUTPUT],
+      parsedAmounts[Field.INPUT].raw,
+      parsedAmounts[Field.OUTPUT].raw
+    );
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmounts[Field.INPUT]]);
+
+  const onConfirm = () => {
+    if (noLiquidity) {
+      handleSwapUsingAggregator();
+    } else {
+      handleSwapUsingRouter();
+    }
+  };
+
   return (
     <>
+      <WarningModal open={warningOpen} setOpen={setWarningOpen} type={"highpriceimpact"} onClick={onConfirm} />
       <ConfirmationModal
         open={openConfirmationModal}
         setOpen={setOpenConfirmationModal}
@@ -436,10 +264,10 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
       <div className="rounded-2xl border border-gray-600">
         <CurrencyInputPanel
           label={t("Sell")}
-          value={typedValue}
+          value={formattedAmounts[Field.INPUT]}
           onUserInput={handleTypeInput}
-          onMax={() => onUserInput(Field.INPUT, maxAmounts?.toExact())}
-          showMaxButton={!atMaxAmount}
+          onMax={handleMaxInput}
+          showMaxButton={!atMaxAmountInput}
           currency={currencies[Field.INPUT]}
           balance={currencyBalances[Field.INPUT]}
           currencies={currencies}
@@ -456,27 +284,23 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
       <div className="mb-6 rounded-2xl border border-dashed border-gray-600">
         <CurrencyOutputPanel
           label={t("Buy")}
-          value={outputAmount?.toSignificant(6) ?? "0.0"}
-          onUserInput={() => null}
+          value={formattedAmounts[Field.OUTPUT]}
+          onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
           balance={currencyBalances[Field.OUTPUT]}
-          data={quoteData}
+          data={parsedAmounts[Field.INPUT] && !showWrap ? query : undefined}
           slippage={autoMode ? slippage : userSlippageTolerance}
           price={price}
           buyTax={buyTax}
           sellTax={sellTax}
-          verified={verified}
           currencies={currencies}
+          disable={noLiquidity}
         />
       </div>
       {account &&
         (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
           <>
-            {quoteError ? (
-              <button className="btn-outline btn" disabled={true}>
-                {t(quoteError)}
-              </button>
-            ) : inputError ? (
+            {inputError ? (
               <button className="btn-outline btn" disabled={true}>
                 {t(inputError)}
               </button>
@@ -484,13 +308,19 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
               <button className="btn-outline btn" disabled={true}>
                 {t("Loading")}
               </button>
+            ) : showWrap ? (
+              <PrimarySolidButton disabled={Boolean(wrapInputError)} onClick={onWrap}>
+                {wrapInputError ??
+                  (wrapType === WrapType.WRAP ? "Wrap" : wrapType === WrapType.UNWRAP ? "Unwrap" : null)}
+              </PrimarySolidButton>
             ) : approval <= ApprovalState.PENDING ? (
               <>
-                <ApproveStatusBar step={apporveStep} url={currencies[Field.INPUT]} />
                 <PrimarySolidButton
                   onClick={() => {
-                    handleApprove();
+                    handleApproveUsingRouter();
                   }}
+                  pending={attemptingTxn}
+                  disabled={attemptingTxn}
                 >
                   {approval === ApprovalState.PENDING ? (
                     <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
@@ -504,11 +334,31 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
             ) : (
               <PrimarySolidButton
                 onClick={() => {
-                  handleSwap();
+                  if (priceImpactSeverity === 3) setWarningOpen(true);
+                  else onConfirm();
                 }}
-                disabled={attemptingTxn || !outputAmount}
+                pending={attemptingTxn}
+                disabled={
+                  attemptingTxn ||
+                  (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
+                  (noLiquidity && !!aggregationCallbackError)
+                }
               >
-                {t("Swap")}
+                {attemptingTxn ? (
+                  <TailSpin width={30} height={30} color={"rgba(255,255,255,0.5"} />
+                ) : !noLiquidity ? (
+                  !!swapCallbackError ? (
+                    swapCallbackError
+                  ) : priceImpactSeverity > 3 ? (
+                    "Price Impact Too High"
+                  ) : (
+                    "Swap"
+                  )
+                ) : !!aggregationCallbackError ? (
+                  aggregationCallbackError
+                ) : (
+                  "Swap"
+                )}
               </PrimarySolidButton>
             )}
           </>
