@@ -345,7 +345,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                 }
               >
                 {attemptingTxn ? (
-                  <TailSpin width={30} height={30} color={"rgba(255,255,255,0.5"} />
+                  "Swapping..."
                 ) : !noLiquidity ? (
                   !!swapCallbackError ? (
                     swapCallbackError
