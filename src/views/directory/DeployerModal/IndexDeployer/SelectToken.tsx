@@ -41,7 +41,7 @@ const SelectToken = ({ step, setStep }) => {
                       setContractAddress(temp);
                     }}
                   />
-                  <CircleImage className="h-8 w-8" />
+                  <CircleImage className="flex h-8 w-8 items-center justify-center text-[#2E2F2F]" />
                 </div>
                 {i !== 4 ? (
                   <div className="my-2 flex w-full scale-150 justify-center text-[#5D616A]">{PlusSVG}</div>
