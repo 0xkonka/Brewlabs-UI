@@ -165,5 +165,12 @@ export const Adapters = {
       meta: "tricrypto",
     },
   ],
-  97: [],
+  97: [
+    {
+      address: "0xc42213ea7D836285e35413CCe8607f9416Ddb0a6",
+      name: "Pancakeswap",
+      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
+      meta: "v2",
+    },
+  ],
 };
