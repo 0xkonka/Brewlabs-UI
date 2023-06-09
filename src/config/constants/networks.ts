@@ -45,7 +45,6 @@ export const CHAIN_KEYS = {
   [ChainId.AVALANCHE]: "avalanchec",
   [ChainId.CRONOS]: "cronos",
   [ChainId.BRISE]: "brise",
-  [ChainId.ARBITRUM]: "arbitrum"
 };
 
 export const EXPLORER_NAMES = {
@@ -59,7 +58,6 @@ export const EXPLORER_NAMES = {
   [ChainId.AVALANCHE]: "Snowtrace",
   [ChainId.CRONOS]: "CronoScan",
   [ChainId.BRISE]: "BriseScan",
-  [ChainId.ARBITRUM]: "ArbiScan"
 };
 
 export const EXPLORER_URLS = {
