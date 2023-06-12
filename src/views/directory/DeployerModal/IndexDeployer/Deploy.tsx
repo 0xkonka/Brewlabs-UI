@@ -36,14 +36,6 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const [commissionWallet, setCommissionWallet] = useState<string | undefined>();
   const [visibleType, setVisibleType] = useState(true);
 
-  useEffect(() => {
-    if (step === 3) {
-      // setTimeout(() => {
-      //   setStep(4);
-      // }, 5000);
-    }
-  }, [step]);
-
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
   };
@@ -71,6 +63,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
         const payingToken = useERC20(factory.payingToken.address);
         const allowance = payingToken.allowance(account, factory.address);
+
         // approve paying token for deployment
         if (
           factory.payingToken.isToken &&
@@ -101,7 +94,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         } catch (e) {}
       }
 
-      setStep(4)
+      setStep(4);
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(chainId));
