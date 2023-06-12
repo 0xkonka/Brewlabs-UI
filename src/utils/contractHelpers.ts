@@ -24,8 +24,9 @@ import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
 import IndexAbi from "config/abi/indexes/index.json";
-import FarmFactoryAbi from "config/abi/farm/factory.json";
+import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
+import FarmFactoryAbi from "config/abi/farm/factory.json";
 
 // Addresses
 import {
@@ -40,6 +41,7 @@ import {
   getBrewlabsRouterAddress,
   getBrewlabsFeeManagerAddress,
   getFarmFactoryAddress,
+  getIndexFactoryAddress,
 } from "utils/addressHelpers";
 import { provider } from "./wagmi";
 
@@ -161,6 +163,18 @@ export const getFarmImplContract = (
   return getContract(chainId, address, FarmImplAbi, signer);
 };
 
+export const getIndexFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getIndexFactoryAddress(chainId), IndexFactoryAbi, signer);
+};
+
+export const getIndexContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, IndexAbi, signer);
+};
+
 export const getBrewlabsRouterContract = (
   chainId: ChainId,
   address: string,
@@ -175,14 +189,6 @@ export const getBrewlabsFeeManagerContract = (chainId: ChainId, signer?: ethers.
 
 export const getZapInContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getZapperAddress(chainId), zapperAbi, signer);
-};
-
-export const getIndexContract = (
-  chainId: ChainId,
-  address: string,
-  signer?: ethers.Signer | ethers.providers.Provider
-) => {
-  return getContract(chainId, address, IndexAbi, signer);
 };
 
 export const getExternalMasterChefContract = (

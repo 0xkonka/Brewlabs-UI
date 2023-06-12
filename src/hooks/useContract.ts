@@ -28,6 +28,7 @@ import {
   getBrewlabsFeeManagerContract,
   getFarmFactoryContract,
   getFarmImplContract,
+  getIndexFactoryContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -97,6 +98,12 @@ export const useFarmFactoryContract = (chainId: ChainId) => {
   const { data: signer } = useSigner();
   return useMemo(() => getFarmFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
 };
+
+export const useIndexFactoryContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getIndexFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
 // Code below migrated from Exchange useContract.ts
 
 // returns null on errors
