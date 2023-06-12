@@ -28,7 +28,7 @@ import LoadingText from "@components/LoadingText";
 
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
-import { useFarmFactory } from "./hooks";
+import { useFactory as useFarmFactory } from "./hooks";
 
 const DURATIONS = [365, 180, 90, 60];
 
@@ -191,7 +191,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
   return (
     <div className="font-roboto text-white">
-      <div className="mt-4 flex items-center justify-between rounded-[30px] px-4 py-5 bg-[#1A1E28] primary-shadow">
+      <div className="primary-shadow mt-4 flex items-center justify-between rounded-[30px] bg-[#1A1E28] px-4 py-5">
         <div className="mx-auto flex items-center justify-between sm:mx-0">
           <img
             src={getDexLogo(router?.id)}
