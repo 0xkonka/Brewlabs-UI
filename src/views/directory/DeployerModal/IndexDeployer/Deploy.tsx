@@ -126,7 +126,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         </div>
       )}
 
-      {step !== 4 && (
+      {step === 4 && (
         <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
