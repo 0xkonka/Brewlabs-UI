@@ -117,13 +117,13 @@ const CurrencyRow = ({
       <button
         className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
         onClick={() => {
-          onConfirm();
-          return;
-
           if (notListedTokens.includes(currency)) {
             setWarningOpen(true);
             setWarningType("notlisted");
-          } else
+          } else {
+            onConfirm();
+            return;
+
             isVerified(currency).then((result) => {
               if (result) onConfirm();
               else {
@@ -131,6 +131,7 @@ const CurrencyRow = ({
                 setWarningType("notverified");
               }
             });
+          }
         }}
       >
         <div className="flex items-center justify-between gap-4">
