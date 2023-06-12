@@ -79,27 +79,29 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         ) {
           await onApprove(factory.payingToken.address, factory.address);
         }
-
-        // deploy farm contract
-        const tx = await onCreate(
-          name,
-          tokens.map((t) => t.address),
-          commissionFee,
-          commissionWallet ?? account,
-          visibleType
-        );
-
-        const iface = new ethers.utils.Interface(IndexFactoryAbi);
-        for (let i = 0; i < tx.logs.length; i++) {
-          try {
-            const log = iface.parseLog(tx.logs[i]);
-            if (log.name === "IndexCreated") {
-              setIndexAddr(log.args.index);
-              break;
-            }
-          } catch (e) {}
-        }
       }
+
+      // deploy farm contract
+      const tx = await onCreate(
+        name,
+        tokens.map((t) => t.address),
+        commissionFee,
+        commissionWallet ?? account,
+        visibleType
+      );
+
+      const iface = new ethers.utils.Interface(IndexFactoryAbi);
+      for (let i = 0; i < tx.logs.length; i++) {
+        try {
+          const log = iface.parseLog(tx.logs[i]);
+          if (log.name === "IndexCreated") {
+            setIndexAddr(log.args.index);
+            break;
+          }
+        } catch (e) {}
+      }
+
+      setStep(4)
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(chainId));
