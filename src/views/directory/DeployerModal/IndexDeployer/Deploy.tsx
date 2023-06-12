@@ -1,26 +1,37 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ethers } from "ethers";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "@components/logo/IndexLogo";
+
+import IndexFactoryAbi from "config/abi/indexes/factory.json";
+import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
-import { getChainLogo, getIndexName } from "utils/functions";
+import { useTokenApprove } from "@hooks/useApprove";
+import { useERC20 } from "@hooks/useContract";
+import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useIndexFactories } from "state/deploy/hooks";
+import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
 
 import { useFactory as useIndexFactory } from "./hooks";
-import { useIndexFactories } from "state/deploy/hooks";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
+  const { pending, setPending }: any = useContext(DashboardContext);
 
   const factory = useIndexFactories(chainId);
   const { onCreate } = useIndexFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const { onApprove } = useTokenApprove();
 
   const [name, setName] = useState("");
+  const [indexAddr, setIndexAddr] = useState("");
   const [commissionFee, setCommissionFee] = useState(0);
   const [commissionWallet, setCommissionWallet] = useState<string | undefined>();
   const [visibleType, setVisibleType] = useState(true);
@@ -33,7 +44,70 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     }
   }, [step]);
 
-  const handleDeploy = async () => {};
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleDeploy = async () => {
+    if (!factory) {
+      toast.error("Not supported current chain");
+      return;
+    }
+
+    if (!ethers.utils.isAddress(commissionWallet) && commissionWallet !== "") {
+      toast.error("Invalid commission wallet");
+      return;
+    }
+
+    if (name.length > 25) {
+      toast.error("Index name cannot exceed 25 characters");
+      return;
+    }
+
+    setStep(3);
+    setPending(true);
+
+    try {
+      if (factory.payingToken.isToken && +factory.serviceFee > 0) {
+        const payingToken = useERC20(factory.payingToken.address);
+        const allowance = payingToken.allowance(account, factory.address);
+        // approve paying token for deployment
+        if (
+          factory.payingToken.isToken &&
+          +factory.serviceFee > 0 &&
+          allowance.lt(ethers.BigNumber.from(factory.serviceFee))
+        ) {
+          await onApprove(factory.payingToken.address, factory.address);
+        }
+
+        // deploy farm contract
+        const tx = await onCreate(
+          name,
+          tokens.map((t) => t.address),
+          commissionFee,
+          commissionWallet ?? account,
+          visibleType
+        );
+
+        const iface = new ethers.utils.Interface(IndexFactoryAbi);
+        for (let i = 0; i < tx.logs.length; i++) {
+          try {
+            const log = iface.parseLog(tx.logs[i]);
+            if (log.name === "IndexCreated") {
+              setIndexAddr(log.args.index);
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(chainId));
+      setStep(2);
+    }
+
+    setPending(false);
+  };
 
   const makePendingText = () => {
     return (
@@ -142,7 +216,10 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             <div>Index contract address</div>
             <div className="flex w-full max-w-[140px] items-center">
               <CircleImage className="mr-2 h-5 w-5" />
-              <div>0x8793192319....</div>
+              <img src={getExplorerLogo(chainId)} className="mr-1 h-5 w-5" alt="explorer" />
+              <a href={getExplorerLink(chainId, "address", indexAddr)} target="_blank" rel="noreferrer">
+                {indexAddr.slice(0, 12)}....
+              </a>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
@@ -187,7 +264,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
         {step === 2 ? (
-          <StyledButton type="primary" onClick={() => setStep(3)}>
+          <StyledButton type="primary" onClick={handleDeploy} disabled={pending || !factory}>
             Deploy
           </StyledButton>
         ) : step === 4 ? (
