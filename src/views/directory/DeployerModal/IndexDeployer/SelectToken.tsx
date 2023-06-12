@@ -11,7 +11,7 @@ import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
 import TokenSelect from "../TokenSelect";
 
-const SelectToken = ({ step, setStep, tokens, setTokens }) => {
+const SelectToken = ({ setStep, tokens, setTokens }) => {
   const { chainId } = useActiveChainId();
 
   const isSupported = Object.keys(contracts.indexFactory).includes(chainId.toString());

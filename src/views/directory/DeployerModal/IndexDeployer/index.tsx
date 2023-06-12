@@ -10,9 +10,9 @@ const IndexDeployer = ({ setOpen, step, setStep }) => {
   return (
     <div>
       {step === 1 ? (
-        <SelectToken step={step} setStep={setStep} tokens={tokens} setTokens={setTokens} />
+        <SelectToken setStep={setStep} tokens={tokens} setTokens={setTokens} />
       ) : (
-        <Deploy step={step} setStep={setStep} setOpen={setOpen} />
+        <Deploy step={step} setStep={setStep} setOpen={setOpen}  tokens={tokens}/>
       )}
     </div>
   );

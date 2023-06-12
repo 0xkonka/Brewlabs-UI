@@ -1,11 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import StyledButton from "../../StyledButton";
-import ChainSelect from "views/swap/components/ChainSelect";
 import { useEffect, useState } from "react";
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { getChainLogo } from "utils/functions";
 
-const Deploy = ({ step, setStep, setOpen }) => {
+const Deploy = ({ step, setStep, setOpen, tokens }) => {
+  const { chainId } = useActiveChainId();
+
   const [contractAddress, setContractAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState(null);
   const [visibleType, setVisibleType] = useState("public");
@@ -41,7 +44,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
         <div className="mx-auto flex w-full max-w-[280px] items-center justify-between sm:mx-0">
-          <CircleImage className="h-8 w-8" />
+          <img src={getChainLogo(chainId)} alt={""} className="ml-3 h-5 w-5" />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>
           <div className="flex items-center">
             <CircleImage className="h-8 w-8" />
