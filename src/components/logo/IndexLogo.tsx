@@ -1,9 +1,24 @@
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const IndexLogo = ({ tokens, appId = undefined, classNames = "mr-3" }) => {
+const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "mr-3" }) => {
   const onError = (data) => {
     data.target.src = "/images/unknown.png";
   };
+  if (type === "line") {
+    return <div className={`flex w-fit items-center ${classNames}`}>
+      {tokens.map((data, i) => {
+        return (
+          <img
+            src={getTokenLogoURL(data.address, data.chainId)}
+            onError={onError}
+            alt={""}
+            className="w-7 rounded-full -ml-2 border border-dark"
+            key={i}
+          />
+        );
+      })}
+    </div>;
+  }
 
   switch (tokens.length) {
     case 2:

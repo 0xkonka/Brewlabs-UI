@@ -1,30 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import styled from "styled-components";
-import StyledButton from "../../StyledButton";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
+
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
+import IndexLogo from "@components/logo/IndexLogo";
 import { useActiveChainId } from "@hooks/useActiveChainId";
-import { getChainLogo } from "utils/functions";
+import { getChainLogo, getIndexName } from "utils/functions";
+
+import StyledButton from "../../StyledButton";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
 
-  const [contractAddress, setContractAddress] = useState("");
-  const [tokenAddress, setTokenAddress] = useState(null);
   const [visibleType, setVisibleType] = useState("public");
   const [name, setName] = useState("");
   const [commissionWallet, setCommissionWallet] = useState("");
 
   useEffect(() => {
-    if (contractAddress.length) setTokenAddress("0x330518cc95c92881bCaC1526185a514283A5584D");
-    else setTokenAddress(null);
-  }, [contractAddress]);
-
-  useEffect(() => {
     if (step === 3) {
-      setTimeout(() => {
-        setStep(4);
-      }, 5000);
+      // setTimeout(() => {
+      //   setStep(4);
+      // }, 5000);
     }
   }, [step]);
 
@@ -43,22 +39,19 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   return (
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
-        <div className="mx-auto flex w-full max-w-[280px] items-center justify-between sm:mx-0">
-          <img src={getChainLogo(chainId)} alt={""} className="ml-3 h-5 w-5" />
+        <div className="mx-auto flex w-full max-w-[280px] items-center justify-start sm:mx-0">
+          <img src={getChainLogo(chainId)} alt={""} className="h-8 w-8" />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>
           <div className="flex items-center">
-            <CircleImage className="h-8 w-8" />
-            <div className="-ml-2 mr-2">
-              <CircleImage className="h-8 w-8" />
-            </div>
-            <div>WOM-CAKE Index</div>
+            <IndexLogo type="line" tokens={tokens} classNames="mx-3" />
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">{getIndexName(tokens)}</div>
           </div>
         </div>
         <div className="hidden sm:block">{makePendingText()}</div>
       </div>
       <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div>
 
-      {step === 3 ? (
+      {step === 2 && (
         <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
           <div className="ml-4 ">
             <div className="mb-1">Set index name</div>
@@ -114,11 +107,9 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             </div>
           </div>
         </div>
-      ) : (
-        ""
       )}
 
-      {step === 4 ? (
+      {step === 4 && (
         <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
@@ -148,8 +139,6 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             <div className=" w-full max-w-[140px] pl-7">Public</div>
           </div>
         </div>
-      ) : (
-        ""
       )}
 
       <div className="mb-5 mt-4 flex items-center justify-between text-[#FFFFFF80]">
@@ -169,7 +158,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         </div>
       </div>
 
-      {step !== 5 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
+      <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <div className="mx-auto h-12 max-w-[500px]">
         {step === 2 ? (
           <StyledButton type="primary" onClick={() => setStep(3)}>
