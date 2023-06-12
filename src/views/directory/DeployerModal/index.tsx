@@ -113,7 +113,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
       <Dialog
         open={open}
         className="fixed inset-0 z-10 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
-        onClose={() => step <= 2 && setOpen(false)}
+        onClose={() => {}}
       >
         <div className="flex min-h-full items-center justify-center p-4 ">
           <motion.div

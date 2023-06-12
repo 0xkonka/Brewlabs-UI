@@ -46,7 +46,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       return;
     }
 
-    if (!ethers.utils.isAddress(commissionWallet) && commissionWallet !== "") {
+    if (!ethers.utils.isAddress(commissionWallet) && commissionWallet) {
       toast.error("Invalid commission wallet");
       return;
     }
