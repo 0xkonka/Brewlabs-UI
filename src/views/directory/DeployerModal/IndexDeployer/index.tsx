@@ -4,12 +4,13 @@ import { useState } from "react";
 import SelectToken from "./SelectToken";
 import Deploy from "./Deploy";
 
-const IndexDeployer = ({ setOpen }) => {
-  const [step, setStep] = useState(1)
+const IndexDeployer = ({ setOpen, step, setStep }) => {
+  const [tokens, setTokens] = useState(new Array(2).fill(undefined));
+
   return (
     <div>
       {step === 1 ? (
-        <SelectToken step={step} setStep={setStep} />
+        <SelectToken step={step} setStep={setStep} tokens={tokens} setTokens={setTokens} />
       ) : (
         <Deploy step={step} setStep={setStep} setOpen={setOpen} />
       )}

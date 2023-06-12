@@ -20,7 +20,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
   const notSupported =
     router?.factory?.toLowerCase() !== lpInfo?.pair?.factory?.toLowerCase() ||
     supportedTokens
-      .filter((t) => t.chainId === chainId)
+      .filter((t) => t.chainId === chainId && t.address)
       .filter(
         (t) =>
           t.address.toLowerCase() === token0Address?.toLowerCase() ||

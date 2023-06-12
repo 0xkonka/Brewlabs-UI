@@ -150,7 +150,7 @@ const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
               ) : deployType === "Yield Farm" ? (
                 <FarmDeployer setOpen={setOpen} step={step} setStep={setStep} />
               ) : deployType === "Index" ? (
-                <IndexDeployer setOpen={setOpen} />
+                <IndexDeployer setOpen={setOpen} step={step} setStep={setStep} />
               ) : (
                 ""
               )}
