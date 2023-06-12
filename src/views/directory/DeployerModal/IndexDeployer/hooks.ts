@@ -1,6 +1,6 @@
+import { useCallback } from "react";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useIndexFactoryContract } from "@hooks/useContract";
-import { useCallback } from "react";
 import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
