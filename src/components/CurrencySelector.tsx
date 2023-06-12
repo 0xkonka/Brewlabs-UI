@@ -27,6 +27,7 @@ import UserDashboard from "components/dashboard/UserDashboard";
 
 import NavButton from "./dashboard/NavButton";
 import WarningModal from "./warningModal";
+import DropDown from "./dashboard/TokenList/Dropdown";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -183,7 +184,7 @@ const CurrencySelector = ({
   const allTokens = useAllTokens();
 
   // if they input an address, use it
-  let searchToken: any = useToken(debouncedQuery);
+  let searchToken = useToken(debouncedQuery);
 
   const showETH: boolean = useMemo(() => {
     const s = debouncedQuery.toLowerCase().trim();
@@ -314,7 +315,7 @@ const CurrencySelector = ({
         {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
       </div>
 
-      <nav className="mb-4 flex space-x-4" aria-label="Tabs">
+      <nav className="mb-4 hidden space-x-4 sm:flex" aria-label="Tabs">
         {tabs.map((tab, index) => (
           <button
             key={tab.name}
@@ -330,6 +331,19 @@ const CurrencySelector = ({
             {tab.name}
           </button>
         ))}
+      </nav>
+
+      <nav className="mb-4 block sm:hidden" aria-label="Tabs">
+        <DropDown
+          width="w-full"
+          value={activeTab}
+          setValue={(i) => {
+            setPage(0);
+            setActiveTab(i);
+          }}
+          type="secondary"
+          values={tabs.map((data) => data.name)}
+        />
       </nav>
 
       <input
@@ -358,6 +372,11 @@ const CurrencySelector = ({
                 />
               );
             })
+          ) : searchToken === null ? (
+            <>
+              {/* <img className="m-auto" alt="No results" src="/images/Brewlabs--no-results-found-transparent.gif" /> */}
+              <p className="my-7 flex justify-center text-2xl dark:text-primary">Loading Token ...</p>
+            </>
           ) : (
             <>
               <img className="m-auto" alt="No results" src="/images/Brewlabs--no-results-found-transparent.gif" />
