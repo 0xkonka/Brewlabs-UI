@@ -323,7 +323,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                   disabled={attemptingTxn}
                 >
                   {approval === ApprovalState.PENDING ? (
-                    <span>{t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                    <span>{t("Approving %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
                   ) : approval === ApprovalState.UNKNOWN ? (
                     <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
                   ) : (
@@ -344,21 +344,17 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                   (noLiquidity && !!aggregationCallbackError)
                 }
               >
-                {attemptingTxn ? (
-                  "Swapping..."
-                ) : !noLiquidity ? (
-                  !!swapCallbackError ? (
-                    swapCallbackError
-                  ) : priceImpactSeverity > 3 ? (
-                    "Price Impact Too High"
-                  ) : (
-                    "Swap"
-                  )
-                ) : !!aggregationCallbackError ? (
-                  aggregationCallbackError
-                ) : (
-                  "Swap"
-                )}
+                {attemptingTxn
+                  ? "Swapping..."
+                  : !noLiquidity
+                  ? !!swapCallbackError
+                    ? swapCallbackError
+                    : priceImpactSeverity > 3
+                    ? "Price Impact Too High"
+                    : "Swap"
+                  : !!aggregationCallbackError
+                  ? aggregationCallbackError
+                  : "Swap"}
               </PrimarySolidButton>
             )}
           </>
