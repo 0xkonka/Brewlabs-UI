@@ -8,13 +8,16 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { getChainLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
+import { useAccount } from "wagmi";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
+  const { address: account } = useAccount();
 
-  const [visibleType, setVisibleType] = useState("public");
   const [name, setName] = useState("");
-  const [commissionWallet, setCommissionWallet] = useState("");
+  const [commissionFee, setCommissionFee] = useState(0);
+  const [commissionWallet, setCommissionWallet] = useState<string | undefined>();
+  const [visibleType, setVisibleType] = useState(true);
 
   useEffect(() => {
     if (step === 3) {
@@ -40,7 +43,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
         <div className="mx-auto flex w-full max-w-[280px] items-center justify-start sm:mx-0">
-          <img src={getChainLogo(chainId)} alt={""} className="h-8 w-8" />
+          <img src={getChainLogo(chainId)} alt={""} className="h-7 w-7" />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>
           <div className="flex items-center">
             <IndexLogo type="line" tokens={tokens} classNames="mx-3" />
@@ -55,7 +58,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
           <div className="ml-4 ">
             <div className="mb-1">Set index name</div>
-            <StyledInput value={name} onChange={(e) => setName(e.target.value)} />
+            <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder={getIndexName(tokens)} />
           </div>
 
           <div className="ml-4 mt-3.5">
@@ -63,12 +66,26 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               <div className="mb-1">Set commission wallet</div>
               <div className="flex items-center">
                 <div>Set commission fee</div>
-                <div className="mx-2 scale-150 cursor-pointer text-[#3F3F46]">{PlusSVG}</div>
-                <div>1.00%</div>
-                <div className="ml-2 scale-150 cursor-pointer text-[#3F3F46]">{MinusSVG}</div>
+                <div
+                  className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
+                  onClick={() => setCommissionFee(Math.min(2, commissionFee + 0.1))}
+                >
+                  {PlusSVG}
+                </div>
+                <div>{commissionFee.toFixed(2)}%</div>
+                <div
+                  className="ml-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
+                  onClick={() => setCommissionFee(Math.max(0, commissionFee - 0.1))}
+                >
+                  {MinusSVG}
+                </div>
               </div>
             </div>
-            <StyledInput value={commissionWallet} onChange={(e) => setCommissionWallet(e.target.value)} />
+            <StyledInput
+              value={commissionWallet}
+              onChange={(e) => setCommissionWallet(e.target.value)}
+              placeholder="Default is your connected wallet"
+            />
           </div>
 
           <div className="mt-3">
@@ -82,34 +99,34 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               <StyledButton
                 type={"default"}
                 className={`${
-                  visibleType === "public"
+                  visibleType
                     ? "border-primary text-primary shadow-[0px_4px_4px_#00000040]"
                     : "border-[#FFFFFF40] text-[#FFFFFF80]"
                 } relative flex h-9 w-36 items-center justify-center rounded-md border  bg-[#B9B8B81A] font-brand text-base font-normal`}
-                onClick={() => setVisibleType("public")}
+                onClick={() => setVisibleType(true)}
               >
                 Public
-                {visibleType === "public" ? <div className="absolute left-3 scale-[40%]">{checkCircleSVG}</div> : ""}
+                {visibleType && <div className="absolute left-3 scale-[40%]">{checkCircleSVG}</div>}
               </StyledButton>
               <div className="mr-2" />
               <StyledButton
                 type={"default"}
                 className={`${
-                  visibleType === "private"
+                  !visibleType
                     ? "border-primary text-primary shadow-[0px_4px_4px_#00000040]"
                     : "border-[#FFFFFF40] text-[#FFFFFF80]"
                 } relative flex h-9 w-36 items-center justify-center rounded-md border  bg-[#B9B8B81A] font-brand text-base font-normal`}
-                onClick={() => setVisibleType("private")}
+                onClick={() => setVisibleType(false)}
               >
                 Private
-                {visibleType === "private" ? <div className="absolute left-3 scale-[40%]">{checkCircleSVG}</div> : ""}
+                {!visibleType && <div className="absolute left-3 scale-[40%]">{checkCircleSVG}</div>}
               </StyledButton>
             </div>
           </div>
         </div>
       )}
 
-      {step === 4 && (
+      {step !== 4 && (
         <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
@@ -121,22 +138,22 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Index name</div>
-            <div className=" w-full max-w-[140px] pl-7">{name}</div>
+            <div className=" w-full max-w-[140px] pl-7">{name === "" ? getIndexName(tokens) : name}</div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Commission wallet</div>
             <div className="flex w-full max-w-[140px] items-center">
               <CircleImage className="mr-2 h-5 w-5" />
-              <div>{commissionWallet}</div>
+              <div>{commissionWallet ?? account}</div>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Commission fee</div>
-            <div className=" w-full max-w-[140px] pl-7">0.05%</div>
+            <div className=" w-full max-w-[140px] pl-7">{commissionFee.toFixed(2)}%</div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Visibility</div>
-            <div className=" w-full max-w-[140px] pl-7">Public</div>
+            <div className=" w-full max-w-[140px] pl-7">{visibleType ? "Public" : "Priveate"}</div>
           </div>
         </div>
       )}
