@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "@components/logo/IndexLogo";
+import LoadingText from "@components/LoadingText";
 
 import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -80,7 +81,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         tokens.map((t) => t.address),
         commissionFee,
         commissionWallet ?? account,
-        visibleType
+        !visibleType
       );
 
       const iface = new ethers.utils.Interface(IndexFactoryAbi);
@@ -210,22 +211,35 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Index contract address</div>
             <div className="flex w-full max-w-[140px] items-center">
-              <CircleImage className="mr-2 h-5 w-5" />
-              <img src={getExplorerLogo(chainId)} className="mr-1 h-5 w-5" alt="explorer" />
-              <a href={getExplorerLink(chainId, "address", indexAddr)} target="_blank" rel="noreferrer">
-                {indexAddr.slice(0, 12)}....
+              <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
+              <a
+                href={getExplorerLink(chainId, "address", indexAddr)}
+                target="_blank"
+                rel="noreferrer"
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
+              >
+                {indexAddr}
               </a>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Index name</div>
-            <div className=" w-full max-w-[140px] pl-7">{name === "" ? getIndexName(tokens) : name}</div>
+            <div className=" w-full max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap pl-7">
+              {name === "" ? getIndexName(tokens) : name}
+            </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Commission wallet</div>
             <div className="flex w-full max-w-[140px] items-center">
-              <CircleImage className="mr-2 h-5 w-5" />
-              <div>{commissionWallet ?? account}</div>
+              <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
+              <a
+                href={getExplorerLink(chainId, "address", commissionWallet ?? account)}
+                target="_blank"
+                rel="noreferrer"
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
+              >
+                {commissionWallet ?? account}
+              </a>
             </div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
@@ -241,9 +255,13 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
 
       <div className="mb-5 mt-4 flex items-center justify-between text-[#FFFFFF80]">
         {step === 2 ? (
-          <div className="text-sm font-semibold text-[#FFFFFF40]">Waiting for deploy...</div>
+          <div className="text-sm font-semibold text-[#FFFFFF40]">
+            <LoadingText text={"Waiting for deploy"} />
+          </div>
         ) : step === 3 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">Deploying smart contract...</div>
+          <div className="text-sm font-semibold text-[#2FD35DBF]">
+            <LoadingText text={"Deploying smart contract"} />
+          </div>
         ) : step === 4 ? (
           <div className="text-sm font-semibold text-[#2FD35DBF]">Complete</div>
         ) : (

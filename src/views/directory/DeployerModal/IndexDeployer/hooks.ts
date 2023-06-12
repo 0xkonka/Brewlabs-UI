@@ -9,14 +9,14 @@ export const useFactory = (chainId, performanceFee) => {
   const factoryContract = useIndexFactoryContract(chainId);
 
   const handleCreate = useCallback(
-    async (indexName: string, tokens: string[], commissionFee: number, commissionWallet: string, isPublic = true) => {
+    async (indexName: string, tokens: string[], commissionFee: number, commissionWallet: string, isPrivate = true) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
       let gasLimit = await factoryContract.estimateGas.createBrewlabsIndex(
         indexName,
         tokens,
         commissionFee,
         commissionWallet,
-        isPublic,
+        isPrivate,
         { value: performanceFee, gasPrice }
       );
       gasLimit = calculateGasMargin(gasLimit);
@@ -26,7 +26,7 @@ export const useFactory = (chainId, performanceFee) => {
         tokens,
         commissionFee,
         commissionWallet,
-        isPublic,
+        isPrivate,
         { value: performanceFee, gasPrice, gasLimit }
       );
       const receipt = await tx.wait();
