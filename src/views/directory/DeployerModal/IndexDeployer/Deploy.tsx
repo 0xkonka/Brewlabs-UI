@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "@components/logo/IndexLogo";
@@ -8,11 +9,16 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { getChainLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
-import { useAccount } from "wagmi";
+
+import { useFactory as useIndexFactory } from "./hooks";
+import { useIndexFactories } from "state/deploy/hooks";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
+
+  const factory = useIndexFactories(chainId);
+  const { onCreate } = useIndexFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
 
   const [name, setName] = useState("");
   const [commissionFee, setCommissionFee] = useState(0);
@@ -27,6 +33,8 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     }
   }, [step]);
 
+  const handleDeploy = async () => {};
+
   const makePendingText = () => {
     return (
       <div className="flex w-28 items-center justify-between rounded-lg border border-[#FFFFFF80] bg-[#B9B8B81A] px-2 py-1 text-sm">
@@ -39,6 +47,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       </div>
     );
   };
+
   return (
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
@@ -68,7 +77,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 <div>Set commission fee</div>
                 <div
                   className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                  onClick={() => setCommissionFee(Math.min(2, commissionFee + 0.1))}
+                  onClick={() => setCommissionFee(Math.min(factory ? factory.feeLimit / 100 : 2, commissionFee + 0.1))}
                 >
                   {PlusSVG}
                 </div>
