@@ -1,4 +1,4 @@
-import { ChainId, Currency } from "@brewlabs/sdk";
+import { ChainId } from "@brewlabs/sdk";
 
 import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import { tokens } from "config/constants/tokens";
@@ -20,6 +20,10 @@ export const fetchIndexFactoryData = async (chainId: ChainId) => {
       address: getIndexFactoryAddress(chainId),
       name: "feeLimit",
     },
+    {
+      address: getIndexFactoryAddress(chainId),
+      name: "brewlabsFee",
+    },
   ];
 
   const result = await multicall(IndexFactoryAbi, calls, chainId);
@@ -27,6 +31,7 @@ export const fetchIndexFactoryData = async (chainId: ChainId) => {
     chainId,
     payingToken: serializeToken(Object.values(tokens[chainId]).find((t: any) => t.address === result[0][0])),
     serviceFee: result[1][0].toString(),
-    feeLimit: result[2][0].toNumber(),
+    feeLimit: result[2][0].toNumber() / 100,
+    brewsFee: result[3][0].toNumber() / 100,
   };
 };

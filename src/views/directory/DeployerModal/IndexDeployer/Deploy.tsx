@@ -147,7 +147,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 <div>Set commission fee</div>
                 <div
                   className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                  onClick={() => setCommissionFee(Math.min(factory ? factory.feeLimit / 100 : 2, commissionFee + 0.1))}
+                  onClick={() => setCommissionFee(Math.min(factory ? factory.feeLimit : 2, commissionFee + 0.1))}
                 >
                   {PlusSVG}
                 </div>

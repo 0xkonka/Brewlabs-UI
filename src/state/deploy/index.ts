@@ -5,7 +5,7 @@ import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { serializeToken } from "state/user/hooks/helpers";
 import { getFarmFactoryAddress, getIndexFactoryAddress } from "utils/addressHelpers";
 import { fetchFarmFactoryData } from "./fetchFactory";
-import { fetchIndexFactoryData } from "./indexFactory";
+import { fetchIndexFactoryData } from "./fetchIndex";
 
 const initialState = {
   farm: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => ({
