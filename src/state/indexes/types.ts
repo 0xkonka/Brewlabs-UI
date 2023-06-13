@@ -6,7 +6,10 @@ interface IndexConfigBaseProps {
   pid: number;
   chainId: ChainId;
   address: string;
-  nft: string;
+  category?: number;
+  nft?: string;
+  indexNft?: string;
+  deployerNft?: string;
   numTokens: number;
   fee: string;
   createdAt: string;
@@ -17,6 +20,8 @@ interface IndexConfigBaseProps {
   isFinished?: boolean;
   visible?: boolean;
   deployer?: string;
+  owner?: string;
+  feeWallet?: string;
 }
 
 export interface SerializedIndexConfig extends IndexConfigBaseProps {

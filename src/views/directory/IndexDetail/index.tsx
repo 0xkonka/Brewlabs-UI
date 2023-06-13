@@ -200,10 +200,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     }, 1000);
     navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
   };
+
   return (
     <>
       <AnimatePresence exitBeforeEnter>
-        (
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}

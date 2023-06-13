@@ -29,6 +29,7 @@ import {
   getFarmFactoryContract,
   getFarmImplContract,
   getIndexFactoryContract,
+  getOldIndexContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -90,6 +91,14 @@ export const useIndexContract = (chainId: ChainId, contractAddress: string) => {
   const { data: signer } = useSigner();
   return useMemo(
     () => getIndexContract(chainId, contractAddress, signer ?? undefined),
+    [chainId, contractAddress, signer]
+  );
+};
+
+export const useOldIndexContract = (chainId: ChainId, contractAddress: string) => {
+  const { data: signer } = useSigner();
+  return useMemo(
+    () => getOldIndexContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
   );
 };

@@ -1,6 +1,6 @@
 import { parseEther } from "ethers/lib/utils";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useOldIndexContract } from "hooks/useContract";
+import { useIndexContract } from "hooks/useContract";
 import { useCallback } from "react";
 import { useAppDispatch } from "state";
 import { fetchIndexPublicDataAsync, updateUserBalance, updateUserStakings } from "state/indexes";
@@ -59,10 +59,10 @@ const stakeNft = async (indexContract, tokenId, gasPrice, performanceFee = "0") 
   return receipt;
 };
 
-const useIndex = (pid, contractAddress, performanceFee) => {
+const useIndexImpl = (pid, contractAddress, performanceFee) => {
   const dispatch = useAppDispatch();
   const { account, chainId, library } = useActiveWeb3React();
-  const indexContract = useOldIndexContract(chainId, contractAddress);
+  const indexContract = useIndexContract(chainId, contractAddress);
 
   const handleZapIn = useCallback(
     async (amount, percents) => {
@@ -132,4 +132,4 @@ const useIndex = (pid, contractAddress, performanceFee) => {
   };
 };
 
-export default useIndex;
+export default useIndexImpl;
