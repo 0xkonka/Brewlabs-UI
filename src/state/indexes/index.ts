@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 import { API_URL } from "config/constants";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { Category } from "config/constants/types";
 import { IndexesState } from "state/types";
 import { fetchIndexPerformance, fetchIndexesTotalStaking } from "./fetchIndexes";
@@ -19,7 +20,9 @@ export const fetchIndexesFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/indexes`).then((res) => {
     let indexes = [];
     if (res.data) {
-      indexes = res.data.map((pool) => ({ type: Category.INDEXES, ...pool }));
+      indexes = res.data
+        .filter((p) => PAGE_SUPPORTED_CHAINS["indexes"].includes(p.chainId))
+        .map((pool) => ({ type: Category.INDEXES, ...pool }));
     }
     dispatch(setIndexesPublicData(indexes));
 
