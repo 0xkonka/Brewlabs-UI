@@ -180,12 +180,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       );
     return (
       <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
-        ${numberWithCommas(Math.abs(profit).toFixed(2))} <span className="text-[#FFFFFF80]">earned</span>
+        ${numberWithCommas(isNaN(profit) ? "0.00" : Math.abs(profit).toFixed(2))}{" "}
+        <span className="text-[#FFFFFF80]">earned</span>
         {isProfit ? (
           <>
             <br />
             <span className={`${profitChanged >= 0 ? "text-green" : "text-danger"}`}>
-              {Math.abs(profitChanged).toFixed(2)}%&nbsp;
+              {isNaN(profitChanged) ? "0.00" : Math.abs(profitChanged).toFixed(2)}%&nbsp;
               <span className="text-[#FFFFFF80]">{profitChanged >= 0 ? "gain" : "loss"}</span>
             </span>
           </>
@@ -455,7 +456,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mr-4 whitespace-nowrap">
                           <span className="mr-1 hidden sm:inline-block">Index: </span>
                           {getIndexName(tokens)}
-                          
+
                           <a
                             className="absolute left-[8px] top-[22px]"
                             href={getExplorerLink(data.chainId, "address", data.address)}
@@ -469,7 +470,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           {/* Performance:&nbsp; */}
                           {data.priceChanges !== undefined ? (
                             <span className={data.priceChanges[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
-                              {data.priceChanges[curAPR].percent.toFixed(2)}%
+                              {isNaN(data.priceChanges[curAPR].percent)
+                                ? "0.00"
+                                : data.priceChanges[curAPR].percent.toFixed(2)}
+                              %
                             </span>
                           ) : (
                             <SkeletonComponent />
@@ -603,7 +607,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex text-[#FFFFFF80]">
                         {data.priceChanges !== undefined ? (
                           <span className={data.priceChanges[0].percent < 0 ? "text-danger" : "text-green"}>
-                            {data.priceChanges[0].percent.toFixed(2)}%
+                            {isNaN(data.priceChanges[0].percent) ? "0.00" : data.priceChanges[0].percent.toFixed(2)}%
                           </span>
                         ) : (
                           <SkeletonComponent />
@@ -611,7 +615,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         &nbsp;
                         <div>
                           {data.priceChanges !== undefined ? (
-                            `(${formatDollar(data.priceChanges[0].value, 2)})`
+                            `(${
+                              isNaN(data.priceChanges[0].value) ? "0.00" : formatDollar(data.priceChanges[0].value, 2)
+                            })`
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -666,7 +672,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex text-[#FFFFFF80]">
                         $
-                        {data.commissions?.length
+                        {data.commissions?.length && nativeTokenPrice
                           ? formatAmount(+data.commissions[data.commissions.length - 1] * nativeTokenPrice)
                           : "0.00"}
                       </div>

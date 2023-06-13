@@ -106,7 +106,9 @@ const PoolCard = ({
                       data.priceChanges[0].percent >= 0 ? "text-success" : "text-danger"
                     } overflow-hidden text-ellipsis`}
                   >
-                    Performance - {Math.abs(data.priceChanges[0].percent).toFixed(2)}% 24hrs
+                    Performance -{" "}
+                    {isNaN(data.priceChanges[0].percent) ? "0.00" : Math.abs(data.priceChanges[0].percent).toFixed(2)}%
+                    24hrs
                   </div>
                 ) : (
                   <SkeletonComponent />
