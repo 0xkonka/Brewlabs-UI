@@ -43,7 +43,7 @@ const PoolCard = ({
         switch (data.type) {
           case Category.POOL:
             // setCurPool({ type: Category.POOL, pid: data.sousId, chainId: data.chainId });
-            router.push(`/staking/${data.chainId}/${data.contractAddress}`);
+            router.push(`/staking/${data.chainId}/${data.sousId}`);
             break;
           case Category.FARM:
             // setCurPool({ type: Category.FARM, pid: data.farmId, chainId: data.chainId });

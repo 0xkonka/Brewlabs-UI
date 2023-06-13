@@ -9,7 +9,7 @@ import StakingDetail from "views/directory/StakingDetail";
 
 const Staking: NextPage = () => {
   const router = useRouter();
-  const { chainId, address }: any = router.query;
+  const { chainId, sousId }: any = router.query;
   const { pools } = usePools();
   const { tokenPrices } = useContext(TokenPriceContext);
   const allPools = [
@@ -23,10 +23,7 @@ const Staking: NextPage = () => {
   ];
 
   const data = allPools.find(
-    (pool: any) =>
-      pool.type === 1 &&
-      pool["contractAddress"].toLowerCase() === address.toLowerCase() &&
-      pool["chainId"] / 1 === chainId / 1
+    (pool: any) => pool.type === 1 && pool["sousId"] === +sousId && pool["chainId"] / 1 === chainId / 1
   );
   if (!data) return;
 
