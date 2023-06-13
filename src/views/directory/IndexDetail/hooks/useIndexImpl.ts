@@ -17,33 +17,47 @@ import { getNetworkGasPrice } from "utils/getGasPrice";
 const zapIn = async (indexContract, token, amount, percents, gasPrice) => {
   const value = parseEther(amount);
 
-  const query = await indexContract.precomputeZapIn(
+  const queries = await indexContract.precomputeZapIn(
     token,
     value,
     percents.map((p) => p * 100)
   );
-  if (query.adapters.length == 0) {
-    console.log(query);
-    return;
+  // if (token != ethers.constants.AddressZero && queries[0].adapters.length === 0) return;
+
+  let trades = [];
+  for (let i = 0; i < queries.length; i++) {
+    // if (queries[i].adapters.length === 0) return;
+
+    trades.push([
+      queries[i].amounts[0] ?? 0,
+      queries[i].amounts[queries[i].amounts.length - 1] ?? 0,
+      queries[i].path,
+      queries[i].adapters,
+    ]);
   }
 
-  let args = [
+  let gasLimit = await indexContract.estimateGas.zapIn(
     token,
     value,
     percents.map((p) => p * 100),
-    [query.amounts[0], query.amounts[query.amounts.length - 1], query.path, query.adapters],
-  ];
-
-  let gasLimit = await indexContract.estimateGas.zapIn(...args, {
-    value: token === ethers.constants.AddressZero ? value : 0,
-  });
+    trades,
+    {
+      value: token === ethers.constants.AddressZero ? value : 0,
+    }
+  );
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await indexContract.zapIn(...args, {
-    gasPrice,
-    gasLimit,
-    value: token === ethers.constants.AddressZero ? value : 0,
-  });
+  const tx = await indexContract.zapIn(
+    token,
+    value,
+    percents.map((p) => p * 100),
+    trades,
+    {
+      gasPrice,
+      gasLimit,
+      value: token === ethers.constants.AddressZero ? value : 0,
+    }
+  );
   const receipt = await tx.wait();
   return receipt;
 };
@@ -58,18 +72,25 @@ const claimTokens = async (indexContract, percent, gasPrice) => {
 };
 
 const zapOut = async (indexContract, token, gasPrice) => {
-  const query = await indexContract.precomputeZapOut(token);
-  if (query.adapters.length == 0) {
-    console.log(query);
-    return;
+  const queries = await indexContract.precomputeZapOut(token);
+  // if (token != ethers.constants.AddressZero && queries[queries.length - 1].adapters.length === 0) return;
+
+  let trades = [];
+  for (let i = 0; i < queries.length; i++) {
+    // if (queries[i].adapters.length === 0) return;
+
+    trades.push([
+      queries[i].amounts[0] ?? 0,
+      queries[i].amounts[queries[i].amounts.length - 1] ?? 0,
+      queries[i].path,
+      queries[i].adapters,
+    ]);
   }
 
-  let args = [token, [query.amounts[0], query.amounts[query.amounts.length - 1], query.path, query.adapters]];
-
-  let gasLimit = await indexContract.estimateGas.zapOut(...args);
+  let gasLimit = await indexContract.estimateGas.zapOut(token, trades);
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await indexContract.zapOut(...args, { gasPrice, gasLimit });
+  const tx = await indexContract.zapOut(token, trades, { gasPrice, gasLimit });
   const receipt = await tx.wait();
   return receipt;
 };
