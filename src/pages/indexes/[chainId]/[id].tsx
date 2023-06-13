@@ -1,11 +1,12 @@
-import PageWrapper from "components/layout/PageWrapper";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext } from "react";
+
+import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useIndexes } from "state/indexes/hooks";
 import getCurrencyId from "utils/getCurrencyId";
-import Directory from "views/directory";
+
+import PageWrapper from "components/layout/PageWrapper";
 import IndexDetail from "views/directory/IndexDetail";
 
 const Stables: NextPage = () => {

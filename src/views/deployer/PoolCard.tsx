@@ -54,7 +54,7 @@ const PoolCard = ({
             break;
           case Category.INDEXES:
             // setCurPool({ type: Category.INDEXES, pid: data.pid });
-            router.push(`/indexes/${data.pid}`);
+            router.push(`/indexes/${data.chainId}/${data.pid}`);
             break;
           case Category.ZAPPER:
             setCurPool({ type: Category.ZAPPER, pid: data.pid, chainId: data.chainId });

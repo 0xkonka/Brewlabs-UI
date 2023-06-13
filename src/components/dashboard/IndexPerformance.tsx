@@ -77,7 +77,7 @@ const IndexPerformance = () => {
                       key={i}
                       className="flex cursor-pointer items-center justify-between rounded sm:p-[12px_12px_12px_24px] p-[12px_4px_12px_8px] transition hover:bg-[rgba(50,50,50,0.4)] "
                       onClick={() => {
-                        router.push(`/indexes/${data.pid}`);
+                        router.push(`/indexes/${data.chainId}/${data.pid}`);
                         setIsOpen(0);
                       }}
                     >
