@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 import styled from "styled-components";
 
 import "react-tooltip/dist/react-tooltip.css";
@@ -24,7 +24,7 @@ import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
 import {
@@ -36,12 +36,15 @@ import {
   updateUserIndexNftInfo,
   updateUserStakings,
 } from "state/indexes";
+import { getErc721Contract } from "utils/contractHelpers";
 import { formatDollar, getIndexName, numberWithCommas } from "utils/functions";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import useIndex from "./hooks/useIndex";
+import useIndexImpl from "./hooks/useIndexImpl";
+import useNftApprove from "./hooks/useNftApprove";
 
 import StyledButton from "../StyledButton";
 import DropDown from "./Dropdowns/Dropdown";
@@ -51,9 +54,6 @@ import EnterExitModal from "./Modals/EnterExitModal";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
-import useIndexImpl from "./hooks/useIndexImpl";
-import { getErc721Contract } from "utils/contractHelpers";
-import useNftApprove from "./hooks/useNftApprove";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 const availableActions = [
@@ -67,7 +67,9 @@ const availableActions = [
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
   const { tokens, userData, priceHistories } = data;
+
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);
@@ -76,14 +78,22 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curAPR, setCurAPR] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
 
-  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
-  const { data: signer } = useSigner();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
   const { tokenPrices } = useContext(TokenPriceContext);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
+
+  const isMintable =
+    !data.deployerNftId &&
+    !userData?.deployerNftItem?.tokenId &&
+    data.deployer?.toLowerCase() === address?.toLowerCase();
+  const isUnstakable =
+    data.deployerNftId &&
+    !userData?.deployerNftItem?.tokenId &&
+    data.feeWallet?.toLowerCase() === address?.toLowerCase();
+  const isStakable = userData?.deployerNftItem?.tokenId;
 
   const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
   const { onApprove: onApproveNft } = useNftApprove(data.category >= 0 ? data.deployerNft : data.nft);
@@ -353,6 +363,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <OptionDropdown
                           values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
                           setValue={handleProcessAction}
+                          status={[
+                            true,
+                            true,
+                            isMintable && !pending,
+                            isStakable && !pending,
+                            isUnstakable && !pending,
+                          ]}
                         />
                       </div>
                     </div>
@@ -406,6 +423,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <OptionDropdown
                           values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
                           setValue={handleProcessAction}
+                          status={[
+                            true,
+                            true,
+                            isMintable && !pending,
+                            isStakable && !pending,
+                            isUnstakable && !pending,
+                          ]}
                         />
                       </div>
                       <a
@@ -431,6 +455,15 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mr-4 whitespace-nowrap">
                           <span className="mr-1 hidden sm:inline-block">Index: </span>
                           {getIndexName(tokens)}
+                          
+                          <a
+                            className="absolute left-[8px] top-[22px]"
+                            href={getExplorerLink(data.chainId, "address", data.address)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {LinkSVG}
+                          </a>
                         </div>
                         <div className="ml-auto flex items-center">
                           {/* Performance:&nbsp; */}

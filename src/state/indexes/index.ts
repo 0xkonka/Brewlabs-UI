@@ -152,7 +152,7 @@ export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => 
         setIndexesUserData(
           indexes.map((pool) => ({
             pid: pool.pid,
-            deployerNftItems: nftInfo.filter((data) => data.indexAddress.toLowerCase() === pool.address.toLowerCase()),
+            deployerNftItem: nftInfo.find((data) => data.indexAddress.toLowerCase() === pool.address.toLowerCase()),
           }))
         )
       )
@@ -239,11 +239,12 @@ export const updateUserDeployerNftInfo = (account: string, chainId: ChainId) => 
     chainId,
     indexes.filter((index) => index.category >= 0)[0]?.deployerNft
   );
+
   dispatch(
     setIndexesUserData(
       indexes.map((pool) => ({
         pid: pool.pid,
-        deployerNftItems: deployerNftInfo.filter(
+        deployerNftItem: deployerNftInfo.find(
           (data) => data.indexAddress.toLowerCase() === pool.address.toLowerCase()
         ),
       }))

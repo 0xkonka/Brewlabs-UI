@@ -108,8 +108,8 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const makePendingText = () => {
     return (
       <div className="flex w-28 items-center justify-between rounded-lg border border-[#FFFFFF80] bg-[#B9B8B81A] px-2 py-1 text-sm">
-        <div className="text-[#FFFFFFBF]">{step === 2 ? "Pending" : step === 5 ? "Deployed" : "Deploying"}</div>
-        {step === 5 ? (
+        <div className="text-[#FFFFFFBF]">{step === 2 ? "Pending" : step === 4 ? "Deployed" : "Deploying"}</div>
+        {step === 4 ? (
           <div className="ml-3 scale-50 text-primary">{checkCircleSVG}</div>
         ) : (
           <div className="text-primary">{UploadSVG}</div>

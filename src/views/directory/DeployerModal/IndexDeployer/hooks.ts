@@ -14,7 +14,7 @@ export const useFactory = (chainId, performanceFee) => {
       let gasLimit = await factoryContract.estimateGas.createBrewlabsIndex(
         indexName,
         tokens,
-        commissionFee,
+        commissionFee * 100,
         commissionWallet,
         isPrivate,
         { value: performanceFee, gasPrice }
@@ -24,7 +24,7 @@ export const useFactory = (chainId, performanceFee) => {
       const tx = await factoryContract.createBrewlabsIndex(
         indexName,
         tokens,
-        commissionFee,
+        commissionFee * 100,
         commissionWallet,
         isPrivate,
         { value: performanceFee, gasPrice, gasLimit }

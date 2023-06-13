@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ethers } from "ethers";
 
-import IndexAbi from "config/abi/indexes/index.json";
+import IndexAbi from "config/abi/indexes/indexImpl.json";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import multicall from "utils/multicall";
@@ -44,6 +44,23 @@ export const fetchIndexesTotalStaking = async (chainId, indexes) => {
             }
 
             data.push({ pid: pool.pid, totalStaked });
+          }
+        }
+
+        const deployerNftIds = await multicall(
+          IndexAbi,
+          batch.filter((p) => p.category >= 0).map((pool) => ({ address: pool.address, name: "deployerNftId" })),
+          chainId
+        );
+        if (deployerNftIds) {
+          let idx = 0;
+          for (let pool of batch.filter((p) => p.category >= 0)) {
+            let index = data.findIndex((d) => d.pid === pool.pid);
+            if (index >= 0) {
+              data[index]["deployerNftId"] = deployerNftIds[idx][0].toNumber();
+            } else {
+              data.push({ pid: pool.pid, deployerNftId: deployerNftIds[idx][0].toNumber() });
+            }
           }
         }
       } catch (e) {

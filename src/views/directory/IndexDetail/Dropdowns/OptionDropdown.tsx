@@ -29,8 +29,10 @@ const OptionDropdown = ({ values, setValue, status }: { values: string[]; setVal
           return (
             <div
               key={i}
-              className="flex h-8 cursor-pointer items-center whitespace-nowrap overflow-hidden text-[0.8rem] text-ellipsis justify-center transition-all hover:bg-[#424444bf]"
-              onClick={() => setValue(i)}
+              className={`flex h-8 cursor-pointer items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap text-[0.8rem] transition-all hover:bg-[#424444bf] ${
+                status[i] ? "" : "hidden"
+              }`}
+              onClick={() => status[i] && setValue(i)}
             >
               {data}
             </div>

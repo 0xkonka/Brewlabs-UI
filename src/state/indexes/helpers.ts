@@ -7,7 +7,7 @@ export const transformUserData = (userData: any) => {
     allowance: userData?.allowance ?? false,
     ethBalance: userData?.ethBalance ? BigNumber.from(userData.ethBalance) : ethers.constants.Zero,
     indexNftItems: userData?.indexNftItems ?? [],
-    deployerNftItems: userData?.deployerNftItems ?? [],
+    deployerNftItem: userData?.deployerNftItem,
     stakedBalances: userData?.stakedBalances ? userData.stakedBalances.map((amount) => BigNumber.from(amount)) : [],
     stakedUsdAmount: userData?.stakedUsdAmount ?? "0",
     histories: userData?.histories ?? [],

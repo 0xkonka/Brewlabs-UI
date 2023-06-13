@@ -167,7 +167,7 @@ export const Adapters = {
   ],
   97: [
     {
-      address: "0xc42213ea7D836285e35413CCe8607f9416Ddb0a6",
+      address: "0xdd98619165ce0947E43DACE1baD5D391fD693C76",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
       meta: "v2",

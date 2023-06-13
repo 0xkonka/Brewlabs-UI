@@ -36,7 +36,6 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
   const { onStakeNft: onStakeNftOld } = useIndex(data.pid, data.address, data.performanceFee);
   const { onStakeNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
   const { onApprove } = useNftApprove(data.category === undefined ? data.nft : data.indexNft);
-  const { onApprove: onApproveDeployerNFT } = useNftApprove(data.category === undefined ? data.nft : data.deployerNft);
 
   useEffect(() => {
     if (!userData.indexNftItems?.length) return;
@@ -66,7 +65,11 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
   const handleStakeNft = async () => {
     setPending(true);
     try {
-      await onStakeNft(tokenId);
+      if (data.category >= 0) {
+        await onStakeNft(tokenId);
+      } else {
+        await onStakeNftOld(tokenId);
+      }
 
       toast.success(`Index NFT was unlocked`);
       setOpen(false);
@@ -165,7 +168,7 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                             </div>
                             <div className="text-xs text-[#FFFFFF80]">
                               $
-                              {selectedNft && tokenPrices
+                              {selectedNft && tokenPrices[index]
                                 ? formatAmount(
                                     +ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals) *
                                       tokenPrices[index]
