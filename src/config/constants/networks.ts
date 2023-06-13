@@ -23,9 +23,9 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.CRONOS,
     ChainId.BRISE,
   ],
-  indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET],
-  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET],
-  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON],
+  indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
@@ -45,7 +45,6 @@ export const CHAIN_KEYS = {
   [ChainId.AVALANCHE]: "avalanchec",
   [ChainId.CRONOS]: "cronos",
   [ChainId.BRISE]: "brise",
-  [ChainId.ARBITRUM]: "arbitrum"
 };
 
 export const EXPLORER_NAMES = {
@@ -59,7 +58,6 @@ export const EXPLORER_NAMES = {
   [ChainId.AVALANCHE]: "Snowtrace",
   [ChainId.CRONOS]: "CronoScan",
   [ChainId.BRISE]: "BriseScan",
-  [ChainId.ARBITRUM]: "ArbiScan"
 };
 
 export const EXPLORER_URLS = {
@@ -67,6 +65,7 @@ export const EXPLORER_URLS = {
   [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
   [ChainId.POLYGON]: "https://polygonscan.com",
+  [ChainId.FANTOM]: "https://ftmscan.com"
 };
 
 export const EXPLORER_API_URLS = {
@@ -74,6 +73,7 @@ export const EXPLORER_API_URLS = {
   [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
   [ChainId.BSC_TESTNET]: "https://api.bscscan.com/api",
   [ChainId.POLYGON]: "https://api.polygonscan.com/api",
+  [ChainId.FANTOM]: "https://api.ftmscan.com/api"
 };
 
 export const EXPLORER_API_KEYS = {
@@ -81,6 +81,7 @@ export const EXPLORER_API_KEYS = {
   [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.BSC_TESTNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.POLYGON]: "F2KCC1VEPQC23GBVKATATP1V3ZQIC31D7Z",
+  [ChainId.FANTOM]: "BFCVDJ6EW9GQHGNDEUMDSM3HU6KACMWPPC"
 };
 
 export const CHAIN_LABLES = {

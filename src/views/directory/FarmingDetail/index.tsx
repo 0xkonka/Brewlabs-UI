@@ -39,9 +39,10 @@ import StakingModal from "./Modals/StakingModal";
 import useFarm from "./hooks/useFarm";
 import { BASE_URL } from "config";
 import useFarmImpl from "./hooks/useFarmImpl";
+import { useRouter } from "next/router";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data } = detailDatas;
+  const { data } = detailDatas;
   const dispatch = useAppDispatch();
 
   const { userData: accountData, token, quoteToken, earningToken, reflectionToken } = data;
@@ -51,6 +52,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
 
+  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
@@ -224,7 +226,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   return (
     <AnimatePresence exitBeforeEnter>
-      {open && (
+      {
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -258,7 +260,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/farms")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -271,7 +273,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div className="flex w-[160px] flex-col">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/farms")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -786,7 +788,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
             )}
           </div>
         </motion.div>
-      )}
+      }
     </AnimatePresence>
   );
 };
