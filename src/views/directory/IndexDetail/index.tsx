@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { useAccount } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import styled from "styled-components";
 
 import "react-tooltip/dist/react-tooltip.css";
@@ -32,7 +32,8 @@ import {
   setIndexesPublicData,
   updateNftAllowance,
   updateUserBalance,
-  updateUserNftInfo,
+  updateUserDeployerNftInfo,
+  updateUserIndexNftInfo,
   updateUserStakings,
 } from "state/indexes";
 import { formatDollar, getIndexName, numberWithCommas } from "utils/functions";
@@ -50,8 +51,18 @@ import EnterExitModal from "./Modals/EnterExitModal";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
+import useIndexImpl from "./hooks/useIndexImpl";
+import { getErc721Contract } from "utils/contractHelpers";
+import useNftApprove from "./hooks/useNftApprove";
 
 const aprTexts = ["24hrs", "7D", "30D"];
+const availableActions = [
+  "Mint Index NFT",
+  "Add Index NFT",
+  "Mint Deployer NFT",
+  "Stake Deployer NFT",
+  "Unstake Deployer NFT",
+];
 
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -68,26 +79,24 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
+  const { data: signer } = useSigner();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
   const { tokenPrices } = useContext(TokenPriceContext);
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
 
-  const { onMintNft } = useIndex(data.pid, data.address, data.performanceFee);
+  const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
+  const { onApprove: onApproveNft } = useNftApprove(data.category >= 0 ? data.deployerNft : data.nft);
+  const { onMintNft, onMintDeployerNft, onStakeDeployerNft, onUnstakeDeployerNft } = useIndexImpl(
+    data.pid,
+    data.address,
+    data.performanceFee
+  );
 
   useEffect(() => {
     const fetchFeeHistoriesAsync = async () => {
       const { performanceFees, commissions } = await fetchIndexFeeHistories(data);
-
-      dispatch(
-        setIndexesPublicData([
-          {
-            pid: data.pid,
-            performanceFees,
-            commissions,
-          },
-        ])
-      );
+      dispatch(setIndexesPublicData([{ pid: data.pid, performanceFees, commissions }]));
     };
 
     fetchFeeHistoriesAsync();
@@ -98,7 +107,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       dispatch(updateNftAllowance(data.pid, address, data.chainId));
       dispatch(updateUserStakings(data.pid, address, data.chainId));
       dispatch(updateUserBalance(address, data.chainId));
-      dispatch(updateUserNftInfo(address, data.chainId));
+      dispatch(updateUserIndexNftInfo(address, data.chainId));
+      dispatch(updateUserDeployerNftInfo(address, data.chainId));
 
       dispatch(fetchIndexUserHistoryDataAsync(data.pid, address));
     }
@@ -181,11 +191,66 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const handleMintNft = async () => {
+    if (pending) return;
+
     setPending(true);
     try {
-      await onMintNft();
+      if (data.category >= 0) {
+        await onMintNft();
+      } else {
+        await onMintNftOld();
+      }
 
       toast.success("Index NFT was mint");
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleMintDeployerNft = async () => {
+    if (pending) return;
+
+    setPending(true);
+    try {
+      await onMintDeployerNft();
+      toast.success("Deployer NFT was mint");
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleStakeDeployerNft = async () => {
+    if (pending) return;
+
+    setPending(true);
+    try {
+      // check allowance & approve
+      const deployerNft = getErc721Contract(data.chainId, data.deployerNft);
+      let allowance = await deployerNft.isApprovedForAll(address, data.address);
+      if (!allowance) {
+        await onApproveNft(data.address);
+      }
+
+      await onStakeDeployerNft();
+      toast.success("Deployer NFT was unstaked");
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+    }
+    setPending(false);
+  };
+
+  const handleUnstakeDeployerNft = async () => {
+    if (pending) return;
+
+    setPending(true);
+    try {
+      await onUnstakeDeployerNft();
+      toast.success("Deployer NFT was unstaked");
     } catch (e) {
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
@@ -199,6 +264,27 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       setIsCopied(false);
     }, 1000);
     navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
+  };
+
+  const handleProcessAction = (index) => {
+    switch (index) {
+      case 0:
+        handleMintNft();
+        break;
+      case 1:
+        setAddNFTModalOpen(true);
+        break;
+      case 2:
+        handleMintDeployerNft();
+        break;
+      case 3:
+        handleStakeDeployerNft();
+        break;
+      case 4:
+        handleUnstakeDeployerNft();
+        break;
+      default:
+    }
   };
 
   return (
@@ -264,7 +350,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div> */}
                         </StyledButton>
                         <div className="mt-2" />
-                        <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
+                        <OptionDropdown
+                          values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
+                          setValue={handleProcessAction}
+                        />
                       </div>
                     </div>
                   </div>
@@ -314,7 +403,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </StyledButton>
                       <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
                       <div className="hidden xl:block">
-                        <OptionDropdown handleMintNft={handleMintNft} setAddNFTModalOpen={setAddNFTModalOpen} />
+                        <OptionDropdown
+                          values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
+                          setValue={handleProcessAction}
+                        />
                       </div>
                       <a
                         className=" ml-0 h-[32px] w-[140px] xl:ml-4 "

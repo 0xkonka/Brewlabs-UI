@@ -39,7 +39,6 @@ import {
   getPancakeMasterChefAddress,
   getExternalMasterChefAddress,
   getBrewlabsAggregationRouterAddress,
-  getBrewlabsRouterAddress,
   getBrewlabsFeeManagerAddress,
   getFarmFactoryAddress,
   getIndexFactoryAddress,

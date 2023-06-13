@@ -20,9 +20,11 @@ import { formatAmount } from "utils/formatApy";
 import { getIndexName, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
+import useIndex from "../hooks/useIndex";
+import useIndexImpl from "../hooks/useIndexImpl";
+
 import StyledButton from "../../StyledButton";
 import StyledSlider from "./StyledSlider";
-import useIndex from "../hooks/useIndex";
 
 const EnterExitModal = ({
   open,
@@ -44,7 +46,12 @@ const EnterExitModal = ({
   const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(Math.floor(100 / data.numTokens)));
 
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { onZapIn, onZapOut, onClaim } = useIndex(data.pid, data.address, data.performanceFee);
+  const {
+    onZapIn: onZapInOld,
+    onZapOut: onZapOutOld,
+    onClaim: onClaimOld,
+  } = useIndex(data.pid, data.address, data.performanceFee);
+  const { onZapIn, onZapOut, onClaim } = useIndexImpl(data.pid, data.address, data.performanceFee);
 
   const ethbalance = ethers.utils.formatEther(userData.ethBalance);
   const stakedBalances = userData.stakedBalances?.length
@@ -153,7 +160,11 @@ const EnterExitModal = ({
 
     setPending(true);
     try {
-      await onZapIn(amount, [percent, ...percents]);
+      if (data.category >= 0) {
+        await onZapIn(ethers.constants.AddressZero, amount, [percent, ...percents]);
+      } else {
+        await onZapInOld(amount, [percent, ...percents]);
+      }
 
       toast.success(`Zapped in successfully`);
       setOpen(false);
@@ -167,7 +178,11 @@ const EnterExitModal = ({
   const handleZapOut = async () => {
     setPending(true);
     try {
-      await onZapOut();
+      if (data.category >= 0) {
+        await onZapOut(ethers.constants.AddressZero);
+      } else {
+        await onZapOutOld();
+      }
 
       toast.success(`Zapped out successfully`);
       setOpen(false);
@@ -181,7 +196,11 @@ const EnterExitModal = ({
   const handleClaimTokens = async () => {
     setPending(true);
     try {
-      await onClaim(percent);
+      if (data.category >= 0) {
+        await onClaim(percent);
+      } else {
+        await onClaimOld(percent);
+      }
 
       toast.success(`Claimed ${percent}% tokens`);
       setOpen(false);

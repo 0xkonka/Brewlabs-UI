@@ -3,8 +3,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 
-const OptionDropdown = ({ handleMintNft, setAddNFTModalOpen }: { handleMintNft: any; setAddNFTModalOpen: any }) => {
-  const data = ["Mint Index NFT", "Add Index NFT"];
+const OptionDropdown = ({ values, setValue, status }: { values: string[]; setValue: any; status?: any[] }) => {
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
 
@@ -26,12 +25,12 @@ const OptionDropdown = ({ handleMintNft, setAddNFTModalOpen }: { handleMintNft: 
       <div>Index Options</div>
       <div>{!open ? <ChevronDownIcon className={"h-3"} /> : <ChevronUpIcon className={"h-3 "} />}</div>
       <DropDownBody className={"absolute transition-all"} open={open}>
-        {data.map((data, i) => {
+        {values.map((data, i) => {
           return (
             <div
               key={i}
-              className="flex h-8 cursor-pointer items-center justify-center transition-all hover:bg-[#424444bf]"
-              onClick={() => (i === 0 ? handleMintNft() : setAddNFTModalOpen(true))}
+              className="flex h-8 cursor-pointer items-center whitespace-nowrap overflow-hidden text-[0.8rem] text-ellipsis justify-center transition-all hover:bg-[#424444bf]"
+              onClick={() => setValue(i)}
             >
               {data}
             </div>
@@ -55,7 +54,7 @@ const StyledDropDown = styled.div<{ open: boolean }>`
 `;
 
 const DropDownBody = styled.div<{ open: boolean }>`
-  height: ${({ open }) => (open ? "65px" : 0)};
+  height: ${({ open }) => (open ? "auto" : 0)};
   overflow: hidden;
   background: rgb(46, 47, 56);
   border-bottom-left-radius: 6px;

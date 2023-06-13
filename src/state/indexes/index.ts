@@ -201,7 +201,7 @@ export const updateUserBalance = (account: string, chainId: ChainId) => async (d
   dispatch(setIndexesUserData(indexes.map((pool) => ({ pid: pool.pid, ethBalance: ethBalance.toString() }))));
 };
 
-export const updateUserNftInfo = (account: string, chainId: ChainId) => async (dispatch, getState) => {
+export const updateUserIndexNftInfo = (account: string, chainId: ChainId) => async (dispatch, getState) => {
   const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
   if (indexes.length === 0) return;
 
@@ -228,6 +228,11 @@ export const updateUserNftInfo = (account: string, chainId: ChainId) => async (d
       }))
     )
   );
+};
+
+export const updateUserDeployerNftInfo = (account: string, chainId: ChainId) => async (dispatch, getState) => {
+  const indexes = getState().indexes.data.filter((p) => p.chainId === chainId);
+  if (indexes.length === 0) return;
 
   const deployerNftInfo = await fetchUserDeployerNftData(
     account,
