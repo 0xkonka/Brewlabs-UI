@@ -188,7 +188,6 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await mintNft(indexContract, gasPrice, performanceFee);
 
-    dispatch(fetchIndexPublicDataAsync(pid));
     dispatch(updateUserStakings(pid, account, chainId));
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserIndexNftInfo(account, chainId));
@@ -200,7 +199,6 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
       const receipt = await stakeNft(indexContract, tokenId, gasPrice, performanceFee);
 
-      dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       dispatch(updateUserIndexNftInfo(account, chainId));
@@ -213,7 +211,6 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await mintDeployerNft(indexContract, gasPrice, performanceFee);
 
-    dispatch(fetchIndexPublicDataAsync(pid));
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
     return receipt;
@@ -223,7 +220,6 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await stakeDeployerNft(indexContract, gasPrice, performanceFee);
 
-    dispatch(fetchIndexPublicDataAsync(pid));
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
     return receipt;
@@ -233,7 +229,6 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await unstakeDeployerNft(indexContract, gasPrice, performanceFee);
 
-    dispatch(fetchIndexPublicDataAsync(pid));
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
     return receipt;
