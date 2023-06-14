@@ -114,8 +114,8 @@ const PoolCard = ({
               ) : (
                 ""
               )}
-              {data.type === Category.INDEXES && (data.pid === 3 || data.pid === 5) && (
-                <span className="text-warning">{data.pid === 3 ? "Attention needed" : "Migrated"}</span>
+              {data.type === Category.INDEXES && data.category === undefined && (
+                <span className="text-warning">Migrated</span>
               )}
             </div>
           </div>
