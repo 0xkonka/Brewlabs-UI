@@ -305,7 +305,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
                     <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
                       <StyledButton
-                        className="relative mb-2 mr-0 h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white  hover:text-white lg:mb-0 lg:mr-5"
+                        className="mb-2 mr-0 !h-8 !w-[140px] border border-primary bg-[#B9B8B81A] font-roboto font-bold text-primary hover:border-white hover:text-white lg:mb-0 lg:mr-5"
                         type={"default"}
                         onClick={onShareFarm}
                       >
