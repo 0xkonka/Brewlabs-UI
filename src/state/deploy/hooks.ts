@@ -36,8 +36,8 @@ export const usePollIndexFactoryData = () => {
   }, [dispatch]);
 };
 
-export const useFarmFactories = (chainId) =>
+export const useFarmFactory = (chainId) =>
   useSelector((state: State) => state.deploy.farm.find((data) => data.chainId === chainId));
 
-export const useIndexFactories = (chainId) =>
+export const useIndexFactory = (chainId) =>
   useSelector((state: State) => state.deploy.indexes.find((data) => data.chainId === chainId));

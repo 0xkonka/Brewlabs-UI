@@ -25,7 +25,8 @@ const initialState = {
     address: getIndexFactoryAddress(chainId),
     payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
     serviceFee: "0",
-    feeLimit: 10
+    depositFeeLimit: 0.25,
+    commissionFeeLimit: 1,
   })),
 };
 

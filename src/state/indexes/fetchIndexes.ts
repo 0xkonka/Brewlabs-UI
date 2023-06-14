@@ -47,22 +47,35 @@ export const fetchIndexesTotalStaking = async (chainId, indexes) => {
           }
         }
 
-        const deployerNftIds = await multicall(
-          IndexAbi,
-          batch.filter((p) => p.category >= 0).map((pool) => ({ address: pool.address, name: "deployerNftId" })),
-          chainId
-        );
-        if (deployerNftIds) {
-          let idx = 0;
-          for (let pool of batch.filter((p) => p.category >= 0)) {
-            let index = data.findIndex((d) => d.pid === pool.pid);
-            if (index >= 0) {
-              data[index]["deployerNftId"] = deployerNftIds[idx][0].toNumber();
-            } else {
-              data.push({ pid: pool.pid, deployerNftId: deployerNftIds[idx][0].toNumber() });
-            }
-          }
-        }
+        // calls = [];
+        // for (let pool of batch.filter((p) => p.category >= 0)) {
+        //   calls.push(
+        //     { address: pool.address, name: "totalCommissions" },
+        //     { address: pool.address, name: "getPendingCommissions" }
+        //   );
+        // }
+        // const commissions = await multicall(IndexAbi, calls, chainId);
+        // if (commissions) {
+        //   let idx = 0;
+        //   for (let pool of batch.filter((p) => p.category >= 0)) {
+        //     let index = data.findIndex((d) => d.pid === pool.pid);
+        //     let pendingCommissions = [];
+        //     for (let i = 0; i < pool.numTokens; i++) {
+        //       pendingCommissions.push(ethers.utils.formatUnits(totalStakes[2 * idx + 1][i], pool.tokens[i].decimals));
+        //     }
+        //     if (index >= 0) {
+        //       data[index]["totalCommissions"] = ethers.utils.parseEther(commissions[2 * idx][0]);
+        //       data[index]["pendingCommissions"] = pendingCommissions;
+        //     } else {
+        //       data.push({
+        //         pid: pool.pid,
+        //         totalCommissions: ethers.utils.parseEther(commissions[2 * idx][0]),
+        //         pendingCommissions,
+        //       });
+        //     }
+        //     idx++;
+        //   }
+        // }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e);

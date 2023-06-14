@@ -12,7 +12,8 @@ interface IndexConfigBaseProps {
   deployerNft?: string;
   deployerNftId?: number;
   numTokens: number;
-  fee: string;
+  depositFee: string;
+  commissionFee: string;
   createdAt: string;
   sortOrder?: number;
   version?: Version;
@@ -20,8 +21,8 @@ interface IndexConfigBaseProps {
   isServiceFee?: boolean;
   isFinished?: boolean;
   visible?: boolean;
-  deployer?: string;
   owner?: string;
+  deployer?: string;
   feeWallet?: string;
 }
 

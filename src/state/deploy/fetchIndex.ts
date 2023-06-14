@@ -18,7 +18,13 @@ export const fetchIndexFactoryData = async (chainId: ChainId) => {
     },
     {
       address: getIndexFactoryAddress(chainId),
-      name: "feeLimit",
+      name: "feeLimits",
+      params: [0],
+    },
+    {
+      address: getIndexFactoryAddress(chainId),
+      name: "feeLimits",
+      params: [1],
     },
     {
       address: getIndexFactoryAddress(chainId),
@@ -31,7 +37,8 @@ export const fetchIndexFactoryData = async (chainId: ChainId) => {
     chainId,
     payingToken: serializeToken(Object.values(tokens[chainId]).find((t: any) => t.address === result[0][0])),
     serviceFee: result[1][0].toString(),
-    feeLimit: result[2][0].toNumber() / 100,
-    brewsFee: result[3][0].toNumber() / 100,
+    depositFeeLimit: result[2][0].toNumber() / 100,
+    commissionFeeLimit: result[3][0].toNumber() / 100,
+    brewsFee: result[4][0].toNumber() / 100,
   };
 };

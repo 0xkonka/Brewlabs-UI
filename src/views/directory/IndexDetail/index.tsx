@@ -18,6 +18,7 @@ import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
 import { BASE_URL } from "config";
+import IndexImplAbi from "config/abi/indexes/indexImpl.json";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
@@ -54,6 +55,7 @@ import EnterExitModal from "./Modals/EnterExitModal";
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
+import { useIndexFactory } from "state/deploy/hooks";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 const availableActions = [
@@ -95,6 +97,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     data.feeWallet?.toLowerCase() === address?.toLowerCase();
   const isStakable = userData?.deployerNftItem?.tokenId;
 
+  const factory = useIndexFactory(chainId);
   const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
   const { onApprove: onApproveNft } = useNftApprove(data.category >= 0 ? data.deployerNft : data.nft);
   const { onMintNft, onMintDeployerNft, onStakeDeployerNft, onUnstakeDeployerNft } = useIndexImpl(
@@ -225,7 +228,19 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
 
     setPending(true);
     try {
-      await onMintDeployerNft();
+      const tx = await onMintDeployerNft();
+      
+      const iface = new ethers.utils.Interface(IndexImplAbi);
+      for (let i = 0; i < tx.logs.length; i++) {
+        try {
+          const log = iface.parseLog(tx.logs[i]);
+          if (log.name === "DeployerNftMinted") {
+            console.log('deployerNftId', log.args.tokenId)
+            dispatch(setIndexesPublicData([{ pid: data.pid, deployerNftId: log.args.tokenId }]));
+            break;
+          }
+        } catch (e) {}
+      }
       toast.success("Deployer NFT was mint");
     } catch (e) {
       console.log(e);
@@ -247,6 +262,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
       }
 
       await onStakeDeployerNft();
+      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: address }]));
+
       toast.success("Deployer NFT was unstaked");
     } catch (e) {
       console.log(e);
@@ -261,6 +278,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(true);
     try {
       await onUnstakeDeployerNft();
+      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: ethers.constants.AddressZero }]));
       toast.success("Deployer NFT was unstaked");
     } catch (e) {
       console.log(e);
@@ -497,7 +515,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="text-xs leading-none text-[#FFFFFF80]">
                         <div className="relative mt-1 flex">
-                          Deposit Fee {data.fee}% {getNativeSybmol(data.chainId)}
+                          Deposit Fee {data.category >= 0 ? data.depositFee + factory?.brewsFee ?? 0 : data.fee}%{" "}
+                          {getNativeSybmol(data.chainId)}
                           <ReactTooltip
                             anchorId={"Depositfees"}
                             place="right"
@@ -508,7 +527,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         </div>
                         <div className="relative mt-1 flex">
-                          Withdrawal Fee 0.00% / In Profit Withdrawal Fee {data.fee ?? ""}% of Profit
+                          Withdrawal Fee 0.00% / In Profit Withdrawal Fee{" "}
+                          {data.category >= 0 ? data.commissionFee + factory?.brewsFee ?? 0 : data.fee}% of Profit
                           <ReactTooltip
                             anchorId={"Withdrawfees"}
                             place="right"

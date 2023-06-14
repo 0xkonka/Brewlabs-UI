@@ -15,24 +15,25 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenApprove } from "@hooks/useApprove";
 import { useERC20 } from "@hooks/useContract";
 import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
-import { useIndexFactories } from "state/deploy/hooks";
+import { useIndexFactory } from "state/deploy/hooks";
 import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
 
-import { useFactory as useIndexFactory } from "./hooks";
+import { useFactory } from "./hooks";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
   const { pending, setPending }: any = useContext(DashboardContext);
 
-  const factory = useIndexFactories(chainId);
-  const { onCreate } = useIndexFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const factory = useIndexFactory(chainId);
+  const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
   const { onApprove } = useTokenApprove();
 
   const [name, setName] = useState("");
   const [indexAddr, setIndexAddr] = useState("");
+  const [depositFee, setDepositFee] = useState(0);
   const [commissionFee, setCommissionFee] = useState(0);
   const [commissionWallet, setCommissionWallet] = useState<string | undefined>();
   const [visibleType, setVisibleType] = useState(true);
@@ -79,7 +80,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       const tx = await onCreate(
         name,
         tokens.map((t) => t.address),
-        commissionFee,
+        [depositFee, commissionFee],
         commissionWallet ?? account,
         !visibleType
       );
@@ -143,20 +144,46 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           <div className="ml-4 mt-3.5">
             <div className="flex w-full items-center justify-between">
               <div className="mb-1">Set commission wallet</div>
-              <div className="flex items-center">
-                <div>Set commission fee</div>
-                <div
-                  className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                  onClick={() => setCommissionFee(Math.min(factory ? factory.feeLimit : 2, commissionFee + 0.1))}
-                >
-                  {PlusSVG}
+              <div>
+                <div className="flex items-center justify-between">
+                  <div>Set deposit fee</div>
+                  <div className="flex items-center">
+                    <div
+                      className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
+                      onClick={() =>
+                        setDepositFee(Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01))
+                      }
+                    >
+                      {PlusSVG}
+                    </div>
+                    <div>{depositFee.toFixed(2)}%</div>
+                    <div
+                      className="ml-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
+                      onClick={() => setDepositFee(Math.max(0, depositFee - 0.01))}
+                    >
+                      {MinusSVG}
+                    </div>
+                  </div>
                 </div>
-                <div>{commissionFee.toFixed(2)}%</div>
-                <div
-                  className="ml-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                  onClick={() => setCommissionFee(Math.max(0, commissionFee - 0.1))}
-                >
-                  {MinusSVG}
+                <div className="flex items-center">
+                  <div>Set commission fee</div>
+                  <div className="flex items-center">
+                    <div
+                      className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
+                      onClick={() =>
+                        setCommissionFee(Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01))
+                      }
+                    >
+                      {PlusSVG}
+                    </div>
+                    <div>{commissionFee.toFixed(2)}%</div>
+                    <div
+                      className="ml-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
+                      onClick={() => setCommissionFee(Math.max(0, commissionFee - 0.01))}
+                    >
+                      {MinusSVG}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

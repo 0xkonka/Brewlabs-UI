@@ -6,6 +6,7 @@ export interface DeployConfig {
   address: string;
   payingToken: SerializedToken;
   serviceFee: string;
-  feeLimit?: number;
+  depositFeeLimit?: number;
+  commissionFeeLimit?: number;
   brewsFee?: number;
 }

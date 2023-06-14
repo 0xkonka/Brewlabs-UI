@@ -39,7 +39,7 @@ const SelectToken = ({ setStep, tokens, setTokens }) => {
           <div className="mb-1">2. Select token:</div>
 
           {tokens.map((token, i) => (
-            <div className="my-2">
+            <div className="my-2" key={i}>
               <TokenSelect selectedCurrency={token} setSelectedCurrency={(c) => handleTokenSelected(i, c)} />
             </div>
           ))}

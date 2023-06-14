@@ -15,7 +15,7 @@ import { useTokenApprove } from "hooks/useApprove";
 import useTotalSupply from "hooks/useTotalSupply";
 import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
-import { useFarmFactories } from "state/deploy/hooks";
+import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
 import { calculateGasMargin, isAddress } from "utils";
 import { getContract } from "utils/contractHelpers";
@@ -28,7 +28,7 @@ import LoadingText from "@components/LoadingText";
 
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
-import { useFactory as useFarmFactory } from "./hooks";
+import { useFactory } from "./hooks";
 
 const DURATIONS = [365, 180, 90, 60];
 
@@ -39,8 +39,8 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
   const { pending, setPending, tokens }: any = useContext(DashboardContext);
 
-  const factory = useFarmFactories(chainId);
-  const { onCreate } = useFarmFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const factory = useFarmFactory(chainId);
+  const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
   const { onApprove } = useTokenApprove();
 
   const [duration, setDuration] = useState(0);

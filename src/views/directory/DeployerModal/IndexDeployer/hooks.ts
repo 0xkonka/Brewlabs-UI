@@ -9,12 +9,12 @@ export const useFactory = (chainId, performanceFee) => {
   const factoryContract = useIndexFactoryContract(chainId);
 
   const handleCreate = useCallback(
-    async (indexName: string, tokens: string[], commissionFee: number, commissionWallet: string, isPrivate = true) => {
+    async (indexName: string, tokens: string[], fees: number[], commissionWallet: string, isPrivate = true) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
       let gasLimit = await factoryContract.estimateGas.createBrewlabsIndex(
         indexName,
         tokens,
-        commissionFee * 100,
+        fees.map(fee => fee * 100),
         commissionWallet,
         isPrivate,
         { value: performanceFee, gasPrice }
@@ -24,7 +24,7 @@ export const useFactory = (chainId, performanceFee) => {
       const tx = await factoryContract.createBrewlabsIndex(
         indexName,
         tokens,
-        commissionFee * 100,
+        fees.map(fee => fee * 100),
         commissionWallet,
         isPrivate,
         { value: performanceFee, gasPrice, gasLimit }
