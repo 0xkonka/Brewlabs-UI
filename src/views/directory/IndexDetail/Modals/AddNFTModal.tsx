@@ -2,27 +2,29 @@
 import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
+import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
+import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
 
 import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
+import { updateNftAllowance } from "state/indexes";
 import { DeserializedIndex } from "state/indexes/types";
 import { getIndexName } from "utils/functions";
 import { formatAmount } from "utils/formatApy";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import useIndex from "../hooks/useIndex";
-import StyledButton from "../../StyledButton";
 import useNftApprove from "../hooks/useNftApprove";
-import { updateNftAllowance } from "state/indexes";
-import { useAccount } from "wagmi";
-import { ethers } from "ethers";
 import useIndexImpl from "../hooks/useIndexImpl";
+
+import StyledButton from "../../StyledButton";
 
 const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
   const dispatch = useAppDispatch();
@@ -195,6 +197,18 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                     onClick={userData?.allowance ? handleStakeNft : handleApproveNft}
                   >
                     {userData?.allowance ? `Add Index NFT` : "Approve Index NFT"}
+                    {pending && (
+                      <div className="absolute right-2 top-0 flex h-full items-center">
+                        <Oval
+                          width={21}
+                          height={21}
+                          color={"white"}
+                          secondaryColor="black"
+                          strokeWidth={3}
+                          strokeWidthSecondary={3}
+                        />
+                      </div>
+                    )}
                   </StyledButton>
                 </div>
               </div>

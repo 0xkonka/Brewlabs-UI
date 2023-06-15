@@ -140,6 +140,15 @@ const unstakeDeployerNft = async (indexContract, gasPrice, performanceFee = "0")
   return receipt;
 };
 
+const updateFeeWallet = async (indexContract, wallet, gasPrice, performanceFee = "0") => {
+  let gasLimit = await indexContract.estimateGas.setFeeWallet(wallet, { value: performanceFee });
+  gasLimit = calculateGasMargin(gasLimit);
+
+  const tx = await indexContract.setFeeWallet(wallet, { gasPrice, gasLimit, value: performanceFee });
+  const receipt = await tx.wait();
+  return receipt;
+};
+
 const useIndexImpl = (pid, contractAddress, performanceFee) => {
   const dispatch = useAppDispatch();
   const { account, chainId, library } = useActiveWeb3React();
@@ -234,6 +243,18 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     return receipt;
   }, [account, chainId, library, dispatch, indexContract, pid, performanceFee]);
 
+  const handleUpdateFeeAddresss = useCallback(
+    async (wallet) => {
+      const gasPrice = await getNetworkGasPrice(library, chainId);
+      const receipt = await updateFeeWallet(indexContract, wallet, gasPrice, performanceFee);
+
+      dispatch(updateUserBalance(account, chainId));
+      dispatch(updateUserDeployerNftInfo(account, chainId));
+      return receipt;
+    },
+    [account, chainId, library, dispatch, indexContract, pid, performanceFee]
+  );
+
   return {
     onZapIn: handleZapIn,
     onClaim: handleClaim,
@@ -243,6 +264,7 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     onMintDeployerNft: handleMintDeployerNft,
     onStakeDeployerNft: handleStaketDeployerNft,
     onUnstakeDeployerNft: handleUnstaketDeployerNft,
+    onUpdateFeeAddress: handleUpdateFeeAddresss,
   };
 };
 

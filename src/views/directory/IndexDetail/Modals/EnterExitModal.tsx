@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 
@@ -41,6 +42,7 @@ const EnterExitModal = ({
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
+  const [isZapOut, setZapout] = useState(false);
 
   const [percent, setPercent] = useState(100 - (data.numTokens - 1) * Math.floor(100 / data.numTokens));
   const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(Math.floor(100 / data.numTokens)));
@@ -177,6 +179,7 @@ const EnterExitModal = ({
 
   const handleZapOut = async () => {
     setPending(true);
+    setZapout(true);
     try {
       if (data.category >= 0) {
         await onZapOut(ethers.constants.AddressZero);
@@ -190,6 +193,7 @@ const EnterExitModal = ({
       console.log(e);
       handleWalletError(e, showError, getNativeSybmol(data.chainId));
     }
+    setZapout(false);
     setPending(false);
   };
 
@@ -378,6 +382,18 @@ const EnterExitModal = ({
                   <div className="h-12">
                     <StyledButton type="quaternary" onClick={handleZapIn} disabled={!amount || pending || insufficient}>
                       {insufficient ? `Insufficient balance` : `Enter ${getIndexName(tokens)} Index`}
+                      {pending && (
+                        <div className="absolute right-2 top-0 flex h-full items-center">
+                          <Oval
+                            width={21}
+                            height={21}
+                            color={"white"}
+                            secondaryColor="black"
+                            strokeWidth={3}
+                            strokeWidthSecondary={3}
+                          />
+                        </div>
+                      )}
                     </StyledButton>
                   </div>
                 ) : (
@@ -388,6 +404,18 @@ const EnterExitModal = ({
                       disabled={pending || !percent || +userData.stakedUsdAmount <= 0}
                     >
                       Exit {renderProfit()} Profit
+                      {pending && !isZapOut && (
+                        <div className="absolute right-2 top-0 flex h-full items-center">
+                          <Oval
+                            width={21}
+                            height={21}
+                            color={"white"}
+                            secondaryColor="black"
+                            strokeWidth={3}
+                            strokeWidthSecondary={3}
+                          />
+                        </div>
+                      )}
                     </StyledButton>
                     <div className="mx-1" />
                     <StyledButton
@@ -396,6 +424,18 @@ const EnterExitModal = ({
                       disabled={pending || +userData.stakedUsdAmount <= 0}
                     >
                       Zap Out
+                      {pending && isZapOut && (
+                        <div className="absolute right-2 top-0 flex h-full items-center">
+                          <Oval
+                            width={21}
+                            height={21}
+                            color={"white"}
+                            secondaryColor="black"
+                            strokeWidth={3}
+                            strokeWidthSecondary={3}
+                          />
+                        </div>
+                      )}
                     </StyledButton>
                   </div>
                 )}

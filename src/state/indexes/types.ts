@@ -6,12 +6,14 @@ interface IndexConfigBaseProps {
   pid: number;
   chainId: ChainId;
   address: string;
+  name?: string;
   category?: number;
   nft?: string;
   indexNft?: string;
   deployerNft?: string;
   deployerNftId?: number;
   numTokens: number;
+  fee?: number;
   depositFee: string;
   commissionFee: string;
   createdAt: string;
@@ -63,6 +65,7 @@ export interface DeserializedIndex extends DeserializedIndexConfig {
     stakedBalances: BigNumber[];
     histories: IndexHistory[];
   };
+  tvl?: number;
   TVLData?: number[];
   performanceFees?: number[];
   commissions?: number[];

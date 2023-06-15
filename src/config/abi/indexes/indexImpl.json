@@ -136,18 +136,31 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256[2]",
-        "name": "fees",
-        "type": "uint256[2]"
-      },
-      {
-        "indexed": false,
         "internalType": "address",
         "name": "wallet",
         "type": "address"
       }
     ],
-    "name": "SetFeeSettings",
+    "name": "SetFeeWallet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee0",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee2",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetFees",
     "type": "event"
   },
   {
@@ -854,17 +867,30 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[2]",
-        "name": "_fees",
-        "type": "uint256[2]"
-      },
-      {
         "internalType": "address",
         "name": "_feeWallet",
         "type": "address"
       }
     ],
-    "name": "setFeeSettings",
+    "name": "setFeeWallet",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_depositfee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_commissionFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setFees",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"

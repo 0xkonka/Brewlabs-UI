@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useAccount } from "wagmi";
-import styled from "styled-components";
 
 import "react-tooltip/dist/react-tooltip.css";
 
@@ -18,7 +17,6 @@ import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
 import { BASE_URL } from "config";
-import IndexImplAbi from "config/abi/indexes/indexImpl.json";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
@@ -27,7 +25,9 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
 import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
+import { useIndexFactory } from "state/deploy/hooks";
 import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
+import { DeserializedIndex } from "state/indexes/types";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -37,7 +37,6 @@ import {
   updateUserIndexNftInfo,
   updateUserStakings,
 } from "state/indexes";
-import { getErc721Contract } from "utils/contractHelpers";
 import { formatDollar, getIndexName, numberWithCommas } from "utils/functions";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import getCurrencyId from "utils/getCurrencyId";
@@ -45,34 +44,31 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import useIndex from "./hooks/useIndex";
 import useIndexImpl from "./hooks/useIndexImpl";
-import useNftApprove from "./hooks/useNftApprove";
 
 import StyledButton from "../StyledButton";
 import DropDown from "./Dropdowns/Dropdown";
 import OptionDropdown from "./Dropdowns/OptionDropdown";
 import AddNFTModal from "./Modals/AddNFTModal";
 import EnterExitModal from "./Modals/EnterExitModal";
-import IndexLogo from "./IndexLogo";
-import StakingHistory from "./StakingHistory";
-import TotalStakedChart from "./TotalStakedChart";
 import UpdateFeeModal from "./Modals/UpdateFeeModal";
 import MintIndexOwnershipNFT from "./Modals/MintIndexOwnershipNFT";
 import StakeIndexOwnershipNFT from "./Modals/StakeIndexOwnershipNFT";
-import { useIndexFactory } from "state/deploy/hooks";
+
+import IndexLogo from "./IndexLogo";
+import StakingHistory from "./StakingHistory";
+import TotalStakedChart from "./TotalStakedChart";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 const availableActions = [
   "Mint Index NFT",
   "Add Index NFT",
-  "Mint Deployer NFT",
-  "Stake Deployer NFT",
-  "Unstake Deployer NFT",
+  "Update Fee Address",
+  "Mint Ownership NFT",
+  "Stake Ownership NFT",
+  "Unstake Ownership NFT",
 ];
-// const indexOptions =
-// data?.deployer === address.toLowerCase()
-//   ? ["Mint Index NFT", "Add Index NFT", "Update Fee Address", "Mint Ownership NFT", "Stake Ownership NFT"]
-//   : ["Mint Index NFT", "Add Index NFT"];
-const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
+
+const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex } }) => {
   const { data } = detailDatas;
   const { tokens, userData, priceHistories } = data;
 
@@ -82,15 +78,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [addNFTModalOpen, setAddNFTModalOpen] = useState(false);
   const [updateFeeOpen, setUpdateFeeOpen] = useState(false);
-  const [mintIndexNFTOpen, setMintIndexNFTOpen] = useState(false);
-  const [stakeIndexNFTOpen, setStakeIndexNFTOpen] = useState(false);
+  const [mintDeployerNftOpen, setMintDeployerNftOpen] = useState(false);
+  const [stakeDeployerNftOpen, setStakeDeployerNftOpen] = useState(false);
+  const [unstakeDeployerNftOpen, setUnstakeDeployerNftOpen] = useState(false);
 
   const [curType, setCurType] = useState("enter");
   const [curGraph, setCurGraph] = useState(2);
   const [curAPR, setCurAPR] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
 
-  const { address } = useAccount();
+  const { address: account } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -100,17 +97,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const isMintable =
     !data.deployerNftId &&
     !userData?.deployerNftItem?.tokenId &&
-    data.deployer?.toLowerCase() === address?.toLowerCase();
+    data.deployer?.toLowerCase() === account?.toLowerCase();
   const isUnstakable =
     data.deployerNftId &&
     !userData?.deployerNftItem?.tokenId &&
-    data.feeWallet?.toLowerCase() === address?.toLowerCase();
+    data.feeWallet?.toLowerCase() === account?.toLowerCase();
   const isStakable = userData?.deployerNftItem?.tokenId;
 
   const factory = useIndexFactory(chainId);
   const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
-  const { onApprove: onApproveNft } = useNftApprove(data.category >= 0 ? data.deployerNft : data.nft);
-  const { onMintNft, onMintDeployerNft, onStakeDeployerNft, onUnstakeDeployerNft } = useIndexImpl(
+  const { onMintNft, onUnstakeDeployerNft } = useIndexImpl(
     data.pid,
     data.address,
     data.performanceFee
@@ -126,16 +122,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   }, [data.pid]);
 
   useEffect(() => {
-    if (address) {
-      dispatch(updateNftAllowance(data.pid, address, data.chainId));
-      dispatch(updateUserStakings(data.pid, address, data.chainId));
-      dispatch(updateUserBalance(address, data.chainId));
-      dispatch(updateUserIndexNftInfo(address, data.chainId));
-      dispatch(updateUserDeployerNftInfo(address, data.chainId));
+    if (account) {
+      dispatch(updateNftAllowance(data.pid, account, data.chainId));
+      dispatch(updateUserStakings(data.pid, account, data.chainId));
+      dispatch(updateUserBalance(account, data.chainId));
+      dispatch(updateUserIndexNftInfo(account, data.chainId));
+      dispatch(updateUserDeployerNftInfo(account, data.chainId));
 
-      dispatch(fetchIndexUserHistoryDataAsync(data.pid, address));
+      dispatch(fetchIndexUserHistoryDataAsync(data.pid, account));
     }
-  }, [data.pid, address]);
+  }, [data.pid, account]);
 
   const graphData = () => {
     let _graphData;
@@ -176,7 +172,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const renderProfit = (isProfit = false) => {
     let profit = getProfit();
 
-    const profitChanged = (profit ? profit / userData.stakedUsdAmount : 0) * 100;
+    const profitChanged = (profit ? profit / +userData.stakedUsdAmount : 0) * 100;
     if (!userData?.stakedBalances?.length || !priceHistories?.length)
       return (
         <span className="mr-1 text-green">
@@ -233,55 +229,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(false);
   };
 
-  const handleMintDeployerNft = async () => {
-    if (pending) return;
-
-    setPending(true);
-    try {
-      const tx = await onMintDeployerNft();
-
-      const iface = new ethers.utils.Interface(IndexImplAbi);
-      for (let i = 0; i < tx.logs.length; i++) {
-        try {
-          const log = iface.parseLog(tx.logs[i]);
-          if (log.name === "DeployerNftMinted") {
-            console.log("deployerNftId", log.args.tokenId, log);
-            dispatch(setIndexesPublicData([{ pid: data.pid, deployerNftId: log.args.tokenId }]));
-            break;
-          }
-        } catch (e) {}
-      }
-      toast.success("Deployer NFT was mint");
-    } catch (e) {
-      console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
-    }
-    setPending(false);
-  };
-
-  const handleStakeDeployerNft = async () => {
-    if (pending) return;
-
-    setPending(true);
-    try {
-      // check allowance & approve
-      const deployerNft = getErc721Contract(data.chainId, data.deployerNft);
-      let allowance = await deployerNft.isApprovedForAll(address, data.address);
-      if (!allowance) {
-        await onApproveNft(data.address);
-      }
-
-      await onStakeDeployerNft();
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: address }]));
-
-      toast.success("Deployer NFT was unstaked");
-    } catch (e) {
-      console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
-    }
-    setPending(false);
-  };
-
   const handleUnstakeDeployerNft = async () => {
     if (pending) return;
 
@@ -317,10 +264,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
         setUpdateFeeOpen(true);
         break;
       case 3:
-        setMintIndexNFTOpen(true);
+        setMintDeployerNftOpen(true);
         break;
       case 4:
-        setStakeIndexNFTOpen(true);
+        setStakeDeployerNftOpen(true);
+        break;
+      case 5:
+        setUnstakeDeployerNftOpen(true);
         break;
       default:
     }
@@ -336,13 +286,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
           transition={{ duration: 0.3 }}
         >
           <div className="absolute left-0 top-0 max-h-screen w-full overflow-x-hidden overflow-y-scroll pb-[150px]">
-            {address && data && (
+            {account && data && (
               <EnterExitModal open={stakingModalOpen} setOpen={setStakingModalOpen} type={curType} data={data} />
             )}
             <AddNFTModal open={addNFTModalOpen} setOpen={setAddNFTModalOpen} data={data} />
-            <UpdateFeeModal open={updateFeeOpen} setOpen={setUpdateFeeOpen} name={getIndexName(tokens)} />
-            <MintIndexOwnershipNFT open={mintIndexNFTOpen} setOpen={setMintIndexNFTOpen} />
-            <StakeIndexOwnershipNFT open={stakeIndexNFTOpen} setOpen={setStakeIndexNFTOpen} />
+            <UpdateFeeModal open={updateFeeOpen} setOpen={setUpdateFeeOpen} data={data} />
+            <MintIndexOwnershipNFT open={mintDeployerNftOpen} setOpen={setMintDeployerNftOpen} data={data} />
+            <StakeIndexOwnershipNFT open={stakeDeployerNftOpen} setOpen={setStakeDeployerNftOpen} data={data} />
             <PageHeader
               title={
                 <div className="text-[40px]">
@@ -398,6 +348,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           status={[
                             true,
                             true,
+                            data.feeWallet?.toLowerCase() === account?.toLowerCase(),
                             isMintable && !pending,
                             isStakable && !pending,
                             isUnstakable && !pending,
@@ -458,6 +409,12 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           status={[
                             true,
                             true,
+                            true,
+                            true,
+                            true,
+                            true,
+                            true,
+                            data.feeWallet?.toLowerCase() === account?.toLowerCase(),
                             isMintable && !pending,
                             isStakable && !pending,
                             isUnstakable && !pending,
@@ -594,7 +551,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                   ethers.utils.formatUnits(userData.stakedBalances[index], token.decimals),
                                   4
                                 )}`
-                              ) : address ? (
+                              ) : account ? (
                                 <SkeletonComponent />
                               ) : (
                                 "0.00"
@@ -749,7 +706,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("enter");
                               }}
-                              disabled={pending || !address}
+                              disabled={pending || !account}
                             >
                               Enter {getIndexName(tokens)} Index
                             </StyledButton>
@@ -761,7 +718,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 setStakingModalOpen(true);
                                 setCurType("exit");
                               }}
-                              disabled={pending || !address || +userData.stakedUsdAmount <= 0}
+                              disabled={pending || !account || +userData.stakedUsdAmount <= 0}
                             >
                               Exit &nbsp;{renderProfit()} Profit
                             </StyledButton>

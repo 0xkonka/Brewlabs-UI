@@ -24,12 +24,12 @@ const OptionDropdown = ({ values, setValue, status }: { values: string[]; setVal
     >
       <div>Index Options</div>
       <div>{!open ? <ChevronDownIcon className={"h-3"} /> : <ChevronUpIcon className={"h-3 "} />}</div>
-      <DropDownBody className={"primary-shadow absolute transition-all"} open={open} length={values.length}>
+      <DropDownBody className={"primary-shadow absolute transition-all"} open={open}>
         {values.map((data, i) => {
           return (
             <div
               key={i}
-              className={`flex h-8 cursor-pointer items-center justify-center text-center transition-all hover:bg-[#424444bf] ${
+              className={`flex h-8 cursor-pointer items-center justify-center text-center text-xs transition-all hover:bg-[#424444bf] ${
                 status[i] ? "" : "hidden"
               }`}
               onClick={() => status[i] && setValue(i)}
@@ -53,8 +53,8 @@ const StyledDropDown = styled.div<{ open: boolean }>`
   padding: 0 8px 0 12px;
 `;
 
-const DropDownBody = styled.div<{ open: boolean; length: number }>`
-  height: ${({ open, length }) => (open ? `${32 * length}px` : 0)};
+const DropDownBody = styled.div<{ open: boolean }>`
+  height: ${({ open }) => (open ? `auto` : 0)};
   overflow: hidden;
   background: rgb(46, 47, 56);
   border-bottom-left-radius: 4px;

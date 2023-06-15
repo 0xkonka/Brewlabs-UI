@@ -11,9 +11,11 @@ import IndexDetail from "views/directory/IndexDetail";
 
 const Stables: NextPage = () => {
   const router = useRouter();
+
   const { id }: any = router.query;
   const { indexes } = useIndexes();
-  const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
+  const { tokenPrices } = useContext(TokenPriceContext);
+
   const allPools = [
     ...indexes.map((_index) => {
       let tvl = 0;
