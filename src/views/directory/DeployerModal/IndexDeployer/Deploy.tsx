@@ -64,7 +64,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     try {
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
         const payingToken = getBep20Contract(chainId, factory.payingToken.address);
-        const allowance = payingToken.allowance(account, factory.address);
+        const allowance = await payingToken.allowance(account, factory.address);
 
         // approve paying token for deployment
         if (

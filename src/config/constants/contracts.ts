@@ -11,6 +11,7 @@ export default {
     56: "0xe8F5d6E471CDd8Bc1Ec180DD2bf31cF16A8b72cc",
   },
   indexFactory: {
+    56: "0x0DCe744cd16e5168C3Df67d9Ca1961b0061370Ff",
     97: "0x3D93f5c60A7893169A6e895cEaD3d0663f622455",
   },
   lpManager: {
