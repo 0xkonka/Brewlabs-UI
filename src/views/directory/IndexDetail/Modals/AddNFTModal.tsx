@@ -227,15 +227,5 @@ const StyledPanel = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const StyledInput = styled.input`
-  width: 100%;
-  height: 55px;
-  padding: 16px 14px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  border-radius: 6px;
-  color: white;
-  outline: none;
-`;
+
 export default AddNFTModal;

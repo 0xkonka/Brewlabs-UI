@@ -172,5 +172,10 @@ export const Adapters = {
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
       meta: "v2",
     },
+    {
+      address: "0x8433f9865c197a9E4954Ebd5c0C69a24cE50c6dC",
+      name: "Brewswap",
+      logo: "/logo.png"
+    },
   ],
 };
