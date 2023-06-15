@@ -90,7 +90,7 @@ export const useSwapAggregator = (
     if (!query || !query.outputAmount) {
       return { callback: null, error: "No liquidity found", query };
     }
-    
+
     return {
       callback: async function onSwap() {
         const args = [
@@ -108,7 +108,7 @@ export const useSwapAggregator = (
           gasLimit: calculateGasMargin(gasEstimate),
           ...(options.value ? { value: options.value, from: account } : { from: account }),
         })
-          .then((response: any) => {
+          .then(async (response: any) => {
             const inputSymbol = currencies[Field.INPUT].wrapped.symbol;
             const outputSymbol = currencies[Field.OUTPUT].wrapped.symbol;
             const inputAmount = amountIn.toSignificant(3);
@@ -127,7 +127,7 @@ export const useSwapAggregator = (
             addTransaction(response, {
               summary: withRecipient,
             });
-
+            await response.wait();
             return response.hash;
           })
           .catch((error: any) => {
