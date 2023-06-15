@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SelectionPanel from "./SelectionPanel";
-import NFTPanel from "./NFTpanel";
+import NFTPanel from "./NFTPanel";
 
 const NFTList = () => {
   const [criteria, setCriteria] = useState("");
