@@ -13,9 +13,9 @@ import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenApprove } from "@hooks/useApprove";
-import { useERC20 } from "@hooks/useContract";
 import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useIndexFactory } from "state/deploy/hooks";
+import { getBep20Contract } from "utils/contractHelpers";
 import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
@@ -63,7 +63,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
 
     try {
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
-        const payingToken = useERC20(factory.payingToken.address);
+        const payingToken = getBep20Contract(chainId, factory.payingToken.address);
         const allowance = payingToken.allowance(account, factory.address);
 
         // approve paying token for deployment
@@ -194,13 +194,13 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             />
           </div>
           <div className="mt-3">
-          <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
-          <div>Deployment fee</div>
-          <div>
-            {ethers.utils.formatUnits(factory.serviceFee, factory.payingToken.decimals).toString()}{" "}
-            {factory.payingToken.symbol}
-          </div>
-        </div>
+            <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
+              <div>Deployment fee</div>
+              <div>
+                {ethers.utils.formatUnits(factory.serviceFee, factory.payingToken.decimals).toString()}{" "}
+                {factory.payingToken.symbol}
+              </div>
+            </div>
           </div>
 
           <div className="mt-3">

@@ -69,7 +69,7 @@ const availableActions = [
   "Unstake Ownership NFT",
 ];
 
-const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex } }) => {
+const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
   const { data } = detailDatas;
   const { tokens, userData, priceHistories } = data;
 

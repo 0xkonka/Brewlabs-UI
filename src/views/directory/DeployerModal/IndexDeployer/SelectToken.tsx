@@ -14,7 +14,7 @@ import TokenSelect from "../TokenSelect";
 const SelectToken = ({ setStep, tokens, setTokens }) => {
   const { chainId } = useActiveChainId();
 
-  const isSupported = Object.keys(contracts.indexFactory).includes(chainId.toString());
+  const isSupportedChain = Object.keys(contracts.indexFactory).includes(chainId.toString());
   const isDuplicated = tokens
     .map((t) => `${t?.chainId}-${t?.address}`)
     .some((item, idx) => tokens.map((t) => `${t?.chainId}-${t?.address}`).indexOf(item) !== idx);
@@ -58,9 +58,9 @@ const SelectToken = ({ setStep, tokens, setTokens }) => {
         <StyledButton
           type="primary"
           onClick={() => setStep(2)}
-          disabled={!isSupported || isDuplicated || tokens.length == 0 || tokens.filter((t) => !t).length > 0}
+          disabled={!isSupportedChain || isDuplicated || tokens.length == 0 || tokens.filter((t) => !t).length > 0}
         >
-          Next
+          {isSupportedChain ? "Next" : "Not support current chain"}
         </StyledButton>
       </div>
     </div>
