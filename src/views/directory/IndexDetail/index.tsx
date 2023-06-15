@@ -53,6 +53,7 @@ import EnterExitModal from "./Modals/EnterExitModal";
 import UpdateFeeModal from "./Modals/UpdateFeeModal";
 import MintIndexOwnershipNFT from "./Modals/MintIndexOwnershipNFT";
 import StakeIndexOwnershipNFT from "./Modals/StakeIndexOwnershipNFT";
+import UnstakeIndexOwnershipNFT from "./Modals/UnstakeIndexOwnershipNFT";
 
 import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
@@ -106,11 +107,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
 
   const factory = useIndexFactory(chainId);
   const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
-  const { onMintNft, onUnstakeDeployerNft } = useIndexImpl(
-    data.pid,
-    data.address,
-    data.performanceFee
-  );
+  const { onMintNft, onUnstakeDeployerNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
 
   useEffect(() => {
     const fetchFeeHistoriesAsync = async () => {
@@ -229,21 +226,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
     setPending(false);
   };
 
-  const handleUnstakeDeployerNft = async () => {
-    if (pending) return;
-
-    setPending(true);
-    try {
-      await onUnstakeDeployerNft();
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: ethers.constants.AddressZero }]));
-      toast.success("Deployer NFT was unstaked");
-    } catch (e) {
-      console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
-    }
-    setPending(false);
-  };
-
   const onShareIndex = () => {
     setIsCopied(true);
     setTimeout(() => {
@@ -293,6 +275,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
             <UpdateFeeModal open={updateFeeOpen} setOpen={setUpdateFeeOpen} data={data} />
             <MintIndexOwnershipNFT open={mintDeployerNftOpen} setOpen={setMintDeployerNftOpen} data={data} />
             <StakeIndexOwnershipNFT open={stakeDeployerNftOpen} setOpen={setStakeDeployerNftOpen} data={data} />
+            <UnstakeIndexOwnershipNFT open={unstakeDeployerNftOpen} setOpen={setUnstakeDeployerNftOpen} data={data} />
+
             <PageHeader
               title={
                 <div className="text-[40px]">
@@ -409,15 +393,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
                           status={[
                             true,
                             true,
-                            true,
-                            true,
-                            true,
-                            true,
-                            true,
                             data.feeWallet?.toLowerCase() === account?.toLowerCase(),
-                            isMintable && !pending,
-                            isStakable && !pending,
-                            isUnstakable && !pending,
+                            isMintable,
+                            isStakable,
+                            isUnstakable,
                           ]}
                         />
                       </div>

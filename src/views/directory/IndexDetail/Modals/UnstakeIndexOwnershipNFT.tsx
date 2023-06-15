@@ -2,6 +2,7 @@
 import { useContext, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
+import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { Oval } from "react-loader-spinner";
@@ -9,7 +10,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useAccount, useSigner } from "wagmi";
 
-import { chevronLeftSVG, downloadSVG, LinkSVG } from "components/dashboard/assets/svgs";
+import { chevronLeftSVG, LinkSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
@@ -18,18 +19,25 @@ import { useAppDispatch } from "state";
 import { setIndexesPublicData, updateUserBalance, updateUserDeployerNftInfo } from "state/indexes";
 import { useIndexes } from "state/indexes/hooks";
 import { DeserializedIndex } from "state/indexes/types";
-import { getErc721Contract, getIndexContract } from "utils/contractHelpers";
+import { getIndexContract } from "utils/contractHelpers";
 import { calculateGasMargin } from "utils";
 import { getChainLogo, getIndexName } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
-import useNftApprove from "../hooks/useNftApprove";
 import useIndexImpl from "../hooks/useIndexImpl";
 
 import StyledButton from "../../StyledButton";
 import IndexLogo from "../IndexLogo";
 
-const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: DeserializedIndex }) => {
+const UnstakeIndexOwnershipNFT = ({
+  open,
+  setOpen,
+  data,
+}: {
+  open: boolean;
+  setOpen: any;
+  data: DeserializedIndex;
+}) => {
   const dispatch = useAppDispatch();
 
   const { chainId } = useActiveChainId();
@@ -39,33 +47,24 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const [selIndexId, setSelectedIndexId] = useState(0);
-
-  const { onApprove } = useNftApprove(data.category >= 0 ? data.deployerNft : data.nft);
-  const { onStakeDeployerNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
+  const { onUnstakeDeployerNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
 
   let allPools = indexes.filter(
-    (_index) => _index.chainId === chainId && _index.deployerNftId && _index.userData?.deployerNftItem
+    (_index) =>
+      _index.chainId === chainId && _index.deployerNftId && _index.feeWallet?.toLowerCase() === account?.toLowerCase()
   );
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
   };
 
-  const handleStakeDeployerNft = async () => {
+  const handleUnstakeDeployerNft = async () => {
     if (pending) return;
 
     setPending(true);
     try {
-      // check allowance & approve
-      const deployerNft = getErc721Contract(data.chainId, data.deployerNft);
-      let allowance = await deployerNft.isApprovedForAll(account, data.address);
-      if (!allowance) {
-        await onApprove(data.address);
-      }
-
-      await onStakeDeployerNft();
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: account }]));
-
+      await onUnstakeDeployerNft();
+      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: ethers.constants.AddressZero }]));
       toast.success("Deployer NFT was unstaked");
     } catch (e) {
       console.log(e);
@@ -74,7 +73,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
     setPending(false);
   };
 
-  const handleStakeDeployerNftForIndex = async (indexId) => {
+  const handleUnstakeDeployerNftForIndex = async (indexId) => {
     if (pending) return;
 
     const selectedIndex = allPools.find((_index) => _index.pid === indexId);
@@ -83,31 +82,24 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
     setSelectedIndexId(indexId);
     setPending(true);
     try {
-      // check allowance & approve
-      const deployerNft = getErc721Contract(selectedIndex.chainId, selectedIndex.deployerNft);
-      let allowance = await deployerNft.isApprovedForAll(account, selectedIndex.address);
-      if (!allowance) {
-        await onApprove(selectedIndex.address);
-      }
-
       const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, signer);
       const gasPrice = await getNetworkGasPrice(signer, chainId);
 
-      let gasLimit = await indexContract.estimateGas.stakeDeployerNft({ value: selectedIndex.performanceFee ?? "0" });
+      let gasLimit = await indexContract.estimateGas.unstakeDeployerNft({ value: selectedIndex.performanceFee ?? "0" });
       gasLimit = calculateGasMargin(gasLimit);
 
-      const tx = await indexContract.stakeDeployerNft({
+      const tx = await indexContract.unstakeDeployerNft({
         gasPrice,
         gasLimit,
         value: selectedIndex.performanceFee ?? "0",
       });
       await tx.wait();
 
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: account }]));
+      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: ethers.constants.AddressZero }]));
       dispatch(updateUserBalance(account, chainId));
       dispatch(updateUserDeployerNftInfo(account, chainId));
 
-      toast.success("Deployer NFT was staked");
+      toast.success("Deployer NFT was unstaked");
 
       setSelectedIndexId(0);
       setOpen(false);
@@ -153,7 +145,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
               <div className="flex flex-col-reverse justify-between border-b border-b-[#FFFFFF80] pb-3 xmd:flex-row xmd:items-center">
                 <div className="mt-5 flex items-center pl-3 text-xl xmd:mt-0">
                   <LogoIcon classNames="w-9 text-brand mr-3" />
-                  <div>Stake index Ownership NFT</div>
+                  <div>Unstake index Ownership NFT</div>
                 </div>
                 <div className="h-10 min-w-[130px]">
                   <StyledButton type="secondary" onClick={() => setOpen(false)}>
@@ -167,14 +159,14 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
               <div className="mx-auto w-full max-w-[480px]">
                 <div className="mt-4 text-xl text-[#FFFFFFBF]">How does this work?</div>
                 <div className="mt-2 text-sm leading-[1.2] text-[#FFFFFF80]">
-                  If you have an Index Ownership NFT in your wallet it will appear below. You can stake your chosen
-                  Index Ownership NFT to claim ownership of the Index, pending fees/commissions and future
-                  fees/commissions.
+                  Unstaking will move your Index Ownership NFT to your wallet. Your Index Ownership NFT will allow you
+                  to transfer ownership of this index to another wallet by sending your Index Ownership NFT to a target
+                  wallet. You can also list this an Index Ownership NFT on a marketplace for sale.
                 </div>
 
                 {allPools.length ? (
                   <>
-                    <div className="mt-5 text-[#FFFFFFBF]">Available Index Ownership NFT’s found!</div>
+                    <div className="mt-5 text-[#FFFFFFBF]">Staked Index Ownership NFT’s found!</div>
                     <div className="yellowScroll mb-[50px] mt-2.5 max-h-[400px] overflow-y-scroll text-[#FFFFFFBF]">
                       {allPools.map((pool, i) => {
                         return (
@@ -200,11 +192,11 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
                                 </Link>
                               </div>
                               <div
-                                onClick={() => handleStakeDeployerNftForIndex(pool.pid)}
+                                onClick={() => handleUnstakeDeployerNftForIndex(pool.pid)}
                                 className="primary-shadow flex h-12 w-full cursor-pointer flex-col items-center justify-center rounded-md bg-[#B9B8B81A] transition hover:bg-[#b9b8b850] sm:w-24"
                               >
                                 {selIndexId !== pool.pid ? (
-                                  <div className="my-1 scale-125 text-[#D9D9D9]">{downloadSVG}</div>
+                                  <div className="my-1 text-[#D9D9D9]">{UploadSVG}</div>
                                 ) : (
                                   <div className="flex items-center">
                                     <Oval
@@ -217,7 +209,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
                                     />
                                   </div>
                                 )}
-                                <div className="text-sm">Stake</div>
+                                <div className="text-sm">Unstake</div>
                               </div>
                             </div>
                           </div>
@@ -226,7 +218,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
                     </div>
                   </>
                 ) : (
-                  <div className="mt-5 text-center text-lg text-[#FFFFFFBF]">No Index Ownership NFT Found!</div>
+                  <div className="mt-5 text-center text-lg text-[#FFFFFFBF]">No Staked Index Ownership NFT Found!</div>
                 )}
               </div>
               <button
@@ -259,4 +251,4 @@ const StyledPanel = styled.div`
   flex-direction: column;
 `;
 
-export default StakeIndexOwnershipNFT;
+export default UnstakeIndexOwnershipNFT;
