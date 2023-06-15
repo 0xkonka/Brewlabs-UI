@@ -107,7 +107,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
 
   const factory = useIndexFactory(chainId);
   const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
-  const { onMintNft, onUnstakeDeployerNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
+  const { onMintNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
 
   useEffect(() => {
     const fetchFeeHistoriesAsync = async () => {
