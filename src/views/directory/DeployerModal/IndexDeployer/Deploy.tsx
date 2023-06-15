@@ -142,7 +142,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           </div>
 
           <div className="ml-4 mt-3.5">
-            <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-end justify-between">
               <div className="mb-1">Set commission wallet</div>
               <div>
                 <div className="flex items-center justify-between">
@@ -192,6 +192,15 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               onChange={(e) => setCommissionWallet(e.target.value)}
               placeholder="Default is your connected wallet"
             />
+          </div>
+          <div className="mt-3">
+          <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
+          <div>Deployment fee</div>
+          <div>
+            {ethers.utils.formatUnits(factory.serviceFee, factory.payingToken.decimals).toString()}{" "}
+            {factory.payingToken.symbol}
+          </div>
+        </div>
           </div>
 
           <div className="mt-3">

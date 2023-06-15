@@ -170,7 +170,7 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                             </div>
                             <div className="text-xs text-[#FFFFFF80]">
                               $
-                              {selectedNft && tokenPrices[index]
+                              {selectedNft && tokenPrices?.[index]
                                 ? formatAmount(
                                     +ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals) *
                                       tokenPrices[index]

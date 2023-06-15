@@ -332,7 +332,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
                           status={[
                             true,
                             true,
-                            data.feeWallet?.toLowerCase() === account?.toLowerCase(),
+                            data.feeWallet?.toLowerCase() === account?.toLowerCase() && !data.userData?.deployerNftItem,
                             isMintable && !pending,
                             isStakable && !pending,
                             isUnstakable && !pending,
@@ -393,7 +393,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: DeserializedIndex }
                           status={[
                             true,
                             true,
-                            data.feeWallet?.toLowerCase() === account?.toLowerCase(),
+                            data.feeWallet?.toLowerCase() === account?.toLowerCase() && !data.userData?.deployerNftItem,
                             isMintable,
                             isStakable,
                             isUnstakable,

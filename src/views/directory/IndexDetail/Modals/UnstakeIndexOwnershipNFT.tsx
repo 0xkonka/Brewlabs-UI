@@ -115,7 +115,7 @@ const UnstakeIndexOwnershipNFT = ({
       <Dialog
         open={open}
         className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
-        onClose={() => setOpen(false)}
+        onClose={() => {}}
       >
         <div className="flex min-h-full items-center justify-center p-4 ">
           <motion.div
@@ -195,9 +195,7 @@ const UnstakeIndexOwnershipNFT = ({
                                 onClick={() => handleUnstakeDeployerNftForIndex(pool.pid)}
                                 className="primary-shadow flex h-12 w-full cursor-pointer flex-col items-center justify-center rounded-md bg-[#B9B8B81A] transition hover:bg-[#b9b8b850] sm:w-24"
                               >
-                                {selIndexId !== pool.pid ? (
-                                  <div className="my-1 text-[#D9D9D9]">{UploadSVG}</div>
-                                ) : (
+                                {selIndexId === pool.pid && pending ? (
                                   <div className="flex items-center">
                                     <Oval
                                       width={18}
@@ -208,6 +206,8 @@ const UnstakeIndexOwnershipNFT = ({
                                       strokeWidthSecondary={3}
                                     />
                                   </div>
+                                ) : (
+                                  <div className="my-1 text-[#D9D9D9]">{UploadSVG}</div>
                                 )}
                                 <div className="text-sm">Unstake</div>
                               </div>
