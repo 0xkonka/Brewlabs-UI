@@ -229,13 +229,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(true);
     try {
       const tx = await onMintDeployerNft();
-      
+
       const iface = new ethers.utils.Interface(IndexImplAbi);
       for (let i = 0; i < tx.logs.length; i++) {
         try {
           const log = iface.parseLog(tx.logs[i]);
           if (log.name === "DeployerNftMinted") {
-            console.log('deployerNftId', log.args.tokenId)
+            console.log("deployerNftId", log.args.tokenId, log);
             dispatch(setIndexesPublicData([{ pid: data.pid, deployerNftId: log.args.tokenId }]));
             break;
           }
@@ -473,7 +473,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="flex flex-wrap justify-between text-xl">
                         <div className="mr-4 whitespace-nowrap">
                           <span className="mr-1 hidden sm:inline-block">Index: </span>
-                          {getIndexName(tokens)}
+                          {data.name && data.name !== "" ? data.name : getIndexName(tokens)}
 
                           <a
                             className="absolute left-[8px] top-[22px]"
