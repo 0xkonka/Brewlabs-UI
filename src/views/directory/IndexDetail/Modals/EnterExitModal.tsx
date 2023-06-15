@@ -48,11 +48,7 @@ const EnterExitModal = ({
   const [percents, setPercents] = useState(new Array(data.numTokens - 1).fill(Math.floor(100 / data.numTokens)));
 
   const { pending, setPending }: any = useContext(DashboardContext);
-  const {
-    onZapIn: onZapInOld,
-    onZapOut: onZapOutOld,
-    onClaim: onClaimOld,
-  } = useIndex(data.pid, data.address, data.performanceFee);
+  const { onZapOut: onZapOutOld, onClaim: onClaimOld } = useIndex(data.pid, data.address, data.performanceFee);
   const { onZapIn, onZapOut, onClaim } = useIndexImpl(data.pid, data.address, data.performanceFee);
 
   const ethbalance = ethers.utils.formatEther(userData.ethBalance);
@@ -160,13 +156,14 @@ const EnterExitModal = ({
       return;
     }
 
+    if (data.category === undefined) {
+      toast.warn("This version is no longer supported.");
+      return;
+    }
+
     setPending(true);
     try {
-      if (data.category >= 0) {
-        await onZapIn(ethers.constants.AddressZero, amount, [percent, ...percents]);
-      } else {
-        await onZapInOld(amount, [percent, ...percents]);
-      }
+      await onZapIn(ethers.constants.AddressZero, amount, [percent, ...percents]);
 
       toast.success(`Zapped in successfully`);
       setOpen(false);

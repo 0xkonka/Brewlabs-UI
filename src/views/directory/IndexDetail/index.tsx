@@ -106,7 +106,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
   const isStakable = userData?.deployerNftItem?.tokenId;
 
   const factory = useIndexFactory(chainId);
-  const { onMintNft: onMintNftOld } = useIndex(data.pid, data.address, data.performanceFee);
   const { onMintNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
 
   useEffect(() => {
@@ -209,14 +208,14 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
 
   const handleMintNft = async () => {
     if (pending) return;
+    if (data.category === undefined) {
+      toast.warn("This version is no longer supported.");
+      return;
+    }
 
     setPending(true);
     try {
-      if (data.category >= 0) {
-        await onMintNft();
-      } else {
-        await onMintNftOld();
-      }
+      await onMintNft();
 
       toast.success("Index NFT was mint");
     } catch (e) {
