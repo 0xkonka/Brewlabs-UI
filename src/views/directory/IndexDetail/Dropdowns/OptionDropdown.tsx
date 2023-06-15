@@ -24,12 +24,12 @@ const OptionDropdown = ({ values, setValue, status }: { values: string[]; setVal
     >
       <div>Index Options</div>
       <div>{!open ? <ChevronDownIcon className={"h-3"} /> : <ChevronUpIcon className={"h-3 "} />}</div>
-      <DropDownBody className={"primary-shadow absolute transition-all"} open={open}>
+      <DropDownBody className={"primary-shadow absolute transition-all"} open={open} length={values.length}>
         {values.map((data, i) => {
           return (
             <div
               key={i}
-              className={`flex h-8 cursor-pointer items-center justify-center transition-all hover:bg-[#424444bf] text-center ${
+              className={`flex h-8 cursor-pointer items-center justify-center text-center transition-all hover:bg-[#424444bf] ${
                 status[i] ? "" : "hidden"
               }`}
               onClick={() => status[i] && setValue(i)}

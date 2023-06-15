@@ -27,7 +27,6 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
 import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
-import { useIndexFactory } from "state/deploy/hooks";
 import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
 import {
   fetchIndexUserHistoryDataAsync,
@@ -59,6 +58,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import UpdateFeeModal from "./Modals/UpdateFeeModal";
 import MintIndexOwnershipNFT from "./Modals/MintIndexOwnershipNFT";
 import StakeIndexOwnershipNFT from "./Modals/StakeIndexOwnershipNFT";
+import { useIndexFactory } from "state/deploy/hooks";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 const availableActions = [
@@ -68,7 +68,10 @@ const availableActions = [
   "Stake Deployer NFT",
   "Unstake Deployer NFT",
 ];
-
+// const indexOptions =
+// data?.deployer === address.toLowerCase()
+//   ? ["Mint Index NFT", "Add Index NFT", "Update Fee Address", "Mint Ownership NFT", "Stake Ownership NFT"]
+//   : ["Mint Index NFT", "Add Index NFT"];
 const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
   const { tokens, userData, priceHistories } = data;
@@ -302,13 +305,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
     navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
   };
 
-  const indexOptions =
-    data?.deployer === address.toLowerCase()
-      ? ["Mint Index NFT", "Add Index NFT", "Update Fee Address", "Mint Ownership NFT", "Stake Ownership NFT"]
-      : ["Mint Index NFT", "Add Index NFT"];
-
-  function onIndexOption(i) {
-    switch (i) {
+  const onIndexOption = (index) => {
+    switch (index) {
       case 0:
         handleMintNft();
         break;
@@ -325,9 +323,8 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
         setStakeIndexNFTOpen(true);
         break;
       default:
-        break;
     }
-  }
+  };
 
   return (
     <>
@@ -390,11 +387,13 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="flex items-center">
                             <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                           </div>
+                          {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                            Soon
+                          </div> */}
                         </StyledButton>
                         <div className="mt-2" />
-
                         <OptionDropdown
-                          values={indexOptions}
+                          values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
                           setValue={onIndexOption}
                           status={[
                             true,
@@ -407,54 +406,77 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-1 justify-end">
-                  <div className="hidden w-full max-w-[480px] items-center sm:flex">
-                    <img
-                      src={"/images/non-logo.png"}
-                      alt={""}
-                      className="mr-2 hidden h-10 w-10 rounded-full xs:block"
-                    />
-                    <StyledButton
-                      className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:border-white hover:text-white xl:flex"
-                      type={"default"}
-                      onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
-                    >
-                      <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">View {data.deployer}</div>
-                      <div className="ml-2">{LinkSVG}</div>
-                    </StyledButton>
-                  </div>
-                  <StyledButton
-                    className="hidden !h-8 !w-[140px] bg-[#B9B8B81A] font-roboto font-bold text-primary hover:border-white hover:text-white xl:flex"
-                    type={"default"}
-                    onClick={() => onShareIndex()}
-                  >
-                    <div className="flex items-center">
-                      <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
+                  <div className="flex flex-1 justify-end">
+                    <div className="hidden w-full max-w-[480px] items-center sm:flex">
+                      <img src={"/images/non-logo.png"} alt={""} className="mr-2 hidden h-10 w-10 rounded-full" />
+                      <StyledButton
+                        className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:text-white xl:flex"
+                        type={"default"}
+                        onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
+                      >
+                        <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                          View {data.deployer}
+                        </div>
+                        <div className="ml-2">{LinkSVG}</div>
+                      </StyledButton>
                     </div>
-                    {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                    <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
+                      <div className="mb-2 block flex w-full max-w-[480px] items-center sm:hidden">
+                        <img
+                          src={"/images/non-logo.png"}
+                          alt={""}
+                          className="mr-2 hidden h-10 w-10 rounded-full xs:block"
+                        />
+                        <StyledButton
+                          className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:border-white hover:text-white xl:flex"
+                          type={"default"}
+                          onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
+                        >
+                          <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                            View {data.deployer}
+                          </div>
+                          <div className="ml-2">{LinkSVG}</div>
+                        </StyledButton>
+                      </div>
+                      <StyledButton
+                        className="hidden !h-8 !w-[140px] bg-[#B9B8B81A] font-roboto font-bold text-primary hover:border-white hover:text-white xl:flex"
+                        type={"default"}
+                        onClick={() => onShareIndex()}
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
+                        </div>
+                        {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
                           Soon
                         </div> */}
-                  </StyledButton>
-                  <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
-                  <div className="hidden xl:block">
-                    <OptionDropdown
-                      values={indexOptions}
-                      setValue={onIndexOption}
-                      status={[true, true, isMintable && !pending, isStakable && !pending, isUnstakable && !pending]}
-                    />
+                      </StyledButton>
+                      <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
+                      <div className="hidden xl:block">
+                        <OptionDropdown
+                          values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
+                          setValue={onIndexOption}
+                          status={[
+                            true,
+                            true,
+                            isMintable && !pending,
+                            isStakable && !pending,
+                            isUnstakable && !pending,
+                          ]}
+                        />
+                      </div>
+                      <a
+                        className=" ml-0 h-[32px] w-[140px] xl:ml-4 "
+                        target="_blank"
+                        href={`${BASE_URL}/swap?outputCurrency=${tokens[0].address}`}
+                        rel="noreferrer"
+                      >
+                        <StyledButton>
+                          <div>Swap</div>
+                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
+                        </StyledButton>
+                      </a>
+                    </div>
                   </div>
-                  <a
-                    className=" ml-0 h-[32px] w-[140px] xl:ml-4 "
-                    target="_blank"
-                    href={`${BASE_URL}/swap?outputCurrency=${tokens[0].address}`}
-                    rel="noreferrer"
-                  >
-                    <StyledButton>
-                      <div>Swap</div>
-                      <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
-                    </StyledButton>
-                  </a>
                 </div>
 
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
@@ -465,6 +487,18 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mr-4 whitespace-nowrap">
                           <span className="mr-1 hidden sm:inline-block">Index: </span>
                           {data.name && data.name !== "" ? data.name : getIndexName(tokens)}
+
+                          <a
+                            className="absolute left-[8px] top-[22px]"
+                            href={getExplorerLink(data.chainId, "address", data.address)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {LinkSVG}
+                          </a>
+                        </div>
+                        <div className="ml-auto flex items-center">
+                          {/* Performance:&nbsp; */}
                           {data.priceChanges !== undefined ? (
                             <span className={data.priceChanges[curAPR].percent >= 0 ? "text-green" : "text-danger"}>
                               {isNaN(data.priceChanges[curAPR].percent)
@@ -475,7 +509,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
                           ) : (
                             <SkeletonComponent />
                           )}
-                          <div className="ml-2 w-[60px]">
+                          <div className="ml-1 w-[60px]">
                             <DropDown value={curAPR} setValue={setCurAPR} data={aprTexts} />
                           </div>
                         </div>
