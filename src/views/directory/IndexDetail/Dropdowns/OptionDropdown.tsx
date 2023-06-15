@@ -29,7 +29,7 @@ const OptionDropdown = ({ data, setValue }: { data: any; setValue: any }) => {
           return (
             <div
               key={i}
-              className="flex h-8 cursor-pointer items-center justify-center transition-all hover:bg-[#424444bf] text-center"
+              className="flex h-8 cursor-pointer items-center justify-center text-center text-xs transition-all hover:bg-[#424444bf]"
               onClick={() => setValue(i)}
             >
               {data}

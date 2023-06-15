@@ -14,7 +14,7 @@ import { getChainLogo, getIndexName } from "utils/functions";
 import IndexLogo from "../IndexLogo";
 import Link from "next/link";
 
-const StakeIndexOwnershipNFT = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
+const UnstakeIndexOwnershipNFT = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
   const { address: account } = useAccount();
   const { indexes, userDataLoaded } = useIndexes();
   let allPools = [
@@ -73,14 +73,14 @@ const StakeIndexOwnershipNFT = ({ open, setOpen }: { open: boolean; setOpen: any
               <div className="mx-auto w-full max-w-[480px]">
                 <div className="mt-4 text-xl text-[#FFFFFFBF]">How does this work?</div>
                 <div className="mt-2 text-sm leading-[1.2] text-[#FFFFFF80]">
-                  If you have an Index Ownership NFT in your wallet it will appear below. You can stake your chosen
-                  Index Ownership NFT to claim ownership of the Index, pending fees/commissions and future
-                  fees/commissions.
+                  Unstaking will move your Index Ownership NFT to your wallet. Your Index Ownership NFT will allow you
+                  to transfer ownership of this index to another wallet by sending your Index Ownership NFT to a target
+                  wallet. You can also list this an Index Ownership NFT on a marketplace for sale.
                 </div>
 
                 {allPools.length ? (
                   <>
-                    <div className="mt-5 text-[#FFFFFFBF]">Available Index Ownership NFT’s found!</div>
+                    <div className="mt-5 text-[#FFFFFFBF]">Staked Index Ownership NFT’s found!</div>
                     <div className="yellowScroll mb-[50px] mt-2.5 max-h-[400px] overflow-y-scroll text-[#FFFFFFBF]">
                       {allPools.map((data, i) => {
                         return (
@@ -106,8 +106,8 @@ const StakeIndexOwnershipNFT = ({ open, setOpen }: { open: boolean; setOpen: any
                                 </Link>
                               </div>
                               <div className="primary-shadow flex h-12 w-full cursor-pointer flex-col items-center justify-center rounded-md bg-[#B9B8B81A] transition hover:bg-[#b9b8b850] sm:w-24">
-                                <div className="scale-125 text-[#D9D9D9]">{downloadSVG}</div>
-                                <div className="text-sm">Stake</div>
+                                <div className="-scale-y-125 scale-x-125 text-[#D9D9D9]">{downloadSVG}</div>
+                                <div className="text-sm">Unstake</div>
                               </div>
                             </div>
                           </div>
@@ -116,7 +116,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen }: { open: boolean; setOpen: any
                     </div>
                   </>
                 ) : (
-                  <div className="mt-5 text-[#FFFFFFBF] text-lg text-center">No Index Ownership NFT Found!</div>
+                  <div className="mt-5 text-center text-lg text-[#FFFFFFBF]">No Index Ownership NFT Found!</div>
                 )}
               </div>
               <button
@@ -149,4 +149,4 @@ const StyledPanel = styled.div`
   flex-direction: column;
 `;
 
-export default StakeIndexOwnershipNFT;
+export default UnstakeIndexOwnershipNFT;

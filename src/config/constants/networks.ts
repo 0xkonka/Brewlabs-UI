@@ -31,6 +31,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  nft: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
 };
 
@@ -65,7 +66,7 @@ export const EXPLORER_URLS = {
   [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
   [ChainId.POLYGON]: "https://polygonscan.com",
-  [ChainId.FANTOM]: "https://ftmscan.com/"
+  [ChainId.FANTOM]: "https://ftmscan.com/",
 };
 
 export const EXPLORER_API_URLS = {
@@ -73,7 +74,7 @@ export const EXPLORER_API_URLS = {
   [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
   [ChainId.BSC_TESTNET]: "https://api.bscscan.com/api",
   [ChainId.POLYGON]: "https://api.polygonscan.com/api",
-  [ChainId.FANTOM]: "https://api.ftmscan.com/api"
+  [ChainId.FANTOM]: "https://api.ftmscan.com/api",
 };
 
 export const EXPLORER_API_KEYS = {
@@ -81,7 +82,7 @@ export const EXPLORER_API_KEYS = {
   [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.BSC_TESTNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.POLYGON]: "F2KCC1VEPQC23GBVKATATP1V3ZQIC31D7Z",
-  [ChainId.FANTOM]: "BFCVDJ6EW9GQHGNDEUMDSM3HU6KACMWPPC"
+  [ChainId.FANTOM]: "BFCVDJ6EW9GQHGNDEUMDSM3HU6KACMWPPC",
 };
 
 export const CHAIN_LABLES = {

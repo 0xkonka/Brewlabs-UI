@@ -53,6 +53,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import UpdateFeeModal from "./Modals/UpdateFeeModal";
 import MintIndexOwnershipNFT from "./Modals/MintIndexOwnershipNFT";
 import StakeIndexOwnershipNFT from "./Modals/StakeIndexOwnershipNFT";
+import UnstakeIndexOwnershipNFT from "./Modals/UnstakeIndexOwnershipNFT";
 
 const aprTexts = ["24hrs", "7D", "30D"];
 
@@ -66,6 +67,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [updateFeeOpen, setUpdateFeeOpen] = useState(false);
   const [mintIndexNFTOpen, setMintIndexNFTOpen] = useState(false);
   const [stakeIndexNFTOpen, setStakeIndexNFTOpen] = useState(false);
+  const [unstakeIndexNFTOpen, setUnstakeIndexNFTOpen] = useState(false);
 
   const [curType, setCurType] = useState("enter");
   const [curGraph, setCurGraph] = useState(2);
@@ -209,8 +211,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
   };
 
   const indexOptions =
-    data?.deployer === address.toLowerCase()
-      ? ["Mint Index NFT", "Add Index NFT", "Update Fee Address", "Mint Ownership NFT", "Stake Ownership NFT"]
+    // data?.deployer === address.toLowerCase()
+    true
+      ? [
+          "Mint Index NFT",
+          "Add Index NFT",
+          "Update Fee Address",
+          "Mint Ownership NFT",
+          "Stake Ownership NFT",
+          "Unstake Ownership NFT",
+        ]
       : ["Mint Index NFT", "Add Index NFT"];
 
   function onIndexOption(i) {
@@ -229,6 +239,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
         break;
       case 4:
         setStakeIndexNFTOpen(true);
+        break;
+      case 5:
+        setUnstakeIndexNFTOpen(true);
         break;
       default:
         break;
@@ -253,6 +266,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: any }) => {
             <UpdateFeeModal open={updateFeeOpen} setOpen={setUpdateFeeOpen} name={getIndexName(tokens)} />
             <MintIndexOwnershipNFT open={mintIndexNFTOpen} setOpen={setMintIndexNFTOpen} />
             <StakeIndexOwnershipNFT open={stakeIndexNFTOpen} setOpen={setStakeIndexNFTOpen} />
+            <UnstakeIndexOwnershipNFT open={unstakeIndexNFTOpen} setOpen={setUnstakeIndexNFTOpen} />
             <PageHeader
               title={
                 <div className="text-[40px]">
