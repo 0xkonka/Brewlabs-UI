@@ -106,7 +106,7 @@ const NFTActions = () => {
             </div>
             {i !== actions.length - 1 ? (
               <div
-                key={i}
+                key={data.name}
                 className={`mx-4 -mt-[140px] -scale-x-100 text-white ${
                   i === 1 ? "hidden xl:block" : "hidden sm:block"
                 }`}

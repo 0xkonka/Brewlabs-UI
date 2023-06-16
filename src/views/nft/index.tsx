@@ -22,22 +22,19 @@ const NFT = () => {
             <PageHeader
               title={
                 <div className="text-[40px]">
-                  <WordHighlight content="Brewlabs NFT" />
-                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">By Brewlabs</div>
+                  <WordHighlight content="Welcome to the Brewlabs NFT Artificer" />
                 </div>
               }
-            />
-            <Container className="font-brand">
-              <div className="mb-16">
-                <div className="text-lg leading-[1.2] text-primary">Welcome to the Brewlabs NFT Artificer</div>
-                <div className="mt-1.5 max-w-[750px] text-sm leading-[1.2]">
-                  Brewlabs is responsible for number of products and utilities deployed across the decentralised finance
-                  industry. The Brewlabs NFT collection allows users to mint a Brewlabs NFT at anytime to gain access to
-                  a number of benefits within the Brewlabs ecosystem including fee discounts, premium features,
-                  whitelist access and more. Mint an NFT below and unlock the benefits of the Brewlabs NFT. Users can
-                  also stake their rare, epic and legendary NFT’s to earn rewards.
-                </div>
+            >
+              <div className="mt-5 text-xl font-normal font-brand">
+                Brewlabs is responsible for number of products and utilities deployed across the decentralised finance
+                industry. The Brewlabs NFT collection allows users to mint a Brewlabs NFT at anytime to gain access to a
+                number of benefits within the Brewlabs ecosystem including fee discounts, premium features, whitelist
+                access and more. Mint an NFT below and unlock the benefits of the Brewlabs NFT. Users can also stake
+                their rare, epic and legendary NFT’s to earn rewards.
               </div>
+            </PageHeader>
+            <Container className="font-brand mt-6">
               <NFTActions />
               <NFTList />
             </Container>
