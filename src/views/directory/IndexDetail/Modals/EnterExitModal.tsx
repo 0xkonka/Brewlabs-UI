@@ -12,6 +12,7 @@ import styled from "styled-components";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "components/logo/IndexLogo";
 import LogoIcon from "components/LogoIcon";
+import TokenLogo from "@components/logo/TokenLogo";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import useTokenPrice from "hooks/useTokenPrice";
@@ -320,12 +321,7 @@ const EnterExitModal = ({
 
               <div className="mx-auto mb-4 mt-4 flex w-full max-w-[480px] items-center">
                 {type === "enter" ? (
-                  <img
-                    src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
-                    onError={(data) => (data.target["src"] = "/images/unknown.png")}
-                    alt={""}
-                    className="w-14 rounded-full"
-                  />
+                  <TokenLogo src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} classNames="w-14" large />
                 ) : (
                   <IndexLogo tokens={tokens} classNames="mr-0 scale-125" />
                 )}
@@ -347,12 +343,7 @@ const EnterExitModal = ({
               {type === "enter" ? (
                 tokens.slice(1).map((token, index) => (
                   <div key={token.address} className="mx-auto mb-4 mt-4 flex w-full max-w-[480px] items-center">
-                    <img
-                      src={getTokenLogoURL(token.address, token.chainId)}
-                      onError={(data) => (data.target["src"] = "/images/unknown.png")}
-                      alt={""}
-                      className="w-14 rounded-full"
-                    />
+                    <TokenLogo src={getTokenLogoURL(token.address, token.chainId)} classNames="w-14" large />
                     <StyledSlider
                       value={percents[index]}
                       setValue={(v) => percentChanged(index + 1, v)}

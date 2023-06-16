@@ -1,23 +1,19 @@
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import TokenLogo from "./TokenLogo";
 
 const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "mr-3" }) => {
-  const onError = (data) => {
-    data.target.src = "/images/unknown.png";
-  };
   if (type === "line") {
-    return <div className={`flex w-fit items-center ${classNames}`}>
-      {tokens.map((data, i) => {
-        return (
-          <img
-            src={getTokenLogoURL(data.address, data.chainId)}
-            onError={onError}
-            alt={""}
-            className="w-7 rounded-full -ml-2 border border-dark"
+    return (
+      <div className={`flex w-fit items-center ${classNames}`}>
+        {tokens.map((data, i) => (
+          <TokenLogo
             key={i}
+            src={getTokenLogoURL(data.address, data.chainId, data.logo, appId)}
+            classNames="w-7 -ml-2 border border-dark"
           />
-        );
-      })}
-    </div>;
+        ))}
+      </div>
+    );
   }
 
   switch (tokens.length) {
@@ -25,17 +21,13 @@ const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "
       return (
         <div className={classNames}>
           <div className="flex">
-            <img
+            <TokenLogo
               src={getTokenLogoURL(tokens[0].address, tokens[0].chainId, tokens[0].logo, appId)}
-              onError={onError}
-              alt={""}
-              className="w-7 rounded-full"
+              classNames="w-7"
             />
-            <img
-              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId, tokens[0].logo, appId)}
-              onError={onError}
-              alt={""}
-              className="-ml-3 w-7 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId, tokens[1].logo, appId)}
+              classNames="-ml-3 w-7"
             />
           </div>
         </div>
@@ -44,25 +36,19 @@ const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "
       return (
         <div className={classNames}>
           <div className="flex">
-            <img
-              src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
-              onError={onError}
-              alt={""}
-              className="w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[0].address, tokens[0].chainId, tokens[0].logo, appId)}
+              classNames="w-6"
             />
-            <img
-              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId)}
-              onError={onError}
-              alt={""}
-              className="-ml-2 w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId, tokens[1].logo, appId)}
+              classNames="-ml-2 w-6"
             />
           </div>
           <div className="-mt-2">
-            <img
-              src={getTokenLogoURL(tokens[2].address, tokens[2].chainId)}
-              onError={onError}
-              alt={""}
-              className="m-auto w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[2].address, tokens[2].chainId, tokens[2].logo, appId)}
+              classNames="m-auto w-6"
             />
           </div>
         </div>
@@ -71,31 +57,23 @@ const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "
       return (
         <div className={classNames}>
           <div className="flex">
-            <img
-              src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
-              alt={""}
-              onError={onError}
-              className="w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[0].address, tokens[0].chainId, tokens[0].logo, appId)}
+              classNames="w-6"
             />
-            <img
-              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId)}
-              onError={onError}
-              alt={""}
-              className="-ml-2 w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId, tokens[1].logo, appId)}
+              classNames="-ml-2 w-6"
             />
           </div>
           <div className="-mt-2 flex">
-            <img
-              src={getTokenLogoURL(tokens[2].address, tokens[2].chainId)}
-              alt={""}
-              onError={onError}
-              className="w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[2].address, tokens[2].chainId, tokens[2].logo, appId)}
+              classNames="w-6"
             />
-            <img
-              src={getTokenLogoURL(tokens[3].address, tokens[3].chainId)}
-              onError={onError}
-              alt={""}
-              className="-ml-2 w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[3].address, tokens[3].chainId, tokens[3].logo, appId)}
+              classNames="-ml-2 w-6"
             />
           </div>
         </div>
@@ -104,37 +82,27 @@ const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "
       return (
         <div className={classNames}>
           <div className="flex">
-            <img
-              src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)}
-              alt={""}
-              onError={onError}
-              className="w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[0].address, tokens[0].chainId, tokens[0].logo, appId)}
+              classNames="w-6"
             />
-            <img
-              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId)}
-              onError={onError}
-              alt={""}
-              className="-ml-2 w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[1].address, tokens[1].chainId, tokens[1].logo, appId)}
+              classNames="-ml-2 w-6"
             />
-            <img
-              src={getTokenLogoURL(tokens[2].address, tokens[2].chainId)}
-              onError={onError}
-              alt={""}
-              className="-ml-2 w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[2].address, tokens[2].chainId, tokens[2].logo, appId)}
+              classNames="-ml-2 w-6"
             />
           </div>
           <div className="-mt-2 flex justify-center">
-            <img
-              src={getTokenLogoURL(tokens[3].address, tokens[3].chainId)}
-              onError={onError}
-              alt={""}
-              className="w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[3].address, tokens[3].chainId, tokens[3].logo, appId)}
+              classNames="w-6"
             />
-            <img
-              src={getTokenLogoURL(tokens[4].address, tokens[4].chainId)}
-              onError={onError}
-              alt={""}
-              className="-ml-2 w-6 rounded-full"
+            <TokenLogo
+              src={getTokenLogoURL(tokens[4].address, tokens[4].chainId, tokens[4].logo, appId)}
+              classNames="-ml-2 w-6"
             />
           </div>
         </div>

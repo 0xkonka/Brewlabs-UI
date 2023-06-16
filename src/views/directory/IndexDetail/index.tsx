@@ -13,6 +13,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import { chevronLeftSVG, LinkSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
+import TokenLogo from "@components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
@@ -27,7 +28,6 @@ import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } 
 import { useAppDispatch } from "state";
 import { useIndexFactory } from "state/deploy/hooks";
 import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
-import { DeserializedIndex } from "state/indexes/types";
 import {
   fetchIndexUserHistoryDataAsync,
   setIndexesPublicData,
@@ -42,7 +42,6 @@ import { formatAmount, formatTvl } from "utils/formatApy";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-import useIndex from "./hooks/useIndex";
 import useIndexImpl from "./hooks/useIndexImpl";
 
 import StyledButton from "../StyledButton";
@@ -517,12 +516,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         <div className="mb-1 text-xl">Tokens</div>
                         {tokens.map((token, index) => (
                           <div className="mt-1 flex items-center leading-none" key={token.address}>
-                            <img
-                              src={getTokenLogoURL(token.address, token.chainId)}
-                              onError={(data) => (data.target["src"] = "/images/unknown.png")}
-                              alt={""}
-                              className="mr-1 w-3 rounded-full"
-                            />
+                            <TokenLogo src={getTokenLogoURL(token.address, token.chainId)} classNames="mr-1 w-3" />
                             <div className="flex text-[#FFFFFFBF]">
                               {userData?.stakedBalances.length ? (
                                 `${formatAmount(

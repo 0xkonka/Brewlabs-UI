@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 
 import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
+import TokenLogo from "@components/logo/TokenLogo";
 import { DashboardContext } from "contexts/DashboardContext";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
@@ -156,12 +157,7 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                       const selectedNft = userData.indexNftItems?.find((nft) => nft.tokenId === tokenId);
                       return (
                         <div className="mb-3 flex items-center" key={token.address}>
-                          <img
-                            src={getTokenLogoURL(token.address, token.chainId)}
-                            onError={(data) => (data.target["src"] = "/images/unknown.png")}
-                            alt={""}
-                            className="w-12 rounded-full"
-                          />
+                          <TokenLogo src={getTokenLogoURL(token.address, token.chainId)} classNames="w-12" large />
                           <div className="ml-3 leading-none">
                             <div className="text-xl text-[#FFFFFFBF]">
                               {selectedNft

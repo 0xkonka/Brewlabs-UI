@@ -10,6 +10,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import CurrencySelector from "components/CurrencySelector";
 import { DrawSVG } from "components/dashboard/assets/svgs";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const { chainId } = useActiveChainId();
@@ -52,11 +53,9 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
       >
         {selectedCurrency ? (
           <div className="flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap">
-            <img
+            <TokenLogo
               src={getTokenLogoURL(selectedCurrency.address, chainId, selectedCurrency.logo)}
-              alt={""}
-              className="h-6 w-6 rounded-full"
-              onError={(e: any) => (e.target.src = "/images/unknown.png")}
+              classNames="h-6 w-6"
             />
             <div className="mx-4 w-[100px] xsm:w-[140px]">
               <div className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[#FFFFFFBF]">
