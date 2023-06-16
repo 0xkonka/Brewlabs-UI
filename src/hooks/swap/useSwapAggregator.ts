@@ -28,7 +28,14 @@ export const useSwapAggregator = (
   }, [chainId, signer]);
 
   const callParams = useMemo(() => {
-    if (!amountIn || !currencies || !currencies[Field.INPUT] || !currencies[Field.OUTPUT]) return null;
+    if (
+      !amountIn ||
+      !currencies ||
+      !currencies[Field.INPUT] ||
+      !currencies[Field.OUTPUT] ||
+      currencies[Field.INPUT]?.wrapped.address === currencies[Field.OUTPUT]?.wrapped.address
+    )
+      return null;
     const amountInWei = makeBigNumber(amountIn.toExact(), amountIn.currency.decimals);
     return {
       args: [
