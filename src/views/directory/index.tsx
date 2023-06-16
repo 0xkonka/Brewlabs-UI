@@ -111,7 +111,7 @@ const Directory = ({ page }: { page: number }) => {
         return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
       }),
     ...indexes
-      .filter((p) => p.visible)
+      .filter((p) => p.visible && p["category"] === undefined)
       .map((_index) => {
         let tvl = 0;
         for (let i = 0; i < _index.tokens.length; i++) {
