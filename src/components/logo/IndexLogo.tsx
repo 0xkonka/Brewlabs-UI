@@ -9,7 +9,7 @@ const IndexLogo = ({ tokens, type = "default", appId = undefined, classNames = "
           <TokenLogo
             key={i}
             src={getTokenLogoURL(data.address, data.chainId, data.logo, appId)}
-            classNames="w-7 -ml-2 border border-dark"
+            classNames="w-7 -ml-2"
           />
         ))}
       </div>
