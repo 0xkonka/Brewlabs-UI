@@ -8,10 +8,10 @@ export default {
   },
   farmFactory: {
     1: "0xB35dB6963Ee19Fad44bA2a30aA6D3730572F894d",
-    56: "0xb3daffCe98a637714A3d4FE06BcBF57eAA36E70C",
+    56: "0xe8F5d6E471CDd8Bc1Ec180DD2bf31cF16A8b72cc",
   },
   indexFactory: {
-    56: "0x0DCe744cd16e5168C3Df67d9Ca1961b0061370Ff",
+    56: "0xb3daffCe98a637714A3d4FE06BcBF57eAA36E70C",
     97: "0x3D93f5c60A7893169A6e895cEaD3d0663f622455",
   },
   lpManager: {
