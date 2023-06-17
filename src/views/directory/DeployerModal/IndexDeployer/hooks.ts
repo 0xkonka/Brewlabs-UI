@@ -14,7 +14,7 @@ export const useFactory = (chainId, performanceFee) => {
       let gasLimit = await factoryContract.estimateGas.createBrewlabsIndex(
         indexName,
         tokens,
-        fees.map(fee => fee * 100),
+        fees.map((fee) => Math.floor(fee * 100).toString()),
         commissionWallet,
         isPrivate,
         { value: performanceFee, gasPrice }
@@ -24,7 +24,7 @@ export const useFactory = (chainId, performanceFee) => {
       const tx = await factoryContract.createBrewlabsIndex(
         indexName,
         tokens,
-        fees.map(fee => fee * 100),
+        fees.map((fee) => Math.floor(fee * 100).toString()),
         commissionWallet,
         isPrivate,
         { value: performanceFee, gasPrice, gasLimit }
