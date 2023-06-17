@@ -345,10 +345,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       <StyledButton
                         className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:text-white xl:flex"
                         type={"default"}
-                        onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
+                        onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
                       >
                         <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                          View {data.deployer}
+                          View {ethers.utils.getAddress(data.deployer)}
                         </div>
                         <div className="ml-2">{LinkSVG}</div>
                       </StyledButton>
@@ -363,10 +363,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         <StyledButton
                           className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:border-white hover:text-white xl:flex"
                           type={"default"}
-                          onClick={() => router.push(`/indexes/profile/${data.deployer}`)}
+                          onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
                         >
                           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                            View {data.deployer}
+                            View {ethers.utils.getAddress(data.deployer)}
                           </div>
                           <div className="ml-2">{LinkSVG}</div>
                         </StyledButton>
