@@ -36,7 +36,7 @@ const Deployer = ({ page }: { page: number }) => {
     chainId: 0,
   });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
-  const [status, setStatus] = useState("new");
+  const [status, setStatus] = useState("active");
 
   const { pools, dataFetched } = usePools();
   const { data: farms } = useFarms();
