@@ -67,7 +67,7 @@ export const EXPLORER_URLS = {
   [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
   [ChainId.POLYGON]: "https://polygonscan.com",
-  [ChainId.FANTOM]: "https://ftmscan.com/",
+  [ChainId.FANTOM]: "https://ftmscan.com",
 };
 
 export const EXPLORER_API_URLS = {
@@ -89,27 +89,43 @@ export const EXPLORER_API_KEYS = {
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
   [ChainId.ARBITRUM]: "Arbitrum",
-  [ChainId.GOERLI]: "Goerli",
   [ChainId.BSC_MAINNET]: "BNB Smart Chain",
-  [ChainId.BSC_TESTNET]: "BSC Testnet",
   [ChainId.POLYGON]: "Polygon Chain",
   [ChainId.FANTOM]: "Fantom Chain",
   [ChainId.AVALANCHE]: "Avalanche",
   [ChainId.CRONOS]: "Cronos Chain",
   [ChainId.BRISE]: "Brise Chain",
+
+  [ChainId.GOERLI]: "Goerli",
+  [ChainId.BSC_TESTNET]: "BSC Testnet",
 };
 
 export const CHAIN_ICONS = {
   [ChainId.ETHEREUM]: "/images/networks/eth.svg",
   [ChainId.ARBITRUM]: "/images/networks/arbitrum.svg",
-  [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_MAINNET]: "/images/networks/bsc.png",
-  [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
   [ChainId.POLYGON]: "/images/networks/polygon.png",
   [ChainId.FANTOM]: "/images/networks/ftm.svg",
   [ChainId.AVALANCHE]: "/images/networks/avalanche.svg",
   [ChainId.CRONOS]: "/images/networks/cronos.png",
   [ChainId.BRISE]: "/images/networks/bitgert.png",
+
+  [ChainId.GOERLI]: "/images/networks/eth.svg",
+  [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
+};
+
+export const EXPLORER_LOGO = {
+  [ChainId.ETHEREUM]: "/images/explorer/etherscan.png",
+  [ChainId.ARBITRUM]: "/images/explorer/arbiscan.png",
+  [ChainId.BSC_MAINNET]: "/images/explorer/bscscan.png",
+  [ChainId.POLYGON]: "/images/networks/polygonscan.png",
+  [ChainId.FANTOM]: "/images/networks/ftmscan.png",
+  [ChainId.AVALANCHE]: "/images/networks/snowtrace.png",
+  [ChainId.CRONOS]: "/images/networks/cronoscan.png",
+  [ChainId.BRISE]: "/images/networks/brisescan.png",
+
+  [ChainId.GOERLI]: "/images/explorer/etherscan.png",
+  [ChainId.BSC_TESTNET]: "/images/explorer/bscscan.png",
 };
 
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
@@ -122,6 +138,7 @@ export const MORALIS_CHAIN_NAME = {
   [ChainId.ETHEREUM]: "mainnet",
   [ChainId.ARBITRUM]: "arbitrum",
   [ChainId.BSC_MAINNET]: "bsc",
+  [ChainId.POLYGON]: "polygon",
 };
 
 export const SUPPORTED_CHAINS = [
@@ -174,7 +191,7 @@ export const NETWORKS = {
   },
   [ChainId.BSC_TESTNET]: {
     chainId: `0x${Number(ChainId.BSC_MAINNET).toString(16)}`,
-    chainName: "BNB Smart Chain Testnet",
+    chainName: "BSC Testnet",
     nativeCurrency: {
       name: "BNB",
       symbol: "BNB",

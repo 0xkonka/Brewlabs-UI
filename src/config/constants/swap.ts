@@ -11,9 +11,11 @@ export const SUBGRAPH_NAMES = {
 export const SUPPORTED_DEXES = {
   [ChainId.ETHEREUM]: ["uniswap-v2"],
   [ChainId.BSC_MAINNET]: ["pcs-v2"],
+  [ChainId.BSC_TESTNET]: ["brewlabs", "pcs-v2"],
 };
 
 export const DEX_LOGOS = {
+  brewlabs: "/images/brewlabsRouter.png",
   "uniswap-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
   "pcs-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
   quickswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/4098.png",

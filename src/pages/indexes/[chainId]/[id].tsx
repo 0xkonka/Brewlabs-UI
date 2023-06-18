@@ -1,18 +1,21 @@
-import PageWrapper from "components/layout/PageWrapper";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext } from "react";
+
+import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useIndexes } from "state/indexes/hooks";
 import getCurrencyId from "utils/getCurrencyId";
-import Directory from "views/directory";
+
+import PageWrapper from "components/layout/PageWrapper";
 import IndexDetail from "views/directory/IndexDetail";
 
 const Stables: NextPage = () => {
   const router = useRouter();
+
   const { id }: any = router.query;
   const { indexes } = useIndexes();
-  const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
+  const { tokenPrices } = useContext(TokenPriceContext);
+
   const allPools = [
     ...indexes.map((_index) => {
       let tvl = 0;
