@@ -9,13 +9,11 @@ import { getNetworkGasPrice } from "utils/getGasPrice";
 
 const zapIn = async (indexContract, amount, percents, gasPrice) => {
   const value = parseEther(amount);
-  console.log('ZapIn estimating')
   let gasLimit = await indexContract.estimateGas.zapIn(
     percents.map((p) => Math.floor(p * 100)),
     { value }
   );
   gasLimit = calculateGasMargin(gasLimit);
-  console.log('ZapIn gasLimit', gasLimit)
 
   const tx = await indexContract.zapIn(
     percents.map((p) => p * 100),
@@ -68,7 +66,6 @@ const useIndex = (pid, contractAddress, performanceFee) => {
 
   const handleZapIn = useCallback(
     async (amount, percents) => {
-      console.log('ZapIn', amount, percents)
       const gasPrice = await getNetworkGasPrice(library, chainId);
       const receipt = await zapIn(indexContract, amount, percents, gasPrice);
 
