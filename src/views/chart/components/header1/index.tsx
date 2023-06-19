@@ -11,6 +11,7 @@ export default function Header1() {
     const {
         showFavorite,
         setShowFavorite,
+        tokenData
     }: any = useContext(ChartContext);
 
     return (

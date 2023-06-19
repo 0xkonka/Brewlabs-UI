@@ -1,22 +1,34 @@
 import { CircleSVG, StarSVG, LockSVG, CheckCircleSVG, ThumbUpSVG, ThumbDownSVG, WebSiteSVG, EmailSVG, TelegramSVG, TwitterSVG, DiscordSVG } from "@components/dashboard/assets/svgs"
 import { ChartContext } from "contexts/ChartContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
-export default function Star() {
+export const Star = () => {
     const {
         tokenData,
-        pairData
+        pairData,
+        fetchFavoriteData,
+        favorites,
+        setFavoriteData
     }: any = useContext(ChartContext);
+
+    useEffect(() => {
+        fetchFavoriteData();
+    }, []);
     
     return (
         <div className="flex flex-wrap items-center justify-start gap-2 max-[700px]:justify-center max-[700px]:flex-col max-[480px]:gap-4">
             <div className="flex">
-                <div className="flex items-center pr-[9px]">
-                    <StarSVG color="#3F3F46" size="20px"/>
-                </div>
+                <button className="flex items-center pr-[9px]" onClick={() => {
+                    tokenData && pairData && setFavoriteData(`${tokenData.data.symbol}-${pairData.data.tokenRef.symbol}`);
+                }}>
+                    {tokenData && pairData && 
+                    (favorites.includes(`${tokenData.data.symbol}-${pairData.data.tokenRef.symbol}`) ? 
+                    <StarSVG color="#eebb19" size="20px"/> : <StarSVG color="#3F3F46" size="20px"/>)
+                }
+                </button>
                 <div className="flex pr-[7px]">
                     <div className="flex items-center justify-center border-1 border-solid border-black">
-                    <CircleSVG size="22"/>
+                    {tokenData ? <img src={`https://www.dextools.io/resources/tokens/logos/${tokenData.data.logo}`} className="w-[22px] h-[22px] rounded-[30px]"/>: <></>}
                     </div>
                 </div>
                 <div className="flex pr-[13px]">

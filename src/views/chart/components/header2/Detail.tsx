@@ -12,7 +12,7 @@ export default function Detail () {
             <div className="flex gap-2 items-center">
                 <button><DBSVG color="#3F3F46"/></button>
                 <p className="text-[10px] leading-[12px] text-[500] text-white max-[480px]:text-[14px] max-[1400px]:leading-[16px]">
-                    {pairData && pairData.data.metrics.liquidity.toFixed(2)} Pool liquidity
+                    {pairData && pairData.data.price24h && pairData.data.metrics.liquidity.toFixed(2)} Pool liquidity
                 </p>
             </div>
             <div className="flex gap-2 items-center">
@@ -30,7 +30,7 @@ export default function Detail () {
             <div className="flex gap-2 items-center">
                 <button>{GraphSVG}</button>
                 <p className="text-[10px] leading-[12px] text-[500] text-white max-[480px]:text-[14px] max-[1400px]:leading-[16px]">
-                    {pairData && pairData.data.price24h.volume.toFixed(2)} Volume(24h)
+                    {pairData && pairData.data.price24h && pairData.data.price24h.volume.toFixed(2)} Volume(24h)
                 </p>
             </div>
         </div>

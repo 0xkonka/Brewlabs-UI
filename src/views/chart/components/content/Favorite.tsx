@@ -5,7 +5,7 @@ import { useContext } from "react";
 export default function Favorite () {
     const {
         favorites,
-        setFavorites
+        setFavoriteData
     }: any = useContext(ChartContext);
 
     return (
@@ -31,7 +31,7 @@ export default function Favorite () {
                         <p className="!text-[#2BA64E] text-[8px] leading-[9px] font-[500] max-[480px]:text-[10px]">+2.23%</p>
                         <p className="text-white text-[12px] leading-[14px] font-[900] max-[480px]:text-[16px]">$1.002</p>
                         <div className="relative top-[-15px] right-[-20px] ml-[-15px] cursor-pointer">
-                            <button onClick={() => {setFavorites(favorites.filter((_favorite) => _favorite != favorite))}}>{CloseCircle}</button>
+                            <button onClick={() => {setFavoriteData(favorite)}}>{CloseCircle}</button>
                         </div>
                     </div>
                 </div>

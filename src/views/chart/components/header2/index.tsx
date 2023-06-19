@@ -1,6 +1,6 @@
 import Detail from "./Detail"
 import PriceTrend from "./PriceTrend"
-import Star from "./Star"
+import { Star } from "./Star"
 import { ChartContext } from "contexts/ChartContext";
 import { useContext } from "react";
 

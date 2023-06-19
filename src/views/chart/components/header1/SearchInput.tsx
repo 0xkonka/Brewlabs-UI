@@ -13,11 +13,13 @@ export const SearchInput = () => {
         inputValue,
         setInputValue,
         fetchTokenData,
+        fetchPriceData,
     }: any = useContext(ChartContext);
 
     useEffect(() => {
         fetchTokenData();
-      }, []);
+        fetchPriceData();
+    }, []);
     const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
     const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
 
@@ -36,6 +38,7 @@ export const SearchInput = () => {
             <div className="mr-3">
                 <button onClick={() => {
                     fetchTokenData();
+                    fetchPriceData();
                 }}>
                     {ArrowCircleSVG}
                 </button>
