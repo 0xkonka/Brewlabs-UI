@@ -1,11 +1,19 @@
 import { ChainId } from "@brewlabs/sdk";
 
-export const SUBGRAPH_NAMES = {
+export const AGGREGATOR_SUBGRAPH_NAMES = {
   [ChainId.ETHEREUM]: "brewlabs-aggregator-mainnet",
   [ChainId.BSC_MAINNET]: "brewlabs-aggregator-bsc",
   [ChainId.ARBITRUM]: "brewlabs-aggregator-arbitrum",
   [ChainId.POLYGON]: "brewlabs-aggregator-polygon",
   [ChainId.FANTOM]: "brewlabs-aggregator-fantom",
+};
+
+export const ROUTER_SUBGRAPH_NAMES = {
+  [ChainId.ETHEREUM]: "brewlabs-router-mainnet",
+  [ChainId.BSC_MAINNET]: "brewlabs-router-bsc",
+  [ChainId.ARBITRUM]: "brewlabs-router-arbitrum",
+  [ChainId.POLYGON]: "brewlabs-router-polygon",
+  [ChainId.FANTOM]: "brewlabs-router-fantom",
 };
 
 export const SUPPORTED_DEXES = {
