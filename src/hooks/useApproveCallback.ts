@@ -1,6 +1,6 @@
 import { MaxUint256 } from "@ethersproject/constants";
 import { TransactionResponse } from "@ethersproject/providers";
-import { Trade, CurrencyAmount } from "@brewlabs/sdk";
+import { Trade, CurrencyAmount, ROUTER_ADDRESS_MAP, EXCHANGE_MAP } from "@brewlabs/sdk";
 import { useCallback, useMemo } from "react";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -76,29 +76,32 @@ export function useApproveCallback(
 
     let useExact = false;
 
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const estimatedGas = await tokenContract.estimateGas.approve(spender, MaxUint256).catch(() => {
-      // general fallback for tokens who restrict approval amounts
-      useExact = true;
-      return tokenContract.estimateGas.approve(spender, amountToApprove.raw.toString());
-    });
-    console.log(estimatedGas);
-    // eslint-disable-next-line consistent-return
-    const response: TransactionResponse = await tokenContract.approve(
-      spender,
-      useExact ? amountToApprove.raw.toString() : MaxUint256,
-      {
-        gasPrice,
-        gasLimit: calculateGasMargin(estimatedGas),
-      }
-    );
-    // add transaction detail to the global state store
-    addTransaction(response, {
-      summary: `Approve ${amountToApprove.currency.symbol}`,
-      approval: { tokenAddress: token.address, spender },
-    });
-
-    return response;
+    try {
+      const gasPrice = await getNetworkGasPrice(library, chainId);
+      const estimatedGas = await tokenContract.estimateGas.approve(spender, MaxUint256).catch(() => {
+        // general fallback for tokens who restrict approval amounts
+        useExact = true;
+        return tokenContract.estimateGas.approve(spender, amountToApprove.raw.toString());
+      });
+      console.log(estimatedGas);
+      // eslint-disable-next-line consistent-return
+      const response: TransactionResponse = await tokenContract.approve(
+        spender,
+        useExact ? amountToApprove.raw.toString() : MaxUint256,
+        {
+          gasPrice,
+          gasLimit: calculateGasMargin(estimatedGas),
+        }
+      );
+      // add transaction detail to the global state store
+      addTransaction(response, {
+        summary: `Approve ${amountToApprove.currency.symbol}`,
+        approval: { tokenAddress: token.address, spender },
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
   }, [approvalState, token, tokenContract, amountToApprove, spender, addTransaction, chainId, library]);
 
   return [approvalState, approve];
@@ -119,6 +122,6 @@ export function useApproveCallbackFromTrade(
 
   return useApproveCallback(
     noLiquidity ? amountIn : amountToApprove,
-    noLiquidity ? getAggregatorAddress(chainId) : ROUTER_ADDRESS[chainId]
+    noLiquidity ? getAggregatorAddress(chainId) : ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId][0]?.key][chainId]
   );
 }

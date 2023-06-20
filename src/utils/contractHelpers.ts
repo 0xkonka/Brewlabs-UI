@@ -16,14 +16,18 @@ import lpManagerAbi from "config/abi/brewlabsLiquidityManager.json";
 import zapperAbi from "config/abi/brewlabsZapInConstructor.json";
 import externalMasterChefAbi from "config/abi/externalMasterchef.json";
 import lpTokenAbi from "config/abi/lpToken.json";
-import masterChef from "config/abi/staking/masterchef.json";
-import masterChefV2 from "config/abi/staking/masterchefV2.json";
+import masterChef from "config/abi/farm/masterchef.json";
+import masterChefV2 from "config/abi/farm/masterchefV2.json";
 import MultiCallAbi from "config/abi/Multicall.json";
 import singleStaking from "config/abi/staking/singlestaking.json";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
 import IndexAbi from "config/abi/indexes/index.json";
+import IndexImplAbi from "config/abi/indexes/indexImpl.json";
+import IndexFactoryAbi from "config/abi/indexes/factory.json";
+import FarmImplAbi from "config/abi/farm/farmImpl.json";
+import FarmFactoryAbi from "config/abi/farm/factory.json";
 
 // Addresses
 import {
@@ -35,8 +39,9 @@ import {
   getPancakeMasterChefAddress,
   getExternalMasterChefAddress,
   getBrewlabsAggregationRouterAddress,
-  getBrewlabsRouterAddress,
   getBrewlabsFeeManagerAddress,
+  getFarmFactoryAddress,
+  getIndexFactoryAddress,
 } from "utils/addressHelpers";
 import { provider } from "./wagmi";
 
@@ -146,20 +151,52 @@ export const getBrewlabsAggregationRouterContract = (
   return getContract(chainId, getBrewlabsAggregationRouterAddress(chainId), brewlabsAggregationRouterAbi, signer);
 };
 
-export const getBrewlabsRouterContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, getBrewlabsRouterAddress(chainId), brewlabsRouterAbi, signer);
+export const getFarmFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getFarmFactoryAddress(chainId), FarmFactoryAbi, signer);
+};
+
+export const getFarmImplContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, FarmImplAbi, signer);
+};
+
+export const getIndexFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getIndexFactoryAddress(chainId), IndexFactoryAbi, signer);
+};
+
+export const getIndexContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, IndexImplAbi, signer);
+};
+
+export const getOldIndexContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, IndexAbi, signer);
+};
+
+export const getBrewlabsRouterContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, brewlabsRouterAbi, signer);
 };
 
 export const getBrewlabsFeeManagerContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getBrewlabsFeeManagerAddress(chainId), brewlabsFeeManagerAbi, signer);
-}
+};
 
 export const getZapInContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getZapperAddress(chainId), zapperAbi, signer);
-};
-
-export const getIndexContract = (chainId: ChainId, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, address, IndexAbi, signer);
 };
 
 export const getExternalMasterChefContract = (

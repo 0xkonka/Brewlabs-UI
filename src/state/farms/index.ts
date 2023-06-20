@@ -2,6 +2,8 @@ import axios from "axios";
 import { createSlice } from "@reduxjs/toolkit";
 
 import { API_URL } from "config/constants";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { Category } from "config/constants/types";
 import { resetUserState } from "state/global/actions";
 import { SerializedFarmsState } from "state/types";
 
@@ -13,7 +15,6 @@ import {
   fetchFarmUserTokenBalances,
 } from "./fetchFarmUser";
 import { fetchTotalStakesForFarms } from "./fetchPublicFarmData";
-import { Category } from "config/constants/types";
 
 const initialUserData = {
   allowance: "0",
@@ -33,7 +34,9 @@ export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
   axios.post(`${API_URL}/farms`).then((res) => {
     let farms = [];
     if (res.data) {
-      farms = res.data.map((farm) => ({ type: Category.FARM, ...farm }));
+      farms = res.data
+        .filter((f) => PAGE_SUPPORTED_CHAINS["farms"].includes(f.chainId))
+        .map((farm) => ({ type: Category.FARM, ...farm }));
     }
     dispatch(setFarmsPublicData(farms));
 
@@ -120,35 +123,14 @@ export const fetchFarmUserDataAsync =
       });
       dispatch(setFarmUserData(data));
     });
-    fetchFarmUserStakedBalances(account, chainId, farmsToFetch).then((userStakedBalances) => {
-      const data = farmsToFetch.map((farm, index) => {
-        return {
-          pid: farm.pid,
-          farmId: farm.farmId,
-          poolId: farm.poolId,
-          chainId: farm.chainId,
-          stakedBalance: userStakedBalances[index],
-        };
-      });
+    fetchFarmUserStakedBalances(account, chainId, farmsToFetch).then((data) => {
       dispatch(setFarmUserData(data));
     });
     fetchFarmUserEarnings(
       account,
       chainId,
       farmsToFetch.filter((f) => ![15, 17].includes(f.farmId))
-    ).then((userFarmEarnings) => {
-      const data = farmsToFetch
-        .filter((f) => ![15, 17].includes(f.farmId))
-        .filter((f) => !f.enableEmergencyWithdraw)
-        .map((farm, index) => {
-          return {
-            pid: farm.pid,
-            farmId: farm.farmId,
-            poolId: farm.poolId,
-            chainId: farm.chainId,
-            earnings: userFarmEarnings[index] ?? "0",
-          };
-        });
+    ).then((data) => {
       dispatch(setFarmUserData(data));
     });
     await fetchFarmUserReflections(

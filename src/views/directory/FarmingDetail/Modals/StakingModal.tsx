@@ -23,6 +23,7 @@ import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";
 import { getBalanceAmount } from "utils/formatBalance";
+import useFarmImpl from "../hooks/useFarmImpl";
 
 const StakingModal = ({
   open,
@@ -49,6 +50,14 @@ const StakingModal = ({
 
   const { onApprove } = useApproveFarm(data.lpAddress, data.pid, data.contractAddress);
   const { onStake, onUnstake } = useFarm(
+    data.poolId,
+    data.farmId,
+    data.chainId,
+    data.contractAddress,
+    data.version >= Version.V2 && data.performanceFee ? data.performanceFee : "0",
+    data.enableEmergencyWithdraw
+  );
+  const { onStake: onStakeImpl, onUnstake: onUnstakeImpl } = useFarmImpl(
     data.poolId,
     data.farmId,
     data.chainId,
@@ -85,11 +94,20 @@ const StakingModal = ({
   const handleConfirm = async () => {
     setPending(true);
     try {
-      if (type === "deposit") {
-        await onStake(amount);
+      if (data.category) {
+        if (type === "deposit") {
+          await onStakeImpl(amount);
+        } else {
+          await onUnstakeImpl(amount);
+        }
       } else {
-        await onUnstake(amount);
+        if (type === "deposit") {
+          await onStake(amount);
+        } else {
+          await onUnstake(amount);
+        }
       }
+
       dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
@@ -103,7 +121,7 @@ const StakingModal = ({
       <Dialog
         open={open}
         className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
-        onClose={() => setOpen(false)}
+        onClose={() => {}}
       >
         <div className="flex min-h-full items-center justify-center p-4 ">
           <motion.div

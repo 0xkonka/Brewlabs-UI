@@ -47,9 +47,10 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
+import { useRouter } from "next/router";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data } = detailDatas;
+  const { data } = detailDatas;
   const dispatch = useAppDispatch();
 
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
@@ -58,7 +59,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curType, setCurType] = useState("deposit");
   const [populatedAmount, setPopulatedAmount] = useState("0");
   const [curGraph, setCurGraph] = useState(1);
+  const [isCopied, setIsCopied] = useState(false);
 
+  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
@@ -224,6 +227,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
     setPending(false);
   };
 
+  const onSharePool = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
+  };
+
   const history =
     data && accountData?.deposits && address
       ? accountData?.deposits.map((deposit) => ({ ...deposit, symbol: data.stakingToken.symbol }))
@@ -231,7 +242,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   return (
     <AnimatePresence exitBeforeEnter>
-      {open && (
+      {
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -268,7 +279,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -281,13 +292,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="flex items-center justify-between font-roboto">
                   <div className="flex w-[160px] flex-col">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
                     </div>
                     {data.isCustody && (
-                      <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
+                      <div className="mt-2 block h-[32px] w-[140px] lg:mt-0 lg:hidden">
                         <StyledButton>
                           <div className="absolute left-2 top-2.5">{lockSVG}</div>
                           <div className="ml-3">Brewlabs Custody</div>
@@ -297,8 +308,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-1 justify-end">
                     {data.isCustody && (
-                      <div className="hidden w-full max-w-[470px] sm:block">
-                        <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
+                      <div className="ml-5 hidden w-full max-w-[470px] lg:block">
+                        <div className="mt-2 h-[32px] w-[140px] lg:mt-0">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3">Brewlabs Custody</div>
@@ -306,9 +317,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                     )}
-                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end sm:ml-[30px] sm:max-w-[520px] sm:flex-row">
+                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
                       {data.enableEmergencyWithdraw && (
-                        <div className="h-[32px] w-[180px]">
+                        <div className="mr-0 h-[32px] w-[180px] lg:mr-5">
                           <StyledButton
                             type={"danger"}
                             onClick={() => setEmergencyOpen(true)}
@@ -318,9 +329,18 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </StyledButton>
                         </div>
                       )}
+                      <StyledButton
+                        className="mb-2 !h-8 !w-[140px] border border-primary bg-[#B9B8B81A] font-roboto font-bold text-primary hover:border-white hover:text-white lg:mb-0"
+                        type={"default"}
+                        onClick={onSharePool}
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-1.5">{isCopied ? "Copied" : "Share Pool"}</div> {LinkSVG}
+                        </div>
+                      </StyledButton>
                       {data.earningToken.projectLink && (
                         <a
-                          className="ml-0 h-[32px] w-[140px] sm:ml-5"
+                          className="ml-0 h-[32px] w-[140px] lg:ml-5"
                           href={data.earningToken.projectLink}
                           target="_blank"
                           rel="noreferrer"
@@ -332,7 +352,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </a>
                       )}
                       <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
+                        className="ml-0 mt-2 h-[32px] w-[140px] lg:ml-5 lg:mt-0"
                         target="_blank"
                         href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
@@ -383,25 +403,57 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <span className="text-primary">{earningToken.symbol}</span>
                         </div>
                         <div className="text-primary">
-                          {data.poolCategory === PoolCategory.CORE ? "Flexible" : `${data.duration} days lock`}
+                          {data.poolCategory === PoolCategory.CORE ? (
+                            "Flexible"
+                          ) : data.duration ? (
+                            `${data.duration} days lock`
+                          ) : (
+                            <div className="flex">
+                              <SkeletonComponent />
+                              <span className="ml-1">days lock</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="text-xs text-[#FFFFFF80]">
                         <div className="flex">
-                          Deposit Fee {(+data.depositFee).toFixed(2)}%
+                          Deposit Fee{" "}
+                          {data.depositFee !== undefined ? (
+                            (+data.depositFee).toFixed(2)
+                          ) : (
+                            <div className="ml-1">
+                              <SkeletonComponent />
+                            </div>
+                          )}
+                          %
                           <div className="tooltip" data-tip="Deposit fees are sent to token owner nominated address.">
                             <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                         <div className="flex">
-                          Withdraw Fee {(+data.withdrawFee).toFixed(2)}%
-                          {data.penaltyFee && <> (Early Withdraw Fee {data.penaltyFee.toFixed(2)} %)</>}
+                          Withdraw Fee{" "}
+                          {data.withdrawFee !== undefined ? (
+                            (+data.withdrawFee).toFixed(2)
+                          ) : (
+                            <div className="ml-1">
+                              <SkeletonComponent />
+                            </div>
+                          )}
+                          %{data.penaltyFee && <> (Early Withdraw Fee {data.penaltyFee.toFixed(2)} %)</>}
                           <div className="tooltip" data-tip="Withdraw fees are sent to token owner nominated address.">
                             <div className="ml-1 mt-[1.3px]">{warningFarmerSVG("11px")}</div>
                           </div>
                         </div>
                         <div className="flex">
-                          Peformance Fee {data.performanceFee / Math.pow(10, 18)} {getNativeSybmol(data.chainId)}&nbsp;
+                          Peformance Fee{" "}
+                          {data.performanceFee !== undefined ? (
+                            data.performanceFee / Math.pow(10, 18)
+                          ) : (
+                            <div className="ml-1">
+                              <SkeletonComponent />
+                            </div>
+                          )}{" "}
+                          {getNativeSybmol(data.chainId)}&nbsp;
                           <div
                             className="tooltip"
                             data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
@@ -506,7 +558,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     rewards={{
                       deposit:
                         data.depositBalance -
-                        (data.earningToken.address.toLowerCase() === data.stakingToken.address.toLowerCase()
+                        (data.earningToken.address?.toLowerCase() === data.stakingToken.address.toLowerCase()
                           ? data.totalStaked
                           : 0),
                       available: data.availableRewards,
@@ -818,7 +870,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
             )}
           </div>
         </motion.div>
-      )}
+      }
     </AnimatePresence>
   );
 };

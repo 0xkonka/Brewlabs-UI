@@ -77,11 +77,17 @@ export const serializeTokens = (chainId: ChainId): SerializedTokenList => {
 };
 
 export const factoryTokens = {
-  [ChainId.ETHEREUM]: [ethTokens.brews],
+  [ChainId.ETHEREUM]: [ethTokens.brews, ethTokens.funicular],
   [ChainId.BSC_MAINNET]: [bscTokens.brews],
 };
 
 export const popularTokens = {
   [ChainId.ETHEREUM]: [ethTokens.brews, ethTokens.eth, ethTokens.usdc, ethTokens.usdt],
   [ChainId.BSC_MAINNET]: [bscTokens.brews, bscTokens.bnb, bscTokens.busd, bscTokens.usdt],
+};
+
+export const customTokensForDeploy = {
+  [ChainId.ETHEREUM]: Object.values(ethTokens),
+  [ChainId.BSC_MAINNET]: Object.values(bscTokens),
+  [ChainId.BSC_TESTNET]: Object.values(bscTestTokens),
 };

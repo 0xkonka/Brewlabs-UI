@@ -22,12 +22,14 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export const ROUTER_ADDRESS = {
   [ChainId.ETHEREUM]: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   [ChainId.BSC_MAINNET]: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-  [ChainId.BSC_TESTNET]: "0x200D85bc80816DB40a0A088dd261F8AFc29CC3b7",
   [ChainId.POLYGON]: "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
   [ChainId.FANTOM]: "0xF491e7B69E4244ad4002BC14e878a34207E38c29",
   [ChainId.AVALANCHE]: "0x60aE616a2155Ee3d9A68541Ba4544862310933d4",
   [ChainId.CRONOS]: "0x145677FC4d9b8F19B5D56d1820c48e0443049a30",
   [ChainId.BRISE]: "0xBb5e1777A331ED93E07cF043363e48d320eb96c4",
+
+  [ChainId.GOERLI]: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  [ChainId.BSC_TESTNET]: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
 };
 
 export const AggregationRouterV4 = {
@@ -173,7 +175,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     tokens[ChainId.BSC_MAINNET].eth,
     tokens[ChainId.BSC_MAINNET].usdc,
   ],
-  [ChainId.BSC_TESTNET]: [tokens[ChainId.BSC_TESTNET].wbnb, tokens[ChainId.BSC_TESTNET].busd],
+  [ChainId.BSC_TESTNET]: [tokens[ChainId.BSC_TESTNET].wbnb, tokens[ChainId.BSC_TESTNET].busd, tokens[ChainId.BSC_TESTNET].tokenA],
   [ChainId.POLYGON]: [tokens[ChainId.POLYGON].wmatic, tokens[ChainId.POLYGON].usdc],
   [ChainId.FANTOM]: [tokens[ChainId.FANTOM].wftm, tokens[ChainId.FANTOM].eth, tokens[ChainId.FANTOM].usdc],
   [ChainId.AVALANCHE]: [tokens[ChainId.AVALANCHE].wavax, tokens[ChainId.AVALANCHE].usdc],

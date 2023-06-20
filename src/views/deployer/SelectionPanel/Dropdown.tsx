@@ -3,7 +3,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 
-const DropDown = ({ value, setValue, data }: { setValue?: any; value: number; data: string[] }) => {
+const   DropDown = ({ value, setValue, data }: { setValue?: any; value: number; data: any[] }) => {
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
 
@@ -17,7 +17,7 @@ const DropDown = ({ value, setValue, data }: { setValue?: any; value: number; da
 
   return (
     <StyledDropDown
-      className="portfolio-shadow relative z-10 flex h-[30px] w-full cursor-pointer items-center justify-center bg-primary text-sm text-black"
+      className="primary-shadow relative z-10 flex h-[30px] w-full cursor-pointer items-center justify-center bg-primary text-sm text-black"
       ref={dropRef}
       onClick={() => setOpen(!open)}
       open={open}
