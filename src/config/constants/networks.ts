@@ -32,6 +32,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   nft: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  tradingPairs: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
 };
 

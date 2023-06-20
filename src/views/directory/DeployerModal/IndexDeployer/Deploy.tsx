@@ -21,6 +21,7 @@ import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
 import StyledButton from "../../StyledButton";
 
 import { useFactory } from "./hooks";
+import StyledInput from "@components/StyledInput";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
@@ -122,12 +123,12 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   return (
     <div className="font-roboto text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
-        <div className="mx-auto flex w-full max-w-[280px] items-center justify-start sm:mx-0">
+        <div className="mx-auto flex w-fit items-center justify-start overflow-hidden text-ellipsis whitespace-nowrap sm:mx-0">
           <img src={getChainLogo(chainId)} alt={""} className="h-7 w-7" />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>
-          <div className="flex items-center">
+          <div className="flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
             <IndexLogo type="line" tokens={tokens} classNames="mx-3" />
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">{getIndexName(tokens)}</div>
+            <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{getIndexName(tokens)}</div>
           </div>
         </div>
         <div className="hidden sm:block">{makePendingText()}</div>
@@ -138,86 +139,103 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
           <div className="ml-4 ">
             <div className="mb-1">Set index name</div>
-            <StyledInput value={name} onChange={(e) => setName(e.target.value)} placeholder={getIndexName(tokens)} />
+            <StyledInput value={name} setValue={setName} placeholder={getIndexName(tokens)} className="w-full" />
           </div>
 
-          <div className="ml-4 mt-3.5">
-            <div className="flex w-full items-end justify-between">
-              <div className="mb-1">Set commission wallet</div>
-              <div>
-                <div className="flex items-center justify-between">
-                  <div>Set deposit fee</div>
-                  <div className="flex items-center">
-                    <div
-                      className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                      onClick={() =>
-                        setDepositFee(Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01))
-                      }
-                    >
-                      {PlusSVG}
-                    </div>
-                    <div>{depositFee.toFixed(2)}%</div>
-                    <div
-                      className="ml-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                      onClick={() => setDepositFee(Math.max(0, depositFee - 0.01))}
-                    >
-                      {MinusSVG}
-                    </div>
+          <div className="mt-3.5">
+            <div className="mb-1 flex w-full items-end justify-between">
+              <div className="flex items-center">
+                <div className="tooltip" data-tip="This wallet can be changed at a later date.">
+                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">
+                    <InfoSVG />
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <div>Set commission fee</div>
-                  <div className="flex items-center">
-                    <div
-                      className="mx-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                      onClick={() =>
-                        setCommissionFee(Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01))
-                      }
-                    >
-                      {PlusSVG}
-                    </div>
-                    <div>{commissionFee.toFixed(2)}%</div>
-                    <div
-                      className="ml-2 scale-150 cursor-pointer text-[#3F3F46] hover:text-[#87878a]"
-                      onClick={() => setCommissionFee(Math.max(0, commissionFee - 0.01))}
-                    >
-                      {MinusSVG}
-                    </div>
-                  </div>
-                </div>
+                <div>Set deposit and commission fee wallet</div>
               </div>
             </div>
             <StyledInput
               value={commissionWallet}
-              onChange={(e) => setCommissionWallet(e.target.value)}
+              setValue={setCommissionWallet}
               placeholder="Default is your connected wallet"
+              className="ml-4 w-[calc(100%-16px)]"
             />
           </div>
-          <div className="mt-3">
-            <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
-              <div>Deployment fee</div>
-              <div>
-                {ethers.utils.formatUnits(factory.serviceFee, factory.payingToken.decimals).toString()}{" "}
-                {factory.payingToken.symbol}
+          <div className="mt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div
+                  className="tooltip"
+                  data-tip="This fee is charged when a user enters your index. This fee is sent to your nominated address. Your deposit fee is combined with Brewlabs fixed fee's of 0.25% on every index"
+                >
+                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">
+                    <InfoSVG />
+                  </div>
+                </div>
+                <div>Set deposit fee</div>
+              </div>
+              <div className="flex items-center">
+                <div
+                  className="mx-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
+                  onClick={() => setDepositFee(Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01))}
+                >
+                  {PlusSVG}
+                </div>
+                <div>{depositFee.toFixed(2)}%</div>
+                <div
+                  className="ml-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
+                  onClick={() => setDepositFee(Math.max(0, depositFee - 0.01))}
+                >
+                  {MinusSVG}
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-between">
+              <div className="flex items-center">
+                <div
+                  className="tooltip"
+                  data-tip="This fee is charged when a user exits your index in a profitable position."
+                >
+                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">
+                    <InfoSVG />
+                  </div>
+                </div>
+                <div>Set commission fee</div>
+              </div>
+              <div className="flex items-center">
+                <div
+                  className="mx-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
+                  onClick={() =>
+                    setCommissionFee(Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01))
+                  }
+                >
+                  {PlusSVG}
+                </div>
+                <div>{commissionFee.toFixed(2)}%</div>
+                <div
+                  className="ml-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
+                  onClick={() => setCommissionFee(Math.max(0, commissionFee - 0.01))}
+                >
+                  {MinusSVG}
+                </div>
               </div>
             </div>
           </div>
 
           <div className="mt-3">
             <div className="flex items-center">
-              <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                <InfoSVG />
+              <div className="tooltip" data-tip="Display your index to other users.">
+                <div className="-mt-0.5 mr-1.5 scale-125 text-white">
+                  <InfoSVG />
+                </div>
               </div>
               <div>Make my index visible to others?</div>
             </div>
-            <div className="ml-4 mt-2 flex">
+            <div className="ml-4 mt-4 flex">
               <StyledButton
                 type={"default"}
                 className={`${
-                  visibleType
-                    ? "border-primary text-primary shadow-[0px_4px_4px_#00000040]"
-                    : "border-[#FFFFFF40] text-[#FFFFFF80]"
-                } !h-9 !w-36 border bg-[#B9B8B81A] font-brand !text-base font-normal`}
+                  visibleType ? "text-primary" : "text-[#FFFFFF80]"
+                } !h-9 !w-36 bg-[#B9B8B81A] font-brand !text-base font-normal`}
                 onClick={() => setVisibleType(true)}
               >
                 Public
@@ -227,10 +245,8 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               <StyledButton
                 type={"default"}
                 className={`${
-                  !visibleType
-                    ? "border-primary text-primary shadow-[0px_4px_4px_#00000040]"
-                    : "border-[#FFFFFF40] text-[#FFFFFF80]"
-                } !h-9 !w-36 border bg-[#B9B8B81A] font-brand !text-base font-normal`}
+                  !visibleType ? "text-primary" : "text-[#FFFFFF80]"
+                } !h-9 !w-36 bg-[#B9B8B81A] font-brand !text-base font-normal`}
                 onClick={() => setVisibleType(false)}
               >
                 Private
@@ -327,24 +343,5 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     </div>
   );
 };
-
-const CircleImage = styled.div`
-  background: #d9d9d9;
-  border: 1px solid #000000;
-  border-radius: 50%;
-`;
-
-const StyledInput = styled.input`
-  height: 40px;
-  font-size: 14px;
-  width: 100%;
-  flex: 1;
-  color: white;
-  outline: none;
-  background: rgba(185, 184, 184, 0.1);
-  border: 0.5px solid rgba(255, 255, 255, 0.25);
-  padding: 16px 14px;
-  border-radius: 6px;
-`;
 
 export default Deploy;

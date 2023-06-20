@@ -1,4 +1,4 @@
-import { ChevronDownSVG, InfoSVG, downSVG } from "components/dashboard/assets/svgs";
+import { ChevronCircleDownSVG, InfoSVG, downSVG } from "components/dashboard/assets/svgs";
 import { useState, useMemo, useCallback } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
@@ -93,7 +93,7 @@ const SwapRewards = () => {
             <div className="text-xs leading-none">
               Harvest <span className="text-[#EEBB19]">All</span>
             </div>
-            <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronDownSVG}</div>
+            <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronCircleDownSVG}</div>
           </StyledButton>
           <div className="absolute -bottom-5 left-2 flex items-center">
             <div className="mr-2 scale-125 text-white">

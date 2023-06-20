@@ -392,7 +392,7 @@ const EnterExitModal = ({
                       disabled={pending || !percent || +userData.stakedUsdAmount <= 0}
                     >
                       Exit {renderProfit()} Profit
-                      {pending && !isZapOut && (
+                      {pending /*&& !isZapOut*/ && (
                         <div className="absolute right-2 top-0 flex h-full items-center">
                           <Oval
                             width={21}
@@ -412,7 +412,7 @@ const EnterExitModal = ({
                       disabled={pending || +userData.stakedUsdAmount <= 0}
                     >
                       Zap Out
-                      {pending && isZapOut && (
+                      {pending /*&& isZapOut*/ && (
                         <div className="absolute right-2 top-0 flex h-full items-center">
                           <Oval
                             width={21}

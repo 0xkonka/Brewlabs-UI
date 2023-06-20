@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 
-import { ChevronDownSVG } from "components/dashboard/assets/svgs";
+import { ChevronCircleDownSVG } from "components/dashboard/assets/svgs";
 import "react-tooltip/dist/react-tooltip.css";
 import StyledButton from "views/directory/StyledButton";
 import { NetworkOptions } from "config/constants/networks";
@@ -40,7 +40,7 @@ const Pair = ({ pair }) => {
           }}
         >
           <div className="text-xs leading-none">Harvest</div>
-          <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronDownSVG}</div>
+          <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronCircleDownSVG}</div>
         </StyledButton>
       </div>
     </div>
