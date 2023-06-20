@@ -22,14 +22,18 @@ const NFT = () => {
             <PageHeader
               title={
                 <div className="text-[40px]">
-                  <WordHighlight content="Brewlabs NFT" />
-                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">By Brewlabs</div>
+                  <WordHighlight content="Brewlabs NFT's" />
+                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
+                    Brewlabs NFT Artificer
+                  </div>
                 </div>
               }
             />
             <Container className="font-brand">
-              <div className="mb-16">
-                <div className="text-lg leading-[1.2] text-primary">Welcome to the Brewlabs NFT Artificer</div>
+              <div className="mb-20">
+                <div className="text-lg leading-[1.2] text-primary">
+                  {"Mint, upgrade, benefit and earn with Brewlabs NFT's."}
+                </div>
                 <div className="mt-1.5 max-w-[750px] text-sm leading-[1.2]">
                   Brewlabs is responsible for number of products and utilities deployed across the decentralised finance
                   industry. The Brewlabs NFT collection allows users to mint a Brewlabs NFT at anytime to gain access to
@@ -39,6 +43,7 @@ const NFT = () => {
                 </div>
               </div>
               <NFTActions />
+              <div className="mt-3" />
               <NFTList />
             </Container>
           </div>

@@ -656,9 +656,9 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         }}
                       />
                     </div>
-                    <div className="relative bottom-0 left-0 mt-2 flex h-12 w-full md:absolute">
+                    <div className="relative bottom-0 left-0 mt-2 flex h-fit w-full flex-col sm:flex-row md:absolute">
                       {data.chainId !== chainId ? (
-                        <div className="flex-1">
+                        <div className="h-12 flex-none sm:flex-1">
                           <StyledButton
                             type={"quaternary"}
                             disabled={!canSwitch}
@@ -671,7 +671,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         </div>
                       ) : (
                         <>
-                          <div className="mr-5 flex-1">
+                          <div className="mr-0 h-12 flex-none sm:mr-5 sm:flex-1">
                             <StyledButton
                               type={"quaternary"}
                               onClick={() => {
@@ -683,7 +683,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                               Enter {getIndexName(tokens)} Index
                             </StyledButton>
                           </div>
-                          <div className="flex-1">
+                          <div className="h-12 sm:flex-1 flex-none sm:mt-0 mt-2">
                             <StyledButton
                               type={"quaternary"}
                               onClick={() => {
