@@ -152,14 +152,15 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                   <NavigationMobile />
                                   <UserSidebar />
 
-                                <div className="flex flex-1 flex-col relative">
-                                  <HeaderMobile />
-                                  <LazyMotion features={domAnimation}>
-                                    <AnimatePresence exitBeforeEnter>
-                                      <App {...props} />
-                                    </AnimatePresence>
-                                  </LazyMotion>
-                                  {/* {loading ? <LoadingPage /> : ""} */}
+                                  <div className="flex flex-1 flex-col relative">
+                                    <HeaderMobile />
+                                    <LazyMotion features={domAnimation}>
+                                      <AnimatePresence exitBeforeEnter>
+                                        <App {...props} />
+                                      </AnimatePresence>
+                                    </LazyMotion>
+                                    {/* {loading ? <LoadingPage /> : ""} */}
+                                  </div>
                                 </div>
                                 <ToastContainer />
                               </div>
