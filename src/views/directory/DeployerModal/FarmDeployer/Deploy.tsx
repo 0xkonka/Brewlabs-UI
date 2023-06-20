@@ -15,7 +15,7 @@ import { useTokenApprove } from "hooks/useApprove";
 import useTotalSupply from "hooks/useTotalSupply";
 import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
-import { useFarmFactories } from "state/deploy/hooks";
+import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
 import { calculateGasMargin, isAddress } from "utils";
 import { getContract } from "utils/contractHelpers";
@@ -24,10 +24,11 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import DropDown from "components/dashboard/TokenList/Dropdown";
+import LoadingText from "@components/LoadingText";
+
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
-import { useFarmFactory } from "./hooks";
-import LoadingText from "@components/LoadingText";
+import { useFactory } from "./hooks";
 
 const DURATIONS = [365, 180, 90, 60];
 
@@ -38,8 +39,8 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
   const { pending, setPending, tokens }: any = useContext(DashboardContext);
 
-  const factory = useFarmFactories(chainId);
-  const { onCreate } = useFarmFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const factory = useFarmFactory(chainId);
+  const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
   const { onApprove } = useTokenApprove();
 
   const [duration, setDuration] = useState(0);
@@ -190,7 +191,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
   return (
     <div className="font-roboto text-white">
-      <div className="mt-4 flex items-center justify-between rounded-[30px] px-4 py-5 bg-[#1A1E28] primary-shadow">
+      <div className="primary-shadow mt-4 flex items-center justify-between rounded-[30px] bg-[#1A1E28] px-4 py-5">
         <div className="mx-auto flex items-center justify-between sm:mx-0">
           <img
             src={getDexLogo(router?.id)}

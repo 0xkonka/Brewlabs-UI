@@ -111,3 +111,19 @@ html.dark h3 {
   border-radius: 9999px;
   background-color: #eebb19;
 }
+
+.bounce-animation {
+  animation: rightBounce 0.8s infinite;
+}
+
+@keyframes rightBounce {
+  0%,
+  to {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  50% {
+    transform: translateX(20%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+}
