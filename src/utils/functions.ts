@@ -102,3 +102,12 @@ export const formatIPFSString = (url) => {
     _url = "https://maverickbl.mypinata.cloud/ipfs/" + _url.replace("ipfs://ipfs/", "");
   return _url;
 };
+
+export const getRarityColor = (rarity) => {
+  switch (rarity) {
+    case "common":
+      return "text-white";
+    case "rare":
+      return "text-[#1A82FF]";
+  }
+};

@@ -5,13 +5,18 @@ const SelectionPanel = ({
   setCurFilter,
   criteria,
   setCriteria,
+  nfts,
 }: {
   curFilter: number;
   setCurFilter: any;
   criteria: string;
   setCriteria: any;
+  nfts: any;
 }) => {
-  const filters = ["All (63)", "Common (2)", "Uncommon (4)", "Rare  (2)", "Epic (2)", "Legendary (2)"];
+  const filterNames = ["All", "Common", "Uncommon", "Rare", "Epic", "Legendary"];
+  const filters = filterNames.map(
+    (name) => `${name} (${nfts.filter((data) => data.rarity === name.toLowerCase() || name === "All").length})`
+  );
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
       <div className="mb-0 block flex w-full items-center justify-end md:mb-3 xl:hidden">
@@ -25,7 +30,9 @@ const SelectionPanel = ({
         </div>
       </div>
       <div className="flex w-full items-center justify-between">
-        <div className="font-roboto font-bold leading-none text-white whitespace-nowrap md:block hidden">My Brewlabs NFT’s</div>
+        <div className="hidden whitespace-nowrap font-roboto font-bold leading-none text-white md:block">
+          My Brewlabs NFT’s
+        </div>
         <div className="flex items-center justify-between ">
           <div className="hidden flex-1 md:flex">
             {filters.map((data, i) => {
@@ -37,13 +44,15 @@ const SelectionPanel = ({
                     curFilter === i
                       ? "bg-[#FFFFFF40] text-[#FFDE0D]"
                       : "bg-[#d9d9d91a] text-[#FFFFFF59] hover:text-white"
-                  } ${i === filters.length - 1 ? 'xl:mr-2.5 mr-0' : 'mr-2.5'} h-fit whitespace-nowrap p-[8px_10px] leading-none`}
+                  } ${
+                    i === filters.length - 1 ? "mr-0 xl:mr-2.5" : "mr-2.5"
+                  } h-fit whitespace-nowrap p-[8px_10px] leading-none`}
                 >
                   {data}
                 </div>
               );
             })}
-            <div className="hidden w-[280px] flex-1 xl:block">
+            <div className="hidden w-[240px] flex-1 xl:block">
               <input
                 placeholder="Search token..."
                 value={criteria}
