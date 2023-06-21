@@ -12,6 +12,7 @@ import SolidButton from "../button/SolidButton";
 import OutlinedButton from "../button/OutlinedButton";
 import { shortenAddress } from "utils";
 import { ZERO_ADDRESS } from "config/constants";
+import { BurnSVG, LockFillSVG, PoolFeeSVG } from "@components/dashboard/assets/svgs";
 
 export const CheckStatus = ({ status }: { status: number }) => {
   return status === 0 ? (
@@ -124,7 +125,9 @@ export default function DeployYieldFarm({
               <CurrencyLogo currency={currencies[Field.CURRENCY_B]} size="30px" />
             </div>
           )}
-          <span className="ml-0 text-xs text-white sm:ml-2 sm:text-base">{currencies[Field.CURRENCY_A].symbol}-{currencies[Field.CURRENCY_B].symbol}</span>
+          <span className="ml-0 text-xs text-white sm:ml-2 sm:text-base">
+            {currencies[Field.CURRENCY_A].symbol}-{currencies[Field.CURRENCY_B].symbol}
+          </span>
         </div>
         <button
           className="flex items-center rounded border border-gray-700 bg-gray-800 py-1 pl-[20px] pr-[7px]"
@@ -206,10 +209,34 @@ export default function DeployYieldFarm({
           )}
         </div>
       </div>
-      {justEntered && (
-        <SolidButton disabled={false} onClick={onAddLiquidity}>
-          Create pair & yield farm
-        </SolidButton>
+      {txConfirmed ? (
+        <div className="mb-4">
+          <SolidButton className="w-full">
+            <div className="mx-auto flex w-fit items-center">
+              Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+            </div>
+          </SolidButton>
+          <div className="mt-3 flex justify-between">
+            <SolidButton className="mr-3 flex-1 text-xs">
+              <div className="mx-auto flex w-fit items-center">
+                Lock liquidity for ETH-BREWLABS
+                <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
+              </div>
+            </SolidButton>
+            <SolidButton className="flex-1 bg-[#D9563A] text-xs">
+              <div className="mx-auto flex w-fit items-center">
+                Burn liquidity for ETH-BREWLABS
+                <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
+              </div>
+            </SolidButton>
+          </div>
+        </div>
+      ) : (
+        justEntered && (
+          <SolidButton disabled={false} onClick={onAddLiquidity}>
+            Create pair & yield farm
+          </SolidButton>
+        )
       )}
       {attemptingTxn && <SolidButton disabled={false}>Deploying...</SolidButton>}
       {!attemptingTxn && (

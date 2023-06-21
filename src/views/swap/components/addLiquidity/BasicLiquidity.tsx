@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Currency, TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -26,6 +26,8 @@ import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketCha
 import useTotalSupply from "@hooks/useTotalSupply";
 import { useTokenPrices } from "hooks/useTokenPrice";
 import getCurrencyId from "utils/getCurrencyId";
+import { getChainLogo } from "utils/functions";
+import { BurnSVG, LockFillSVG, PoolFeeSVG, checkCircleSVG, lockSVG } from "@components/dashboard/assets/svgs";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -240,51 +242,72 @@ export default function BasicLiquidity() {
     <>
       {addLiquidityStep < 4 ? (
         <>
-          <div className="font-['Roboto'] text-xl text-white">{`${
+          <div className="font-brand text-xl text-white">{`${
             addLiquidityStep === 3 ? "Step 1/2: " : ""
           }Create basic liquidity pool`}</div>
 
-          <div className="px-0 sm:px-4">
-            <div className="mt-6 rounded-2xl border border-gray-600">
-              <CurrencyInputPanel
-                value={formattedAmounts[Field.CURRENCY_A]}
-                onUserInput={onFieldAInput}
-                onMax={() => {
-                  onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
-                }}
-                onCurrencySelect={onCurrencySelection}
-                currency={currencies[Field.CURRENCY_A]}
-                balance={currencyBalances[Field.CURRENCY_A]}
-                type={"liquidity"}
-                currencies={currencies}
-                showMaxButton
-              ></CurrencyInputPanel>
-            </div>
+          <div>
+            {!txHash ? (
+              <div className="px-0 sm:px-4">
+                <div className="mt-6 rounded-2xl border border-gray-600">
+                  <CurrencyInputPanel
+                    value={formattedAmounts[Field.CURRENCY_A]}
+                    onUserInput={onFieldAInput}
+                    onMax={() => {
+                      onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? "");
+                    }}
+                    onCurrencySelect={onCurrencySelection}
+                    currency={currencies[Field.CURRENCY_A]}
+                    balance={currencyBalances[Field.CURRENCY_A]}
+                    type={"liquidity"}
+                    currencies={currencies}
+                    showMaxButton
+                  ></CurrencyInputPanel>
+                </div>
 
-            <div className="z-10 -my-2 flex justify-center">
-              <div className="rounded-lg bg-primary px-1">
-                <PlusSmallIcon className="h-6 w-6 dark:text-gray-900" />
+                <div className="z-10 -my-2 flex justify-center">
+                  <div className="rounded-lg bg-primary px-1">
+                    <PlusSmallIcon className="h-6 w-6 dark:text-gray-900" />
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-gray-600">
+                  <CurrencyInputPanel
+                    value={formattedAmounts[Field.CURRENCY_B]}
+                    onUserInput={onFieldBInput}
+                    onMax={() => {
+                      onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
+                    }}
+                    onCurrencySelect={onCurrencySelection}
+                    currency={currencies[Field.CURRENCY_B]}
+                    balance={currencyBalances[Field.CURRENCY_B]}
+                    currencies={currencies}
+                    type={"liquidity"}
+                    inputCurrencySelect={false}
+                    showMaxButton
+                  ></CurrencyInputPanel>
+                </div>
               </div>
-            </div>
-
-            <div className="rounded-2xl border border-gray-600">
-              <CurrencyInputPanel
-                value={formattedAmounts[Field.CURRENCY_B]}
-                onUserInput={onFieldBInput}
-                onMax={() => {
-                  onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? "");
-                }}
-                onCurrencySelect={onCurrencySelection}
-                currency={currencies[Field.CURRENCY_B]}
-                balance={currencyBalances[Field.CURRENCY_B]}
-                currencies={currencies}
-                type={"liquidity"}
-                inputCurrencySelect={false}
-                showMaxButton
-              ></CurrencyInputPanel>
-            </div>
-
-            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-['Roboto'] text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
+            ) : (
+              <div className="primary-shadow flex items-center rounded-[30px] bg-[#18181B] p-[12px_24px]">
+                <img src={getChainLogo(chainId)} alt={""} className="h-6 w-6 rounded-full" />
+                <div className="mx-3 text-primary [&>*:first-child]:!h-4">{checkCircleSVG}</div>
+                <div className="flex items-center justify-center">
+                  {currencies[Field.CURRENCY_A] && <CurrencyLogo currency={currencies[Field.CURRENCY_A]} size="30px" />}
+                  {currencies[Field.CURRENCY_B] && (
+                    <div className="-ml-2">
+                      <CurrencyLogo currency={currencies[Field.CURRENCY_B]} size="30px" />
+                    </div>
+                  )}
+                </div>
+                <div className="ml-2 font-brand text-white">
+                  {(currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_A].symbol) +
+                    "-" +
+                    (currencies[Field.CURRENCY_B] && currencies[Field.CURRENCY_B].symbol)}
+                </div>
+              </div>
+            )}
+            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-brand text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
               <div className="mb-3 flex justify-between">
                 <div className="text-base text-gray-300 sm:text-xl">New pool metrics</div>
                 <div className="flex min-w-[60px] items-center justify-center">
@@ -309,7 +332,7 @@ export default function BasicLiquidity() {
               ))}
             </div>
 
-            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-['Roboto'] text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
+            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-brand text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
               <div className="flex justify-between">
                 <div className="text-base text-gray-300">Dynamic pool fees</div>
               </div>
@@ -326,51 +349,89 @@ export default function BasicLiquidity() {
               ))}
             </div>
           </div>
-          {approvalA === ApprovalState.NOT_APPROVED ||
-          approvalA === ApprovalState.PENDING ||
-          approvalB === ApprovalState.NOT_APPROVED ||
-          approvalB === ApprovalState.PENDING ? (
-            <div
-              className={`grid ${
-                approvalA === ApprovalState.APPROVED || approvalB === ApprovalState.APPROVED
-                  ? "grid-cols-1"
-                  : "grid-cols-2"
-              } gap-2`}
-            >
-              {approvalA !== ApprovalState.APPROVED && (
-                <SolidButton onClick={approveACallback} disabled={approvalA === ApprovalState.PENDING}>
-                  {approvalA === ApprovalState.PENDING
-                    ? `Approving ${currencies[Field.CURRENCY_A]?.symbol}`
-                    : `Approve ${currencies[Field.CURRENCY_A]?.symbol}`}
-                </SolidButton>
-              )}
-              {approvalB !== ApprovalState.APPROVED && (
-                <SolidButton onClick={approveBCallback} disabled={approvalB === ApprovalState.PENDING}>
-                  {approvalB === ApprovalState.PENDING
-                    ? `Approving ${currencies[Field.CURRENCY_B]?.symbol}`
-                    : `Approve ${currencies[Field.CURRENCY_B]?.symbol}`}
-                </SolidButton>
-              )}
-            </div>
+          {!txHash ? (
+            approvalA === ApprovalState.NOT_APPROVED ||
+            approvalA === ApprovalState.PENDING ||
+            approvalB === ApprovalState.NOT_APPROVED ||
+            approvalB === ApprovalState.PENDING ? (
+              <div
+                className={`grid ${
+                  approvalA === ApprovalState.APPROVED || approvalB === ApprovalState.APPROVED
+                    ? "grid-cols-1"
+                    : "grid-cols-2"
+                } gap-2`}
+              >
+                {approvalA !== ApprovalState.APPROVED && (
+                  <SolidButton
+                    onClick={approveACallback}
+                    disabled={approvalA === ApprovalState.PENDING}
+                    pending={approvalA === ApprovalState.PENDING}
+                  >
+                    {approvalA === ApprovalState.PENDING
+                      ? `Approving ${currencies[Field.CURRENCY_A]?.symbol}`
+                      : `Approve ${currencies[Field.CURRENCY_A]?.symbol}`}
+                  </SolidButton>
+                )}
+                {approvalB !== ApprovalState.APPROVED && (
+                  <SolidButton
+                    onClick={approveBCallback}
+                    disabled={approvalB === ApprovalState.PENDING}
+                    pending={approvalB === ApprovalState.PENDING}
+                  >
+                    {approvalB === ApprovalState.PENDING
+                      ? `Approving ${currencies[Field.CURRENCY_B]?.symbol}`
+                      : `Approve ${currencies[Field.CURRENCY_B]?.symbol}`}
+                  </SolidButton>
+                )}
+              </div>
+            ) : (
+              <SolidButton
+                onClick={onNext}
+                disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+                pending={attemptingTxn}
+              >
+                {error
+                  ? error
+                  : addLiquidityStep === 2
+                  ? noLiquidity
+                    ? attemptingTxn
+                      ? "Creating..."
+                      : "Create pool"
+                    : attemptingTxn
+                    ? "Adding..."
+                    : "Add liquidity"
+                  : "Next: Select yield farm metrics"}
+              </SolidButton>
+            )
           ) : (
-            <SolidButton
-              onClick={onNext}
-              disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-            >
-              {error
-                ? error
-                : addLiquidityStep === 2
-                ? noLiquidity
-                  ? attemptingTxn
-                    ? "Creating..."
-                    : "Create pool"
-                  : attemptingTxn
-                  ? "Adding..."
-                  : "Add liquidity"
-                : "Next: Select yield farm metrics"}
-            </SolidButton>
+            <div className="mb-4">
+              <SolidButton className="w-full">
+                <div className="mx-auto flex w-fit items-center">
+                  Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+                </div>
+              </SolidButton>
+              <div className="mt-3 flex justify-between">
+                <SolidButton className="mr-3 flex-1 text-xs">
+                  <div className="mx-auto flex w-fit items-center">
+                    Lock liquidity for ETH-BREWLABS
+                    <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
+                  </div>
+                </SolidButton>
+                <SolidButton className="flex-1 bg-[#D9563A] text-xs">
+                  <div className="mx-auto flex w-fit items-center">
+                    Burn liquidity for ETH-BREWLABS
+                    <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
+                  </div>
+                </SolidButton>
+              </div>
+            </div>
           )}
-          <OutlinedButton className="mt-1 font-bold" small onClick={() => setAddLiquidityStep(1)}>
+          <OutlinedButton
+            className="mt-1 font-bold"
+            small
+            onClick={() => setAddLiquidityStep(1)}
+            // onClick={() => setIsAdded(true)}
+          >
             Back
           </OutlinedButton>
         </>

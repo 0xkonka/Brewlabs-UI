@@ -53,7 +53,7 @@ export default function MobileNav() {
                       }}
                       disabled
                     >
-                      Add liquidity
+                      Liquidity tools
                     </button>
                   )}
                 </Menu.Item>
@@ -67,7 +67,7 @@ export default function MobileNav() {
                         // onClick={() => setSwapTab(2)}
                         // disabled
                       >
-                        Swap Rewards
+                        Pools & analytics
                       </button>
                     </Link>
                   )}
