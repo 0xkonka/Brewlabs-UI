@@ -109,7 +109,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
 
   const makePendingText = () => {
     return (
-      <div className="flex w-28 items-center justify-between rounded-lg border border-[#FFFFFF80] bg-[#B9B8B81A] px-2 py-1 text-sm">
+      <div className="primary-shadow flex w-28 items-center justify-between rounded-lg bg-[#B9B8B81A] px-2 py-1 text-sm">
         <div className="text-[#FFFFFFBF]">{step === 2 ? "Pending" : step === 4 ? "Deployed" : "Deploying"}</div>
         {step === 4 ? (
           <div className="ml-3 scale-50 text-primary">{checkCircleSVG}</div>
@@ -122,7 +122,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
 
   return (
     <div className="font-roboto text-white">
-      <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
+      <div className="primary-shadow mt-4 flex items-center justify-between rounded-[30px] px-4 py-3">
         <div className="mx-auto flex w-fit items-center justify-start overflow-hidden text-ellipsis whitespace-nowrap sm:mx-0">
           <img src={getChainLogo(chainId)} alt={""} className="h-7 w-7" />
           <div className="scale-50 text-primary">{checkCircleSVG}</div>

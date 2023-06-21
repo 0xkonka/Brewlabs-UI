@@ -111,6 +111,10 @@ export default function DeployYieldFarm({
     },
   ];
 
+  function getName(currencyA, currencyB) {
+    return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
+  }
+
   return (
     <>
       <div className="font-['Roboto'] text-xl text-white">Step 2/2: Deploy yield farm</div>
@@ -219,13 +223,13 @@ export default function DeployYieldFarm({
           <div className="mt-3 flex justify-between">
             <SolidButton className="mr-3 flex-1 text-xs">
               <div className="mx-auto flex w-fit items-center">
-                Lock liquidity for ETH-BREWLABS
+                Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                 <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
               </div>
             </SolidButton>
-            <SolidButton className="flex-1 bg-[#D9563A] text-xs">
+            <SolidButton className="flex-1 !bg-[#D9563A] text-xs">
               <div className="mx-auto flex w-fit items-center">
-                Burn liquidity for ETH-BREWLABS
+                Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                 <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
               </div>
             </SolidButton>

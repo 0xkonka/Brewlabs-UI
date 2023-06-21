@@ -211,7 +211,7 @@ export default function BasicLiquidity() {
     },
     {
       key: "Pool fee for liquidity providers",
-      value: liquidityProviderFee.toFixed(2) + "%",
+      value: `${(Math.round(liquidityProviderFee * 100) / 100).toFixed(2)}%`,
     },
     {
       key: "Pool fee for Brewlabs protocol",
@@ -219,7 +219,9 @@ export default function BasicLiquidity() {
     },
     {
       key: "Total fixed pool fee",
-      value: (tokenOwnerFee + tokenHoldersFee + liquidityProviderFee + brewlabsFee).toFixed(2) + "%",
+      value: `${(
+        Math.round((tokenOwnerFee + tokenHoldersFee + liquidityProviderFee + brewlabsFee) * 100) / 100
+      ).toFixed(2)}%`,
     },
   ];
 
@@ -237,6 +239,10 @@ export default function BasicLiquidity() {
       value: `0.00%`,
     },
   ];
+
+  function getName(currencyA, currencyB) {
+    return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
+  }
 
   return (
     <>
@@ -301,9 +307,7 @@ export default function BasicLiquidity() {
                   )}
                 </div>
                 <div className="ml-2 font-brand text-white">
-                  {(currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_A].symbol) +
-                    "-" +
-                    (currencies[Field.CURRENCY_B] && currencies[Field.CURRENCY_B].symbol)}
+                  {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                 </div>
               </div>
             )}
@@ -413,13 +417,13 @@ export default function BasicLiquidity() {
               <div className="mt-3 flex justify-between">
                 <SolidButton className="mr-3 flex-1 text-xs">
                   <div className="mx-auto flex w-fit items-center">
-                    Lock liquidity for ETH-BREWLABS
+                    Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                     <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
                   </div>
                 </SolidButton>
-                <SolidButton className="flex-1 bg-[#D9563A] text-xs">
+                <SolidButton className="flex-1 !bg-[#D9563A] text-xs">
                   <div className="mx-auto flex w-fit items-center">
-                    Burn liquidity for ETH-BREWLABS
+                    Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                     <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
                   </div>
                 </SolidButton>
@@ -430,7 +434,7 @@ export default function BasicLiquidity() {
             className="mt-1 font-bold"
             small
             onClick={() => setAddLiquidityStep(1)}
-            // onClick={() => setIsAdded(true)}
+            // onClick={() => setTxHash("ASDFASDF")}
           >
             Back
           </OutlinedButton>
