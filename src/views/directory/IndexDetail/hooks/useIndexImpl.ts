@@ -17,10 +17,11 @@ import { getNetworkGasPrice } from "utils/getGasPrice";
 const zapIn = async (indexContract, token, amount, percents, gasPrice) => {
   const value = parseEther(amount);
 console.log('precomputeZapIn', token, percents.map((p) => (p * 100).toFixed(0)))
+  
   const queries = await indexContract.precomputeZapIn(
     token,
     value,
-    percents.map((p) => (p * 100).toFixed(0))
+    percents.map((p) => (p * 100).toFixed(0)), {gasLimit: "80000000"}
   );
   // if (token != ethers.constants.AddressZero && queries[0].adapters.length === 0) return;
 console.log('zapIn queries', queries)
