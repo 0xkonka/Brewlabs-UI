@@ -29,14 +29,14 @@ const SubNav = ({ openSettingModal }: Props) => {
           }}
           // disabled
         >
-          Add liquidity
+          Liquidity tools
         </button>
         <Link href={"/tradingPairs"}>
           <button
             className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""}`}
             //  onClick={() => setSwapTab(2)}
           >
-            Swap Rewards
+            Pools & analytics
           </button>
         </Link>
       </div>
