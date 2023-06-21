@@ -6,9 +6,11 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import StyledButton from "views/directory/StyledButton";
 import RarityCard from "./RarityCard";
-import { InfoSVG } from "@components/dashboard/assets/svgs";
+import { InfoSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import { useState } from "react";
 import DropDown from "@components/dashboard/TokenList/Dropdown";
+import MintNFTModal from "../Modals/MintNFTModal";
+import Link from "next/link";
 
 const FindOutMore = () => {
   const rarities = [
@@ -117,9 +119,11 @@ const FindOutMore = () => {
   ];
 
   const [curRarity, setCurRarity] = useState(0);
+  const [mintOpen, setMintOpen] = useState(false);
 
   return (
     <PageWrapper>
+      <MintNFTModal open={mintOpen} setOpen={setMintOpen} />
       <AnimatePresence>
         <motion.div
           initial={{ opacity: 0, scale: 0.75 }}
@@ -135,14 +139,32 @@ const FindOutMore = () => {
                     <WordHighlight content="Brewlabs NFT Information" />
                   </div>
                 </h1>
-                <StyledButton className="hidden !w-fit p-[10px_12px] !font-normal md:block">
-                  Mint Brewlabs NFT
-                </StyledButton>
+                <div className="hidden lg:flex">
+                  <StyledButton className="!w-fit p-[10px_12px] !font-normal" onClick={() => setMintOpen(true)}>
+                    Mint Brewlabs NFT
+                  </StyledButton>
+                  <div className="mr-2" />
+                  <Link href={"/nft"}>
+                    <StyledButton className="!w-fit p-[10px_12px_10px_24px] !font-normal">
+                      <div className="absolute left-1 top-[11px] scale-[85%]">{chevronLeftSVG}</div>
+                      Back to NFT
+                    </StyledButton>
+                  </Link>
+                </div>
               </header>
             </Container>
             <Container className="font-roboto">
-              <div className="mb-6 flex w-full justify-end md:hidden">
-                <StyledButton className="!w-fit p-[10px_12px] !font-normal">Mint Brewlabs NFT</StyledButton>
+              <div className="mb-3 flex w-full justify-end lg:hidden">
+                <StyledButton className="!w-fit p-[6px_12px] !font-normal" onClick={() => setMintOpen(true)}>
+                  Mint Brewlabs NFT
+                </StyledButton>
+                <div className="mr-2" />
+                <Link href={"/nft"}>
+                  <StyledButton className="!w-fit p-[6px_12px_6px_24px] !font-normal">
+                    <div className="absolute left-1 top-[7px] scale-[85%]">{chevronLeftSVG}</div>
+                    Back to NFT
+                  </StyledButton>
+                </Link>
               </div>
               <div className="hidden w-full flex-wrap justify-evenly md:flex xl:flex-nowrap xl:justify-between">
                 {rarities.map((data, i) => {

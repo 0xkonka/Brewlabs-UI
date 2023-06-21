@@ -39,7 +39,7 @@ const RarityCard = ({ rarity }) => {
       ) : (
         <div className="md:h-[26px] h-0" />
       )}
-      <div className="md:mt-10 mt-0">
+      <div className="mt-10">
         <div className="text-sm text-[#FFFFFFBF]">{rarity.features.title}</div>
         <ul className="mt-4 list-disc pl-5 text-xs text-[#FFFFFF80]">
           {rarity.features.data.map((data: string, i: number) => {
