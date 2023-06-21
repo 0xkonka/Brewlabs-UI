@@ -73,6 +73,8 @@ export const navigationData = [
     external: false,
     // coming: true,
     icon: "ShoppingBagIcon",
+    svg: NFTSVG,
+
   },
 ] as NavigationItem[];
 
