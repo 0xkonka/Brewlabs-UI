@@ -29,9 +29,10 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
   const formattedInvertedPrice = formatDecimals(price?.invert()?.toSignificant(6) ?? "0.0");
 
   const adapters = useMemo(() => {
+    if (!data) return [];
     const usedAdapters = Adapters[chainId].filter((x) => data.adapters.includes(x.address));
     return usedAdapters.filter((x, i) => usedAdapters.findIndex((y) => y.name == x.name) == i);
-  }, [data.adapters, chainId]);
+  }, [data, chainId]);
 
   return (
     <>
