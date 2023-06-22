@@ -7,6 +7,10 @@ import { JSBI, Token } from "@brewlabs/sdk";
 import { filterTokens } from "@components/searchModal/filtering";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenBalancesWithLoadingIndicator } from "state/wallet/hooks";
+import { usePendingRewards } from "./usePendingRewards";
+import { rewardInUSD } from "views/swap/components/SwapRewards";
+import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
+import { useTokens } from "@hooks/Tokens";
 
 type FeeDistribution = {
   lpFee: number;
@@ -31,13 +35,13 @@ export const useLiquidityPools = () => {
   const [pairsLength, setPairsLength] = useState<number>(0);
 
   useEffect(() => {
-    if (contract) {
+    if (contract.address) {
       (async () => {
         const value = await contract.pairsLength();
         setPairsLength(value.toNumber());
       })();
     }
-  }, [contract]);
+  }, [contract.address]);
 
   const outputOfPairs = useSingleContractMultipleData(
     contract,
@@ -69,6 +73,7 @@ export const useOwnedLiquidityPools = () => {
 
   const lpTokens = useMemo(() => pairs.map((pair) => new Token(chainId, pair.id, 18)), [chainId, pairs]);
   const [lpBalances] = useTokenBalancesWithLoadingIndicator(account, lpTokens);
+  const tokenMarketData = useTokenMarketChart(chainId);
 
   const ownedPairs = useMemo(() => {
     if (!account || !pairs || !pairs.length) return [];
@@ -78,9 +83,30 @@ export const useOwnedLiquidityPools = () => {
     );
   }, [account, pairs]);
 
+  const rewards = usePendingRewards(ownedPairs);
+
+  const pairTokenAddresses = useMemo(
+    () => [...new Set([].concat.apply([], ownedPairs.map((pair) => [pair.token0, pair.token1]) as ConcatArray<any>[]))],
+    [ownedPairs]
+  );
+  const pairTokens = useTokens(pairTokenAddresses);
+
   const inputFilter = (pair) =>
     filterTokens([new Token(chainId, pair.token0, 18), new Token(chainId, pair.token1, 18)], "").length > 0;
 
   const eligiblePairs = useMemo(() => ownedPairs.filter(inputFilter), [ownedPairs]);
-  return { eligiblePairs, ownedPairs, lpBalances };
+
+  const collectiblePairs = useMemo(
+    () =>
+      eligiblePairs.filter((pair) => {
+        if (Object.keys(pairTokens ?? {}).length === 0) return 0;
+        const { token0, token1 } = pair;
+        const { usd: token0Price } = tokenMarketData[token0?.toLowerCase()] || defaultMarketData;
+        const { usd: token1Price } = tokenMarketData[token1?.toLowerCase()] || defaultMarketData;
+        return rewardInUSD(pairTokens[token0], pairTokens[token1], token0Price, token1Price, rewards[pair.id]);
+      }),
+    [eligiblePairs, rewards]
+  );
+
+  return { eligiblePairs, ownedPairs, lpBalances, collectiblePairs, rewards, pairTokens };
 };

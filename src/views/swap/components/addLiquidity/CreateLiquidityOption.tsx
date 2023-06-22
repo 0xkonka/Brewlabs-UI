@@ -2,12 +2,12 @@ import { SwapContext } from "contexts/SwapContext";
 import React, { useContext } from "react";
 
 import OutlinedButton from "../button/OutlinedButton";
-import { useOwnedLiquidityPools } from "@hooks/swap/useLiquidityPools";
 import Notification from "@components/Notification";
+import Link from "next/link";
 
 export default function CreateLiquidityOption() {
-  const { eligiblePairs } = useOwnedLiquidityPools();
-  const { addLiquidityStep, setAddLiquidityStep, setSwapTab }: any = useContext(SwapContext);
+  const { addLiquidityStep, setAddLiquidityStep, swapFeeData }: any = useContext(SwapContext);
+  const { collectiblePairs } = swapFeeData;
   return addLiquidityStep === "default" ? (
     <>
       <div className="font-brand text-xl text-white">Create and manage your liquidity</div>
@@ -35,9 +35,19 @@ export default function CreateLiquidityOption() {
           View and&nbsp;<span className="text-white">harvest</span>
           &nbsp;my&nbsp;<span className="dark:text-primary">Brew</span>
           <span className="text-white">Swap</span>&nbsp;fees
-          <Notification count={eligiblePairs.length} className="!-right-[26px] !-top-2.5"/>
+          <Notification count={collectiblePairs.length} className="!-right-[26px] !-top-2.5" />
         </div>
       </OutlinedButton>
+
+      <Link href={"/constructor"}>
+        <OutlinedButton image="/images/swap/plus.svg" className="mt-2">
+          <div className="relative">
+            Add&nbsp;<span className="text-white">liquidity </span>
+            &nbsp;my&nbsp;<span className="dark:text-primary">Brew</span>
+            <span className="text-white">Swap</span>&nbsp;pairs
+          </div>
+        </OutlinedButton>
+      </Link>
     </>
   ) : addLiquidityStep === "CreateNewLiquidityPool" ? (
     <>
