@@ -7,16 +7,20 @@ type SolidButtonProps = {
   className?: string;
   disabled?: boolean;
   pending?: boolean;
+  href?: string;
 };
 
-const SolidButton = ({ children, onClick, className, disabled, pending }: SolidButtonProps) => {
+const SolidButton = ({ children, onClick, className, disabled, pending, href }: SolidButtonProps) => {
   return (
     <button
-      className={`primary-shadow relative cursor-pointer rounded-lg bg-primary py-2.5 text-center font-brand text-sm font-bold leading-[1.2] text-black transition enabled:hover:border-primary enabled:hover:bg-opacity-60 ${
+      onClick={(e: any) => {
+        onClick && onClick(e);
+        // rouetr
+      }}
+      disabled={disabled}
+      className={`primary-shadow relative cursor-pointer rounded-lg bg-primary py-2.5 text-center font-brand text-sm font-bold leading-[1.2] text-black transition enabled:hover:border-primary enabled:hover:bg-opacity-80 ${
         className ?? ""
       } disabled:cursor-not-allowed disabled:opacity-70`}
-      onClick={onClick}
-      disabled={disabled}
     >
       {children}
       {pending ? (

@@ -175,7 +175,11 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     tokens[ChainId.BSC_MAINNET].eth,
     tokens[ChainId.BSC_MAINNET].usdc,
   ],
-  [ChainId.BSC_TESTNET]: [tokens[ChainId.BSC_TESTNET].wbnb, tokens[ChainId.BSC_TESTNET].busd, tokens[ChainId.BSC_TESTNET].tokenA],
+  [ChainId.BSC_TESTNET]: [
+    tokens[ChainId.BSC_TESTNET].wbnb,
+    tokens[ChainId.BSC_TESTNET].busd,
+    tokens[ChainId.BSC_TESTNET].tokenA,
+  ],
   [ChainId.POLYGON]: [tokens[ChainId.POLYGON].wmatic, tokens[ChainId.POLYGON].usdc],
   [ChainId.FANTOM]: [tokens[ChainId.FANTOM].wftm, tokens[ChainId.FANTOM].eth, tokens[ChainId.FANTOM].usdc],
   [ChainId.AVALANCHE]: [tokens[ChainId.AVALANCHE].wavax, tokens[ChainId.AVALANCHE].usdc],
@@ -269,7 +273,7 @@ export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), B
 export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE); // 3%
 export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(JSBI.BigInt(500), BIPS_BASE); // 5%
 // if the price slippage exceeds this number, force the user to type 'confirm' to execute
-export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(JSBI.BigInt(1000), BIPS_BASE) // 10%
+export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(JSBI.BigInt(1000), BIPS_BASE); // 10%
 // for non expert mode disable swaps above this
 export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(JSBI.BigInt(1500), BIPS_BASE); // 15%
 
@@ -284,3 +288,8 @@ export const slippageWithTVL = 200;
 export const slippageDefault = 5000;
 
 export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+export const FREEZER_CHAINS = {
+  1: "ethereum",
+  56: "smartchain",
+};

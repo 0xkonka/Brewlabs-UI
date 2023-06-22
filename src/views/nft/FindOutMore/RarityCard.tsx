@@ -18,8 +18,8 @@ const RarityCard = ({ rarity }) => {
           ""
         )}
       </div>
-      <div className="mt-2 flex h-[158px] w-full items-center justify-center rounded bg-[#B9B8B80D] text-tailwind [&>*:first-child]:!h-[66px]">
-        {QuestionSVG}
+      <div className="mt-2 flex h-[158px] w-full items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-tailwind">
+        <img src={rarity.logo} alt={""} className="w-full" />
       </div>
       <div className="mt-1.5 h-36">
         <div className="text-sm text-[#FFFFFFBF]">Benefits</div>
@@ -37,7 +37,7 @@ const RarityCard = ({ rarity }) => {
           Upgradeable
         </StyledButton>
       ) : (
-        <div className="md:h-[26px] h-0" />
+        <div className="h-0 md:h-[26px]" />
       )}
       <div className="mt-10">
         <div className="text-sm text-[#FFFFFFBF]">{rarity.features.title}</div>

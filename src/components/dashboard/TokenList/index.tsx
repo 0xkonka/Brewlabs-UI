@@ -11,7 +11,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccount, useSigner } from "wagmi";
 import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat, getBlockExplorerLink, getChainLogo } from "utils/functions";
-import "react-tooltip/dist/react-tooltip.css";
+
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { Field } from "state/swap/actions";

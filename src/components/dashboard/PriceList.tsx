@@ -6,7 +6,7 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { chevronLeftSVG, DoubleUpSVG } from "./assets/svgs";
 import { BigNumberFormat, priceFormat } from "utils/functions";
 import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 const responsive = {

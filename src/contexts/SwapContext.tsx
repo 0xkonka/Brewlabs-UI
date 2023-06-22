@@ -19,7 +19,7 @@ const SwapContext: any = React.createContext({
   verified: false,
   apporveStep: 0,
   swapTab: 0,
-  addLiquidityStep: 0,
+  addLiquidityStep: "default",
   openSettingModal: false,
   setQuoteData: () => {},
   setOutputAmount: () => {},
@@ -55,7 +55,7 @@ const SwapContextProvider = ({ children }: any) => {
   const [apporveStep, setApproveStep] = useState(0);
 
   const [swapTab, setSwapTab] = useState(0);
-  const [addLiquidityStep, setAddLiquidityStep] = useState(0);
+  const [addLiquidityStep, setAddLiquidityStep] = useState("default");
   const [openSettingModal, setOpenSettingModal] = useState(false);
 
   useDefaultsFromURLSearch();

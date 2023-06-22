@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from "react";
-import { Currency, TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
+import { useMemo } from "react";
+import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { TransactionResponse } from "@ethersproject/providers";
 import DeployYieldFarm from "./DeployYieldFarm";
 import CurrencyInputPanel from "components/currencyInputPanel";
@@ -19,15 +20,15 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/m
 import { calculateSlippageAmount, calculateGasMargin } from "utils";
 import { maxAmountSpend } from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
-import { getBrewlabsRouterContract } from "utils/contractHelpers";
+import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { CurrencyLogo } from "@components/logo";
 import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
 import useTotalSupply from "@hooks/useTotalSupply";
-import { useTokenPrices } from "hooks/useTokenPrice";
-import getCurrencyId from "utils/getCurrencyId";
 import { getChainLogo } from "utils/functions";
-import { BurnSVG, LockFillSVG, PoolFeeSVG, checkCircleSVG, lockSVG } from "@components/dashboard/assets/svgs";
+import { BurnSVG, InfoSVG, LockFillSVG, PoolFeeSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import WarningModal from "@components/warningModal";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -56,7 +57,8 @@ export default function BasicLiquidity() {
 
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
-  ``;
+  const [burnWarningOpen, setBurnWarningOpen] = useState<boolean>(false);
+
   const [allowedSlippage] = useUserSlippageTolerance();
   const deadline = 1000;
 
@@ -166,11 +168,28 @@ export default function BasicLiquidity() {
     // }, 2000);
   };
 
+  const onBurnLiquidity = () => {
+    setBurnWarningOpen(true);
+  };
+
+  const onBurn = async () => {
+    setAttemptingTxn(true);
+    try {
+      const tokenContract = getBep20Contract(chainId, pair?.liquidityToken.address, signer);
+      const balance = await tokenContract.balanceOf(account);
+      const tx = await tokenContract.transfer(ZERO_ADDRESS, balance);
+      await tx.wait();
+    } catch (e) {
+      console.log(e);
+    }
+    setAttemptingTxn(false);
+  };
+
   const onNext = () => {
-    if (addLiquidityStep === 2) {
+    if (addLiquidityStep === "CreateBasicLiquidityPool") {
       onAdd();
     } else {
-      setAddLiquidityStep(4);
+      setAddLiquidityStep("DeployYieldFarm");
     }
   };
 
@@ -246,10 +265,17 @@ export default function BasicLiquidity() {
 
   return (
     <>
-      {addLiquidityStep < 4 ? (
+      <WarningModal
+        type={"burn"}
+        open={burnWarningOpen}
+        setOpen={setBurnWarningOpen}
+        data={{ pair: { name: getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]) } }}
+        onClick={onBurn}
+      />
+      {addLiquidityStep === "CreateBasicLiquidityPool" || addLiquidityStep === "CreateBundleLiquidityPool" ? (
         <>
           <div className="font-brand text-xl text-white">{`${
-            addLiquidityStep === 3 ? "Step 1/2: " : ""
+            addLiquidityStep === "CreateBundleLiquidityPool" ? "Step 1/2: " : ""
           }Create basic liquidity pool`}</div>
 
           <div>
@@ -337,8 +363,11 @@ export default function BasicLiquidity() {
             </div>
 
             <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-brand text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
-              <div className="flex justify-between">
-                <div className="text-base text-gray-300">Dynamic pool fees</div>
+              <div className="flex items-center text-base text-gray-300">
+                <div className="mr-1 scale-[110%] text-[#FFFFFFB0]" id={"dynamicpoolfees"}>
+                  <InfoSVG />
+                </div>
+                <div>Dynamic pool fees</div>
               </div>
               {dynamicData.map((item, i) => (
                 <div
@@ -396,7 +425,7 @@ export default function BasicLiquidity() {
               >
                 {error
                   ? error
-                  : addLiquidityStep === 2
+                  : addLiquidityStep === "CreateBasicLiquidityPool"
                   ? noLiquidity
                     ? attemptingTxn
                       ? "Creating..."
@@ -414,16 +443,32 @@ export default function BasicLiquidity() {
                   Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
                 </div>
               </SolidButton>
-              <div className="mt-3 flex justify-between">
-                <SolidButton className="mr-3 flex-1 text-xs">
+              <div className="mt-3 flex flex-col justify-between sm:flex-row">
+                <a
+                  href={`https://freezer.brewlabs.info/${FREEZER_CHAINS[chainId]}/pair-lock/new?pairAddress=${
+                    pair?.liquidityToken.address || ZERO_ADDRESS
+                  }`}
+                  target="_blank"
+                >
+                  <SolidButton className="mb-2 mr-0 flex-1 text-xs sm:mb-0 sm:mr-3">
+                    <div className="mx-auto flex w-fit items-center">
+                      <div className="flex-1">
+                        Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
+                      </div>
+                      <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
+                    </div>
+                  </SolidButton>
+                </a>
+                <SolidButton
+                  className="flex-1 !bg-[#D9563A] text-xs hover:!bg-opacity-80"
+                  onClick={() => onBurnLiquidity()}
+                  disabled={attemptingTxn}
+                  pending={attemptingTxn}
+                >
                   <div className="mx-auto flex w-fit items-center">
-                    Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
-                    <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
-                  </div>
-                </SolidButton>
-                <SolidButton className="flex-1 !bg-[#D9563A] text-xs">
-                  <div className="mx-auto flex w-fit items-center">
-                    Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
+                    <div className="flex-1">
+                      Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
+                    </div>
                     <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
                   </div>
                 </SolidButton>
@@ -433,21 +478,24 @@ export default function BasicLiquidity() {
           <OutlinedButton
             className="mt-1 font-bold"
             small
-            onClick={() => setAddLiquidityStep(1)}
-            // onClick={() => setTxHash("ASDFASDF")}
+            onClick={() => setAddLiquidityStep("CreateNewLiquidityPool")}
+            // onClick={() => setTxHash("ASDFASD")}
           >
             Back
           </OutlinedButton>
         </>
       ) : (
-        <DeployYieldFarm
-          onAddLiquidity={onAdd}
-          pair={pair}
-          attemptingTxn={attemptingTxn}
-          hash={txHash}
-          currencies={currencies}
-        ></DeployYieldFarm>
+        // <DeployYieldFarm
+        //   onAddLiquidity={onAdd}
+        //   pair={pair}
+        //   attemptingTxn={attemptingTxn}
+        //   hash={txHash}
+        //   currencies={currencies}
+        //   onBurn={onBurn}
+        // ></DeployYieldFarm>
+        ""
       )}
+      <ReactTooltip anchorId={"dynamicpoolfees"} place="right" content="Available once pool is deployed." />
     </>
   );
 }

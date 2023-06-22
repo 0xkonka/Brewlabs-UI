@@ -24,6 +24,7 @@ const FindOutMore = () => {
         data: ["Extended favourites in BrewCharts", "Complete trending heatmap"],
       },
       chainId: 1,
+      logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
     },
     {
       type: "Uncommon",
@@ -40,6 +41,7 @@ const FindOutMore = () => {
         data: ["Some advertising across BrewCharts", "Extended favourites in BrewCharts", "Complete trending heatmap"],
       },
       chainId: 1,
+      logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-uncommon.png",
     },
     {
       type: "Rare",
@@ -63,6 +65,7 @@ const FindOutMore = () => {
         ],
       },
       chainId: 1,
+      logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-rare.png",
     },
     {
       type: "Epic",
@@ -89,6 +92,7 @@ const FindOutMore = () => {
         ],
       },
       chainId: 1,
+      logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-epic.png",
     },
     {
       type: "Legendary / Moderator",
@@ -115,6 +119,7 @@ const FindOutMore = () => {
         ],
       },
       chainId: 1,
+      logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-legendary.png",
     },
   ];
 
