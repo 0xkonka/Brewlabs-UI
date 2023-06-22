@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
-import "react-tooltip/dist/react-tooltip.css";
+
 
 import {
   BarChartSVG,
@@ -39,7 +39,7 @@ import { useGlobalState } from "state";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
 import useWalletNFTs from "@hooks/useWalletNFTs";
-import "react-tooltip/dist/react-tooltip.css";
+
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { WNATIVE } from "@brewlabs/sdk";
 import { BASE_URL } from "config";

@@ -49,7 +49,7 @@ export default function MobileNav() {
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                       onClick={() => {
                         setSwapTab(1);
-                        setAddLiquidityStep(0);
+                        setAddLiquidityStep("default");
                       }}
                       disabled
                     >

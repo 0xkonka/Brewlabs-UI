@@ -11,8 +11,9 @@ import { CHAIN_ICONS } from "config/constants/networks";
 import SolidButton from "../button/SolidButton";
 import OutlinedButton from "../button/OutlinedButton";
 import { shortenAddress } from "utils";
-import { ZERO_ADDRESS } from "config/constants";
+import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import { BurnSVG, LockFillSVG, PoolFeeSVG } from "@components/dashboard/assets/svgs";
+import WarningModal from "@components/warningModal";
 
 export const CheckStatus = ({ status }: { status: number }) => {
   return status === 0 ? (
@@ -30,17 +31,20 @@ export default function DeployYieldFarm({
   attemptingTxn,
   hash,
   currencies,
+  onBurn,
 }: {
   onAddLiquidity: () => void;
   pair: Pair;
   attemptingTxn: boolean;
   hash: string | undefined;
   currencies: { [field in Field]?: Currency };
+  onBurn: () => void;
 }) {
   const { chainId } = useActiveWeb3React();
   const { setAddLiquidityStep }: any = useContext(SwapContext);
 
   const [initialReward, setInitialReward] = useState(0.1);
+  const [burnWarningOpen, setBurnWarningOpen] = useState(false);
 
   const onUpdateInitialReward = (update) => {
     const newValue = initialReward + update;
@@ -111,9 +115,24 @@ export default function DeployYieldFarm({
     },
   ];
 
+  function getName(currencyA, currencyB) {
+    return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
+  }
+
+  const onBurnLiquidity = () => {
+    setBurnWarningOpen(true);
+  };
+
   return (
     <>
-      <div className="font-['Roboto'] text-xl text-white">Step 2/2: Deploy yield farm</div>
+      <WarningModal
+        type={"burn"}
+        open={burnWarningOpen}
+        setOpen={setBurnWarningOpen}
+        data={{ pair: { name: getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]) } }}
+        onClick={onBurn}
+      />
+      <div className="font-brand text-xl text-white">Step 2/2: Deploy yield farm</div>
 
       <div className="flex items-center justify-between rounded-3xl border border-primary p-4">
         <img src={CHAIN_ICONS[chainId]} alt="" className="h-6 w-6 sm:h-8 sm:w-8"></img>
@@ -139,7 +158,7 @@ export default function DeployYieldFarm({
       </div>
 
       <div className="mt-4 px-0 sm:px-4">
-        <div className="primary-shadow rounded-3xl px-5 pb-8 pt-3 font-['Roboto'] text-xs font-bold sm:text-sm">
+        <div className="primary-shadow rounded-3xl px-5 pb-8 pt-3 font-brand text-xs font-bold sm:text-sm">
           <div className="mb-3 flex justify-between">
             <div className="text-base text-gray-300 sm:text-xl">New yield farm metrics</div>
             <div className="flex min-w-[100px] items-center justify-center">
@@ -188,7 +207,7 @@ export default function DeployYieldFarm({
             </div>
           </div>
         </div>
-        <div className="primary-shadow mb-6 mt-2 rounded-3xl px-5 pb-4 pt-3 font-['Roboto'] text-xs font-bold sm:text-sm">
+        <div className="primary-shadow mb-6 mt-2 rounded-3xl px-5 pb-4 pt-3 font-brand text-xs font-bold sm:text-sm">
           <div className="text-lg text-gray-300">Summary</div>
           {!txConfirmed ? (
             <div>Available after deployment</div>
@@ -216,16 +235,32 @@ export default function DeployYieldFarm({
               Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
             </div>
           </SolidButton>
-          <div className="mt-3 flex justify-between">
-            <SolidButton className="mr-3 flex-1 text-xs">
+          <div className="mt-3 flex flex-col justify-between sm:flex-row">
+            <a
+              href={`https://freezer.brewlabs.info/${FREEZER_CHAINS[chainId]}/pair-lock/new?pairAddress=${
+                pair?.liquidityToken.address || ZERO_ADDRESS
+              }`}
+              target="_blank"
+            >
+              <SolidButton className="mb-2 mr-0 flex-1 text-xs sm:mb-0 sm:mr-3">
+                <div className="mx-auto flex w-fit items-center">
+                  <div className="flex-1">
+                    Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
+                  </div>
+                  <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
+                </div>
+              </SolidButton>
+            </a>
+            <SolidButton
+              className="flex-1 !bg-[#D9563A] text-xs hover:!bg-opacity-80"
+              onClick={() => onBurnLiquidity()}
+              disabled={attemptingTxn}
+              pending={attemptingTxn}
+            >
               <div className="mx-auto flex w-fit items-center">
-                Lock liquidity for ETH-BREWLABS
-                <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
-              </div>
-            </SolidButton>
-            <SolidButton className="flex-1 bg-[#D9563A] text-xs">
-              <div className="mx-auto flex w-fit items-center">
-                Burn liquidity for ETH-BREWLABS
+                <div className="flex-1">
+                  Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
+                </div>
                 <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
               </div>
             </SolidButton>

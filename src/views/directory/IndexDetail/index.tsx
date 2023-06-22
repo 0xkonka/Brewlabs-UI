@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useAccount } from "wagmi";
 
-import "react-tooltip/dist/react-tooltip.css";
+
 
 import { chevronLeftSVG, LinkSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";

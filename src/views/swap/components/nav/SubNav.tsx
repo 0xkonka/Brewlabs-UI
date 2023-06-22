@@ -4,6 +4,8 @@ import { useContext, useState } from "react";
 import { SwapContext } from "../../../../contexts/SwapContext";
 import MobileNav from "./MobileNav";
 import Link from "next/link";
+import Notification from "@components/Notification";
+import { useOwnedLiquidityPools } from "@hooks/swap/useLiquidityPools";
 
 type Props = {
   openSettingModal: () => void;
@@ -13,6 +15,7 @@ const SubNav = ({ openSettingModal }: Props) => {
   const { swapTab, setSwapTab, setAddLiquidityStep }: any = useContext(SwapContext);
 
   const [toggle, setToggle] = useState(false);
+  const { eligiblePairs } = useOwnedLiquidityPools();
 
   return (
     <div className="mb-8 flex">
@@ -22,14 +25,15 @@ const SubNav = ({ openSettingModal }: Props) => {
           <img src="/images/logo-vector.svg" className="ml-3" alt="Brew swap" />
         </button>
         <button
-          className={`tab px-3 ${swapTab === 1 ? "tab-active" : ""}`}
+          className={`tab px-3 ${swapTab === 1 ? "tab-active" : ""} relative`}
           onClick={() => {
             setSwapTab(1);
-            setAddLiquidityStep(0);
+            setAddLiquidityStep("default");
           }}
           // disabled
         >
           Liquidity tools
+          <Notification count={eligiblePairs.length} />
         </button>
         <Link href={"/tradingPairs"}>
           <button
