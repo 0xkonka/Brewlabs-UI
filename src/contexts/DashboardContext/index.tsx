@@ -83,8 +83,7 @@ const DashboardContextProvider = ({ children }: any) => {
           totalRewards: 0,
           symbol: "",
         },
-        isReward = false,
-        balance = token.balance;
+        isReward = false;
 
       try {
         let calls = [
@@ -147,7 +146,6 @@ const DashboardContextProvider = ({ children }: any) => {
         reward,
         isScam: scamResult !== undefined ? scamResult : token.isScam,
         isReward,
-        balance,
       };
     } catch (error) {
       console.log(error);
@@ -161,7 +159,7 @@ const DashboardContextProvider = ({ children }: any) => {
     data = await Promise.all(
       tokens.map(async (data: any) => {
         const tokenInfo = await fetchTokenInfo(data);
-        const serializedToken = { ...data, ...tokenInfo, balance: tokenInfo.balance };
+        const serializedToken = { ...data, ...tokenInfo };
         return serializedToken;
       })
     );
