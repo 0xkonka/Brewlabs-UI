@@ -338,7 +338,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-1 justify-end">
+                  <div className="flex flex-1 justify-end items-center">
                     <div className="hidden w-full max-w-[480px] items-center sm:flex">
                       <img src={"/images/non-logo.png"} alt={""} className="mr-2 h-10 w-10 rounded-full" />
                       <StyledButton
@@ -370,7 +370,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           <div className="ml-2">{LinkSVG}</div>
                         </StyledButton>
                       </div>
-                      <div className="mr-2 hidden cursor-pointer text-tailwind transition hover:text-white xl:block [&>*:first-child]:!h-5">
+                      <div className="mr-10 hidden cursor-pointer text-tailwind transition hover:text-white xl:block [&>*:first-child]:!h-5">
                         {NFTSVG}
                       </div>
                       <StyledButton
@@ -418,7 +418,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
                   <div className="relative">
                     <IndexLogo tokens={tokens} />
-                    <div className="absolute -right-6 bottom-0 cursor-pointer text-tailwind transition hover:text-white [&>*:first-child]:!h-5">
+                    <div className="absolute -right-6 bottom-0 block cursor-pointer text-tailwind transition hover:text-white xl:hidden [&>*:first-child]:!h-5">
                       {NFTSVG}
                     </div>
                   </div>
