@@ -202,7 +202,7 @@ const DashboardContextProvider = ({ children }: any) => {
           name,
           symbol,
           decimals,
-          price,
+          price: price ?? 0,
           reward,
           isScam,
           isReward,
@@ -210,6 +210,7 @@ const DashboardContextProvider = ({ children }: any) => {
         });
       }
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
+      console.log(_tokens);
       setTokens(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens);
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
