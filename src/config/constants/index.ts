@@ -293,3 +293,45 @@ export const FREEZER_CHAINS = {
   1: "ethereum",
   56: "smartchain",
 };
+
+export const LIVECOIN_APIS = [
+  "82fc55c0-9833-4d12-82bb-48ae9748bead",
+  "10760947-8c9a-4a18-b20f-2be694baf496",
+  "4853da0a-f79f-4714-a915-d683b8168e1e",
+  "4f616412-ca6d-4876-9a94-dac14e142b12",
+];
+
+export const TOKENLIST_URI = {
+  1: "https://tokens.coingecko.com/ethereum/all.json",
+  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
+  137: "https://tokens.coingecko.com/polygon-pos/all.json",
+  250: "https://tokens.coingecko.com/fantom/all.json",
+  43114: "https://tokens.coingecko.com/avalanche/all.json",
+  42161: "https://tokens.coingecko.com/arbitrum-one/all.json",
+  25: "https://tokens.coingecko.com/cronos/all.json",
+};
+
+export const CHART_PERIOD_RESOLUTION = {
+  0: {
+    period: 86400,
+    resolution: 10,
+  },
+  1: {
+    period: 86400 * 7,
+    resolution: 60,
+  },
+  2: {
+    period: 86400 * 30,
+    resolution: 240,
+  },
+  3: {
+    period: 86400 * 365,
+    resolution: 1440,
+  },
+  4: {
+    period: 86400 * 10000,
+    resolution: 1440,
+  },
+};
+
+export const DEX_GURU_WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";

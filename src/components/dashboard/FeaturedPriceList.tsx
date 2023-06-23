@@ -52,7 +52,7 @@ const DrawChart = ({ data }: { data: any }) => {
                   {
                     offset: 0,
                     color: "rgb(110, 220, 181)",
-                    opacity: 0.4,
+                    opacity: 0.2,
                   },
                   {
                     offset: 100,
@@ -64,7 +64,7 @@ const DrawChart = ({ data }: { data: any }) => {
                   {
                     offset: 0,
                     color: "#ea3943",
-                    opacity: 0.4,
+                    opacity: 0.2,
                   },
                   {
                     offset: 100,
@@ -89,6 +89,7 @@ const DrawChart = ({ data }: { data: any }) => {
       },
       stroke: {
         curve: "smooth",
+        width: 1,
       },
       xaxis: {
         labels: {
@@ -128,8 +129,8 @@ const DrawChart = ({ data }: { data: any }) => {
   );
 };
 
-const PriceList = () => {
-  const { priceHistory }: any = useContext(DashboardContext);
+const FeaturedPriceList = () => {
+  const { featuredPriceHistory }: any = useContext(DashboardContext);
 
   const CustomRightArrow = ({ onClick }) => {
     return (
@@ -159,7 +160,7 @@ const PriceList = () => {
         customRightArrow={<CustomRightArrow onClick={undefined} />}
         customLeftArrow={<CustomLeftArrow onClick={undefined} />}
       >
-        {priceHistory.map((data: any, i: number) => {
+        {featuredPriceHistory.map((data: any, i: number) => {
           let percent = 0,
             price = 0;
           if (data.history.length) {
@@ -199,7 +200,7 @@ const PriceList = () => {
   );
 };
 
-export default PriceList;
+export default FeaturedPriceList;
 
 const StyledContainer = styled.div`
   width: calc(100% - 30px);

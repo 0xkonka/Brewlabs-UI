@@ -35,7 +35,7 @@ const DrawChart = ({ data, type }: { data: any; type: string }) => {
                   {
                     offset: 0,
                     color: "#2FD35D",
-                    opacity: 0.75,
+                    opacity: 0.2,
                   },
                   {
                     offset: 100,
@@ -47,7 +47,7 @@ const DrawChart = ({ data, type }: { data: any; type: string }) => {
                   {
                     offset: 0,
                     color: "#ea3943",
-                    opacity: 0.4,
+                    opacity: 0.2,
                   },
                   {
                     offset: 100,
@@ -69,6 +69,7 @@ const DrawChart = ({ data, type }: { data: any; type: string }) => {
       },
       stroke: {
         curve: "smooth",
+        width :1
       },
       xaxis: {
         labels: {

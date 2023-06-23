@@ -276,7 +276,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Index name</div>
-            <div className=" w-full max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap pl-7">
+            <div className=" w-fit max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap pl-0 xsm:w-full xsm:pl-7">
               {name === "" ? getIndexName(tokens) : name}
             </div>
           </div>
@@ -296,11 +296,11 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Commission fee</div>
-            <div className=" w-full max-w-[140px] pl-7">{commissionFee.toFixed(2)}%</div>
+            <div className="w-fit max-w-[140px] pl-0 xsm:w-full xsm:pl-7">{commissionFee.toFixed(2)}%</div>
           </div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
             <div>Visibility</div>
-            <div className=" w-full max-w-[140px] pl-7">{visibleType ? "Public" : "Priveate"}</div>
+            <div className="w-fit max-w-[140px] pl-0 xsm:w-full xsm:pl-7">{visibleType ? "Public" : "Priveate"}</div>
           </div>
         </div>
       )}
