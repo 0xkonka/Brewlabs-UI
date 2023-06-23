@@ -57,8 +57,13 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
               <div className="-ml-4 text-xs leading-none">Remove Liquidity</div>
               <div className="absolute right-2 -scale-y-125 scale-x-125 text-[#EEBB19]">{ChevronCircleDownSVG}</div>
               <div className="absolute -bottom-5 left-2 flex items-center">
-                <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3] ">
-                  <InfoSVG opacity="1" />
+                <div
+                  className="tooltip z-10 flex items-center"
+                  data-tip="Approximate value of your liquidity position in this pair."
+                >
+                  <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3]">
+                    <InfoSVG opacity="1" />
+                  </div>
                 </div>
                 <div className="text-xs text-[#FFFFFF80]">${(lpPrice * balance).toFixed(4)} USD</div>
               </div>
@@ -77,8 +82,13 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
           <div className="text-xs leading-none">Harvest</div>
           <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronCircleDownSVG}</div>
           <div className="absolute -bottom-5 left-2 flex items-center">
-            <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3] ">
-              <InfoSVG opacity="1" />
+            <div
+              className="tooltip z-10 flex items-center"
+              data-tip="Combined value of swap fees made up of pair tokens."
+            >
+              <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3]  ">
+                <InfoSVG opacity="1" />
+              </div>
             </div>
             <div className="text-xs text-[#FFFFFF80]">${rewardUSD.toFixed(4)} USD</div>
           </div>
