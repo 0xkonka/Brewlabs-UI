@@ -26,6 +26,16 @@ export default function CreateLiquidityOption() {
         <span className="text-white">Swap</span>
       </OutlinedButton>
 
+      <Link href={"/constructor"}>
+        <OutlinedButton image="/images/swap/plus-minus.svg" className="mt-2">
+          <div className="relative">
+            <span className="text-white">Add or remove </span>
+            &nbsp;<span className="dark:text-primary">Brew</span>
+            <span className="text-white">Swap</span>&nbsp;pair liquidity
+          </div>
+        </OutlinedButton>
+      </Link>
+
       <OutlinedButton
         image="/images/swap/logout.svg"
         className="mt-2"
@@ -38,16 +48,6 @@ export default function CreateLiquidityOption() {
           <Notification count={collectiblePairs.length} className="!-right-[26px] !-top-2.5" />
         </div>
       </OutlinedButton>
-
-      <Link href={"/constructor"}>
-        <OutlinedButton image="/images/swap/plus.svg" className="mt-2">
-          <div className="relative">
-            Add&nbsp;<span className="text-white">liquidity </span>
-            &nbsp;my&nbsp;<span className="dark:text-primary">Brew</span>
-            <span className="text-white">Swap</span>&nbsp;pairs
-          </div>
-        </OutlinedButton>
-      </Link>
     </>
   ) : addLiquidityStep === "CreateNewLiquidityPool" ? (
     <>
