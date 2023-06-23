@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { LighteningSVG, QuestionSVG } from "@components/dashboard/assets/svgs";
+import ReactPlayer from "react-player";
 import { getChainLogo } from "utils/functions";
 import StyledButton from "views/directory/StyledButton";
 
@@ -18,8 +19,17 @@ const RarityCard = ({ rarity }) => {
           ""
         )}
       </div>
-      <div className="mt-2 flex h-[158px] w-full items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-tailwind">
-        <img src={rarity.logo} alt={""} className="w-full" />
+      <div className="mx-auto mt-2 flex h-[240px] w-[240px] items-center justify-center overflow-hidden rounded text-tailwind md:w-full xl:h-[180px]">
+        <ReactPlayer
+          className="!w-full"
+          url={rarity.logo}
+          playing={true}
+          autoPlay={true}
+          muted={true}
+          loop={true}
+          playsinline={true}
+          controls={false}
+        />
       </div>
       <div className="mt-1.5 h-36">
         <div className="text-sm text-[#FFFFFFBF]">Benefits</div>

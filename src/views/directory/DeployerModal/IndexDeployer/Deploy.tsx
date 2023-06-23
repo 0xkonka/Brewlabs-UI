@@ -131,9 +131,9 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{getIndexName(tokens)}</div>
           </div>
         </div>
-        <div className="hidden sm:block">{makePendingText()}</div>
+        {/* <div className="hidden sm:block">{makePendingText()}</div> */}
       </div>
-      <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div>
+      {/* <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div> */}
 
       {step === 2 && (
         <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">

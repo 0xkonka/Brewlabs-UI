@@ -2,20 +2,19 @@ import { ChevronCircleDownSVG, InfoSVG } from "components/dashboard/assets/svgs"
 import { useState, useMemo, useEffect, useContext } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
-import Pair from "./Pair";
+import PairCard from "./PairCard";
 import OutlinedButton from "../button/OutlinedButton";
 import { useClaim } from "hooks/swap/useClaim";
-import { JSBI, TokenAmount } from "@brewlabs/sdk";
+import { Currency, JSBI, Pair, TokenAmount } from "@brewlabs/sdk";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useLiquidityPools, useOwnedLiquidityPools } from "@hooks/swap/useLiquidityPools";
+import { useLiquidityPools } from "@hooks/swap/useLiquidityPools";
 import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
-import { usePendingRewards } from "@hooks/swap/usePendingRewards";
-import { useTokens } from "@hooks/Tokens";
 import { BigNumber } from "ethers";
 import { getPairDayDatas } from "lib/swap/pairs";
 import { useGraphEndPoint } from "@hooks/swap/useGraphEndPoint";
 import StyledButton from "views/directory/StyledButton";
 import { SwapContext } from "contexts/SwapContext";
+import Notification from "@components/Notification";
 
 export const rewardInUSD = (token0, token1, token0Price, token1Price, reward) => {
   const { lpRewards, ownerRewards, referralRewards } = reward || {};
@@ -37,6 +36,13 @@ export const rewardInUSD = (token0, token1, token0Price, token1Price, reward) =>
   return Number(token0Price) * Number(token0Amount) + Number(token1Price) * Number(token1Amount);
 };
 
+export const getLPPrice = (token0Price: number, token1Price: number, pair: Pair) => {
+  if (!pair) return 0;
+  const price =
+    (parseFloat(pair.reserve0.toExact()) * token0Price + parseFloat(pair.reserve1.toExact()) * token1Price) / 2;
+  return price;
+};
+
 const SwapRewards = () => {
   const { chainId, account } = useActiveWeb3React();
   // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
@@ -51,7 +57,8 @@ const SwapRewards = () => {
    * pairs are initialized with hardcoded infos
    * they should be fetched from subgraph
    */
-  const { ownedPairs, eligiblePairs, lpBalances }: any = useOwnedLiquidityPools();
+  const { swapFeeData }: any = useContext(SwapContext);
+  const { eligiblePairs, ownedPairs, lpBalances, collectiblePairs, rewards, pairTokens } = swapFeeData;
 
   const tokenMarketData = useTokenMarketChart(chainId);
   const pairs = useLiquidityPools();
@@ -60,7 +67,7 @@ const SwapRewards = () => {
   const [pairDayDatas, setPairDayDatas] = useState<any[]>([]);
 
   useEffect(() => {
-    if (ownedPairs.length == 0 || !graphEndPoint) return;
+    if (ownedPairs.length == 0 || !graphEndPoint.router) return;
     (async () => {
       const pairDayDatas = await getPairDayDatas(
         graphEndPoint.router,
@@ -69,12 +76,7 @@ const SwapRewards = () => {
       setPairDayDatas(pairDayDatas);
     })();
   }, [ownedPairs, graphEndPoint]);
-  const pairTokenAddresses = useMemo(
-    () => [...new Set([].concat.apply([], ownedPairs.map((pair) => [pair.token0, pair.token1]) as ConcatArray<any>[]))],
-    [ownedPairs]
-  );
-  const pairTokens = useTokens(pairTokenAddresses);
-  const rewards = usePendingRewards(ownedPairs);
+
   const totalRewards = useMemo(() => {
     if (Object.keys(pairTokens ?? {}).length === 0) return 0;
     return ownedPairs.reduce((sum, pair) => {
@@ -131,8 +133,9 @@ const SwapRewards = () => {
               claimAll(pairs);
             }}
           >
-            <div className="text-xs leading-none">
+            <div className="relative text-xs leading-none">
               Harvest <span className="text-[#EEBB19]">All</span>
+              <Notification count={collectiblePairs.length} className="!-right-12 !-top-5" />
             </div>
             <div className="absolute right-2 scale-125 text-[#EEBB19]">{ChevronCircleDownSVG}</div>
           </StyledButton>
@@ -184,13 +187,15 @@ const SwapRewards = () => {
               { dailyVolumeToken0: 0, dailyVolumeToken1: 0 }
             );
           return (
-            <Pair
+            <PairCard
               pair={pair}
               key={index}
               token0Price={token0Price}
               token1Price={token1Price}
               reward={rewards[pair.id]}
               pairDayData={pairDayData}
+              isRemovable={pairsOfLpProvider.find((data) => pair.id === data.id)}
+              balance={parseFloat(lpBalances[pair.id].toExact() ?? 0)}
             />
           );
         })}

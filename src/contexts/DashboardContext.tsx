@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { WNATIVE } from "@brewlabs/sdk";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import { useAccount, useSigner } from "wagmi";
 
 import ERC20ABI from "config/abi/erc20.json";
@@ -16,6 +16,8 @@ import useWalletNFTs from "hooks/useWalletNFTs";
 import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
 import { getNativeSybmol } from "lib/bridge/helpers";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { DEX_GURU_CHAIN_NAME } from "config";
 
 const DashboardContext: any = React.createContext({
   tokens: [],
@@ -53,6 +55,7 @@ const WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 let temp_addr: any, temp_id: any;
 const DashboardContextProvider = ({ children }: any) => {
   const { address } = useAccount();
+  // const address = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
   const { chainId } = useActiveChainId();
   const { data: signer }: any = useSigner();
 
@@ -106,7 +109,7 @@ const DashboardContextProvider = ({ children }: any) => {
     const to = Math.floor(Date.now() / 1000);
     const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
       address === WETH_ADDR || !address ? WNATIVE[chainID].address : address
-    }-${chainID === 56 ? "bsc" : "eth"}_USD&resolution=${resolution}&from=${to - 3600 * 24}&to=${to}`;
+    }-${DEX_GURU_CHAIN_NAME[chainId]}_USD&resolution=${resolution}&from=${to - 3600 * 24}&to=${to}`;
     let result: any = await axios.get(url);
     return result;
   }
@@ -229,13 +232,16 @@ const DashboardContextProvider = ({ children }: any) => {
     return data;
   };
 
-  async function fetchTokenBalances() {
+  async function getNativeBalance(chainId: number) {
     let ethBalance = 0;
     const multicallContract = getMulticallContract(chainId);
     ethBalance = await multicallContract.getEthBalance(address);
+    return ethBalance;
+  }
+
+  async function fetchTokenBalances() {
     let data: any = [];
     if (chainId === 1) {
-      
       const result = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${address}/tokens`);
       const nonZeroBalances = result.data.tokenAccounts.filter((data: any) => data.balance / 1 > 0);
       data = await Promise.all(
@@ -255,16 +261,51 @@ const DashboardContextProvider = ({ children }: any) => {
     } else if (chainId === 56) {
       data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
       data = data.data;
+    } else if (chainId === 137) {
+      let offset = 0;
+      let tokens = [];
+      do {
+        const query = new URLSearchParams({
+          pageSize: "100",
+          auth_key: "K82WDxM7Ej3y9u8VSmLYa8pdeqTVqziA2VGQaSRq",
+          offset: offset.toString(),
+        }).toString();
+
+        const resp = await fetch(`https://api.unmarshal.com/v2/matic/address/${address}/assets?${query}`, {
+          method: "GET",
+        });
+
+        const data = await resp.json();
+        offset = data.next_offset;
+        tokens = [...tokens, ...data.assets];
+      } while (offset);
+      data = tokens.map((token) => {
+        return {
+          address:
+            token.contract_address === "0x0000000000000000000000000000000000001010"
+              ? WETH_ADDR
+              : token.contract_address,
+          balance: token.balance / Math.pow(10, token.contract_decimals),
+          decimals: token.contract_decimals,
+          name: token.contract_name,
+          symbol: token.contract_ticker_symbol,
+          price: token.quote_rate,
+          priceList: [token.quote_rate],
+        };
+      });
     }
-    data.push({
-      address: WETH_ADDR,
-      balance: ethBalance / Math.pow(10, 18),
-      decimals: 18,
-      name: chainId === 1 ? "Ethereum" : "Binance",
-      symbol: chainId === 1 ? "ETH" : "BNB",
-      price: 0,
-      priceList: [0],
-    });
+    if (chainId === ChainId.ETHEREUM || chainId === ChainId.BSC_MAINNET) {
+      const ethBalance = await getNativeBalance(chainId);
+      data.push({
+        address: WETH_ADDR,
+        balance: ethBalance / Math.pow(10, 18),
+        decimals: 18,
+        name: chainId === 1 ? "Ethereum" : "Binance",
+        symbol: chainId === 1 ? "ETH" : "BNB",
+        price: 0,
+        priceList: [0],
+      });
+    }
     return data;
   }
   async function fetchTokens() {
@@ -291,7 +332,6 @@ const DashboardContextProvider = ({ children }: any) => {
           isReward: filter.length ? filter[0].isReward : false,
         });
       }
-
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
       setTokens(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens);
@@ -349,7 +389,7 @@ const DashboardContextProvider = ({ children }: any) => {
   }
 
   useSlowRefreshEffect(() => {
-    if (!(chainId === 56 || chainId === 1) || !signer || !address) {
+    if (!PAGE_SUPPORTED_CHAINS.draw.includes(chainId) || !signer || !address) {
       setTokens([]);
     } else {
       fetchTokens();
@@ -357,7 +397,7 @@ const DashboardContextProvider = ({ children }: any) => {
   }, [chainId, signer]);
 
   useSlowRefreshEffect(() => {
-    if (!(chainId === 56 || chainId === 1)) {
+    if (!PAGE_SUPPORTED_CHAINS.draw.includes(chainId)) {
       setMarketHistory([]);
     } else {
       fetchMarketInfo();

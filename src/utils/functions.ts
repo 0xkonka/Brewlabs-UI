@@ -117,3 +117,7 @@ export const getAddLiquidityUrl = (token1: Currency, token2: Currency, chainId: 
     token1.isNative || token1.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token1.address
   }/${token2.isNative || token2.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token2.address}`;
 };
+
+export const getStringfy = (data: any) => {
+  return JSON.stringify(data);
+};

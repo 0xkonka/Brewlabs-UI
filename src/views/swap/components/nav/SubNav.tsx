@@ -12,10 +12,11 @@ type Props = {
 };
 
 const SubNav = ({ openSettingModal }: Props) => {
-  const { swapTab, setSwapTab, setAddLiquidityStep }: any = useContext(SwapContext);
+  const { swapTab, setSwapTab, setAddLiquidityStep, swapFeeData }: any = useContext(SwapContext);
+
+  const { collectiblePairs } = swapFeeData;
 
   const [toggle, setToggle] = useState(false);
-  const { eligiblePairs } = useOwnedLiquidityPools();
 
   return (
     <div className="mb-8 flex">
@@ -33,7 +34,7 @@ const SubNav = ({ openSettingModal }: Props) => {
           // disabled
         >
           Liquidity tools
-          <Notification count={eligiblePairs.length} />
+          <Notification count={collectiblePairs.length} />
         </button>
         <Link href={"/tradingPairs"}>
           <button
