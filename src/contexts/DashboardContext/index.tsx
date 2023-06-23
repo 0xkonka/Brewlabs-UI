@@ -86,11 +86,6 @@ const DashboardContextProvider = ({ children }: any) => {
         isReward = false,
         balance = token.balance;
 
-      let priceBalanceResult: any = await Promise.all([
-        token.address === DEX_GURU_WETH_ADDR ? 0 : fetchTokenBaseInfo(token.address, chainId, "", address),
-      ]);
-      balance =
-        token.address === DEX_GURU_WETH_ADDR ? balance : priceBalanceResult[0][0][0] / Math.pow(10, token.decimals);
       try {
         let calls = [
           {
@@ -101,7 +96,6 @@ const DashboardContextProvider = ({ children }: any) => {
         ];
         const claimableResult = await multicall(claimableTokenAbi, calls, chainId);
         const dividendTracker = claimableResult[0][0];
-        if (token.address === "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()) console.log(balance);
         let rewardToken: any,
           pendingRewards = 0,
           totalRewards = 0;
@@ -210,7 +204,6 @@ const DashboardContextProvider = ({ children }: any) => {
         });
       }
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;
-      console.log(_tokens);
       setTokens(_tokens);
       let tokenInfos: any = await fetchTokenInfos(_tokens);
       if (!temp_addr || temp_addr !== address || temp_id !== chainId) return;

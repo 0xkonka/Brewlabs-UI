@@ -1,8 +1,7 @@
 import axios from "axios";
 import { getMulticallContract } from "utils/contractHelpers";
-import { fetchTokenBaseInfo } from "./fetchFeaturedPrices";
 import { ChainId } from "@brewlabs/sdk";
-import { UNMARSHAL_API_KEYS } from "config";
+import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 
 async function getNativeBalance(address: string, chainId: number) {
@@ -14,25 +13,10 @@ async function getNativeBalance(address: string, chainId: number) {
 
 export async function fetchTokenBalances(address: string, chainId: number) {
   let data: any = [];
-  if (chainId === 1) {
-    const result = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${address}/tokens`);
-    const nonZeroBalances = result.data.tokenAccounts.filter((data: any) => data.balance / 1 > 0);
-    data = await Promise.all(
-      nonZeroBalances.map(async (token: any) => {
-        const data = await Promise.all([fetchTokenBaseInfo(token.tokenHash, chainId, "name")]);
-        return {
-          address: token.tokenHash,
-          balance: token.balance / Math.pow(10, token.decimals),
-          decimals: token.decimals,
-          name: data[0][0][0],
-          symbol: token.tokenSymbol,
-        };
-      })
-    );
-  } else if (chainId === 56) {
+  if (chainId === 56) {
     data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
     data = data.data;
-  } else if (chainId === 137) {
+  } else if (chainId === 137 || chainId === 1) {
     let offset = 0;
     let tokens = [];
     let apiKeyIndex = 0;
@@ -43,9 +27,12 @@ export async function fetchTokenBalances(address: string, chainId: number) {
         offset: offset.toString(),
       }).toString();
 
-      const resp = await fetch(`https://api.unmarshal.com/v2/matic/address/${address}/assets?${query}`, {
-        method: "GET",
-      });
+      const resp = await fetch(
+        `https://api.unmarshal.com/v2/${UNMARSHAL_CHAIN_NAME[chainId]}/address/${address}/assets?${query}`,
+        {
+          method: "GET",
+        }
+      );
       if (resp.status === 429) {
         apiKeyIndex++;
         if (apiKeyIndex === UNMARSHAL_API_KEYS.length) break;
@@ -53,6 +40,7 @@ export async function fetchTokenBalances(address: string, chainId: number) {
       }
       const data = await resp.json();
       offset = data.next_offset;
+      if (!data.assets) break;
       tokens = [...tokens, ...data.assets];
       if (!offset) break;
     } while (1);
@@ -69,14 +57,14 @@ export async function fetchTokenBalances(address: string, chainId: number) {
       };
     });
   }
-  if (chainId === ChainId.ETHEREUM || chainId === ChainId.BSC_MAINNET) {
+  if (chainId === ChainId.BSC_MAINNET) {
     const ethBalance = await getNativeBalance(address, chainId);
     data.push({
       address: DEX_GURU_WETH_ADDR,
       balance: ethBalance / Math.pow(10, 18),
       decimals: 18,
-      name: chainId === 1 ? "Ethereum" : "Binance",
-      symbol: chainId === 1 ? "ETH" : "BNB",
+      name: "Binance",
+      symbol: "BNB",
     });
   }
   return data;

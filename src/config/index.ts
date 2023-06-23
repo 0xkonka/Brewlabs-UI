@@ -128,11 +128,17 @@ export const UNMARSHAL_API_KEYS = [
   "K82WDxM7Ej3y9u8VSmLYa8pdeqTVqziA2VGQaSRq",
   "81Ev4SteeHa2L23LdTq0e3U1urG82Idc8vtwbiIS",
   "bG6czxhve08cqjNx3tQ8r9P6TDFC8qmI6qwDRXRv",
-  "gxzF8K9KM98XQaLuypeVC6HJ9TJq8d0V89nbd7G3", 
+  "gxzF8K9KM98XQaLuypeVC6HJ9TJq8d0V89nbd7G3",
 ];
 
 export const DEX_GURU_CHAIN_NAME = {
   1: "eth",
   56: "bsc",
   137: "polygon",
+};
+
+export const UNMARSHAL_CHAIN_NAME = {
+  1: "ethereum",
+  56: "bsc",
+  137: "matic",
 };
