@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getMulticallContract } from "utils/contractHelpers";
-import { ChainId } from "@brewlabs/sdk";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 
@@ -65,6 +65,15 @@ export async function fetchTokenBalances(address: string, chainId: number) {
       decimals: 18,
       name: "Binance",
       symbol: "BNB",
+    });
+  }
+  if (!data.length) {
+    data.push({
+      address: DEX_GURU_WETH_ADDR,
+      balance: 0,
+      decimals: 18,
+      name: WNATIVE[chainId].name,
+      symbol: WNATIVE[chainId].symbol,
     });
   }
   return data;
