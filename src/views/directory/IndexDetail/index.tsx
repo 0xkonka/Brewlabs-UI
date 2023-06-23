@@ -182,13 +182,14 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
       );
     return (
       <span className={`${profit >= 0 ? "text-green" : "text-danger"} mr-1`}>
-        ${numberWithCommas(isNaN(profit) ? "0.00" : Math.abs(profit).toFixed(2))}{" "}
+        ${numberWithCommas(isNaN(profit) ? "0.00" : `${profit < 0 ? "-" : ""}${Math.abs(profit).toFixed(2)}`)}{" "}
         <span className="text-[#FFFFFF80]">earned</span>
         {isProfit ? (
           <>
             <br />
             <span className={`${profitChanged >= 0 ? "text-green" : "text-danger"}`}>
-              {isNaN(profitChanged) ? "0.00" : Math.abs(profitChanged).toFixed(2)}%&nbsp;
+              {isNaN(profitChanged) ? "0.00" : `${profitChanged < 0 ? "-" : ""}${Math.abs(profitChanged).toFixed(2)}`}
+              %&nbsp;
               <span className="text-[#FFFFFF80]">{profitChanged >= 0 ? "gain" : "loss"}</span>
             </span>
           </>
@@ -417,7 +418,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
                   <div className="relative">
                     <IndexLogo tokens={tokens} />
-                    <div className="absolute cursor-pointer text-tailwind -right-6 bottom-0 transition hover:text-white [&>*:first-child]:!h-5">
+                    <div className="absolute -right-6 bottom-0 cursor-pointer text-tailwind transition hover:text-white [&>*:first-child]:!h-5">
                       {NFTSVG}
                     </div>
                   </div>
