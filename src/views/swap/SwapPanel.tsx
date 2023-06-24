@@ -338,11 +338,12 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                   else onConfirm();
                 }}
                 pending={attemptingTxn}
-                disabled={
-                  attemptingTxn ||
-                  (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
-                  (noLiquidity && !!aggregationCallbackError)
-                }
+                disabled
+                // disabled={
+                //   attemptingTxn ||
+                //   (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
+                //   (noLiquidity && !!aggregationCallbackError)
+                // }
               >
                 {attemptingTxn
                   ? "Swapping..."
