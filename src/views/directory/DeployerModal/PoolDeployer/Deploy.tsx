@@ -106,7 +106,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Withdrawal fee</div>
           </div>
@@ -129,7 +129,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Deposit fee</div>
           </div>
@@ -152,7 +152,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Lockup Period</div>
           </div>

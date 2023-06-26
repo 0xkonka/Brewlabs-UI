@@ -2,6 +2,7 @@ import { useState } from "react";
 import SelectionPanel from "./SelectionPanel";
 import NFTPanel from "./NFTPanel";
 import { tokens } from "config/constants/tokens";
+import { NFT_RARITY } from "config/constants";
 
 const NFTList = () => {
   const [criteria, setCriteria] = useState("");
@@ -10,27 +11,39 @@ const NFTList = () => {
     {
       name: "BREWLABS NFT",
       tokenId: "321",
-      rarity: "common",
-      isStaked: true,
-      apr: 12.52,
-      earning: {
-        amount: 0.01,
-        currency: tokens[1].eth,
-      },
+      rarity: NFT_RARITY.COMMON,
       chainId: 1,
       logo: "/images/nfts/brewlabs-nft.png",
+      pending: true,
     },
     {
       name: "BREWLABS NFT",
-      tokenId: "321",
-      rarity: "rare",
+      tokenId: "745",
+      rarity: NFT_RARITY.COMMON,
+      chainId: 1,
+      logo: "/images/nfts/brewlabs-nft.png",
+      pending: true,
+    },
+    {
+      name: "BREWLABS NFT",
+      tokenId: "1",
+      rarity: NFT_RARITY.RARE,
       isStaked: false,
       chainId: 1,
       logo: "/images/nfts/brewlabs-nft.png",
+      pending: true,
+    },
+    {
+      name: "BREWLABS NFT",
+      tokenId: "1",
+      rarity: NFT_RARITY.LEGENDARY,
+      isStaked: false,
+      chainId: 1,
+      logo: "/images/nfts/brewlabs-nft.png",
+      pending: true,
     },
   ];
-  const rarities = ["All", "Common", "Uncommon", "Rare", "Epic", "Legendary"];
-  const fileredNFTs = nfts.filter((data) => data.rarity === rarities[curFilter].toLowerCase() || curFilter === 0);
+  const fileredNFTs = nfts.filter((data) => data.rarity === curFilter || curFilter === 0);
   return (
     <div className="flex flex-col">
       <SelectionPanel

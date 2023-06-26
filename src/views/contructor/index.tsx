@@ -52,7 +52,7 @@ export default function Constructor() {
           >
             <div className="flex w-full items-start justify-between p-[16px_12px_16px_12px] sm:p-[16px_40px_16px_40px]">
               <div className="mt-2 scale-150 text-white">
-                <InfoSVG />
+                {InfoSVG}
               </div>
               <div className="ml-4 flex-1 text-sm xsm:ml-6">
                 Important message to project owners: To ensure tax-free liquidity token creation for users of this
