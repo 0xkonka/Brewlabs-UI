@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { motion, AnimatePresence } from "framer-motion";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -25,6 +26,7 @@ const NFTStakingInfo = () => {
           "Unstake at anytime.",
         ],
       },
+      tooltip: "Staking Brewlabs NFT incurs a performance fee of approximately $2.00 in network currency.",
     },
     {
       title: "Receive Brewlabs Mirror NFT",
@@ -38,6 +40,7 @@ const NFTStakingInfo = () => {
           "Brewlabs Mirror NFT’s are non transferable and burnt when you unstake your Brewlabs NFT.",
         ],
       },
+      tooltip: "Unstaking Brewlabs NFT incurs a performance fee of approximately $2.00 in network currency.",
     },
   ];
   const aprByNetworks = [
@@ -111,7 +114,10 @@ const NFTStakingInfo = () => {
                     <>
                       <div key={i} className="w-[257px]">
                         <div className="flex items-center text-[#FFFFFFBF]">
-                          <div className="[&>*:first-child]:!h-4 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100">
+                          <div
+                            className="[&>*:first-child]:!h-4 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100"
+                            id={data.title}
+                          >
                             {InfoSVG}
                           </div>
                           <div className="ml-1 text-lg font-medium">{data.title}</div>
@@ -127,9 +133,10 @@ const NFTStakingInfo = () => {
                             })}
                           </ul>
                         </div>
+                        <ReactTooltip anchorId={data.title} place="top" content={data.tooltip} className="text-xs" />
                       </div>
                       {i === 0 ? (
-                        <div className="mb-4 sm:mt-9 mt-4 flex h-fit rotate-90 flex-col justify-center text-white sm:mb-0 sm:h-[180px] sm:rotate-0">
+                        <div className="mb-4 mt-4 flex h-fit rotate-90 flex-col justify-center text-white sm:mb-0 sm:mt-9 sm:h-[180px] sm:rotate-0">
                           <div className="-scale-x-100">{chevronLeftSVG}</div>
                           <div className="mt-1">{chevronLeftSVG}</div>
                         </div>
@@ -140,7 +147,7 @@ const NFTStakingInfo = () => {
                   );
                 })}
               </div>
-              <div className="relative mx-auto sm:mt-6 mt-10 flex w-full max-w-[726px] font-medium text-white">
+              <div className="relative mx-auto mt-10 flex w-full max-w-[726px] font-medium text-white sm:mt-6">
                 <div className="absolute top-0.5 scale-125 [&>*:first-child]:!opacity-100">{InfoSVG}</div>
                 <div className="ml-4 text-xs">
                   50% of all Brewlabs mint fees are allocated to various yield farming strategies to earn NFT staking
