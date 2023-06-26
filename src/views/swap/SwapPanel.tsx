@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useContext } from "react";
 import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price, ChainId } from "@brewlabs/sdk";
 import { useSigner } from "wagmi";
+import { Oval } from "react-loader-spinner";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useTranslation } from "contexts/localization";
@@ -334,6 +335,18 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
                   : !!aggregationCallbackError
                   ? aggregationCallbackError
                   : "Swap"}
+                {(attemptingTxn || aggregationCallbackError === "Querying swap path...") && (
+                  <div className="absolute right-2 top-0 flex h-full items-center">
+                    <Oval
+                      width={21}
+                      height={21}
+                      color={"white"}
+                      secondaryColor="black"
+                      strokeWidth={3}
+                      strokeWidthSecondary={3}
+                    />
+                  </div>
+                )}
               </PrimarySolidButton>
             )}
           </>

@@ -1,16 +1,12 @@
 import { useState } from "react";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { useAccount } from "wagmi";
-
-import PairABI from "config/abi/lpToken.json";
-import { useFastRefreshEffect } from "hooks/useRefreshEffect";
-import multicall from "utils/multicall";
 import { getAddress } from "ethers/lib/utils.js";
+import { useAccount } from "wagmi";
+import { useFastRefreshEffect } from "hooks/useRefreshEffect";
 
 export const useLPTokens = () => {
   const { address: account } = useAccount();
-  // const account = "0xb101a10B7501788969CDb34afbB417175aA83682";
-  // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
 
   const [ethLPTokens, setETHLPTokens] = useState(null);
   const [bscLPTokens, setBSCLpTokens] = useState(null);
@@ -47,7 +43,11 @@ export const useLPTokens = () => {
         info.offset = 15 * Math.floor(txCount / 15);
         let lastTx: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", info);
         const token0 = priceResult.data.data[0];
-        const token1 = priceResult.data.data[1];
+        let token1 = priceResult.data.data[1];
+        if(token0.address == token1.address) {
+          token1 = WNATIVE[chain === "eth" ? ChainId.ETHEREUM : ChainId.BSC_MAINNET]
+          token1.symbol = "ETH"
+        }
         const lpInfo = result.data.data[0];
         lastTx = lastTx.data.data;
         return {
@@ -62,7 +62,7 @@ export const useLPTokens = () => {
           },
           token1: {
             decimals: token1.decimals,
-            symbol: token1.symbols[0],
+            symbol: token1.symbols?.[0] ?? token1.symbol,
             address: getAddress(token1.address),
             name: token1.name,
           },

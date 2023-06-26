@@ -92,7 +92,7 @@ export const useSwapAggregator = (
     }
 
     if (callParams.value && !callParams.value.eq(query.amounts[0])) {
-      return { callback: null, error: "Invalid trade estimate", query};
+      return { callback: null, error: "Querying swap path...", query };
     }
     
     return {

@@ -136,7 +136,7 @@ export const Adapters = {
       address: "0x34Fb087D17D269F67852834Cdf63868554b6dc07",
       name: "Equalizer",
       logo: "https://dexscreener.com/img/dexes/equalizer.png",
-    }
+    },
   ],
   42161: [
     {
@@ -180,7 +180,7 @@ export const Adapters = {
     {
       address: "0x8433f9865c197a9E4954Ebd5c0C69a24cE50c6dC",
       name: "Brewswap",
-      logo: "/images/brewlabs.png"
+      logo: "/images/brewlabs.png",
     },
   ],
 };
