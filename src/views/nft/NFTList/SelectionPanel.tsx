@@ -40,7 +40,7 @@ const SelectionPanel = ({
                 <div
                   key={i}
                   onClick={() => setCurFilter(i)}
-                  className={`cursor-pointer rounded-lg text-sm text-[#ffffff59] transition ${
+                  className={`cursor-pointer rounded-lg text-sm transition ${
                     curFilter === i
                       ? "bg-[#FFFFFF40] text-[#FFDE0D]"
                       : "bg-[#d9d9d91a] text-[#FFFFFF59] hover:text-white"
