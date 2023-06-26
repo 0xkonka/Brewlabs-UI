@@ -6,7 +6,7 @@ import { NetworkOptions } from "config/constants/networks";
 import { useClaim } from "hooks/swap/useClaim";
 import { useCurrency } from "hooks/Tokens";
 import { CurrencyLogo } from "components/logo";
-import { getLPPrice, rewardInUSD } from ".";
+import { rewardInUSD } from ".";
 import StyledButton from "views/directory/StyledButton";
 import Link from "next/link";
 import { getAddLiquidityUrl } from "utils/functions";
@@ -19,19 +19,19 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
   const currency0 = useCurrency(token0);
   const currency1 = useCurrency(token1);
 
-  const [_pairState, _pair] = usePair(currency0, currency1);
+  const [pairState, pairContext] = usePair(currency0, currency1);
 
-  const volumeUSD =
+  const totalVolumeInPool =
+    Number(token0Price) * Number(pairContext?.reserve0.toExact() ?? "0") +
+    Number(token1Price) * Number(pairContext?.reserve1.toExact() ?? "0");
+  const tradeVolumeIn24hr =
     Number(token0Price) * Number(pairDayData?.dailyVolumeToken0 ?? "0") +
     Number(token1Price) * Number(pairDayData?.dailyVolumeToken1 ?? "0");
   const rewardUSD = rewardInUSD(currency0, currency1, token0Price, token1Price, reward);
-  const lpPrice = getLPPrice(token0Price, token1Price, _pair);
 
   const { claim } = useClaim();
   const { chainId } = useActiveChainId();
   const network = useMemo(() => NetworkOptions.filter((network) => network.id == chainId)[0], [chainId]);
-
-  // const lpPrice = useDexPrice(chainId, pair.id);
 
   return (
     <div className="primary-shadow mb-2.5 flex flex-col items-start justify-between rounded-[30px] p-[24px_12px_24px_12px] shadow sm:flex-row sm:items-center sm:p-[24px_15px_24px_24px]">
@@ -46,7 +46,7 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
             <div className="overflow-hidden text-ellipsis whitespace-nowrap text-white">
               {currency0.symbol}-{currency1.symbol}
             </div>
-            <div className="text-xs text-[#FFFFFF80]">Vol. ${volumeUSD?.toFixed(2) ?? 0} (24hrs) </div>
+            <div className="text-xs text-[#FFFFFF80]">Vol. ${tradeVolumeIn24hr?.toFixed(2) ?? 0} (24hrs) </div>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
                     <InfoSVG opacity="1" />
                   </div>
                 </div>
-                <div className="text-xs text-[#FFFFFF80]">${(lpPrice * balance).toFixed(4)} USD</div>
+                <div className="text-xs text-[#FFFFFF80]">${totalVolumeInPool?.toFixed(4) ?? 0} USD</div>
               </div>
             </StyledButton>
           </Link>
