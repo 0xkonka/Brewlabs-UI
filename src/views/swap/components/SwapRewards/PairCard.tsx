@@ -5,6 +5,7 @@ import { ChevronCircleDownSVG, InfoSVG } from "components/dashboard/assets/svgs"
 import { NetworkOptions } from "config/constants/networks";
 import { useClaim } from "hooks/swap/useClaim";
 import { useCurrency } from "hooks/Tokens";
+import useTotalSupply from "hooks/useTotalSupply";
 import { CurrencyLogo } from "components/logo";
 import { rewardInUSD } from ".";
 import StyledButton from "views/directory/StyledButton";
@@ -13,17 +14,23 @@ import { getAddLiquidityUrl } from "utils/functions";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { usePair } from "data/Reserves";
 
-const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemovable, balance }) => {
+const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemovable, lpBalance }) => {
   const { token0, token1 } = pair;
 
   const currency0 = useCurrency(token0);
   const currency1 = useCurrency(token1);
 
   const [pairState, pairContext] = usePair(currency0, currency1);
-
-  const totalVolumeInPool =
+  const lpTotalSupply = useTotalSupply(pairContext.liquidityToken);
+  const totalVolumeInUSD =
     Number(token0Price) * Number(pairContext?.reserve0.toExact() ?? "0") +
     Number(token1Price) * Number(pairContext?.reserve1.toExact() ?? "0");
+  const ownedVolumeInUSD = useMemo(() => {
+    const numerator = Number(lpBalance);
+    const denominator = Number(lpTotalSupply.toExact() ?? "0");
+    if (totalVolumeInUSD === 0 || denominator === 0) return 0;
+    return totalVolumeInUSD * numerator / denominator;
+  }, [totalVolumeInUSD, lpTotalSupply, lpBalance]);
   const tradeVolumeIn24hr =
     Number(token0Price) * Number(pairDayData?.dailyVolumeToken0 ?? "0") +
     Number(token1Price) * Number(pairDayData?.dailyVolumeToken1 ?? "0");
@@ -65,7 +72,9 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
                     <InfoSVG opacity="1" />
                   </div>
                 </div>
-                <div className="text-xs text-[#FFFFFF80]">${totalVolumeInPool?.toFixed(4) ?? 0} USD</div>
+                <div className="text-xs text-[#FFFFFF80]">
+                  ${ownedVolumeInUSD.toFixed(4) ?? 0} USD
+                </div>
               </div>
             </StyledButton>
           </Link>
