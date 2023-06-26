@@ -30,7 +30,7 @@ const SelectionPanel = ({
         </div>
       </div>
       <div className="flex w-full items-center justify-between">
-        <div className="hidden whitespace-nowrap font-roboto font-bold leading-none text-white md:block">
+        <div className="hidden whitespace-nowrap font-brand font-bold leading-none text-white md:block">
           My Brewlabs NFT’s
         </div>
         <div className="flex items-center justify-between ">

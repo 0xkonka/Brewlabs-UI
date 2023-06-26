@@ -190,7 +190,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   };
 
   return (
-    <div className="font-roboto text-white">
+    <div className="font-brand text-white">
       <div className="primary-shadow mt-4 flex items-center justify-between rounded-[30px] bg-[#1A1E28] px-4 py-5">
         <div className="mx-auto flex items-center justify-between sm:mx-0">
           <img
@@ -361,7 +361,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       </div>
 
       {step === 6 ? (
-        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
+        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Yield farm contract address</div>

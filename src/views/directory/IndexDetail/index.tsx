@@ -286,7 +286,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
             />
             {!data ? (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-roboto">
+                <div className="flex items-center justify-between font-brand">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/indexes")}>
@@ -299,7 +299,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
               </Container>
             ) : (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-roboto">
+                <div className="flex items-center justify-between font-brand">
                   <div>
                     <div className="min-w-fit sm:min-w-[160px]">
                       <div className="h-[32px] w-[140px] ">
@@ -311,14 +311,14 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       <div className="block xl:hidden">
                         <div className="mt-2" />
                         <StyledButton
-                          className="!h-8 !w-[140px] bg-[#B9B8B81A] font-roboto font-bold text-primary hover:border-white hover:text-white"
+                          className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white"
                           type={"default"}
                           onClick={onShareIndex}
                         >
                           <div className="flex items-center">
                             <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                           </div>
-                          {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                          {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
                             Soon
                           </div> */}
                         </StyledButton>
@@ -338,11 +338,11 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-1 justify-end items-center">
+                  <div className="flex flex-1 items-center justify-end">
                     <div className="hidden w-full max-w-[480px] items-center sm:flex">
                       <img src={"/images/non-logo.png"} alt={""} className="mr-2 h-10 w-10 rounded-full" />
                       <StyledButton
-                        className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:text-white xl:flex"
+                        className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand font-semibold text-primary hover:text-white xl:flex"
                         type={"default"}
                         onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
                       >
@@ -360,7 +360,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           className="mr-2 hidden h-10 w-10 rounded-full xs:block"
                         />
                         <StyledButton
-                          className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-roboto font-semibold text-primary hover:border-white hover:text-white xl:flex"
+                          className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand font-semibold text-primary hover:border-white hover:text-white xl:flex"
                           type={"default"}
                           onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
                         >
@@ -370,18 +370,21 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           <div className="ml-2">{LinkSVG}</div>
                         </StyledButton>
                       </div>
-                      <div className="mr-10 hidden cursor-pointer text-tailwind transition hover:text-white xl:block [&>*:first-child]:!h-5">
+                      <div
+                        className="mr-10 hidden cursor-pointer text-tailwind transition hover:text-white xl:block [&>*:first-child]:!h-5"
+                        id={"BrewlabsNFT"}
+                      >
                         {NFTSVG}
                       </div>
                       <StyledButton
-                        className="hidden !h-8 !w-[140px] bg-[#B9B8B81A] font-roboto font-bold text-primary hover:border-white hover:text-white xl:flex"
+                        className="hidden !h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white xl:flex"
                         type={"default"}
                         onClick={() => onShareIndex()}
                       >
                         <div className="flex items-center">
                           <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                         </div>
-                        {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                        {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
                           Soon
                         </div> */}
                       </StyledButton>
@@ -418,7 +421,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
                   <div className="relative">
                     <IndexLogo tokens={tokens} />
-                    <div className="absolute -right-6 bottom-0 block cursor-pointer text-tailwind transition hover:text-white xl:hidden [&>*:first-child]:!h-5">
+                    <div
+                      className="absolute -right-6 bottom-0 block cursor-pointer text-tailwind transition hover:text-white xl:hidden [&>*:first-child]:!h-5"
+                      id={"BrewlabsNFT"}
+                    >
                       {NFTSVG}
                     </div>
                   </div>
@@ -709,6 +715,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
               </Container>
             )}
           </div>
+          <ReactTooltip anchorId={"BrewlabsNFT"} place="top" content="No brewlabs nft found etc" />
         </motion.div>
       </AnimatePresence>
     </>

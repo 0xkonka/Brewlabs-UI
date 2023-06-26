@@ -68,7 +68,7 @@ const ConfirmationModal = ({ open, setOpen, type, tx }: ModalProps): ReactElemen
                       : "Transaction Confirmed"}
                   </div>
                 </div>
-                <div className="flex overflow-hidden rounded-b-lg border border-t-0 border-[#FFFFFF80] bg-[rgb(38,44,55)] font-roboto font-semibold">
+                <div className="flex overflow-hidden rounded-b-lg border border-t-0 border-[#FFFFFF80] bg-[rgb(38,44,55)] font-brand font-semibold">
                   <a
                     className="flex w-[50%] cursor-pointer items-center justify-center border-r  border-[FFFFFF80] py-2 text-white transition hover:bg-[rgb(61,66,76)]"
                     target={"_blank"}

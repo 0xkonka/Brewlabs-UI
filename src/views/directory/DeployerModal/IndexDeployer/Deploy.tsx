@@ -121,7 +121,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   };
 
   return (
-    <div className="font-roboto text-white">
+    <div className="font-brand text-white">
       <div className="primary-shadow mt-4 flex items-center justify-between rounded-[30px] px-4 py-3">
         <div className="mx-auto flex w-fit items-center justify-start overflow-hidden text-ellipsis whitespace-nowrap sm:mx-0">
           <img src={getChainLogo(chainId)} alt={""} className="h-7 w-7" />
@@ -258,7 +258,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       )}
 
       {step === 4 && (
-        <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
+        <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Index contract address</div>

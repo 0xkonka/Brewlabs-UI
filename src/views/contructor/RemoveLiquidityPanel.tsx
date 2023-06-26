@@ -367,7 +367,7 @@ export default function RemoveLiquidityPanel({
 
   return (
     <div>
-      <div className="mt-[52px] flex justify-center font-roboto">
+      <div className="mt-[52px] flex justify-center font-brand">
         <img
           src={getTokenLogoURL(token0Address, selectedChainId)}
           alt={""}

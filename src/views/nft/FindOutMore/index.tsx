@@ -158,7 +158,7 @@ const FindOutMore = () => {
                 </div>
               </header>
             </Container>
-            <Container className="font-roboto">
+            <Container className="font-brand">
               <div className="mb-3 flex w-full justify-end lg:hidden">
                 <StyledButton className="!w-fit p-[6px_12px] !font-normal" onClick={() => setMintOpen(true)}>
                   Mint Brewlabs NFT

@@ -95,7 +95,7 @@ const IndexPerformance = () => {
                           })}
                         </div>
                         <img src={getChainLogo(data.chainId)} alt={""} className="ml-3 h-5 w-5" />
-                        <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-roboto text-xs font-semibold text-white sm:w-[140px]">
+                        <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs font-semibold text-white sm:w-[140px]">
                           {getIndexName(data.tokens)}
                         </div>
                       </div>

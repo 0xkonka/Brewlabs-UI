@@ -171,7 +171,7 @@ const SwapRewards = () => {
           className="primary-shadow focusShadow h-fit w-full rounded border-none bg-[#D9D9D926] p-[7px_10px] text-xs leading-[1.2] text-white !outline-none"
         />
       </div>
-      <div className="yellowScroll mt-3 max-h-[400px] overflow-y-scroll">
+      <div className="yellowScroll mt-3 max-h-[400px] overflow-x-hidden overflow-y-scroll">
         {filteredPairs.map((pair, index) => {
           const { token0, token1 } = pair;
           const { usd: token0Price } = tokenMarketData[token0?.toLowerCase()] || defaultMarketData;
