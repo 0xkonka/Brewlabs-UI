@@ -224,9 +224,9 @@ const DashboardContextProvider = ({ children }: any) => {
     if (!PAGE_SUPPORTED_CHAINS.draw.includes(chainId)) {
       setMarketHistory([]);
     } else {
-      fetchMarketInfo().then((data) => setMarketHistory(data));
+      fetchMarketInfo(chartPeriod).then((data) => setMarketHistory(data));
     }
-  }, [chainId]);
+  }, [chainId, chartPeriod]);
 
   useEffect(() => {
     fetchTokenList(chainId).then((data) => setTokenList(data));

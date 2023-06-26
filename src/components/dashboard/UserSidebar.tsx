@@ -40,7 +40,7 @@ const UserSidebar = () => {
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-40 flex font-roboto">
+        <div className="fixed inset-0 z-40 flex font-brand">
           <Transition.Child
             as={Fragment}
             enter="transition ease-in-out duration-300 transform"

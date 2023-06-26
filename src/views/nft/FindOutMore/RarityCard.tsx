@@ -7,7 +7,7 @@ import StyledButton from "views/directory/StyledButton";
 
 const RarityCard = ({ rarity }) => {
   return (
-    <div className="w-full font-roboto font-medium">
+    <div className="w-full font-brand font-medium">
       <div className="flex items-center justify-between text-sm text-white ">
         <div>{rarity.type}</div>
         {rarity.isActive ? (

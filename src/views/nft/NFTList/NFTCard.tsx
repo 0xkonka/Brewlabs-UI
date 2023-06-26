@@ -4,7 +4,7 @@ import StyledButton from "views/directory/StyledButton";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   return (
-    <div className="primary-shadow mt-2 cursor-pointer rounded bg-[#B9B8B80D] p-[16px_18px_16px_12px] font-roboto font-bold text-[#FFFFFFBF] transition hover:bg-[#b9b8b828] xsm:p-[16px_36px_16px_28px]">
+    <div className="primary-shadow mt-2 cursor-pointer rounded bg-[#B9B8B80D] p-[16px_18px_16px_12px] font-brand font-bold text-[#FFFFFFBF] transition hover:bg-[#b9b8b828] xsm:p-[16px_36px_16px_28px]">
       <div className="hidden items-center justify-between xl:flex">
         <div className="flex w-[280px] items-center justify-center">
           <img src={getChainLogo(nft.chainId)} alt={""} className="h-[30px] w-[30px] rounded-full" />

@@ -1,8 +1,8 @@
 import axios from "axios";
-import { LIVECOIN_APIS, TOKENLIST_URI } from "config/constants";
+import { CHART_PERIOD_RESOLUTION, LIVECOIN_APIS, TOKENLIST_URI } from "config/constants";
 import { customTokensForDeploy } from "config/constants/tokens";
 
-export async function fetchMarketInfo() {
+export async function fetchMarketInfo(chartPeriod) {
   let i;
   for (i = 0; i < LIVECOIN_APIS.length; i++) {
     try {
@@ -14,7 +14,7 @@ export async function fetchMarketInfo() {
         }),
         body: JSON.stringify({
           currency: "USD",
-          start: Date.now() - 1000 * 3600 * 24,
+          start: Date.now() - 1000 * CHART_PERIOD_RESOLUTION[chartPeriod].period,
           end: Date.now(),
         }),
       });

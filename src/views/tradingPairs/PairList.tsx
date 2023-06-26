@@ -41,8 +41,8 @@ export default function PairList() {
   ];
   const width = ["w-[55px]", "w-[140px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[30px]"];
   return (
-    <div className="primary-shadow rounded-md bg-[#18181B] p-[10px_16px_24px_16px]">
-      <div className="font-roboto text-xl font-bold text-white">TRADING PAIRS</div>
+    <div className="primary-shadow rounded-md bg-[#18181B] p-[10px_16px_24px_16px] xsm:p-[10px_12px_24px_12px]">
+      <div className="font-brand text-xl font-bold text-white">TRADING PAIRS</div>
       <div className="mt-2 hidden justify-between px-4 font-brand text-sm text-[#ffffff75] md:flex">
         {headers.map((data, i) => {
           return (

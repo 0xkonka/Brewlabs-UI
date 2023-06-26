@@ -82,7 +82,7 @@ const NFTList = () => {
                 return (
                   <div
                     key={i}
-                    className="mx-5 my-5 w-[135px] overflow-hidden rounded-[12px] font-roboto text-xs font-medium transition-all duration-700 hover:scale-[120%]"
+                    className="mx-5 my-5 w-[135px] overflow-hidden rounded-[12px] font-brand text-xs font-medium transition-all duration-700 hover:scale-[120%]"
                   >
                     <div className="flex h-[135px] items-center justify-center overflow-hidden">
                       <img

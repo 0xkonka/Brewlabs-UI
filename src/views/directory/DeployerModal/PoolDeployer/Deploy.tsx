@@ -43,7 +43,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
     );
   };
   return (
-    <div className="font-roboto text-white">
+    <div className="font-brand text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
         <div className="mx-auto flex w-full max-w-[280px] items-center justify-between sm:mx-0">
           <CircleImage className="h-8 w-8" />
@@ -197,7 +197,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
       </div>
 
       {step === 4 ? (
-        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
+        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Staking contract address</div>

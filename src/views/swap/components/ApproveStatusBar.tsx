@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 const ApproveStatusBar = ({ step, url }: { step: number; url: any }) => (
   <div className="mb-5 flex items-center justify-center">
-    <div className="mr-6 font-roboto">One time approval required</div>
+    <div className="mr-6 font-brand">One time approval required</div>
     <StyledLogo active={step > 0}>
       <div className="border border-transparent rounded-full">
         <CurrencyLogo currency={url} size="30px" />

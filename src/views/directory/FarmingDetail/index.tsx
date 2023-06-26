@@ -257,7 +257,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
             />
             {!data ? (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-roboto">
+                <div className="flex items-center justify-between font-brand">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/farms")}>
@@ -270,7 +270,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
               </Container>
             ) : (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-roboto">
+                <div className="flex items-center justify-between font-brand">
                   <div className="flex w-[160px] flex-col">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/farms")}>

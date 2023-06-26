@@ -105,7 +105,7 @@ const NFTActions = () => {
         return (
           <>
             <div key={i} className="relative mb-[140px] w-[220px]">
-              <div className="absolute -top-7 left-0  flex w-full justify-between font-roboto text-lg font-bold text-white">
+              <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
                 <div className="text-[#C80046]">{data.rarity}</div>
               </div>
@@ -126,7 +126,7 @@ const NFTActions = () => {
                     >
                       {data.button}
                     </StyledButton>
-                    <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                    <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
                       Soon
                     </div>
                   </div>
