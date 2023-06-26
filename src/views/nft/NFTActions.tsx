@@ -14,10 +14,12 @@ import { useState } from "react";
 import StyledButton from "views/directory/StyledButton";
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
+import { useRouter } from "next/router";
 
 const NFTActions = () => {
   const [mintOpen, setMintOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const router = useRouter();
 
   function onApprove() {}
   function onMint() {
@@ -37,9 +39,14 @@ const NFTActions = () => {
       action: onApprove,
       info: "To mint a Brewlabs NFT you must approve the transfer of 3500 BREWLABS token as part of the mint fee.",
       essential: {
-        text: "Get Brewlabs",
-        action: "",
-        active: true,
+        align: "",
+        datas: [
+          {
+            text: "Get Brewlabs",
+            action: "",
+            active: true,
+          },
+        ],
       },
     },
     {
@@ -47,23 +54,24 @@ const NFTActions = () => {
       button: "Mint Brewlabs NFT",
       icon: NFTFillSVG,
       action: onMint,
-      info: (
-        <div className="flex w-full justify-between">
-          <div>Mint a Brewlabs NFT.</div>
-          <Link className="-mt-1.5" href={"/nft/findoutmore"}>
-            <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:text-yellow">
-              <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                <InfoSVG opacity="1" />
-              </div>
-              Find out more
-            </StyledButton>
-          </Link>
-        </div>
-      ),
+      info: "Mint a Brewlabs NFT.",
       essential: {
-        text: "Get stablecoin",
-        action: "",
-        active: true,
+        align: "justify-between",
+        datas: [
+          {
+            text: "Get stablecoin",
+            action: "",
+            active: true,
+          },
+          {
+            text: "Find out more",
+            action: () => {
+              router.push("/nft/findoutmore");
+            },
+            active: true,
+            info: true,
+          },
+        ],
       },
     },
     {
@@ -90,6 +98,18 @@ const NFTActions = () => {
               </ul>
             </div>
           ),
+          essential: {
+            align: "justify-end",
+            datas: [
+              {
+                text: "NFT Staking Info",
+                action: () => {
+                  router.push("/nft/nftstakinginfo");
+                },
+                active: true,
+              },
+            ],
+          },
         }
       : {
           name: "NFT",
@@ -104,7 +124,7 @@ const NFTActions = () => {
       {actions.map((data, i) => {
         return (
           <>
-            <div key={i} className="relative mb-[140px] w-[220px]">
+            <div key={i} className="relative mb-[164px] w-[220px]">
               <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
                 <div className="text-[#C80046]">{data.rarity}</div>
@@ -122,7 +142,7 @@ const NFTActions = () => {
                     <StyledButton
                       type={"primary"}
                       className="p-[10px_12px] !text-xs !font-normal"
-                      onClick={data.action}
+                      onClick={() => data.action()}
                     >
                       {data.button}
                     </StyledButton>
@@ -134,24 +154,28 @@ const NFTActions = () => {
                   ""
                 )}
               </div>
-              <div className="absolute -bottom-[96px] w-full text-xs leading-[1.2] text-[#FFFFFFBF]">
-                <div className="relative h-10">
+              <div className="absolute -bottom-[106px] w-full text-xs leading-[1.2] text-[#FFFFFFBF]">
+                <div className="relative h-14">
                   {data.info}
-                  <div className="absolute -left-6 top-0 scale-[175%] text-[#ffffff88]">
-                    <InfoSVG />
-                  </div>
+                  <div className="absolute -left-6 top-0 scale-[175%] text-[#ffffff88]">{InfoSVG}</div>
                 </div>
                 {data.essential ? (
-                  <div className="mt-2.5 flex w-full justify-end">
-                    <StyledButton
-                      className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
-                      disabled={!data.essential.active}
-                    >
-                      <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                        {CircleRightSVG}
-                      </div>
-                      {data.essential.text}
-                    </StyledButton>
+                  <div className={`mt-2.5 flex w-full ${data.essential.align}`}>
+                    {data.essential.datas.map((data: any, i: number) => {
+                      return (
+                        <StyledButton
+                          className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
+                          disabled={!data.active}
+                          key={i}
+                          onClick={() => data.action()}
+                        >
+                          <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100">
+                            {data.info ? InfoSVG : CircleRightSVG}
+                          </div>
+                          {data.text}
+                        </StyledButton>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="h-[36px]" />

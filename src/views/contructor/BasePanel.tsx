@@ -102,7 +102,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           </StyledButton>
           <div className="absolute -bottom-[18px] left-2 flex items-center">
             <div className="text-white" id={"appValue" + i}>
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div className="ml-1 mt-0.5 text-[10px]">${numberWithCommas((data.balance * data.price).toFixed(2))}</div>
           </div>
@@ -130,7 +130,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           </StyledButton>
           <div className="absolute -bottom-[18px] z-10 flex w-full items-center justify-center">
             <div className="text-white" id={"appValue" + i}>
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div className="ml-1 mt-0.5 text-[10px]">${numberWithCommas((data.balance * data.price).toFixed(2))}</div>
           </div>

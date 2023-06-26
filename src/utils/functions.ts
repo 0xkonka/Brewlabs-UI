@@ -103,13 +103,9 @@ export const formatIPFSString = (url) => {
   return _url;
 };
 
-export const getRarityColor = (rarity) => {
-  switch (rarity) {
-    case "common":
-      return "text-white";
-    case "rare":
-      return "text-[#1A82FF]";
-  }
+export const getRarityColor = (rarity: number) => {
+  const colors = ["text-white", "", "text-[#1A82FF]"];
+  return colors[rarity] ?? "text-white";
 };
 
 export const getAddLiquidityUrl = (token1: Currency, token2: Currency, chainId: number) => {

@@ -365,7 +365,7 @@ export default function BasicLiquidity() {
             <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-brand text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
               <div className="flex items-center text-base text-gray-300">
                 <div className="mr-1 scale-[110%] text-[#FFFFFFB0]" id={"dynamicpoolfees"}>
-                  <InfoSVG />
+                  {InfoSVG}
                 </div>
                 <div>Dynamic pool fees</div>
               </div>

@@ -147,7 +147,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               <div className="flex items-center">
                 <div className="tooltip" data-tip="This wallet can be changed at a later date.">
                   <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                    <InfoSVG />
+                    {InfoSVG}
                   </div>
                 </div>
                 <div>Set deposit and commission fee wallet</div>
@@ -168,7 +168,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                   data-tip="This fee is charged when a user enters your index. This fee is sent to your nominated address. Your deposit fee is combined with Brewlabs fixed fee's of 0.25% on every index"
                 >
                   <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                    <InfoSVG />
+                    {InfoSVG}
                   </div>
                 </div>
                 <div>Set deposit fee</div>
@@ -196,7 +196,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                   data-tip="This fee is charged when a user exits your index in a profitable position."
                 >
                   <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                    <InfoSVG />
+                    {InfoSVG}
                   </div>
                 </div>
                 <div>Set commission fee</div>
@@ -225,7 +225,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             <div className="flex items-center">
               <div className="tooltip" data-tip="Display your index to other users.">
                 <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                  <InfoSVG />
+                  {InfoSVG}
                 </div>
               </div>
               <div>Make my index visible to others?</div>

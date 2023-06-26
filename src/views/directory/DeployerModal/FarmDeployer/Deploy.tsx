@@ -279,7 +279,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="tooltip flex items-center" data-tip="Deposit fees are sent to deployer address.">
             <div className=" -mt-0.5 mr-1.5 scale-125 text-sm text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Deposit fee</div>
           </div>
@@ -302,7 +302,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="tooltip flex items-center" data-tip="Withdraw fees are sent to deployer address.">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Withdrawal fee</div>
           </div>

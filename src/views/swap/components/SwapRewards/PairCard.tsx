@@ -61,8 +61,8 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
                   className="tooltip z-10 flex items-center"
                   data-tip="Approximate value of your liquidity position in this pair."
                 >
-                  <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3]">
-                    <InfoSVG opacity="1" />
+                  <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3] [&>*:first-child]:!opacity-100">
+                    {InfoSVG}
                   </div>
                 </div>
                 <div className="text-xs text-[#FFFFFF80]">${(lpPrice * balance).toFixed(4)} USD</div>
@@ -86,8 +86,8 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
               className="tooltip z-10 flex items-center"
               data-tip="Combined value of swap fees made up of pair tokens."
             >
-              <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3]  ">
-                <InfoSVG opacity="1" />
+              <div className="-mt-[3px] mr-1.5 scale-[110%] text-[#ffffffb3] [&>*:first-child]:!opacity-100 ">
+                {InfoSVG}
               </div>
             </div>
             <div className="text-xs text-[#FFFFFF80]">${rewardUSD.toFixed(4)} USD</div>

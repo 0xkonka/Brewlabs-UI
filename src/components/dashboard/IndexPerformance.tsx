@@ -48,8 +48,8 @@ const IndexPerformance = () => {
     <StyledContainer className="-mt-2 w-full">
       <div className="relative font-semibold text-yellow">
         Index Performance
-        <div className="absolute -left-4 top-1.5" id={"Top9"}>
-          <InfoSVG opacity="1" />
+        <div className="absolute -left-4 top-1.5 [&>*:first-child]:!opacity-100" id={"Top9"}>
+          {InfoSVG}
         </div>
         <ReactTooltip anchorId={"Top9"} place="right" content="Top 9 Brewlabs Indexes based on performance." />
       </div>

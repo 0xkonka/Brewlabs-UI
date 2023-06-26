@@ -204,9 +204,7 @@ const FindOutMore = () => {
               </div>
 
               <div className="relative mt-4 flex font-medium text-white">
-                <div className="absolute top-0.5 scale-125">
-                  <InfoSVG opacity="1" />
-                </div>
+                <div className="absolute top-0.5 scale-125 [&>*:first-child]:!opacity-100">{InfoSVG}</div>
                 <div className="ml-4 text-xs">
                   NFT minting fees (stablecoin) are designated to the following categories: 50% of mint fee to NFT
                   staking protocol, 25% of mint fees to Brewlabs Treasury, 25% of mint fees to Brewlabs development
@@ -216,9 +214,7 @@ const FindOutMore = () => {
               </div>
 
               <div className="relative mb-20 mt-7 flex font-medium text-white">
-                <div className="absolute top-0.5 scale-125">
-                  <InfoSVG opacity="1" />
-                </div>
+                <div className="absolute top-0.5 scale-125 [&>*:first-child]:!opacity-100">{InfoSVG}</div>
                 <div className="ml-4 text-xs">
                   Brewlabs as a web3 builder aims to incorporate Brewlabs NFT benefits across current and future
                   products, maximising the use case of the Brewlabs NFT collection. Some benefits may not be live as of
