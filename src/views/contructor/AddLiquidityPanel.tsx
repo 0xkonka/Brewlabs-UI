@@ -284,7 +284,7 @@ export default function AddLiquidityPanel({
         />
       </div>
       {currencyA && currencyB ? (
-        <div className="mt-6 rounded-[30px] border border-[#FFFFFF80] px-3 py-4 font-roboto font-bold text-[#FFFFFF80] sm:px-8">
+        <div className="mt-6 rounded-[30px] border border-[#FFFFFF80] px-3 py-4 font-brand font-bold text-[#FFFFFF80] sm:px-8">
           <div className="text-xl text-[#FFFFFFBF] text-white">Create</div>
           <div className="text-sm">
             <div className="mt-2 flex flex-wrap justify-between">

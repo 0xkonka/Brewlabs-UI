@@ -3,6 +3,7 @@ import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Hambuger from "../button/Hambuger";
 import { SwapContext } from "contexts/SwapContext";
+import Link from "next/link";
 
 export default function MobileNav() {
   const { swapTab, setSwapTab, setAddLiquidityStep }: any = useContext(SwapContext);
@@ -48,25 +49,27 @@ export default function MobileNav() {
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                       onClick={() => {
                         setSwapTab(1);
-                        setAddLiquidityStep(0);
+                        setAddLiquidityStep("default");
                       }}
                       disabled
                     >
-                      Add liquidity
+                      Liquidity tools
                     </button>
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <button
-                      className={`${
-                        swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
-                      } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                      onClick={() => setSwapTab(2)}
-                      disabled
-                    >
-                      Swap Rewards
-                    </button>
+                    <Link href={"/tradingPairs"}>
+                      <button
+                        className={`${
+                          swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
+                        } group flex w-full cursor-pointer items-center rounded-md px-2 py-2 text-sm`}
+                        // onClick={() => setSwapTab(2)}
+                        // disabled
+                      >
+                        Pools & analytics
+                      </button>
+                    </Link>
                   )}
                 </Menu.Item>
               </div>

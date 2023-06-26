@@ -9,16 +9,22 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ETH_ADDRESSES } from "config/constants";
 import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
-import Card from "./Card";
-
 const Row = (data: any) => {
   const {
-    data: { _tokenIn: srcToken, _tokenOut: dstToken, _amountIn: spentAmount, _amountOut: returnAmount, transactionHash },
+    data: {
+      _tokenIn: srcToken,
+      _tokenOut: dstToken,
+      _amountIn: spentAmount,
+      _amountOut: returnAmount,
+      transactionHash,
+      source,
+    },
   } = data;
   const inputCurrency = useCurrency(ETH_ADDRESSES.includes(srcToken) ? "ETH" : srcToken);
   const outputCurrency = useCurrency(ETH_ADDRESSES.includes(dstToken) ? "ETH" : dstToken);
 
-  const amount = formatUnits(BigNumber.from(returnAmount), outputCurrency?.decimals);
+  const amount =
+    source === "aggregator" ? formatUnits(BigNumber.from(returnAmount), outputCurrency?.decimals) : returnAmount;
   const { chainId } = useActiveWeb3React();
 
   return (

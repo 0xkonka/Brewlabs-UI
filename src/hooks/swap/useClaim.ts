@@ -9,20 +9,20 @@ export const useClaim = () => {
   const feeManagerContract = useBrewlabsFeeManager(chainId);
 
   const claimAll = useCallback(
-    (pairs: BrewlabsPair[]) => {
+    (pairs) => {
       if (feeManagerContract) {
         const pairAddresses = pairs.map((pair) => pair.id);
-        feeManagerContract.claimAll(pairAddresses);
+        feeManagerContract.claimAll(pairAddresses).catch((e: string) => console.log(e));
       }
     },
     [feeManagerContract]
   );
 
   const claim = useCallback(
-    (pair: BrewlabsPair) => {
+    (pair) => {
       if (feeManagerContract) {
         const pairAddress = pair.id;
-        feeManagerContract.claim(pairAddress);
+        feeManagerContract.claim(pairAddress).catch((e: string) => console.log(e));
       }
     },
     [feeManagerContract]

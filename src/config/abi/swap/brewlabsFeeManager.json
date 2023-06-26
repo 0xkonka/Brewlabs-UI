@@ -1,20 +1,41 @@
 [
   {
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
         "internalType": "address",
-        "name": "_factory",
+        "name": "previousOwner",
         "type": "address"
       },
       {
+        "indexed": true,
         "internalType": "address",
-        "name": "_brewlabsFeeTo",
+        "name": "newOwner",
         "type": "address"
       }
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "referrer",
+        "type": "address"
+      }
+    ],
+    "name": "ReferrerUpdated",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -34,21 +55,64 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount0",
+        "name": "token0Amount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount1",
+        "name": "token1Amount",
         "type": "uint256"
       }
     ],
-    "name": "Claimed",
+    "name": "RewardClaimed",
     "type": "event"
   },
   {
-    "constant": false,
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardDeposited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "tokenOwner",
+        "type": "address"
+      }
+    ],
+    "name": "TokenOwnerUpdated",
+    "type": "event"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -58,12 +122,10 @@
     ],
     "name": "claim",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address[]",
@@ -73,12 +135,10 @@
     ],
     "name": "claimAll",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -93,21 +153,14 @@
     ],
     "name": "createPool",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": true,
     "inputs": [
       {
         "internalType": "address",
         "name": "pair",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "feeToken",
         "type": "address"
       }
     ],
@@ -115,7 +168,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "operationFee",
+        "name": "totalFee",
         "type": "uint256"
       },
       {
@@ -135,7 +188,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "tokenHolderFee",
+        "name": "stakingFee",
         "type": "uint256"
       },
       {
@@ -144,12 +197,107 @@
         "type": "uint256"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
+      }
+    ],
+    "name": "getPoolFeInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenOwner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "referrer",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "lpFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "brewlabsFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tokenOwnerFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "stakingFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "referralFee",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct BrewlabsSwapFeeManager.FeeDistribution",
+            "name": "feeDistribution",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timeToOpen",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.PoolFeInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
+      }
+    ],
+    "name": "getReferrer",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -163,19 +311,25 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_factory",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -200,12 +354,10 @@
     ],
     "name": "lpBurned",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -230,12 +382,10 @@
     ],
     "name": "lpMinted",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -265,12 +415,10 @@
     ],
     "name": "lpTransferred",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -290,12 +438,23 @@
     ],
     "name": "notifyRewardAmount",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -311,12 +470,23 @@
         "type": "address"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": true,
+    "inputs": [],
+    "name": "pairsLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -325,44 +495,75 @@
       },
       {
         "internalType": "address",
-        "name": "staker",
+        "name": "claimer",
         "type": "address"
       }
     ],
-    "name": "pendingLPRewards",
+    "name": "pendingRewards",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "amount0",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "amount0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount1",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.RewardAmount",
+        "name": "lpRewards",
+        "type": "tuple"
       },
       {
-        "internalType": "uint256",
-        "name": "amount1",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "amount0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount1",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.RewardAmount",
+        "name": "ownerRewards",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "amount0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount1",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.RewardAmount",
+        "name": "referralRewards",
+        "type": "tuple"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_brewlabsFeeTo",
-        "type": "address"
-      }
-    ],
-    "name": "setBrewlabsFeeTo",
+    "inputs": [],
+    "name": "renounceOwnership",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -377,12 +578,10 @@
     ],
     "name": "setFeeDistribution",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -397,12 +596,10 @@
     ],
     "name": "setReferrer",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
@@ -417,21 +614,14 @@
     ],
     "name": "setTime2OpenPool",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "address",
         "name": "pair",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "token",
         "type": "address"
       },
       {
@@ -442,7 +632,19 @@
     ],
     "name": "setTokenOwner",
     "outputs": [],
-    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

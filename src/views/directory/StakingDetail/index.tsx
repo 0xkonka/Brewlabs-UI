@@ -47,9 +47,10 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
+import { useRouter } from "next/router";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data } = detailDatas;
+  const { data } = detailDatas;
   const dispatch = useAppDispatch();
 
   const { userData: accountData, earningToken, stakingToken, reflectionTokens } = data;
@@ -60,6 +61,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [curGraph, setCurGraph] = useState(1);
   const [isCopied, setIsCopied] = useState(false);
 
+  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
@@ -240,7 +242,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   return (
     <AnimatePresence exitBeforeEnter>
-      {open && (
+      {
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -274,10 +276,10 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
             />
             {!data ? (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-roboto">
+                <div className="flex items-center justify-between font-brand">
                   <div className="flex w-[160px] flex-col sm:flex-row">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -287,10 +289,10 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
               </Container>
             ) : (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-roboto">
+                <div className="flex items-center justify-between font-brand">
                   <div className="flex w-[160px] flex-col">
                     <div className="h-[32px] w-[140px] ">
-                      <StyledButton onClick={() => setOpen(false)}>
+                      <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
                         <div className="ml-2">Back to pool list</div>
                       </StyledButton>
@@ -317,7 +319,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     )}
                     <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
                       {data.enableEmergencyWithdraw && (
-                        <div className="h-[32px] w-[180px]">
+                        <div className="mr-0 h-[32px] w-[180px] lg:mr-5">
                           <StyledButton
                             type={"danger"}
                             onClick={() => setEmergencyOpen(true)}
@@ -328,7 +330,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       )}
                       <StyledButton
-                        className="relative mb-2 h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition  hover:border-white hover:text-white lg:mb-0"
+                        className="primary-shadow mb-2 !h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white lg:mb-0"
                         type={"default"}
                         onClick={onSharePool}
                       >
@@ -372,10 +374,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
-                    <InfoPanel
-                      padding={"14px 25px 8px 25px"}
-                      className="relative mt-4 max-w-full md:max-w-[520px] xl:md:max-w-[470px]"
-                    >
+                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
                       <div className="flex justify-between text-xl">
                         <div>
                           Pool: <span className="text-primary">{earningToken.symbol}</span>
@@ -467,12 +466,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <SkeletonComponent />
                         )}
                       </div>
-                    </InfoPanel>
+                    </div>
 
-                    <InfoPanel
-                      padding={"6px 25px 8px 25px"}
-                      className="ml-0 mt-4 flex max-w-full flex-wrap justify-between md:ml-[30px] md:max-w-[520px]"
-                    >
+                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
@@ -547,7 +543,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <SkeletonComponent />
                           ))}
                       </div>
-                    </InfoPanel>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-7">
@@ -556,14 +552,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     rewards={{
                       deposit:
                         data.depositBalance -
-                        (data.earningToken.address.toLowerCase() === data.stakingToken.address.toLowerCase()
+                        (data.earningToken.address?.toLowerCase() === data.stakingToken.address.toLowerCase()
                           ? data.totalStaked
                           : 0),
                       available: data.availableRewards,
                     }}
                   />
                 </div>
-                <div className="mt-10 flex h-[560px] w-full flex-col justify-between md:flex-row">
+                <div className="mt-10 flex h-[552px] w-full flex-col justify-between md:flex-row">
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={graphData()}
@@ -573,25 +569,29 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       price={curGraph === 4 ? 1 : curGraph !== 3 ? tokenPrice : nativeTokenPrice}
                       curGraph={curGraph}
                     />
-                    <InfoPanel
-                      className="mt-[80px] flex cursor-pointer justify-between lg:mt-20"
-                      type={"secondary"}
-                      boxShadow={curGraph === 1 ? "primary" : null}
+                    <div
+                      className={`primary-shadow mt-[80px] flex w-full cursor-pointer justify-between rounded transition ${
+                        curGraph === 1
+                          ? "bg-primary text-black"
+                          : "bg-[#B9B8B81A] text-[#FFFFFFBF] hover:bg-[#b9b8b82f]"
+                      } p-[12px_15px] lg:mt-20`}
                       onClick={() => setCurGraph(1)}
                     >
                       <div>Total Staked Value</div>
                       <div className="flex">
                         {data.tvl || data.tvl === 0.0 ? `${formatTvl(data.tvl, 1)}` : <SkeletonComponent />}
                       </div>
-                    </InfoPanel>
-                    <InfoPanel
-                      className="mt-2.5 flex cursor-pointer justify-between"
-                      type={"secondary"}
-                      boxShadow={curGraph === 2 ? "primary" : null}
+                    </div>
+                    <div
+                      className={`primary-shadow mt-2.5 flex w-full cursor-pointer justify-between rounded transition ${
+                        curGraph === 2
+                          ? "bg-primary text-black"
+                          : "bg-[#B9B8B81A] text-[#FFFFFFBF] hover:bg-[#b9b8b82f]"
+                      } p-[12px_15px]`}
                       onClick={() => setCurGraph(2)}
                     >
                       <div>
-                        Token fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+                        Token fees<span className="opacity-75"> (24hrs)</span>
                       </div>
                       <div className="flex">
                         {data.tokenFees !== undefined ? (
@@ -600,17 +600,21 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <SkeletonComponent />
                         )}
                         &nbsp;
-                        <span className="text-primary">{data.stakingToken.symbol}</span>
+                        <span className={`${curGraph === 2 ? "text-black" : "text-primary"}`}>
+                          {data.stakingToken.symbol}
+                        </span>
                       </div>
-                    </InfoPanel>
-                    <InfoPanel
-                      className="mt-2.5 flex cursor-pointer justify-between"
-                      type={"secondary"}
-                      boxShadow={curGraph === 3 ? "primary" : null}
+                    </div>
+                    <div
+                      className={`primary-shadow mt-2.5 flex w-full cursor-pointer justify-between rounded transition ${
+                        curGraph === 3
+                          ? "bg-primary text-black"
+                          : "bg-[#B9B8B81A] text-[#FFFFFFBF] hover:bg-[#b9b8b82f]"
+                      } p-[12px_15px]`}
                       onClick={() => setCurGraph(3)}
                     >
                       <div>
-                        Performance fees<span className="text-[#FFFFFF80]"> (24hrs)</span>
+                        Performance fees<span className="opacity-75"> (24hrs)</span>
                       </div>
                       <div className="flex">
                         {data.performanceFees !== undefined ? (
@@ -618,18 +622,23 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         ) : (
                           <SkeletonComponent />
                         )}
-                        &nbsp;<span className="text-primary">{getNativeSybmol(data.chainId)}</span>
+                        &nbsp;
+                        <span className={`${curGraph === 3 ? "text-black" : "text-primary"}`}>
+                          {getNativeSybmol(data.chainId)}
+                        </span>
                       </div>
-                    </InfoPanel>
+                    </div>
 
-                    <InfoPanel
-                      className="mt-2.5 flex cursor-pointer justify-between"
-                      type={"secondary"}
-                      boxShadow={curGraph === 4 ? "primary" : null}
+                    <div
+                      className={`primary-shadow mt-2.5 flex w-full cursor-pointer justify-between rounded transition ${
+                        curGraph === 4
+                          ? "bg-primary text-black"
+                          : "bg-[#B9B8B81A] text-[#FFFFFFBF] hover:bg-[#b9b8b82f]"
+                      } p-[12px_15px]`}
                       onClick={() => setCurGraph(4)}
                     >
                       <div>
-                        Staked addresses<span className="text-[#FFFFFF80]"> (24hrs)</span>
+                        Staked addresses<span className="opacity-75"> (24hrs)</span>
                       </div>
                       <div className="flex">
                         {data.stakedAddresses !== undefined ? (
@@ -638,11 +647,11 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <SkeletonComponent />
                         )}
                       </div>
-                    </InfoPanel>
+                    </div>
                   </div>
                   <div className="relative mt-10 flex w-full flex-col justify-between md:mt-0 md:w-[57%]">
                     <div className="flex w-full flex-col xsm:flex-row">
-                      <InfoPanel className="flex cursor-pointer justify-between" type={"secondary"}>
+                      <div className="primary-shadow flex w-full cursor-pointer justify-between rounded bg-[#B9B8B81A] p-[12px_15px]">
                         <div>My Staked Tokens</div>
                         <div className="flex">
                           {!address ? (
@@ -655,11 +664,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           <span className="text-primary">{stakingToken.symbol}</span>
                         </div>
-                      </InfoPanel>
-                      <InfoPanel
-                        className="mt-2 flex cursor-pointer justify-between xsm:ml-4 xsm:mt-0"
-                        type={"secondary"}
-                      >
+                      </div>
+                      <div className="primary-shadow mt-2 flex w-full cursor-pointer justify-between rounded bg-[#B9B8B81A] p-[12px_15px] xsm:ml-4 xsm:mt-0">
                         <div>USD Value</div>
                         <div className="flex">
                           {!address ? (
@@ -672,7 +678,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <SkeletonComponent />
                           )}
                         </div>
-                      </InfoPanel>
+                      </div>
                     </div>
                     <div className="mt-8 flex w-full flex-col xsm:flex-row">
                       <div className="mr-0 flex-1 xsm:mr-[14px]">
@@ -868,25 +874,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
             )}
           </div>
         </motion.div>
-      )}
+      }
     </AnimatePresence>
   );
 };
 
 export default StakingDetail;
-
-const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: string }>`
-  background: ${({ type }) => (type === "secondary" ? "rgba(185, 184, 184, 0.1)" : "rgba(185, 184, 184, 0.05)")};
-  border: 0.5px solid rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-  align-items: center;
-  padding: ${({ padding, type }) => (type === "secondary" ? "12px 15px" : padding)};
-  width: 100%;
-  color: #ffffffbf;
-  box-shadow: ${({ boxShadow }) =>
-    boxShadow === "primary" ? "0px 0px 4px #EEBB19" : boxShadow === "secondary" ? "0px 0px 4px #EEBB19" : ""};
-  :hover {
-    border-color: ${({ type, boxShadow }) =>
-      type === "secondary" && !boxShadow ? "#EEBB19" : "rgba(255, 255, 255, 0.5)"};
-  }
-`;

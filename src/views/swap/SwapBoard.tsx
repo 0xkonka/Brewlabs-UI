@@ -1,6 +1,8 @@
 import { useState, useContext } from "react";
 import { useUserSlippageTolerance } from "state/user/hooks";
 
+import { Tooltip as ReactTooltip } from "react-tooltip";
+
 import SubNav from "./components/nav/SubNav";
 import ChainSelect from "./components/ChainSelect";
 import SettingModal from "./components/modal/SettingModal";
@@ -9,6 +11,7 @@ import { SwapContext } from "contexts/SwapContext";
 import SwapPanel from "./SwapPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
 import SwapRewards from "./components/SwapRewards";
+import { NFTSVG } from "@components/dashboard/assets/svgs";
 
 export default function SwapBoard({ type = "swap", disableChainSelect = false }) {
   const {
@@ -20,6 +23,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
     swapTab,
     openSettingModal,
     setOpenSettingModal,
+    addLiquidityStep,
   }: any = useContext(SwapContext);
 
   // txn values
@@ -39,15 +43,31 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
 
   return (
     <div
-      className={`relative mx-auto mb-4 flex w-fit min-w-[90%] max-w-xl flex-col gap-1 rounded-3xl pb-10 pt-4 sm:min-w-[540px] ${
-        type === "swap" ? "border-t px-4 dark:border-slate-600" : ""
+      className={`relative mx-auto mb-4 flex w-fit min-w-full flex-col gap-1 rounded-3xl pb-10 pt-4 sm:min-w-[540px] ${
+        type === "swap" ? "border-t px-3 dark:border-slate-600" : ""
       } dark:bg-zinc-900 sm:px-10 md:mx-0`}
     >
+      <div
+        className="tooltip absolute right-14 top-6 scale-75 cursor-pointer text-[rgb(75,85,99)]"
+        data-tip="No Brewlabs NFT found."
+      >
+        {NFTSVG}
+      </div>
       <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
       {!disableChainSelect && <ChainSelect id="chain-select" />}
 
-      {swapTab === 0 ? <SwapPanel /> : swapTab === 1 ? <AddLiquidityPanel /> : swapTab === 2 ? <SwapRewards /> : ""}
+      {swapTab === 0 ? (
+        <SwapPanel />
+      ) : swapTab === 1 ? (
+        addLiquidityStep === "ViewHarvestFees" ? (
+          <SwapRewards />
+        ) : (
+          <AddLiquidityPanel />
+        )
+      ) : (
+        ""
+      )}
 
       {openSettingModal && (
         <Modal
@@ -65,6 +85,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
           />
         </Modal>
       )}
+      <ReactTooltip anchorId={"nfticon"} place="top" content="No Brewlabs NFT found." />
     </div>
   );
 }

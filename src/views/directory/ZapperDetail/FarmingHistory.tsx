@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import CountDown from "./CountDown";
+import CountDown from "@components/CountDown";
 
 const StakingHistory = ({ history }: { history: any }) => {
   return (
@@ -20,7 +20,7 @@ const StakingHistory = ({ history }: { history: any }) => {
               </div>
               <div className="min-w-[60px]">{data.blockNumber}</div>
               <div className="min-w-[80px] text-right">
-                <CountDown time={data.timeRemaining} />
+                <CountDown time={data.timeRemaining} finishedText="Unstake" />
                 {data.timeRemaining ? "Remaining" : ""}
               </div>
             </div>

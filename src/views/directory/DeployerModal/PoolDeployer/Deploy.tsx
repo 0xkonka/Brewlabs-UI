@@ -43,7 +43,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
     );
   };
   return (
-    <div className="font-roboto text-white">
+    <div className="font-brand text-white">
       <div className="mt-4 flex items-center justify-between rounded-[30px] border border-primary px-4 py-3">
         <div className="mx-auto flex w-full max-w-[280px] items-center justify-between sm:mx-0">
           <CircleImage className="h-8 w-8" />
@@ -54,9 +54,9 @@ const Deploy = ({ step, setStep, setOpen }) => {
             <div className="ml-4">TICKER Staking Pool</div>
           </div>
         </div>
-        <div className="hidden sm:block">{makePendingText()}</div>
+        {/* <div className="hidden sm:block">{makePendingText()}</div> */}
       </div>
-      <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div>
+      {/* <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div> */}
 
       <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
         <div className="ml-4 flex flex-col items-center justify-between xs:flex-row xs:items-start">
@@ -67,14 +67,14 @@ const Deploy = ({ step, setStep, setOpen }) => {
           <div>Stakig pool duration</div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setStakingDuration(Math.min(12, stakingDuration + 1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{stakingDuration} Months</div>
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setStakingDuration(Math.max(1, stakingDuration - 1))}
             >
               {MinusSVG}
@@ -85,14 +85,14 @@ const Deploy = ({ step, setStep, setOpen }) => {
           <div>Initial reward supply for 12 months</div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(Math.min(3, initialSupply + 0.1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{initialSupply.toFixed(2)}%</div>
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(Math.max(0, initialSupply - 0.1))}
             >
               {MinusSVG}
@@ -106,20 +106,20 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Withdrawal fee</div>
           </div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(Math.min(2, withdrawFee + 0.1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{withdrawFee.toFixed(2)}%</div>
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(Math.max(0, withdrawFee - 0.1))}
             >
               {MinusSVG}
@@ -129,20 +129,20 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Deposit fee</div>
           </div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(Math.min(2, depositFee + 0.1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{depositFee.toFixed(2)}%</div>
             <div
-              className="cursor-pointer text-[#3F3F46] transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(Math.max(0, depositFee - 0.1))}
             >
               {MinusSVG}
@@ -152,7 +152,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         <div className="mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row">
           <div className="flex items-center">
             <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              <InfoSVG />
+              {InfoSVG}
             </div>
             <div>Lockup Period</div>
           </div>
@@ -197,7 +197,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
       </div>
 
       {step === 4 ? (
-        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-roboto text-sm font-semibold text-[#FFFFFF80]">
+        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm font-semibold text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Staking contract address</div>

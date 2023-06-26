@@ -4,8 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
-import "react-tooltip/dist/react-tooltip.css";
-
 import {
   BarChartSVG,
   CameraSVG,
@@ -39,7 +37,7 @@ import { useGlobalState } from "state";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
 import useWalletNFTs from "@hooks/useWalletNFTs";
-import "react-tooltip/dist/react-tooltip.css";
+
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { WNATIVE } from "@brewlabs/sdk";
 import { BASE_URL } from "config";
@@ -184,7 +182,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
             />
 
             <Container className="font-brand">
-              <div className="flex items-center justify-between font-roboto">
+              <div className="flex items-center justify-between font-brand">
                 <div>
                   <div className="min-w-fit sm:min-w-[180px]">
                     <div className="h-[32px] w-[120px] ">
@@ -207,22 +205,22 @@ const Profile = ({ deployer }: { deployer: string }) => {
                 <div className="flex flex-1 justify-end">
                   <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
                     <StyledButton
-                      className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white hover:text-white xs:w-[200px] xl:flex"
+                      className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary transition hover:border-white hover:text-white xs:!w-[200px] xl:flex"
                       type={"default"}
                     >
-                      <div className="flex items-center">
-                        <div className="mr-1.5 w-[150px] overflow-hidden text-ellipsis whitespace-nowrap xl:w-[170px]">
+                      <div className="flex w-full items-center px-2">
+                        <div className="mr-1.5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap ">
                           Follow & get notifications
                         </div>
                         <div className="scale-[125%]">{UserAddSVG}</div>
                       </div>
-                      <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-roboto text-xs font-bold text-black">
+                      <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
                         Soon
                       </div>
                     </StyledButton>
                     <div className="mr-4 mt-2 xl:mt-0" />
                     <StyledButton
-                      className="relative h-8 w-[140px] rounded-md border border-primary bg-[#B9B8B81A] font-roboto text-sm font-bold text-primary shadow-[0px_4px_4px_rgba(0,0,0,0.25)] transition hover:border-white hover:text-white xl:flex"
+                      className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white xl:flex"
                       type={"default"}
                       onClick={onSharePortfolio}
                     >
@@ -261,7 +259,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                     </div>
                   </div>
                 </div>
-                <InfoPanel className="relative mt-4 flex w-full flex-col justify-between p-3.5 sm:p-[14px_14px_14px_40px] md:w-[calc(100%-180px)] ls:flex-row">
+                <div className="primary-shadow relative mt-4 flex w-full flex-col justify-between rounded bg-[#B9B8B80D] p-3.5 text-[#ffffffbf] sm:p-[14px_14px_14px_40px] md:w-[calc(100%-180px)] ls:flex-row">
                   <div className="w-full ls:w-[calc(100%-556px)]">
                     <div className="relative text-[25px] text-white">
                       <div>Brewlabs</div>
@@ -321,7 +319,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                     <div className="mt-2 sm:mt-0" />
                     <ChartHistory data={getPriceChange()} type={"performance"} />
                   </div>
-                </InfoPanel>
+                </div>
               </div>
               <SelectionPanel
                 pools={allPools}
@@ -350,28 +348,3 @@ const Profile = ({ deployer }: { deployer: string }) => {
 };
 
 export default Profile;
-
-const InfoPanel = styled.div<{ padding?: string; type?: string; boxShadow?: string }>`
-  background: ${({ type }) => (type === "secondary" ? "rgba(185, 184, 184, 0.1)" : "rgba(185, 184, 184, 0.05)")};
-  border: 0.5px solid rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-  color: #ffffffbf;
-  box-shadow: ${({ boxShadow }) =>
-    boxShadow === "primary"
-      ? "0px 2px 1px rgba(255, 255, 255, 0.75)"
-      : boxShadow === "secondary"
-      ? "0px 1px 1px rgba(255, 255, 255, 0.75)"
-      : ""};
-  :hover {
-    border-color: ${({ type, boxShadow }) =>
-      type === "secondary" && !boxShadow ? "rgba(255, 255, 255, 0.75)" : "rgba(255, 255, 255, 0.5)"};
-  }
-  .react-tooltip {
-    z-index: 100;
-    font-size: 13px;
-    line-height: 125%;
-    opacity: 1;
-    max-width: 300px;
-    text-align: center;
-  }
-`;

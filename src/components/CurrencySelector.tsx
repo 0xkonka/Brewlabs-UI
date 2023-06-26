@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo, useContext } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, use } from "react";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
@@ -17,7 +17,7 @@ import { useGlobalState } from "state";
 import { Field } from "state/swap/actions";
 import { Field as LiquidityField } from "state/mint/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
-import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
+import { isVerified, useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
 
 import { CurrencyLogo } from "components/logo";
@@ -26,6 +26,8 @@ import { filterTokens, useSortedTokensByQuery } from "components/searchModal/fil
 import UserDashboard from "components/dashboard/UserDashboard";
 
 import NavButton from "./dashboard/NavButton";
+import WarningModal from "./warningModal";
+import DropDown from "./dashboard/TokenList/Dropdown";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";
@@ -50,6 +52,9 @@ const tabs = [
   {
     name: "Brewlabs factory",
   },
+  {
+    name: "LSD's",
+  },
 ];
 
 const CurrencyRow = ({
@@ -59,13 +64,15 @@ const CurrencyRow = ({
   onUserInput,
   type,
   onCurrencySelect,
+  notListedTokens,
 }: {
-  currency: Currency;
+  currency: any;
   marketData: any;
   inputType: "input" | "output";
   onUserInput: any;
   type: string;
   onCurrencySelect: any;
+  notListedTokens: any;
 }) => {
   const { account } = useActiveWeb3React();
 
@@ -75,69 +82,89 @@ const CurrencyRow = ({
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
+  const [warningOpen, setWarningOpen] = useState(false);
+  const [warningType, setWarningType] = useState("notverified");
+
+  const onConfirm = () => {
+    if (type === "liquidity") {
+      const input =
+        inputType === "input"
+          ? type === "liquidity"
+            ? LiquidityField.CURRENCY_A
+            : Field.INPUT
+          : type === "liquidity"
+          ? LiquidityField.CURRENCY_B
+          : Field.OUTPUT;
+      onUserInput("");
+      onCurrencySelect(input, currency);
+    } else {
+      const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
+      // onUserInput(input, "");
+      if (onCurrencySelect) onCurrencySelect(input, currency);
+      onCurrencySelection(input, currency);
+    }
+    if (userSidebarOpen === 2) {
+      setUserSidebarOpen(0);
+      // setSidebarContent(<UserDashboard />);
+      return;
+    }
+    setSidebarContent(<UserDashboard />);
+  };
+
   return (
-    <button
-      className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
-      onClick={() => {
-        if (type === "liquidity") {
-          const input =
-            inputType === "input"
-              ? type === "liquidity"
-                ? LiquidityField.CURRENCY_A
-                : Field.INPUT
-              : type === "liquidity"
-              ? LiquidityField.CURRENCY_B
-              : Field.OUTPUT;
-          onUserInput("");
-          onCurrencySelect(input, currency);
-        } else {
-          const input = inputType === "input" ? Field.INPUT : Field.OUTPUT;
-          // onUserInput(input, "");
-          if (onCurrencySelect) onCurrencySelect(input, currency);
-          onCurrencySelection(input, currency);
-        }
+    <>
+      <WarningModal open={warningOpen} setOpen={setWarningOpen} type={warningType} onClick={onConfirm} />
+      <button
+        className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
+        onClick={() => {
+          if (notListedTokens.includes(currency)) {
+            setWarningOpen(true);
+            setWarningType("notlisted");
+          } else {
+            onConfirm();
+            return;
 
-        if (userSidebarOpen === 2) {
-          setUserSidebarOpen(0);
-
-          // setSidebarContent(<UserDashboard />);
-
-          return;
-        }
-
-        setSidebarContent(<UserDashboard />);
-      }}
-    >
-      <div className="flex items-center justify-between gap-4">
-        <CurrencyLogo currency={currency} size="36px" />
-        <div>
-          <p className="text-start text-lg">{currency?.symbol}</p>
-          <p className="flex items-center justify-start gap-1 text-sm">
-            {priceChange24h > 0 ? (
-              <span className="flex items-center text-green">
-                {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
-              </span>
-            ) : (
-              <span className="flex items-center text-danger">
-                {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
-              </span>
-            )}
-            <span className="text-primary">24HR</span>
-          </p>
-          <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-danger"} text-[10px]`}>
-            {tokenPrice} USD = 1.00 {currency?.symbol}
-          </p>
+            isVerified(currency).then((result) => {
+              if (result) onConfirm();
+              else {
+                setWarningOpen(true);
+                setWarningType("notverified");
+              }
+            });
+          }
+        }}
+      >
+        <div className="flex items-center justify-between gap-4">
+          <CurrencyLogo currency={currency} size="36px" />
+          <div>
+            <p className="text-start text-lg">{currency?.symbol}</p>
+            <p className="flex items-center justify-start gap-1 text-sm">
+              {priceChange24h > 0 ? (
+                <span className="flex items-center text-green">
+                  {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
+                </span>
+              ) : (
+                <span className="flex items-center text-danger">
+                  {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
+                </span>
+              )}
+              <span className="text-primary">24HR</span>
+            </p>
+            <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-danger"} text-[10px]`}>
+              {tokenPrice} USD = 1.00 {currency?.symbol}
+            </p>
+          </div>
         </div>
-      </div>
-      {balance && !balance.equalTo(0) && (
-        <div className="text-end">
-          <p>{balance.toFixed(3)}</p>
-          <p className="text-sm opacity-40">
-            {new BigNumber(balance.toSignificant()).times(tokenPrice).toFixed(4)} USD
-          </p>
-        </div>
-      )}
-    </button>
+        {balance && !balance.equalTo(0) && (
+          <div className="text-end">
+            <p>{balance.toFixed(3)}</p>
+            <p className="text-sm opacity-40">
+              {new BigNumber(balance.toSignificant()).times(tokenPrice).toFixed(4)} USD
+            </p>
+          </div>
+        )}
+      </button>
+    </>
   );
 };
 
@@ -161,7 +188,7 @@ const CurrencySelector = ({
   const allTokens = useAllTokens();
 
   // if they input an address, use it
-  const searchToken = useToken(debouncedQuery);
+  let searchToken = useToken(debouncedQuery);
 
   const showETH: boolean = useMemo(() => {
     const s = debouncedQuery.toLowerCase().trim();
@@ -212,12 +239,19 @@ const CurrencySelector = ({
   const inactiveTokens = useFoundOnInactiveList(debouncedQuery);
   const filteredInactiveTokens: Token[] = useSortedTokensByQuery(inactiveTokens, debouncedQuery);
 
-  const currencies =
+  let currencies =
     filteredCurrencies?.length > 0
       ? filterTokens(filteredCurrencies, debouncedQuery)
       : filteredInactiveTokens
       ? filteredSortedTokens.concat(filteredInactiveTokens)
       : filteredSortedTokens;
+
+  let notListedTokens = [];
+
+  if (searchToken && !currencies.includes(searchToken)) {
+    currencies.push(searchToken);
+    notListedTokens.push(searchToken);
+  }
 
   const walletTokens = useWalletTokens(account, MORALIS_CHAIN_NAME[chainId]);
   const itemData: (Currency | undefined)[] = useMemo(() => {
@@ -257,12 +291,7 @@ const CurrencySelector = ({
     }
   }, [activeTab, chainId, itemData, ethBalance, walletTokens]);
 
-  const tokenMarketData = useTokenMarketChart(
-    listingTokens
-      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      .map((currency) => currency?.wrapped?.address),
-    chainId
-  );
+  const tokenMarketData = useTokenMarketChart(chainId);
 
   const totalPages = useMemo(() => Math.ceil(listingTokens.length / rowsPerPage), [listingTokens, rowsPerPage]);
 
@@ -290,7 +319,7 @@ const CurrencySelector = ({
         {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
       </div>
 
-      <nav className="mb-4 flex space-x-4" aria-label="Tabs">
+      <nav className="mb-4 hidden space-x-4 sm:flex" aria-label="Tabs">
         {tabs.map((tab, index) => (
           <button
             key={tab.name}
@@ -306,6 +335,19 @@ const CurrencySelector = ({
             {tab.name}
           </button>
         ))}
+      </nav>
+
+      <nav className="mb-4 block sm:hidden" aria-label="Tabs">
+        <DropDown
+          width="w-full"
+          value={activeTab}
+          setValue={(i) => {
+            setPage(0);
+            setActiveTab(i);
+          }}
+          type="secondary"
+          values={tabs.map((data) => data.name)}
+        />
       </nav>
 
       <input
@@ -326,6 +368,7 @@ const CurrencySelector = ({
                   key={index}
                   currency={currency}
                   inputType={inputType}
+                  notListedTokens={notListedTokens}
                   marketData={tokenMarketData[tokenAddress] || defaultMarketData}
                   onUserInput={onUserInput}
                   type={type}
@@ -333,6 +376,11 @@ const CurrencySelector = ({
                 />
               );
             })
+          ) : searchToken === null ? (
+            <>
+              {/* <img className="m-auto" alt="No results" src="/images/Brewlabs--no-results-found-transparent.gif" /> */}
+              <p className="my-7 flex justify-center text-2xl dark:text-primary">Loading Token ...</p>
+            </>
           ) : (
             <>
               <img className="m-auto" alt="No results" src="/images/Brewlabs--no-results-found-transparent.gif" />

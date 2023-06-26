@@ -6,7 +6,7 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { chevronLeftSVG, DoubleUpSVG } from "./assets/svgs";
 import { BigNumberFormat, priceFormat } from "utils/functions";
 import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 const responsive = {
@@ -52,7 +52,7 @@ const DrawChart = ({ data }: { data: any }) => {
                   {
                     offset: 0,
                     color: "rgb(110, 220, 181)",
-                    opacity: 0.4,
+                    opacity: 0.2,
                   },
                   {
                     offset: 100,
@@ -64,7 +64,7 @@ const DrawChart = ({ data }: { data: any }) => {
                   {
                     offset: 0,
                     color: "#ea3943",
-                    opacity: 0.4,
+                    opacity: 0.2,
                   },
                   {
                     offset: 100,
@@ -89,6 +89,7 @@ const DrawChart = ({ data }: { data: any }) => {
       },
       stroke: {
         curve: "smooth",
+        width: 1,
       },
       xaxis: {
         labels: {
@@ -128,12 +129,12 @@ const DrawChart = ({ data }: { data: any }) => {
   );
 };
 
-const PriceList = () => {
-  const { priceHistory }: any = useContext(DashboardContext);
+const FeaturedPriceList = () => {
+  const { featuredPriceHistory }: any = useContext(DashboardContext);
 
   const CustomRightArrow = ({ onClick }) => {
     return (
-      <div onClick={() => onClick()} className="absolute -right-5 -scale-100 cursor-pointer text-[#7a7a7c]">
+      <div onClick={() => onClick()} className="absolute -right-5 -scale-100 cursor-pointer text-primary">
         {chevronLeftSVG}
       </div>
     );
@@ -141,14 +142,14 @@ const PriceList = () => {
 
   const CustomLeftArrow = ({ onClick }) => {
     return (
-      <div onClick={() => onClick()} className="absolute -left-5 cursor-pointer text-[#7a7a7c]">
+      <div onClick={() => onClick()} className="absolute -left-5 cursor-pointer text-primary">
         {chevronLeftSVG}
       </div>
     );
   };
   return (
     <StyledContainer>
-      <div className = 'font-semibold text-yellow mb-1 -ml-2'>Featured</div>
+      <div className="-ml-2 mb-1 font-semibold text-yellow">Featured</div>
       <Carousel
         responsive={responsive}
         infinite={true}
@@ -159,7 +160,7 @@ const PriceList = () => {
         customRightArrow={<CustomRightArrow onClick={undefined} />}
         customLeftArrow={<CustomLeftArrow onClick={undefined} />}
       >
-        {priceHistory.map((data: any, i: number) => {
+        {featuredPriceHistory.map((data: any, i: number) => {
           let percent = 0,
             price = 0;
           if (data.history.length) {
@@ -167,7 +168,7 @@ const PriceList = () => {
             percent = ((price - data.history[0]) / data.history[0]) * 100;
           }
           return (
-            <div className="relative w-[210px] rounded-[20px] border-[2px] border-[#FFFFFF80] px-[18px] py-3" key={i}>
+            <div className="feature-shadow relative w-[210px] rounded-[20px] px-[18px] py-3" key={i}>
               <div className="flex items-center">
                 <img src={getTokenLogoURL(data.address, data.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
                 <div className="font-semibold">
@@ -199,7 +200,7 @@ const PriceList = () => {
   );
 };
 
-export default PriceList;
+export default FeaturedPriceList;
 
 const StyledContainer = styled.div`
   width: calc(100% - 30px);
@@ -207,6 +208,7 @@ const StyledContainer = styled.div`
   margin: 0 auto;
   .react-multi-carousel-list {
     position: unset !important;
+    padding: 4px 0 !important;
   }
   position: relative;
   .react-multi-carousel-item {

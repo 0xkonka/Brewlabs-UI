@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "react-tooltip/dist/react-tooltip.css";
+
 import { getChainLogo } from "utils/functions";
 import { LinkSVG } from "../assets/svgs";
 import { useContext, useEffect, useRef, useState } from "react";
 import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+
 import styled from "styled-components";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
@@ -82,7 +82,7 @@ const NFTList = () => {
                 return (
                   <div
                     key={i}
-                    className="mx-5 my-5 w-[135px] overflow-hidden rounded-[12px] font-roboto text-xs font-medium transition-all duration-700 hover:scale-[120%]"
+                    className="mx-5 my-5 w-[135px] overflow-hidden rounded-[12px] font-brand text-xs font-medium transition-all duration-700 hover:scale-[120%]"
                   >
                     <div className="flex h-[135px] items-center justify-center overflow-hidden">
                       <img

@@ -28,7 +28,14 @@ export const useSwapAggregator = (
   }, [chainId, signer]);
 
   const callParams = useMemo(() => {
-    if (!amountIn || !currencies || !currencies[Field.INPUT] || !currencies[Field.OUTPUT]) return null;
+    if (
+      !amountIn ||
+      !currencies ||
+      !currencies[Field.INPUT] ||
+      !currencies[Field.OUTPUT] ||
+      currencies[Field.INPUT]?.wrapped.address === currencies[Field.OUTPUT]?.wrapped.address
+    )
+      return null;
     const amountInWei = makeBigNumber(amountIn.toExact(), amountIn.currency.decimals);
     return {
       args: [
@@ -41,7 +48,7 @@ export const useSwapAggregator = (
     };
   }, [amountIn?.toExact(), currencies[Field.INPUT]?.address, currencies[Field.OUTPUT]?.address]);
 
-  const [query, setQuery] = useState<any>();
+  const [query, setQuery] = useState<any>(null);
 
   useEffect(() => {
     if (!contract || !callParams) return;
@@ -49,16 +56,16 @@ export const useSwapAggregator = (
     contract[methodName](...callParams.args)
       .then((response: any) => {
         const outputValue = response.amounts[response.amounts.length - 1];
-        const outputAmount =
-          currencies[Field.OUTPUT] instanceof Token
-            ? new TokenAmount(currencies[Field.OUTPUT], outputValue)
-            : new CurrencyAmount(currencies[Field.OUTPUT], outputValue);
-        const inputValue = response.amounts[0];
-        const inputAmount =
-          currencies[Field.INPUT] instanceof Token
-            ? new TokenAmount(currencies[Field.INPUT], inputValue)
-            : new CurrencyAmount(currencies[Field.INPUT], inputValue);
-        if (outputAmount)
+        if (outputValue) {
+          const outputAmount =
+            currencies[Field.OUTPUT] instanceof Token
+              ? new TokenAmount(currencies[Field.OUTPUT], outputValue)
+              : new CurrencyAmount(currencies[Field.OUTPUT], outputValue);
+          const inputValue = response.amounts[0];
+          const inputAmount =
+            currencies[Field.INPUT] instanceof Token
+              ? new TokenAmount(currencies[Field.INPUT], inputValue)
+              : new CurrencyAmount(currencies[Field.INPUT], inputValue);
           setQuery({
             inputAmount,
             outputAmount,
@@ -66,6 +73,9 @@ export const useSwapAggregator = (
             path: response.path,
             adapters: response.adapters,
           });
+        } else {
+          setQuery(null);
+        }
       })
       .catch((error: any) => {
         console.error(error);
@@ -75,8 +85,16 @@ export const useSwapAggregator = (
   const addTransaction = useTransactionAdder();
   return useMemo(() => {
     if (!chainId || !library || !account || !signer || !contract || !callParams) {
-      return { callback: null, query: query, error: "Missing dependencies" };
+      return { callback: null, error: "Missing dependencies", query };
     }
+    if (!query || !query.outputAmount) {
+      return { callback: null, error: "No liquidity found", query };
+    }
+
+    if (callParams.value && !callParams.value.eq(query.amounts[0])) {
+      return { callback: null, error: "Querying swap path...", query };
+    }
+    
     return {
       callback: async function onSwap() {
         const args = [
@@ -94,7 +112,7 @@ export const useSwapAggregator = (
           gasLimit: calculateGasMargin(gasEstimate),
           ...(options.value ? { value: options.value, from: account } : { from: account }),
         })
-          .then((response: any) => {
+          .then(async (response: any) => {
             const inputSymbol = currencies[Field.INPUT].wrapped.symbol;
             const outputSymbol = currencies[Field.OUTPUT].wrapped.symbol;
             const inputAmount = amountIn.toSignificant(3);
@@ -113,7 +131,7 @@ export const useSwapAggregator = (
             addTransaction(response, {
               summary: withRecipient,
             });
-
+            await response.wait();
             return response.hash;
           })
           .catch((error: any) => {
