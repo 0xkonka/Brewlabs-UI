@@ -4,17 +4,24 @@ import { SerializedToken } from "config/constants/types";
 export interface FlaskNftData {
   chainId: ChainId;
   address: string;
-  balances: [{ tokenId: number; rarity: number }];
   brewsToken: SerializedToken;
   stableTokens: SerializedToken[];
   mintFee: { brews: string; stable: string };
   upgradeFee: { brews: string; stable: string };
+  oneTimeLimit: number;
+  userData?: {
+    balances: [{ tokenId: number; rarity: number }];
+    allowances: string[];
+    tokenBalances?: string[];
+  };
 }
 
 export interface MirrorNftData {
   chainId: ChainId;
   address: string;
-  balances: [{ tokenId: number; rarity: number }];
+  userData?: {
+    balances: [{ tokenId: number; rarity: number }];
+  };
 }
 
 export interface NftStakingData {
@@ -23,9 +30,11 @@ export interface NftStakingData {
   earningToken: SerializedToken;
   apr: number;
   totalStaked: number;
-  stakedInfo: {
-    amount: number;
-    tokenIds: number[];
+  oneTimeLimit: number;
+  userData?: {
+    allowance: boolean;
+    stakedAmount: number;
+    stakedTokenIds: number[];
   };
   performanceFee?: string;
 }
