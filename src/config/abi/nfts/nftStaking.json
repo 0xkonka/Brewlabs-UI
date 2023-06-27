@@ -350,7 +350,7 @@
     "name": "earnedToken",
     "outputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -422,7 +422,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract IERC20",
+        "internalType": "address",
         "name": "_earnedToken",
         "type": "address"
       },
