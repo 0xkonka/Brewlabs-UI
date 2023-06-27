@@ -6,8 +6,8 @@ export interface FlaskNftData {
   address: string;
   brewsToken: SerializedToken;
   stableTokens: SerializedToken[];
-  mintFee: { brews: string; stable: string };
-  upgradeFee: { brews: string; stable: string };
+  mintFee?: { brews: string; stable: string };
+  upgradeFee?: { brews: string; stable: string };
   oneTimeLimit: number;
   userData?: {
     balances: [{ tokenId: number; rarity: number }];
@@ -28,7 +28,7 @@ export interface NftStakingData {
   chainId: ChainId;
   address: string;
   earningToken: SerializedToken;
-  apr: number;
+  apr?: number;
   totalStaked: number;
   oneTimeLimit: number;
   userData?: {

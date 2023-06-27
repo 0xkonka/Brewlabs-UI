@@ -1,15 +1,42 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ChainId } from "@brewlabs/sdk";
+import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
+import contracts from "config/constants/contracts";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { stableCoins } from "config/constants/nft";
+import { brewsToken } from "config/constants/tokens";
 import { NftState } from "state/types";
+import { serializeToken } from "state/user/hooks/helpers";
+
 import { fetchFlaskNftPublicData, fetchFlaskNftUserData } from "./fetchFlaskNft";
 import { fetchNftStakingPublicData, fetchNftStakingUserData } from "./fetchNftStaking";
 import { fetchMirrorNftUserData } from "./fetchMirrorNft";
 
 const initialState: NftState = {
-  flaskNft: [],
-  mirrorNft: [],
-  data: [],
+  flaskNft: Object.keys(contracts.flaskNft)
+    .filter((chainId) => PAGE_SUPPORTED_CHAINS.nft.includes(+chainId))
+    .map((chainId) => ({
+      chainId: +chainId,
+      address: contracts.flaskNft[chainId],
+      brewsToken: serializeToken(brewsToken[+chainId]),
+      stableTokens: stableCoins[+chainId].map((t) => serializeToken(t)),
+      oneTimeLimit: 30,
+    })),
+  mirrorNft: Object.keys(contracts.mirrorNft)
+    .filter((chainId) => PAGE_SUPPORTED_CHAINS.nft.includes(+chainId))
+    .map((chainId) => ({
+      chainId: +chainId,
+      address: contracts.mirrorNft[chainId],
+    })),
+  data: Object.keys(contracts.nftStaking)
+    .filter((chainId) => PAGE_SUPPORTED_CHAINS.nft.includes(+chainId))
+    .map((chainId) => ({
+      chainId: +chainId,
+      address: contracts.nftStaking[chainId],
+      earningToken: serializeToken(NATIVE_CURRENCIES[+chainId]),
+      totalStaked: 0,
+      oneTimeLimit: 30,
+    })),
   userDataLoaded: false,
 };
 
