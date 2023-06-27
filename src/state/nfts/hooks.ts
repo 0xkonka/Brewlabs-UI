@@ -1,26 +1,45 @@
-import { useEffect } from "react";
+import { ChainId } from "@brewlabs/sdk";
 import { useSelector } from "react-redux";
 
+import contracts from "config/constants/contracts";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
-import { simpleRpcProvider } from "utils/providers";
 
 import { State } from "../types";
-import { NftStakingData } from "./type";
+import { FlaskNftData, MirrorNftData, NftStakingData } from "./type";
+import { fetchNftPublicDataAsync, fetchNftUserDataAsync, resetNftUserData } from ".";
 
-export const useFetchPublicPoolsData = () => {
+export const useFetchPublicNftData = () => {
   const dispatch = useAppDispatch();
-  const { chainId } = useActiveWeb3React();
 
+  const supportedChains = PAGE_SUPPORTED_CHAINS["nft"].filter((chainId) =>
+    Object.keys(contracts.flaskNft)
+      .map((c) => +c)
+      .includes(chainId)
+  );
   useSlowRefreshEffect(() => {
-    const fetchPoolsPublicData = async () => {
-      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber();
-      // dispatch(fetchPoolsPublicDataAsync(blockNumber, chainId));
-    };
+    supportedChains.forEach((chainId) => dispatch(fetchNftPublicDataAsync(chainId)));
+  }, [dispatch]);
+};
 
-    fetchPoolsPublicData();
-  }, [dispatch, chainId]);
+export const useFetchNftUserData = () => {
+  const dispatch = useAppDispatch();
+  const { account } = useActiveWeb3React();
+
+  const supportedChains = PAGE_SUPPORTED_CHAINS["nft"].filter((chainId) =>
+    Object.keys(contracts.flaskNft)
+      .map((c) => +c)
+      .includes(chainId)
+  );
+  useSlowRefreshEffect(() => {
+    if (account) {
+      supportedChains.forEach((chainId) => dispatch(fetchNftUserDataAsync(chainId, account)));
+    } else {
+      dispatch(resetNftUserData());
+    }
+  }, [dispatch, account]);
 };
 
 export const useNftPools = (): { pools: NftStakingData[]; userDataLoaded: boolean } => {
@@ -31,3 +50,18 @@ export const useNftPools = (): { pools: NftStakingData[]; userDataLoaded: boolea
   return { pools, userDataLoaded };
 };
 
+export const useNftPool = (chainId: ChainId): { pool?: NftStakingData; userDataLoaded: boolean } => {
+  const { pool, userDataLoaded } = useSelector((state: State) => ({
+    pool: state.nfts.data.find((p) => p.chainId === chainId),
+    userDataLoaded: state.nfts.userDataLoaded,
+  }));
+  return { pool, userDataLoaded };
+};
+
+export const useFlaskNft = (chainId: ChainId): FlaskNftData => {
+  return useSelector((state: State) => state.nfts.flaskNft.find((nft) => nft.chainId === chainId));
+};
+
+export const useMirrorNft = (chainId: ChainId): MirrorNftData => {
+  return useSelector((state: State) => state.nfts.mirrorNft.find((nft) => nft.chainId === chainId));
+};
