@@ -68,6 +68,16 @@ export const fetchNftUserDataAsync = (chainId: ChainId, account: string) => asyn
   }
 };
 
+export const fetchFlaskNftUserDataAsync = (chainId: ChainId, account: string) => async (dispatch, getState) => {
+  const config = getState().nfts.flaskNft.filter((p) => p.chainId === chainId);
+
+  const data = fetchFlaskNftUserData(chainId, account, [
+    config.brewsToken.address,
+    ...config.stableTokens.map((t) => t.address),
+  ]);
+  dispatch(setNftUserData({ type: "flaskNft", data }));
+};
+
 export const NftSlice = createSlice({
   name: "nfts",
   initialState,
