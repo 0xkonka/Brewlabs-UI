@@ -198,7 +198,7 @@ export const getMirrorNftContract = (chainId: ChainId, signer?: ethers.Signer | 
 };
 
 export const getNftStakingContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, getNftStakingAddress(chainId), MirrorNftAbi, signer);
+  return getContract(chainId, getNftStakingAddress(chainId), NftStakingAbi, signer);
 };
 
 export const getBrewlabsRouterContract = (

@@ -267,7 +267,13 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                 <div>Upgrade Brewlabs NFT</div>
               </div>
               <div className="h-10 min-w-[130px]">
-                <StyledButton type="secondary" onClick={() => setOpen(false)}>
+                <StyledButton
+                  type="secondary"
+                  onClick={() => {
+                    setOpen(false);
+                    setIsMinted(false);
+                  }}
+                >
                   <div className="flex items-center text-[#FFFFFFBF]">
                     {chevronLeftSVG}
                     <div className="ml-2">Back a page</div>
@@ -408,7 +414,13 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                     Congratulations you upgraded a RARE <span className="text-primary">BREWLABS</span> NFT
                   </div>
                   <div className="flex flex-col justify-center sm:flex-row">
-                    <StyledButton className="w-full p-[10px_12px] sm:!w-fit" onClick={() => setOpen(false)}>
+                    <StyledButton
+                      className="w-full p-[10px_12px] sm:!w-fit"
+                      onClick={() => {
+                        setOpen(false);
+                        setIsMinted(false);
+                      }}
+                    >
                       Skip&nbsp;<span className="font-normal">and close window</span>
                     </StyledButton>
                   </div>
@@ -417,7 +429,10 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
             </div>
 
             <button
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                setIsMinted(false);
+              }}
               className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
             >
               <span className="sr-only">Close</span>

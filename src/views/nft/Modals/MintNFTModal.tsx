@@ -131,7 +131,7 @@ const MintNFTModal = ({ open, setOpen }) => {
       await onMint(quantity, selectedCurrency.address);
 
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
-      toast.success(`${quantity} NFT${quantity > 1 && "s"} was mint`);
+      toast.success(`${quantity} NFT${quantity > 1 ? "s" : ""} was mint`);
       setIsMinted(true);
       setIsEnded(false);
     } catch (error) {
