@@ -14,6 +14,8 @@ import {
   chevronLeftSVG,
 } from "@components/dashboard/assets/svgs";
 
+import { BASE_URL } from "config";
+import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
 import { DashboardContext } from "contexts/DashboardContext";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useTokenApprove } from "@hooks/useApprove";
@@ -25,8 +27,6 @@ import StyledButton from "views/directory/StyledButton";
 
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
-import { rarities } from "config/constants/nft";
-import { BASE_URL } from "config";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -80,9 +80,9 @@ const NFTActions = () => {
   };
 
   const activeNFT = flaskNft.userData?.balances?.length;
-  const activeRarityInfo: any = activeNFT
-    ? rarities[[...flaskNft.userData.balances].sort((a, b) => a.rarity - b.rarity)[0].rarity - 1]
-    : {};
+  const activeRarity: any = activeNFT
+    ? [...flaskNft.userData.balances].sort((a, b) => b.rarity - a.rarity)[0].rarity - 1
+    : -1;
   const isApproved = +flaskNft.userData?.allowances?.[0] >= +flaskNft.mintFee?.brews;
 
   const actions = [
@@ -138,15 +138,15 @@ const NFTActions = () => {
     activeNFT
       ? {
           name: "ACTIVE NFT",
-          rarity: activeRarityInfo.type.toUpperCase(),
+          rarity: NFT_RARITY_NAME[activeRarity].toUpperCase(),
           logo: "/images/nfts/brewlabs-nft.png",
           info: (
             <div>
               <div>
-                <span className="font-bold text-[#C80045]">{activeRarityInfo.type.toUpperCase()}</span> Benefit level
+                <span className="font-bold text-[#C80045]">{NFT_RARITY_NAME[activeRarity].toUpperCase()}</span> Benefit level
               </div>
               <ul className="list-disc pl-5">
-                {activeRarityInfo.benefits.slice(1, 4).map((benefit, i) => (
+                {rarities[activeRarity].benefits.slice(1, 4).map((benefit, i) => (
                   <li key={i}>{benefit}</li>
                 ))}
               </ul>

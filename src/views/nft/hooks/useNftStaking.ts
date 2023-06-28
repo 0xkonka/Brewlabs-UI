@@ -22,6 +22,17 @@ export const useNftStaking = (performanceFee) => {
     [nftStakingContract, chainId, library, performanceFee]
   );
 
+  const handleClaim = useCallback(async () => {
+    const gasPrice = await getNetworkGasPrice(library, chainId);
+    let gasLimit = await nftStakingContract.estimateGas.claimReward({ value: performanceFee, gasPrice });
+    gasLimit = calculateGasMargin(gasLimit);
+
+    const tx = await nftStakingContract.claimReward({ value: performanceFee, gasPrice, gasLimit });
+    const receipt = await tx.wait();
+
+    return receipt;
+  }, [nftStakingContract, chainId, library, performanceFee]);
+
   const handleUnstake = useCallback(
     async (amount: number) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
@@ -36,8 +47,24 @@ export const useNftStaking = (performanceFee) => {
     [nftStakingContract, chainId, library, performanceFee]
   );
 
+  const handleUnstakeNft = useCallback(
+    async (tokenId: number) => {
+      const gasPrice = await getNetworkGasPrice(library, chainId);
+      let gasLimit = await nftStakingContract.estimateGas.withdrawNft(tokenId, { value: performanceFee, gasPrice });
+      gasLimit = calculateGasMargin(gasLimit);
+
+      const tx = await nftStakingContract.withdraw(tokenId, { value: performanceFee, gasPrice, gasLimit });
+      const receipt = await tx.wait();
+
+      return receipt;
+    },
+    [nftStakingContract, chainId, library, performanceFee]
+  );
+
   return {
     onStake: handleStake,
     onUnstake: handleUnstake,
+    onUnstakeNft: handleUnstakeNft,
+    onClaim: handleClaim,
   };
 };

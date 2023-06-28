@@ -32,11 +32,15 @@ export interface NftStakingData {
   earningToken: SerializedToken;
   apr?: number;
   totalStaked: number;
+  startBlock: number;
+  bonusEndBlock: number;
+  rewardPerBlock?: string;
   oneTimeLimit: number;
   userData?: {
     allowance: boolean;
     stakedAmount: number;
     stakedTokenIds: number[];
+    earnings: string;
   };
   performanceFee?: string;
 }

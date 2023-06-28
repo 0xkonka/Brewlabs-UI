@@ -40,7 +40,9 @@ const NFTList = () => {
     ),
   ];
   const filteredNFTs = allNfts
-    .filter((data) => data.rarity === curFilter || curFilter === 0)
+    .filter(
+      (data) => (data.rarity === curFilter && curFilter < 5) || (data.rarity >= 5 && curFilter >= 5) || curFilter === 0
+    )
     .filter((data) => data.tokenId.toString().indexOf(criteria) >= 0);
 
   return (
