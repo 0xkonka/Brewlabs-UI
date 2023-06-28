@@ -165,12 +165,15 @@ const NFTStakingInfo = () => {
                     >
                       <div className="flex items-center">
                         <img src={getChainLogo(data.chainId)} alt={""} className="mr-2 h-6 w-6 rounded-full" />
-                        <div className="text-lg">{data.apr.toFixed(2)}% APR</div>
+                        {/* <div className="text-lg">{data.apr.toFixed(2)}% APR</div> */}
+                        <div className="text-lg">Pending...</div>
                       </div>
                       <div className="mt-3.5 flex justify-between text-sm">
                         <div>
-                          <div>${numberWithCommas(data.totalPosition.toFixed(2))}</div>
-                          <div className="mt-2">${numberWithCommas(data.weeklyROI.toFixed(2))}</div>
+                          {/* <div>${numberWithCommas(data.totalPosition.toFixed(2))}</div> */}
+                          <div>Pending...</div>
+                          {/* <div className="mt-2">${numberWithCommas(data.weeklyROI.toFixed(2))}</div> */}
+                          <div className="mt-2">Pending...</div>
                         </div>
                         <div className="text-[#FFFFFFBF]">
                           <div>Total position</div>

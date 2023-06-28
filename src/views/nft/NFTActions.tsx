@@ -26,6 +26,7 @@ import StyledButton from "views/directory/StyledButton";
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
 import { rarities } from "config/constants/nft";
+import { BASE_URL } from "config";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -46,6 +47,13 @@ const NFTActions = () => {
 
   function onUpgrade() {
     setUpgradeOpen(true);
+  }
+
+  function onGetBrewlabs() {
+    window.open(`${BASE_URL}/swap?outputCurrency=${flaskNft.brewsToken.address}`, "_blank");
+  }
+  function onGetStableCoin() {
+    window.open(`${BASE_URL}/swap?outputCurrency=${flaskNft.stableTokens[0].address}`, "_blank");
   }
 
   const showError = (errorMsg: string) => {
@@ -76,7 +84,6 @@ const NFTActions = () => {
     ? rarities[flaskNft.userData.balances.sort((a, b) => a.rarity - b.rarity)[0].rarity - 1]
     : {};
   const isApproved = +flaskNft.userData?.allowances?.[0] >= +flaskNft.mintFee?.brews;
-
   const actions = [
     {
       name: "Approve",
@@ -89,9 +96,7 @@ const NFTActions = () => {
         datas: [
           {
             text: "Get Brewlabs",
-            action: () => {
-              router.push(`/swap?outputCurrency=${flaskNft.brewsToken.address}`);
-            },
+            action: onGetBrewlabs,
             active: true,
           },
         ],
@@ -108,9 +113,7 @@ const NFTActions = () => {
         datas: [
           {
             text: "Get stablecoin",
-            action: () => {
-              router.push(`/swap?outputCurrency=${flaskNft.stableTokens[0].address}`);
-            },
+            action: onGetStableCoin,
             active: true,
           },
           {
@@ -210,6 +213,9 @@ const NFTActions = () => {
                         </div>
                       )}
                     </StyledButton>
+                    {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
+                      Soon
+                    </div> */}
                   </div>
                 ) : (
                   ""

@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Hambuger from "../button/Hambuger";
 import { SwapContext } from "contexts/SwapContext";
 import Link from "next/link";
+import Soon from "@components/Soon";
 
 export default function MobileNav() {
   const { swapTab, setSwapTab, setAddLiquidityStep }: any = useContext(SwapContext);
@@ -47,29 +48,35 @@ export default function MobileNav() {
                       className={`${
                         swapTab === 1 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                      onClick={() => {
-                        setSwapTab(1);
-                        setAddLiquidityStep("default");
-                      }}
+                      // onClick={() => {
+                      //   setSwapTab(1);
+                      //   setAddLiquidityStep("default");
+                      // }}
                       disabled
                     >
-                      Liquidity tools
+                      <div className="relative">
+                        Liquidity tools
+                        <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" />
+                      </div>
                     </button>
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <Link href={"/tradingPairs"}>
-                      <button
-                        className={`${
-                          swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
-                        } group flex w-full cursor-pointer items-center rounded-md px-2 py-2 text-sm`}
-                        // onClick={() => setSwapTab(2)}
-                        // disabled
-                      >
+                    // <Link href={"/tradingPairs"}>
+                    <button
+                      className={`${
+                        swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
+                      } group flex w-full cursor-pointer items-center rounded-md px-2 py-2 text-sm`}
+                      // onClick={() => setSwapTab(2)}
+                      disabled
+                    >
+                      <div className="relative">
                         Pools & analytics
-                      </button>
-                    </Link>
+                        <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" />
+                      </div>
+                    </button>
+                    // </Link>
                   )}
                 </Menu.Item>
               </div>
