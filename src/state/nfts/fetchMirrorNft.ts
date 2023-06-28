@@ -5,9 +5,11 @@ import multicall from "utils/multicall";
 export const fetchMirrorNftUserData = async (chainId, account) => {
   if (!account) return { chainId, userData: undefined };
 
-  let result = await multicall(MirrorNftAbi, [
-    { address: getMirrorNftAddress(chainId), name: "balanceOf", params: [account] },
-  ]);
+  let result = await multicall(
+    MirrorNftAbi,
+    [{ address: getMirrorNftAddress(chainId), name: "balanceOf", params: [account] }],
+    chainId
+  );
   const balance = result[0][0].toNumber();
   if (balance == 0) return { chainId, userData: { balances: [] } };
 

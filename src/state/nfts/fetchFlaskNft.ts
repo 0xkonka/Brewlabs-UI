@@ -31,9 +31,11 @@ export const fetchFlaskNftPublicData = async (chainId) => {
 export const fetchFlaskNftUserData = async (chainId, account, tokens) => {
   if (!account) return { chainId, userData: undefined };
 
-  let result = await multicall(FlaskNftAbi, [
-    { address: getFlaskNftAddress(chainId), name: "balanceOf", params: [account] },
-  ]);
+  let result = await multicall(
+    FlaskNftAbi,
+    [{ address: getFlaskNftAddress(chainId), name: "balanceOf", params: [account] }],
+    chainId
+  );
   const balance = result[0][0].toNumber();
 
   let calls = [];

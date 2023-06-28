@@ -56,7 +56,7 @@ const MintNFTModal = ({ open, setOpen }) => {
   const [isEnded, setIsEnded] = useState(false);
 
   const currencies = stableTokens;
-  const isBrewsApproved = userData ? userData.allowances[0] >= mintFee.brews : false;
+  const isBrewsApproved = userData ? +userData.allowances[0] >= +mintFee.brews : false;
   const isBrewsValid =
     isBrewsApproved &&
     (userData
@@ -65,8 +65,8 @@ const MintNFTModal = ({ open, setOpen }) => {
 
   const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
   const isApproved = userData
-    ? userData.allowances[index + 1] >=
-      parseUnits(formatUnits(mintFee?.stable[index] ?? "0"), selectedCurrency.decimals).toString()
+    ? +userData.allowances[index + 1] >=
+      +parseUnits(formatUnits(mintFee?.stable[index] ?? "0"), selectedCurrency.decimals).toString()
     : false;
   const isValid =
     isApproved &&
@@ -133,7 +133,7 @@ const MintNFTModal = ({ open, setOpen }) => {
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`${quantity} NFT${quantity > 1 && "s"} was mint`);
       setIsMinted(true);
-      setIsEnded(false)
+      setIsEnded(false);
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(chainId));

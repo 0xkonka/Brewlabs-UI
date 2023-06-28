@@ -20,12 +20,14 @@ export const fetchNftStakingPublicData = async (chainId) => {
 export const fetchNftStakingUserData = async (chainId, account) => {
   if (!account) return { chainId, stakedInfo: { amount: 0, tokenIds: [] } };
 
-  let result = await multicall(NftStakingAbi, [
-    { address: getNftStakingAddress(chainId), name: "stakedInfo", params: [account] },
-  ]);
+  let result = await multicall(
+    NftStakingAbi,
+    [{ address: getNftStakingAddress(chainId), name: "stakedInfo", params: [account] }],
+    chainId
+  );
 
   return {
     chainId,
-    userData: { stakedAmount: result[0][0].toNumber(), stakedTokenIds: result[1].map((t) => t.toNumber()) },
+    userData: { stakedAmount: result[0][0].toNumber(), stakedTokenIds: result[0][1].map((t) => t.toNumber()) },
   };
 };

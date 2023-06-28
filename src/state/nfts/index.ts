@@ -43,29 +43,29 @@ const initialState: NftState = {
 };
 
 export const fetchNftPublicDataAsync = (chainId: ChainId) => async (dispatch) => {
-  const flaskData = fetchFlaskNftPublicData(chainId);
+  const flaskData = await fetchFlaskNftPublicData(chainId);
   dispatch(setNftPublicData({ type: "flaskNft", data: flaskData }));
 
   if (contracts.nftStaking[chainId]) {
-    const nftStakingInfo = fetchNftStakingPublicData(chainId);
+    const nftStakingInfo = await fetchNftStakingPublicData(chainId);
     dispatch(setNftPublicData({ type: "data", data: nftStakingInfo }));
   }
 };
 
 export const fetchNftUserDataAsync = (chainId: ChainId, account: string) => async (dispatch, getState) => {
-  const config = getState().nfts.flaskNft.filter((p) => p.chainId === chainId);
+  const config = getState().nfts.flaskNft.find((p) => p.chainId === chainId);
 
-  const flaskData = fetchFlaskNftUserData(chainId, account, [
+  const flaskData = await fetchFlaskNftUserData(chainId, account, [
     config.brewsToken.address,
     ...config.stableTokens.map((t) => t.address),
   ]);
   dispatch(setNftUserData({ type: "flaskNft", data: flaskData }));
 
-  const mirrorData = fetchMirrorNftUserData(chainId, account);
+  const mirrorData = await fetchMirrorNftUserData(chainId, account);
   dispatch(setNftUserData({ type: "mirrorNft", data: mirrorData }));
 
   if (contracts.nftStaking[chainId]) {
-    const nftStakingInfo = fetchNftStakingUserData(chainId, account);
+    const nftStakingInfo = await fetchNftStakingUserData(chainId, account);
     dispatch(setNftUserData({ type: "data", data: nftStakingInfo }));
   }
 };
@@ -73,7 +73,7 @@ export const fetchNftUserDataAsync = (chainId: ChainId, account: string) => asyn
 export const fetchFlaskNftUserDataAsync = (chainId: ChainId, account: string) => async (dispatch, getState) => {
   const config = getState().nfts.flaskNft.filter((p) => p.chainId === chainId);
 
-  const data = fetchFlaskNftUserData(chainId, account, [
+  const data = await fetchFlaskNftUserData(chainId, account, [
     config.brewsToken.address,
     ...config.stableTokens.map((t) => t.address),
   ]);
