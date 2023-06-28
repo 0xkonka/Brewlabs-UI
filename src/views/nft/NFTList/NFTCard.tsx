@@ -18,10 +18,10 @@ import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
 import { fetchNftUserDataAsync } from "state/nfts";
 import { useAllNftData } from "state/nfts/hooks";
-import { getPoolApr } from "utils/apr";
 import { getChainLogo, getRarityColor } from "utils/functions";
 
 import { useNftStaking } from "../hooks/useNftStaking";
+import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -44,15 +44,12 @@ const NFTCard = ({ nft }: { nft: any }) => {
 
   const isPending = !pool || pool.startBlock > currentBlock;
   const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
+
   const apr = flaskNft.mintFee
-    ? getPoolApr(
-        +formatEther(flaskNft.mintFee.stable) +
-          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice,
-        ethPrice,
-        pool?.totalStaked,
-        +formatEther(nft.rewardPerBlock ?? "0"),
-        chainId
-      )
+    ? (((+formatEther(pool.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
+      ((+formatEther(flaskNft.mintFee.stable) +
+        +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+        (pool?.totalStaked ?? 0))
     : 0;
 
   const stakingDate = new Date(2023, 8, 0, 0, 0, 0, 0);
