@@ -187,7 +187,11 @@ const NFTActions = () => {
                 {data.logo ? (
                   <img src={data.logo} alt={""} className="h-full w-full" />
                 ) : (
-                  <div className="mb-4 flex h-[90px] items-center justify-center text-tailwind [&>*:first-child]:!h-fit [&>*:first-child]:!w-20">
+                  <div
+                    className={`mb-4 flex h-[90px] items-center justify-center ${
+                      (i < 2 && isApproved) || (i === 2 && activeNFT) ? "text-primary" : "text-tailwind"
+                    } [&>*:first-child]:!h-fit [&>*:first-child]:!w-20`}
+                  >
                     {data.icon}
                   </div>
                 )}
@@ -197,7 +201,7 @@ const NFTActions = () => {
                       type={"primary"}
                       className={`p-[10px_12px] !text-xs !font-normal ${i === 0 && pending && "pr-[36px]"}`}
                       onClick={() => data.action()}
-                      disabled={i === 0 && (pending || isApproved)}
+                      disabled={(i === 0 && (pending || isApproved)) || (i === 1 && !isApproved)}
                     >
                       {data.button}
                       {i === 0 && pending && (
