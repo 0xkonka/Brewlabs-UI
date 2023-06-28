@@ -69,3 +69,5 @@ export const useMirrorNftData = (chainId: ChainId): MirrorNftData => {
     (state: State) => state.nfts.mirrorNft.find((nft) => nft.chainId === chainId) ?? state.nfts.mirrorNft[0]
   );
 };
+
+export const useAllNftData = () => useSelector((state: State) => state.nfts);

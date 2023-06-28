@@ -138,12 +138,12 @@ const NFTActions = () => {
     activeNFT
       ? {
           name: "ACTIVE NFT",
-          rarity: activeRarityInfo.type,
+          rarity: activeRarityInfo.type.toUpperCase(),
           logo: "/images/nfts/brewlabs-nft.png",
           info: (
             <div>
               <div>
-                <span className="text-[#C80045]">{activeRarityInfo.type}</span> Benefit level
+                <span className="font-bold text-[#C80045]">{activeRarityInfo.type.toUpperCase()}</span> Benefit level
               </div>
               <ul className="list-disc pl-5">
                 {activeRarityInfo.benefits.slice(1, 4).map((benefit, i) => (

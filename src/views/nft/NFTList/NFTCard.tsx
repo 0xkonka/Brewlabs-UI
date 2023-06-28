@@ -20,8 +20,8 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{nft.name}</div>
         </div>
         <div className="w-[60px]  overflow-hidden text-ellipsis whitespace-nowrap">ID {nft.tokenId}</div>
-        <div className={`uppercase ${getRarityColor(nft.rarity)} w-[80px]`}>{NFT_RARITY_NAME[nft.rarity]}</div>
-        {nft.rarity > NFT_RARITY.UNCOMMON ? (
+        <div className={`uppercase ${getRarityColor(nft.rarity - 1)} w-[80px]`}>{NFT_RARITY_NAME[nft.rarity - 1]}</div>
+        {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (
           nft.isStaked ? (
             <>
               <div className="w-[116px]">
