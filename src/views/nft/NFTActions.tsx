@@ -143,10 +143,11 @@ const NFTActions = () => {
           info: (
             <div>
               <div>
-                <span className="font-bold text-[#C80045]">{NFT_RARITY_NAME[activeRarity].toUpperCase()}</span> Benefit level
+                <span className="font-bold text-[#C80045]">{NFT_RARITY_NAME[activeRarity].toUpperCase()}</span> Benefit
+                level
               </div>
               <ul className="list-disc pl-5">
-                {rarities[activeRarity].benefits.slice(1, 4).map((benefit, i) => (
+                {rarities[activeRarity < 4 ? activeRarity : 4].benefits.slice(1, 4).map((benefit, i) => (
                   <li key={i}>{benefit}</li>
                 ))}
               </ul>
