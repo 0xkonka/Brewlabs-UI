@@ -21,7 +21,7 @@ export const useFetchPublicNftData = () => {
   );
   useSlowRefreshEffect(() => {
     supportedChains.forEach((chainId) => dispatch(fetchNftPublicDataAsync(chainId)));
-  }, [dispatch]);
+  }, [dispatch, supportedChains.length]);
 };
 
 export const useFetchNftUserData = () => {
@@ -39,7 +39,7 @@ export const useFetchNftUserData = () => {
     } else {
       dispatch(resetNftUserData());
     }
-  }, [dispatch, account]);
+  }, [dispatch, account, supportedChains.length]);
 };
 
 export const useNftPools = (): { pools: NftStakingData[]; userDataLoaded: boolean } => {
