@@ -20,7 +20,7 @@ import { useTokenApprove } from "@hooks/useApprove";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
-import { useFlaskNft } from "state/nfts/hooks";
+import { useFlaskNftData } from "state/nfts/hooks";
 import StyledButton from "views/directory/StyledButton";
 
 import MintNFTModal from "./Modals/MintNFTModal";
@@ -32,7 +32,7 @@ const NFTActions = () => {
   const { chainId, account } = useActiveWeb3React();
   const router = useRouter();
 
-  const flaskNft = useFlaskNft(chainId);
+  const flaskNft = useFlaskNftData(chainId);
   const { onApprove } = useTokenApprove();
 
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -61,6 +61,7 @@ const NFTActions = () => {
 
     try {
       await onApprove(flaskNft.brewsToken.address, flaskNft.address);
+
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success("Brewlabs was approved");
     } catch (error) {

@@ -1,4 +1,5 @@
 import { ChevronCircleDownSVG, ChevronDownSVG, downSVG } from "@components/dashboard/assets/svgs";
+import TokenLogo from "@components/logo/TokenLogo";
 import { useEffect, useRef, useState } from "react";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -31,10 +32,9 @@ const CurrencyDropdown = ({
     >
       <div className="flex flex-1 items-center justify-between">
         <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{value.symbol}</div>
-        <img
+        <TokenLogo
           src={getTokenLogoURL(value.address, value.chainId)}
-          alt={""}
-          className="ml-2.5 h-[18px] w-[18px] rounded-full"
+          classNames="ml-2.5 h-[18px] w-[18px] rounded-full"
         />
       </div>
       <div className="ml-2.5 text-tailwind">{ChevronDownSVG}</div>
@@ -48,10 +48,9 @@ const CurrencyDropdown = ({
             >
               <div className="flex flex-1 items-center justify-between">
                 <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{data.symbol}</div>
-                <img
+                <TokenLogo
                   src={getTokenLogoURL(data.address, data.chainId)}
-                  alt={""}
-                  className="ml-2.5 h-[18px] w-[18px] rounded-full"
+                  classNames="ml-2.5 h-[18px] w-[18px] rounded-full"
                 />
               </div>
               <div className="w-[21px]" />

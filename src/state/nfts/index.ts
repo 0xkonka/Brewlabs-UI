@@ -20,6 +20,8 @@ const initialState: NftState = {
       address: contracts.flaskNft[chainId],
       brewsToken: serializeToken(brewsToken[+chainId]),
       stableTokens: stableCoins[+chainId].map((t) => serializeToken(t)),
+      maxSupply: 5000,
+      totalSupply: 0,
       oneTimeLimit: 30,
     })),
   mirrorNft: Object.keys(contracts.mirrorNft)

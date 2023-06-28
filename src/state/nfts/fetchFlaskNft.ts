@@ -4,7 +4,15 @@ import { getFlaskNftAddress } from "utils/addressHelpers";
 import multicall from "utils/multicall";
 
 export const fetchFlaskNftPublicData = async (chainId) => {
-  const calls = ["mintFee", "brewsMintFee", "upgradeFee", "brewsUpgradeFee", "oneTimeLimit"].map((method) => ({
+  const calls = [
+    "mintFee",
+    "brewsMintFee",
+    "upgradeFee",
+    "brewsUpgradeFee",
+    "oneTimeLimit",
+    "maxSupply",
+    "totalSupply",
+  ].map((method) => ({
     address: getFlaskNftAddress(chainId),
     name: method,
   }));
@@ -15,6 +23,8 @@ export const fetchFlaskNftPublicData = async (chainId) => {
     mintFee: { brews: result[1][0].toString(), stable: result[0][0].toString() },
     upgradeFee: { brews: result[3][0].toString(), stable: result[2][0].toString() },
     oneTimeLimit: result[4][0].toNumber(),
+    maxSupply: result[5][0].toNumber(),
+    totalSupply: result[6][0].toNumber(),
   };
 };
 

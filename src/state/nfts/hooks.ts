@@ -58,10 +58,10 @@ export const useNftPool = (chainId: ChainId): { pool?: NftStakingData; userDataL
   return { pool, userDataLoaded };
 };
 
-export const useFlaskNft = (chainId: ChainId): FlaskNftData => {
+export const useFlaskNftData = (chainId: ChainId): FlaskNftData => {
   return useSelector((state: State) => state.nfts.flaskNft.find((nft) => nft.chainId === chainId));
 };
 
-export const useMirrorNft = (chainId: ChainId): MirrorNftData => {
+export const useMirrorNftData = (chainId: ChainId): MirrorNftData => {
   return useSelector((state: State) => state.nfts.mirrorNft.find((nft) => nft.chainId === chainId));
 };

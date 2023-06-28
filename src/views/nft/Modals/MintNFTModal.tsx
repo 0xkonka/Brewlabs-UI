@@ -1,8 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
+import { useContext, useEffect, useState } from "react";
+import { Token } from "@brewlabs/sdk";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
+import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { motion } from "framer-motion";
+import { Oval } from "react-loader-spinner";
+import { toast } from "react-toastify";
+import ReactPlayer from "react-player";
+
 import {
   MinusSVG,
   NFTFillSVG,
@@ -10,27 +16,196 @@ import {
   QuestionSVG,
   checkCircleSVG,
   chevronLeftSVG,
-  warningFillSVG,
 } from "@components/dashboard/assets/svgs";
-import StyledButton from "views/directory/StyledButton";
-import LogoIcon from "@components/LogoIcon";
 import CurrencyDropdown from "@components/CurrencyDropdown";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { tokens } from "config/constants/tokens";
-import ReactPlayer from "react-player";
+import LogoIcon from "@components/LogoIcon";
+
+import StyledButton from "views/directory/StyledButton";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import useActiveWeb3React from "@hooks/useActiveWeb3React";
+import { useTokenApprove } from "@hooks/useApprove";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
+import { fetchFlaskNftUserDataAsync } from "state/nfts";
+import { useFlaskNftData } from "state/nfts/hooks";
+import { useTokenBalances } from "state/wallet/hooks";
+import { deserializeToken } from "state/user/hooks/helpers";
+
+import { useFlaskNft } from "../hooks/useFlaskNft";
 
 const MintNFTModal = ({ open, setOpen }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState(tokens[1].usdc);
+  const dispatch = useAppDispatch();
+  const { chainId, account } = useActiveWeb3React();
+
+  const flaskNft = useFlaskNftData(chainId);
+  const tokenBalances = useTokenBalances(
+    account,
+    [flaskNft.brewsToken, ...flaskNft.stableTokens].map((t) => deserializeToken(t) as Token)
+  );
+
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { onApprove } = useTokenApprove();
+  const { onMint } = useFlaskNft();
+
+  const { userData, brewsToken, stableTokens, mintFee } = flaskNft;
+
+  const [selectedCurrency, setSelectedCurrency] = useState(stableTokens[0]);
   const [quantity, setQuantity] = useState(1);
   const [isMinted, setIsMinted] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
-  const currencies = [tokens[1].usdc, tokens[1].usdt];
-  const isValid = true;
+
+  const currencies = stableTokens;
+  const isBrewsApproved = userData ? userData.allowances[0] >= mintFee.brews : false;
+  const isBrewsValid =
+    isBrewsApproved &&
+    (userData
+      ? +tokenBalances[brewsToken.address].toExact() >= +formatUnits(mintFee.brews, brewsToken.decimals) * quantity
+      : false);
+
+  const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
+  const isApproved = userData
+    ? userData.allowances[index + 1] >=
+      parseUnits(formatUnits(mintFee?.stable[index] ?? "0"), selectedCurrency.decimals).toString()
+    : false;
+  const isValid =
+    isApproved &&
+    (userData
+      ? +tokenBalances[selectedCurrency.address].toExact() >= +formatUnits(mintFee?.stable[index] ?? "0") * quantity
+      : false);
 
   useEffect(() => {
     setIsEnded(false);
     setIsMinted(false);
   }, []);
+
+  useEffect(() => {
+    setSelectedCurrency(currencies[0]);
+  }, [chainId]);
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleApprove = async () => {
+    if (!account) {
+      toast.error("Please connect wallet");
+      return;
+    }
+    setPending(true);
+
+    try {
+      await onApprove(selectedCurrency.address, flaskNft.address);
+
+      dispatch(fetchFlaskNftUserDataAsync(chainId, account));
+      toast.success(`${selectedCurrency.symbol} was approved`);
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
+  const handleBrewsApprove = async () => {
+    if (!account) {
+      toast.error("Please connect wallet");
+      return;
+    }
+    setPending(true);
+
+    try {
+      await onApprove(brewsToken.address, flaskNft.address);
+
+      dispatch(fetchFlaskNftUserDataAsync(chainId, account));
+      toast.success(`BREWLABS was approved`);
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
+  const handleMint = async () => {
+    setPending(true);
+    try {
+      await onMint(quantity, selectedCurrency.address);
+
+      dispatch(fetchFlaskNftUserDataAsync(chainId, account));
+      toast.success(`${quantity} NFT${quantity > 1 && "s"} was mint`);
+      setIsMinted(true);
+      setIsEnded(false)
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
+  const renderAction = () => {
+    if (!isBrewsApproved) {
+      return (
+        <StyledButton className="p-[10px_12px] !font-normal" onClick={handleBrewsApprove}>
+          Approve&nbsp;<span className="font-bold">BREWLABS</span>
+          {pending && (
+            <div className="absolute right-2 top-0 flex h-full items-center">
+              <Oval
+                width={21}
+                height={21}
+                color={"white"}
+                secondaryColor="black"
+                strokeWidth={3}
+                strokeWidthSecondary={3}
+              />
+            </div>
+          )}
+        </StyledButton>
+      );
+    }
+
+    if (!isApproved) {
+      return (
+        <StyledButton className="p-[10px_12px] !font-normal" onClick={handleApprove}>
+          Approve&nbsp;<span className="font-bold">{selectedCurrency.symbol}</span>
+          {pending && (
+            <div className="absolute right-2 top-0 flex h-full items-center">
+              <Oval
+                width={21}
+                height={21}
+                color={"white"}
+                secondaryColor="black"
+                strokeWidth={3}
+                strokeWidthSecondary={3}
+              />
+            </div>
+          )}
+        </StyledButton>
+      );
+    }
+
+    return isValid && isBrewsValid ? (
+      <StyledButton className="p-[10px_12px] !font-normal" onClick={handleMint}>
+        Mint&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on&nbsp;
+        <span className="font-bold">Ethereum</span>
+        {pending && (
+          <div className="absolute right-2 top-0 flex h-full items-center">
+            <Oval
+              width={21}
+              height={21}
+              color={"white"}
+              secondaryColor="black"
+              strokeWidth={3}
+              strokeWidthSecondary={3}
+            />
+          </div>
+        )}
+      </StyledButton>
+    ) : (
+      <StyledButton className="p-[10px_12px] !font-normal">
+        Get&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;&&nbsp;
+        <span className="font-bold">USDC</span>
+      </StyledButton>
+    );
+  };
 
   return (
     <Dialog
@@ -115,14 +290,14 @@ const MintNFTModal = ({ open, setOpen }) => {
                     <div className="flex items-center">
                       <div
                         className={`mr-3 ${
-                          isValid ? "text-primary" : "text-[#FFFFFF80]"
+                          isBrewsValid ? "text-primary" : "text-[#FFFFFF80]"
                         } [&>*:first-child]:h-4 [&>*:first-child]:w-4`}
                       >
                         {checkCircleSVG}
                       </div>
                       <div
                         className={`rounded-lg p-[6px_10px] leading-none text-[#18181B] ${
-                          isValid ? "bg-primary" : "bg-[#FFFFFF80]"
+                          isBrewsValid ? "bg-primary" : "bg-[#FFFFFF80]"
                         } text-sm`}
                       >
                         Brewlabs Token
@@ -161,14 +336,14 @@ const MintNFTModal = ({ open, setOpen }) => {
                     <div className="flex items-center">
                       <div
                         className={`mr-3 ${
-                          isValid ? "text-primary" : "text-[#FFFFFF80]"
+                          flaskNft.totalSupply + quantity < flaskNft.maxSupply ? "text-primary" : "text-[#FFFFFF80]"
                         } [&>*:first-child]:h-4 [&>*:first-child]:w-4`}
                       >
                         {NFTFillSVG}
                       </div>
                       <div
                         className={`rounded-lg p-[6px_10px] leading-none text-[#18181B] ${
-                          isValid ? "bg-primary" : "bg-[#FFFFFF80]"
+                          flaskNft.totalSupply + quantity < flaskNft.maxSupply ? "bg-primary" : "bg-[#FFFFFF80]"
                         } text-sm`}
                       >
                         Quantity
@@ -184,36 +359,25 @@ const MintNFTModal = ({ open, setOpen }) => {
                       </div>
                       <div
                         className="primary-shadow flex h-10 w-10 cursor-pointer items-center justify-center rounded text-tailwind transition-all hover:bg-[#292929] hover:text-white"
-                        onClick={() => setQuantity(quantity - 1)}
+                        onClick={() => setQuantity(Math.max(quantity - 1, 1))}
                       >
                         {MinusSVG}
                       </div>
                     </div>
                   </div>
-                  <div className="mt-6">
-                    {isValid ? (
-                      <StyledButton className="p-[10px_12px] !font-normal" onClick={() => setIsMinted(true)}>
-                        Mint&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on&nbsp;
-                        <span className="font-bold">Ethereum</span>
-                      </StyledButton>
-                    ) : (
-                      <StyledButton className="p-[10px_12px] !font-normal">
-                        Get&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;&&nbsp;
-                        <span className="font-bold">USDC</span>
-                      </StyledButton>
-                    )}
-                  </div>
+                  <div className="mt-6">{renderAction()}</div>
                 </div>
               ) : (
                 <div className="w-full">
                   <div className="my-4 text-center">
-                    Congratulations you minted a RARE <span className="text-primary">BREWLABS</span> NFT
+                    Congratulations you minted <span className="text-primary">BREWLABS</span> NFT
                   </div>
                   <div className="flex flex-col justify-center sm:flex-row">
                     <StyledButton className="w-full p-[10px_12px] sm:!w-fit">
                       <div className="flex items-center">
-                        <div>
-                          Next Mint&nbsp;<span className="font-normal">(5 remaining)</span>
+                        <div onClick={() => setIsMinted(false)}>
+                          Next Mint&nbsp;
+                          <span className="font-normal">({flaskNft.maxSupply - flaskNft.totalSupply} remaining)</span>
                         </div>
                         <div className="ml-2 -scale-x-100 [&>*:first-child]:!h-3">{chevronLeftSVG}</div>
                       </div>

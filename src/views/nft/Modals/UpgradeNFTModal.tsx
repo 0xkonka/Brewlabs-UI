@@ -3,6 +3,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
+import { Oval } from "react-loader-spinner";
 import { LighteningSVG, QuestionSVG, checkCircleSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 import LogoIcon from "@components/LogoIcon";
@@ -161,7 +162,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                       </div>
                     </div>
                     <div className="text-[#FFFFFF80]">
-                      3500.00&nbsp;<span className="text-primary">BREWLABS</span>
+                      1500.00&nbsp;<span className="text-primary">BREWLABS</span>
                     </div>
                   </div>
                   <div className="mx-auto mt-2.5 flex w-full max-w-[300px] items-center justify-between text-sm">
@@ -182,7 +183,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                       </div>
                     </div>
                     <div className="flex items-center text-[#FFFFFF80]">
-                      <div className="mr-2">100.00</div>
+                      <div className="mr-2">25.00</div>
                       <CurrencyDropdown
                         currencies={currencies}
                         value={selectedCurrency}

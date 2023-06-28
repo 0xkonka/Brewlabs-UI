@@ -4,8 +4,8 @@ import { useNftStakingContract } from "@hooks/useContract";
 import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
-export const useNftStaking = (chainId, performanceFee) => {
-  const { library } = useActiveWeb3React();
+export const useNftStaking = (performanceFee) => {
+  const { library, chainId } = useActiveWeb3React();
   const nftStakingContract = useNftStakingContract(chainId);
 
   const handleStake = useCallback(

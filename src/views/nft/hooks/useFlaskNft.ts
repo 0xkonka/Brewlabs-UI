@@ -4,8 +4,8 @@ import { useFlaskNftContract } from "@hooks/useContract";
 import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
-export const useFlaskNft = (chainId) => {
-  const { library } = useActiveWeb3React();
+export const useFlaskNft = () => {
+  const { library, chainId } = useActiveWeb3React();
   const nftContract = useFlaskNftContract(chainId);
 
   const handleMint = useCallback(

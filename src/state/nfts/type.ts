@@ -6,6 +6,8 @@ export interface FlaskNftData {
   address: string;
   brewsToken: SerializedToken;
   stableTokens: SerializedToken[];
+  maxSupply: number;
+  totalSupply: number;
   mintFee?: { brews: string; stable: string };
   upgradeFee?: { brews: string; stable: string };
   oneTimeLimit: number;
