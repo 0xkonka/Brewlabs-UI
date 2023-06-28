@@ -15,11 +15,15 @@ import StyledButton from "views/directory/StyledButton";
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
 import { useRouter } from "next/router";
+import { tokens } from "config/constants/tokens";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { BASE_URL } from "config";
 
 const NFTActions = () => {
   const [mintOpen, setMintOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const router = useRouter();
+  const { chainId } = useActiveChainId();
 
   function onApprove() {}
   function onMint() {
@@ -28,7 +32,12 @@ const NFTActions = () => {
   function onUpgrade() {
     setUpgradeOpen(true);
   }
-
+  function onGetBrewlabs() {
+    window.open(`${BASE_URL}/swap?outputCurrency=${tokens[chainId].brews.address}`, "_blank");
+  }
+  function onGetStableCoin() {
+    window.open(`${BASE_URL}/swap?outputCurrency=${tokens[chainId].usdt.address}`, "_blank");
+  }
   const activeNFT = 1;
 
   const actions = [
@@ -43,7 +52,7 @@ const NFTActions = () => {
         datas: [
           {
             text: "Get Brewlabs",
-            action: "",
+            action: onGetBrewlabs,
             active: true,
           },
         ],
@@ -60,7 +69,7 @@ const NFTActions = () => {
         datas: [
           {
             text: "Get stablecoin",
-            action: "",
+            action: onGetStableCoin,
             active: true,
           },
           {
@@ -146,9 +155,9 @@ const NFTActions = () => {
                     >
                       {data.button}
                     </StyledButton>
-                    <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
+                    {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
                       Soon
-                    </div>
+                    </div> */}
                   </div>
                 ) : (
                   ""

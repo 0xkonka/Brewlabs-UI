@@ -1,6 +1,7 @@
 import CountDown from "@components/CountDown";
-import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG } from "@components/dashboard/assets/svgs";
+import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import { NFT_RARITY, NFT_RARITY_TEXT } from "config/constants";
+import Link from "next/link";
 import { getChainLogo, getRarityColor } from "utils/functions";
 import StyledButton from "views/directory/StyledButton";
 
@@ -23,7 +24,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
         {nft.rarity > NFT_RARITY.UNCOMMON ? (
           nft.isStaked ? (
             <>
-              <div className="w-[108px]">
+              <div className="w-[116px]">
                 <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow">
                   <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
                     {CircleMinusSVG}
@@ -55,8 +56,8 @@ const NFTCard = ({ nft }: { nft: any }) => {
             </>
           ) : (
             <>
-              <div className="w-[108px]">
-                <StyledButton
+              <div className="w-[116px]">
+                {/* <StyledButton
                   className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow"
                   disabled={nft.pending}
                 >
@@ -64,7 +65,18 @@ const NFTCard = ({ nft }: { nft: any }) => {
                     {CirclePlusSVG}
                   </div>
                   Stake NFT
-                </StyledButton>
+                </StyledButton> */}
+                <Link href={"/nft/nftstakinginfo"}>
+                  <StyledButton
+                    className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
+                    // disabled={nft.pending}
+                  >
+                    <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
+                      {CircleRightSVG}
+                    </div>
+                    NFT Staking Info
+                  </StyledButton>
+                </Link>
               </div>
               <div className="w-[80px] text-xs text-white">Pending APR</div>
               <div className="relative w-[80px] font-bold leading-[1.2] text-white">
@@ -94,7 +106,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
           )
         ) : (
           <>
-            <div className="w-[108px]" />
+            <div className="w-[116px]" />
             <div className="w-[80px]" />
             <div className="w-[80px]" />
             <div className="w-[84px]" />
@@ -158,7 +170,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
             </>
           ) : (
             <div className="mt-6 flex flex-col justify-between xsm:flex-row">
-              <StyledButton
+              {/* <StyledButton
                 className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
                 disabled={nft.pending}
               >
@@ -166,7 +178,18 @@ const NFTCard = ({ nft }: { nft: any }) => {
                   {CirclePlusSVG}
                 </div>
                 Stake NFT
-              </StyledButton>
+              </StyledButton> */}
+              <Link href={"/nft/nftstakinginfo"}>
+                <StyledButton
+                  className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
+                  // disabled={nft.pending}
+                >
+                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
+                    {CircleRightSVG}
+                  </div>
+                  NFT Staking Info
+                </StyledButton>
+              </Link>
               <StyledButton
                 className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
                 disabled={nft.pending}
