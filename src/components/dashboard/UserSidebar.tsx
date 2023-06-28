@@ -6,24 +6,10 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import ConnectWallet from "./ConnectWallet";
 import UserDashboard from "components/dashboard/UserDashboard";
 import { useGlobalState } from "../../state";
-import { useAccount, useConnect } from "wagmi";
-
-let tempConnected;
 
 const UserSidebar = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
-  const { isConnected } = useAccount();
-  const { connectors, connect } = useConnect();
-  tempConnected = isConnected;
-
-  useEffect(() => {
-    if (!window.ethereum) return;
-    if (!tempConnected) connect({ connector: connectors[0] });
-    window.ethereum.on("chainChanged", async (chainId) => {
-      if (!tempConnected) connect({ connector: connectors[0] });
-    });
-  }, [window.ethereum]);
 
   return (
     <Transition.Root show={isOpen > 0} as={Fragment}>

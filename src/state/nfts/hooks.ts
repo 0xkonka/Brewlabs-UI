@@ -52,16 +52,20 @@ export const useNftPools = (): { pools: NftStakingData[]; userDataLoaded: boolea
 
 export const useNftPool = (chainId: ChainId): { pool?: NftStakingData; userDataLoaded: boolean } => {
   const { pool, userDataLoaded } = useSelector((state: State) => ({
-    pool: state.nfts.data.find((p) => p.chainId === chainId),
+    pool: state.nfts.data.find((p) => p.chainId === chainId) ?? state.nfts.data[0],
     userDataLoaded: state.nfts.userDataLoaded,
   }));
   return { pool, userDataLoaded };
 };
 
 export const useFlaskNftData = (chainId: ChainId): FlaskNftData => {
-  return useSelector((state: State) => state.nfts.flaskNft.find((nft) => nft.chainId === chainId));
+  return useSelector(
+    (state: State) => state.nfts.flaskNft.find((nft) => nft.chainId === chainId) ?? state.nfts.flaskNft[0]
+  );
 };
 
 export const useMirrorNftData = (chainId: ChainId): MirrorNftData => {
-  return useSelector((state: State) => state.nfts.mirrorNft.find((nft) => nft.chainId === chainId));
+  return useSelector(
+    (state: State) => state.nfts.mirrorNft.find((nft) => nft.chainId === chainId) ?? state.nfts.mirrorNft[0]
+  );
 };

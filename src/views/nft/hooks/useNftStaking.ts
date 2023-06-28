@@ -19,7 +19,7 @@ export const useNftStaking = (performanceFee) => {
 
       return receipt;
     },
-    [nftStakingContract, chainId, library]
+    [nftStakingContract, chainId, library, performanceFee]
   );
 
   const handleUnstake = useCallback(
@@ -33,7 +33,7 @@ export const useNftStaking = (performanceFee) => {
 
       return receipt;
     },
-    [nftStakingContract, chainId, library]
+    [nftStakingContract, chainId, library, performanceFee]
   );
 
   return {

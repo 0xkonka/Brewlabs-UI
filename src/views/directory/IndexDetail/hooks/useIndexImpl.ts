@@ -223,7 +223,7 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, indexContract, pid, performanceFee]);
+  }, [account, chainId, library, dispatch, indexContract, performanceFee]);
 
   const handleStaketDeployerNft = useCallback(async () => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
@@ -232,7 +232,7 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, indexContract, pid, performanceFee]);
+  }, [account, chainId, library, dispatch, indexContract, performanceFee]);
 
   const handleUnstaketDeployerNft = useCallback(async () => {
     const gasPrice = await getNetworkGasPrice(library, chainId);
@@ -241,7 +241,7 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, indexContract, pid, performanceFee]);
+  }, [account, chainId, library, dispatch, indexContract, performanceFee]);
 
   const handleUpdateFeeAddresss = useCallback(
     async (wallet) => {
@@ -252,7 +252,7 @@ const useIndexImpl = (pid, contractAddress, performanceFee) => {
       dispatch(updateUserDeployerNftInfo(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid, performanceFee]
+    [account, chainId, library, dispatch, indexContract, performanceFee]
   );
 
   return {

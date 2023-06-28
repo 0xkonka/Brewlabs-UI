@@ -60,7 +60,7 @@ const MintNFTModal = ({ open, setOpen }) => {
   const isBrewsValid =
     isBrewsApproved &&
     (userData
-      ? +tokenBalances[brewsToken.address].toExact() >= +formatUnits(mintFee.brews, brewsToken.decimals) * quantity
+      ? +tokenBalances[brewsToken.address]?.toExact() >= +formatUnits(mintFee.brews, brewsToken.decimals) * quantity
       : false);
 
   const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
@@ -71,7 +71,7 @@ const MintNFTModal = ({ open, setOpen }) => {
   const isValid =
     isApproved &&
     (userData
-      ? +tokenBalances[selectedCurrency.address].toExact() >= +formatUnits(mintFee?.stable[index] ?? "0") * quantity
+      ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(mintFee?.stable[index] ?? "0") * quantity
       : false);
 
   useEffect(() => {
