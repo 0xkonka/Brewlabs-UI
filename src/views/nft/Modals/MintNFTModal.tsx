@@ -25,7 +25,7 @@ import StyledButton from "views/directory/StyledButton";
 import { DashboardContext } from "contexts/DashboardContext";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useTokenApprove } from "@hooks/useApprove";
-import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
@@ -185,7 +185,7 @@ const MintNFTModal = ({ open, setOpen }) => {
     return isValid && isBrewsValid ? (
       <StyledButton className="p-[10px_12px] !font-normal" onClick={handleMint} disabled={pending}>
         Mint&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on&nbsp;
-        <span className="font-bold">Ethereum</span>
+        <span className="font-bold">{getNetworkLabel(chainId)}</span>
         {pending && (
           <div className="absolute right-2 top-0 flex h-full items-center">
             <Oval

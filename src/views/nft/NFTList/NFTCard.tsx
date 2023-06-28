@@ -1,6 +1,6 @@
 import CountDown from "@components/CountDown";
 import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
-import { NFT_RARITY, NFT_RARITY_TEXT } from "config/constants";
+import { NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
 import Link from "next/link";
 import { getChainLogo, getRarityColor } from "utils/functions";
 import StyledButton from "views/directory/StyledButton";
@@ -20,7 +20,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{nft.name}</div>
         </div>
         <div className="w-[60px]  overflow-hidden text-ellipsis whitespace-nowrap">ID {nft.tokenId}</div>
-        <div className={`uppercase ${getRarityColor(nft.rarity)} w-[80px]`}>{NFT_RARITY_TEXT[nft.rarity]}</div>
+        <div className={`uppercase ${getRarityColor(nft.rarity)} w-[80px]`}>{NFT_RARITY_NAME[nft.rarity]}</div>
         {nft.rarity > NFT_RARITY.UNCOMMON ? (
           nft.isStaked ? (
             <>
@@ -134,7 +134,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
             </div>
           </div>
           <div className={`uppercase ${getRarityColor(nft.rarity)} mt-4 w-full text-right sm:mt-0 sm:w-fit`}>
-            {NFT_RARITY_TEXT[nft.rarity]}
+            {NFT_RARITY_NAME[nft.rarity]}
           </div>
         </div>
         {nft.rarity > NFT_RARITY.UNCOMMON ? (

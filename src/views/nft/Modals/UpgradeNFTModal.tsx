@@ -15,10 +15,12 @@ import CurrencyDropdown from "@components/CurrencyDropdown";
 import DropDown from "@components/dashboard/TokenList/Dropdown";
 import StyledButton from "views/directory/StyledButton";
 
+import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useTokenApprove } from "@hooks/useApprove";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
-import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useFlaskNftContract } from "@hooks/useContract";
+import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
@@ -26,8 +28,6 @@ import { useTokenBalances } from "state/wallet/hooks";
 import { deserializeToken } from "state/user/hooks/helpers";
 
 import { useFlaskNft } from "../hooks/useFlaskNft";
-import { rarities } from "config/constants/nft";
-import { useFlaskNftContract } from "@hooks/useContract";
 
 const UpgradeNFTModal = ({ open, setOpen }) => {
   const dispatch = useAppDispatch();
@@ -55,7 +55,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
     flaskNft.userData ? Math.min(flaskNft.userData.balances.filter((b) => b.rarity === 1).length, 3) : 0,
     flaskNft.userData ? Math.min(flaskNft.userData.balances.filter((b) => b.rarity === 2).length, 3) : 0,
   ];
-  const commons = nftCounts.map((c, index) => `${c} ${rarities[index].type} NFT${c > 1 ? "'s" : ""}`);
+  const commons = nftCounts.map((c, index) => `${c} ${NFT_RARITY_NAME[index]} NFT${c > 1 ? "'s" : ""}`);
 
   const currencies = stableTokens;
   const isBrewsApproved = userData ? +userData.allowances[0] >= +upgradeFee.brews : false;
@@ -157,7 +157,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
         <StyledButton className="p-[10px_12px] !font-normal">
           Need more&nbsp;
           <span className="font-bold">
-            {3 - nftCounts[rarity]} {rarities[rarity].type} NFTs
+            {3 - nftCounts[rarity]} {NFT_RARITY_NAME[rarity]} NFTs
           </span>
         </StyledButton>
       );
@@ -206,7 +206,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
     return isValid && isBrewsValid ? (
       <StyledButton className="!w-fit p-[10px_12px] !font-normal" onClick={handleUpgrade} disabled={pending}>
         Upgrade&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on &nbsp;
-        <span className="font-bold">Ethereum</span>
+        <span className="font-bold">{getNetworkLabel(chainId)}</span>
         {pending && (
           <div className="absolute right-2 top-0 flex h-full items-center">
             <Oval
@@ -282,9 +282,9 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                   isEnded ? (
                     <ReactPlayer
                       className="!h-full !w-full"
-                      url={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${rarities[
+                      url={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[
                         rarity + 1
-                      ].type.toLowerCase()}.mp4`}
+                      ].toLowerCase()}.mp4`}
                       playing={true}
                       autoPlay={true}
                       muted={true}
@@ -296,9 +296,9 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                   ) : (
                     <ReactPlayer
                       className="!h-full !w-full"
-                      url={`/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-${rarities[
+                      url={`/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-${NFT_RARITY_NAME[
                         rarity + 1
-                      ].type.toLowerCase()}.mp4`}
+                      ].toLowerCase()}.mp4`}
                       playing={true}
                       autoPlay={true}
                       muted={true}
@@ -346,8 +346,8 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                         }`}
                       >
                         {isValid
-                          ? `1 ${rarities[rarity + 1].type} NFT`
-                          : `${3 - nftCounts[rarity]} ${rarities[rarity].type} NFT`}
+                          ? `1 ${NFT_RARITY_NAME[rarity + 1]} NFT`
+                          : `${3 - nftCounts[rarity]} ${NFT_RARITY_NAME[rarity]} NFT`}
                       </div>
                     </div>
                   </div>

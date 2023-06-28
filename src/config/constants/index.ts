@@ -334,20 +334,5 @@ export const CHART_PERIOD_RESOLUTION = {
   },
 };
 
-export enum NFT_RARITY {
-  COMMON,
-  UNCOMMON,
-  RARE,
-  EPIC,
-  LEGENDARY,
-}
-
-export enum NFT_RARITY_TEXT {
-  "COMMON",
-  "UNCOMMON",
-  "RARE",
-  "EPIC",
-  "LEGENDARY",
-}
 
 export const DEX_GURU_WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";

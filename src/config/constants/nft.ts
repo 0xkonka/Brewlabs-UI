@@ -1,6 +1,24 @@
 import { ChainId } from "@brewlabs/sdk";
 import { tokens } from "./tokens";
 
+export enum NFT_RARITY {
+  COMMON,
+  UNCOMMON,
+  RARE,
+  EPIC,
+  LEGENDARY,
+  MOD,
+}
+
+export enum NFT_RARITY_NAME {
+  "Common",
+  "Uncommon",
+  "Rare",
+  "Epic",
+  "Legendary",
+  "Mod",
+}
+
 export const stableCoins = {
   [ChainId.ETHEREUM]: [tokens[ChainId.ETHEREUM].usdc, tokens[ChainId.ETHEREUM].usdt],
   [ChainId.BSC_MAINNET]: [tokens[ChainId.BSC_MAINNET].busd, tokens[ChainId.BSC_MAINNET].usdt],
