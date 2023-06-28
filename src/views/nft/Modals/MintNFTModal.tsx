@@ -144,7 +144,7 @@ const MintNFTModal = ({ open, setOpen }) => {
   const renderAction = () => {
     if (!isBrewsApproved) {
       return (
-        <StyledButton className="p-[10px_12px] !font-normal" onClick={handleBrewsApprove}>
+        <StyledButton className="p-[10px_12px] !font-normal" onClick={handleBrewsApprove} disabled={pending}>
           Approve&nbsp;<span className="font-bold">BREWLABS</span>
           {pending && (
             <div className="absolute right-2 top-0 flex h-full items-center">
@@ -164,7 +164,7 @@ const MintNFTModal = ({ open, setOpen }) => {
 
     if (!isApproved) {
       return (
-        <StyledButton className="p-[10px_12px] !font-normal" onClick={handleApprove}>
+        <StyledButton className="p-[10px_12px] !font-normal" onClick={handleApprove} disabled={pending}>
           Approve&nbsp;<span className="font-bold">{selectedCurrency.symbol}</span>
           {pending && (
             <div className="absolute right-2 top-0 flex h-full items-center">
@@ -183,7 +183,7 @@ const MintNFTModal = ({ open, setOpen }) => {
     }
 
     return isValid && isBrewsValid ? (
-      <StyledButton className="p-[10px_12px] !font-normal" onClick={handleMint}>
+      <StyledButton className="p-[10px_12px] !font-normal" onClick={handleMint} disabled={pending}>
         Mint&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on&nbsp;
         <span className="font-bold">Ethereum</span>
         {pending && (
@@ -211,7 +211,7 @@ const MintNFTModal = ({ open, setOpen }) => {
     <Dialog
       open={open}
       className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand dark:bg-zinc-900 dark:bg-opacity-80"
-      onClose={() => setOpen(false)}
+      onClose={() => {}}
     >
       <div className="flex min-h-full items-center justify-center p-4 ">
         <motion.div
@@ -244,7 +244,13 @@ const MintNFTModal = ({ open, setOpen }) => {
                 <div>Mint Brewlabs NFT</div>
               </div>
               <div className="h-10 min-w-[130px]">
-                <StyledButton type="secondary" onClick={() => setOpen(false)}>
+                <StyledButton
+                  type="secondary"
+                  onClick={() => {
+                    setOpen(false);
+                    setIsMinted(false);
+                  }}
+                >
                   <div className="flex items-center text-[#FFFFFFBF]">
                     {chevronLeftSVG}
                     <div className="ml-2">Back a page</div>
@@ -383,7 +389,13 @@ const MintNFTModal = ({ open, setOpen }) => {
                       </div>
                     </StyledButton>
                     <div className="mr-0 mt-2 sm:mr-5 sm:mt-0" />
-                    <StyledButton className="w-full p-[10px_12px] sm:!w-fit" onClick={() => setOpen(false)}>
+                    <StyledButton
+                      className="w-full p-[10px_12px] sm:!w-fit"
+                      onClick={() => {
+                        setOpen(false);
+                        setIsMinted(false);
+                      }}
+                    >
                       Skip&nbsp;<span className="font-normal">and close window</span>
                     </StyledButton>
                   </div>
@@ -392,7 +404,10 @@ const MintNFTModal = ({ open, setOpen }) => {
             </div>
 
             <button
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                setIsMinted(false);
+              }}
               className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
             >
               <span className="sr-only">Close</span>

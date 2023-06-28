@@ -24,6 +24,7 @@ export const useFlaskNft = () => {
   const handleUpgradeNft = useCallback(
     async (tokenIds: number[], payingToken: string) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
+
       let gasLimit = await nftContract.estimateGas.upgradeNFT(tokenIds, payingToken, { gasPrice });
       gasLimit = calculateGasMargin(gasLimit);
 

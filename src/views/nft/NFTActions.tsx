@@ -81,9 +81,10 @@ const NFTActions = () => {
 
   const activeNFT = flaskNft.userData?.balances?.length;
   const activeRarityInfo: any = activeNFT
-    ? rarities[flaskNft.userData.balances.sort((a, b) => a.rarity - b.rarity)[0].rarity - 1]
+    ? rarities[[...flaskNft.userData.balances].sort((a, b) => a.rarity - b.rarity)[0].rarity - 1]
     : {};
   const isApproved = +flaskNft.userData?.allowances?.[0] >= +flaskNft.mintFee?.brews;
+
   const actions = [
     {
       name: "Approve",
@@ -145,7 +146,7 @@ const NFTActions = () => {
                 <span className="text-[#C80045]">{activeRarityInfo.type}</span> Benefit level
               </div>
               <ul className="list-disc pl-5">
-                {activeRarityInfo.benefits.slice(1).map((benefit, i) => (
+                {activeRarityInfo.benefits.slice(1, 4).map((benefit, i) => (
                   <li key={i}>{benefit}</li>
                 ))}
               </ul>
@@ -204,7 +205,7 @@ const NFTActions = () => {
                       disabled={(i === 0 && (pending || isApproved)) || (i === 1 && !isApproved)}
                     >
                       {data.button}
-                      {i === 0 && pending && (
+                      {i === 0 && pending && !(mintOpen || upgradeOpen) && (
                         <div className="absolute right-2 top-0 flex h-full items-center">
                           <Oval
                             width={21}
