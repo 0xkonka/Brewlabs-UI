@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { Token } from "@brewlabs/sdk";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { formatUnits, parseUnits } from "ethers/lib/utils.js";
+import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { motion } from "framer-motion";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -60,19 +60,23 @@ const MintNFTModal = ({ open, setOpen }) => {
   const isBrewsValid =
     isBrewsApproved &&
     (userData
-      ? +tokenBalances[brewsToken.address]?.toExact() >= +formatUnits(mintFee.brews, brewsToken.decimals) * quantity
+      ? +tokenBalances[brewsToken.address]?.toExact() >=
+        +formatUnits(mintFee?.brews ?? "0", brewsToken.decimals) * quantity
       : false);
 
   const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
   const isApproved = userData
     ? +userData.allowances[index + 1] >=
-      +parseUnits(formatUnits(mintFee?.stable[index] ?? "0"), selectedCurrency.decimals).toString()
+      +parseUnits(formatUnits(mintFee?.stable ?? "0"), selectedCurrency.decimals).toString()
     : false;
   const isValid =
     isApproved &&
     (userData
-      ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(mintFee?.stable[index] ?? "0") * quantity
+      ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(mintFee?.stable ?? "0") * quantity
       : false);
+
+  const brewsFee = +formatUnits(mintFee?.brews ?? "0", brewsToken.decimals);
+  const stableFee = +formatEther(mintFee?.stable ?? "0");
 
   useEffect(() => {
     setIsEnded(false);
@@ -309,7 +313,7 @@ const MintNFTModal = ({ open, setOpen }) => {
                         Brewlabs Token
                       </div>
                     </div>
-                    <div className="text-[#FFFFFF80]">3500.00 BREWLABS</div>
+                    <div className="text-[#FFFFFF80]">{(brewsFee * quantity).toFixed(2)} BREWLABS</div>
                   </div>
                   <div className="mt-2.5 flex min-w-[300px] items-center justify-between text-sm">
                     <div className="flex items-center">
@@ -329,7 +333,7 @@ const MintNFTModal = ({ open, setOpen }) => {
                       </div>
                     </div>
                     <div className="flex items-center text-[#FFFFFF80]">
-                      <div className="mr-2">100.00</div>
+                      <div className="mr-2">{(stableFee * quantity).toFixed(2)}</div>
                       <CurrencyDropdown
                         currencies={currencies}
                         value={selectedCurrency}
