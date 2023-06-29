@@ -30,6 +30,9 @@ import {
   getFarmImplContract,
   getIndexFactoryContract,
   getOldIndexContract,
+  getFlaskNftContract,
+  getMirrorNftContract,
+  getNftStakingContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -111,6 +114,21 @@ export const useFarmFactoryContract = (chainId: ChainId) => {
 export const useIndexFactoryContract = (chainId: ChainId) => {
   const { data: signer } = useSigner();
   return useMemo(() => getIndexFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const useFlaskNftContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getFlaskNftContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const useMirrorNftContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getMirrorNftContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const useNftStakingContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getNftStakingContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 // Code below migrated from Exchange useContract.ts

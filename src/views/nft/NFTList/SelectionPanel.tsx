@@ -15,8 +15,9 @@ const SelectionPanel = ({
 }) => {
   const filterNames = ["All", "Common", "Uncommon", "Rare", "Epic", "Legendary"];
   const filters = filterNames.map(
-    (name) => `${name} (${nfts.filter((data) => data.rarity === name.toLowerCase() || name === "All").length})`
+    (name, index) => `${name} (${nfts.filter((data) => data.rarity === index || index === 0).length})`
   );
+
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
       <div className="mb-0 block flex w-full items-center justify-end md:mb-3 xl:hidden">

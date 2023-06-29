@@ -80,7 +80,8 @@ export const useOwnedLiquidityPools = () => {
     return pairs.filter(
       (pair) =>
         pair.referrer === account || pair.tokenOwner === account || lpBalances[pair.id]?.greaterThan(JSBI.BigInt(0))
-    );
+    ); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, pairs]);
 
   const rewards = usePendingRewards(ownedPairs);

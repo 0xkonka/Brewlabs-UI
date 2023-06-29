@@ -46,6 +46,7 @@ import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicD
 import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
 import { UserContextProvider } from "contexts/UserContext";
 import { usePollFarmFactoryData, usePollIndexFactoryData } from "state/deploy/hooks";
+import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
 import LoadingPage from "@components/LoadingPage";
 import { ChartContextProvider } from "contexts/ChartContext";
 
@@ -68,6 +69,9 @@ function GlobalHooks() {
 
   usePollFarmFactoryData();
   usePollIndexFactoryData();
+
+  useFetchPublicNftData();
+  useFetchNftUserData();
 
   return null;
 }
