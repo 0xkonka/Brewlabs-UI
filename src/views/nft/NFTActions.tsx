@@ -1,4 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useState } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
+import { Oval } from "react-loader-spinner";
 
 import {
   CircleRightSVG,
@@ -9,43 +13,84 @@ import {
   checkCircleSVG,
   chevronLeftSVG,
 } from "@components/dashboard/assets/svgs";
-import Link from "next/link";
-import { useState } from "react";
+
+import { BASE_URL } from "config";
+import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
+import { DashboardContext } from "contexts/DashboardContext";
+import useActiveWeb3React from "@hooks/useActiveWeb3React";
+import { useTokenApprove } from "@hooks/useApprove";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
+import { fetchFlaskNftUserDataAsync } from "state/nfts";
+import { useFlaskNftData } from "state/nfts/hooks";
 import StyledButton from "views/directory/StyledButton";
+
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
-import { useRouter } from "next/router";
-import { tokens } from "config/constants/tokens";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { BASE_URL } from "config";
 
 const NFTActions = () => {
+  const dispatch = useAppDispatch();
+  const { chainId, account } = useActiveWeb3React();
+  const router = useRouter();
+
+  const flaskNft = useFlaskNftData(chainId);
+  const { onApprove } = useTokenApprove();
+
+  const { pending, setPending }: any = useContext(DashboardContext);
+
   const [mintOpen, setMintOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const router = useRouter();
-  const { chainId } = useActiveChainId();
 
-  function onApprove() {}
   function onMint() {
     setMintOpen(true);
   }
+
   function onUpgrade() {
     setUpgradeOpen(true);
   }
+
   function onGetBrewlabs() {
-    window.open(`${BASE_URL}/swap?outputCurrency=${tokens[chainId].brews.address}`, "_blank");
+    window.open(`${BASE_URL}/swap?outputCurrency=${flaskNft.brewsToken.address}`, "_blank");
   }
   function onGetStableCoin() {
-    window.open(`${BASE_URL}/swap?outputCurrency=${tokens[chainId].usdt.address}`, "_blank");
+    window.open(`${BASE_URL}/swap?outputCurrency=${flaskNft.stableTokens[0].address}`, "_blank");
   }
-  const activeNFT = 1;
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleApprove = async () => {
+    if (!account) {
+      toast.error("Please connect wallet");
+      return;
+    }
+    setPending(true);
+
+    try {
+      await onApprove(flaskNft.brewsToken.address, flaskNft.address);
+
+      dispatch(fetchFlaskNftUserDataAsync(chainId, account));
+      toast.success("Brewlabs was approved");
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
+  const activeNFT = flaskNft.userData?.balances?.length;
+  const activeRarity: any = activeNFT
+    ? [...flaskNft.userData.balances].sort((a, b) => b.rarity - a.rarity)[0].rarity - 1
+    : -1;
+  const isApproved = +flaskNft.userData?.allowances?.[0] >= +flaskNft.mintFee?.brews;
 
   const actions = [
     {
       name: "Approve",
-      button: "Approve Brewlabs",
+      button: !isApproved ? "Approve Brewlabs" : "Approved Brewlabs",
       icon: checkCircleSVG,
-      action: onApprove,
+      action: !isApproved ? handleApprove : () => {},
       info: "To mint a Brewlabs NFT you must approve the transfer of 3500 BREWLABS token as part of the mint fee.",
       essential: {
         align: "",
@@ -93,17 +138,18 @@ const NFTActions = () => {
     activeNFT
       ? {
           name: "ACTIVE NFT",
-          rarity: "MOD",
+          rarity: NFT_RARITY_NAME[activeRarity].toUpperCase(),
           logo: "/images/nfts/brewlabs-nft.png",
           info: (
             <div>
               <div>
-                <span className="text-[#C80045]">MOD</span> Benefit level
+                <span className="font-bold text-[#C80045]">{NFT_RARITY_NAME[activeRarity].toUpperCase()}</span> Benefit
+                level
               </div>
               <ul className="list-disc pl-5">
-                <li>30% Discount on fees</li>
-                <li>Premium Brewer features</li>
-                <li>NFT Staking</li>
+                {rarities[activeRarity < 4 ? activeRarity : 4].benefits.slice(1, 4).map((benefit, i) => (
+                  <li key={i}>{benefit}</li>
+                ))}
               </ul>
             </div>
           ),
@@ -126,6 +172,7 @@ const NFTActions = () => {
           info: "Once your Brewlabs NFT’s are minted you can stake your NFT’s to earn native currency of the network you minted from.",
         },
   ];
+
   return (
     <div className="mx-auto flex w-full  max-w-[260px] flex-wrap items-center justify-between px-4 sm:max-w-[600px] xl:sm:max-w-full xl:flex-none">
       <MintNFTModal open={mintOpen} setOpen={setMintOpen} />
@@ -142,7 +189,11 @@ const NFTActions = () => {
                 {data.logo ? (
                   <img src={data.logo} alt={""} className="h-full w-full" />
                 ) : (
-                  <div className="mb-4 flex h-[90px] items-center justify-center text-tailwind [&>*:first-child]:!h-fit [&>*:first-child]:!w-20">
+                  <div
+                    className={`mb-4 flex h-[90px] items-center justify-center ${
+                      (i < 2 && isApproved) || (i === 2 && activeNFT) ? "text-primary" : "text-tailwind"
+                    } [&>*:first-child]:!h-fit [&>*:first-child]:!w-20`}
+                  >
                     {data.icon}
                   </div>
                 )}
@@ -150,10 +201,23 @@ const NFTActions = () => {
                   <div className="relative">
                     <StyledButton
                       type={"primary"}
-                      className="p-[10px_12px] !text-xs !font-normal"
+                      className={`p-[10px_12px] !text-xs !font-normal ${i === 0 && pending && "pr-[36px]"}`}
                       onClick={() => data.action()}
+                      disabled={(i === 0 && (pending || isApproved)) || (i === 1 && !isApproved)}
                     >
                       {data.button}
+                      {i === 0 && pending && !(mintOpen || upgradeOpen) && (
+                        <div className="absolute right-2 top-0 flex h-full items-center">
+                          <Oval
+                            width={21}
+                            height={21}
+                            color={"white"}
+                            secondaryColor="black"
+                            strokeWidth={3}
+                            strokeWidthSecondary={3}
+                          />
+                        </div>
+                      )}
                     </StyledButton>
                     {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
                       Soon

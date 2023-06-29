@@ -1,14 +1,131 @@
-import CountDown from "@components/CountDown";
-import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
-import { NFT_RARITY, NFT_RARITY_TEXT } from "config/constants";
+import { useState } from "react";
+import { WNATIVE } from "@brewlabs/sdk";
+import { formatEther, formatUnits } from "ethers/lib/utils.js";
 import Link from "next/link";
-import { getChainLogo, getRarityColor } from "utils/functions";
+import { toast } from "react-toastify";
+
+import CountDown from "@components/CountDown";
+import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 
+import { NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
+import useActiveWeb3React from "@hooks/useActiveWeb3React";
+import { useFlaskNftContract } from "@hooks/useContract";
+import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
+import useTokenPrice from "@hooks/useTokenPrice";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
+import { useChainCurrentBlock } from "state/block/hooks";
+import { fetchNftUserDataAsync } from "state/nfts";
+import { useAllNftData } from "state/nfts/hooks";
+import { getChainLogo, getRarityColor } from "utils/functions";
+
+import { useNftStaking } from "../hooks/useNftStaking";
+import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
+
 const NFTCard = ({ nft }: { nft: any }) => {
+  const dispatch = useAppDispatch();
+  const { account, chainId } = useActiveWeb3React();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
+
+  const { flaskNft: flaskNfts, data } = useAllNftData();
+  const flaskNftContract = useFlaskNftContract(chainId);
+  const currentBlock = useChainCurrentBlock(nft.chainId);
+
+  const pool = data.find((p) => p.chainId === nft.chainId);
+  const flaskNft = flaskNfts.find((p) => p.chainId === nft.chainId);
+
+  const { onStake, onUnstakeNft, onClaim } = useNftStaking(pool?.performanceFee ?? "0");
+
+  const [pending, setPending] = useState(false);
+
+  const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
+  const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
+
+  const isPending = !pool || pool.startBlock > currentBlock;
+  const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
+
+  const apr = flaskNft.mintFee
+    ? (((+formatEther(pool.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
+      ((+formatEther(flaskNft.mintFee.stable) +
+        +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+        (pool?.totalStaked ?? 0))
+    : 0;
+
   const stakingDate = new Date(2023, 8, 0, 0, 0, 0, 0);
   let date =
     stakingDate.getTime() - new Date(new Date().toLocaleString("en-us", { timeZone: "America/New_York" })).getTime();
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleStake = async () => {
+    if (pending) return;
+    if (chainId !== nft.chainId) {
+      if (canSwitch) switchNetwork(nft.chainId);
+      return;
+    }
+
+    setPending(true);
+    try {
+      const isApprovedForAll = await flaskNftContract.isApprovedForAll(account, pool.address);
+      if (!isApprovedForAll) {
+        const tx = await flaskNftContract.setApprovalForAll(pool.address, true);
+        await tx.wait();
+      }
+
+      await onStake([nft.tokenId]);
+
+      dispatch(fetchNftUserDataAsync(chainId, account));
+      toast.success(`Brewlabs Flask NFT was staked and Brewlabs Mirror NFT was minted.`);
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
+  const handleUnStake = async () => {
+    if (pending) return;
+    if (chainId !== nft.chainId) {
+      if (canSwitch) switchNetwork(nft.chainId);
+      return;
+    }
+
+    setPending(true);
+    try {
+      await onUnstakeNft(nft.tokenId);
+
+      dispatch(fetchNftUserDataAsync(chainId, account));
+      toast.success(`Brewlabs Flask NFT was unstaked and Brewlabs Mirror NFT was burned.`);
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
+  const handleClaim = async () => {
+    if (pending) return;
+    if (chainId !== nft.chainId) {
+      if (canSwitch) switchNetwork(nft.chainId);
+      return;
+    }
+
+    setPending(true);
+    try {
+      await onClaim();
+
+      dispatch(fetchNftUserDataAsync(chainId, account));
+      toast.success(`Brewlabs Flask NFT was unstaked and Brewlabs Mirror NFT was burned.`);
+    } catch (error) {
+      console.log(error);
+      handleWalletError(error, showError, getNativeSybmol(chainId));
+    }
+    setPending(false);
+  };
+
   return (
     <div className="primary-shadow mt-2 cursor-pointer rounded bg-[#B9B8B80D] p-[16px_18px_16px_12px] font-brand font-bold text-[#FFFFFFBF] transition hover:bg-[#b9b8b828] xsm:p-[16px_36px_16px_28px]">
       <div className="hidden items-center justify-between xl:flex">
@@ -20,90 +137,69 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{nft.name}</div>
         </div>
         <div className="w-[60px]  overflow-hidden text-ellipsis whitespace-nowrap">ID {nft.tokenId}</div>
-        <div className={`uppercase ${getRarityColor(nft.rarity)} w-[80px]`}>{NFT_RARITY_TEXT[nft.rarity]}</div>
-        {nft.rarity > NFT_RARITY.UNCOMMON ? (
-          nft.isStaked ? (
-            <>
-              <div className="w-[116px]">
-                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                    {CircleMinusSVG}
-                  </div>
-                  Unstake NFT
-                </StyledButton>
-              </div>
-              <div className="w-[80px] text-center text-xs text-white">{nft.apr.toFixed(2)}% APR</div>
-              <div className="relative w-[80px] overflow-hidden text-ellipsis whitespace-nowrap text-center leading-[1.2] text-white">
-                {nft.earning.amount.toFixed(2)} {nft.earning.currency.symbol}
-                <div className="absolute right-0 text-[10px] text-[#FFFFFF80]">$20.23 USD</div>
-              </div>
-              <div className="w-[84px]">
-                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                    {CirclePlusSVG}
-                  </div>
-                  Harvest
-                </StyledButton>
-              </div>
-              <div className="w-[104px]">
-                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
-                    {CircleRightSVG}
-                  </div>
-                  Marketplace
-                </StyledButton>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="w-[116px]">
-                {/* <StyledButton
-                  className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow"
-                  disabled={nft.pending}
-                >
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                    {CirclePlusSVG}
-                  </div>
-                  Stake NFT
-                </StyledButton> */}
+        <div className={`uppercase ${getRarityColor(nft.rarity - 1)} w-[80px]`}>{NFT_RARITY_NAME[nft.rarity - 1]}</div>
+        {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (
+          <>
+            <div className="w-[116px]">
+              {isPending ? (
                 <Link href={"/nft/nftstakinginfo"}>
-                  <StyledButton
-                    className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
-                    // disabled={nft.pending}
-                  >
+                  <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
                     <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
                       {CircleRightSVG}
                     </div>
                     NFT Staking Info
                   </StyledButton>
                 </Link>
-              </div>
-              <div className="w-[80px] text-xs text-white">Pending APR</div>
+              ) : (
+                <StyledButton
+                  className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow"
+                  onClick={nft.isStaked ? handleUnStake : handleStake}
+                  disabled={pending}
+                >
+                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
+                    {nft.isStaked ? CircleMinusSVG : CirclePlusSVG}
+                  </div>
+                  {nft.isStaked ? "Unstake NFT" : "Stake NFT"}
+                </StyledButton>
+              )}
+            </div>
+            <div className="w-[80px] text-center text-xs text-white">
+              {isPending || apr === null ? "Pending APR" : `${apr.toFixed(2) ?? "0.00"}%`}
+            </div>
+            {isPending ? (
               <div className="relative w-[80px] font-bold leading-[1.2] text-white">
                 <CountDown time={date + Date.now()} />
                 <div className="absolute right-0 text-[10px] text-[#FFFFFF80]">Pool opens</div>
               </div>
-              <div className="w-[84px]">
+            ) : (
+              <div className="relative w-[80px] overflow-hidden text-ellipsis whitespace-nowrap text-center leading-[1.2] text-white">
+                {earnings.toFixed(3)} {getNativeSybmol(nft.chainId)}
+                <div className="text-right text-[10px] text-[#FFFFFF80]">${(earnings * ethPrice).toFixed(2)} USD</div>
+              </div>
+            )}
+            <div className="w-[84px]">
+              {!isPending && nft.isStaked && (
                 <StyledButton
                   className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow"
-                  disabled={nft.pending}
+                  onClick={handleClaim}
+                  disabled={pending || earnings == 0}
                 >
                   <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
                     {CirclePlusSVG}
                   </div>
                   Harvest
                 </StyledButton>
-              </div>
-              <div className="w-[104px]">
-                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
-                    {CircleRightSVG}
-                  </div>
-                  Marketplace
-                </StyledButton>
-              </div>
-            </>
-          )
+              )}
+            </div>
+            <div className="w-[104px]">
+              <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
+                <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
+                  {CircleRightSVG}
+                </div>
+                Marketplace
+              </StyledButton>
+            </div>
+          </>
         ) : (
           <>
             <div className="w-[116px]" />
@@ -133,72 +229,64 @@ const NFTCard = ({ nft }: { nft: any }) => {
               ID {nft.tokenId}
             </div>
           </div>
-          <div className={`uppercase ${getRarityColor(nft.rarity)} mt-4 w-full text-right sm:mt-0 sm:w-fit`}>
-            {NFT_RARITY_TEXT[nft.rarity]}
+          <div className={`uppercase ${getRarityColor(nft.rarity - 1)} mt-4 w-full text-right sm:mt-0 sm:w-fit`}>
+            {NFT_RARITY_NAME[nft.rarity - 1]}
           </div>
         </div>
-        {nft.rarity > NFT_RARITY.UNCOMMON ? (
-          nft.isStaked ? (
-            <>
-              <div className="mt-2 flex items-center justify-between">
-                <div className="w-fit text-white">APR: {nft.apr.toFixed(2)}%</div>
-                <div className="relative w-fit leading-[1.2] text-white">
-                  EARNING: {nft.earning.amount.toFixed(2)} {nft.earning.currency.symbol}
-                  <div className="absolute right-0 text-right text-[10px] text-[#FFFFFF80]">$20.23 USD</div>
-                </div>
+        {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (
+          <>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="w-fit text-white">
+                APR: {isPending || apr === null ? "Pending" : `${apr.toFixed(2) ?? "0.00"}%`}
               </div>
-              <div className="mt-6 flex flex-col justify-between xsm:flex-row">
-                <StyledButton className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mt-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                    {CircleMinusSVG}
+              {isPending ? (
+                <div className="relative w-fit leading-[1.2] text-white">
+                  POOL OPEN: <CountDown time={date + Date.now()} />
+                  {/* <div className="absolute right-0 text-right text-[10px] text-[#FFFFFF80]">Pool Opens</div> */}
+                </div>
+              ) : (
+                <div className="relative w-fit leading-[1.2] text-white">
+                  EARNING: {earnings.toFixed(3)} {getNativeSybmol(nft.chainId)}
+                  <div className="absolute right-0 text-right text-[10px] text-[#FFFFFF80]">
+                    ${(earnings * ethPrice).toFixed(2)} USD
                   </div>
-                  Unstake NFT
+                </div>
+              )}
+            </div>
+            <div className="mt-6 flex flex-col justify-between xsm:flex-row">
+              {isPending ? (
+                <Link href={"/nft/nftstakinginfo"}>
+                  <StyledButton className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
+                    <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
+                      {CircleRightSVG}
+                    </div>
+                    NFT Staking Info
+                  </StyledButton>
+                </Link>
+              ) : (
+                <StyledButton
+                  className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mt-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
+                  onClick={nft.isStaked ? handleUnStake : handleStake}
+                  disabled={pending}
+                >
+                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
+                    {nft.isStaked ? CircleMinusSVG : CirclePlusSVG}
+                  </div>
+                  {nft.isStaked ? "Unstake NFT" : "Stake NFT"}
                 </StyledButton>
-                <StyledButton className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mt-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow">
+              )}
+              {!isPending && nft.isStaked && (
+                <StyledButton
+                  className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mt-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
+                  onClick={handleClaim}
+                  disabled={pending || earnings == 0}
+                >
                   <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
                     {CirclePlusSVG}
                   </div>
                   Harvest
                 </StyledButton>
-                <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
-                    {CircleRightSVG}
-                  </div>
-                  Marketplace
-                </StyledButton>
-              </div>
-            </>
-          ) : (
-            <div className="mt-6 flex flex-col justify-between xsm:flex-row">
-              {/* <StyledButton
-                className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
-                disabled={nft.pending}
-              >
-                <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                  {CirclePlusSVG}
-                </div>
-                Stake NFT
-              </StyledButton> */}
-              <Link href={"/nft/nftstakinginfo"}>
-                <StyledButton
-                  className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
-                  // disabled={nft.pending}
-                >
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                    {CircleRightSVG}
-                  </div>
-                  NFT Staking Info
-                </StyledButton>
-              </Link>
-              <StyledButton
-                className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
-                disabled={nft.pending}
-              >
-                <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
-                  {CirclePlusSVG}
-                </div>
-                Harvest
-              </StyledButton>
+              )}
               <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
                 <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
                   {CircleRightSVG}
@@ -206,7 +294,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 Marketplace
               </StyledButton>
             </div>
-          )
+          </>
         ) : (
           <div className="mt-6 flex flex-col justify-end xsm:flex-row">
             <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">

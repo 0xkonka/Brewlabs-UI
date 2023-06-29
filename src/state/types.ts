@@ -1,16 +1,18 @@
 import BigNumber from "bignumber.js";
-import { DeserializedFarm, SerializedBigNumber } from "./farms/types";
-import { SerializedPool } from "./pools/types";
-import { SerializedIndex } from "./indexes/types";
-import { DeployConfig } from "./deploy/types";
-import { SwapState } from "./swap/reducer";
-import { ListsState } from "./lists/reducer";
-import { MulticallState } from "./multicall/reducer";
-import { TransactionState } from "./transactions/reducer";
-import { UserState } from "./user/reducer";
-import { Address, AppId, DeserializedFarmConfig, SerializedFarmConfig } from "config/constants/types";
 import { AnyAction } from "@reduxjs/toolkit";
 import { ThunkAction } from "redux-thunk";
+
+import { Address, AppId, DeserializedFarmConfig, SerializedFarmConfig } from "config/constants/types";
+import { DeployConfig } from "./deploy/types";
+import { DeserializedFarm, SerializedBigNumber } from "./farms/types";
+import { SerializedIndex } from "./indexes/types";
+import { ListsState } from "./lists/reducer";
+import { MulticallState } from "./multicall/reducer";
+import { FlaskNftData, MirrorNftData, NftStakingData } from "./nfts/type";
+import { SerializedPool } from "./pools/types";
+import { SwapState } from "./swap/reducer";
+import { TransactionState } from "./transactions/reducer";
+import { UserState } from "./user/reducer";
 
 export interface SerializedDeposit {
   amount: string;
@@ -54,6 +56,13 @@ export interface DeployState {
   farm: DeployConfig[];
   pool: DeployConfig[];
   indexes: DeployConfig[];
+}
+
+export interface NftState {
+  flaskNft: FlaskNftData[]
+  mirrorNft: MirrorNftData[]
+  data: NftStakingData[]
+  userDataLoaded: boolean;
 }
 
 interface SerializedZapFarmUserData {
@@ -101,6 +110,7 @@ export interface State {
   farms: SerializedFarmsState;
   pools: PoolsState;
   indexes: IndexesState;
+  nfts: NftState;
   deploy: DeployState;
   zap: SerializedZapState;
   lists: ListsState;

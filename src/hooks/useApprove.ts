@@ -7,7 +7,7 @@ import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getErc721Contract } from "utils/contractHelpers";
 
 export const useTokenApprove = () => {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const { data: signer } = useSigner();
 
   const handleApprove = useCallback(
@@ -19,7 +19,7 @@ export const useTokenApprove = () => {
       const receipt = await tx.wait();
       return receipt;
     },
-    [account, chainId, signer]
+    [chainId, signer, library]
   );
 
   return { onApprove: handleApprove };

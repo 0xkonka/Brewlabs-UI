@@ -1,27 +1,28 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { useMemo, ReactNode } from "react";
+import { useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import { createGlobalState } from "react-hooks-global-state";
-import { NetworkConfig } from "config/constants/types";
+import { BridgeToken, NetworkConfig } from "config/constants/types";
 
 import { updateVersion } from "./global/actions";
 
-import storage from "./storage";
+import deploy from "./deploy";
 import farms from "./farms";
 import pools from "./pools";
 import indexes from "./indexes";
-import deploy from "./deploy";
-import user from "./user/reducer";
-import transactions from "./transactions/reducer";
+import nfts from "./nfts"
+
 import burn from "./burn/reducer";
-import mint from "./mint/reducer";
-import swap from "./swap/reducer";
 import lists from "./lists/reducer";
-import zap from "./zap";
-import lpPricesReducer from "./lpPrices";
+import mint from "./mint/reducer";
 import multicall from "./multicall/reducer";
-import { BridgeToken } from "config/constants/types";
+import swap from "./swap/reducer";
+import transactions from "./transactions/reducer";
+import user from "./user/reducer";
+import lpPricesReducer from "./lpPrices";
+import storage from "./storage";
+import zap from "./zap";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -39,6 +40,7 @@ const persistedReducer = persistReducer(
     farms,
     pools,
     indexes,
+    nfts,
     deploy,
     zap,
     user,

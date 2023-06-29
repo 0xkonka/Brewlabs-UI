@@ -28,6 +28,7 @@ export const useBridgeDirection = () => {
     );
 
     return config ?? bridgeConfigs[0];
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromChain, fromToken?.address, toChain]);
 
   const { homeChainId, foreignChainId, homeGraphName, foreignGraphName, homeAmbAddress, foreignAmbAddress } =

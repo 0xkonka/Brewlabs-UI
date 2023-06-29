@@ -8,7 +8,7 @@ export default function useActiveWeb3React() {
   const { address: account, connector, isConnected, isConnecting } = useAccount();
 
   return {
-    account,
+    account: connector && isConnected ? account : undefined,
     chainId,
     chain,
     connector,

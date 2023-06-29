@@ -43,6 +43,7 @@ export const useCurrencySelectRoute = (type = "add", selectedChainId = undefined
         });
       }
     },
+     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currencyIdA, router, currencyIdB, chainId]
   );
 

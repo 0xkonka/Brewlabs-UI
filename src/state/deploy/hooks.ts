@@ -19,7 +19,7 @@ export const usePollFarmFactoryData = () => {
 
   useEffect(() => {
     supportedChains.forEach((chainId) => dispatch(fetchFarmFactoryDataAsync(chainId)));
-  }, [dispatch]);
+  }, [dispatch, supportedChains.length]);
 };
 
 export const usePollIndexFactoryData = () => {
@@ -33,7 +33,7 @@ export const usePollIndexFactoryData = () => {
 
   useEffect(() => {
     supportedChains.forEach((chainId) => dispatch(fetchIndexFactoryDataAsync(chainId)));
-  }, [dispatch]);
+  }, [dispatch, supportedChains.length]);
 };
 
 export const useFarmFactory = (chainId) =>
