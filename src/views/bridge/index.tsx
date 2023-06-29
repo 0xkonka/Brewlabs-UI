@@ -92,7 +92,8 @@ const Bridge: NextPage = () => {
 
   useEffect(() => {
     if (fromChainId <= 0 || !SUPPORTED_CHAIN_IDS.includes(fromChainId)) return;
-    const tmpTokens = [];
+
+    let tmpTokens = [];
     tmpTokens.push(...bridgeConfigs.filter((c) => c.homeChainId === fromChainId).map((config) => config.homeToken));
     tmpTokens.push(
       ...bridgeConfigs.filter((c) => c.foreignChainId === fromChainId).map((config) => config.foreignToken)
@@ -102,6 +103,7 @@ const Bridge: NextPage = () => {
       if (a.symbol > b.symbol) return 1;
       return 0;
     });
+    tmpTokens = [...new Map(tmpTokens.map((t) => [`${t.chainId}-${t.address}`, t])).values()];
 
     setNetworkFrom(NetworkOptions.find((c) => c.id === fromChainId)!);
     setSupportedFromTokens(tmpTokens);
@@ -130,7 +132,7 @@ const Bridge: NextPage = () => {
     }
     // set toChain
     let _toChainId = networkTo.id;
-    if (!chainIds.includes(_toChainId)) {
+    if (_toChainId === 0 || !chainIds.includes(_toChainId)) {
       _toChainId = chainIds[0];
       setNetworkTo(NetworkOptions.find((c) => c.id === _toChainId)!);
     }
@@ -375,7 +377,7 @@ const Bridge: NextPage = () => {
                   />
                 ) : (
                   <ChainSelector
-                    networks={supportedNetworks.filter((n) => toChains?.includes(n.id))}
+                    networks={supportedNetworks.filter((n) => n.id !== 0 && toChains?.includes(n.id))}
                     currentChainId={networkTo.id}
                     selectFn={(selectedValue) => setGlobalState("userBridgeTo", selectedValue)}
                   />
