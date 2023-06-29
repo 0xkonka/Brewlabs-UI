@@ -27,6 +27,7 @@ import StyledButton from "views/directory/StyledButton";
 
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
+import { getRarityColor } from "utils/functions";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -143,8 +144,10 @@ const NFTActions = () => {
           info: (
             <div>
               <div>
-                <span className="font-bold text-[#C80045]">{NFT_RARITY_NAME[activeRarity].toUpperCase()}</span> Benefit
-                level
+                <span className={`font-bold ${getRarityColor(activeRarity)}`}>
+                  {NFT_RARITY_NAME[activeRarity].toUpperCase()}
+                </span>{" "}
+                Benefit level
               </div>
               <ul className="list-disc pl-5">
                 {rarities[activeRarity < 4 ? activeRarity : 4].benefits.slice(1, 4).map((benefit, i) => (
@@ -183,7 +186,7 @@ const NFTActions = () => {
             <div key={i} className="relative mb-[164px] w-[220px]">
               <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
-                <div className="text-[#C80046]">{data.rarity}</div>
+                <div className={`${getRarityColor(activeRarity)}`}>{data.rarity}</div>
               </div>
               <div className="primary-shadow flex h-[180px] w-full flex-col items-center justify-center rounded bg-[#B9B8B80D]">
                 {data.logo ? (
