@@ -104,7 +104,7 @@ export const formatIPFSString = (url) => {
 };
 
 export const getRarityColor = (rarity: number) => {
-  const colors = ["text-white", "", "text-[#1A82FF]"];
+  const colors = ["text-white", "text-[#46F181]", "text-[#1A82FF]", "text-[#B95AFE]", "text-[#FF9D5B]", "text-[#C80045]"];
   return colors[rarity] ?? "text-white";
 };
 
