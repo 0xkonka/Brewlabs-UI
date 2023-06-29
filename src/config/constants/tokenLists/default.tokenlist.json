@@ -2398,9 +2398,9 @@
       "chainId": 137,
       "name": "BREWLABS",
       "symbol": "BREWLABS",
-      "address": "0xe745d88A390e89E6562B29F6aC17ec03804050Ad",
+      "address": "0x2F86747a9c5Db9b80840a3A588E2B87f367188d6",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0xe745d88A390e89E6562B29F6aC17ec03804050Ad/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0x2F86747a9c5Db9b80840a3A588E2B87f367188d6/logo.png"
     },
     {
       "name": "(PoS) Tether USD",

@@ -6,7 +6,7 @@ const tokens = {
   wmatic: WNATIVE[ChainId.POLYGON],
   brews: new Token(
     POLYGON,
-    "0xe745d88A390e89E6562B29F6aC17ec03804050Ad",
+    "0x2F86747a9c5Db9b80840a3A588E2B87f367188d6",
     18,
     "BREWLABS",
     "Brewlabs",
