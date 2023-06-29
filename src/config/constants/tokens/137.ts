@@ -4,6 +4,14 @@ const { POLYGON } = ChainId;
 const tokens = {
   matic: NATIVE_CURRENCIES[ChainId.POLYGON],
   wmatic: WNATIVE[ChainId.POLYGON],
+  brews: new Token(
+    POLYGON,
+    "0x2F86747a9c5Db9b80840a3A588E2B87f367188d6",
+    18,
+    "BREWLABS",
+    "Brewlabs",
+    "https://brewlabs.info/"
+  ),
   usdc: new Token(
     POLYGON,
     "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",

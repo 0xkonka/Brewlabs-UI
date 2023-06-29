@@ -37,11 +37,13 @@ export const useLiquidityPools = () => {
   useEffect(() => {
     if (contract.address) {
       (async () => {
-        const value = await contract.pairsLength();
-        setPairsLength(value.toNumber());
+        try {
+          const value = await contract.pairsLength();
+          setPairsLength(value.toNumber());
+        } catch (e) {}
       })();
     }
-  }, [contract.address]);
+  }, [contract.address, chainId]);
 
   const outputOfPairs = useSingleContractMultipleData(
     contract,
@@ -67,7 +69,7 @@ export const useLiquidityPools = () => {
 
 export const useOwnedLiquidityPools = () => {
   const { address: account } = useAccount();
-  // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
+
   const { chainId } = useActiveChainId();
   const pairs = useLiquidityPools();
 
@@ -80,7 +82,7 @@ export const useOwnedLiquidityPools = () => {
     return pairs.filter(
       (pair) =>
         pair.referrer === account || pair.tokenOwner === account || lpBalances[pair.id]?.greaterThan(JSBI.BigInt(0))
-    ); 
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, pairs]);
 

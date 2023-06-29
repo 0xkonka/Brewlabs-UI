@@ -12,7 +12,7 @@ import getCurrencyId from "utils/getCurrencyId";
 type ChainSelectorProps = {
   onDismiss?: () => void;
   networks: NetworkConfig[];
-  currentChainId: ChainId;
+  currentChainId: ChainId | 0;
   bSwitchChain?: boolean;
   selectFn: (selectedNetwork: NetworkConfig) => void;
 };
