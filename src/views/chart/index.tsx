@@ -13,7 +13,7 @@ export default function Chart() {
         title={
           <Header1 />
         }
-      /> */}
+      /> */}  
       <div className="flex flex-col mt-[5rem] pl-[2rem] pr-[2rem] gap-[21px] max-[480px]:pl-[1rem] max-[480px]:pr-[1rem] ">
         <Header1 />
         <Header2/>

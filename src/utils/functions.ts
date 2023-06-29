@@ -103,11 +103,6 @@ export const formatIPFSString = (url) => {
   return _url;
 };
 
-export const getRarityColor = (rarity: number) => {
-  const colors = ["text-white", "text-[#46F181]", "text-[#1A82FF]", "text-[#B95AFE]", "text-[#FF9D5B]", "text-[#C80045]"];
-  return colors[rarity] ?? "text-white";
-};
-
 export const getAddLiquidityUrl = (token1: Currency, token2: Currency, chainId: number) => {
   return `/add/${chainId}/${
     token1.isNative || token1.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token1.address

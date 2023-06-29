@@ -28,25 +28,25 @@ const SubNav = ({ openSettingModal }: Props) => {
         </button>
         <button
           className={`tab px-3 ${swapTab === 1 ? "tab-active" : ""} relative`}
-          // onClick={() => {
-          //   setSwapTab(1);
-          //   setAddLiquidityStep("default");
-          // }}
+          onClick={() => {
+            setSwapTab(1);
+            setAddLiquidityStep("default");
+          }}
           // disabled
         >
           Liquidity tools
-          {/* <Notification count={collectiblePairs.length} /> */}
-          <Soon />
+          <Notification count={collectiblePairs.length} />
+          {/* <Soon /> */}
         </button>
-        {/* <Link href={"/tradingPairs"}> */}
+        <Link href={"/tradingPairs"}>
         <button
           className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""} relative`}
           //  onClick={() => setSwapTab(2)}
         >
           Pools & analytics
-          <Soon />
+          {/* <Soon /> */}
         </button>
-        {/* </Link> */}
+        </Link>
       </div>
       <MobileNav></MobileNav>
       <div className="absolute right-7 top-6" onClick={openSettingModal}>

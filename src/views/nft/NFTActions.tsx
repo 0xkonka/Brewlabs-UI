@@ -27,7 +27,7 @@ import StyledButton from "views/directory/StyledButton";
 
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
-import { getRarityColor } from "utils/functions";
+import { BREWNFT_COLORS } from "config/constants";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -144,7 +144,7 @@ const NFTActions = () => {
           info: (
             <div>
               <div>
-                <span className={`font-bold ${getRarityColor(activeRarity)}`}>
+                <span className={`font-bold ${BREWNFT_COLORS[activeRarity]}`}>
                   {NFT_RARITY_NAME[activeRarity].toUpperCase()}
                 </span>{" "}
                 Benefit level
@@ -186,7 +186,7 @@ const NFTActions = () => {
             <div key={i} className="relative mb-[164px] w-[220px]">
               <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
-                <div className={`${getRarityColor(activeRarity)}`}>{data.rarity}</div>
+                <div className={`${BREWNFT_COLORS[activeRarity]}`}>{data.rarity}</div>
               </div>
               <div className="primary-shadow flex h-[180px] w-full flex-col items-center justify-center rounded bg-[#B9B8B80D]">
                 {data.logo ? (
