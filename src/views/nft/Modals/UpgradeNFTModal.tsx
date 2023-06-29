@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { Token } from "@brewlabs/sdk";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { formatUnits, parseUnits } from "ethers/lib/utils.js";
+import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { motion } from "framer-motion";
 import ReactPlayer from "react-player";
 import { toast } from "react-toastify";
@@ -68,14 +68,15 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
   const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
   const isStableApproved = userData
     ? +userData.allowances[index + 1] >=
-      +parseUnits(formatUnits(upgradeFee?.stable[index] ?? "0"), selectedCurrency.decimals).toString()
+      +parseUnits(formatUnits(upgradeFee?.stable ?? "0"), selectedCurrency.decimals).toString()
     : false;
   const isStableValid =
     isStableApproved &&
-    (userData
-      ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(upgradeFee?.stable[index] ?? "0")
-      : false);
+    (userData ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(upgradeFee?.stable ?? "0") : false);
   const isValid = nftCounts[rarity] === 3;
+
+  const brewsFee = +formatUnits(upgradeFee?.brews ?? "0", brewsToken.decimals);
+  const stableFee = +formatEther(upgradeFee?.stable ?? "0");
 
   useEffect(() => {
     setIsEnded(false);
@@ -138,7 +139,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
       }
 
       const tokenIds = flaskNft.userData.balances.filter((t) => t.rarity === rarity + 1).map((t) => t.tokenId);
-      await onUpgrade(tokenIds, selectedCurrency.address);
+      await onUpgrade(tokenIds.slice(0, 3), selectedCurrency.address);
 
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`Upgraded successfully`);
@@ -375,7 +376,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                       </div>
                     </div>
                     <div className="text-[#FFFFFF80]">
-                      1500.00&nbsp;<span className="text-primary">BREWLABS</span>
+                      {brewsFee.toFixed(2)}&nbsp;<span className="text-primary">BREWLABS</span>
                     </div>
                   </div>
                   <div className="mx-auto mt-2.5 flex w-full max-w-[300px] items-center justify-between text-sm">
@@ -396,7 +397,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
                       </div>
                     </div>
                     <div className="flex items-center text-[#FFFFFF80]">
-                      <div className="mr-2">25.00</div>
+                      <div className="mr-2">{stableFee.toFixed(2)}</div>
                       <CurrencyDropdown
                         currencies={currencies}
                         value={selectedCurrency}
