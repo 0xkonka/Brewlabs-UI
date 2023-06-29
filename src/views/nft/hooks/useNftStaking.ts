@@ -53,7 +53,7 @@ export const useNftStaking = (performanceFee) => {
       let gasLimit = await nftStakingContract.estimateGas.withdrawNft(tokenId, { value: performanceFee, gasPrice });
       gasLimit = calculateGasMargin(gasLimit);
 
-      const tx = await nftStakingContract.withdraw(tokenId, { value: performanceFee, gasPrice, gasLimit });
+      const tx = await nftStakingContract.withdrawNft(tokenId, { value: performanceFee, gasPrice, gasLimit });
       const receipt = await tx.wait();
 
       return receipt;
