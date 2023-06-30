@@ -18,7 +18,7 @@ export const { provider, webSocketProvider, chains } = configureChains(Supported
     rpc: (chain) => {
       switch (chain.id) {
         case mainnet.id:
-          return { http: "https://cloudflare-eth.com" };
+          return { http: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161" };
         default:
           return { http: chain.rpcUrls.default.http[0] };
       }
