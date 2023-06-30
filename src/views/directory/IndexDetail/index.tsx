@@ -206,6 +206,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
 
   const handleMintNft = async () => {
     if (pending) return;
+    if (data.isFinished) {
+      toast.warn("Pool was finished.");
+      return;
+    }
     if (data.category === undefined) {
       toast.warn("This version is no longer supported.");
       return;
@@ -690,7 +694,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                                 setStakingModalOpen(true);
                                 setCurType("enter");
                               }}
-                              disabled={pending || !account}
+                              disabled={pending || !account || data.isFinished}
                             >
                               Enter {getIndexName(tokens)} Index
                             </StyledButton>
