@@ -28,7 +28,7 @@ const CommunityDetail = ({ community }: { community: any }) => {
                   <WordHighlight content="Brewlabs Community" />
                 </div>
               </h1>
-              <Link href={"/community"}>
+              <Link href={"/communities"}>
                 <StyledButton className="!w-fit p-[10px_12px_10px_24px] !font-normal">
                   <div className="absolute left-1 top-[11px] scale-[85%]">{chevronLeftSVG}</div>
                   Back

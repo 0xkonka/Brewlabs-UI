@@ -83,14 +83,14 @@ const InfoPanel = ({ community }: { community: any }) => {
         })}
       </div>
       <div className="mt-7 flex items-center">
-        <div className="mr-2.5 cursor-pointer text-tailwind transition hover:text-white" id={"No Brewlabs NFTs"}>
+        <div className="mr-2.5 cursor-pointer text-tailwind transition hover:text-white" id={"No Brewlabs NFTs Found"}>
           {NFTSVG}
         </div>
         <StyledButton className="!w-fit !bg-[#505050] p-[10px_12px]" disabled>
           Submit&nbsp;<span className="font-normal">new proposal</span>
         </StyledButton>
       </div>
-      <ReactTooltip anchorId={"No Brewlabs NFTs"} place="top" content="No Brewlabs NFTs" />
+      <ReactTooltip anchorId={"No Brewlabs NFTs Found"} place="top" content="No Brewlabs NFTs Found" />
     </div>
   );
 };

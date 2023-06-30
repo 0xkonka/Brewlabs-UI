@@ -71,7 +71,7 @@ const CommunityCard = ({
           <div className="text-lg">{community.engagement.toFixed(2)}%</div>
           <div className="text-xs text-[#FFFFFFBF] text-[#FFFFFFBF]">Engagement</div>
         </div>
-        <Link href={`/community/${community.pid}`} className=" mb-4 xl:mb-0">
+        <Link href={`/communities/${community.pid}`} className=" mb-4 xl:mb-0">
           <StyledButton className="!w-fit p-[5px_12px] !text-sm !font-normal !leading-[1.2]">
             Enter community
           </StyledButton>

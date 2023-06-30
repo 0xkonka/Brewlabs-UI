@@ -1,4 +1,4 @@
-import { FixedSVG, LinkSVG, PlusSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import { FixedSVG, LinkSVG, MinusSVG, PlusSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import TokenLogo from "@components/logo/TokenLogo";
 import Link from "next/link";
@@ -39,11 +39,13 @@ const CommunitySummary = ({ community }: { community: any }) => {
       </div>
       <div className="mx-0 mt-6 sm:mx-6 sm:mt-0">
         <StyledButton
-          className="!h-fit !w-full p-[16px_12px] !font-black sm:!w-fit"
+          className={`!h-fit !w-full p-[16px_12px] !font-black sm:!w-fit ${
+            isJoined ? "!bg-[#27272A] !text-primary" : ""
+          }`}
           onClick={() => joinOrLeaveCommunity(account, community.pid)}
         >
           <div className="flex items-center">
-            <div className="mr-[18px]">{PlusSVG}</div>
+            <div className="mr-[18px]">{isJoined ? MinusSVG : PlusSVG}</div>
             <div>
               {isJoined ? "Leave" : "Join"} <span className="font-normal">{community.name} Community</span>
             </div>
@@ -96,7 +98,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
         </div>
         <div className="mt-1 text-sm leading-[1.2] text-[#FFFFFF80]">
           {community.description.split("\n").map((data: any, i: number) => {
-            return data === "" ? <br /> : data;
+            return data === "" ? <br key={i} /> : data;
           })}
         </div>
         <a href={community.socials.telegram} target="_blank">

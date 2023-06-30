@@ -44,7 +44,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   tradingPairs: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   draw: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  community: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  communities: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
 };
 
 export const CHAIN_KEYS = {
