@@ -30,7 +30,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
       .catch((e) => console.log(e));
   }, [account, communityStringified]);
 
-  const isJoined = community.members.includes(account.toLowerCase());
+  const isJoined = community.members.includes(account?.toLowerCase());
 
   return (
     <div className="mt-10 flex flex-col flex-wrap items-center justify-between sm:flex-row sm:items-start lg:mt-0">
