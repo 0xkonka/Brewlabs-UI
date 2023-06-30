@@ -1,4 +1,4 @@
-import { DeployerSVG, NFTSVG } from "@components/dashboard/assets/svgs";
+import { DeployerSVG, CommunitySVG, NFTSVG } from "@components/dashboard/assets/svgs";
 import { IconName } from "@components/DynamicHeroIcon";
 
 type NavigationItem = {
@@ -81,7 +81,14 @@ export const navigationData = [
     // coming: true,
     icon: "ShoppingBagIcon",
     svg: NFTSVG,
-
+  },
+  {
+    name: "Community",
+    href: "/community",
+    external: false,
+    // coming: true,
+    icon: "ShoppingBagIcon",
+    svg: CommunitySVG,
   },
 ] as NavigationItem[];
 

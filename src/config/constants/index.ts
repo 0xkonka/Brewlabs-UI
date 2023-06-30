@@ -344,3 +344,4 @@ export const BREWNFT_COLORS = [
   "text-[#FF9D5B]",
   "text-[#C80045]",
 ];
+

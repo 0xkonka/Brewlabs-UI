@@ -32,9 +32,9 @@ export const Star = () => {
           {tokenData &&
             pairData &&
             (favorites.includes(`${tokenData.data.symbol}-${pairData.data.tokenRef.symbol}`) ? (
-              <StarSVG color="#eebb19" size="20px" />
+              <div className="text-primary">{StarSVG}</div>
             ) : (
-              <StarSVG color="#3F3F46" size="20px" />
+              <div className="text-tailwind">{StarSVG}</div>
             ))}
         </button>
         <div className="flex pr-[7px]">
@@ -77,7 +77,9 @@ export const Star = () => {
               if (tokenData) window.open(tokenData.data.links.website, "_blank");
             }}
           >
-            <WebSiteSVG color={tokenData && (tokenData.data.links.website.length > 0 ? "#fff" : "#3f3f46")} />
+            <div className={tokenData && (tokenData.data.links.website.length > 0 ? "text-white" : "text-tailwind")}>
+              {WebSiteSVG}
+            </div>
           </button>
           <a
             className="border-1 flex items-center justify-center border-solid border-black"
@@ -91,7 +93,9 @@ export const Star = () => {
               if (tokenData) window.open(tokenData.data.links.telegram, "_blank");
             }}
           >
-            <TelegramSVG color={tokenData && (tokenData.data.links.telegram.length > 0 ? "#fff" : "#3f3f46")} />
+            <div className={tokenData && (tokenData.data.links.telegram.length > 0 ? "text-white" : "text-tailwind")}>
+              {TelegramSVG}
+            </div>
           </button>
           <button
             className="border-1 flex items-center justify-center border-solid border-black"
