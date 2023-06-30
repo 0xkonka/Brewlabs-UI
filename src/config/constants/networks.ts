@@ -171,7 +171,13 @@ export const NETWORKS = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://api.nodes-brewlabs.info/rpc/eth"],
+    rpcUrls: [
+      "https://eth.llamarpc.com",
+      "https://ethereum.publicnode.com",
+      "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      "https://eth.meowrpc.com",
+      "https://rpc.ankr.com/eth",
+    ],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.ARBITRUM]: {
