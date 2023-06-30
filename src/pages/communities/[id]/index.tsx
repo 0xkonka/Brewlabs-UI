@@ -8,7 +8,8 @@ const CommunityPage: NextPage = () => {
   const router = useRouter();
   const { communities }: any = useContext(CommunityContext);
   const { id }: any = router.query;
-  const filteredCommunity = communities.find((data) => data.pid === id / 1);
+
+  const filteredCommunity = communities?.find((data) => data.pid === id / 1);
   if (!filteredCommunity) return <div></div>;
   return <CommunityDetail community={filteredCommunity} />;
 };
