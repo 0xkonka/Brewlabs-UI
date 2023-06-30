@@ -26,7 +26,10 @@ const DropDown = ({ value, setValue, data }: { setValue?: any; value: number; da
       <div className={"absolute right-1"}>
         {!open ? <ChevronDownIcon className={"h-3 w-6"} /> : <ChevronUpIcon className={"h-3 w-6"} />}
       </div>
-      <DropDownBody className={"absolute top-[30px] w-full rounded-b transition-all"} open={open}>
+      <DropDownBody
+        className={`${open ? "" : "hidden"} absolute top-[30px] w-full rounded-b transition-all`}
+        open={open}
+      >
         {data.map((data, i) => {
           return (
             <div
@@ -53,7 +56,6 @@ const StyledDropDown = styled.div<{ open: Boolean }>`
 `;
 
 const DropDownBody = styled.div<{ open: Boolean }>`
-  height: ${({ open }) => (open ? "183px" : 0)};
   overflow: hidden;
   background: linear-gradient(180deg, #ffcc32, #e5cc7e);
 `;

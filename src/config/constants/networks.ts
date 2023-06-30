@@ -5,6 +5,15 @@ export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fant
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
+  chart: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.POLYGON,
+    ChainId.FANTOM,
+    ChainId.AVALANCHE,
+    ChainId.CRONOS,
+    ChainId.BRISE,
+  ],
   farms: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
@@ -35,6 +44,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   tradingPairs: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   draw: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  community: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
 };
 
 export const CHAIN_KEYS = {

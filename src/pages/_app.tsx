@@ -48,6 +48,8 @@ import { UserContextProvider } from "contexts/UserContext";
 import { usePollFarmFactoryData, usePollIndexFactoryData } from "state/deploy/hooks";
 import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
 import LoadingPage from "@components/LoadingPage";
+import { ChartContextProvider } from "contexts/ChartContext";
+import { CommunityContextProvider } from "contexts/CommunityContext";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -124,54 +126,58 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
               <UserContextProvider>
                 <DashboardContextProvider>
                   <SwapContextProvider>
-                    <LanguageProvider>
-                      <BridgeProvider>
-                        <SWRConfig>
-                          {mounted && <GlobalHooks />}
-                          <PersistGate loading={null} persistor={persistor}>
-                            <DefaultSeo {...SEO} />
-                            <Updaters />
+                    <ChartContextProvider>
+                      <CommunityContextProvider>
+                        <LanguageProvider>
+                          <BridgeProvider>
+                            <SWRConfig>
+                              {mounted && <GlobalHooks />}
+                              <PersistGate loading={null} persistor={persistor}>
+                                <DefaultSeo {...SEO} />
+                                <Updaters />
 
-                            <div
-                              className={clsx(
-                                router?.pathname === "/" && "home",
-                                "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
-                              )}
-                            >
-                              <Suspense>
-                                <Bubbles />
-                              </Suspense>
+                                <div
+                                  className={clsx(
+                                    router?.pathname === "/" && "home",
+                                    "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
+                                  )}
+                                >
+                                  <Suspense>
+                                    <Bubbles />
+                                  </Suspense>
 
-                              <Image
-                                className="fixed -right-44 top-0 home:z-10 dark:opacity-50"
-                                src="/images/blur-indigo.png"
-                                alt="background blur"
-                                width={567}
-                                height={567}
-                                unoptimized={false}
-                              />
+                                  <Image
+                                    className="fixed -right-44 top-0 home:z-10 dark:opacity-50"
+                                    src="/images/blur-indigo.png"
+                                    alt="background blur"
+                                    width={567}
+                                    height={567}
+                                    unoptimized={false}
+                                  />
 
-                              <div className="flex h-full">
-                                <NavigationDesktop />
-                                <NavigationMobile />
-                                <UserSidebar />
+                                  <div className="flex h-full">
+                                    <NavigationDesktop />
+                                    <NavigationMobile />
+                                    <UserSidebar />
 
-                                <div className="relative flex flex-1 flex-col">
-                                  <HeaderMobile />
-                                  <LazyMotion features={domAnimation}>
-                                    <AnimatePresence exitBeforeEnter>
-                                      <App {...props} />
-                                    </AnimatePresence>
-                                  </LazyMotion>
-                                  {/* {loading ? <LoadingPage /> : ""} */}
+                                    <div className="relative flex flex-1 flex-col">
+                                      <HeaderMobile />
+                                      <LazyMotion features={domAnimation}>
+                                        <AnimatePresence exitBeforeEnter>
+                                          <App {...props} />
+                                        </AnimatePresence>
+                                      </LazyMotion>
+                                      {/* {loading ? <LoadingPage /> : ""} */}
+                                    </div>
+                                  </div>
+                                  <ToastContainer />
                                 </div>
-                              </div>
-                              <ToastContainer />
-                            </div>
-                          </PersistGate>
-                        </SWRConfig>
-                      </BridgeProvider>
-                    </LanguageProvider>
+                              </PersistGate>
+                            </SWRConfig>
+                          </BridgeProvider>
+                        </LanguageProvider>
+                      </CommunityContextProvider>
+                    </ChartContextProvider>
                   </SwapContextProvider>
                 </DashboardContextProvider>
               </UserContextProvider>
