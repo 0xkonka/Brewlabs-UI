@@ -5,6 +5,15 @@ export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fant
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
+  chart: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.POLYGON,
+    ChainId.FANTOM,
+    ChainId.AVALANCHE,
+    ChainId.CRONOS,
+    ChainId.BRISE,
+  ],
   farms: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
@@ -23,15 +32,19 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.CRONOS,
     ChainId.BRISE,
   ],
-  indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
-  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, , ChainId.POLYGON, ChainId.FANTOM],
+  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  nft: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  tradingPairs: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
+  "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  draw: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  communities: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
 };
 
 export const CHAIN_KEYS = {
@@ -65,7 +78,7 @@ export const EXPLORER_URLS = {
   [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
   [ChainId.POLYGON]: "https://polygonscan.com",
-  [ChainId.FANTOM]: "https://ftmscan.com/"
+  [ChainId.FANTOM]: "https://ftmscan.com",
 };
 
 export const EXPLORER_API_URLS = {
@@ -73,7 +86,7 @@ export const EXPLORER_API_URLS = {
   [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
   [ChainId.BSC_TESTNET]: "https://api.bscscan.com/api",
   [ChainId.POLYGON]: "https://api.polygonscan.com/api",
-  [ChainId.FANTOM]: "https://api.ftmscan.com/api"
+  [ChainId.FANTOM]: "https://api.ftmscan.com/api",
 };
 
 export const EXPLORER_API_KEYS = {
@@ -81,33 +94,49 @@ export const EXPLORER_API_KEYS = {
   [ChainId.BSC_MAINNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.BSC_TESTNET]: "HQ1F33DXXJGEF74NKMDNI7P8ASS4BHIJND",
   [ChainId.POLYGON]: "F2KCC1VEPQC23GBVKATATP1V3ZQIC31D7Z",
-  [ChainId.FANTOM]: "BFCVDJ6EW9GQHGNDEUMDSM3HU6KACMWPPC"
+  [ChainId.FANTOM]: "BFCVDJ6EW9GQHGNDEUMDSM3HU6KACMWPPC",
 };
 
 export const CHAIN_LABLES = {
   [ChainId.ETHEREUM]: "Ethereum",
   [ChainId.ARBITRUM]: "Arbitrum",
-  [ChainId.GOERLI]: "Goerli",
   [ChainId.BSC_MAINNET]: "BNB Smart Chain",
-  [ChainId.BSC_TESTNET]: "BSC Testnet",
   [ChainId.POLYGON]: "Polygon Chain",
   [ChainId.FANTOM]: "Fantom Chain",
   [ChainId.AVALANCHE]: "Avalanche",
   [ChainId.CRONOS]: "Cronos Chain",
   [ChainId.BRISE]: "Brise Chain",
+
+  [ChainId.GOERLI]: "Goerli",
+  [ChainId.BSC_TESTNET]: "BSC Testnet",
 };
 
 export const CHAIN_ICONS = {
   [ChainId.ETHEREUM]: "/images/networks/eth.svg",
   [ChainId.ARBITRUM]: "/images/networks/arbitrum.svg",
-  [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_MAINNET]: "/images/networks/bsc.png",
-  [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
   [ChainId.POLYGON]: "/images/networks/polygon.png",
   [ChainId.FANTOM]: "/images/networks/ftm.svg",
   [ChainId.AVALANCHE]: "/images/networks/avalanche.svg",
   [ChainId.CRONOS]: "/images/networks/cronos.png",
   [ChainId.BRISE]: "/images/networks/bitgert.png",
+
+  [ChainId.GOERLI]: "/images/networks/eth.svg",
+  [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
+};
+
+export const EXPLORER_LOGO = {
+  [ChainId.ETHEREUM]: "/images/explorer/etherscan.png",
+  [ChainId.ARBITRUM]: "/images/explorer/arbiscan.png",
+  [ChainId.BSC_MAINNET]: "/images/explorer/bscscan.png",
+  [ChainId.POLYGON]: "/images/networks/polygonscan.png",
+  [ChainId.FANTOM]: "/images/networks/ftmscan.png",
+  [ChainId.AVALANCHE]: "/images/networks/snowtrace.png",
+  [ChainId.CRONOS]: "/images/networks/cronoscan.png",
+  [ChainId.BRISE]: "/images/networks/brisescan.png",
+
+  [ChainId.GOERLI]: "/images/explorer/etherscan.png",
+  [ChainId.BSC_TESTNET]: "/images/explorer/bscscan.png",
 };
 
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
@@ -120,6 +149,7 @@ export const MORALIS_CHAIN_NAME = {
   [ChainId.ETHEREUM]: "mainnet",
   [ChainId.ARBITRUM]: "arbitrum",
   [ChainId.BSC_MAINNET]: "bsc",
+  [ChainId.POLYGON]: "polygon",
 };
 
 export const SUPPORTED_CHAINS = [
@@ -141,7 +171,13 @@ export const NETWORKS = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://api.nodes-brewlabs.info/rpc/eth"],
+    rpcUrls: [
+      "https://eth.llamarpc.com",
+      "https://ethereum.publicnode.com",
+      "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      "https://eth.meowrpc.com",
+      "https://rpc.ankr.com/eth",
+    ],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.ARBITRUM]: {
@@ -172,7 +208,7 @@ export const NETWORKS = {
   },
   [ChainId.BSC_TESTNET]: {
     chainId: `0x${Number(ChainId.BSC_MAINNET).toString(16)}`,
-    chainName: "BNB Smart Chain Testnet",
+    chainName: "BSC Testnet",
     nativeCurrency: {
       name: "BNB",
       symbol: "BNB",

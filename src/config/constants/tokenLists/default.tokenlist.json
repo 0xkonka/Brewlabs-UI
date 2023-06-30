@@ -2395,6 +2395,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270/logo.png"
     },
     {
+      "chainId": 137,
+      "name": "BREWLABS",
+      "symbol": "BREWLABS",
+      "address": "0x2F86747a9c5Db9b80840a3A588E2B87f367188d6",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/polygon/assets/0x2F86747a9c5Db9b80840a3A588E2B87f367188d6/logo.png"
+    },
+    {
       "name": "(PoS) Tether USD",
       "symbol": "USDT",
       "address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
@@ -2489,6 +2497,20 @@
       "chainId": 25,
       "decimals": 6,
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/cronos/assets/0xc21223249CA28397B4B6541dfFaEcC539BfF0c59/logo.png"
+    },
+    {
+      "name": "Binance USD",
+      "symbol": "BUSD",
+      "address": "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814",
+      "chainId": 97,
+      "decimals": 18
+    },
+    {
+      "name": "TestToken",
+      "symbol": "TEST",
+      "address": "0x8428b19C97acCD93fA10f19cbbdfF4FB71C4D175",
+      "chainId": 97,
+      "decimals": 18
     },
     {
       "name": "TOKENA",

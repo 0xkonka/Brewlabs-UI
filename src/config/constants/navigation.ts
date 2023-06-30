@@ -1,5 +1,5 @@
-import { DeployerSVG, NFTSVG } from "@components/dashboard/assets/svgs";
-import { IconName } from "../../components/DynamicHeroIcon";
+import { DeployerSVG, CommunitySVG, NFTSVG } from "@components/dashboard/assets/svgs";
+import { IconName } from "@components/DynamicHeroIcon";
 
 type NavigationItem = {
   name: string;
@@ -17,6 +17,13 @@ export const navigationData = [
     external: false,
     icon: "HomeIcon",
   },
+  // {
+  //   name: "Chart",
+  //   href: "/chart",
+  //   external: false,
+  //   coming: false,
+  //   icon: "PresentationChartLineIcon",
+  // },
   {
     name: "Staking",
     href: "/staking",
@@ -66,6 +73,22 @@ export const navigationData = [
     // coming: true,
     icon: "ArrowDownOnSquareIcon",
     svg: DeployerSVG,
+  },
+  {
+    name: "Brewlabs NFT",
+    href: "/nft",
+    external: false,
+    // coming: true,
+    icon: "ShoppingBagIcon",
+    svg: NFTSVG,
+  },
+  {
+    name: "Communities",
+    href: "/communities",
+    external: false,
+    // coming: true,
+    icon: "ShoppingBagIcon",
+    svg: CommunitySVG,
   },
 ] as NavigationItem[];
 

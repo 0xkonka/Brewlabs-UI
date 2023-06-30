@@ -6,7 +6,7 @@ const tokens = {
   wbnb: WNATIVE[ChainId.BSC_TESTNET],
   busd: new Token(
     BSC_TESTNET,
-    "0x07D4c987AeB435F2729143F092212416e4ecc378",
+    "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814",
     18,
     "BUSD",
     "Binance USD",

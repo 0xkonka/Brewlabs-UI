@@ -24,8 +24,13 @@ import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
 import IndexAbi from "config/abi/indexes/index.json";
-import FarmFactoryAbi from "config/abi/farm/factory.json";
+import IndexImplAbi from "config/abi/indexes/indexImpl.json";
+import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
+import FarmFactoryAbi from "config/abi/farm/factory.json";
+import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
+import MirrorNftAbi from "config/abi/nfts/mirrorNft.json";
+import NftStakingAbi from "config/abi/nfts/nftStaking.json";
 
 // Addresses
 import {
@@ -37,9 +42,12 @@ import {
   getPancakeMasterChefAddress,
   getExternalMasterChefAddress,
   getBrewlabsAggregationRouterAddress,
-  getBrewlabsRouterAddress,
   getBrewlabsFeeManagerAddress,
   getFarmFactoryAddress,
+  getIndexFactoryAddress,
+  getFlaskNftAddress,
+  getMirrorNftAddress,
+  getNftStakingAddress,
 } from "utils/addressHelpers";
 import { provider } from "./wagmi";
 
@@ -161,6 +169,38 @@ export const getFarmImplContract = (
   return getContract(chainId, address, FarmImplAbi, signer);
 };
 
+export const getIndexFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getIndexFactoryAddress(chainId), IndexFactoryAbi, signer);
+};
+
+export const getIndexContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, IndexImplAbi, signer);
+};
+
+export const getOldIndexContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, IndexAbi, signer);
+};
+
+export const getFlaskNftContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getFlaskNftAddress(chainId), FlaskNftAbi, signer);
+};
+
+export const getMirrorNftContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getMirrorNftAddress(chainId), MirrorNftAbi, signer);
+};
+
+export const getNftStakingContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getNftStakingAddress(chainId), NftStakingAbi, signer);
+};
+
 export const getBrewlabsRouterContract = (
   chainId: ChainId,
   address: string,
@@ -175,14 +215,6 @@ export const getBrewlabsFeeManagerContract = (chainId: ChainId, signer?: ethers.
 
 export const getZapInContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getZapperAddress(chainId), zapperAbi, signer);
-};
-
-export const getIndexContract = (
-  chainId: ChainId,
-  address: string,
-  signer?: ethers.Signer | ethers.providers.Provider
-) => {
-  return getContract(chainId, address, IndexAbi, signer);
 };
 
 export const getExternalMasterChefContract = (

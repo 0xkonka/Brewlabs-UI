@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { BeakerIcon } from "@heroicons/react/24/outline";
-import { useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
+import { Connector, useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
 
 import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
@@ -20,7 +20,7 @@ interface ConnectWalletProps {
 }
 
 const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const { isLoading } = useConnect();
   const { chain } = useNetwork();
   const { disconnect } = useDisconnect();
@@ -36,6 +36,12 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (isConnected && !connector) {
+      disconnect();
+    }
+  }, [isConnected, connector, disconnect]);
 
   if (!mounted) return null;
 

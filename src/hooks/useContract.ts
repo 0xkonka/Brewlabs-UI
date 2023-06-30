@@ -28,6 +28,11 @@ import {
   getBrewlabsFeeManagerContract,
   getFarmFactoryContract,
   getFarmImplContract,
+  getIndexFactoryContract,
+  getOldIndexContract,
+  getFlaskNftContract,
+  getMirrorNftContract,
+  getNftStakingContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -93,10 +98,39 @@ export const useIndexContract = (chainId: ChainId, contractAddress: string) => {
   );
 };
 
+export const useOldIndexContract = (chainId: ChainId, contractAddress: string) => {
+  const { data: signer } = useSigner();
+  return useMemo(
+    () => getOldIndexContract(chainId, contractAddress, signer ?? undefined),
+    [chainId, contractAddress, signer]
+  );
+};
+
 export const useFarmFactoryContract = (chainId: ChainId) => {
   const { data: signer } = useSigner();
   return useMemo(() => getFarmFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
 };
+
+export const useIndexFactoryContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getIndexFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const useFlaskNftContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getFlaskNftContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const useMirrorNftContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getMirrorNftContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const useNftStakingContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getNftStakingContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
 // Code below migrated from Exchange useContract.ts
 
 // returns null on errors

@@ -36,6 +36,7 @@ const CurrencySelectButton = ({
         ? currencies[LiquidityField.CURRENCY_B]
         : currencies[Field.OUTPUT]
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencies, inputCurrencySelect]);
 
   return (
@@ -62,7 +63,7 @@ const CurrencySelectButton = ({
       ) : (
         <span>Select Token</span>
       )}
-      <ChevronDownIcon className="ml-2 mb-1 hidden h-5 w-5 dark:text-primary xsm:block" />
+      <ChevronDownIcon className="mb-1 ml-2 hidden h-5 w-5 dark:text-primary xsm:block" />
     </button>
   );
 };

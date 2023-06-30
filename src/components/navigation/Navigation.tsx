@@ -55,7 +55,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                       className={clsx(
                         slim
                           ? "flex h-5 w-5 scale-[85%] items-center justify-center text-gray-500 dark:text-gray-400"
-                          : "mr-3 flex h-7 w-7 items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
+                          : "mr-3 flex items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500 [&>*:first-child]:!w-[22px] [&>*:first-child]:!h-fit w-7 h-7"
                       )}
                     >
                       {item.svg}
@@ -73,7 +73,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                   <span className={`${clsx(slim ? "sr-only" : "relative")}`}>
                     {item.name}
                     {item.coming ? (
-                      <div className="absolute -right-10 -top-2 z-10 flex h-3 w-8 items-center	 justify-center rounded-[30px] bg-primary font-roboto text-[10px] font-bold tracking-normal text-black">
+                      <div className="absolute -right-10 -top-2 z-10 flex h-3 w-8 items-center	 justify-center rounded-[30px] bg-primary font-brand text-[10px] font-bold tracking-normal text-black">
                         Soon
                       </div>
                     ) : (

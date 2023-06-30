@@ -20,6 +20,19 @@ export const getMulticallAddress = (chainId: ChainId) => {
 export const getFarmFactoryAddress = (chainId: ChainId) => {
   return getAddress(addresses.farmFactory, chainId);
 };
+export const getIndexFactoryAddress = (chainId: ChainId) => {
+  return getAddress(addresses.indexFactory, chainId);
+};
+export const getFlaskNftAddress = (chainId: ChainId) => {
+  return getAddress(addresses.flaskNft, chainId);
+};
+export const getMirrorNftAddress = (chainId: ChainId) => {
+  return getAddress(addresses.mirrorNft, chainId);
+};
+export const getNftStakingAddress = (chainId: ChainId) => {
+  return getAddress(addresses.nftStaking, chainId);
+};
+
 export const getLpManagerAddress = (chainId: ChainId) => {
   return getAddress(addresses.lpManager, chainId);
 };

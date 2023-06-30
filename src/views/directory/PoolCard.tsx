@@ -51,7 +51,7 @@ const PoolCard = ({
             break;
           case Category.INDEXES:
             // setCurPool({ type: Category.INDEXES, pid: data.pid });
-            router.push(`/indexes/${data.pid}`);
+            router.push(`/indexes/${data.chainId}/${data.pid}`);
             break;
           case Category.ZAPPER:
             setCurPool({ type: Category.ZAPPER, pid: data.pid, chainId: data.chainId });
@@ -106,7 +106,9 @@ const PoolCard = ({
                       data.priceChanges[0].percent >= 0 ? "text-success" : "text-danger"
                     } overflow-hidden text-ellipsis`}
                   >
-                    Performance - {Math.abs(data.priceChanges[0].percent).toFixed(2)}% 24hrs
+                    Performance -{" "}
+                    {isNaN(data.priceChanges[0].percent) ? "0.00" : Math.abs(data.priceChanges[0].percent).toFixed(2)}%
+                    24hrs
                   </div>
                 ) : (
                   <SkeletonComponent />
@@ -114,8 +116,8 @@ const PoolCard = ({
               ) : (
                 ""
               )}
-              {data.type === Category.INDEXES && (data.pid === 3 || data.pid === 5) && (
-                <span className="text-warning">{data.pid === 3 ? "Attention needed" : "Migrated"}</span>
+              {data.type === Category.INDEXES && data.category === undefined && (
+                <span className="text-warning">Migrated</span>
               )}
             </div>
           </div>
@@ -203,7 +205,7 @@ const PoolCard = ({
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         <div className="mt-6 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
-          <div className="flex text-2xl">
+          <div className={`flex text-2xl ${data.type === Category.INDEXES ? "hidden xsm:block" : ""}`}>
             APR:&nbsp;
             {data.type !== 3 ? (
               data.apr !== undefined ? (

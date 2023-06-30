@@ -2,7 +2,7 @@ import { ChainId } from "@brewlabs/sdk";
 import { CallOverrides, ethers } from "ethers";
 import { Fragment, Interface } from "ethers/lib/utils";
 import { getMulticallContract } from "utils/contractHelpers";
-import { provider } from "./wagmi";
+import { simpleRpcProvider } from "./providers";
 
 export type MultiCallResponse<T> = T | null;
 export interface Call {
@@ -44,7 +44,7 @@ export type MultiCallV2 = <T = any>(params: MulticallV2Params) => Promise<T>;
 export type MultiCall = <T = any>(abi: any[], calls: Call[], chainId?: ChainId) => Promise<T>;
 
 const multicall: MultiCall = async (abi: any[], calls: Call[], chainId = ChainId.ETHEREUM) => {
-  const multi = getMulticallContract(chainId, provider({ chainId }));
+  const multi = getMulticallContract(chainId, simpleRpcProvider(chainId));
   if (!multi) throw new Error(`Multicall Provider missing for ${chainId}`);
   const itf = new Interface(abi);
 
@@ -66,7 +66,7 @@ const multicallv2 = async <T = any>(
   options: MulticallOptions = { requireSuccess: true }
 ): Promise<MultiCallResponse<T>> => {
   const { requireSuccess } = options;
-  const multi = getMulticallContract(chainId);
+  const multi = getMulticallContract(chainId, simpleRpcProvider(chainId));
   const itf = new ethers.utils.Interface(abi);
 
   const calldata = calls.map((call) => [call.address.toLowerCase(), itf.encodeFunctionData(call.name, call.params)]);
@@ -80,7 +80,7 @@ const multicallv2 = async <T = any>(
 };
 
 const multicallv3 = async ({ calls, chainId = ChainId.ETHEREUM, allowFailure, overrides }: MulticallV3Params) => {
-  const multi = getMulticallContract(chainId, provider({ chainId }));
+  const multi = getMulticallContract(chainId, simpleRpcProvider(chainId));
   if (!multi) throw new Error(`Multicall Provider missing for ${chainId}`);
   const interfaceCache = new WeakMap();
   const _calls = calls.map(({ abi, address, name, params, allowFailure: _allowFailure }) => {

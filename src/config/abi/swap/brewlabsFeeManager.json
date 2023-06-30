@@ -210,12 +210,37 @@
   {
     "inputs": [
       { "internalType": "address", "name": "pair", "type": "address" },
-      { "internalType": "address", "name": "staker", "type": "address" }
+      { "internalType": "address", "name": "claimer", "type": "address" }
     ],
-    "name": "pendingLPRewards",
+    "name": "pendingRewards",
     "outputs": [
-      { "internalType": "uint256", "name": "amount0", "type": "uint256" },
-      { "internalType": "uint256", "name": "amount1", "type": "uint256" }
+      {
+        "components": [
+          { "internalType": "uint256", "name": "amount0", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount1", "type": "uint256" }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.RewardAmount",
+        "name": "lpRewards",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "uint256", "name": "amount0", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount1", "type": "uint256" }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.RewardAmount",
+        "name": "ownerRewards",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "uint256", "name": "amount0", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount1", "type": "uint256" }
+        ],
+        "internalType": "struct BrewlabsSwapFeeManager.RewardAmount",
+        "name": "referralRewards",
+        "type": "tuple"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
