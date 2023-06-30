@@ -61,7 +61,7 @@ export const rarities = [
       "Standard Brewer features ",
     ],
     isUpgradeable: false,
-    isActive: true,
+    isActive: false,
     features: {
       title: "Standard Brewer Features",
       data: [

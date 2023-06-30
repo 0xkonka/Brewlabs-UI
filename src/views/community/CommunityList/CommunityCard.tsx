@@ -28,7 +28,7 @@ const CommunityCard = ({
     <div className="primary-shadow mt-2.5 flex w-full cursor-pointer flex-col items-start justify-between rounded bg-[#B9B8B80D] p-[15px_12px] hover:bg-[#b9b8b81c] sm:p-[15px_44px] xl:flex-row xl:items-center">
       <div className="mr-10 flex w-full max-w-full flex-1 flex-col items-start justify-between sm:flex-row sm:items-center xl:w-[45%] xl:max-w-[380px]">
         <div className="flex items-center justify-between xl:justify-start">
-          <div className="primary-shadow text-primary">
+          <div className="text-primary">
             {!favourites.includes(community.pid) ? (
               <StarOutlineIcon
                 className={"h-[18px] hover:opacity-70"}
@@ -71,7 +71,7 @@ const CommunityCard = ({
           <div className="text-lg">{community.engagement.toFixed(2)}%</div>
           <div className="text-xs text-[#FFFFFFBF] text-[#FFFFFFBF]">Engagement</div>
         </div>
-        <Link href={`/community/${community.pid}`} className=" mb-4 xl:mb-0">
+        <Link href={`/communities/${community.pid}`} className=" mb-4 xl:mb-0">
           <StyledButton className="!w-fit p-[5px_12px] !text-sm !font-normal !leading-[1.2]">
             Enter community
           </StyledButton>

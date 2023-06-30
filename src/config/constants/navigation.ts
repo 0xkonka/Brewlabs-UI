@@ -83,8 +83,8 @@ export const navigationData = [
     svg: NFTSVG,
   },
   {
-    name: "Community",
-    href: "/community",
+    name: "Communities",
+    href: "/communities",
     external: false,
     // coming: true,
     icon: "ShoppingBagIcon",
