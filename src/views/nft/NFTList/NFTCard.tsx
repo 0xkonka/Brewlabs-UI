@@ -133,7 +133,13 @@ const NFTCard = ({ nft }: { nft: any }) => {
         <div className="flex w-[300px] items-center justify-center">
           <img src={getChainLogo(nft.chainId)} alt={""} className="h-[30px] w-[30px] rounded-full" />
           <div className="mx-[30px] flex h-[58px] w-[72px] items-center justify-center overflow-hidden rounded">
-            <img src={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[nft.rarity - 1].toLowerCase()}.png`} alt={""} className="w-full" />
+            <img
+              src={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[
+                nft.rarity - 1
+              ].toLowerCase()}.png`}
+              alt={""}
+              className="w-full"
+            />
           </div>
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{nft.name}</div>
         </div>
@@ -193,12 +199,17 @@ const NFTCard = ({ nft }: { nft: any }) => {
               )}
             </div>
             <div className="w-[104px]">
-              <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
-                  {CircleRightSVG}
-                </div>
-                Marketplace
-              </StyledButton>
+              <Link
+                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+                target="_blank"
+              >
+                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
+                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
+                    {CircleRightSVG}
+                  </div>
+                  Marketplace
+                </StyledButton>
+              </Link>
             </div>
           </>
         ) : (
@@ -208,12 +219,17 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <div className="w-[80px]" />
             <div className="w-[84px]" />
             <div className="w-[104px]">
-              <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
-                  {CircleRightSVG}
-                </div>
-                Marketplace
-              </StyledButton>
+              <Link
+                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+                target="_blank"
+              >
+                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
+                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
+                    {CircleRightSVG}
+                  </div>
+                  Marketplace
+                </StyledButton>
+              </Link>
             </div>
           </>
         )}
@@ -288,22 +304,32 @@ const NFTCard = ({ nft }: { nft: any }) => {
                   Harvest
                 </StyledButton>
               )}
+              <Link
+                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+                target="_blank"
+              >
+                <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
+                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
+                    {CircleRightSVG}
+                  </div>
+                  Marketplace
+                </StyledButton>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="mt-6 flex flex-col justify-end xsm:flex-row">
+            <Link
+              href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+              target="_blank"
+            >
               <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
                 <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
                   {CircleRightSVG}
                 </div>
                 Marketplace
               </StyledButton>
-            </div>
-          </>
-        ) : (
-          <div className="mt-6 flex flex-col justify-end xsm:flex-row">
-            <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-              <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit">
-                {CircleRightSVG}
-              </div>
-              Marketplace
-            </StyledButton>
+            </Link>
           </div>
         )}
       </div>
