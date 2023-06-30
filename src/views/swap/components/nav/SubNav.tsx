@@ -38,15 +38,15 @@ const SubNav = ({ openSettingModal }: Props) => {
           <Notification count={collectiblePairs.length} />
           {/* <Soon /> */}
         </button>
-        <Link href={"/tradingPairs"}>
-        <button
-          className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""} relative`}
-          //  onClick={() => setSwapTab(2)}
-        >
-          Pools & analytics
-          {/* <Soon /> */}
-        </button>
-        </Link>
+        {/* <Link href={"/tradingPairs"}> */}
+          <button
+            className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""} relative`}
+            //  onClick={() => setSwapTab(2)}
+          >
+            Pools & analytics
+            <Soon />
+          </button>
+        {/* </Link> */}
       </div>
       <MobileNav></MobileNav>
       <div className="absolute right-7 top-6" onClick={openSettingModal}>

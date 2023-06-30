@@ -56,14 +56,14 @@ export default function MobileNav() {
                     >
                       <div className="relative">
                         Liquidity tools
-                        <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" />
+                        {/* <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" /> */}
                       </div>
                     </button>
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <Link href={"/tradingPairs"}>
+                    // <Link href={"/tradingPairs"}>
                       <button
                         className={`${
                           swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
@@ -76,7 +76,7 @@ export default function MobileNav() {
                           <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" />
                         </div>
                       </button>
-                    </Link>
+                    // </Link>
                   )}
                 </Menu.Item>
               </div>
