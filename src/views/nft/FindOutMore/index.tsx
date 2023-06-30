@@ -11,11 +11,46 @@ import { useState } from "react";
 import DropDown from "@components/dashboard/TokenList/Dropdown";
 import MintNFTModal from "../Modals/MintNFTModal";
 import Link from "next/link";
-import { rarities } from "config/constants/nft";
+import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
+import { useAllNftData } from "state/nfts/hooks";
 
 const FindOutMore = () => {
   const [curRarity, setCurRarity] = useState(0);
   const [mintOpen, setMintOpen] = useState(false);
+
+  const { flaskNft, mirrorNft } = useAllNftData();
+  const allNfts = [
+    ...[].concat(
+      ...flaskNft.map((data) =>
+        data.userData
+          ? data.userData.balances.map((t) => ({
+              chainId: data.chainId,
+              ...t,
+            }))
+          : []
+      )
+    ),
+    ...[].concat(
+      ...mirrorNft.map((data) =>
+        data.userData
+          ? data.userData.balances.map((t) => ({
+              chainId: data.chainId,
+              ...t,
+            }))
+          : []
+      )
+    ),
+  ];
+
+  let wrappedRarities = rarities;
+  let topNFT = { rarity: -1, logo: "", chainId: 1 };
+  for (let i = 0; i < allNfts.length; i++) if (topNFT.rarity < allNfts[i].rarity) topNFT = allNfts[i];
+  if (topNFT.rarity !== -1) {
+    for (let i = 0; i < wrappedRarities.length - 1; i++) wrappedRarities[i].isActive = false;
+
+    wrappedRarities[topNFT.rarity - 1].isActive = true;
+    wrappedRarities[topNFT.rarity - 1].chainId = topNFT.chainId;
+  }
 
   return (
     <PageWrapper>
@@ -63,7 +98,7 @@ const FindOutMore = () => {
                 </Link>
               </div>
               <div className="hidden w-full flex-wrap justify-evenly md:flex xl:flex-nowrap xl:justify-between">
-                {rarities.map((data, i) => {
+                {wrappedRarities.map((data, i) => {
                   return (
                     <div
                       key={i}
@@ -79,7 +114,7 @@ const FindOutMore = () => {
 
               <div className="flex w-full justify-end md:hidden">
                 <DropDown
-                  values={rarities.map((data) => data.type)}
+                  values={wrappedRarities.map((data) => data.type)}
                   width="w-full max-w-[240px]"
                   value={curRarity}
                   setValue={setCurRarity}
@@ -88,10 +123,10 @@ const FindOutMore = () => {
 
               <div
                 className={`mb-16 mt-6 block rounded p-[15px_6px] md:hidden ${
-                  rarities[curRarity].isActive ? "primary-shadow bg-[#B9B8B80D]" : ""
+                  wrappedRarities[curRarity].isActive ? "primary-shadow bg-[#B9B8B80D]" : ""
                 }`}
               >
-                <RarityCard rarity={rarities[curRarity]} />
+                <RarityCard rarity={wrappedRarities[curRarity]} />
               </div>
 
               <div className="relative mt-4 flex font-medium text-white">

@@ -4,13 +4,13 @@ import { useAllNftData } from "state/nfts/hooks";
 
 import SelectionPanel from "./SelectionPanel";
 import NFTPanel from "./NFTPanel";
+import { NFT_RARITY_NAME } from "config/constants/nft";
 
 const NFTList = () => {
   const [criteria, setCriteria] = useState("");
   const [curFilter, setCurFilter] = useState(0);
 
   const { flaskNft, mirrorNft } = useAllNftData();
-
   const allNfts = [
     ...[].concat(
       ...flaskNft.map((data) =>
@@ -18,7 +18,9 @@ const NFTList = () => {
           ? data.userData.balances.map((t) => ({
               chainId: data.chainId,
               name: "Flask NFT",
-              logo: "/images/nfts/brewlabs-nft.png",
+              logo: `/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[
+                t.rarity - 1
+              ].toLowerCase()}.png`,
               isStaked: false,
               ...t,
             }))
@@ -31,7 +33,9 @@ const NFTList = () => {
           ? data.userData.balances.map((t) => ({
               chainId: data.chainId,
               name: "Mirror NFT",
-              logo: "/images/nfts/brewlabs-nft.png",
+              logo: `/images/nfts/brewlabs-flask-nfts/brewlabsflasknft-${NFT_RARITY_NAME[
+                t.rarity - 1
+              ].toLowerCase()}-copy.png`,
               isStaked: true,
               ...t,
             }))

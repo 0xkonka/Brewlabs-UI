@@ -140,7 +140,7 @@ const NFTActions = () => {
       ? {
           name: "ACTIVE NFT",
           rarity: NFT_RARITY_NAME[activeRarity].toUpperCase(),
-          logo: "/images/nfts/brewlabs-nft.png",
+          logo: `/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[activeRarity].toLowerCase()}.png`,
           info: (
             <div>
               <div>
@@ -188,9 +188,9 @@ const NFTActions = () => {
                 <div>{data.name}</div>
                 <div className={`${BREWNFT_COLORS[activeRarity]}`}>{data.rarity}</div>
               </div>
-              <div className="primary-shadow flex h-[180px] w-full flex-col items-center justify-center rounded bg-[#B9B8B80D]">
+              <div className="primary-shadow flex h-[180px] w-full flex-col items-center justify-center overflow-hidden rounded bg-[#B9B8B80D]">
                 {data.logo ? (
-                  <img src={data.logo} alt={""} className="h-full w-full" />
+                  <img src={data.logo} alt={""} className="w-full" />
                 ) : (
                   <div
                     className={`mb-4 flex h-[90px] items-center justify-center ${
