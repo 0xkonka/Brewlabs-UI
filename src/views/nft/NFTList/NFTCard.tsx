@@ -133,7 +133,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
         <div className="flex w-[300px] items-center justify-center">
           <img src={getChainLogo(nft.chainId)} alt={""} className="h-[30px] w-[30px] rounded-full" />
           <div className="mx-[30px] flex h-[58px] w-[72px] items-center justify-center overflow-hidden rounded">
-            <img src={nft.logo} alt={""} className="w-full" />
+            <img src={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[nft.rarity - 1].toLowerCase()}.png`} alt={""} className="w-full" />
           </div>
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{nft.name}</div>
         </div>

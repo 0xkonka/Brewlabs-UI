@@ -140,7 +140,7 @@ const NFTActions = () => {
       ? {
           name: "ACTIVE NFT",
           rarity: NFT_RARITY_NAME[activeRarity].toUpperCase(),
-          logo: "/images/nfts/brewlabs-nft.png",
+          logo: `/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[activeRarity].toLowerCase()}.png`,
           info: (
             <div>
               <div>
