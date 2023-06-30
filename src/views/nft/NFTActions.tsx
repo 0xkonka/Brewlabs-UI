@@ -239,17 +239,18 @@ const NFTActions = () => {
                   <div className={`mt-2.5 flex w-full ${data.essential.align}`}>
                     {data.essential.datas.map((data: any, i: number) => {
                       return (
-                        <StyledButton
-                          className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
-                          disabled={!data.active}
-                          key={i}
-                          onClick={() => data.action()}
-                        >
-                          <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100">
-                            {data.info ? InfoSVG : CircleRightSVG}
-                          </div>
-                          {data.text}
-                        </StyledButton>
+                        <div className="relative" key={i}>
+                          <StyledButton
+                            className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
+                            disabled={!data.active}
+                            onClick={() => data.action()}
+                          >
+                            <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100">
+                              {data.info ? InfoSVG : CircleRightSVG}
+                            </div>
+                            {data.text}
+                          </StyledButton>
+                        </div>
                       );
                     })}
                   </div>
