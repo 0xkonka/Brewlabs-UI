@@ -47,7 +47,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
 
   const apr = flaskNft.mintFee
-    ? (((+formatEther(pool.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
+    ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
       ((+formatEther(flaskNft.mintFee.stable) +
         +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
         (pool?.totalStaked ?? 0))
