@@ -26,8 +26,8 @@ export const useFetchPublicNftData = () => {
 
 export const useFetchNftUserData = () => {
   const dispatch = useAppDispatch();
-  // const { account } = useActiveWeb3React();
-  const account = "0x53ff4a10a30deb6d412f9b47caeec28af7f8e799";
+  const { account } = useActiveWeb3React();
+  // const account = "0x53ff4a10a30deb6d412f9b47caeec28af7f8e799";
 
   const supportedChains = PAGE_SUPPORTED_CHAINS["nft"].filter((chainId) =>
     Object.keys(contracts.flaskNft)
