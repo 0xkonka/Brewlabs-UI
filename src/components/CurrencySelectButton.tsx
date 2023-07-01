@@ -56,7 +56,7 @@ const CurrencySelectButton = ({
       className="btn font-brand font-light"
     >
       {inputValue ? (
-        <span className="flex items-center justify-between gap-2 pr-8 text-2xl xsm:pr-1">
+        <span className="flex items-center justify-between gap-2 pr-8 text-base xsm:pr-1 sm:text-2xl">
           <CurrencyLogo currency={inputValue} size="24px" />
           {inputValue?.symbol}
         </span>
