@@ -21,18 +21,18 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
   }, [router.events]);
 
   useEffect(() => {
-    if (window && window.innerHeight < 700) {
+    if (window && window.innerHeight < 770) {
       setShort(true);
     } else setShort(false);
   }, [window]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
-      <div className="flex flex-1 flex-col pb-4 pt-5">
-        <div className="flex flex-shrink-0 items-center px-4">
+      <div className={`flex flex-1 flex-col ${short ? "pb-2 pt-2" : "pb-4 pt-5"}`}>
+        <div className={`${short ? "hidden" : "flex"} flex-shrink-0 items-center px-4`}>
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
         </div>
-        <nav className="mt-5 flex flex-1 flex-col justify-between" aria-label="Sidebar">
+        <nav className={`${short ? "mt-0" : "mt-5"} flex flex-1 flex-col justify-between`} aria-label="Sidebar">
           <div className="space-y-1 px-2 font-brand tracking-wider">
             {navigationData.map((item) => (
               <Link href={item.href} passHref key={item.name}>
@@ -55,7 +55,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                       className={clsx(
                         slim
                           ? "flex h-5 w-5 scale-[85%] items-center justify-center text-gray-500 dark:text-gray-400"
-                          : "mr-3 flex items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500 [&>*:first-child]:!w-[22px] [&>*:first-child]:!h-fit w-7 h-7"
+                          : "mr-3 flex h-7 w-7 items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500 [&>*:first-child]:!h-fit [&>*:first-child]:!w-[22px]"
                       )}
                     >
                       {item.svg}

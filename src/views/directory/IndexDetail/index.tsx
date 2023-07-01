@@ -423,6 +423,32 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                 </div>
 
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
+                  <div className="sm:hidden block w-full my-2">
+                    <div className="mr-0 h-12 flex-none sm:mr-5 sm:flex-1">
+                      <StyledButton
+                        type={"quaternary"}
+                        onClick={() => {
+                          setStakingModalOpen(true);
+                          setCurType("enter");
+                        }}
+                        disabled={pending || !account || data.isFinished}
+                      >
+                        Enter {getIndexName(tokens)} Index
+                      </StyledButton>
+                    </div>
+                    <div className="mt-2 h-12 flex-none sm:mt-0 sm:flex-1">
+                      <StyledButton
+                        type={"quaternary"}
+                        onClick={() => {
+                          setStakingModalOpen(true);
+                          setCurType("exit");
+                        }}
+                        disabled={pending || !account || +userData.stakedUsdAmount <= 0}
+                      >
+                        Exit &nbsp;{renderProfit()} Profit
+                      </StyledButton>
+                    </div>
+                  </div>
                   <div className="relative">
                     <IndexLogo tokens={tokens} />
                     <div
