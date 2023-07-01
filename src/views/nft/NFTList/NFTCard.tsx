@@ -53,7 +53,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
         (pool?.totalStaked ?? 0))
     : 0;
 
-  const stakingDate = new Date(2023, 8, 0, 0, 0, 0, 0);
+  const stakingDate = new Date(1696118400000); // Oct 01 2023 00:00:00 GMT
   let date =
     stakingDate.getTime() - new Date(new Date().toLocaleString("en-us", { timeZone: "America/New_York" })).getTime();
 
