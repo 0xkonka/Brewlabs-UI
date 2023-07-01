@@ -72,12 +72,14 @@ const InfoPanel = ({ community }: { community: any }) => {
         })}
       </div>
       <div className="text-xl text-white">Info</div>
-      <div className="flex w-full flex-wrap">
+      <div className="flex w-full flex-col flex-wrap items-center sm:flex-row sm:items-start">
         {infos.map((data, i) => {
           return (
-            <div key={i} className="mt-4 flex w-[300px] items-center">
+            <div key={i} className="mt-4 flex w-[240px] items-center sm:w-[300px]">
               <div className="mr-1.5 text-tailwind [&>*:first-child]:!h-fit [&>*:first-child]:!w-5">{data.icon}</div>
-              <div className="text-sm text-[#FFFFFFBF]">{data.data}</div>
+              <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[#FFFFFFBF]">
+                {data.data}
+              </div>
             </div>
           );
         })}
