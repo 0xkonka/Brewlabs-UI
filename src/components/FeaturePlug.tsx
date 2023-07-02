@@ -34,7 +34,7 @@ const features = [
     link: "/zapper",
   },
   {
-    name: "NTFs",
+    name: "NFTs",
     description: "Explore the TrueNFT marketplace for your favourite NFT’s, stake, mint and transfer NFTS plus more.",
     link: "https://truenft.io/home",
   },

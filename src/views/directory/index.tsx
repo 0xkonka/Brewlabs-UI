@@ -40,6 +40,8 @@ import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
 import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
+import StyledButton from "./StyledButton";
+import Link from "next/link";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -283,7 +285,11 @@ const Directory = ({ page }: { page: number }) => {
               />
               <Container className="font-brand">
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
-
+                <div className="-mb-4 -mt-4 flex justify-end">
+                  <Link href={"/deployer"}>
+                    <StyledButton className="!w-fit p-[6px_12px] !text-sm">Go to deploy</StyledButton>
+                  </Link>
+                </div>
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}
