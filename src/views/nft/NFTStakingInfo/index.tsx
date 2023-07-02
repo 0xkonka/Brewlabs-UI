@@ -115,7 +115,7 @@ const NFTStakingInfo = () => {
                       <div key={i} className="w-[257px]">
                         <div className="flex items-center text-[#FFFFFFBF]">
                           <div
-                            className="[&>*:first-child]:!h-4 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100"
+                            className="[&>*:first-child]:!h-4 [&>*:first-child]:!w-4 [&>*:first-child]:!opacity-100"
                             id={data.title}
                           >
                             {InfoSVG}

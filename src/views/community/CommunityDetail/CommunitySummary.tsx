@@ -70,7 +70,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
         </div>
         <div className="mt-3 flex items-center">
           <div
-            className="flex w-8 justify-center text-primary [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit"
+            className="flex w-8 justify-center text-primary [&>*:first-child]:!h-5 [&>*:first-child]:!w-5"
             id={"Voting power."}
           >
             {FixedSVG}
@@ -81,7 +81,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
         </div>
         <div className="mt-3 flex items-center">
           <div
-            className="flex w-8 justify-center text-[#FFFFFFBF] [&>*:first-child]:!h-4 [&>*:first-child]:!w-fit"
+            className="flex w-8 justify-center text-[#FFFFFFBF] [&>*:first-child]:!h-4 [&>*:first-child]:!w-4"
             id={"Measured by how active this wallet is voting on proposals."}
           >
             {checkCircleSVG}
