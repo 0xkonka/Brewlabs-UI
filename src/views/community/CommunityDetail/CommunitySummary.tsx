@@ -30,7 +30,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
       .catch((e) => console.log(e));
   }, [account, communityStringified]);
 
-  const isJoined = community.members.includes(account?.toLowerCase());
+  const isJoined = community.members.includes(account.toLowerCase());
 
   return (
     <div className="mt-10 flex flex-col flex-wrap items-center justify-between sm:flex-row sm:items-start lg:mt-0">
@@ -39,9 +39,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
       </div>
       <div className="mx-0 mt-6 sm:mx-6 sm:mt-0">
         <StyledButton
-          className={`!h-fit !w-full p-[16px_12px] !font-black sm:!w-fit ${
-            isJoined ? "!bg-[#27272A] !text-primary" : ""
-          }`}
+          className={`!h-fit !w-full p-[16px_12px] !font-black sm:!w-fit ${isJoined ? "!bg-danger" : ""}`}
           onClick={() => joinOrLeaveCommunity(account, community.pid)}
         >
           <div className="flex items-center">
