@@ -64,7 +64,7 @@ const InfoPanel = ({ community }: { community: any }) => {
               key={i}
               href={data.link}
               target="_blank"
-              className="mr-2 !text-tailwind transition hover:!text-white [&>*:first-child]:!h-6 [&>*:first-child]:!w-fit"
+              className="mr-2 !text-tailwind transition hover:!text-white [&>*:first-child]:!h-6 [&>*:first-child]:!w-6"
             >
               {data.icon}
             </a>

@@ -245,7 +245,7 @@ const NFTActions = () => {
                             disabled={!data.active}
                             onClick={() => data.action()}
                           >
-                            <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit [&>*:first-child]:!opacity-100">
+                            <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
                               {data.info ? InfoSVG : CircleRightSVG}
                             </div>
                             {data.text}

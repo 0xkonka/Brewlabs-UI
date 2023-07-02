@@ -41,7 +41,7 @@ const RarityCard = ({ rarity }) => {
       </div>
       {rarity.isUpgradeable ? (
         <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:text-yellow">
-          <div className="absolute -right-[13px] text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-fit">
+          <div className="absolute -right-[13px] text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
             {LighteningSVG}
           </div>
           Upgradeable
