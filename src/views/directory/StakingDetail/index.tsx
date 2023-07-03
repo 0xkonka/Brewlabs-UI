@@ -281,7 +281,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
-                        <div className="ml-2">Back to pool list</div>
+                        <div className="ml-2">Back</div>
                       </StyledButton>
                     </div>
                   </div>
@@ -294,7 +294,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
-                        <div className="ml-2">Back to pool list</div>
+                        <div className="ml-2">Back</div>
                       </StyledButton>
                     </div>
                     {data.isCustody && (

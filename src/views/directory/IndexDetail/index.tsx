@@ -295,7 +295,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/indexes")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
-                        <div className="ml-2">Back to pool list</div>
+                        <div className="ml-2">Back</div>
                       </StyledButton>
                     </div>
                   </div>
@@ -309,7 +309,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       <div className="h-[32px] w-[140px] ">
                         <StyledButton onClick={() => router.push("/indexes")}>
                           <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
-                          <div className="ml-2">Back to pool list</div>
+                          <div className="ml-2">Back</div>
                         </StyledButton>
                       </div>
                       <div className="block xl:hidden">
@@ -745,7 +745,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
               </Container>
             )}
           </div>
-          <ReactTooltip anchorId={"BrewlabsNFT"} place="top" content="No brewlabs nft found etc" />
+          <ReactTooltip anchorId={"BrewlabsNFT"} place="top" content="No Brewlabs NFT found." />
         </motion.div>
       </AnimatePresence>
     </>

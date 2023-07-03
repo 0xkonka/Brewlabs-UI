@@ -6,7 +6,7 @@ import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
-  const [isDark, setDark] = useState(theme === "dark");
+  const [isDark, setDark] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   // When mounted on client, now we can show the UI
