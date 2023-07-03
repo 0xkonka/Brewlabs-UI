@@ -68,9 +68,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
     56: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[1].balance) / NFT_RARE_COUNT[56] / 100 : null,
   };
 
-  console.log(NFT_Apr);
-
-  const stakingDate = new Date(2023, 9, 0, 0, 0, 0, 0);
+  const stakingDate = new Date(1696118400000); // Oct 01 2023 00:00:00 GMT
   let date =
     stakingDate.getTime() - new Date(new Date().toLocaleString("en-us", { timeZone: "America/New_York" })).getTime();
 
