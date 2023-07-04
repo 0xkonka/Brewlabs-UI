@@ -201,6 +201,10 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
         `,
         }}
       />
+      <Script
+        type="text/javascript"
+        src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"
+      />
     </>
   );
 }
