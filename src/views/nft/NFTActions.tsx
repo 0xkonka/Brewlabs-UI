@@ -244,7 +244,7 @@ const NFTActions = () => {
                             disabled={!data.active}
                             onClick={() => data.action()}
                           >
-                            <div className="absolute -right-[13px] animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
+                            <div className="absolute -right-3.5 animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
                               {data.info ? InfoSVG : CircleRightSVG}
                             </div>
                             {data.text}
@@ -261,7 +261,7 @@ const NFTActions = () => {
             {i !== actions.length - 1 ? (
               <div
                 key={data.name}
-                className={`mx-4 -mt-[140px] -scale-x-100 text-white ${
+                className={`mx-4 -mt-[164px] -scale-x-100 text-white ${
                   i === 1 ? "hidden xl:block" : "hidden sm:block"
                 }`}
               >
