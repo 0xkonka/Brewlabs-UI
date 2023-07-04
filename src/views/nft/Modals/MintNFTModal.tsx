@@ -137,12 +137,11 @@ const MintNFTModal = ({ open, setOpen }) => {
       const events = receipt.events;
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`${quantity} NFT${quantity > 1 ? "s" : ""} was minted`);
-      console.log(events);
+
       const tokenIds = events
         .filter((data) => data.address.toLowerCase() === getFlaskNftAddress(chainId).toLowerCase())
         .map((data) => parseInt(data.args.tokenId));
 
-      console.log(tokenIds);
       const calls = tokenIds.map((data) => {
         return {
           name: "rarityOf",

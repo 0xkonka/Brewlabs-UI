@@ -411,7 +411,7 @@ const EnterExitModal = ({
                       onClick={handleZapOut}
                       disabled={pending || +userData.stakedUsdAmount <= 0}
                     >
-                      Zap Out
+                      Zap Out All
                       {pending /*&& isZapOut*/ && (
                         <div className="absolute right-2 top-0 flex h-full items-center">
                           <Oval
