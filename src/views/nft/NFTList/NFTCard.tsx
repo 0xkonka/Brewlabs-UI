@@ -219,7 +219,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
             </div>
             <div className="w-[104px]">
               <Link
-                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}-pending`}
                 target="_blank"
               >
                 <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
@@ -239,7 +239,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <div className="w-[84px]" />
             <div className="w-[104px]">
               <Link
-                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}-pending`}
                 target="_blank"
               >
                 <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
@@ -330,7 +330,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 )}
               </div>
               <Link
-                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}-pending`}
                 target="_blank"
                 className="relative"
               >
@@ -346,7 +346,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
         ) : (
           <div className="mt-6 flex flex-col justify-end xsm:flex-row">
             <Link
-              href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
+              href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}-pending`}
               target="_blank"
               className="relative"
             >
