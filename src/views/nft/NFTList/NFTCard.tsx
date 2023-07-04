@@ -186,7 +186,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
               )}
             </div>
             <div className="relative w-[90px] text-xs font-semibold leading-[1.2] text-white">
-              {NFT_Apr[nft.chainId] === null ? "Pending" : `${NFT_Apr[nft.chainId].toFixed(2) ?? "0.00"}%`} APR
+              {NFT_Apr[nft.chainId] === null ? "Pending" : `${NFT_Apr[nft.chainId]?.toFixed(2) ?? "0.00"}%`} APR
               <br />
               <span className="absolute text-[10px] font-normal text-[#FFFFFF80]">
                 in {NETWORKS[nft.chainId].nativeCurrency.symbol} approx.
@@ -273,7 +273,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <>
             <div className="mt-2 flex items-center justify-between">
               <div className="w-fit text-white">
-                APR: {NFT_Apr[nft.chainId] === null ? "Pending APR" : `${NFT_Apr[nft.chainId].toFixed(2) ?? "0.00"}%`}
+                APR: {NFT_Apr[nft.chainId] === null ? "Pending APR" : `${NFT_Apr[nft.chainId]?.toFixed(2) ?? "0.00"}%`}
                 <br />
                 <span className="text-[10px] font-normal text-[#FFFFFF80]">in ETH approx.</span>
               </div>
