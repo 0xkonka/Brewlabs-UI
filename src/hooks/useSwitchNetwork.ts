@@ -75,7 +75,7 @@ export function useSwitchNetwork() {
     () =>
       isConnected
         ? !!_switchNetworkAsync &&
-          connector?.id !== ConnectorNames.WalletConnect &&
+          // connector?.id !== ConnectorNames.WalletConnect &&
           !(
             typeof window !== "undefined" &&
             // @ts-ignore // TODO: add type later
