@@ -62,7 +62,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
     1: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
     56: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
   });
-  const NFT_RARE_COUNT = { 1: 3, 56: 10 };
+  const NFT_RARE_COUNT = { 1: 3, 56: 25 };
   const NFT_Apr = {
     1: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[0].balance) / NFT_RARE_COUNT[1] / 100 : null,
     56: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[1].balance) / NFT_RARE_COUNT[56] / 100 : null,

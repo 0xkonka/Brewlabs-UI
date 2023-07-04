@@ -75,7 +75,7 @@ export const ChartsDashboard = () => {
       });
       volumeSeries.priceScale().applyOptions({
         scaleMargins: {
-          top: 0.7, // highest point of the series will be 70% away from the top
+          top: 0.8, // highest point of the series will be 70% away from the top
           bottom: 0,
         },
       });
@@ -121,22 +121,6 @@ export const ChartsDashboard = () => {
             labelBackgroundColor: "#9B7DFF",
           },
         },
-
-        handleScroll: {
-          mouseWheel: false,
-          pressedMouseMove: true,
-          horzTouchDrag: false,
-          vertTouchDrag: false,
-        },
-        handleScale: {
-          axisPressedMouseMove: false,
-          mouseWheel: true,
-          pinch: false,
-        },
-        AxisPressedMouseMoveOptions: {
-          price: false,
-          time : false
-        },
       });
 
       // Generate sample data to use within a candlestick series
@@ -157,13 +141,13 @@ export const ChartsDashboard = () => {
       });
 
       // Adjust the options for the priceScale of the mainSeries
-      mainSeries.priceScale().applyOptions({
-        autoScale: false, // disables auto scaling based on visible content
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.2,
-        },
-      });
+      // mainSeries.priceScale().applyOptions({
+      //   autoScale: false, // disables auto scaling based on visible content
+      //   scaleMargins: {
+      //     top: 0.1,
+      //     bottom: 0.2,
+      //   },
+      // });
     }
   }, [priceData]);
 
