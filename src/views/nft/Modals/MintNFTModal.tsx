@@ -139,8 +139,8 @@ const MintNFTModal = ({ open, setOpen }) => {
       toast.success(`${quantity} NFT${quantity > 1 ? "s" : ""} was minted`);
 
       const tokenIds = events
-        .filter((data) => data.address.toLowerCase() === getFlaskNftAddress(chainId).toLowerCase())
-        .map((data) => parseInt(data.args.tokenId));
+        .filter((data: any) => data.address.toLowerCase() === getFlaskNftAddress(chainId).toLowerCase())
+        .map((data: any) => parseInt(data.args.tokenId));
 
       const calls = tokenIds.map((data) => {
         return {
