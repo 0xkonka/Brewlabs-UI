@@ -48,8 +48,8 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
 
   const [selectedCurrency, setSelectedCurrency] = useState(stableTokens[0]);
   const [isMinted, setIsMinted] = useState(false);
-  const [isEnded, setIsEnded] = useState(false);
   const [rarity, setRarity] = useState(0);
+  const [mintedRarity, setMintedRarity] = useState(0);
 
   const nftCounts = [
     flaskNft.userData ? Math.min(flaskNft.userData.balances.filter((b) => b.rarity === 1).length, 3) : 0,
@@ -79,7 +79,6 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
   const stableFee = +formatEther(upgradeFee?.stable ?? "0");
 
   useEffect(() => {
-    setIsEnded(false);
     setIsMinted(false);
   }, []);
 
@@ -144,7 +143,6 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`Upgraded successfully`);
       setIsMinted(true);
-      setIsEnded(false);
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(chainId));
@@ -286,34 +284,16 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
             <div className="flex flex-col items-center">
               <div className="mt-2.5 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-tailwind">
                 {isMinted ? (
-                  isEnded ? (
-                    <ReactPlayer
-                      className="!h-full !w-full"
-                      url={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[
-                        rarity + 1
-                      ].toLowerCase()}.mp4`}
-                      playing={true}
-                      autoPlay={true}
-                      muted={true}
-                      loop={true}
-                      playsinline={true}
-                      controls={false}
-                      onEnded={() => setIsEnded(true)}
-                    />
-                  ) : (
-                    <ReactPlayer
-                      className="!h-full !w-full"
-                      url={`/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-${NFT_RARITY_NAME[
-                        rarity + 1
-                      ].toLowerCase()}.mp4`}
-                      playing={true}
-                      autoPlay={true}
-                      muted={true}
-                      playsinline={true}
-                      controls={false}
-                      onEnded={() => setIsEnded(true)}
-                    />
-                  )
+                  <ReactPlayer
+                    className="!h-full !w-full"
+                    url={`/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${NFT_RARITY_NAME[rarity].toLowerCase()}.mp4`}
+                    playing={true}
+                    autoPlay={true}
+                    muted={true}
+                    loop={true}
+                    playsinline={true}
+                    controls={false}
+                  />
                 ) : (
                   QuestionSVG
                 )}

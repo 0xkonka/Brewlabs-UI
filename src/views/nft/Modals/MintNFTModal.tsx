@@ -19,6 +19,7 @@ import {
 } from "@components/dashboard/assets/svgs";
 import CurrencyDropdown from "@components/CurrencyDropdown";
 import LogoIcon from "@components/LogoIcon";
+import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
 
 import StyledButton from "views/directory/StyledButton";
 
@@ -33,6 +34,9 @@ import { useTokenBalances } from "state/wallet/hooks";
 import { deserializeToken } from "state/user/hooks/helpers";
 
 import { useFlaskNft } from "../hooks/useFlaskNft";
+import { getFlaskNftAddress } from "utils/addressHelpers";
+import multicall from "utils/multicall";
+import { rarities } from "config/constants/nft";
 
 const MintNFTModal = ({ open, setOpen }) => {
   const dispatch = useAppDispatch();
@@ -53,7 +57,8 @@ const MintNFTModal = ({ open, setOpen }) => {
   const [selectedCurrency, setSelectedCurrency] = useState(stableTokens[0]);
   const [quantity, setQuantity] = useState(1);
   const [isMinted, setIsMinted] = useState(false);
-  const [isEnded, setIsEnded] = useState(false);
+  const [mintedTokenIds, setMintedTokenIds] = useState([]);
+  const [curAnimation, setCurAnimation] = useState(0);
 
   const currencies = stableTokens;
   const isBrewsApproved = userData ? +userData.allowances[0] >= +mintFee.brews : false;
@@ -79,7 +84,6 @@ const MintNFTModal = ({ open, setOpen }) => {
   const stableFee = +formatEther(mintFee?.stable ?? "0");
 
   useEffect(() => {
-    setIsEnded(false);
     setIsMinted(false);
   }, []);
 
@@ -100,7 +104,6 @@ const MintNFTModal = ({ open, setOpen }) => {
 
     try {
       await onApprove(selectedCurrency.address, flaskNft.address);
-
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`${selectedCurrency.symbol} was approved`);
     } catch (error) {
@@ -116,10 +119,8 @@ const MintNFTModal = ({ open, setOpen }) => {
       return;
     }
     setPending(true);
-
     try {
       await onApprove(brewsToken.address, flaskNft.address);
-
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`BREWLABS was approved`);
     } catch (error) {
@@ -132,12 +133,35 @@ const MintNFTModal = ({ open, setOpen }) => {
   const handleMint = async () => {
     setPending(true);
     try {
-      await onMint(quantity, selectedCurrency.address);
-
+      const receipt = await onMint(quantity, selectedCurrency.address);
+      console.log(receipt);
+      const events = receipt.events;
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`${quantity} NFT${quantity > 1 ? "s" : ""} was minted`);
+
+      const tokenIds = events
+        .filter(
+          (data) =>
+            data.topics[0] === "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" &&
+            data.topics[1] === "0x0000000000000000000000000000000000000000000000000000000000000000"
+        )
+        .map((data) => parseInt(data.topics[3]));
+
       setIsMinted(true);
-      setIsEnded(false);
+
+      const calls = tokenIds.map((data) => {
+        return {
+          name: "rarifyOf",
+          address: getFlaskNftAddress(chainId),
+          params: [data],
+        };
+      });
+
+      let rarities = await multicall(FlaskNftAbi, calls, chainId);
+      rarities = rarities.map((data) => data[0] / 1);
+      console.log(rarities);
+      setMintedTokenIds(rarities);
+      setCurAnimation(0);
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(chainId));
@@ -266,30 +290,16 @@ const MintNFTModal = ({ open, setOpen }) => {
             <div className="flex flex-col items-center">
               <div className="mt-2.5 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-tailwind">
                 {isMinted ? (
-                  isEnded ? (
-                    <ReactPlayer
-                      className="!h-full !w-full"
-                      url={"/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.mp4"}
-                      playing={true}
-                      autoPlay={true}
-                      muted={true}
-                      loop={true}
-                      playsinline={true}
-                      controls={false}
-                      onEnded={() => setIsEnded(true)}
-                    />
-                  ) : (
-                    <ReactPlayer
-                      className="!h-full !w-full"
-                      url={"/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-common.mp4"}
-                      playing={true}
-                      autoPlay={true}
-                      muted={true}
-                      playsinline={true}
-                      controls={false}
-                      onEnded={() => setIsEnded(true)}
-                    />
-                  )
+                  <ReactPlayer
+                    className="!h-full !w-full"
+                    url={rarities[mintedTokenIds[curAnimation]].mintLogo}
+                    playing={true}
+                    autoPlay={true}
+                    muted={true}
+                    loop={true}
+                    playsinline={true}
+                    controls={false}
+                  />
                 ) : (
                   QuestionSVG
                 )}
@@ -380,18 +390,24 @@ const MintNFTModal = ({ open, setOpen }) => {
               ) : (
                 <div className="w-full">
                   <div className="my-4 text-center">
-                    Congratulations you minted <span className="text-primary">BREWLABS</span> NFT
+                    Congratulations you minted a {rarities[mintedTokenIds[curAnimation]].type.toUpperCase()}&nbsp;
+                    <span className="text-primary">BREWLABS</span> NFT
                   </div>
                   <div className="flex flex-col justify-center sm:flex-row">
-                    <StyledButton className="w-full p-[10px_12px] sm:!w-fit">
-                      <div className="flex items-center">
-                        <div onClick={() => setIsMinted(false)}>
-                          Next Mint&nbsp;
-                          <span className="font-normal">({flaskNft.maxSupply - flaskNft.totalSupply} remaining)</span>
+                    {curAnimation !== mintedTokenIds.length - 1 ? (
+                      <StyledButton className="w-full p-[10px_12px] sm:!w-fit">
+                        <div className="flex items-center">
+                          <div onClick={() => setCurAnimation(Math.min(curAnimation + 1, mintedTokenIds.length))}>
+                            Next Mint&nbsp;
+                            <span className="font-normal">({flaskNft.maxSupply - flaskNft.totalSupply} remaining)</span>
+                          </div>
+
+                          <div className="ml-2 -scale-x-100 [&>*:first-child]:!h-3">{chevronLeftSVG}</div>
                         </div>
-                        <div className="ml-2 -scale-x-100 [&>*:first-child]:!h-3">{chevronLeftSVG}</div>
-                      </div>
-                    </StyledButton>
+                      </StyledButton>
+                    ) : (
+                      ""
+                    )}
                     <div className="mr-0 mt-2 sm:mr-5 sm:mt-0" />
                     <StyledButton
                       className="w-full p-[10px_12px] sm:!w-fit"
