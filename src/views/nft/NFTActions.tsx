@@ -70,7 +70,6 @@ const NFTActions = () => {
 
     try {
       await onApprove(flaskNft.brewsToken.address, flaskNft.address);
-
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success("Brewlabs was approved");
     } catch (error) {

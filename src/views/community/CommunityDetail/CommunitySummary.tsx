@@ -11,6 +11,7 @@ import { getMultiChainTotalBalances } from "@hooks/useTokenMultiChainBalance";
 import { useAccount } from "wagmi";
 import { useContext, useEffect, useState } from "react";
 import { CommunityContext } from "contexts/CommunityContext";
+import { toast } from "react-toastify";
 
 const CommunitySummary = ({ community }: { community: any }) => {
   const { chainId } = useActiveChainId();
@@ -30,7 +31,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
       .catch((e) => console.log(e));
   }, [account, communityStringified]);
 
-  const isJoined = community.members.includes(account.toLowerCase());
+  const isJoined = account && community.members.includes(account.toLowerCase());
 
   return (
     <div className="mt-10 flex flex-col flex-wrap items-center justify-between sm:flex-row sm:items-start lg:mt-0">
@@ -40,7 +41,10 @@ const CommunitySummary = ({ community }: { community: any }) => {
       <div className="mx-0 mt-6 sm:mx-6 sm:mt-0">
         <StyledButton
           className={`!h-fit !w-full p-[16px_12px] !font-black sm:!w-fit ${isJoined ? "!bg-danger" : ""}`}
-          onClick={() => joinOrLeaveCommunity(account, community.pid)}
+          onClick={() => {
+            if (!account) toast.error("Please Connect Wallet");
+            else joinOrLeaveCommunity(account, community.pid);
+          }}
         >
           <div className="flex items-center">
             <div className="mr-[18px]">{isJoined ? MinusSVG : PlusSVG}</div>

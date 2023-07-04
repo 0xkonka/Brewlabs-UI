@@ -38,6 +38,7 @@ export const rarities = [
     },
     chainId: 1,
     logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.mp4",
+    mintLogo: "/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-common.mp4",
   },
   {
     type: "Uncommon",
@@ -50,6 +51,7 @@ export const rarities = [
     },
     chainId: 1,
     logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-uncommon.mp4",
+    mintLogo: "/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-uncommon.mp4",
   },
   {
     type: "Rare",
@@ -74,6 +76,7 @@ export const rarities = [
     },
     chainId: 1,
     logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-rare.mp4",
+    mintLogo: "/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-rare.mp4",
   },
   {
     type: "Epic",
@@ -101,6 +104,7 @@ export const rarities = [
     },
     chainId: 1,
     logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-epic.mp4",
+    mintLogo: "/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-epic.mp4",
   },
   {
     type: "Legendary / Moderator",
@@ -128,5 +132,6 @@ export const rarities = [
     },
     chainId: 1,
     logo: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-legendary.mp4",
+    mintLogo: "/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-legendary.mp4",
   },
 ];
