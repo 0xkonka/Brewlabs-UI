@@ -2331,6 +2331,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xd4bC850c0B3cDcb2417cfD77fAABEa1f47F09fd8/logo.png"
     },
     {
+      "name": "Zeleboba",
+      "symbol": "ZELEBOBA",
+      "address": "0xf0D43f46Cea02bBb5E616bF6d795D4f8719cD80d",
+      "chainId": 56,
+      "decimals": 9,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/smartchain/assets/0xf0D43f46Cea02bBb5E616bF6d795D4f8719cD80d/logo.png"
+    },
+    {
       "name": "Matic Token",
       "symbol": "MATIC",
       "address": "0xCC42724C6683B7E57334c4E856f4c9965ED682bD",

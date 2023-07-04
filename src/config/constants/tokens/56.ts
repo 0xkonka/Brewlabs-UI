@@ -514,6 +514,14 @@ const tokens = {
     'MetaSetGO',
     'https://msgo.io/',
   ),
+  zeleboba : new Token(
+    BSC_MAINNET,
+    '0xf0D43f46Cea02bBb5E616bF6d795D4f8719cD80d',
+    9,
+    'ZELEBOBA',
+    'Zeleboba',
+    'https://zeleboba.online/',
+  ),
   cake: new Token(
     BSC_MAINNET,
     "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
