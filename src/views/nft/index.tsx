@@ -7,13 +7,8 @@ import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 import NFTActions from "./NFTActions";
 import NFTList from "./NFTList";
-import { useConnect, useSwitchNetwork } from "wagmi";
 
 const NFT = () => {
-  
-  const { connectors, pendingConnector } = useConnect();
-  const _switchNetwork = useSwitchNetwork();
-  console.log(connectors, pendingConnector, _switchNetwork, '######')
   return (
     <PageWrapper>
       <AnimatePresence>
