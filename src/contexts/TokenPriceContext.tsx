@@ -6,6 +6,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 
 const TokenPriceContext = React.createContext({
   prices: {} as { [key: string]: number },
+  cgprices: {} as { [key: number]: any },
   tokenPrices: {} as { [key: string]: number },
   lpPrices: {} as { [key: string]: number },
   ethPrice: 0,
@@ -18,6 +19,7 @@ const WETH_ADDR: any = {
 
 const TokenPriceContextProvider = ({ children }: any) => {
   const [prices, setPrices] = useState({});
+  const [cgprices, setCGPrices] = useState({});
   const [tokenPrices, setTokenPrices] = useState({});
   const [lpPrices, setLPPrices] = useState({});
   const [ethPrice, setETHPrice] = useState(0);
@@ -47,6 +49,21 @@ const TokenPriceContextProvider = ({ children }: any) => {
   }, []);
 
   useSlowRefreshEffect(() => {
+    axios
+      .get(`${API_URL}/cg/prices`)
+      .then((res) => {
+        if (res.data) {
+          let data = {};
+          for (let i = 0; i < res.data.length; i++) {
+            data[+res.data[i].chainId] = res.data[i].prices;
+          }
+          setCGPrices(data);
+        }
+      })
+      .catch((e) => console.log(e));
+  }, []);
+
+  useSlowRefreshEffect(() => {
     const to = Math.floor(Date.now() / 1000);
     axios
       .get(
@@ -58,7 +75,7 @@ const TokenPriceContextProvider = ({ children }: any) => {
       .catch((e) => console.log(e));
   }, []);
   return (
-    <TokenPriceContext.Provider value={{ prices, tokenPrices, lpPrices, ethPrice }}>
+    <TokenPriceContext.Provider value={{ prices, cgprices, tokenPrices, lpPrices, ethPrice }}>
       {children}
     </TokenPriceContext.Provider>
   );
