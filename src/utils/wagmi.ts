@@ -45,11 +45,11 @@ export const client = createClient({
         appLogoUrl: `${BASE_URL}/logo.png`,
       },
     }),
-    new BinanceWalletConnector({ chains }),    
-    new WalletConnectLegacyConnector({
+    new BinanceWalletConnector({ chains }),
+    new WalletConnectConnector({
       chains,
       options: {
-        qrcode: true,
+        projectId: "3f9ccaf57c23a26a29b6ede970ea33c1"
       },
     }),
     new LedgerConnector({ chains }),

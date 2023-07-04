@@ -10,7 +10,7 @@ export class WalletSwitchChainError extends Error {}
 export enum ConnectorNames {
   MetaMask = "metaMask",
   Injected = "injected",
-  WalletConnect = "walletConnectLegacy",
+  WalletConnect = "walletConnect",
   BSC = "bsc",
   WalletLink = "coinbaseWallet",
 }
