@@ -23,6 +23,7 @@ import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
 
 import StyledButton from "views/directory/StyledButton";
 
+import { rarities } from "config/constants/nft";
 import { DashboardContext } from "contexts/DashboardContext";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useTokenApprove } from "@hooks/useApprove";
@@ -32,11 +33,10 @@ import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
 import { useTokenBalances } from "state/wallet/hooks";
 import { deserializeToken } from "state/user/hooks/helpers";
-
-import { useFlaskNft } from "../hooks/useFlaskNft";
 import { getFlaskNftAddress } from "utils/addressHelpers";
 import multicall from "utils/multicall";
-import { rarities } from "config/constants/nft";
+
+import { useFlaskNft } from "../hooks/useFlaskNft";
 
 const MintNFTModal = ({ open, setOpen }) => {
   const dispatch = useAppDispatch();
@@ -134,7 +134,6 @@ const MintNFTModal = ({ open, setOpen }) => {
     setPending(true);
     try {
       const receipt = await onMint(quantity, selectedCurrency.address);
-      console.log(receipt);
       const events = receipt.events;
       dispatch(fetchFlaskNftUserDataAsync(chainId, account));
       toast.success(`${quantity} NFT${quantity > 1 ? "s" : ""} was minted`);
@@ -146,22 +145,20 @@ const MintNFTModal = ({ open, setOpen }) => {
             data.topics[1] === "0x0000000000000000000000000000000000000000000000000000000000000000"
         )
         .map((data) => parseInt(data.topics[3]));
-
-      setIsMinted(true);
-
       const calls = tokenIds.map((data) => {
         return {
-          name: "rarifyOf",
+          name: "rarityOf",
           address: getFlaskNftAddress(chainId),
           params: [data],
         };
       });
 
-      let rarities = await multicall(FlaskNftAbi, calls, chainId);
-      rarities = rarities.map((data) => data[0] / 1);
-      console.log(rarities);
-      setMintedTokenIds(rarities);
+      let _rarities = await multicall(FlaskNftAbi, calls, chainId);
+      _rarities = _rarities.map((data) => data[0] / 1);
+
+      setMintedTokenIds(_rarities);
       setCurAnimation(0);
+      setIsMinted(true);
     } catch (error) {
       console.log(error);
       handleWalletError(error, showError, getNativeSybmol(chainId));
@@ -289,10 +286,10 @@ const MintNFTModal = ({ open, setOpen }) => {
 
             <div className="flex flex-col items-center">
               <div className="mt-2.5 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-tailwind">
-                {isMinted ? (
+                {isMinted && rarities[mintedTokenIds[curAnimation] - 1]?.mintLogo ? (
                   <ReactPlayer
                     className="!h-full !w-full"
-                    url={rarities[mintedTokenIds[curAnimation]].mintLogo}
+                    url={rarities[mintedTokenIds[curAnimation] - 1]?.mintLogo}
                     playing={true}
                     autoPlay={true}
                     muted={true}
@@ -390,7 +387,7 @@ const MintNFTModal = ({ open, setOpen }) => {
               ) : (
                 <div className="w-full">
                   <div className="my-4 text-center">
-                    Congratulations you minted a {rarities[mintedTokenIds[curAnimation]].type.toUpperCase()}&nbsp;
+                    Congratulations you minted a {rarities[mintedTokenIds[curAnimation] - 1]?.type.toUpperCase()}&nbsp;
                     <span className="text-primary">BREWLABS</span> NFT
                   </div>
                   <div className="flex flex-col justify-center sm:flex-row">
