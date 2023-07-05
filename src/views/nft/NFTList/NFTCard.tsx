@@ -275,7 +275,9 @@ const NFTCard = ({ nft }: { nft: any }) => {
               <div className="w-fit text-white">
                 APR: {NFT_Apr[nft.chainId] === null ? "Pending APR" : `${NFT_Apr[nft.chainId]?.toFixed(2) ?? "0.00"}%`}
                 <br />
-                <span className="text-[10px] font-normal text-[#FFFFFF80]">in ETH approx.</span>
+                <span className="text-[10px] font-normal text-[#FFFFFF80]">
+                  in {NETWORKS[nft.chainId].nativeCurrency.symbol} approx.
+                </span>
               </div>
               {isPending ? (
                 <div className="relative w-fit leading-[1.2] text-white">

@@ -95,14 +95,12 @@ const SelectionPanel = ({
             <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
           </div>
         </div>
-        <div className="ml-4 hidden w-[140px] xl:block">
+        <div className="ml-4 hidden w-[145px] xl:block">
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
       <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
-        <div className="hidden xsm:block">
-          <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
-        </div>
+        <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
         <div className="mt-2 w-full">
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
