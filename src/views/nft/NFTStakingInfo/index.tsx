@@ -11,9 +11,38 @@ import { useState } from "react";
 import MintNFTModal from "../Modals/MintNFTModal";
 import Link from "next/link";
 import { getChainLogo, numberWithCommas } from "utils/functions";
+import { useOETHWeeklyAPY } from "@hooks/useOETHAPY";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
+import { tokens } from "config/constants/tokens";
+import { NFT_RARE_COUNT } from "config/constants/nft";
+import { SkeletonComponent } from "@components/SkeletonComponent";
 
 const NFTStakingInfo = () => {
   const [mintOpen, setMintOpen] = useState(false);
+
+  const OETHWeeklyAPY = useOETHWeeklyAPY();
+  const OETHMontlyAPY = useOETHWeeklyAPY();
+  const NFT_wallet_balance = useTokenBalances([tokens[1].usdc, tokens[56].busd], {
+    1: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
+    56: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
+  });
+
+  const NFT_MontlyApr = {
+    1:
+      NFT_wallet_balance && OETHMontlyAPY
+        ? (OETHMontlyAPY * NFT_wallet_balance[0].balance) / NFT_RARE_COUNT[1] / 100
+        : null,
+    56:
+      NFT_wallet_balance && OETHMontlyAPY
+        ? (OETHMontlyAPY * NFT_wallet_balance[1].balance) / NFT_RARE_COUNT[56] / 100
+        : null,
+  };
+
+  const NFT_Weekly_ROI = {
+    1: NFT_wallet_balance && OETHWeeklyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[0].balance) / 100 : null,
+    56: NFT_wallet_balance && OETHMontlyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[1].balance) / 100 : null,
+  };
+
   const infos = [
     {
       title: "Stake Brewlabs NFT",
@@ -45,22 +74,24 @@ const NFTStakingInfo = () => {
   ];
   const aprByNetworks = [
     {
-      chainId: 56,
-      apr: 54.0,
-      totalPosition: 58938.0,
-      weeklyROI: 438.0,
-    },
-    {
       chainId: 1,
-      apr: 54.0,
-      totalPosition: 58938.0,
-      weeklyROI: 438.0,
+      apr: NFT_MontlyApr[1],
+      totalPosition: NFT_wallet_balance ? NFT_wallet_balance[0].balance : null,
+      weeklyROI: NFT_Weekly_ROI[1],
     },
+
+    {
+      chainId: 56,
+      apr: NFT_MontlyApr[56],
+      totalPosition: NFT_wallet_balance ? NFT_wallet_balance[1].balance : null,
+      weeklyROI: NFT_Weekly_ROI[56],
+    },
+
     {
       chainId: 137,
-      apr: 54.0,
-      totalPosition: 58938.0,
-      weeklyROI: 438.0,
+      apr: null,
+      totalPosition: null,
+      weeklyROI: null,
     },
   ];
   return (
@@ -165,15 +196,34 @@ const NFTStakingInfo = () => {
                     >
                       <div className="flex items-center">
                         <img src={getChainLogo(data.chainId)} alt={""} className="mr-2 h-6 w-6 rounded-full" />
-                        {/* <div className="text-lg">{data.apr.toFixed(2)}% APR</div> */}
-                        <div className="text-lg">Pending...</div>
+                        <div className="text-lg">
+                          {i !== 2 ? data.apr ? `${data.apr.toFixed(2)}% APR` : <SkeletonComponent /> : "Pending..."}
+                        </div>
                       </div>
                       <div className="mt-3.5 flex justify-between text-sm">
                         <div>
-                          {/* <div>${numberWithCommas(data.totalPosition.toFixed(2))}</div> */}
-                          <div>Pending...</div>
-                          {/* <div className="mt-2">${numberWithCommas(data.weeklyROI.toFixed(2))}</div> */}
-                          <div className="mt-2">Pending...</div>
+                          <div>
+                            {i !== 2 ? (
+                              data.totalPosition ? (
+                                `$${numberWithCommas(data.totalPosition.toFixed(2))}`
+                              ) : (
+                                <SkeletonComponent />
+                              )
+                            ) : (
+                              "Pending..."
+                            )}
+                          </div>
+                          <div className="mt-2">
+                            {i !== 2 ? (
+                              data.weeklyROI ? (
+                                `$${numberWithCommas(data.weeklyROI.toFixed(2))}`
+                              ) : (
+                                <SkeletonComponent />
+                              )
+                            ) : (
+                              "Pending..."
+                            )}
+                          </div>
                         </div>
                         <div className="text-[#FFFFFFBF]">
                           <div>Total position</div>

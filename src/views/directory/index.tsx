@@ -46,7 +46,7 @@ import Link from "next/link";
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
-  const [sortOrder, setSortOrder] = useState("default");
+  const [sortOrder, setSortOrder] = useState("tvl");
   const [curPool, setCurPool] = useState<{ type: Category; pid: number; chainId: number }>({
     type: 0,
     pid: 0,
@@ -285,11 +285,17 @@ const Directory = ({ page }: { page: number }) => {
               />
               <Container className="font-brand">
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
-                <div className="-mb-4 -mt-4 flex justify-end">
-                  <Link href={"/deployer"}>
-                    <StyledButton className="!w-fit p-[6px_12px] !text-sm">Go to deploy</StyledButton>
-                  </Link>
-                </div>
+                {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
+                  <div className="-mb-4 -mt-4 flex justify-end">
+                    <Link href={"/deployer"}>
+                      <StyledButton className="!w-fit p-[6px_12px] !text-sm">
+                        Create {curFilter === Category.FARM ? "Farm" : curFilter === Category.INDEXES ? "Index" : ""}
+                      </StyledButton>
+                    </Link>
+                  </div>
+                ) : (
+                  ""
+                )}
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}
