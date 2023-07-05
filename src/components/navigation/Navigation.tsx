@@ -27,13 +27,13 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
   }, [window]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
-      <div className={`flex flex-1 flex-col ${short ? "pb-2 pt-2" : "pb-4 pt-5"}`}>
-        <div className={`${short ? "hidden" : "flex"} flex-shrink-0 items-center px-4`}>
+    <div className="flex min-h-0 max-h-screen flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
+      <div className={`flex flex-1 flex-col pb-4 pt-5 overflow-hidden`}>
+        <div className={`flex flex-shrink-0 items-center px-4`}>
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
         </div>
-        <nav className={`${short ? "mt-0" : "mt-5"} flex flex-1 flex-col justify-between`} aria-label="Sidebar">
-          <div className="space-y-1 px-2 font-brand tracking-wider">
+        <nav className={`mt-5 flex flex-1 flex-col justify-between overflow-hidden`} aria-label="Sidebar">
+          <div className="space-y-1 px-2 font-brand tracking-wider overflow-y-scroll yellowScroll">
             {navigationData.map((item) => (
               <Link href={item.href} passHref key={item.name}>
                 <motion.a
