@@ -135,3 +135,5 @@ export const rarities = [
     mintLogo: "/images/nfts/brewlabs-flask-nfts/brewlabs-mint-animation-legendary.mp4",
   },
 ];
+
+export const NFT_RARE_COUNT = { [ChainId.ETHEREUM]: 3, [ChainId.BSC_MAINNET]: 25 };
