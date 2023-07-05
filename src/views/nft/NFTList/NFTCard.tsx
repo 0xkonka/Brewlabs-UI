@@ -8,7 +8,7 @@ import CountDown from "@components/CountDown";
 import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 
-import { NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
+import { NFT_RARE_COUNT, NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useFlaskNftContract } from "@hooks/useContract";
 import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
@@ -23,10 +23,10 @@ import { getChainLogo } from "utils/functions";
 import { useNftStaking } from "../hooks/useNftStaking";
 import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
 import { BREWNFT_COLORS } from "config/constants";
-import useOETHAPY from "@hooks/useOETHAPY";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
+import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -57,12 +57,12 @@ const NFTCard = ({ nft }: { nft: any }) => {
         (pool?.totalStaked ?? 0))
     : 0;
 
-  const OETHAPY = useOETHAPY();
+  const OETHAPY = useOETHMonthlyAPY();
   const NFT_wallet_balance = useTokenBalances([tokens[1].usdc, tokens[56].busd], {
     1: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
     56: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
   });
-  const NFT_RARE_COUNT = { 1: 3, 56: 25 };
+
   const NFT_Apr = {
     1: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[0].balance) / NFT_RARE_COUNT[1] / 100 : null,
     56: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[1].balance) / NFT_RARE_COUNT[56] / 100 : null,
