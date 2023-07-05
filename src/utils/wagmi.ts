@@ -26,7 +26,6 @@ export const { provider, webSocketProvider, chains } = configureChains(Supported
   }),
 ]);
 
-
 export const client = createClient({
   autoConnect: true,
   provider,
@@ -49,7 +48,7 @@ export const client = createClient({
     new WalletConnectConnector({
       chains,
       options: {
-        projectId: "3f9ccaf57c23a26a29b6ede970ea33c1"
+        projectId: "3f9ccaf57c23a26a29b6ede970ea33c1",
       },
     }),
     new LedgerConnector({ chains }),
