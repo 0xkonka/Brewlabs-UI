@@ -146,7 +146,7 @@ export const useSwapAggregator = (
             } else {
               // otherwise, the error was unexpected and we need to convey that
               console.error(`Swap failed`, error, methodName, args, options.value);
-              throw new Error(`Swap failed: ${error.message}`);
+              throw new Error(`${error.message}`);
             }
           });
       },
