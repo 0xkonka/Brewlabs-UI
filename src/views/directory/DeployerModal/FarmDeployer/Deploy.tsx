@@ -78,7 +78,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
     try {
       let rewardPerBlock = ethers.utils.parseUnits(
-        ((+totalSupply.toFixed(2) * initialSupply) / 100).toString(),
+        ((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(rewardCurrency.decimals),
         rewardCurrency.decimals
       );
       rewardPerBlock = rewardPerBlock
@@ -258,14 +258,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <div className="flex items-center">
             <div
               className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
-              onClick={() => setInitialSupply(Math.min(3, initialSupply + 0.1))}
+              onClick={() => setInitialSupply(+Math.min(3, initialSupply + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{initialSupply.toFixed(2)}%</div>
             <div
               className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
-              onClick={() => setInitialSupply(Math.max(0, initialSupply - 0.1))}
+              onClick={() => setInitialSupply(+Math.max(0, initialSupply - 0.1).toFixed(2))}
             >
               {MinusSVG}
             </div>
