@@ -31,6 +31,12 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "_sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "_tokenIn",
         "type": "address"
       },
@@ -709,45 +715,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenIn",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenOut",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxSteps",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "swapAggregationCall",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "uint256",
@@ -778,6 +745,11 @@
         "internalType": "address",
         "name": "_to",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deadline",
+        "type": "uint256"
       }
     ],
     "name": "swapNoSplit",
@@ -818,6 +790,11 @@
         "internalType": "address",
         "name": "_to",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deadline",
+        "type": "uint256"
       }
     ],
     "name": "swapNoSplitFromETH",
@@ -858,6 +835,11 @@
         "internalType": "address",
         "name": "_to",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deadline",
+        "type": "uint256"
       }
     ],
     "name": "swapNoSplitToETH",

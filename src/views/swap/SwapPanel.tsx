@@ -76,7 +76,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   const { callback: swapCallbackUsingRouter, error: swapCallbackError }: any = useSwapCallback(
     trade,
-    userSlippageTolerance,
+    autoMode ? slippage : userSlippageTolerance,
     deadline,
     recipient
   );
@@ -159,7 +159,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     callback: swapCallbackUsingAggregator,
     query,
     error: aggregationCallbackError,
-  } = useSwapAggregator(currencies, parsedAmount, recipient);
+  } = useSwapAggregator(currencies, parsedAmount, autoMode ? slippage : userSlippageTolerance, deadline, recipient);
 
   const handleSwapUsingAggregator = async () => {
     if (!swapCallbackUsingAggregator) {

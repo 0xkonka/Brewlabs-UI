@@ -27,33 +27,33 @@ export const Adapters = {
   ],
   56: [
     {
-      address: "0xA31c745DC9D61D7840622e4Df490bAF44dF1Fc5B",
+      address: "0xf9c9FB47dba1391443cE6a2D6B2Ec69c227Bb9ad",
       name: "Apeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/apeswap.finance.png",
     },
     {
-      address: "0x7F360b8a59bfb414692e8b4B57cedf1556c620AD",
+      address: "0x78f81D1D1F66E1EA0Be841FB7CAf055D1C3453b2",
       name: "Babyswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/babyswap.finance.png",
     },
     {
-      address: "0x3Be8C9E5130285478F143EE09091Aa6cbba1D256",
+      address: "0x5DAb09861B3bCEfb453612Ed3E331b4792770b64",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
     },
     {
-      address: "0x463fDFbdCBD55E83701C377d89b39Bbb7E0DFE54",
+      address: "0xEa60321B9Bb6B312ACb2174E9413Af180FaDE9CC",
       name: "Sushiswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.sushi.com.png",
     },
     {
-      address: "0x55C0D0EBA206088E57A90f1460033271DAb251ef",
+      address: "0x7191Cc71044564974a32659fe886630e836F3148",
       name: "Pancakeswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/exchange.pancakeswap.finance.png",
       meta: "v3",
     },
     {
-      address: "0x3E01db4bbb07561121f069F4b5578dA015E19783",
+      address: "0x3e1383a615eBf6c905A18B8B190aaDb10999Fa3b",
       name: "Uniswap",
       logo: "https://raw.githubusercontent.com/trustwallet/assets/master/dapps/app.uniswap.org.png",
       meta: "v3",
