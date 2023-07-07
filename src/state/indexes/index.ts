@@ -135,7 +135,7 @@ export const fetchIndexesUserDataAsync = (account: string, chainId: ChainId) => 
       )
     )
   );
-  fetchUserDeployerNftData(account, chainId, indexes.filter((index) => index.category >= 0)[0]?.deployerNft).then(
+  fetchUserDeployerNftData(account, chainId, indexes.filter((index) => !index.isFinished)[0]?.deployerNft).then(
     (nftInfo) =>
       dispatch(
         setIndexesUserData(
@@ -212,7 +212,7 @@ export const updateUserDeployerNftInfo = (account: string, chainId: ChainId) => 
   const deployerNftInfo = await fetchUserDeployerNftData(
     account,
     chainId,
-    indexes.filter((index) => index.category >= 0)[0]?.deployerNft
+    indexes.filter((index) => !index.isFinished)[0]?.deployerNft
   );
 
   dispatch(
