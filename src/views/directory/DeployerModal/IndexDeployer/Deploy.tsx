@@ -176,14 +176,14 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               <div className="flex items-center">
                 <div
                   className="mx-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
-                  onClick={() => setDepositFee(Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01))}
+                  onClick={() => setDepositFee(+Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01).toFixed(2))}
                 >
                   {PlusSVG}
                 </div>
                 <div>{depositFee.toFixed(2)}%</div>
                 <div
                   className="ml-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
-                  onClick={() => setDepositFee(Math.max(0, depositFee - 0.01))}
+                  onClick={() => setDepositFee(+Math.max(0, depositFee - 0.01).toFixed(2))}
                 >
                   {MinusSVG}
                 </div>
@@ -205,7 +205,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 <div
                   className="mx-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
                   onClick={() =>
-                    setCommissionFee(Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01))
+                    setCommissionFee(+Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01).toFixed(2))
                   }
                 >
                   {PlusSVG}
@@ -213,7 +213,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 <div>{commissionFee.toFixed(2)}%</div>
                 <div
                   className="ml-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
-                  onClick={() => setCommissionFee(Math.max(0, commissionFee - 0.01))}
+                  onClick={() => setCommissionFee(+Math.max(0, commissionFee - 0.01).toFixed(2))}
                 >
                   {MinusSVG}
                 </div>

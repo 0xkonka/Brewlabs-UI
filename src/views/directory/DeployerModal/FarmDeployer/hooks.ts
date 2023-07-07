@@ -14,8 +14,8 @@ export const useFactory = (chainId, performanceFee) => {
       rewardToken: string,
       dividendToken: string,
       rewardPerBlock: string,
-      depositFee: number,
-      withdrawFee: number,
+      depositFee: string,
+      withdrawFee: string,
       duration: number,
       hasDividend: boolean
     ) => {
