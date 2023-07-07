@@ -19,6 +19,12 @@ const CommunityContextProvider = ({ children }: any) => {
     console.log(result);
     getCommunities();
   }
+
+  async function addProposal(proposal, pid) {
+    const result = await axios.post(`http://localhost:5050/api/community/addProposal`, { proposal, pid });
+    console.log(result);
+    getCommunities();
+  }
   const [communities, setCommunities] = useState([]);
   useEffect(() => {
     getCommunities();
@@ -29,6 +35,7 @@ const CommunityContextProvider = ({ children }: any) => {
       value={{
         communities,
         joinOrLeaveCommunity,
+        addProposal,
       }}
     >
       {children}

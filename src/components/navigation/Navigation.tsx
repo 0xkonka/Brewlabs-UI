@@ -27,13 +27,13 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
   }, [window]);
 
   return (
-    <div className="flex min-h-0 max-h-screen flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
-      <div className={`flex flex-1 flex-col pb-4 pt-5 overflow-hidden`}>
+    <div className="flex max-h-screen min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
+      <div className={`flex flex-1 flex-col overflow-hidden pb-4 pt-5`}>
         <div className={`flex flex-shrink-0 items-center px-4`}>
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
         </div>
         <nav className={`mt-5 flex flex-1 flex-col justify-between overflow-hidden`} aria-label="Sidebar">
-          <div className="space-y-1 px-2 font-brand tracking-wider overflow-y-scroll yellowScroll">
+          <div className="yellowScroll space-y-1 overflow-x-clip overflow-y-scroll px-2 pb-2 font-brand tracking-wider">
             {navigationData.map((item) => (
               <Link href={item.href} passHref key={item.name}>
                 <motion.a
@@ -87,7 +87,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
           <div
             className={clsx(
               slim ? "items-center p-2" : "px-5",
-              `flex ${short ? "mx-auto w-full max-w-[200px] justify-between" : "flex-col justify-end"}`
+              `flex ${short && !slim ? "mx-auto w-full max-w-[200px] justify-between" : "flex-col justify-end"}`
             )}
           >
             {navigationExtraData.map((item) => (
