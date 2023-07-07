@@ -102,6 +102,7 @@ export const fetchUserIndexNftData = async (account, chainId, nftAddr) => {
 
   let calls = [{ address: nftAddr, name: "balanceOf", params: [account] }];
   const [balance] = await multicall(IndexNftAbi, calls, chainId);
+
   if (balance[0].eq(0)) return [];
 
   if (balance[0].gt(0)) {
