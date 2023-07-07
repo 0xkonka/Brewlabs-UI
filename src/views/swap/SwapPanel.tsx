@@ -1,32 +1,32 @@
 import { useState, useMemo, useCallback, useContext } from "react";
-import { CurrencyAmount, Percent, FACTORY_ADDRESS_MAP, INIT_CODE_HASH_MAP, Price, ChainId } from "@brewlabs/sdk";
-import { useSigner } from "wagmi";
+import { CurrencyAmount, Percent, Price, ChainId } from "@brewlabs/sdk";
 import { Oval } from "react-loader-spinner";
-import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useTranslation } from "contexts/localization";
+import { toast } from "react-toastify";
+
 import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ALLOWED_PRICE_IMPACT_HIGH } from "config/constants";
 import contracts from "config/constants/contracts";
+import { useTranslation } from "contexts/localization";
+import { SwapContext } from "contexts/SwapContext";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
+import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
+import useSwapCallback from "@hooks/swap/useSwapCallback";
+import useWrapCallback, { WrapType } from "@hooks/swap/useWrapCallback";
 import { useUserSlippageTolerance, useUserTransactionTTL } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import { useSwapState, useSwapActionHandlers, useDerivedSwapInfo } from "state/swap/hooks";
-
 import maxAmountSpend from "utils/maxAmountSpend";
 import { computeTradePriceBreakdown, warningSeverity } from "utils/prices";
 
-import { TailSpin } from "react-loader-spinner";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
 import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
+import WarningModal from "@components/warningModal";
+
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
-import { SwapContext } from "contexts/SwapContext";
-import useSwapCallback from "@hooks/swap/useSwapCallback";
-import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
-import useWrapCallback, { WrapType } from "@hooks/swap/useWrapCallback";
-import WarningModal from "@components/warningModal";
 
 export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
   const { account, chainId } = useActiveWeb3React();
@@ -76,7 +76,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
 
   const { callback: swapCallbackUsingRouter, error: swapCallbackError }: any = useSwapCallback(
     trade,
-    userSlippageTolerance,
+    autoMode ? slippage : userSlippageTolerance,
     deadline,
     recipient
   );
@@ -124,6 +124,14 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
         onUserInput(Field.INPUT, "");
       })
       .catch((error) => {
+        if (error.reason) {
+          if (error.reason == "BrewlabsAggregatonRouter: Insufficient output amount") {
+            toast.error("Slippage requirement not met.");
+          } else toast.error(error.reason.split(":").slice(-1)[0]);
+        } else if (error.message) {
+          toast.error(error.message.split("(")[0]);
+        }
+
         setAttemptingTxn(false);
         onUserInput(Field.INPUT, "");
       });
@@ -159,7 +167,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
     callback: swapCallbackUsingAggregator,
     query,
     error: aggregationCallbackError,
-  } = useSwapAggregator(currencies, parsedAmount, recipient);
+  } = useSwapAggregator(currencies, parsedAmount, autoMode ? slippage : userSlippageTolerance, deadline, recipient);
 
   const handleSwapUsingAggregator = async () => {
     if (!swapCallbackUsingAggregator) {
@@ -173,6 +181,12 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
         onUserInput(Field.INPUT, "");
       })
       .catch((error) => {
+        if (error.reason) {
+          toast.error(error.reason.split(":").slice(-1)[0]);
+        } else if (error.message) {
+          toast.error(error.message.split("(")[0]);
+        }
+
         setAttemptingTxn(false);
         onUserInput(Field.INPUT, "");
       });

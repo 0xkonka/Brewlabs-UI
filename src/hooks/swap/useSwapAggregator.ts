@@ -1,5 +1,6 @@
 import { Currency, CurrencyAmount, TokenAmount, Token } from "@brewlabs/sdk";
 import useENS from "@hooks/ENS/useENS";
+import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
 import { ethers } from "ethers";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useEffect, useMemo, useState } from "react";
@@ -13,6 +14,8 @@ import { useSigner } from "wagmi";
 export const useSwapAggregator = (
   currencies: { [field in Field]?: Currency },
   amountIn: CurrencyAmount,
+  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
+  deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
   recipientAddressOrName: string | null
 ) => {
   const { account, chainId, library } = useActiveWeb3React();
@@ -94,12 +97,14 @@ export const useSwapAggregator = (
     if (callParams.value && !callParams.value.eq(query.amounts[0])) {
       return { callback: null, error: "Querying swap path...", query };
     }
-    
+
     return {
       callback: async function onSwap() {
+        const amountOutMin = query.amounts[query.amounts.length - 1].mul(10000 - allowedSlippage).div(10000);
         const args = [
-          [query.amounts[0], query.amounts[query.amounts.length - 1], query.path, query.adapters],
+          [query.amounts[0], amountOutMin, query.path, query.adapters],
           recipient,
+          Math.floor(Date.now() / 1000 + deadline),
         ];
         const options = callParams.value ? { value: callParams.value } : {};
         const methodName = currencies[Field.INPUT].isNative
@@ -141,11 +146,23 @@ export const useSwapAggregator = (
             } else {
               // otherwise, the error was unexpected and we need to convey that
               console.error(`Swap failed`, error, methodName, args, options.value);
-              throw new Error(`Swap failed: ${error.message}`);
+              throw new Error(`${error.message}`);
             }
           });
       },
       query,
     };
-  }, [library, account, chainId, recipient, contract, query, callParams, recipientAddressOrName, addTransaction]);
+  }, [
+    library,
+    account,
+    chainId,
+    recipient,
+    contract,
+    query,
+    callParams,
+    allowedSlippage,
+    deadline,
+    recipientAddressOrName,
+    addTransaction,
+  ]);
 };

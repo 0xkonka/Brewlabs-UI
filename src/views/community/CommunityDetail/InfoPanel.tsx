@@ -16,6 +16,7 @@ import { NETWORKS } from "config/constants/networks";
 import { getChainLogo, numberWithCommas } from "utils/functions";
 import { useEffect, useState } from "react";
 import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
+import ProposalModal from "./ProposalModal";
 
 const InfoPanel = ({ community }: { community: any }) => {
   const explorers = [
@@ -32,6 +33,8 @@ const InfoPanel = ({ community }: { community: any }) => {
   ];
 
   const [totalBalance, setTotalBalance] = useState(0);
+  const [proposalOpen, setProposalOpen] = useState(false);
+
   const communityStringified = JSON.stringify(community);
   useEffect(() => {
     getTreasuryBalances(
@@ -57,6 +60,7 @@ const InfoPanel = ({ community }: { community: any }) => {
 
   return (
     <div>
+      <ProposalModal open={proposalOpen} setOpen={setProposalOpen} community={community} />
       <div className="mt-2 flex justify-end">
         {explorers.map((data, i) => {
           return (
@@ -88,7 +92,7 @@ const InfoPanel = ({ community }: { community: any }) => {
         <div className="mr-2.5 cursor-pointer text-tailwind transition hover:text-white" id={"No Brewlabs NFTs Found"}>
           {NFTSVG}
         </div>
-        <StyledButton className="!w-fit !bg-[#505050] p-[10px_12px]" disabled>
+        <StyledButton className="!w-fit p-[10px_12px] disabled:!bg-[#505050]" disabled>
           Submit&nbsp;<span className="font-normal">new proposal</span>
         </StyledButton>
       </div>
