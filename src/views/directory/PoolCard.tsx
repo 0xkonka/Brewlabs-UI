@@ -7,10 +7,10 @@ import { getIndexName, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import IndexLogo from "components/logo/IndexLogo";
+import TokenLogo from "@components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { useRouter } from "next/router";
 import { isAddress } from "utils";
-import TokenLogo from "@components/logo/TokenLogo";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",

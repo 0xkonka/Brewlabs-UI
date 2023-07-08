@@ -41,7 +41,7 @@ const PoolList = ({
             return (
               <PoolCard
                 data={data}
-                key={100000 + i}
+                key={`${data.pid}-${data.chainId}-${data.address}-${data.contractAddress}`}
                 index={i}
                 setSelectPoolDetail={setSelectPoolDetail}
                 setCurPool={setCurPool}

@@ -7,6 +7,7 @@ import { getIndexName, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import IndexLogo from "components/logo/IndexLogo";
+import TokenLogo from "@components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { useRouter } from "next/router";
 import { isAddress } from "utils";
@@ -74,13 +75,10 @@ const PoolCard = ({
           ) : data.type === Category.ZAPPER ? (
             <IndexLogo tokens={[data.token, data.quoteToken]} />
           ) : (
-            <div className="mr-3 h-7 w-7 rounded-full border border-white bg-white">
-              <img
-                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
-                alt={""}
-                className="rounded-full"
-              />
-            </div>
+            <TokenLogo
+              src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId, data.earningToken.logo)}
+              classNames="mr-3 h-7 w-7"
+            />
           )}
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
             {data.type === Category.INDEXES ? (
@@ -168,10 +166,9 @@ const PoolCard = ({
             {data.type === Category.INDEXES ? (
               <IndexLogo tokens={data.tokens} />
             ) : (
-              <img
-                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId)}
-                alt={""}
-                className="mr-3 w-7 rounded-full"
+              <TokenLogo
+                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId, data.earningToken.logo)}
+                classNames="mr-3 h-7 w-7"
               />
             )}
             <div>
