@@ -70,7 +70,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
                   setTimeout(() => {
                     setGlobalState("mobileNavOpen", false);
                     onDismiss();
-                  }, 2000);
+                  }, 1000);
                 }
               }}
               className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
