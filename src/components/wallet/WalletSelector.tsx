@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 import { WalletConfig } from "config/constants/types";
 import { wallets } from "config/constants/wallets";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import useIsMobile from "@hooks/useIsMobile";
 import { setGlobalState } from "state";
 
 interface WalletSelectorProps {
@@ -13,6 +14,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
   const { connect, connectors, isLoading, error, pendingConnector } = useConnect();
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
+  const isMobile = useIsMobile();
 
   const { chainId } = useActiveChainId();
 
@@ -43,7 +45,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
       {errorMsg && (
         <div className="relative mt-2 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700" role="alert">
           <strong className="font-bold">{errorMsg}</strong>
-          <span className="absolute top-0 bottom-0 right-0 px-4 py-3" onClick={() => setErrorMsg("")}>
+          <span className="absolute bottom-0 right-0 top-0 px-4 py-3" onClick={() => setErrorMsg("")}>
             <svg
               className="h-6 w-6 fill-current text-red-500"
               role="button"
@@ -64,6 +66,12 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
               onClick={() => {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
+                if (isMobile) {
+                  setTimeout(() => {
+                    setGlobalState("mobileNavOpen", false);
+                    onDismiss();
+                  }, 2000);
+                }
               }}
               className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
             >
