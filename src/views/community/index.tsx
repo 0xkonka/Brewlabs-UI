@@ -52,9 +52,14 @@ const Community = () => {
                   >
                     {NFTSVG}
                   </div>
-                  <StyledButton className="whitespace-nowrap p-[10px_12px]" onClick={() => setCommunityOpen(true)}>
-                    Submit&nbsp;<span className="font-normal">new community</span>
-                  </StyledButton>
+                  <a href="https://t.me/MaverickBL" target="_blank">
+                    <StyledButton
+                      className="whitespace-nowrap p-[10px_12px]"
+                      // onClick={() => setCommunityOpen(true)}
+                    >
+                      Submit&nbsp;<span className="font-normal">new community</span>
+                    </StyledButton>
+                  </a>
                 </div>
               </div>
               <CommunityList />
