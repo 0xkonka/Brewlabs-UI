@@ -9,10 +9,14 @@ import { NFTSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 import CommunityList from "./CommunityList";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import CommunityModal from "./CommunityModal";
+import { useState } from "react";
 
 const Community = () => {
+  const [communityOpen, setCommunityOpen] = useState(false);
   return (
     <PageWrapper>
+      <CommunityModal open={communityOpen} setOpen={setCommunityOpen} />
       <AnimatePresence>
         <motion.div
           initial={{ opacity: 0, scale: 0.75 }}
@@ -48,11 +52,9 @@ const Community = () => {
                   >
                     {NFTSVG}
                   </div>
-                  <a href="https://t.me/MaverickBL" target="_blank">
-                    <StyledButton className="whitespace-nowrap p-[10px_12px]">
-                      Submit&nbsp;<span className="font-normal">new community</span>
-                    </StyledButton>
-                  </a>
+                  <StyledButton className="whitespace-nowrap p-[10px_12px]" onClick={() => setCommunityOpen(true)}>
+                    Submit&nbsp;<span className="font-normal">new community</span>
+                  </StyledButton>
                 </div>
               </div>
               <CommunityList />

@@ -184,7 +184,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mt-2 block h-[32px] w-[140px] sm:mt-0 sm:hidden">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                            <div className="ml-3">Brewlabs Custody</div>
+                            <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
                       ) : (
@@ -197,7 +197,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="mt-2 h-[32px] w-[140px] sm:mt-0">
                             <StyledButton>
                               <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                              <div className="ml-3">Brewlabs Custody</div>
+                              <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
                             </StyledButton>
                           </div>
                         </div>

@@ -146,13 +146,12 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                     <Bubbles />
                                   </Suspense>
 
-                                  <Image
-                                    className="fixed -right-44 top-0 home:z-10 dark:opacity-50"
+                                  <img
+                                    className="fixed -right-44 top-0 home:z-10 dark:opacity-50 sm:block hidden"
                                     src="/images/blur-indigo.png"
-                                    alt="background blur"
+                                    alt=""
                                     width={567}
                                     height={567}
-                                    unoptimized={false}
                                   />
 
                                   <div className="flex h-full">

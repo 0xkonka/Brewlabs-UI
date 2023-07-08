@@ -282,7 +282,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2 block h-[32px] w-[140px] lg:mt-0 lg:hidden">
                         <StyledButton>
                           <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                          <div className="ml-3">Brewlabs Custody</div>
+                          <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
                     ) : (
@@ -295,7 +295,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="ml-5 mt-2 h-[32px] w-[140px] lg:mt-0">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                            <div className="ml-3">Brewlabs Custody</div>
+                            <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
                       </div>
@@ -338,7 +338,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         }`}
                         passHref
                       >
-                        <div className="ml-0 mt-2 h-[32px] w-[140px] lg:ml-5 lg:mt-0">
+                        <div className="ml-0 h-[32px] w-[140px] lg:ml-5 ">
                           <StyledButton>
                             <div>Make LP</div>
                             <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
@@ -357,8 +357,8 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
-                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
-                      <div className="flex justify-between text-xl">
+                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_12px_8px_12px] sm:p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
+                      <div className="flex flex-col justify-between text-xl xsm:flex-row">
                         <div>
                           Pool: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
                           <a
@@ -413,7 +413,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </div>
 
-                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
+                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_12px_8px_12px] sm:p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
@@ -557,7 +557,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     </div>
                   </div>
                   <div className="relative mt-10 flex w-full flex-col justify-between md:mt-0 md:w-[57%]">
-                    <div className="flex w-full flex-col xsm:flex-row">
+                    <div className="flex w-full flex-col sm:flex-row">
                       <div className="primary-shadow flex w-full cursor-pointer justify-between rounded bg-[#B9B8B81A] p-[12px_15px]">
                         <div>My Staked Tokens</div>
                         <div className="flex ">
@@ -574,7 +574,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </span>
                         </div>
                       </div>
-                      <div className="primary-shadow mt-2 flex w-full cursor-pointer justify-between rounded bg-[#B9B8B81A] p-[12px_15px] xsm:ml-4 xsm:mt-0">
+                      <div className="primary-shadow mt-2 flex w-full cursor-pointer justify-between rounded bg-[#B9B8B81A] p-[12px_15px] sm:ml-4 sm:mt-0">
                         <div>USD Value</div>
                         <div className="flex">
                           {!address || !lpPrice ? (
@@ -741,9 +741,9 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </div>
                     <StakingHistory history={history} />
-                    <div className="relative mb-[150px] mt-2 flex h-12 w-full md:mb-0">
+                    <div className="relative mb-[150px] mt-2 flex w-full flex-col  xsm:flex-row md:mb-0">
                       {data.chainId !== chainId ? (
-                        <div className="flex-1">
+                        <div className="h-12 flex-1">
                           <StyledButton
                             onClick={() => {
                               if (canSwitch) switchNetwork(data.chainId);
@@ -754,7 +754,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       ) : (
                         <>
-                          <div className="mr-5 flex-1">
+                          <div className="mb-2 mr-0 h-12 flex-none xsm:mb-0 xsm:mr-5 xsm:flex-1">
                             <StyledButton
                               onClick={() => {
                                 setStakingModalOpen(true);
@@ -765,7 +765,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               Deposit {data.lpSymbol.split(" ")[0]}
                             </StyledButton>
                           </div>
-                          <div className="flex-1">
+                          <div className="h-12 flex-none xsm:flex-1">
                             <StyledButton
                               type={"secondary"}
                               onClick={() => {

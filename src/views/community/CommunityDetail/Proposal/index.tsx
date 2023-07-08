@@ -18,8 +18,8 @@ const Proposal = ({ community }: { community: any }) => {
           proposals={community.proposals}
         />
       </div>
-      <div className="mt-9"/>
-      <ProposalList proposals={community.proposals} />
+      <div className="mt-9" />
+      <ProposalList community={community} />
     </div>
   );
 };
