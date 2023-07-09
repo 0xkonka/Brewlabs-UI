@@ -12,9 +12,16 @@ import RequireAlert from "@components/RequireAlert";
 import { CommunityContext } from "contexts/CommunityContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { toast } from "react-toastify";
-import { useTokenApprove } from "@hooks/useApprove";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useAccount, useSigner } from "wagmi";
+import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
+import { NETWORKS } from "config/constants/networks";
+import { getBep20Contract } from "utils/contractHelpers";
+import { handleWalletError } from "lib/bridge/helpers";
 
 const ProposalModal = ({ open, setOpen, community }) => {
+  const coreCurrency = community.currencies[community.coreChainId];
+
   const [isFeeToVote, setIsFeeToVote] = useState(0);
   const [duration, setDuration] = useState(0);
   const [title, setTitle] = useState("");
@@ -22,19 +29,42 @@ const ProposalModal = ({ open, setOpen, community }) => {
   const [submitClicked, setSubmitClicked] = useState(false);
 
   const { addProposal }: any = useContext(CommunityContext);
-  const { onApprove } = useTokenApprove();
+  const { chainId } = useActiveChainId();
+  const { address: account } = useAccount();
+  const { data: signer } = useSigner();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: { pending: boolean; setPending: (pending: boolean) => {} } =
     useContext(DashboardContext);
 
-  const onSubmitProposal = () => {
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const onSubmitProposal = async () => {
     if (!title || !description) return;
     setPending(true);
     try {
+      const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
+      const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount);
+      await tx.wait();
       const durations = [3600 * 24 * 7, 3600 * 24 * 14, 3600 * 24 * 30];
-      addProposal({ title, description, isFeeToVote: isFeeToVote === 0, duration: durations[duration] }, community.pid);
+      await addProposal(
+        {
+          title,
+          description,
+          isFeeToVote: isFeeToVote === 0,
+          duration: durations[duration] * 1000,
+          owner: account.toLowerCase(),
+          createdTime: Date.now(),
+          yesVoted: [],
+          noVoted: [],
+        },
+        community.pid
+      );
+      toast.success("Proposal Submitted");
     } catch (e: any) {
       console.log(e);
-      toast.error(e);
+      handleWalletError(e, showError);
     }
     setPending(false);
   };
@@ -74,29 +104,35 @@ const ProposalModal = ({ open, setOpen, community }) => {
               <div>
                 <div className="text-xl text-primary">New proposal</div>
                 <div className="text-sm">
-                  By <span className="text-[#FFFFFF80]">0x213123213120003120313214x3213</span>
+                  By <span className="text-[#FFFFFF80]">{account}</span>
                 </div>
               </div>
               <img src={community.logo} alt={""} className="primary-shadow h-16 w-16 rounded" />
             </div>
             <div className="mt-4 flex items-center justify-end text-sm">
-              <div className="relative mr-3">
-                Fee to vote?
-                <div
-                  className="absolute -left-5 top-0.5 cursor-pointer text-tailwind transition hover:text-white [&>*:first-child]:!h-3.5 [&>*:first-child]:!w-3.5"
-                  id="A small fee is charged on each user wallet vote sent to project nominated address."
-                >
-                  {InfoSVG}
+              {community.feeToVote === "sometimes" ? (
+                <div className="flex items-center">
+                  <div className="relative mr-3">
+                    Fee to vote?
+                    <div
+                      className="absolute -left-5 top-0.5 cursor-pointer text-tailwind transition hover:text-white [&>*:first-child]:!h-3.5 [&>*:first-child]:!w-3.5"
+                      id="A small fee is charged on each user wallet vote sent to project nominated address."
+                    >
+                      {InfoSVG}
+                    </div>
+                  </div>
+                  <DropDown
+                    value={isFeeToVote}
+                    setValue={setIsFeeToVote}
+                    values={["Yes", "No"]}
+                    type={"secondary"}
+                    width="w-[72px]"
+                    className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
+                  />
                 </div>
-              </div>
-              <DropDown
-                value={isFeeToVote}
-                setValue={setIsFeeToVote}
-                values={["Yes", "No"]}
-                type={"secondary"}
-                width="w-[72px]"
-                className="!rounded-lg !bg-[#FFFFFF1A] !p-[6px_10px]   text-sm text-primary"
-              />
+              ) : (
+                ""
+              )}
               <div className="mx-3">Duration</div>
               <DropDown
                 value={duration}
@@ -104,7 +140,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 values={["7 Days", "14 Days", "30 Days"]}
                 type={"secondary"}
                 width="w-[100px]"
-                className="!rounded-lg !bg-[#FFFFFF1A] !p-[6px_10px]   text-sm text-primary"
+                className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
               />
             </div>
             <div>
@@ -130,30 +166,36 @@ const ProposalModal = ({ open, setOpen, community }) => {
             </div>
             <div className="mt-4 flex justify-end text-xs leading-[1.2] text-[#FFFFFF80]">
               <ul className="max-w-[200px] list-disc">
-                <li>Submit community proposal fee 1000 BREWLABS token.</li>
+                <li>
+                  Submit community proposal fee {community.feeToProposal.amount / Math.pow(10, coreCurrency.decimals)}{" "}
+                  {coreCurrency.symbol} token.
+                </li>
               </ul>
               <ul className="ml-6 mr-3 max-w-[200px] list-disc">
                 <li>You can only post one proposal at a time. </li>
                 <li>Proposals with profanities will be removed.</li>
               </ul>
-              {community.isFeetoSubmit ? (
-                <StyledButton
-                  className="!w-fit p-[10px_12px]"
-                  onClick={() => {
-                    // onApprove();
-                  }}
-                >
-                  Approve {community.symbol}
-                </StyledButton>
-              ) : (
+              {Object.keys(community.currencies).includes(chainId.toString()) ? (
                 <StyledButton
                   className="!w-fit p-[10px_12px]"
                   onClick={() => {
                     setSubmitClicked(true);
                     onSubmitProposal();
                   }}
+                  pending={pending}
+                  disabled={pending}
                 >
                   Submit my proposal
+                </StyledButton>
+              ) : (
+                <StyledButton
+                  className="!w-fit whitespace-nowrap p-[10px_12px]"
+                  onClick={() => {
+                    switchNetwork(community.coreChainId);
+                  }}
+                  disabled={!canSwitch}
+                >
+                  Switch {NETWORKS[community.coreChainId].chainName}
                 </StyledButton>
               )}
             </div>

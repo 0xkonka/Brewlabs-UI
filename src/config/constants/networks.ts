@@ -36,7 +36,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON], 
+  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
@@ -44,7 +44,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   tradingPairs: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
   "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   draw: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  communities: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  communities: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET, ChainId.POLYGON],
 };
 
 export const CHAIN_KEYS = {
@@ -224,10 +224,7 @@ export const NETWORKS = {
       symbol: "MATIC",
       decimals: 18,
     },
-    rpcUrls: [
-      "https://polygon.llamarpc.com",
-      "https://polygon-rpc.com/"
-    ],
+    rpcUrls: ["https://polygon.llamarpc.com", "https://polygon-rpc.com/"],
     blockExplorerUrls: ["https://polygonscan.com"],
   },
   [ChainId.FANTOM]: {

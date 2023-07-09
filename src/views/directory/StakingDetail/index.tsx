@@ -301,7 +301,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <div className="mt-2 block h-[32px] w-[140px] lg:mt-0 lg:hidden">
                         <StyledButton>
                           <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                          <div className="ml-3">Brewlabs Custody</div>
+                          <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
                     )}
@@ -312,7 +312,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mt-2 h-[32px] w-[140px] lg:mt-0">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                            <div className="ml-3">Brewlabs Custody</div>
+                            <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
                       </div>
@@ -374,8 +374,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
-                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
-                      <div className="flex justify-between text-xl">
+                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_12px_8px_12px] sm:p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
+                      <div className="flex justify-between text-xl xsm:flex-row flex-col">
                         <div>
                           Pool: <span className="text-primary">{earningToken.symbol}</span>
                           <a
@@ -468,7 +468,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </div>
 
-                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
+                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_12px_8px_12px] sm:p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
@@ -570,7 +570,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       curGraph={curGraph}
                     />
                     <div
-                      className={`primary-shadow mt-[80px] flex w-full cursor-pointer justify-between rounded transition ${
+                      className={`primary-shadow mt-[120px] flex w-full cursor-pointer justify-between rounded transition ${
                         curGraph === 1
                           ? "bg-primary text-black"
                           : "bg-[#B9B8B81A] text-[#FFFFFFBF] hover:bg-[#b9b8b82f]"
@@ -827,9 +827,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         setStakingModalOpen(true);
                       }}
                     />
-                    <div className="relative mb-[150px] mt-2 flex h-12 w-full md:mb-0">
+                    <div className="relative mb-[150px] mt-2 flex w-full flex-col  xsm:flex-row md:mb-0">
                       {data.chainId !== chainId ? (
-                        <div className="flex-1">
+                        <div className="h-12 flex-1">
                           <StyledButton
                             onClick={() => {
                               if (canSwitch) switchNetwork(data.chainId);
@@ -840,7 +840,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       ) : (
                         <>
-                          <div className="mr-5 flex-1">
+                          <div className="mb-2 mr-0 h-12 flex-none xsm:mb-0 xsm:mr-5 xsm:flex-1">
                             <StyledButton
                               onClick={() => {
                                 setStakingModalOpen(true);
@@ -851,7 +851,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               Deposit {data.stakingToken.symbol}
                             </StyledButton>
                           </div>
-                          <div className="flex-1">
+                          <div className="h-12 flex-none xsm:flex-1">
                             <StyledButton
                               type={"secondary"}
                               onClick={() => {

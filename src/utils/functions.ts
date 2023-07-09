@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { CHAIN_ICONS, EXPLORER_LOGO, EXPLORER_NAMES, EXPLORER_URLS } from "config/constants/networks";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { DEX_LOGOS } from "config/constants/swap";
+import { toast } from "react-toastify";
 
 export function numberWithCommas(x: any) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -111,4 +112,8 @@ export const getAddLiquidityUrl = (token1: Currency, token2: Currency, chainId: 
 
 export const getStringfy = (data: any) => {
   return JSON.stringify(data);
+};
+
+export const showError = (errorMsg: string) => {
+  if (errorMsg) toast.error(errorMsg);
 };

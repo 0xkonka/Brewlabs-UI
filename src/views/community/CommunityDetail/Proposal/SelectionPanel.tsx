@@ -14,9 +14,7 @@ const SelectionPanel = ({
   proposals: any;
 }) => {
   const filterNames = ["All", "Open", "Resolved", "Failed", "My proposals"];
-  const filters = filterNames.map(
-    (name, index) => `${name} (${proposals.filter((data) => (data.isFavourite && index === 1) || index === 0).length})`
-  );
+  const filters = filterNames.map((name, index) => `${name} (${proposals.filter((data) => false).length})`);
 
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
