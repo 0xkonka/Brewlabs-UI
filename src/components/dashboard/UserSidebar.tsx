@@ -13,7 +13,7 @@ const UserSidebar = () => {
 
   return (
     <Transition.Root show={isOpen > 0} as={Fragment}>
-      <Dialog as="div" onClose={() => setIsOpen(0)} className="relative z-40">
+      <Dialog as="div" onClose={() => setIsOpen(0)} className="relative z-100">
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"

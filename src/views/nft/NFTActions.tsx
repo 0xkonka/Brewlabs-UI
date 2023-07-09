@@ -194,7 +194,7 @@ const NFTActions = () => {
                   <div
                     className={`mb-4 flex h-[90px] items-center justify-center ${
                       (i < 2 && isApproved) || (i === 2 && activeNFT) ? "text-primary" : "text-tailwind"
-                    } [&>*:first-child]:!h-fit [&>*:first-child]:!w-20`}
+                    } [&>*:first-child]:!h-20 [&>*:first-child]:!w-20`}
                   >
                     {data.icon}
                   </div>

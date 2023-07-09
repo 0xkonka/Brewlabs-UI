@@ -7,6 +7,7 @@ const StyledButton = ({
   type,
   boxShadow,
   className,
+  pending,
 }: {
   onClick?: any;
   disabled?: boolean;
@@ -14,6 +15,7 @@ const StyledButton = ({
   type?: string;
   boxShadow?: boolean;
   className?: string;
+  pending?: boolean;
 }): ReactElement => {
   const base =
     "flex items-center justify-center disabled:cursor-[not-allowed] font-brand rounded relative primary-shadow text-sm transition w-full h-full ";

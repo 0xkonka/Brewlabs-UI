@@ -6,34 +6,31 @@ import clsx from "clsx";
 import Link from "next/link";
 import LogoIcon from "../LogoIcon";
 import ConnectWallet from "../wallet/ConnectWallet";
-// import ThemeSwitcher from "../ThemeSwitcher";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
 import { navigationData, navigationExtraData } from "../../config/constants/navigation";
-import { BuildingOffice2Icon, DocumentTextIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { useMediaQuery } from "react-responsive";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
-  const [short, setShort] = useState(false);
   // Close the mobile navigation when navigating
   useEffect(() => {
     router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
   }, [router.events]);
 
-  useEffect(() => {
-    if (window && window.innerHeight < 770) {
-      setShort(true);
-    } else setShort(false);
-  }, [window]);
+  const isMd = useMediaQuery({ query: "(max-height: 768px)" });
 
   return (
-    <div className="flex max-h-screen min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
-      <div className={`flex flex-1 flex-col overflow-hidden pb-4 pt-5`}>
+    <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
+      <div className={`flex flex-1 flex-col pb-4 pt-5 ${!slim ? "overflow-hidden" : ""}`}>
         <div className={`flex flex-shrink-0 items-center px-4`}>
           <LogoIcon classNames="w-12 text-dark dark:text-brand" />
         </div>
-        <nav className={`mt-5 flex flex-1 flex-col justify-between overflow-hidden`} aria-label="Sidebar">
-          <div className="yellowScroll space-y-1 overflow-x-clip overflow-y-scroll px-2 pb-2 font-brand tracking-wider">
+        <nav
+          className={`mt-5 flex flex-1 flex-col justify-between ${!slim ? "overflow-hidden" : ""}`}
+          aria-label="Sidebar"
+        >
+          <div className={`flex-1 space-y-1 px-2 font-brand tracking-wider ${!slim ? "overflow-y-scroll" : ""}`}>
             {navigationData.map((item) => (
               <Link href={item.href} passHref key={item.name}>
                 <motion.a
@@ -55,7 +52,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                       className={clsx(
                         slim
                           ? "flex h-5 w-5 scale-[85%] items-center justify-center text-gray-500 dark:text-gray-400"
-                          : "mr-3 flex h-7 w-7 items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500 [&>*:first-child]:!h-fit [&>*:first-child]:!w-[22px]"
+                          : "mr-3 flex h-7 w-7 items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500 [&>*:first-child]:!h-[22px] [&>*:first-child]:!w-[22px]"
                       )}
                     >
                       {item.svg}
@@ -87,7 +84,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
           <div
             className={clsx(
               slim ? "items-center p-2" : "px-5",
-              `flex ${short && !slim ? "mx-auto w-full max-w-[200px] justify-between" : "flex-col justify-end"}`
+              `flex ${isMd && !slim ? "mx-auto w-full max-w-[200px] justify-between" : "flex-col justify-end"}`
             )}
           >
             {navigationExtraData.map((item) => (
@@ -101,22 +98,15 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                 <div>
                   {item.svg ? (
                     <div
-                      className={`flex h-5 w-5 flex-shrink-0 scale-[90%] items-center justify-center ${
-                        short ? "text-[#d1d5db] hover:text-primary" : "text-gray-600"
-                      }`}
+                      className={`flex h-5 w-5 flex-shrink-0 scale-[90%] items-center justify-center text-gray-600 hover:text-primary`}
                     >
                       {item.svg}
                     </div>
                   ) : (
-                    <DynamicHeroIcon
-                      icon={item.icon}
-                      className={`h-5 w-5  flex-shrink-0 ${
-                        short ? "text-[#d1d5db] hover:text-primary" : "text-gray-400"
-                      }`}
-                    />
+                    <DynamicHeroIcon icon={item.icon} className={`h-5 w-5  flex-shrink-0 hover:text-primary`} />
                   )}
                 </div>
-                <span className={short ? "hidden" : clsx(slim && "sr-only")}>
+                <span className={isMd ? "hidden" : clsx(slim && "sr-only")}>
                   Visit&nbsp;
                   <span className="dark:text-primary">{item.name}</span>
                 </span>
