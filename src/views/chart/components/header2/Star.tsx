@@ -103,7 +103,11 @@ export const Star = () => {
               if (tokenData) window.open(tokenData.data.links.twitter, "_blank");
             }}
           >
-            <TwitterSVG color={tokenData && (tokenData.data.links.twitter.length > 0 ? "#fff" : "#3f3f46")} />
+            <div
+              className={`${tokenData && (tokenData.data.links.twitter.length > 0 ? "text-white" : "text-[#3f3f46]")}`}
+            >
+              {TwitterSVG}
+            </div>
           </button>
           <button
             className="border-1 flex cursor-pointer items-center justify-center border-solid border-black"

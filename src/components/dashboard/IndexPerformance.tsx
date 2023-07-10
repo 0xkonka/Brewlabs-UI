@@ -35,8 +35,6 @@ const IndexPerformance = () => {
   let splitIndex: any = [];
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
 
-  for (let i = 0; i < Math.ceil(indexes.length / 3); i++) splitIndex.push(indexes.slice(i * 3, i * 3 + 3));
-
   const CustomDot = ({ onClick, ...rest }: any) => {
     const { active } = rest;
 
@@ -44,9 +42,25 @@ const IndexPerformance = () => {
     // active is provided by this lib for checking if the item is active or not.
     return <DotGroup active={active} onClick={() => onClick()} />;
   };
+
+  let sortedIndexes = indexes.map((data) => {
+    let sortedPercentChanges = data.priceChanges;
+    if (!sortedPercentChanges) sortedPercentChanges = [undefined, undefined, undefined, undefined];
+    else {
+      sortedPercentChanges = sortedPercentChanges.map((data) => data.percent);
+    }
+    return { ...data, sortedPercentChanges };
+  });
+
+
+  sortedIndexes = sortedIndexes.sort((a, b) => b.sortedPercentChanges[2] - a.sortedPercentChanges[2]);
+
+  for (let i = 0; i < Math.min(Math.ceil(sortedIndexes.length / 3), 3); i++)
+    splitIndex.push(sortedIndexes.slice(i * 3, i * 3 + 3));
+
   return (
     <StyledContainer className="-mt-2 w-full">
-      <div className="relative font-semibold text-yellow">
+      <div className="relative  text-yellow">
         Index Performance
         <div className="absolute -left-4 top-1.5 [&>*:first-child]:!opacity-100" id={"Top9"}>
           {InfoSVG}
@@ -68,11 +82,6 @@ const IndexPerformance = () => {
             return (
               <div className="w-full" key={i}>
                 {indexes.map((data: any, i) => {
-                  let sortedPercentChanges = data.priceChanges;
-                  if (!sortedPercentChanges) sortedPercentChanges = [undefined, undefined, undefined, undefined];
-                  else {
-                    sortedPercentChanges = sortedPercentChanges.map((data) => data.percent);
-                  }
                   return (
                     <div
                       key={i}
@@ -83,7 +92,7 @@ const IndexPerformance = () => {
                       }}
                     >
                       <div className="flex items-center">
-                        <div className="flex w-[60px]">
+                        <div className="flex w-[70px]">
                           {data.tokens.map((data, i) => {
                             return (
                               <TokenLogo
@@ -95,16 +104,16 @@ const IndexPerformance = () => {
                           })}
                         </div>
                         <img src={getChainLogo(data.chainId)} alt={""} className="ml-3 h-5 w-5" />
-                        <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs font-semibold text-white sm:w-[140px]">
+                        <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs  text-white sm:w-[140px]">
                           {getIndexName(data.tokens)}
                         </div>
                       </div>
                       <div className="flex">
-                        {sortedPercentChanges.map((data, i) => {
+                        {data.sortedPercentChanges.map((data, i) => {
                           if (window.innerWidth < 550 && i != 0) return;
                           const names = ["24hrs", "7D", "30D"];
                           return (
-                            <div key={i} className="mr-5 text-xs font-semibold ">
+                            <div key={i} className="mr-5 text-xs  ">
                               {data ? (
                                 <div className={data < 0 ? "text-danger" : "text-green"}>
                                   {data >= 0 ? "+" : ""} {data.toFixed(2)}% {names[i]}

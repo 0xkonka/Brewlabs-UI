@@ -125,8 +125,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       <div className="primary-shadow mt-4 flex items-center justify-between rounded-[30px] px-4 py-3">
         <div className="mx-auto flex w-fit items-center justify-start overflow-hidden text-ellipsis whitespace-nowrap sm:mx-0">
           <img src={getChainLogo(chainId)} alt={""} className="h-7 w-7" />
-          <div className="scale-50 text-primary">{checkCircleSVG}</div>
-          <div className="flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
+          <div className="ml-3 flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
             <IndexLogo type="line" tokens={tokens} classNames="mx-3" />
             <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{getIndexName(tokens)}</div>
           </div>
@@ -136,7 +135,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       {/* <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div> */}
 
       {step === 2 && (
-        <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
+        <div className="mt-4  text-sm  text-[#FFFFFF80]">
           <div className="ml-4 ">
             <div className="mb-1">Set index name</div>
             <StyledInput value={name} setValue={setName} placeholder={getIndexName(tokens)} className="w-full" />
@@ -146,9 +145,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
             <div className="mb-1 flex w-full items-end justify-between">
               <div className="flex items-center">
                 <div className="tooltip" data-tip="This wallet can be changed at a later date.">
-                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                    {InfoSVG}
-                  </div>
+                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
                 </div>
                 <div>Set deposit and commission fee wallet</div>
               </div>
@@ -167,16 +164,16 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                   className="tooltip"
                   data-tip="This fee is charged when a user enters your index. This fee is sent to your nominated address. Your deposit fee is combined with Brewlabs fixed fee's of 0.25% on every index"
                 >
-                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                    {InfoSVG}
-                  </div>
+                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
                 </div>
                 <div>Set deposit fee</div>
               </div>
               <div className="flex items-center">
                 <div
                   className="mx-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
-                  onClick={() => setDepositFee(+Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01).toFixed(2))}
+                  onClick={() =>
+                    setDepositFee(+Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01).toFixed(2))
+                  }
                 >
                   {PlusSVG}
                 </div>
@@ -195,9 +192,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                   className="tooltip"
                   data-tip="This fee is charged when a user exits your index in a profitable position."
                 >
-                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                    {InfoSVG}
-                  </div>
+                  <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
                 </div>
                 <div>Set commission fee</div>
               </div>
@@ -205,7 +200,9 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 <div
                   className="mx-2 scale-150 cursor-pointer text-tailwind hover:text-[#87878a]"
                   onClick={() =>
-                    setCommissionFee(+Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01).toFixed(2))
+                    setCommissionFee(
+                      +Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01).toFixed(2)
+                    )
                   }
                 >
                   {PlusSVG}
@@ -224,9 +221,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           <div className="mt-3">
             <div className="flex items-center">
               <div className="tooltip" data-tip="Display your index to other users.">
-                <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-                  {InfoSVG}
-                </div>
+                <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
               </div>
               <div>Make my index visible to others?</div>
             </div>
@@ -258,7 +253,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       )}
 
       {step === 4 && (
-        <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm font-semibold text-[#FFFFFF80]">
+        <div className="my-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm  text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Index contract address</div>
@@ -307,15 +302,15 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
 
       <div className="mb-5 mt-4 flex items-center justify-between text-[#FFFFFF80]">
         {step === 2 ? (
-          <div className="text-sm font-semibold text-[#FFFFFF40]">
+          <div className="text-sm  text-[#FFFFFF40]">
             <LoadingText text={"Waiting for deploy"} />
           </div>
         ) : step === 3 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">
+          <div className="text-sm  text-[#2FD35DBF]">
             <LoadingText text={"Deploying smart contract"} />
           </div>
         ) : step === 4 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">Complete</div>
+          <div className="text-sm  text-[#2FD35DBF]">Complete</div>
         ) : (
           ""
         )}
@@ -334,7 +329,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
           </StyledButton>
         ) : step === 4 ? (
           <StyledButton type="deployer" onClick={() => setOpen(false)}>
-            Close window & Visit index
+            Close window
           </StyledButton>
         ) : (
           <StyledButton type="deployer">Do not close this window</StyledButton>
