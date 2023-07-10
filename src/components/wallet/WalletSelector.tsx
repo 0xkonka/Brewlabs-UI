@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 import { WalletConfig } from "config/constants/types";
-import { wallets } from "config/constants/wallets";
+import { ConnectorNames, wallets } from "config/constants/wallets";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import useIsMobile from "@hooks/useIsMobile";
 import { setGlobalState } from "state";
@@ -38,6 +38,17 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
     } else setErrorMsg("");
   }, [error]);
 
+  const checkWalletConnectModalIsOpen = () => {
+    const wcModal = document.getElementsByTagName("wcm-modal")[0]?.shadowRoot;
+    const isOpened = wcModal?.getElementById("wcm-modal").className?.indexOf("wcm-active") > 0;
+    if (isOpened) {
+      setGlobalState("mobileNavOpen", false);
+      onDismiss();
+    } else {
+      setTimeout(checkWalletConnectModalIsOpen, 200);
+    }
+  };
+
   return (
     <div className="p-4 font-brand">
       <h5 className="mb-2 text-2xl dark:text-slate-400">Connect Wallet</h5>
@@ -66,11 +77,8 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
               onClick={() => {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
-                if (isMobile) {
-                  setTimeout(() => {
-                    setGlobalState("mobileNavOpen", false);
-                    onDismiss();
-                  }, 1000);
+                if (isMobile && wallet.connectorId === ConnectorNames.WalletConnect) {
+                  checkWalletConnectModalIsOpen();
                 }
               }}
               className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
