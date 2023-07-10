@@ -42,7 +42,7 @@ const Deployer = ({ page }: { page: number }) => {
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
   const { address: account } = useAccount();
-  // const account = "0xcd3b71d65d1f03f0b2c5a4e67a17347dc71141f7";
+  // const account = "0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799";
 
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const currentBlocks = useChainCurrentBlocks();

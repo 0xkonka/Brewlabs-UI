@@ -112,7 +112,7 @@ const SelectionPanel = ({
         </div>
       </div>
       <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
-        <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
+        <DropDown value={curFilter - 2} setValue={(i) => setCurFilter(i + 2)} data={filters} />
         <div className="mt-2 w-full">
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>

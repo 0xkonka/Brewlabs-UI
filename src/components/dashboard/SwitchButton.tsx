@@ -13,7 +13,7 @@ const SwitchButton = ({
   className?: string;
 }) => {
   return (
-    <StyledContainer value={value} className={`flex rounded-md text-sm font-semibold ${className}`}>
+    <StyledContainer value={value} className={`flex rounded-md text-sm font-medium ${className}`}>
       {values.map((data, i) => {
         return (
           <div key={i} onClick={() => setValue(i)}>

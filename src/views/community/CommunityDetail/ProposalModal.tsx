@@ -150,8 +150,8 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 setValue={setTitle}
                 placeholder="Write your title here"
                 className="w-full !rounded-none"
+                isRequire={!submitClicked || title}
               />
-              <RequireAlert value={!submitClicked || title} />
             </div>
             <div className="mt-[18px]">
               <div>Description</div>
@@ -161,8 +161,8 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 setValue={setDescription}
                 placeholder="Write about your proposal here..."
                 className="h-[183px] w-full !rounded-none"
+                isRequire={!submitClicked || description}
               />
-              <RequireAlert value={!submitClicked || description} />
             </div>
             <div className="mt-4 flex justify-end text-xs leading-[1.2] text-[#FFFFFF80]">
               <ul className="max-w-[200px] list-disc">
