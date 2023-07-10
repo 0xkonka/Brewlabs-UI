@@ -20,8 +20,13 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
 
   const [errorMsg, setErrorMsg] = useState("");
 
+  const installedWallets: WalletConfig[] = wallets.filter((w) => w.installed);
   const walletsToShow: WalletConfig[] = wallets.filter((w) => {
-    return w.installed !== false;
+    return isMobile
+      ? installedWallets.length
+        ? w.installed
+        : w.installed !== false || w.deepLink
+      : w.installed !== false;
   });
 
   useEffect(() => {
