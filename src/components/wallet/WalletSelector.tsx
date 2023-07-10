@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 import { WalletConfig } from "config/constants/types";
-import { wallets } from "config/constants/wallets";
+import { ConnectorNames, wallets } from "config/constants/wallets";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import useIsMobile from "@hooks/useIsMobile";
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { setGlobalState } from "state";
 
 interface WalletSelectorProps {
@@ -19,6 +20,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
   const { chainId } = useActiveChainId();
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [connecting, setConnecting] = useState(false);
 
   const walletsToShow: WalletConfig[] = wallets.filter((w) => {
     return w.installed !== false || w.deepLink;
@@ -37,6 +39,20 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
       setErrorMsg(error?.message ?? "");
     } else setErrorMsg("");
   }, [error]);
+
+  useFastRefreshEffect(() => {
+    if (connecting) {
+      const wcModal = document.getElementsByTagName("wcm-modal")[0]?.shadowRoot;
+      const isOpened = wcModal?.getElementById("wcm-modal").className?.indexOf("wcm-active") > 0;
+      if (isOpened) handleClose();
+    }
+  }, [connecting]);
+
+  const handleClose = () => {
+    setConnecting(false);
+    setGlobalState("mobileNavOpen", false);
+    onDismiss();
+  };
 
   return (
     <div className="p-4 font-brand">
@@ -66,11 +82,8 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
               onClick={() => {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
-                if (isMobile) {
-                  setTimeout(() => {
-                    setGlobalState("mobileNavOpen", false);
-                    onDismiss();
-                  }, 1000);
+                if (isMobile && wallet.connectorId === ConnectorNames.WalletConnect) {
+                  setConnecting(true);
                 }
               }}
               className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
