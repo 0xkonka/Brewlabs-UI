@@ -4,7 +4,6 @@ import { WalletConfig } from "config/constants/types";
 import { ConnectorNames, wallets } from "config/constants/wallets";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import useIsMobile from "@hooks/useIsMobile";
-import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { setGlobalState } from "state";
 
 interface WalletSelectorProps {
@@ -40,18 +39,15 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
     } else setErrorMsg("");
   }, [error]);
 
-  useFastRefreshEffect(() => {
-    if (connecting) {
-      const wcModal = document.getElementsByTagName("wcm-modal")[0]?.shadowRoot;
-      const isOpened = wcModal?.getElementById("wcm-modal").className?.indexOf("wcm-active") > 0;
-      if (isOpened) handleClose();
+  const checkWalletConnectModalIsOpen = () => {
+    const wcModal = document.getElementsByTagName("wcm-modal")[0]?.shadowRoot;
+    const isOpened = wcModal?.getElementById("wcm-modal").className?.indexOf("wcm-active") > 0;
+    if (isOpened) {
+      setGlobalState("mobileNavOpen", false);
+      onDismiss();
+    } else {
+      setTimeout(checkWalletConnectModalIsOpen, 200);
     }
-  }, [connecting]);
-
-  const handleClose = () => {
-    setConnecting(false);
-    setGlobalState("mobileNavOpen", false);
-    onDismiss();
   };
 
   return (
@@ -82,8 +78,9 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
               onClick={() => {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
+
                 if (isMobile && wallet.connectorId === ConnectorNames.WalletConnect) {
-                  setConnecting(true);
+                  checkWalletConnectModalIsOpen();
                 }
               }}
               className="flex w-full items-center py-4 hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
