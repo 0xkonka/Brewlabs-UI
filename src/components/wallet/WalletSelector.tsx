@@ -21,7 +21,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const walletsToShow: WalletConfig[] = wallets.filter((w) => {
-    return w.installed !== false || w.deepLink;
+    return w.installed !== false;
   });
 
   useEffect(() => {
