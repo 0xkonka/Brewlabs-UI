@@ -13,7 +13,7 @@ const CommunityContextProvider = ({ children }: any) => {
   };
   async function getCommunities() {
     axios.post(`${API_URL}/community/getCommunities`, {}).then((data) => {
-      setCommunities(data.data.filter((data) => data.coreChainId !== 97));
+      setCommunities(data.data);
     });
   }
 

@@ -209,8 +209,8 @@ export const NETWORKS = {
     chainId: `0x${Number(ChainId.BSC_TESTNET).toString(16)}`,
     chainName: "BSC Testnet",
     nativeCurrency: {
-      name: "BNB",
-      symbol: "BNB",
+      name: "TBNB",
+      symbol: "TBNB",
       decimals: 18,
     },
     rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
