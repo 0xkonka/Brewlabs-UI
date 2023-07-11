@@ -52,7 +52,6 @@ const IndexPerformance = () => {
     return { ...data, sortedPercentChanges };
   });
 
-
   sortedIndexes = sortedIndexes.sort((a, b) => b.sortedPercentChanges[2] - a.sortedPercentChanges[2]);
 
   for (let i = 0; i < Math.min(Math.ceil(sortedIndexes.length / 3), 3); i++)
@@ -68,70 +67,74 @@ const IndexPerformance = () => {
         <ReactTooltip anchorId={"Top9"} place="right" content="Top 9 Brewlabs Indexes based on performance." />
       </div>
       <div className="mx-auto w-full max-w-[652px] sm:max-w-[676px]">
-        <Carousel
-          arrows={false}
-          responsive={responsive}
-          infinite={true}
-          autoPlay={true}
-          autoPlaySpeed={4000}
-          ref={carouselRef}
-          customDot={<CustomDot onClick={() => {}} />}
-          showDots={true}
-        >
-          {splitIndex.map((indexes, i) => {
-            return (
-              <div className="w-full" key={i}>
-                {indexes.map((data: any, i) => {
-                  return (
-                    <div
-                      key={i}
-                      className="flex cursor-pointer items-center justify-between rounded p-[12px_4px_12px_8px] transition hover:bg-[rgba(50,50,50,0.4)] sm:p-[12px_12px_12px_24px] "
-                      onClick={() => {
-                        router.push(`/indexes/${data.chainId}/${data.pid}`);
-                        setIsOpen(0);
-                      }}
-                    >
-                      <div className="flex items-center">
-                        <div className="flex w-[70px]">
-                          {data.tokens.map((data, i) => {
+        {isOpen ? (
+          <Carousel
+            arrows={false}
+            responsive={responsive}
+            infinite={true}
+            autoPlay={true}
+            autoPlaySpeed={4000}
+            ref={carouselRef}
+            customDot={<CustomDot onClick={() => {}} />}
+            showDots={true}
+          >
+            {splitIndex.map((indexes, i) => {
+              return (
+                <div className="w-full" key={i}>
+                  {indexes.map((data: any, i) => {
+                    return (
+                      <div
+                        key={i}
+                        className="flex cursor-pointer items-center justify-between rounded p-[12px_4px_12px_8px] transition hover:bg-[rgba(50,50,50,0.4)] sm:p-[12px_12px_12px_24px] "
+                        onClick={() => {
+                          router.push(`/indexes/${data.chainId}/${data.pid}`);
+                          setIsOpen(0);
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <div className="flex w-[70px]">
+                            {data.tokens.map((data, i) => {
+                              return (
+                                <TokenLogo
+                                  key={i}
+                                  src={getTokenLogoURL(data.address, data.chainId, data.logo)}
+                                  classNames="-mr-3 h-6 w-6"
+                                />
+                              );
+                            })}
+                          </div>
+                          <img src={getChainLogo(data.chainId)} alt={""} className="ml-3 h-5 w-5" />
+                          <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs  text-white sm:w-[140px]">
+                            {getIndexName(data.tokens)}
+                          </div>
+                        </div>
+                        <div className="flex">
+                          {data.sortedPercentChanges.map((data, i) => {
+                            if (window.innerWidth < 550 && i != 0) return;
+                            const names = ["24hrs", "7D", "30D"];
                             return (
-                              <TokenLogo
-                                key={i}
-                                src={getTokenLogoURL(data.address, data.chainId, data.logo)}
-                                classNames="-mr-3 h-6 w-6"
-                              />
+                              <div key={i} className="mr-5 text-xs  ">
+                                {data ? (
+                                  <div className={data < 0 ? "text-danger" : "text-green"}>
+                                    {data >= 0 ? "+" : ""} {data.toFixed(2)}% {names[i]}
+                                  </div>
+                                ) : (
+                                  <SkeletonComponent />
+                                )}
+                              </div>
                             );
                           })}
                         </div>
-                        <img src={getChainLogo(data.chainId)} alt={""} className="ml-3 h-5 w-5" />
-                        <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs  text-white sm:w-[140px]">
-                          {getIndexName(data.tokens)}
-                        </div>
                       </div>
-                      <div className="flex">
-                        {data.sortedPercentChanges.map((data, i) => {
-                          if (window.innerWidth < 550 && i != 0) return;
-                          const names = ["24hrs", "7D", "30D"];
-                          return (
-                            <div key={i} className="mr-5 text-xs  ">
-                              {data ? (
-                                <div className={data < 0 ? "text-danger" : "text-green"}>
-                                  {data >= 0 ? "+" : ""} {data.toFixed(2)}% {names[i]}
-                                </div>
-                              ) : (
-                                <SkeletonComponent />
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </Carousel>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </Carousel>
+        ) : (
+          ""
+        )}
       </div>
     </StyledContainer>
   );

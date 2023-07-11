@@ -31,12 +31,12 @@ const CommunitySummary = ({ community }: { community: any }) => {
       .catch((e) => console.log(e));
   }, [account, communityStringified]);
 
-  const isJoined = account && community.members.includes(account.toLowerCase());
+  const isJoined = community.members.includes(account?.toLowerCase());
 
   return (
     <div className="mt-10 flex flex-col flex-wrap items-center justify-between sm:flex-row sm:items-start lg:mt-0">
-      <div className="primary-shadow flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded">
-        <img src={community.logo} className="h-full max-w-[unset]" alt={""} />
+      <div className="primary-shadow flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded bg-[#0e2130]">
+        <img src={community.logo} className="w-[120px] rounded" alt={""} />
       </div>
       <div className="mx-0 mt-6 sm:mx-6 sm:mt-0">
         <StyledButton
@@ -69,7 +69,8 @@ const CommunitySummary = ({ community }: { community: any }) => {
             </div>
           </div>
           <div className="ml-3 text-sm text-[#FFFFFFBF]">
-            {numberWithCommas(totalBalance.toFixed(2))} {community.symbol} in my wallet.
+            {numberWithCommas(totalBalance.toFixed(2))} {community.currencies[community.coreChainId].symbol} in my
+            wallet.
           </div>
         </div>
         <div className="mt-3 flex items-center">
@@ -80,7 +81,8 @@ const CommunitySummary = ({ community }: { community: any }) => {
             {FixedSVG}
           </div>
           <div className="ml-3 text-sm text-[#FFFFFFBF]">
-            {((totalBalance / community.totalSupply) * 100).toFixed(4)}% {community.symbol}{" "}
+            {((totalBalance / community.totalSupply) * 100).toFixed(4)}%{" "}
+            {community.currencies[community.coreChainId].symbol}{" "}
           </div>
         </div>
         <div className="mt-3 flex items-center">

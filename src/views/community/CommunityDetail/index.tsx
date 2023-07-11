@@ -10,8 +10,23 @@ import Link from "next/link";
 import CommunitySummary from "./CommunitySummary";
 import InfoPanel from "./InfoPanel";
 import Proposal from "./Proposal";
+import { useEffect, useState } from "react";
+import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 
 const CommunityDetail = ({ community }: { community: any }) => {
+  const [totalBalance, setTotalBalance] = useState(0);
+
+  const communityStringified = JSON.stringify(community);
+  useEffect(() => {
+    getTreasuryBalances(
+      Object.keys(community.currencies).map((key) => community.currencies[key]),
+      community.treasuries
+    ).then((balance) => setTotalBalance(balance));
+  }, [communityStringified]);
+
+  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
+  const circulatingSupply = totalSupply - totalBalance;
+
   return (
     <AnimatePresence exitBeforeEnter>
       <motion.div
@@ -38,9 +53,9 @@ const CommunityDetail = ({ community }: { community: any }) => {
             <div className="mt-4" />
             <CommunitySummary community={community} />
             <div className="mt-4" />
-            <InfoPanel community={community} />
+            <InfoPanel community={community} circulatingSupply={circulatingSupply} />
             <div className="mt-10 sm:mt-2" />
-            <Proposal community={community} />
+            <Proposal community={community} circulatingSupply={circulatingSupply} />
           </Container>
         </div>
       </motion.div>

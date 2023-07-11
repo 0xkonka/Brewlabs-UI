@@ -4,7 +4,7 @@ import { useState } from "react";
 import SelectionPanel from "./SelectionPanel";
 import ProposalList from "./ProposalList";
 
-const Proposal = ({ community }: { community: any }) => {
+const Proposal = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   const [curFilter, setCurFilter] = useState(0);
   const [criteria, setCriteria] = useState("");
   return (
@@ -19,7 +19,7 @@ const Proposal = ({ community }: { community: any }) => {
         />
       </div>
       <div className="mt-9" />
-      <ProposalList community={community} />
+      <ProposalList community={community} circulatingSupply={circulatingSupply} />
     </div>
   );
 };

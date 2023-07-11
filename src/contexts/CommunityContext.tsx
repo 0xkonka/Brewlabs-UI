@@ -1,3 +1,4 @@
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import axios from "axios";
 import { API_URL } from "config/constants";
 import React, { useEffect, useState } from "react";
@@ -6,13 +7,20 @@ import { toast } from "react-toastify";
 const CommunityContext: any = React.createContext({ communities: [], joinOrLeaveCommunity: () => {} });
 
 const CommunityContextProvider = ({ children }: any) => {
-  const handleError = (data) => {
+  const handleError = (data, successText = "") => {
     if (!data.success) toast.error(data.msg);
+    else if (successText) toast.success(successText);
   };
   async function getCommunities() {
     axios.post(`${API_URL}/community/getCommunities`, {}).then((data) => {
-      setCommunities(data.data);
+      setCommunities(data.data.filter((data) => data.coreChainId !== 97));
     });
+  }
+
+  async function addCommunity(community) {
+    const result = await axios.post(`${API_URL}/community/addCommunities`, { community });
+    handleError(result.data, "Community Added");
+    getCommunities();
   }
 
   async function joinOrLeaveCommunity(address, pid) {
@@ -25,24 +33,25 @@ const CommunityContextProvider = ({ children }: any) => {
   }
 
   async function addProposal(proposal, pid) {
-    const result = await axios.post(`${API_URL}/api/community/addProposal`, { proposal, pid });
-    handleError(result.data);
+    const result = await axios.post(`${API_URL}/community/addProposal`, { proposal, pid });
+    handleError(result.data, "Proposal Submitted");
     getCommunities();
   }
 
   async function voteOrAgainst(address, pid, index, type) {
-    const result = await axios.post(`${API_URL}/api/community/voteOrAgainst`, {
+    const result = await axios.post(`${API_URL}/community/voteOrAgainst`, {
       address: address.toLowerCase(),
       pid,
       index,
       type,
     });
-    handleError(result.data);
+    handleError(result.data, "Voted Successfully");
     getCommunities();
   }
 
   const [communities, setCommunities] = useState([]);
-  useEffect(() => {
+
+  useFastRefreshEffect(() => {
     getCommunities();
   }, []);
 
@@ -53,6 +62,7 @@ const CommunityContextProvider = ({ children }: any) => {
         joinOrLeaveCommunity,
         addProposal,
         voteOrAgainst,
+        addCommunity,
       }}
     >
       {children}
