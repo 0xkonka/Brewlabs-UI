@@ -136,4 +136,4 @@ export const rarities = [
   },
 ];
 
-export const NFT_RARE_COUNT = { [ChainId.ETHEREUM]: 3, [ChainId.BSC_MAINNET]: 25 };
+export const NFT_RARE_COUNT = { [ChainId.ETHEREUM]: 3, [ChainId.BSC_MAINNET]: 37 };

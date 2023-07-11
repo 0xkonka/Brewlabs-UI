@@ -7,7 +7,7 @@ export const useOETHMonthlyAPY = () => {
     axios
       .get("https://analytics.ousd.com/api/v2/oeth/apr/trailing_history/30")
       .then((data) => {
-        setAPY(data.data.trailing_history[0].trailing_apy);
+        setAPY(data.data.trailing_history[0].trailing_apy / 100 );
       })
       .catch((e) => console.log(e));
   }, []);
@@ -20,7 +20,7 @@ export const useOETHWeeklyAPY = () => {
     axios
       .get("https://analytics.ousd.com/api/v2/oeth/apr/trailing_history/7")
       .then((data) => {
-        setAPY(data.data.trailing_history[0].trailing_apy);
+        setAPY(data.data.trailing_history[0].trailing_apy / 100);
       })
       .catch((e) => console.log(e));
   }, []);
