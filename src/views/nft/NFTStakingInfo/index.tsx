@@ -32,20 +32,24 @@ const NFTStakingInfo = () => {
 
   const tokenMarketData = useTokenMarketChart(1);
 
+  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
+    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
+    : null;
+
   const NFT_MontlyApr = {
     1:
-      NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1][0].balance) / NFT_RARE_COUNT[1] / 9
+      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
+        ? ((OETHMontlyAPY * NFT_wallet_balance[1][0].balance * OETHPrice) / NFT_RARE_COUNT[1] / 9) * 12
         : null,
     56:
-      NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1][1].balance) / NFT_RARE_COUNT[56] / 9
+      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
+        ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
         : null,
   };
 
   const NFT_Weekly_ROI = {
-    1: NFT_wallet_balance && OETHWeeklyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[1][0].balance) / 9 : null,
-    56: NFT_wallet_balance && OETHMontlyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[1][1].balance) / 9 : null,
+    1: NFT_wallet_balance && OETHWeeklyAPY ? ((OETHWeeklyAPY * NFT_wallet_balance[1][0].balance) / 9) * 12 : null,
+    56: NFT_wallet_balance && OETHMontlyAPY ? ((OETHWeeklyAPY * NFT_wallet_balance[1][1].balance) / 9) * 12 : null,
   };
 
   const infos = [
@@ -77,10 +81,6 @@ const NFTStakingInfo = () => {
       tooltip: "Unstaking Brewlabs NFT incurs a performance fee of approximately $2.00 in network currency.",
     },
   ];
-
-  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
-    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
-    : null;
 
   const aprByNetworks = [
     {

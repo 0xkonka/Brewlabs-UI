@@ -27,6 +27,7 @@ import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
+import useTokenMarketChart from "@hooks/useTokenMarketChart";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -57,6 +58,12 @@ const NFTCard = ({ nft }: { nft: any }) => {
         (pool?.totalStaked ?? 0))
     : 0;
 
+  const tokenMarketData = useTokenMarketChart(1);
+
+  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
+    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
+    : null;
+
   const OETHMontlyAPY = useOETHMonthlyAPY();
   const NFT_wallet_balance = useTokenBalances(
     { 1: [tokens[1].oeth, tokens[1].oeth] },
@@ -67,12 +74,12 @@ const NFTCard = ({ nft }: { nft: any }) => {
 
   const NFT_Apr = {
     1:
-      NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1][0].balance) / NFT_RARE_COUNT[1] / 9
+      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
+        ? ((OETHMontlyAPY * NFT_wallet_balance[1][0].balance * OETHPrice) / NFT_RARE_COUNT[1] / 9) * 12
         : null,
     56:
-      NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1][1].balance) / NFT_RARE_COUNT[56] / 9
+      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
+        ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
         : null,
   };
 

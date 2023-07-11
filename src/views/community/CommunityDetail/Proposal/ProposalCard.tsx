@@ -14,14 +14,10 @@ import { useAccount, useSigner } from "wagmi";
 
 const ProposalCard = ({
   proposal,
-  index,
-  pid,
   community,
   circulatingSupply,
 }: {
   proposal: any;
-  index: number;
-  pid: number;
   community: any;
   circulatingSupply: any;
 }) => {
@@ -70,11 +66,11 @@ const ProposalCard = ({
     100;
 
   return (
-    <div className="primary-shadow flex w-full justify-end rounded bg-[#B9B8B80D] sm:p-[20px_20px_32px_20px] p-[20px_12px_32px_12px]">
+    <div className="primary-shadow mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] p-[20px_12px_32px_12px] sm:p-[20px_20px_32px_20px]">
       <div className="flex w-full max-w-[1100px] flex-col items-center justify-between sm:flex-row">
         <div className="flex flex-1 flex-wrap">
           <div>
-            <div className="text-xl text-primary">Proposal #{index + 1}</div>
+            <div className="text-xl text-primary">Proposal #{proposal.index + 1}</div>
             <div className="w-[110px] overflow-hidden text-ellipsis text-sm text-white">
               {name.loading ? proposal.owner : name.ENSName ?? proposal.owner}
             </div>
@@ -92,7 +88,7 @@ const ProposalCard = ({
           <div className="mx-4 mt-[5px] flex h-4 w-12 items-center justify-center rounded-[12px] bg-primary text-[10px] font-bold text-black xl:mx-10">
             New
           </div>
-          <div className="w-full flex-none sm:w-fit sm:flex-1 sm:mt-0 mt-4">
+          <div className="mt-4 w-full flex-none sm:mt-0 sm:w-fit sm:flex-1">
             <div className="text-xl text-white">
               <span className="text-primary">OPEN:</span>&nbsp;{proposal.title}
             </div>
@@ -101,11 +97,11 @@ const ProposalCard = ({
             </div>
           </div>
         </div>
-        <div className="ml-4 mr-0 mt-4 flex flex-row sm:mt-0 sm:flex-col xl:mr-20">
+        <div className="ml-0 mr-0 mt-4 flex flex-row sm:ml-4 sm:mt-0 sm:flex-col xl:mr-20">
           <div className="relative">
             <StyledButton
               className="!h-fit p-[10px_12px]"
-              onClick={() => onVoteOrAgainst(account, pid, index, "yesVoted")}
+              onClick={() => onVoteOrAgainst(account, community.pid, proposal.index, "yesVoted")}
               disabled={pending}
             >
               {proposal.yesVoted.includes(account?.toLowerCase()) ? "I'm for it!" : "For"}
@@ -119,7 +115,7 @@ const ProposalCard = ({
           <div className="relative ml-4 mt-0 sm:ml-0 sm:mt-8">
             <StyledButton
               className="!h-fit !bg-[#27272A] p-[10px_12px] text-primary"
-              onClick={() => onVoteOrAgainst(account, pid, index, "noVoted")}
+              onClick={() => onVoteOrAgainst(account, community.pid, proposal.index, "noVoted")}
               disabled={pending}
             >
               {proposal.noVoted.includes(account?.toLowerCase()) ? "I'm against it" : "Against"}

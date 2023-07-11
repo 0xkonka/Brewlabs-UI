@@ -36,6 +36,21 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   if (community.socials.telegram) explorers.push({ icon: TelegramSVG, link: community.socials.telegram });
   if (community.socials.twitter) explorers.push({ icon: TwitterSVG, link: community.socials.twitter });
 
+  let totalVoteCount = 0;
+  community.proposals.map(
+    (data) =>
+      (totalVoteCount +=
+        community.feeToVote.type === "no" || (community.feeToVote.type === "sometimes" && !data.isFeeToVote)
+          ? 0
+          : [...data.yesVoted, ...data.noVoted].length)
+  );
+
+  const totalVotePercent =
+    ((community.feeToVote.amount * totalVoteCount) /
+      Math.pow(10, community.currencies[community.coreChainId].decimals) /
+      circulatingSupply) *
+    100;
+
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
   const circulatingPercent = (circulatingSupply / totalSupply) * 100;
 
@@ -44,7 +59,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   const durations = [7, 14, 30];
   const infos = [
     { icon: PeopleSVG, data: `${community.members.length} Members` },
-    { icon: EngagementSVG, data: `${(0).toFixed(2)}% Governance Engagement` },
+    { icon: EngagementSVG, data: `${totalVotePercent.toFixed(2)}% Governance Engagement` },
     { icon: RequirementSVG, data: "30.00% Quorum Requirement" },
     {
       icon: BellSVG,

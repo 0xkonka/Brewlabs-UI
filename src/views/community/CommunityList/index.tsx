@@ -7,14 +7,38 @@ import { useAccount } from "wagmi";
 import { isArray } from "lodash";
 import axios from "axios";
 import { CommunityContext } from "contexts/CommunityContext";
+import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 
 const CommunityList = () => {
+  const { communities: _communities }: any = useContext(CommunityContext);
+
   const [favourites, setFavourites] = useState([]);
   const [curFilter, setCurFilter] = useState(0);
   const [criteria, setCriteria] = useState("");
+  const [communities, setCommunities] = useState(_communities);
 
   const { address: account } = useAccount();
-  const { communities }: any = useContext(CommunityContext);
+
+  const communityStringified = JSON.stringify(_communities);
+  useEffect(() => {
+    Promise.all(
+      _communities.map((data) =>
+        getTreasuryBalances(
+          Object.keys(data.currencies).map((key) => data.currencies[key]),
+          data.treasuries
+        )
+      )
+    )
+      .then((result) => {
+        const coms = _communities.map((data, i) => {
+          const totalSupply = data.totalSupply / Math.pow(10, data.currencies[data.coreChainId].decimals);
+          const circulatingSupply = totalSupply - result[i];
+          return { ...data, circulatingSupply };
+        });
+        setCommunities(coms);
+      })
+      .catch((e) => console.log(e));
+  }, [communityStringified]);
 
   const getFavourites = () => {
     try {
@@ -32,9 +56,13 @@ const CommunityList = () => {
   const wrappedCommunities = communities.map((data) => {
     return { ...data, isFavourite: favourites.includes(data.pid) };
   });
-  const filteredCommunity = wrappedCommunities.filter(
-    (data, i) => (data.isFavourite && curFilter === 1) || curFilter === 0
-  );
+  const filteredCommunity = wrappedCommunities
+    .filter(
+      (data) =>
+        data.name.toLowerCase().includes(criteria.toLowerCase()) ||
+        data.currencies[data.coreChainId].address.toLowerCase().includes(criteria.toLowerCase())
+    )
+    .filter((data, i) => (data.isFavourite && curFilter === 1) || curFilter === 0);
 
   return (
     <div>
