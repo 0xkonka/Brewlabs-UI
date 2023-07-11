@@ -8,6 +8,7 @@ import {
   RefreshSVG,
   RequirementSVG,
   TelegramSVG,
+  TwitterSVG,
   WebSiteSVG,
 } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
@@ -18,8 +19,8 @@ import { useEffect, useState } from "react";
 import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 import ProposalModal from "./ProposalModal";
 
-const InfoPanel = ({ community }: { community: any }) => {
-  const explorers = [
+const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
+  let explorers = [
     ...Object.keys(community.currencies)
       .filter((key) => key !== "97")
       .map((key) => {
@@ -30,29 +31,29 @@ const InfoPanel = ({ community }: { community: any }) => {
           }`,
         };
       }),
-    { icon: WebSiteSVG, link: community.socials.website },
-    { icon: TelegramSVG, link: community.socials.telegram },
   ];
+  if (community.socials.website) explorers.push({ icon: WebSiteSVG, link: community.socials.website });
+  if (community.socials.telegram) explorers.push({ icon: TelegramSVG, link: community.socials.telegram });
+  if (community.socials.twitter) explorers.push({ icon: TwitterSVG, link: community.socials.twitter });
 
-  const [totalBalance, setTotalBalance] = useState(0);
+  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
+  const circulatingPercent = (circulatingSupply / totalSupply) * 100;
+
   const [proposalOpen, setProposalOpen] = useState(false);
 
-  const communityStringified = JSON.stringify(community);
-  useEffect(() => {
-    getTreasuryBalances(
-      Object.keys(community.currencies).map((key) => community.currencies[key]),
-      community.treasuries
-    ).then((balance) => setTotalBalance(balance));
-  }, [communityStringified]);
-
-  const circulatingPercent = ((community.totalSupply / 1 - totalBalance) / community.totalSupply) * 100;
-
+  const durations = [7, 14, 30];
   const infos = [
     { icon: PeopleSVG, data: `${community.members.length} Members` },
-    { icon: EngagementSVG, data: `${community.engagement.toFixed(2)}% Governance Engagement` },
+    { icon: EngagementSVG, data: `${(0).toFixed(2)}% Governance Engagement` },
     { icon: RequirementSVG, data: "30.00% Quorum Requirement" },
-    { icon: BellSVG, data: `7-30 Day Proposal Duration` },
-    { icon: DatabaseSVG, data: `${numberWithCommas((community.totalSupply / 1).toFixed(2))} BREWLABS` },
+    {
+      icon: BellSVG,
+      data: `${community.maxProposal ? "7-" : ""}${durations[community.maxProposal]} Day Proposal Duration`,
+    },
+    {
+      icon: DatabaseSVG,
+      data: `${numberWithCommas(totalSupply.toFixed(2))} ${community.currencies[community.coreChainId].symbol}`,
+    },
     {
       icon: RefreshSVG,
       data: `${circulatingPercent.toFixed(2)}% Circulating Supply`,
@@ -96,8 +97,8 @@ const InfoPanel = ({ community }: { community: any }) => {
         </div>
         <StyledButton
           className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
-          // onClick={() => setProposalOpen(true)}
-          disabled
+          onClick={() => setProposalOpen(true)}
+          // disabled
         >
           Submit&nbsp;<span className="font-normal">new proposal</span>
         </StyledButton>

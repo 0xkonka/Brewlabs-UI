@@ -7,20 +7,16 @@ import Dropzone from "react-dropzone";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useAccount } from "wagmi";
 import StyledInput from "@components/StyledInput";
-import { useState, useCallback } from "react";
+import { useContext, useState } from "react";
 import DropDown from "@components/dashboard/TokenList/Dropdown";
 import { getChainLogo } from "utils/functions";
 import { NETWORKS } from "config/constants/networks";
-import {
-  ChevronRightVG,
-  InfoSVG,
-  TelegramSVG,
-  TwitterSVG,
-  WebSiteSVG,
-  chevronLeftSVG,
-} from "@components/dashboard/assets/svgs";
+import { InfoSVG, TelegramSVG, TwitterSVG, WebSiteSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
-import axios from "axios";
+import useTokenInfo from "@hooks/useTokenInfo";
+import { ethers } from "ethers";
+import RequireAlert from "@components/RequireAlert";
+import { CommunityContext } from "contexts/CommunityContext";
 
 const storage = new NFTStorage({
   token:
@@ -29,6 +25,7 @@ const storage = new NFTStorage({
 
 const CommunityModal = ({ open, setOpen }) => {
   const { address: account } = useAccount();
+  // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
 
   const [title, setTitle] = useState("");
   const [contractAddress, setContractAddress] = useState("");
@@ -55,24 +52,86 @@ const CommunityModal = ({ open, setOpen }) => {
   const [telegram, setTelegram] = useState("");
   const [twitter, setTwitter] = useState("");
 
-  const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161]];
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161] /*, NETWORKS[97]*/];
   const contractTypes = ["Token", "NFT", "Both"];
   const quoroumReqs = [10, 15, 20, 25, 30, 35, 40, 45, 50];
   const maxProposals = [7, 14, 30];
 
+  const { owner, deployer, name, symbol, decimals, totalSupply } = useTokenInfo(
+    contractAddress,
+    parseInt(chains[selectedChainId].chainId)
+  );
+
+  const { addCommunity }: any = useContext(CommunityContext);
+
+  let isOwnerOrDeployer =
+    owner?.toLowerCase() === account?.toLowerCase() || deployer?.toLowerCase() === account?.toLowerCase();
+
+  isOwnerOrDeployer = isOwnerOrDeployer ?? false;
+
+  const isInValid =
+    !title ||
+    !isOwnerOrDeployer ||
+    !description ||
+    !feeProposalAmount ||
+    !feeVoteAmount ||
+    !ethers.utils.isAddress(feeProposalWallet) ||
+    !ethers.utils.isAddress(feeVoteWallet) ||
+    !uploadImage;
+
   const dropHandler = async (acceptedFiles: any[]) => {
     try {
       const [File] = acceptedFiles;
-      setUploadedImage(`https://maverickbl.mypinata.cloud/ipfs/${await storage.storeBlob(File)}`);
+      const path = await storage.storeBlob(File);
+      setUploadedImage(`https://maverickbl.mypinata.cloud/ipfs/${path}`);
       setCommunityImage(URL.createObjectURL(File));
     } catch (e) {
       console.log(e);
     }
   };
+
+  const onSubmitCommunity = async () => {
+    setSubmitClicked(true);
+    if (isInValid || !submitClicked) return;
+    const chainId = parseInt(chains[selectedChainId].chainId);
+    let currencies = new Object();
+    currencies[chainId] = { chainId, decimals, name, symbol, address: contractAddress };
+    await addCommunity({
+      name: title,
+      members: [],
+      logo: uploadImage,
+      currencies,
+      type: contractTypes[contractType],
+      socials: {
+        telegram,
+        twitter,
+        website,
+      },
+      coreChainId: chainId,
+      description: description,
+      proposals: [],
+      totalSupply: totalSupply.toString(),
+      treasuries: { 1: [ethers.constants.AddressZero, "0x000000000000000000000000000000000000dead"] },
+      feeToProposal: {
+        type: ["Yes", "No"][feeForProposal],
+        address: feeProposalWallet,
+        amount: ethers.utils.parseUnits(feeProposalAmount, decimals).toString(),
+      },
+      feeToVote: {
+        type: ["Yes", "No", "Sometimes"][feeForVote],
+        address: feeVoteWallet,
+        amount: ethers.utils.parseUnits(feeVoteAmount, decimals).toString(),
+      },
+      maxProposal: maxProposal,
+    });
+  };
+
   return (
     <Dialog
       open={open}
-      className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand backdrop-blur-[2px] dark:bg-zinc-900 dark:bg-opacity-80"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-gray-300 bg-opacity-90 font-brand backdrop-blur-[2px] dark:bg-zinc-900 dark:bg-opacity-80"
       onClose={() => {}}
     >
       <div className="flex min-h-full items-center justify-center p-4 ">
@@ -99,17 +158,17 @@ const CommunityModal = ({ open, setOpen }) => {
           }}
           transition={{ duration: 0.25 }}
         >
-          <div className="primary-shadow relative w-[calc(100vw-24px)] max-w-[800px]  rounded bg-[#18181B] p-[38px_32px_40px_64px] text-white ">
+          <div className="primary-shadow relative w-[calc(100vw-24px)] max-w-[800px]  rounded bg-[#18181B] p-[38px_4px_40px_12px] text-white md:p-[38px_32px_40px_64px] ">
             <div className="greyScroll max-h-[600px] overflow-y-scroll pr-2">
               <div>
                 <div className="text-xl text-primary">New Community</div>
-                <div className="mt-1 text-sm text-[#FFFFFF80]">
+                <div className="mt-1 overflow-hidden text-ellipsis text-sm text-[#FFFFFF80] ">
                   <span className="text-white">By</span> {account} (Must be contract owner or deployer).
                   <br /> All fields need completion below.
                 </div>
               </div>
 
-              <div className="mt-4 flex justify-between">
+              <div className="mt-4 flex flex-col-reverse justify-between xsm:flex-row">
                 <div className="flex-1">
                   <div>Community title</div>
                   <StyledInput
@@ -117,9 +176,10 @@ const CommunityModal = ({ open, setOpen }) => {
                     setValue={setTitle}
                     placeholder="Write your title here"
                     className="h-fit w-full p-[6px_10px]"
+                    isValid={!submitClicked || title}
                   />
                 </div>
-                <div className="ml-12">
+                <div className="mb-2 ml-0 xsm:mb-0 xsm:ml-4 sm:xsm:ml-12">
                   <div>Type</div>
                   <DropDown
                     value={communityType}
@@ -132,7 +192,7 @@ const CommunityModal = ({ open, setOpen }) => {
                 </div>
               </div>
 
-              <div className="mt-2 flex justify-between">
+              <div className="mt-2 flex flex-col-reverse justify-between xsm:flex-row">
                 <div className="flex-1">
                   <div>Contract address</div>
                   <StyledInput
@@ -140,9 +200,11 @@ const CommunityModal = ({ open, setOpen }) => {
                     setValue={setContractAddress}
                     placeholder="0x...."
                     className="h-fit w-full p-[6px_10px]"
+                    isValid={!submitClicked || isOwnerOrDeployer}
+                    requireText="Not owner or deployer"
                   />
                 </div>
-                <div className="ml-12">
+                <div className="mb-2 ml-0 xsm:mb-0 xsm:ml-4 sm:xsm:ml-12">
                   <div>Network</div>
                   <div className="flex w-[120px] items-center justify-between">
                     <DropDown
@@ -172,10 +234,11 @@ const CommunityModal = ({ open, setOpen }) => {
                   setValue={setDescription}
                   placeholder="Write about your community here..."
                   className="h-28 w-full !p-2.5"
+                  isValid={!submitClicked || description}
                 />
               </div>
 
-              <div className="flex">
+              <div className="mt-1.5 flex flex-col sm:flex-row">
                 <div>
                   <div className="text-sm">Smart contract type</div>
                   <DropDown
@@ -183,19 +246,19 @@ const CommunityModal = ({ open, setOpen }) => {
                     setValue={setContractType}
                     values={contractTypes}
                     type={"secondary"}
-                    width="w-24"
+                    width="sm:w-24 w-full"
                     className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
                   />
                 </div>
 
-                <div className="mx-10">
+                <div className="mx-0 my-2 sm:mx-10 sm:my-0">
                   <div className="text-sm">Quoroum Req.</div>
                   <DropDown
                     value={quoroumReq}
                     setValue={setQuoroumReq}
                     values={quoroumReqs.map((data) => data.toFixed(2) + "%")}
                     type={"secondary"}
-                    width="w-24"
+                    width="sm:w-24 w-full"
                     className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
                   />
                 </div>
@@ -207,13 +270,13 @@ const CommunityModal = ({ open, setOpen }) => {
                     setValue={setMaxProposal}
                     values={maxProposals.map((data) => data + " Days")}
                     type={"secondary"}
-                    width="w-24"
+                    width="sm:w-24 w-full"
                     className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
                   />
                 </div>
               </div>
 
-              <div className="mt-[22px] flex items-center justify-between">
+              <div className="mt-[22px] flex flex-col items-start justify-between md:flex-row">
                 <div className="flex items-center">
                   <div
                     className="mr-2.5 mt-[18px] cursor-pointer text-tailwind hover:text-white [&>svg]:!h-6 [&>svg]:!w-6"
@@ -233,29 +296,37 @@ const CommunityModal = ({ open, setOpen }) => {
                     />
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <div>
-                    <div className="text-sm">Fee Amount</div>
-                    <StyledInput
-                      value={feeProposalAmount}
-                      setValue={setFeeProposalAmount}
-                      placeholder="Enter round num...."
-                      className="!h-fit w-[200px] !rounded-none !p-[6px_10px]"
-                    />
+                {feeForProposal !== 1 ? (
+                  <div className="mt-4 flex w-full flex-col items-start xsm:flex-row md:mt-0 md:w-fit">
+                    <div className=" w-full w-full flex-1 md:w-fit md:flex-none">
+                      <div className="text-sm">Fee Amount</div>
+                      <StyledInput
+                        type={"number"}
+                        value={feeProposalAmount}
+                        setValue={setFeeProposalAmount}
+                        placeholder="Enter round num...."
+                        className="!h-fit w-full !rounded-none !p-[6px_10px] md:w-[200px]"
+                        isValid={!submitClicked || feeProposalAmount}
+                      />
+                    </div>
+                    <div className="ml-0 mt-2 w-full flex-1 xsm:ml-3 xsm:mt-0 md:w-fit md:flex-none">
+                      <div className="text-sm">Fee wallet</div>
+                      <StyledInput
+                        value={feeProposalWallet}
+                        setValue={setFeeProposalWallet}
+                        placeholder="0x...."
+                        className="!h-fit w-full !rounded-none !p-[6px_10px] md:w-[273px]"
+                        isValid={!submitClicked || ethers.utils.isAddress(feeProposalWallet)}
+                        requireText="Please input valid address"
+                      />
+                    </div>
                   </div>
-                  <div className="ml-3">
-                    <div className="text-sm">Fee wallet</div>
-                    <StyledInput
-                      value={feeProposalWallet}
-                      setValue={setFeeProposalWallet}
-                      placeholder="0x...."
-                      className="!h-fit w-[273px] !rounded-none !p-[6px_10px]"
-                    />
-                  </div>
-                </div>
+                ) : (
+                  ""
+                )}
               </div>
 
-              <div className="mt-3 flex items-center justify-between">
+              <div className="mt-3 flex flex-col items-start justify-between md:flex-row">
                 <div className="flex items-center">
                   <div
                     className="mr-2.5 mt-[18px] cursor-pointer text-tailwind hover:text-white [&>svg]:!h-6 [&>svg]:!w-6"
@@ -275,33 +346,41 @@ const CommunityModal = ({ open, setOpen }) => {
                     />
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <div>
-                    <div className="text-sm">Fee Amount</div>
-                    <StyledInput
-                      value={feeVoteAmount}
-                      setValue={setFeeVoteAmount}
-                      placeholder="Enter round num...."
-                      className="!h-fit w-[200px] !rounded-none !p-[6px_10px]"
-                    />
+                {feeForVote !== 1 ? (
+                  <div className="mt-4 flex w-full flex-col items-start xsm:flex-row md:mt-0 md:w-fit">
+                    <div className="w-full w-full flex-1 md:w-fit md:flex-none">
+                      <div className="text-sm">Fee Amount</div>
+                      <StyledInput
+                        type={"number"}
+                        value={feeVoteAmount}
+                        setValue={setFeeVoteAmount}
+                        placeholder="Enter round num...."
+                        className="!h-fit w-full !rounded-none !p-[6px_10px] md:w-[200px]"
+                        isValid={!submitClicked || feeVoteAmount}
+                      />
+                    </div>
+                    <div className="ml-0 mt-2 w-full flex-1 xsm:ml-3 xsm:mt-0 md:w-fit md:flex-none">
+                      <div className="text-sm">Fee wallet</div>
+                      <StyledInput
+                        value={feeVoteWallet}
+                        setValue={setFeeVoteWallet}
+                        placeholder="0x...."
+                        className="!h-fit w-full !rounded-none !p-[6px_10px] md:w-[273px]"
+                        isValid={!submitClicked || ethers.utils.isAddress(feeVoteWallet)}
+                        requireText="Please input valid address"
+                      />
+                    </div>
                   </div>
-                  <div className="ml-3">
-                    <div className="text-sm">Fee wallet</div>
-                    <StyledInput
-                      value={feeVoteWallet}
-                      setValue={setFeeVoteWallet}
-                      placeholder="0x...."
-                      className="!h-fit w-[273px] !rounded-none !p-[6px_10px]"
-                    />
-                  </div>
-                </div>
+                ) : (
+                  ""
+                )}
               </div>
 
               <div className="mt-3">
                 <div className="text-sm">
                   Community image <span className="text-[#FFFFFF80]">*150x150px</span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col items-center justify-between sm:flex-row">
                   <Dropzone
                     maxFiles={1}
                     accept={
@@ -342,9 +421,9 @@ const CommunityModal = ({ open, setOpen }) => {
                       </div>
                     )}
                   </Dropzone>
-                  <div className="-scale-x-100">{chevronLeftSVG}</div>
-                  <div className="flex items-center">
-                    <div className="mr-3.5 flex flex-col items-center">
+                  <div className="my-2 rotate-90 -scale-x-100 sm:my-0 sm:rotate-0">{chevronLeftSVG}</div>
+                  <div className="flex flex-col items-center sm:flex-row">
+                    <div className="mb-3 mr-0 flex flex-col items-center sm:mb-0 sm:mr-3.5">
                       <div className="primary-shadow h-[75px] w-[75px] bg-[#0e2130]" />
                       <div className="mt-0.5 text-xs text-[#FFFFFF80]">Example thumbnail</div>
                     </div>
@@ -358,17 +437,18 @@ const CommunityModal = ({ open, setOpen }) => {
                     </div>
                   </div>
                 </div>
+                <RequireAlert text="Upload Image" value={communityImage || !submitClicked} />
               </div>
 
               <div className="mt-1.5">
                 <div className="mt-9 flex items-center">
                   <div className="text-tailwind [&>svg]:!h-6 [&>svg]:!w-6">{WebSiteSVG}</div>
-                  <div className="relative ml-2.5">
+                  <div className="relative ml-2.5 flex-1">
                     <StyledInput
                       value={website}
                       setValue={setWebsite}
                       placeholder="https://"
-                      className="!h-fit w-[333px] !p-[6px_8px]"
+                      className="!h-fit w-full max-w-[333px] !p-[6px_8px]"
                     />
                     <div className="absolute -top-6 left-0">Website</div>
                   </div>
@@ -376,12 +456,12 @@ const CommunityModal = ({ open, setOpen }) => {
 
                 <div className="mt-7 flex items-center">
                   <div className="text-tailwind [&>svg]:!h-6 [&>svg]:!w-6">{TelegramSVG}</div>
-                  <div className="relative ml-2.5">
+                  <div className="relative ml-2.5 flex-1">
                     <StyledInput
                       value={telegram}
                       setValue={setTelegram}
                       placeholder="https://"
-                      className="!h-fit w-[333px] !p-[6px_8px]"
+                      className="!h-fit w-full max-w-[333px] !p-[6px_8px]"
                     />
                     <div className="absolute -top-6 left-0">Telegram</div>
                   </div>
@@ -389,23 +469,27 @@ const CommunityModal = ({ open, setOpen }) => {
 
                 <div className="mt-7 flex items-center">
                   <div className="text-tailwind [&>svg]:!h-6 [&>svg]:!w-6">{TwitterSVG}</div>
-                  <div className="relative ml-2.5">
+                  <div className="relative ml-2.5 flex-1">
                     <StyledInput
                       value={twitter}
                       setValue={setTwitter}
                       placeholder="https://"
-                      className="!h-fit w-[333px] !p-[6px_8px]"
+                      className="!h-fit w-full max-w-[333px] !p-[6px_8px]"
                     />
                     <div className="absolute -top-6 left-0">Twitter</div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-end">
-                <div className="mr-2 max-w-[160px] text-xs leading-[1.2] text-[#FFFFFF80]">
+              <div className="mt-5 flex flex-col items-center justify-end xsm:flex-row">
+                <div className="mb-4 mr-0 max-w-full text-xs leading-[1.2] text-[#FFFFFF80] xsm:mb-0 xsm:mr-2 xsm:max-w-[160px]">
                   Updates can be made later by contacting Brewlabs.
                 </div>
-                <StyledButton className="!h-fit !w-fit p-[10px_12px] !font-normal">
+                <StyledButton
+                  className="!h-fit !w-fit p-[10px_12px] !font-normal"
+                  onClick={() => onSubmitCommunity()}
+                  disabled={isInValid && submitClicked}
+                >
                   <span className="font-semibold">Submit</span>&nbsp; my community
                 </StyledButton>
               </div>

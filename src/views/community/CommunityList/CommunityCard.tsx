@@ -24,6 +24,23 @@ const CommunityCard = ({
       getFavourites();
     }
   };
+
+  // const voteCounts = community.proposals.filter((data) => {
+  //   const voteCount = [...data.yesVoted, ...data.noVoted].length;
+  //   const feeVoteAmount =
+  //     community.feeToVote.type === "sometimes"
+  //       ? data.isFeeToVote
+  //         ? data.feeToVoteAmount
+  //         : 0
+  //       : community.feeToVote.amount;
+  //   return voteCount * feeVoteAmount;
+  // });
+
+  const archivedProposalCount = community.proposals.filter(
+    (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
+  ).length;
+  const activeProposalCount = community.proposals.length - archivedProposalCount;
+
   return (
     <div className="primary-shadow mt-2.5 flex w-full cursor-pointer flex-col items-start justify-between rounded bg-[#B9B8B80D] p-[15px_12px] hover:bg-[#b9b8b81c] sm:p-[15px_44px] xl:flex-row xl:items-center">
       <div className="mr-10 flex w-full max-w-full flex-1 flex-col items-start justify-between sm:flex-row sm:items-center xl:w-[45%] xl:max-w-[380px]">
@@ -45,8 +62,8 @@ const CommunityCard = ({
               />
             )}
           </div>
-          <div className="mx-[30px] w-[72px]">
-            <img src={community.logo} alt={""} className="primary-shadow w-full rounded" />
+          <div className="primary-shadow mx-[30px] flex h-[68px] w-[80px] items-center justify-center overflow-hidden rounded bg-[#0e2130]">
+            <img src={community.logo} alt={""} className="primary-shadow  w-[48px]  rounded" />
           </div>
           <div className="leading-[1.2] text-white">
             <div className="text-lg uppercase">{community.name}</div>
@@ -60,15 +77,15 @@ const CommunityCard = ({
       </div>
       <div className="mt-4 flex w-full max-w-full flex-col items-start justify-between sm:flex-row sm:items-center xl:mt-0 xl:w-[55%] xl:max-w-[600px]">
         <div className="mb-4 leading-[1.2] text-white xl:mb-0">
-          <div className="text-lg">{community.activeProposals}</div>
+          <div className="text-lg">{activeProposalCount}</div>
           <div className="text-xs text-[#FFFFFFBF]">Active proposals</div>
         </div>
         <div className="mb-4 leading-[1.2] text-white xl:mb-0">
-          <div className="text-lg">{community.archivedProposals}</div>
+          <div className="text-lg">{archivedProposalCount}</div>
           <div className="text-xs text-[#FFFFFFBF]">Archived proposals</div>
         </div>
         <div className="mb-4 leading-[1.2] text-white xl:mb-0">
-          <div className="text-lg">{community.engagement.toFixed(2)}%</div>
+          <div className="text-lg">{(0).toFixed(2)}%</div>
           <div className="text-xs text-[#FFFFFFBF] text-[#FFFFFFBF]">Engagement</div>
         </div>
         <Link href={`/communities/${community.pid}`} className=" mb-4 xl:mb-0">

@@ -172,6 +172,18 @@ const NFTActions = () => {
           name: "NFT",
           icon: QuestionSVG,
           info: "Once your Brewlabs NFT’s are minted you can stake your NFT’s to earn native currency of the network you minted from.",
+          essential: {
+            align: "justify-end",
+            datas: [
+              {
+                text: "NFT Staking Info",
+                action: () => {
+                  router.push("/nft/nftstakinginfo");
+                },
+                active: true,
+              },
+            ],
+          },
         },
   ];
 

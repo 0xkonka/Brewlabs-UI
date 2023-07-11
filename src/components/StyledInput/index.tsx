@@ -1,41 +1,68 @@
 import RequireAlert from "@components/RequireAlert";
+import { escapeRegExp } from "../../utils";
+
+const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`); // match escaped "." characters via in a non-capturing group
 
 const StyledInput = ({
   value,
   setValue,
-  className,
+  className = "",
   placeholder,
   type = "text",
-  isRequire = false,
-  requireText = "",
+  isValid = true,
+  requireText = "Please input field",
 }: {
   value: any;
   setValue: any;
   className?: string;
   placeholder?: string;
   type?: string;
-  isRequire?: boolean | string;
+  isValid?: boolean | string;
   requireText?: string;
-}) => (
-  <div className="relative">
-    {type === "text" ? (
-      <input
-        type={"text"}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
-        placeholder={placeholder}
-      />
-    ) : (
-      <textarea
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
-        placeholder={placeholder}
-      />
-    )}
-    {isRequire ? <RequireAlert text={"Please input field"} value={isRequire} /> : ""}
-  </div>
-);
+}) => {
+  const enforcer = (nextUserInput) => {
+    if (nextUserInput === "" || inputRegex.test(escapeRegExp(nextUserInput))) {
+      setValue(nextUserInput);
+    }
+  };
+
+  const handleOnChange = (e) => {
+    if (e.currentTarget.validity.valid) {
+      enforcer(e.target.value.replace(/,/g, "."));
+    }
+  };
+
+  return (
+    <div className="relative flex flex-col">
+      {type === "number" ? (
+        <input
+          value={value}
+          onChange={handleOnChange}
+          inputMode="decimal"
+          placeholder={placeholder || "0.00"}
+          pattern={`^[0-9]*[.,]?[0-9]{0,18}$`}
+          className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
+          maxLength={79}
+        />
+      ) : type === "text" ? (
+        <input
+          type={"text"}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
+          placeholder={placeholder}
+        />
+      ) : (
+        <textarea
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
+          placeholder={placeholder}
+        />
+      )}
+      {!isValid ? <RequireAlert text={requireText} value={isValid} /> : ""}
+    </div>
+  );
+};
 
 export default StyledInput;

@@ -11,36 +11,41 @@ import { useState } from "react";
 import MintNFTModal from "../Modals/MintNFTModal";
 import Link from "next/link";
 import { getChainLogo, numberWithCommas } from "utils/functions";
-import { useOETHWeeklyAPY } from "@hooks/useOETHAPY";
+import { useOETHMonthlyAPY, useOETHWeeklyAPY } from "@hooks/useOETHAPY";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NFT_RARE_COUNT } from "config/constants/nft";
 import { SkeletonComponent } from "@components/SkeletonComponent";
+import useTokenMarketChart from "@hooks/useTokenMarketChart";
 
 const NFTStakingInfo = () => {
   const [mintOpen, setMintOpen] = useState(false);
 
   const OETHWeeklyAPY = useOETHWeeklyAPY();
-  const OETHMontlyAPY = useOETHWeeklyAPY();
-  const NFT_wallet_balance = useTokenBalances([tokens[1].usdc, tokens[56].busd], {
-    1: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
-    56: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
-  });
+  const OETHMontlyAPY = useOETHMonthlyAPY();
+  const NFT_wallet_balance = useTokenBalances(
+    { 1: [tokens[1].oeth, tokens[1].oeth] },
+    {
+      1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
+    }
+  );
+
+  const tokenMarketData = useTokenMarketChart(1);
 
   const NFT_MontlyApr = {
     1:
       NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[0].balance) / NFT_RARE_COUNT[1] / 100
+        ? (OETHMontlyAPY * NFT_wallet_balance[1][0].balance) / NFT_RARE_COUNT[1] / 12
         : null,
     56:
       NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1].balance) / NFT_RARE_COUNT[56] / 100
+        ? (OETHMontlyAPY * NFT_wallet_balance[1][1].balance) / NFT_RARE_COUNT[56] / 12
         : null,
   };
 
   const NFT_Weekly_ROI = {
-    1: NFT_wallet_balance && OETHWeeklyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[0].balance) / 100 : null,
-    56: NFT_wallet_balance && OETHMontlyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[1].balance) / 100 : null,
+    1: NFT_wallet_balance && OETHWeeklyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[1][0].balance) / 12 : null,
+    56: NFT_wallet_balance && OETHMontlyAPY ? (OETHWeeklyAPY * NFT_wallet_balance[1][1].balance) / 12 : null,
   };
 
   const infos = [
@@ -72,19 +77,24 @@ const NFTStakingInfo = () => {
       tooltip: "Unstaking Brewlabs NFT incurs a performance fee of approximately $2.00 in network currency.",
     },
   ];
+
+  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
+    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
+    : null;
+
   const aprByNetworks = [
     {
       chainId: 1,
       apr: NFT_MontlyApr[1],
-      totalPosition: NFT_wallet_balance ? NFT_wallet_balance[0].balance : null,
-      weeklyROI: NFT_Weekly_ROI[1],
+      totalPosition: NFT_wallet_balance && OETHPrice ? NFT_wallet_balance[1][0].balance * OETHPrice : null,
+      weeklyROI: OETHPrice ? NFT_Weekly_ROI[1] * OETHPrice : null,
     },
 
     {
       chainId: 56,
       apr: NFT_MontlyApr[56],
-      totalPosition: NFT_wallet_balance ? NFT_wallet_balance[1].balance : null,
-      weeklyROI: NFT_Weekly_ROI[56],
+      totalPosition: NFT_wallet_balance && OETHPrice ? NFT_wallet_balance[1][1].balance * OETHPrice : null,
+      weeklyROI: OETHPrice ? NFT_Weekly_ROI[56] * OETHPrice : null,
     },
 
     {

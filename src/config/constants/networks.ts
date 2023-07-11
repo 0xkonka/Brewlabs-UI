@@ -84,7 +84,7 @@ export const EXPLORER_URLS = {
 export const EXPLORER_API_URLS = {
   [ChainId.ETHEREUM]: "https://api.etherscan.io/api",
   [ChainId.BSC_MAINNET]: "https://api.bscscan.com/api",
-  [ChainId.BSC_TESTNET]: "https://api.bscscan.com/api",
+  [ChainId.BSC_TESTNET]: "https://api-testnet.bscscan.com/api",
   [ChainId.POLYGON]: "https://api.polygonscan.com/api",
   [ChainId.FANTOM]: "https://api.ftmscan.com/api",
 };
@@ -206,7 +206,7 @@ export const NETWORKS = {
     blockExplorerUrls: ["https://bscscan.com"],
   },
   [ChainId.BSC_TESTNET]: {
-    chainId: `0x${Number(ChainId.BSC_MAINNET).toString(16)}`,
+    chainId: `0x${Number(ChainId.BSC_TESTNET).toString(16)}`,
     chainName: "BSC Testnet",
     nativeCurrency: {
       name: "BNB",

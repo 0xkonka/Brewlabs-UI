@@ -20,9 +20,8 @@ const useTokenPrice = (chainId: ChainId, address: string | undefined, isLiquidit
     : 0;
 };
 
-export const useDexPrice = async (chainId: ChainId, address: string) => {
+export const fetchDexPrice = async (chainId: ChainId, address: string) => {
   try {
-    console.log(chainId, address);
     const result = await axios.post("https://api.dex.guru/v3/tokens", {
       ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
       limit: 1,
@@ -31,6 +30,7 @@ export const useDexPrice = async (chainId: ChainId, address: string) => {
     console.log(result);
   } catch (e) {
     console.log(e);
+    return 0;
   }
 };
 
