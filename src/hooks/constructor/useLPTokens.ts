@@ -4,6 +4,7 @@ import axios from "axios";
 import { getAddress } from "ethers/lib/utils.js";
 import { useAccount } from "wagmi";
 import { useFastRefreshEffect } from "hooks/useRefreshEffect";
+import { API_URL } from "config/constants";
 
 export const useLPTokens = () => {
   const { address: account } = useAccount();
@@ -44,9 +45,9 @@ export const useLPTokens = () => {
         let lastTx: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", info);
         const token0 = priceResult.data.data[0];
         let token1 = priceResult.data.data[1];
-        if(token0.address == token1.address) {
-          token1 = WNATIVE[chain === "eth" ? ChainId.ETHEREUM : ChainId.BSC_MAINNET]
-          token1.symbol = "ETH"
+        if (token0.address == token1.address) {
+          token1 = WNATIVE[chain === "eth" ? ChainId.ETHEREUM : ChainId.BSC_MAINNET];
+          token1.symbol = "ETH";
         }
         const lpInfo = result.data.data[0];
         lastTx = lastTx.data.data;
@@ -96,7 +97,7 @@ export const useLPTokens = () => {
       }
     } else if (chainId === 56) {
       try {
-        let tokenBalances: any = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", {
+        let tokenBalances: any = await axios.post(`${API_URL}/html/getTokenBalances`, {
           address: account,
           chainId,
         });

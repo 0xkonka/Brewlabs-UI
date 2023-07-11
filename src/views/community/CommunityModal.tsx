@@ -54,7 +54,7 @@ const CommunityModal = ({ open, setOpen }) => {
 
   const [submitClicked, setSubmitClicked] = useState(false);
 
-  const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161] /*, NETWORKS[97]*/];
+  const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161], NETWORKS[97]];
   const contractTypes = ["Token", "NFT", "Both"];
   const quoroumReqs = [10, 15, 20, 25, 30, 35, 40, 45, 50];
   const maxProposals = [7, 14, 30];
