@@ -19,10 +19,14 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
   const { chainId } = useActiveChainId();
 
   const [errorMsg, setErrorMsg] = useState("");
-  const [connecting, setConnecting] = useState(false);
 
+  const installedWallets: WalletConfig[] = wallets.filter((w) => w.installed);
   const walletsToShow: WalletConfig[] = wallets.filter((w) => {
-    return w.installed !== false || w.deepLink;
+    return isMobile
+      ? installedWallets.length
+        ? w.installed
+        : w.installed !== false || w.deepLink
+      : w.installed !== false;
   });
 
   useEffect(() => {
@@ -78,7 +82,6 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
               onClick={() => {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
-
                 if (isMobile && wallet.connectorId === ConnectorNames.WalletConnect) {
                   checkWalletConnectModalIsOpen();
                 }

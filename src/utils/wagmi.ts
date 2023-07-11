@@ -7,7 +7,6 @@ import { LedgerConnector } from "wagmi/connectors/ledger";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { SafeConnector } from "wagmi/connectors/safe";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { WalletConnectLegacyConnector } from "wagmi/connectors/walletConnectLegacy";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
 import { SupportedChains } from "config/constants/networks";

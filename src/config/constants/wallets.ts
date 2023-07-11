@@ -10,8 +10,8 @@ export class WalletSwitchChainError extends Error {}
 export enum ConnectorNames {
   MetaMask = "metaMask",
   Injected = "injected",
-  WalletConnect = "walletConnect",
   BSC = "bsc",
+  WalletConnect = "walletConnect",
   WalletLink = "coinbaseWallet",
 }
 
@@ -25,6 +25,14 @@ export const wallets: WalletConfig<ConnectorNames>[] = [
     connectorId: ConnectorNames.MetaMask,
     deepLink: "https://metamask.app.link/dapp/earn.brewlabs.info/",
     downloadLink: "https://metamask.app.link/dapp/earn.brewlabs.info/",
+  },
+  {
+    id: "injected",
+    title: "Injected",
+    description: "Connect to your injected wallet",
+    icon: "/images/wallets/injected.svg",
+    connectorId: ConnectorNames.Injected,
+    installed: typeof window !== "undefined" && !!window.ethereum,
   },
   {
     id: "binance",
