@@ -2,7 +2,7 @@ import axios from "axios";
 import { getMulticallContract } from "utils/contractHelpers";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
-import { DEX_GURU_WETH_ADDR } from "config/constants";
+import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
 
 async function getNativeBalance(address: string, chainId: number) {
   let ethBalance = 0;
@@ -14,7 +14,7 @@ async function getNativeBalance(address: string, chainId: number) {
 export async function fetchTokenBalances(address: string, chainId: number) {
   let data: any = [];
   if (chainId === 56) {
-    data = await axios.post("https://pein-api.vercel.app/api/tokenController/getTokenBalances", { address, chainId });
+    data = await axios.post(`${API_URL}/html/getTokenBalances`, { address, chainId });
     data = data.data;
   } else if (chainId === 137 || chainId === 1) {
     let offset = 0;
