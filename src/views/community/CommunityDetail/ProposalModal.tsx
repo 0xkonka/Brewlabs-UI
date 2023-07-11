@@ -63,6 +63,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
         },
         community.pid
       );
+      setOpen(false);
     } catch (e: any) {
       console.log(e);
       handleWalletError(e, showError);

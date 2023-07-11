@@ -41,6 +41,21 @@ const CommunityCard = ({
   ).length;
   const activeProposalCount = community.proposals.length - archivedProposalCount;
 
+  let totalVoteCount = 0;
+  community.proposals.map(
+    (data) =>
+      (totalVoteCount +=
+        community.feeToVote.type === "no" || (community.feeToVote.type === "sometimes" && !data.isFeeToVote)
+          ? 0
+          : [...data.yesVoted, ...data.noVoted].length)
+  );
+
+  const totalVotePercent =
+    ((community.feeToVote.amount * totalVoteCount) /
+      Math.pow(10, community.currencies[community.coreChainId].decimals) /
+      community.circulatingSupply) *
+    100;
+
   return (
     <div className="primary-shadow mt-2.5 flex w-full cursor-pointer flex-col items-start justify-between rounded bg-[#B9B8B80D] p-[15px_12px] hover:bg-[#b9b8b81c] sm:p-[15px_44px] xl:flex-row xl:items-center">
       <div className="mr-10 flex w-full max-w-full flex-1 flex-col items-start justify-between sm:flex-row sm:items-center xl:w-[45%] xl:max-w-[380px]">
@@ -67,7 +82,7 @@ const CommunityCard = ({
           </div>
           <div className="leading-[1.2] text-white">
             <div className="text-lg uppercase">{community.name}</div>
-            <div className="text-xs text-[#FFFFFFBF]">Community</div>
+            <div className="text-xs text-[#FFFFFFBF]">{community.communityType}</div>
           </div>
         </div>
         <div className="leading-[1.2] text-white">
@@ -85,7 +100,7 @@ const CommunityCard = ({
           <div className="text-xs text-[#FFFFFFBF]">Archived proposals</div>
         </div>
         <div className="mb-4 leading-[1.2] text-white xl:mb-0">
-          <div className="text-lg">{(0).toFixed(2)}%</div>
+          <div className="text-lg">{totalVotePercent.toFixed(2)}%</div>
           <div className="text-xs text-[#FFFFFFBF] text-[#FFFFFFBF]">Engagement</div>
         </div>
         <Link href={`/communities/${community.pid}`} className=" mb-4 xl:mb-0">

@@ -13,7 +13,11 @@ const CommunityContextProvider = ({ children }: any) => {
   };
   async function getCommunities() {
     axios.post(`${API_URL}/community/getCommunities`, {}).then((data) => {
-      setCommunities(data.data);
+      setCommunities(
+        data.data.map((data) => {
+          return { ...data, circulatingSupply: 0 };
+        })
+      );
     });
   }
 

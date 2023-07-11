@@ -17,6 +17,8 @@ import useTokenInfo from "@hooks/useTokenInfo";
 import { ethers } from "ethers";
 import RequireAlert from "@components/RequireAlert";
 import { CommunityContext } from "contexts/CommunityContext";
+import { Puff } from "react-loader-spinner";
+import LoadingText from "@components/LoadingText";
 
 const storage = new NFTStorage({
   token:
@@ -47,15 +49,17 @@ const CommunityModal = ({ open, setOpen }) => {
 
   const [communityImage, setCommunityImage] = useState("");
   const [uploadImage, setUploadedImage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const [website, setWebsite] = useState("");
   const [telegram, setTelegram] = useState("");
   const [twitter, setTwitter] = useState("");
 
-  const [submitClicked, setSubmitClicked] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(true);
 
   const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161], NETWORKS[97]];
   const contractTypes = ["Token", "NFT", "Both"];
+  const communityTypes = ["Team", "Group", "Influencer", "Guild", "Community", "Rabble", "Degens", "Traders"];
   const quoroumReqs = [10, 15, 20, 25, 30, 35, 40, 45, 50];
   const maxProposals = [7, 14, 30];
 
@@ -82,6 +86,7 @@ const CommunityModal = ({ open, setOpen }) => {
     !uploadImage;
 
   const dropHandler = async (acceptedFiles: any[]) => {
+    setIsUploading(true);
     try {
       const [File] = acceptedFiles;
       const path = await storage.storeBlob(File);
@@ -90,6 +95,7 @@ const CommunityModal = ({ open, setOpen }) => {
     } catch (e) {
       console.log(e);
     }
+    setIsUploading(false);
   };
 
   const onSubmitCommunity = async () => {
@@ -125,7 +131,9 @@ const CommunityModal = ({ open, setOpen }) => {
         amount: ethers.utils.parseUnits(feeVoteAmount, decimals).toString(),
       },
       maxProposal: maxProposal,
+      communityType: communityTypes[communityType],
     });
+    setOpen(false);
   };
 
   return (
@@ -184,7 +192,7 @@ const CommunityModal = ({ open, setOpen }) => {
                   <DropDown
                     value={communityType}
                     setValue={setCommunityType}
-                    values={["Team", "Group", "Influencer", "Guild", "Community", "Rabble", "Degens", "Traders"]}
+                    values={communityTypes}
                     type={"secondary"}
                     width="w-[120px]"
                     className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary "
@@ -404,7 +412,14 @@ const CommunityModal = ({ open, setOpen }) => {
                       >
                         <input {...getInputProps()} />
 
-                        {communityImage ? (
+                        {isUploading ? (
+                          <div className="flex h-full w-full flex-col items-center justify-center">
+                            <Puff width={45} height={45} color={"#ffffff9e"} secondaryColor="black" />
+                            <div className="mt-2 text-sm text-[#ffffff9e]">
+                              <LoadingText text={"Uploading Image"} />
+                            </div>
+                          </div>
+                        ) : communityImage ? (
                           <div className="flex h-[150px] w-[150px] items-center justify-center overflow-hidden rounded">
                             <img src={communityImage} className="w-full rounded" alt={""} />
                           </div>
@@ -425,7 +440,7 @@ const CommunityModal = ({ open, setOpen }) => {
                   <div className="flex flex-col items-center sm:flex-row">
                     <div className="mb-3 mr-0 flex flex-col items-center sm:mb-0 sm:mr-3.5">
                       <div className="primary-shadow h-[75px] w-[75px] bg-[#0e2130]" />
-                      <div className="mt-0.5 text-xs text-[#FFFFFF80]">Example thumbnail</div>
+                      <div className="mt-0.5 text-xs text-[#FFFFFF80]">Community icon</div>
                     </div>
                     <div className="flex flex-col items-center">
                       <div className="primary-shadow flex h-[150px] w-[150px] items-center justify-center bg-[#0e2130]">
