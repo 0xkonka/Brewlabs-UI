@@ -68,11 +68,11 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const NFT_Apr = {
     1:
       NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1][0].balance) / NFT_RARE_COUNT[1] / 12
+        ? (OETHMontlyAPY * NFT_wallet_balance[1][0].balance) / NFT_RARE_COUNT[1] / 9
         : null,
     56:
       NFT_wallet_balance && OETHMontlyAPY
-        ? (OETHMontlyAPY * NFT_wallet_balance[1][1].balance) / NFT_RARE_COUNT[56] / 12
+        ? (OETHMontlyAPY * NFT_wallet_balance[1][1].balance) / NFT_RARE_COUNT[56] / 9
         : null,
   };
 
