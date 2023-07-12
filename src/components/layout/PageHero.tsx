@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import PhoneFrame from "@components/PhoneFrame";
 import { ArrowPathRoundedSquareIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Container from "./Container";
+import { NFTSVG } from "@components/dashboard/assets/svgs";
 
 const PageHero = () => {
   return (
@@ -11,7 +12,7 @@ const PageHero = () => {
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
           <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none xl:col-span-6">
-            <header className="mt-4 mb-4 font-brand sm:mt-5 lg:mt-6">
+            <header className="mb-4 mt-4 font-brand sm:mt-5 lg:mt-6">
               <h1 className="bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-4xl text-transparent lg:text-5xl">
                 Get ready for the next generation in blockchain utilities
               </h1>
@@ -22,7 +23,7 @@ const PageHero = () => {
               your portfolio.
             </p>
 
-            <div className="mt-4">
+            <div className="mt-4 flex flex-col">
               <div className="flex flex-wrap gap-2">
                 <a
                   className="btn-outline btn grow border-amber-200 text-amber-200 sm:grow-0"
@@ -37,6 +38,12 @@ const PageHero = () => {
                   Swap tokens
                 </Link>
               </div>
+              {/* <div className="mt-2.5 rounded-lg bg-[url('/images/directory/brewlabs-nft-banner.png')] bg-cover p-[14px_16px] w-full">
+                <div className="flex w-fit items-center rounded-md bg-[#FFFFFF99] p-2.5">
+                  <div className="text-tailwind">{NFTSVG}</div>
+                  <div className="ml-3 font-semibold text-[#1B212D]">VIEW BREWLABS NFT COLLECTION INFO</div>
+                </div>
+              </div> */}
             </div>
           </div>
 
@@ -49,9 +56,9 @@ const PageHero = () => {
             }}
             className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6"
           >
-            <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-top-10 lg:-bottom-20 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
+            <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-bottom-20 lg:-top-10 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
               <PhoneFrame className="mx-auto max-w-[366px]" priority>
-                <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute top-2 left-0" />
+                <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute left-0 top-2" />
               </PhoneFrame>
             </div>
           </motion.div>

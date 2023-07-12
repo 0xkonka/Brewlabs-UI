@@ -24,38 +24,26 @@ export async function getMultiChainTotalBalances(tokens: any, address: any) {
   return totalBalance;
 }
 
-export async function getTreasuryBalances(tokens: any, addresses: any) {
-  let totalBalance = 0;
-  const balances = await Promise.all(
-    tokens.map(async (token) => {
-      try {
-        const calls = addresses[token.chainId].map((address) => {
-          return {
-            name: "balanceOf",
-            params: [address],
-            address: token.address,
-          };
-        });
-        const balances = await multicall(ERC20_ABI, calls, token.chainId);
-        let balance = 0;
-        for (let i = 0; i < balances.length; i++) balance += balances[i][0] / Math.pow(10, token.decimals);
-        return { ...token, balance };
-      } catch (e) {
-        console.log(e);
-        return { ...token, balance: 0 };
-      }
-    })
-  );
-  for (let i = 0; i < balances.length; i++) totalBalance += balances[i].balance;
+export const useTotalUserBalance = (tokens: any, address: any) => {
+  const [totalBalance, setTotalBalance] = useState(0);
+  const tokenStringified = JSON.stringify(tokens);
+  useEffect(() => {
+    if (!address) return;
+    getMultiChainTotalBalances(tokens, address)
+      .then((data) => setTotalBalance(data))
+      .catch((e) => console.log(e));
+  }, [address, tokenStringified]);
   return totalBalance;
-}
+};
 
 const useTokenBalances = (tokens: any, addresses: any) => {
   const [balances, setBalances] = useState(null);
+  const [totalBalance, setTotalBalance] = useState(null);
   async function fetchBalances() {
     let balances = new Object();
+    let _totalBalance = 0;
     await Promise.all(
-      Object.keys(tokens).map(async (key, i) => {
+      Object.keys(tokens).map(async (key: any, i) => {
         try {
           const calls = addresses[key].map((address, i) => {
             return {
@@ -64,10 +52,11 @@ const useTokenBalances = (tokens: any, addresses: any) => {
               address: tokens[key][i].address,
             };
           });
-
-          const result = await multicall(ERC20_ABI, calls, tokens[key].chainId);
+          const result = await multicall(ERC20_ABI, calls, key);
           const tokenDatas = result.map((data, i) => {
-            return { ...tokens[key][i], balance: data / Math.pow(10, tokens[key][i].decimals) };
+            const balance = data / Math.pow(10, tokens[key][i].decimals);
+            _totalBalance += balance;
+            return { ...tokens[key][i], balance };
           });
           balances[key] = tokenDatas;
         } catch (e) {
@@ -76,7 +65,7 @@ const useTokenBalances = (tokens: any, addresses: any) => {
         }
       })
     );
-
+    setTotalBalance(_totalBalance);
     setBalances(balances);
   }
   const strigifiedTokens = JSON.stringify(tokens);
@@ -84,7 +73,7 @@ const useTokenBalances = (tokens: any, addresses: any) => {
   useEffect(() => {
     fetchBalances();
   }, [strigifiedTokens, strigifiedAddresses]);
-  return balances;
+  return { balances, totalBalance };
 };
 
 export default useTokenBalances;

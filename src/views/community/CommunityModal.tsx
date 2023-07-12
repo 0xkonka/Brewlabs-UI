@@ -119,7 +119,7 @@ const CommunityModal = ({ open, setOpen }) => {
       description: description,
       proposals: [],
       totalSupply: totalSupply.toString(),
-      treasuries: { 1: [ethers.constants.AddressZero, "0x000000000000000000000000000000000000dead"] },
+      treasuries: { [chainId]: [ethers.constants.AddressZero, "0x000000000000000000000000000000000000dead"] },
       feeToProposal: {
         type: ["Yes", "No"][feeForProposal],
         address: feeProposalWallet,
@@ -132,6 +132,7 @@ const CommunityModal = ({ open, setOpen }) => {
       },
       maxProposal: maxProposal,
       communityType: communityTypes[communityType],
+      quoroumReq: quoroumReqs[quoroumReq],
     });
     setOpen(false);
   };
@@ -408,7 +409,7 @@ const CommunityModal = ({ open, setOpen }) => {
                     {({ getRootProps, getInputProps }) => (
                       <div
                         {...getRootProps()}
-                        className="primary-shadow flex h-[150px] w-[220px] cursor-pointer justify-center items-center border border-dashed border-transparent bg-[#202023] transition hover:border-primary"
+                        className="primary-shadow flex h-[150px] w-[220px] cursor-pointer items-center justify-center border border-dashed border-transparent bg-[#202023] transition hover:border-primary"
                       >
                         <input {...getInputProps()} />
 

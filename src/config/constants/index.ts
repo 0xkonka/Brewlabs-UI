@@ -288,8 +288,6 @@ export const ONE_HUNDRED_PERCENT = new Percent("1");
 export const slippageWithTVL = 200;
 export const slippageDefault = 50;
 
-export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
-
 export const FREEZER_CHAINS = {
   1: "ethereum",
   56: "smartchain",
@@ -345,3 +343,5 @@ export const BREWNFT_COLORS = [
   "text-[#FF9D5B]",
   "text-[#C80045]",
 ];
+
+export const BREWNFT_RARITIES = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MODS"];
