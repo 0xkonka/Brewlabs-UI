@@ -57,7 +57,7 @@ const CommunityModal = ({ open, setOpen }) => {
 
   const [submitClicked, setSubmitClicked] = useState(true);
 
-  const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161], NETWORKS[97]];
+  const chains = [NETWORKS[1], NETWORKS[56], NETWORKS[137], NETWORKS[42161]];
   const contractTypes = ["Token", "NFT", "Both"];
   const communityTypes = ["Team", "Group", "Influencer", "Guild", "Community", "Rabble", "Degens", "Traders"];
   const quoroumReqs = [10, 15, 20, 25, 30, 35, 40, 45, 50];
@@ -384,11 +384,11 @@ const CommunityModal = ({ open, setOpen }) => {
                 )}
               </div>
 
-              <div className="mt-3">
+              <div className="mx-auto mt-3 max-w-[600px]">
                 <div className="text-sm">
                   Community image <span className="text-[#FFFFFF80]">*150x150px</span>
                 </div>
-                <div className="flex flex-col items-center justify-between sm:flex-row">
+                <div className="flex flex-col items-center justify-between sm:flex-row ">
                   <Dropzone
                     maxFiles={1}
                     accept={
@@ -438,10 +438,6 @@ const CommunityModal = ({ open, setOpen }) => {
                   </Dropzone>
                   <div className="my-2 rotate-90 -scale-x-100 sm:my-0 sm:rotate-0">{chevronLeftSVG}</div>
                   <div className="flex flex-col items-center sm:flex-row">
-                    <div className="mb-3 mr-0 flex flex-col items-center sm:mb-0 sm:mr-3.5">
-                      <div className="primary-shadow h-[75px] w-[75px] bg-[#0e2130]" />
-                      <div className="mt-0.5 text-xs text-[#FFFFFF80]">Community icon</div>
-                    </div>
                     <div className="flex flex-col items-center">
                       <div className="primary-shadow flex h-[150px] w-[150px] items-center justify-center bg-[#0e2130]">
                         <div className="flex h-[110px] w-[110px] items-center justify-center overflow-hidden rounded">
