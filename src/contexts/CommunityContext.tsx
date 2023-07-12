@@ -67,13 +67,15 @@ const CommunityContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     let proposalCount = 0;
-    communities.map(
-      (community) =>
-        (proposalCount += community.proposals.filter(
-          (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
-        ).length)
-    );
-    console.log(proposalCount);
+    account &&
+      communities.map(
+        (community) =>
+          (proposalCount += community.members.includes(account.toLowerCase())
+            ? community.proposals.filter(
+                (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+              ).length
+            : 0)
+      );
     setNewProposalCount(proposalCount);
   }, [stringifiedCommunities]);
 

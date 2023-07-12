@@ -2,6 +2,7 @@ import CountDown from "@components/CountDown";
 import { BellSVG, RequirementSVG } from "@components/dashboard/assets/svgs";
 import useENSName from "@hooks/ENS/useENSName";
 import { useActiveChainId } from "@hooks/useActiveChainId";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { CommunityContext } from "contexts/CommunityContext";
 import { DashboardContext } from "contexts/DashboardContext";
 import { handleWalletError } from "lib/bridge/helpers";
@@ -54,16 +55,14 @@ const ProposalCard = ({
     setPending(false);
   }
 
-  const totalVoteCount =
-    community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !proposal.isFeeToVote)
-      ? 0
-      : [...proposal.yesVoted, ...proposal.noVoted].length;
-
-  const totalVotePercent =
-    ((community.feeToVote.amount * totalVoteCount) /
-      Math.pow(10, community.currencies[community.coreChainId].decimals) /
-      circulatingSupply) *
-    100;
+  let addresses = new Object();
+  let tokens = new Object();
+  Object.keys(community.currencies).map((key, i) => (addresses[key] = [...proposal.yesVoted, ...proposal.noVoted]));
+  Object.keys(community.currencies).map(
+    (key, i) => (tokens[key] = [...proposal.yesVoted, ...proposal.noVoted].map((data) => community.currencies[key]))
+  );
+  const { totalBalance } = useTokenBalances(tokens, addresses);
+  const totalVotePercent = (totalBalance / circulatingSupply) * 100;
 
   const isNew = ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase());
 
@@ -92,7 +91,7 @@ const ProposalCard = ({
               New
             </div>
           ) : (
-            <div className="mx-4 mt-[5px] flex h-4 w-12 items-center justify-center rounded-[12px] bg-primary text-[10px] font-bold text-black xl:mx-10" />
+            <div className="mx-4 mt-[5px] h-4 w-12 xl:mx-10" />
           )}
 
           <div className="mt-4 w-full flex-none sm:mt-0 sm:w-fit sm:flex-1">

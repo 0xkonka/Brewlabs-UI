@@ -16,8 +16,8 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import { NETWORKS } from "config/constants/networks";
 import { getChainLogo, numberWithCommas } from "utils/functions";
 import { useEffect, useState } from "react";
-import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 import ProposalModal from "./ProposalModal";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 
 const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   let explorers = [
@@ -36,20 +36,25 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   if (community.socials.telegram) explorers.push({ icon: TelegramSVG, link: community.socials.telegram });
   if (community.socials.twitter) explorers.push({ icon: TwitterSVG, link: community.socials.twitter });
 
-  let totalVoteCount = 0;
-  community.proposals.map(
-    (data) =>
-      (totalVoteCount +=
-        community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !data.isFeeToVote)
-          ? 0
-          : [...data.yesVoted, ...data.noVoted].length)
-  );
+  let addresses = new Object();
+  let tokens = new Object();
+  Object.keys(community.currencies).map((key, i) => {
+    let result = [];
+    community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
+    addresses[key] = [...(addresses[key] ?? []), ...result];
+  });
+  Object.keys(community.currencies).map((key, i) => {
+    let result = [];
+    community.proposals.map((proposal) =>
+      [...proposal.yesVoted, ...proposal.noVoted].map((data) => (result = [...result, community.currencies[key]]))
+    );
+    tokens[key] = [...(tokens[key] ?? []), ...result];
+  });
 
-  const totalVotePercent =
-    ((community.feeToVote.amount * totalVoteCount) /
-      Math.pow(10, community.currencies[community.coreChainId].decimals) /
-      circulatingSupply) *
-    100;
+  const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
+  const totalVotePercent = community.proposals.length
+    ? (totalVoteBalance / community.proposals.length / circulatingSupply) * 100
+    : 0;
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
   const circulatingPercent = (circulatingSupply / totalSupply) * 100;
@@ -59,8 +64,8 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   const durations = [7, 14, 30];
   const infos = [
     { icon: PeopleSVG, data: `${community.members.length} Members` },
-    { icon: EngagementSVG, data: `${totalVotePercent.toFixed(2)}% Governance Engagement` },
-    { icon: RequirementSVG, data: "30.00% Quorum Requirement" },
+    { icon: EngagementSVG, data: `${(totalVotePercent ?? 0).toFixed(2)}% Governance Engagement` },
+    { icon: RequirementSVG, data: `${Number(community.quoroumReq).toFixed(2)}% Quorum Requirement` },
     {
       icon: BellSVG,
       data: `${community.maxProposal ? "7-" : ""}${durations[community.maxProposal]} Day Proposal Duration`,

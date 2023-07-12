@@ -23,7 +23,7 @@ const NFTStakingInfo = () => {
 
   const OETHWeeklyAPY = useOETHWeeklyAPY();
   const OETHMontlyAPY = useOETHMonthlyAPY();
-  const NFT_wallet_balance = useTokenBalances(
+  const { balances: NFT_wallet_balance } = useTokenBalances(
     { 1: [tokens[1].oeth, tokens[1].oeth] },
     {
       1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],

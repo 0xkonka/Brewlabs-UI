@@ -6,20 +6,24 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import StyledButton from "views/directory/StyledButton";
 import { BASE_URL } from "config";
 import { useActiveChainId } from "@hooks/useActiveChainId";
-import { getMultiChainTotalBalances } from "@hooks/useTokenMultiChainBalance";
+import { getMultiChainTotalBalances, useTotalUserBalance } from "@hooks/useTokenMultiChainBalance";
 import { useContext, useEffect, useState } from "react";
 import { CommunityContext } from "contexts/CommunityContext";
 import { toast } from "react-toastify";
 import { isAddress } from "utils";
+import { useAccount } from "wagmi";
 
 const CommunitySummary = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   const { chainId } = useActiveChainId();
-  // const { address: account } = useAccount();
-  const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
-  const [totalBalance, setTotalBalance] = useState(0);
+  const { address: account } = useAccount();
+  // const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
   const [isCopied, setIsCopied] = useState(false);
 
   const { joinOrLeaveCommunity }: any = useContext(CommunityContext);
+  const totalBalance = useTotalUserBalance(
+    Object.keys(community.currencies).map((key) => community.currencies[key]),
+    account
+  );
 
   const onShareCommunity = () => {
     setIsCopied(true);
@@ -28,17 +32,6 @@ const CommunitySummary = ({ community, circulatingSupply }: { community: any; ci
     }, 1000);
     navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
   };
-
-  const communityStringified = JSON.stringify(community);
-  useEffect(() => {
-    if (!account) return;
-    getMultiChainTotalBalances(
-      Object.keys(community.currencies).map((key) => community.currencies[key]),
-      account
-    )
-      .then((data) => setTotalBalance(data))
-      .catch((e) => console.log(e));
-  }, [account, communityStringified]);
 
   const isJoined = community.members.includes(account?.toLowerCase());
 
