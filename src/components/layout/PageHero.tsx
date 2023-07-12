@@ -38,12 +38,12 @@ const PageHero = () => {
                   Swap tokens
                 </Link>
               </div>
-              <div className="mt-2.5 rounded-lg bg-[url('/images/directory/brewlabs-nft-banner.png')] bg-cover p-[14px_16px] w-full">
+              {/* <div className="mt-2.5 rounded-lg bg-[url('/images/directory/brewlabs-nft-banner.png')] bg-cover p-[14px_16px] w-full">
                 <div className="flex w-fit items-center rounded-md bg-[#FFFFFF99] p-2.5">
                   <div className="text-tailwind">{NFTSVG}</div>
                   <div className="ml-3 font-semibold text-[#1B212D]">VIEW BREWLABS NFT COLLECTION INFO</div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
