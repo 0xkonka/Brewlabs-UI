@@ -1,4 +1,11 @@
-const RequireAlert = ({ className, value }: { className?: string; value?: string | boolean }) =>
-  !value ? <div className={`${className} mt-1 text-xs text-danger`}>*Please input field</div> : <div />;
+const RequireAlert = ({
+  className = "",
+  value,
+  text,
+}: {
+  className?: string;
+  value?: string | boolean;
+  text?: string;
+}) => (!value ? <div className={`${className} mt-1 text-xs text-danger`}>*{text}</div> : <div />);
 
 export default RequireAlert;

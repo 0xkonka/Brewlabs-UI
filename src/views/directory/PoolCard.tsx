@@ -145,7 +145,7 @@ const PoolCard = ({
             <SkeletonComponent />
           )}
         </div>
-        <div className="min-w-[80px]">
+        <div className="min-w-[105px]">
           {data.type !== Category.INDEXES ? (
             data.apr || data.apr === 0.0 ? (
               `${(+data.apr).toFixed(2)}%`
@@ -201,9 +201,9 @@ const PoolCard = ({
           </div>
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
-        <div className="mt-6 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
-          <div className={`flex text-2xl ${data.type === Category.INDEXES ? "hidden xsm:block" : ""}`}>
-            APR:&nbsp;
+        <div className="mt-6 flex flex-col justify-between xsm:flex-row ">
+          <div className={`flex text-xl ${data.type === Category.INDEXES ? "hidden xsm:block" : ""}`}>
+            Performance:&nbsp;
             {data.type !== 3 ? (
               data.apr !== undefined ? (
                 `${(+data.apr).toFixed(2)}%`

@@ -33,7 +33,7 @@ const ToolBar = ({
       <ValuePanel ref={ref} onScroll={(e: any) => setCurScroll(e.target.scrollLeft)}>
         <div className="flex items-center justify-between pl-2">
           <StyledOption
-            className={`${fullOpen ? "min-w-[14px]" : "min-w-[70px]"} font-semibold`}
+            className={`${fullOpen ? "min-w-[14px]" : "min-w-[70px]"} `}
             onClick={() => setFilterType(1)}
             active={filterType === 1}
           >
@@ -47,7 +47,7 @@ const ToolBar = ({
             )}
           </StyledOption>
           <StyledOption
-            className={`min-w-[75px] font-semibold`}
+            className={`min-w-[75px] `}
             onClick={() => setFilterType(2)}
             active={filterType === 2}
           >
@@ -55,7 +55,7 @@ const ToolBar = ({
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
           <StyledOption
-            className={`min-w-[75px] font-semibold`}
+            className={`min-w-[75px] `}
             onClick={() => setFilterType(3)}
             active={filterType === 3}
           >
@@ -63,7 +63,7 @@ const ToolBar = ({
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
           <StyledOption
-            className={`min-w-[100px] font-semibold`}
+            className={`min-w-[100px] `}
             onClick={() => setFilterType(4)}
             active={filterType === 4}
           >
@@ -71,7 +71,7 @@ const ToolBar = ({
             <img src={"/images/dashboard/updown.svg"} alt={""} />
           </StyledOption>
           <StyledOption
-            className={`min-w-[120px] font-semibold`}
+            className={`min-w-[120px] `}
             onClick={() => setFilterType(5)}
             active={filterType === 5}
           >

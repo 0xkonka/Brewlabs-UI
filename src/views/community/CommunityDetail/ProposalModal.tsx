@@ -44,9 +44,11 @@ const ProposalModal = ({ open, setOpen, community }) => {
     if (!title || !description) return;
     setPending(true);
     try {
-      const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-      const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount);
-      await tx.wait();
+      if (community.feeToProposal.type === "Yes") {
+        const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
+        const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount);
+        await tx.wait();
+      }
       const durations = [3600 * 24 * 7, 3600 * 24 * 14, 3600 * 24 * 30];
       await addProposal(
         {
@@ -61,7 +63,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
         },
         community.pid
       );
-      toast.success("Proposal Submitted");
+      setOpen(false);
     } catch (e: any) {
       console.log(e);
       handleWalletError(e, showError);
@@ -69,10 +71,11 @@ const ProposalModal = ({ open, setOpen, community }) => {
     setPending(false);
   };
 
+  const durations = [7, 14, 30].filter((data, i) => i <= community.maxProposal);
   return (
     <Dialog
       open={open}
-      className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-90 font-brand backdrop-blur-[2px] dark:bg-zinc-900 dark:bg-opacity-80"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-gray-300 bg-opacity-90 font-brand backdrop-blur-[2px] dark:bg-zinc-900 dark:bg-opacity-80"
       onClose={() => {}}
     >
       <div className="flex min-h-full items-center justify-center p-4 ">
@@ -99,18 +102,20 @@ const ProposalModal = ({ open, setOpen, community }) => {
           }}
           transition={{ duration: 0.25 }}
         >
-          <div className="primary-shadow relative w-[calc(100vw-24px)] max-w-[720px] rounded bg-[#18181B] p-[38px_47px_40px_64px] text-white ">
+          <div className="primary-shadow relative w-[calc(100vw-24px)] max-w-[720px] rounded bg-[#18181B] p-[38px_12px_40px_12px] text-white md:p-[38px_47px_40px_64px] ">
             <div className="flex justify-between">
-              <div>
+              <div className="flex-1 overflow-hidden">
                 <div className="text-xl text-primary">New proposal</div>
-                <div className="text-sm">
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                   By <span className="text-[#FFFFFF80]">{account}</span>
                 </div>
               </div>
-              <img src={community.logo} alt={""} className="primary-shadow h-16 w-16 rounded" />
+              <div className="primary-shadow flex h-16 w-16 items-center justify-center overflow-hidden rounded bg-[#0E2130]">
+                <img src={community.logo} alt={""} className="w-10 rounded" />
+              </div>
             </div>
             <div className="mt-4 flex items-center justify-end text-sm">
-              {community.feeToVote === "sometimes" ? (
+              {community.feeToVote.type === "Sometimes" ? (
                 <div className="flex items-center">
                   <div className="relative mr-3">
                     Fee to vote?
@@ -137,7 +142,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
               <DropDown
                 value={duration}
                 setValue={setDuration}
-                values={["7 Days", "14 Days", "30 Days"]}
+                values={durations.map((data) => data + " Days")}
                 type={"secondary"}
                 width="w-[100px]"
                 className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
@@ -150,8 +155,8 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 setValue={setTitle}
                 placeholder="Write your title here"
                 className="w-full !rounded-none"
+                isValid={!submitClicked || title}
               />
-              <RequireAlert value={!submitClicked || title} />
             </div>
             <div className="mt-[18px]">
               <div>Description</div>
@@ -161,17 +166,17 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 setValue={setDescription}
                 placeholder="Write about your proposal here..."
                 className="h-[183px] w-full !rounded-none"
+                isValid={!submitClicked || description}
               />
-              <RequireAlert value={!submitClicked || description} />
             </div>
-            <div className="mt-4 flex justify-end text-xs leading-[1.2] text-[#FFFFFF80]">
-              <ul className="max-w-[200px] list-disc">
+            <div className="ml-4 mt-4 flex flex-col justify-end text-xs leading-[1.2] text-[#FFFFFF80] md:ml-0 md:flex-row">
+              <ul className="max-w-full list-disc md:max-w-[200px]">
                 <li>
                   Submit community proposal fee {community.feeToProposal.amount / Math.pow(10, coreCurrency.decimals)}{" "}
                   {coreCurrency.symbol} token.
                 </li>
               </ul>
-              <ul className="ml-6 mr-3 max-w-[200px] list-disc">
+              <ul className="mb-4 ml-0 mr-0 max-w-full list-disc md:mb-0 md:ml-6 md:mr-3 md:max-w-[200px]">
                 <li>You can only post one proposal at a time. </li>
                 <li>Proposals with profanities will be removed.</li>
               </ul>

@@ -1,4 +1,5 @@
 import DropDown from "views/directory/SelectionPanel/Dropdown";
+import { useAccount } from "wagmi";
 
 const SelectionPanel = ({
   curFilter,
@@ -13,8 +14,20 @@ const SelectionPanel = ({
   setCriteria: any;
   proposals: any;
 }) => {
+  const { address: account } = useAccount();
   const filterNames = ["All", "Open", "Resolved", "Failed", "My proposals"];
-  const filters = filterNames.map((name, index) => `${name} (${proposals.filter((data) => false).length})`);
+  const filters = filterNames.map(
+    (name, index) =>
+      `${name} (${
+        proposals.filter((data) => {
+          if (name === "All") return true;
+          if (name === "Open") return data.createdTime + data.duration >= Date.now();
+          if (name === "Resolved") return data.createdTime + data.duration < Date.now();
+          if (name === "Failed") return data.createdTime + data.duration < Date.now();
+          return data.owner === account?.toLowerCase();
+        }).length
+      })`
+  );
 
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">

@@ -289,14 +289,7 @@ const tokens = {
   xua2: new Token(ETHEREUM, "0xB3C28F8b7929497285D07a8f48ff466A7d4C782F", 18, "XUA2", "London Gold"),
   r33lz: new Token(ETHEREUM, "0x5D3957DF518adE9AdfD7c4341a0cf7D6D73EC682", 18, "R33LZ", "R33LZ"),
   rvr: new Token(ETHEREUM, "0xb8b4b66852275355d591B90E5B75f84cAeffF392", 9, "RVR", "ReVeR"),
-  jacy: new Token(
-    ETHEREUM,
-    "0x3B7eEb31278fFC9f1fc2C0C8543825b646C3E66b",
-    9,
-    "JACY",
-    "JACY",
-    "https://jacytoken.io/"
-  ),
+  jacy: new Token(ETHEREUM, "0x3B7eEb31278fFC9f1fc2C0C8543825b646C3E66b", 9, "JACY", "JACY", "https://jacytoken.io/"),
   bbpp: new Token(
     ETHEREUM,
     "0x5dD0F5dA07E9C63F2d216179311EF8cB68ABb629",
@@ -313,14 +306,7 @@ const tokens = {
     "xBBPP",
     "https://www.babypepetoken.com/"
   ),
-  pepe: new Token(
-    ETHEREUM,
-    "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
-    18,
-    "PEPE",
-    "Pepe",
-    "https://www.pepe.vip/"
-  ),
+  pepe: new Token(ETHEREUM, "0x6982508145454Ce325dDbE47a25d4ec3d2311933", 18, "PEPE", "Pepe", "https://www.pepe.vip/"),
   dai: new Token(ETHEREUM, "0x6B175474E89094C44Da98b954EedeAC495271d0F", 18, "DAI", "Dai Stablecoin"),
   wbtc: new Token(ETHEREUM, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", 8, "WBTC", "Wrapped BTC"),
   rune: new Token(ETHEREUM, "0x3155BA85D5F96b2d030a4966AF206230e46849cb", 18, "RUNE", "RUNE.ETH"),
@@ -332,6 +318,7 @@ const tokens = {
   frax: new Token(ETHEREUM, "0x853d955aCEf822Db058eb8505911ED77F175b99e", 18, "FRAX", "FRAX"),
   sushi: new Token(ETHEREUM, "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2", 18, "SUSHI", "SushiToken"),
   stg: new Token(ETHEREUM, "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6", 18, "STG", "StargateToken"),
+  oeth: new Token(ETHEREUM, "0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3", 18, "OETH", "Origin Ether"),
 };
 
 export default tokens;

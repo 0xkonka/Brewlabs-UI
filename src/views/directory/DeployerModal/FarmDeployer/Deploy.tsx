@@ -201,8 +201,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
               e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
             }}
           />
-          <div className="scale-50 text-primary">{checkCircleSVG}</div>
-          <div className="flex items-center">
+          <div className="flex items-center ml-4">
             <img
               src={getTokenLogoURL(token0Address, chainId)}
               alt={""}
@@ -231,7 +230,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       </div>
       {/* <div className=" mb-5 mt-3 flex w-full justify-end sm:hidden">{makePendingText()}</div> */}
 
-      <div className="mt-4  text-sm font-semibold text-[#FFFFFF80]">
+      <div className="mt-4  text-sm  text-[#FFFFFF80]">
         <div className="ml-0 xs:ml-4">
           <div className="mb-1 text-white">*Please select the token reward for the yield farm</div>
           <TokenSelect selectedCurrency={rewardToken} setSelectedCurrency={setRewardToken} />
@@ -333,21 +332,21 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
       <div className="mb-5 mt-4 flex items-center justify-between text-[#FFFFFF80]">
         {step === 2 ? (
-          <div className="text-sm font-semibold text-[#FFFFFF40]">Waiting for deploy...</div>
+          <div className="text-sm  text-[#FFFFFF40]">Waiting for deploy...</div>
         ) : step === 3 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">
+          <div className="text-sm  text-[#2FD35DBF]">
             <LoadingText text={"Deploying yield farm contract"} />
           </div>
         ) : step === 4 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">
+          <div className="text-sm  text-[#2FD35DBF]">
             <LoadingText text={"Adding yield farm rewards"} />
           </div>
         ) : step === 5 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">
+          <div className="text-sm  text-[#2FD35DBF]">
             <LoadingText text={"Starting yield farm"} />
           </div>
         ) : step === 6 ? (
-          <div className="text-sm font-semibold text-[#2FD35DBF]">Complete</div>
+          <div className="text-sm  text-[#2FD35DBF]">Complete</div>
         ) : (
           ""
         )}
@@ -361,7 +360,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       </div>
 
       {step === 6 ? (
-        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm font-semibold text-[#FFFFFF80]">
+        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm  text-[#FFFFFF80]">
           <div className="text-[#FFFFFFBF]">Summary</div>
           <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
             <div>Yield farm contract address</div>

@@ -6,6 +6,7 @@ import styled from "styled-components";
 import AutoFarmer from "./AutoFarmer";
 import TrueNFT from "./TrueNFT";
 import { useRef, useState } from "react";
+import BrewNFT from "./BrewNFT";
 
 const responsive = {
   desktop: {
@@ -43,7 +44,7 @@ const Banner = ({
         autoPlay={true}
         autoPlaySpeed={5000}
         beforeChange={(nextSlide, { currentSlide, onMove }: any) => {
-          setCurSlide((nextSlide - 2) % 3);
+          setCurSlide((nextSlide - 2) % 4);
         }}
         ref={carouselRef}
       >
@@ -51,6 +52,7 @@ const Banner = ({
         <CorePool setSelectPoolDetail={setSelectPoolDetail} index={209} setCurPool={setCurPool} pools={allPools} />
         {/* <AutoFarmer /> */}
         <TrueNFT />
+        <BrewNFT />
       </Carousel>
       <DotGroup active={curSlide}>
         <div
@@ -68,6 +70,12 @@ const Banner = ({
         <div
           onClick={() => {
             carouselRef.current.goToSlide(4);
+            // setCurSlide((curSlide + 2) % 3);
+          }}
+        />
+        <div
+          onClick={() => {
+            carouselRef.current.goToSlide(5);
             // setCurSlide((curSlide + 2) % 3);
           }}
         />

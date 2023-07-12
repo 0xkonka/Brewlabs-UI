@@ -149,7 +149,7 @@ const FeaturedPriceList = () => {
   };
   return (
     <StyledContainer>
-      <div className="-ml-2 mb-1 font-semibold text-yellow">Featured</div>
+      <div className="-ml-2 mb-1  text-yellow">Featured</div>
       <Carousel
         responsive={responsive}
         infinite={true}
@@ -171,7 +171,7 @@ const FeaturedPriceList = () => {
             <div className="feature-shadow relative w-[210px] rounded-[20px] px-[18px] py-3" key={i}>
               <div className="flex items-center">
                 <img src={getTokenLogoURL(data.address, data.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
-                <div className="font-semibold">
+                <div className="">
                   <div className="text-sm text-white">{data.symbol}</div>
                   <div className={`${percent >= 0 ? "text-[#2FD35D]" : "text-[#ea3943]"} text-xs`}>
                     {percent >= 0 ? "+" : ""}
@@ -179,7 +179,7 @@ const FeaturedPriceList = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-right text-[20px] font-bold text-white">
+              <div className="text-right text-[20px]  text-white">
                 {price >= 0.0001 ? (
                   "$" + price.toFixed(price >= 100 ? 2 : 4)
                 ) : (

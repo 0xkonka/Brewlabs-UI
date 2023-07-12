@@ -1,7 +1,20 @@
 import ProposalCard from "./ProposalCard";
 
-const ProposalList = ({ community }: { community: any }) => {
-  return (
+const ProposalList = ({
+  community,
+  circulatingSupply,
+  proposals,
+}: {
+  community: any;
+  circulatingSupply: any;
+  proposals: any;
+}) => {
+  const sortedProposal = proposals.sort((a, b) => b.createdTime - a.createdTime);
+  return sortedProposal ? (
+    sortedProposal.map((data, i) => {
+      return <ProposalCard key={i} proposal={data} community={community} circulatingSupply={circulatingSupply} />;
+    })
+  ) : (
     <div className="primary-shadow flex h-[180px]  items-center justify-center rounded bg-[#B9B8B80D] text-2xl text-primary">
       No proposals{" "}
     </div>

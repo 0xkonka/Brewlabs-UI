@@ -29,8 +29,8 @@ const PoolList = ({
         <div className="min-w-[250px] cursor-pointer" onClick={() => setSortOrder("totalStaked")}>
           Total supply staked
         </div>
-        <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("apr")}>
-          APR
+        <div className="min-w-[105px] cursor-pointer" onClick={() => setSortOrder("apr")}>
+          Performance
         </div>
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
@@ -41,7 +41,8 @@ const PoolList = ({
             return (
               <PoolCard
                 data={data}
-                key={`${data.pid}-${data.chainId}-${data.address}-${data.contractAddress}`}
+                // key={`${data.pid}-${data.chainId}-${data.address}-${data.contractAddress}`}
+                key={i}
                 index={i}
                 setSelectPoolDetail={setSelectPoolDetail}
                 setCurPool={setCurPool}

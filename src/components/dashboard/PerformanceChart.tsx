@@ -132,7 +132,7 @@ const PerformanceChart = ({ showType }: { showType: number }) => {
 
   return (
     <StyledContainer down={(priceChange < 0).toString()}>
-      <div className={"flex items-center justify-between font-semibold text-white"}>
+      <div className={"flex items-center justify-between  text-white"}>
         <div className={"flex items-center"}>
           <div className={"ml-4 w-[140px] text-sm sm:ml-16 sm:w-[180px]"}>
             <div>Performance</div>

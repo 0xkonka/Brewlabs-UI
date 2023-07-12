@@ -240,7 +240,7 @@ const TokenList = ({
             return (
               <StyledLink
                 key={i}
-                className={`w-full cursor-pointer py-[5px] text-sm font-semibold transition`}
+                className={`w-full cursor-pointer py-[5px] text-sm  transition`}
                 left={"true"}
                 isHover={isHover[i] && isHover[i].toString()}
                 onMouseEnter={() => onHover(i, true)}
@@ -316,7 +316,7 @@ const TokenList = ({
                   key={i}
                   className={`flex py-[5px] ${
                     fullOpen ? "h-[50px]" : "h-[30px]"
-                  } cursor-pointer items-center justify-between pl-2 text-sm  font-semibold transition`}
+                  } cursor-pointer items-center justify-between pl-2 text-sm   transition`}
                   priceUp={priceUp.toString()}
                   isHover={isHover[i] && isHover[i].toString()}
                   onMouseEnter={() => onHover(i, true)}

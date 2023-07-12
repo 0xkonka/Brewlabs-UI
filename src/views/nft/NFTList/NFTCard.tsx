@@ -27,6 +27,7 @@ import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
+import useTokenMarketChart from "@hooks/useTokenMarketChart";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -57,15 +58,29 @@ const NFTCard = ({ nft }: { nft: any }) => {
         (pool?.totalStaked ?? 0))
     : 0;
 
-  const OETHAPY = useOETHMonthlyAPY();
-  const NFT_wallet_balance = useTokenBalances([tokens[1].usdc, tokens[56].busd], {
-    1: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
-    56: ["0xeddcea807da853fed51fa4bf0e8d6c9d1f7f9caa"],
-  });
+  const tokenMarketData = useTokenMarketChart(1);
+
+  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
+    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
+    : null;
+
+  const OETHMontlyAPY = useOETHMonthlyAPY();
+  const NFT_wallet_balance = useTokenBalances(
+    { 1: [tokens[1].oeth, tokens[1].oeth] },
+    {
+      1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
+    }
+  );
 
   const NFT_Apr = {
-    1: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[0].balance) / NFT_RARE_COUNT[1] / 100 : null,
-    56: NFT_wallet_balance && OETHAPY ? (OETHAPY * NFT_wallet_balance[1].balance) / NFT_RARE_COUNT[56] / 100 : null,
+    1:
+      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
+        ? ((OETHMontlyAPY * NFT_wallet_balance[1][0].balance * OETHPrice) / NFT_RARE_COUNT[1] / 9) * 12
+        : null,
+    56:
+      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
+        ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
+        : null,
   };
 
   const stakingDate = new Date(1696118400000); // Oct 01 2023 00:00:00 GMT
@@ -143,7 +158,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
   };
 
   return (
-    <div className="primary-shadow mt-2 cursor-pointer rounded bg-[#B9B8B80D] p-[16px_18px_16px_12px] font-brand font-bold text-[#FFFFFFBF] transition hover:bg-[#b9b8b828] xsm:p-[16px_36px_16px_28px]">
+    <div className="primary-shadow mt-2 cursor-pointer rounded bg-[#B9B8B80D] p-[16px_18px_16px_12px] font-brand  text-[#FFFFFFBF] transition hover:bg-[#b9b8b828] xsm:p-[16px_36px_16px_28px]">
       <div className="hidden items-center justify-between xl:flex">
         <div className="flex w-[300px] items-center justify-center">
           <img src={getChainLogo(nft.chainId)} alt={""} className="h-[30px] w-[30px] rounded-full" />
@@ -185,7 +200,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 </StyledButton>
               )}
             </div>
-            <div className="relative w-[90px] text-xs font-semibold leading-[1.2] text-white">
+            <div className="relative w-[90px] text-xs  leading-[1.2] text-white">
               {NFT_Apr[nft.chainId] === null ? "Pending" : `${NFT_Apr[nft.chainId]?.toFixed(2) ?? "0.00"}%`} APR
               <br />
               <span className="absolute text-[10px] font-normal text-[#FFFFFF80]">
@@ -193,7 +208,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
               </span>
             </div>
             {isPending ? (
-              <div className="relative w-[80px] font-bold leading-[1.2] text-white">
+              <div className="relative w-[80px]  leading-[1.2] text-white">
                 <CountDown time={date + Date.now()} />
                 <div className="absolute right-0 text-[10px] font-normal text-[#FFFFFF80]">Pool opens</div>
               </div>
