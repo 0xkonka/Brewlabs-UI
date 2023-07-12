@@ -1,24 +1,33 @@
 import { FixedSVG, LinkSVG, MinusSVG, PlusSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import TokenLogo from "@components/logo/TokenLogo";
-import Link from "next/link";
 import { getChainLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import StyledButton from "views/directory/StyledButton";
 import { BASE_URL } from "config";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { getMultiChainTotalBalances } from "@hooks/useTokenMultiChainBalance";
-import { useAccount } from "wagmi";
 import { useContext, useEffect, useState } from "react";
 import { CommunityContext } from "contexts/CommunityContext";
 import { toast } from "react-toastify";
+import { isAddress } from "utils";
 
-const CommunitySummary = ({ community }: { community: any }) => {
+const CommunitySummary = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   const { chainId } = useActiveChainId();
-  const { address: account } = useAccount();
-  // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
+  // const { address: account } = useAccount();
+  const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
   const [totalBalance, setTotalBalance] = useState(0);
+  const [isCopied, setIsCopied] = useState(false);
+
   const { joinOrLeaveCommunity }: any = useContext(CommunityContext);
+
+  const onShareCommunity = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(`${BASE_URL}${location.pathname}`);
+  };
 
   const communityStringified = JSON.stringify(community);
   useEffect(() => {
@@ -55,13 +64,16 @@ const CommunitySummary = ({ community }: { community: any }) => {
         </StyledButton>
         <a href={`${BASE_URL}/swap?outputCurrency=${community.currencies[chainId]?.address}`} target="_blank">
           <StyledButton className="mt-3 !h-fit !w-full p-[10px_12px] !font-normal leading-[1.2] sm:!w-fit">
-            Get {community.name}
+            Buy {community.name}
           </StyledButton>
         </a>
         <div className="mt-3.5 flex items-center">
           <div className="relative">
             <TokenLogo
-              src={getTokenLogoURL(community.currencies[community.coreChainId].address, community.coreChainId)}
+              src={getTokenLogoURL(
+                isAddress(community.currencies[community.coreChainId].address),
+                community.coreChainId
+              )}
               classNames="w-8"
             />
             <div className="absolute -right-1 bottom-0">
@@ -81,7 +93,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
             {FixedSVG}
           </div>
           <div className="ml-3 text-sm text-[#FFFFFFBF]">
-            {((totalBalance / community.totalSupply) * 100).toFixed(4)}%{" "}
+            {((totalBalance / circulatingSupply) * 100).toFixed(4)}%{" "}
             {community.currencies[community.coreChainId].symbol}{" "}
           </div>
         </div>
@@ -105,16 +117,18 @@ const CommunitySummary = ({ community }: { community: any }) => {
             return data === "" ? <br key={i} /> : data;
           })}
         </div>
-        <a href={community.socials.telegram} target="_blank">
-          <StyledButton className="mt-3 !h-fit !w-fit p-[7px_12px]">
+        <StyledButton className="mt-3 !h-fit !w-fit p-[7px_12px]" onClick={() => onShareCommunity()}>
+          {isCopied ? (
+            "Copied"
+          ) : (
             <div className="flex items-center font-normal">
               <div>
                 <span className="font-black">Share</span> {community.name} Commuinty
               </div>
               <div className="ml-2.5 text-tailwind">{LinkSVG}</div>
             </div>
-          </StyledButton>
-        </a>
+          )}
+        </StyledButton>
       </div>
       <ReactTooltip anchorId={"Voting power."} place="top" content="Voting power." />
       <ReactTooltip

@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 import ProposalModal from "./ProposalModal";
 
-const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
+const   InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   let explorers = [
     ...Object.keys(community.currencies)
       .filter((key) => key !== "97")
