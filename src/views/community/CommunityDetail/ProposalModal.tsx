@@ -115,7 +115,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
               </div>
             </div>
             <div className="mt-4 flex items-center justify-end text-sm">
-              {community.feeToVote === "sometimes" ? (
+              {community.feeToVote.type === "Sometimes" ? (
                 <div className="flex items-center">
                   <div className="relative mr-3">
                     Fee to vote?

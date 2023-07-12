@@ -55,7 +55,7 @@ const ProposalCard = ({
   }
 
   const totalVoteCount =
-    community.feeToVote.type === "no" || (community.feeToVote.type === "sometimes" && !proposal.isFeeToVote)
+    community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !proposal.isFeeToVote)
       ? 0
       : [...proposal.yesVoted, ...proposal.noVoted].length;
 
