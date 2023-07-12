@@ -51,7 +51,7 @@ const CommunityDetail = ({ community }: { community: any }) => {
               </Link>
             </header>
             <div className="mt-4" />
-            <CommunitySummary community={community} />
+            <CommunitySummary community={community} circulatingSupply={circulatingSupply} />
             <div className="mt-4" />
             <InfoPanel community={community} circulatingSupply={circulatingSupply} />
             <div className="mt-10 sm:mt-2" />

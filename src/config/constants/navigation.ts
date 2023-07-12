@@ -8,6 +8,7 @@ type NavigationItem = {
   icon: IconName;
   coming?: boolean;
   svg?: boolean;
+  newItem?: number;
 };
 
 export const navigationData = [
@@ -89,6 +90,7 @@ export const navigationData = [
     // coming: true,
     icon: "ShoppingBagIcon",
     svg: CommunitySVG,
+    newItem: 5,
   },
 ] as NavigationItem[];
 

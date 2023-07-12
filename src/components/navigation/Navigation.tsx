@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import clsx from "clsx";
@@ -10,9 +10,14 @@ import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import { setGlobalState } from "../../state";
 import { navigationData, navigationExtraData } from "../../config/constants/navigation";
 import { useMediaQuery } from "react-responsive";
+import Notification from "@components/Notification";
+import { CommunityContext } from "contexts/CommunityContext";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
+
+  const { newProposalCount }: any = useContext(CommunityContext);
+
   // Close the mobile navigation when navigating
   useEffect(() => {
     router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
@@ -73,6 +78,11 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                       <div className="absolute -right-10 -top-2 z-10 flex h-3 w-8 items-center	 justify-center rounded-[30px] bg-primary font-brand text-[10px] font-bold tracking-normal text-black">
                         Soon
                       </div>
+                    ) : (
+                      ""
+                    )}
+                    {item.name === "Communities" ? (
+                      <Notification count={newProposalCount} className="-right-7 -top-1" />
                     ) : (
                       ""
                     )}

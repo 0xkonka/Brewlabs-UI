@@ -65,6 +65,8 @@ const ProposalCard = ({
       circulatingSupply) *
     100;
 
+  const isNew = ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase());
+
   return (
     <div className="primary-shadow mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] p-[20px_12px_32px_12px] sm:p-[20px_20px_32px_20px]">
       <div className="flex w-full max-w-[1100px] flex-col items-center justify-between sm:flex-row">
@@ -85,9 +87,14 @@ const ProposalCard = ({
               </div>
             </div>
           </div>
-          <div className="mx-4 mt-[5px] flex h-4 w-12 items-center justify-center rounded-[12px] bg-primary text-[10px] font-bold text-black xl:mx-10">
-            New
-          </div>
+          {isNew ? (
+            <div className="mx-4 mt-[5px] flex h-4 w-12 items-center justify-center rounded-[12px] bg-primary text-[10px] font-bold text-black xl:mx-10">
+              New
+            </div>
+          ) : (
+            <div className="mx-4 mt-[5px] flex h-4 w-12 items-center justify-center rounded-[12px] bg-primary text-[10px] font-bold text-black xl:mx-10" />
+          )}
+
           <div className="mt-4 w-full flex-none sm:mt-0 sm:w-fit sm:flex-1">
             <div className="text-xl text-white">
               <span className="text-primary">OPEN:</span>&nbsp;{proposal.title}

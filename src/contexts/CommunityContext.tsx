@@ -3,10 +3,16 @@ import axios from "axios";
 import { API_URL } from "config/constants";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 const CommunityContext: any = React.createContext({ communities: [], joinOrLeaveCommunity: () => {} });
 
 const CommunityContextProvider = ({ children }: any) => {
+  const { address: account } = useAccount();
+
+  const [communities, setCommunities] = useState([]);
+  const [newProposalCount, setNewProposalCount] = useState(0);
+
   const handleError = (data, successText = "") => {
     if (!data.success) toast.error(data.msg);
     else if (successText) toast.success(successText);
@@ -53,11 +59,23 @@ const CommunityContextProvider = ({ children }: any) => {
     getCommunities();
   }
 
-  const [communities, setCommunities] = useState([]);
-
   useFastRefreshEffect(() => {
     getCommunities();
   }, []);
+
+  const stringifiedCommunities = JSON.stringify(communities);
+
+  useEffect(() => {
+    let proposalCount = 0;
+    communities.map(
+      (community) =>
+        (proposalCount += community.proposals.filter(
+          (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+        ).length)
+    );
+    console.log(proposalCount);
+    setNewProposalCount(proposalCount);
+  }, [stringifiedCommunities]);
 
   return (
     <CommunityContext.Provider
@@ -67,6 +85,7 @@ const CommunityContextProvider = ({ children }: any) => {
         addProposal,
         voteOrAgainst,
         addCommunity,
+        newProposalCount,
       }}
     >
       {children}
