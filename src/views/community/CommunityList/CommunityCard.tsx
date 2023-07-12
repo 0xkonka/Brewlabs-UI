@@ -25,17 +25,6 @@ const CommunityCard = ({
     }
   };
 
-  // const voteCounts = community.proposals.filter((data) => {
-  //   const voteCount = [...data.yesVoted, ...data.noVoted].length;
-  //   const feeVoteAmount =
-  //     community.feeToVote.type === "sometimes"
-  //       ? data.isFeeToVote
-  //         ? data.feeToVoteAmount
-  //         : 0
-  //       : community.feeToVote.amount;
-  //   return voteCount * feeVoteAmount;
-  // });
-
   const archivedProposalCount = community.proposals.filter(
     (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
   ).length;
@@ -45,7 +34,7 @@ const CommunityCard = ({
   community.proposals.map(
     (data) =>
       (totalVoteCount +=
-        community.feeToVote.type === "no" || (community.feeToVote.type === "sometimes" && !data.isFeeToVote)
+        community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !data.isFeeToVote)
           ? 0
           : [...data.yesVoted, ...data.noVoted].length)
   );

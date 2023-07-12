@@ -40,7 +40,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   community.proposals.map(
     (data) =>
       (totalVoteCount +=
-        community.feeToVote.type === "no" || (community.feeToVote.type === "sometimes" && !data.isFeeToVote)
+        community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !data.isFeeToVote)
           ? 0
           : [...data.yesVoted, ...data.noVoted].length)
   );
