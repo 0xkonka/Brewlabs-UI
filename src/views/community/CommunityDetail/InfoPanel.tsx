@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 import ProposalModal from "./ProposalModal";
 
-const   InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
+const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   let explorers = [
     ...Object.keys(community.currencies)
       .filter((key) => key !== "97")
@@ -73,7 +73,15 @@ const   InfoPanel = ({ community, circulatingSupply }: { community: any; circula
       icon: RefreshSVG,
       data: `${circulatingPercent.toFixed(2)}% Circulating Supply`,
     },
-    { icon: NoteSVG, data: `Sometimes a fee to vote` },
+    {
+      icon: NoteSVG,
+      data:
+        community.feeToVote.type === "Sometimes"
+          ? `Sometimes a fee to vote`
+          : community.feeToVote.type === "Yes"
+          ? "Fee to vote"
+          : "No fee to vote",
+    },
   ];
 
   return (
