@@ -408,7 +408,7 @@ const CommunityModal = ({ open, setOpen }) => {
                     {({ getRootProps, getInputProps }) => (
                       <div
                         {...getRootProps()}
-                        className="primary-shadow flex h-[150px] w-[220px] justify-center bg-[#202023]"
+                        className="primary-shadow flex h-[150px] w-[220px] cursor-pointer justify-center items-center border border-dashed border-transparent bg-[#202023] transition hover:border-primary"
                       >
                         <input {...getInputProps()} />
 
@@ -420,7 +420,7 @@ const CommunityModal = ({ open, setOpen }) => {
                             </div>
                           </div>
                         ) : communityImage ? (
-                          <div className="flex h-[150px] w-[150px] items-center justify-center overflow-hidden rounded">
+                          <div className="flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded">
                             <img src={communityImage} className="w-full rounded" alt={""} />
                           </div>
                         ) : (
