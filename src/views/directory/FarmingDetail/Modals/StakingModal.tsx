@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { ethers } from "ethers";
+import { formatEther } from "ethers/lib/utils.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -217,8 +217,7 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  {+accountData.allowance.toString() >=
-                  +ethers.utils.parseEther(amount && amount !== "" ? amount : "0") ? (
+                  {+amount <= +formatEther(accountData?.allowance ? accountData.allowance.toString() : "0") ? (
                     <StyledButton type="primary" disabled={!amount || insufficient || pending} onClick={handleConfirm}>
                       {insufficient ? "Insufficient" : type === "deposit" ? "Deposit" : "Withdraw"} {data.lpSymbol}
                     </StyledButton>
