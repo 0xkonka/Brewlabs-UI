@@ -18,6 +18,7 @@ import { getChainLogo, numberWithCommas } from "utils/functions";
 import { useEffect, useState } from "react";
 import ProposalModal from "./ProposalModal";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
+import Soon from "@components/Soon";
 
 const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   let explorers = [
@@ -51,12 +52,13 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
     tokens[key] = [...(tokens[key] ?? []), ...result];
   });
 
+  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
+
   const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
   const totalVotePercent = community.proposals.length
-    ? (totalVoteBalance / community.proposals.length / circulatingSupply) * 100
+    ? (totalVoteBalance / community.proposals.length / totalSupply) * 100
     : 0;
 
-  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
   const circulatingPercent = (circulatingSupply / totalSupply) * 100;
 
   const [proposalOpen, setProposalOpen] = useState(false);
@@ -119,17 +121,30 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
           );
         })}
       </div>
-      <div className="mt-7 flex items-center">
-        <div className="mr-2.5 cursor-pointer text-tailwind transition hover:text-white" id={"No Brewlabs NFTs Found"}>
+      <div className="mt-7 flex">
+        <div
+          className="mr-2.5 mt-1.5 cursor-pointer text-tailwind transition hover:text-white"
+          id={"No Brewlabs NFTs Found"}
+        >
           {NFTSVG}
         </div>
-        <StyledButton
-          className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
-          onClick={() => setProposalOpen(true)}
-          // disabled
-        >
-          Submit&nbsp;<span className="font-normal">new proposal</span>
-        </StyledButton>
+        <div className="flex flex-col xsm:flex-row">
+          <StyledButton
+            className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
+            onClick={() => setProposalOpen(true)}
+            // disabled
+          >
+            Submit&nbsp;<span className="font-normal">new proposal</span>
+          </StyledButton>
+          <div className="mr-0 mt-4 xsm:mr-3 xsm:mt-0" />
+          <StyledButton
+            className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
+            // disabled
+          >
+            Submit&nbsp;<span className="font-normal">new poll</span>
+            <Soon className="!-right-5" />
+          </StyledButton>
+        </div>
       </div>
       <ReactTooltip anchorId={"No Brewlabs NFTs Found"} place="top" content="No Brewlabs NFTs Found" />
     </div>

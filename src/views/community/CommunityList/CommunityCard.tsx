@@ -25,7 +25,6 @@ const CommunityCard = ({
   const { totalBalance } = useTokenBalances(tokens, community.treasuries);
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
-  const circulatingSupply = totalSupply - totalBalance;
 
   const archivedProposalCount = community.proposals.filter(
     (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
@@ -49,7 +48,7 @@ const CommunityCard = ({
 
   const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
   const totalVotePercent = community.proposals.length
-    ? (totalVoteBalance / community.proposals.length / circulatingSupply) * 100
+    ? (totalVoteBalance / community.proposals.length / totalSupply) * 100
     : 0;
 
   const newCount = account
