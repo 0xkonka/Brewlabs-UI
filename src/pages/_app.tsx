@@ -16,7 +16,6 @@ import { SWRConfig } from "swr";
 
 import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
-import "react-tooltip/dist/react-tooltip.css";
 import "react-multi-carousel/lib/styles.css";
 
 import { BridgeProvider } from "contexts/BridgeContext";
@@ -155,12 +154,12 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                     height={567}
                                   />
 
-                                  <div className="flex h-full relative z-10">
+                                  <div className="relative z-10 flex h-full">
                                     <NavigationDesktop />
                                     <NavigationMobile />
                                     <UserSidebar />
 
-                                    <div className="relative flex flex-col flex-1 overflow-hidden">
+                                    <div className="relative flex flex-1 flex-col overflow-hidden">
                                       <HeaderMobile />
                                       <LazyMotion features={domAnimation}>
                                         <AnimatePresence exitBeforeEnter>
