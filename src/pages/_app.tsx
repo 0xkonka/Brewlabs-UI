@@ -86,6 +86,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [navigationWidth, setNavigationWidth] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -147,19 +148,19 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                   </Suspense>
 
                                   <img
-                                    className="fixed -right-44 top-0 home:z-10 dark:opacity-50 sm:block hidden"
+                                    className="fixed -right-44 top-0 hidden home:z-10 dark:opacity-50 sm:block"
                                     src="/images/blur-indigo.png"
                                     alt=""
                                     width={567}
                                     height={567}
                                   />
 
-                                  <div className="flex h-full">
+                                  <div className="flex h-full relative z-10">
                                     <NavigationDesktop />
                                     <NavigationMobile />
                                     <UserSidebar />
 
-                                    <div className="relative flex flex-1 flex-col">
+                                    <div className="relative flex flex-col flex-1 overflow-hidden">
                                       <HeaderMobile />
                                       <LazyMotion features={domAnimation}>
                                         <AnimatePresence exitBeforeEnter>

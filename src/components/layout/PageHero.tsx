@@ -5,6 +5,7 @@ import PhoneFrame from "@components/PhoneFrame";
 import { ArrowPathRoundedSquareIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Container from "./Container";
 import { NFTSVG } from "@components/dashboard/assets/svgs";
+import Soon from "@components/Soon";
 
 const PageHero = () => {
   return (
@@ -23,27 +24,28 @@ const PageHero = () => {
               your portfolio.
             </p>
 
-            <div className="mt-4 flex flex-col">
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-4 flex w-full flex-col sm:w-[400px]">
+              <div className="flex flex-col flex-wrap xmd:flex-row">
                 <a
-                  className="btn-outline btn grow border-amber-200 text-amber-200 sm:grow-0"
+                  className="btn-outline btn mb-2 mr-0 flex-1 border-amber-200 text-amber-200 xmd:mb-0 xmd:mr-2 sm:flex-none"
                   href="https://t.me/brewlabs"
                   target="_blank"
                 >
                   <ChatBubbleLeftRightIcon className="mr-1 h-6 w-6 text-amber-200" />
                   Join our community
                 </a>
-                <Link className="btn-outline btn grow border-gray-400 sm:grow-0" href="/swap">
+                <Link className="btn-outline btn flex-1  border-gray-400" href="/swap">
                   <ArrowPathRoundedSquareIcon className="mr-1 h-6 w-6" />
                   Swap tokens
                 </Link>
               </div>
-              {/* <div className="mt-2.5 rounded-lg bg-[url('/images/directory/brewlabs-nft-banner.png')] bg-cover p-[14px_16px] w-full">
-                <div className="flex w-fit items-center rounded-md bg-[#FFFFFF99] p-2.5">
-                  <div className="text-tailwind">{NFTSVG}</div>
+              <div className="relative mt-3.5 w-full rounded-lg bg-[url('/images/directory/brewlabs-nft-banner.png')] bg-cover p-[10px_12px]">
+                <Soon text={"New"} className="!h-5" fade={true} />
+                <div className="flex w-fit items-center rounded-md bg-[#FFFFFF99] p-[8px_10px]">
+                  <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{NFTSVG}</div>
                   <div className="ml-3 font-semibold text-[#1B212D]">VIEW BREWLABS NFT COLLECTION INFO</div>
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
 
