@@ -36,37 +36,42 @@ export const useTotalUserBalance = (tokens: any, address: any) => {
   return totalBalance;
 };
 
+export async function getBalances(tokens: any, addresses: any) {
+  let balances = new Object();
+  let totalBalance = 0;
+  await Promise.all(
+    Object.keys(tokens).map(async (key: any, i) => {
+      try {
+        const calls = addresses[key].map((address, i) => {
+          return {
+            name: "balanceOf",
+            params: [address],
+            address: tokens[key][i].address,
+          };
+        });
+        const result = await multicall(ERC20_ABI, calls, key);
+        const tokenDatas = result.map((data, i) => {
+          const balance = data / Math.pow(10, tokens[key][i].decimals);
+          totalBalance += balance;
+          return { ...tokens[key][i], balance };
+        });
+        balances[key] = tokenDatas;
+      } catch (e) {
+        console.log(e);
+      }
+    })
+  );
+  return { balances, totalBalance };
+}
+
 const useTokenBalances = (tokens: any, addresses: any) => {
   const [balances, setBalances] = useState(null);
   const [totalBalance, setTotalBalance] = useState(null);
   async function fetchBalances() {
-    let balances = new Object();
-    let _totalBalance = 0;
-    await Promise.all(
-      Object.keys(tokens).map(async (key: any, i) => {
-        try {
-          const calls = addresses[key].map((address, i) => {
-            return {
-              name: "balanceOf",
-              params: [address],
-              address: tokens[key][i].address,
-            };
-          });
-          const result = await multicall(ERC20_ABI, calls, key);
-          const tokenDatas = result.map((data, i) => {
-            const balance = data / Math.pow(10, tokens[key][i].decimals);
-            _totalBalance += balance;
-            return { ...tokens[key][i], balance };
-          });
-          balances[key] = tokenDatas;
-        } catch (e) {
-          console.log(e);
-          return { ...tokens[key], balance: 0 };
-        }
-      })
-    );
+    const result = await getBalances(tokens, addresses);
+    const { balances: _balances, totalBalance: _totalBalance } = result;
     setTotalBalance(_totalBalance);
-    setBalances(balances);
+    setBalances(_balances);
   }
   const strigifiedTokens = JSON.stringify(tokens);
   const strigifiedAddresses = JSON.stringify(addresses);

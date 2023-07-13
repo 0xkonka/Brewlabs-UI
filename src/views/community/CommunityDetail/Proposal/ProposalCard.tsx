@@ -1,5 +1,5 @@
 import CountDown from "@components/CountDown";
-import { BellSVG, RequirementSVG } from "@components/dashboard/assets/svgs";
+import { BellSVG, InfoSVG, RequirementSVG } from "@components/dashboard/assets/svgs";
 import useENSName from "@hooks/ENS/useENSName";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
@@ -13,15 +13,7 @@ import { showError } from "utils/functions";
 import StyledButton from "views/directory/StyledButton";
 import { useAccount, useSigner } from "wagmi";
 
-const ProposalCard = ({
-  proposal,
-  community,
-  circulatingSupply,
-}: {
-  proposal: any;
-  community: any;
-  circulatingSupply: any;
-}) => {
+const ProposalCard = ({ proposal, community }: { proposal: any; community: any }) => {
   const { address: account } = useAccount();
   const name = useENSName(proposal.owner);
   const { voteOrAgainst }: any = useContext(CommunityContext);
@@ -62,12 +54,24 @@ const ProposalCard = ({
     (key, i) => (tokens[key] = [...proposal.yesVoted, ...proposal.noVoted].map((data) => community.currencies[key]))
   );
   const { totalBalance } = useTokenBalances(tokens, addresses);
-  const totalVotePercent = (totalBalance / circulatingSupply) * 100;
+  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
+  const totalVotePercent = (totalBalance / totalSupply) * 100;
 
   const isNew = ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase());
+  const isExcalmation =
+    account &&
+    community.members.includes(account.toLowerCase()) &&
+    ![...proposal.yesVoted, ...proposal.noVoted].includes(account.toLowerCase());
 
   return (
-    <div className="primary-shadow mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] p-[20px_12px_32px_12px] sm:p-[20px_20px_32px_20px]">
+    <div className="primary-shadow relative mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] p-[20px_12px_32px_40px] sm:p-[20px_20px_32px_60px]">
+      {isExcalmation ? (
+        <div className="absolute left-2.5 top-[22px] text-primary sm:left-5 [&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!opacity-100">
+          {InfoSVG}
+        </div>
+      ) : (
+        ""
+      )}
       <div className="flex w-full max-w-[1100px] flex-col items-center justify-between sm:flex-row">
         <div className="flex flex-1 flex-wrap">
           <div>

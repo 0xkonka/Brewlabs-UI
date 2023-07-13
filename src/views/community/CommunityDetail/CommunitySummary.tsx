@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { isAddress } from "utils";
 import { useAccount } from "wagmi";
 
-const CommunitySummary = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
+const CommunitySummary = ({ community }: { community: any }) => {
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
   // const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
@@ -24,6 +24,7 @@ const CommunitySummary = ({ community, circulatingSupply }: { community: any; ci
     Object.keys(community.currencies).map((key) => community.currencies[key]),
     account
   );
+  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
 
   const onShareCommunity = () => {
     setIsCopied(true);
@@ -57,7 +58,7 @@ const CommunitySummary = ({ community, circulatingSupply }: { community: any; ci
         </StyledButton>
         <a href={`${BASE_URL}/swap?outputCurrency=${community.currencies[chainId]?.address}`} target="_blank">
           <StyledButton className="mt-3 !h-fit !w-full p-[10px_12px] !font-normal leading-[1.2] sm:!w-fit">
-            Buy {community.name}
+            <span className="font-semibold">Buy</span>&nbsp;{community.name}
           </StyledButton>
         </a>
         <div className="mt-3.5 flex items-center">
@@ -69,9 +70,6 @@ const CommunitySummary = ({ community, circulatingSupply }: { community: any; ci
               )}
               classNames="w-8"
             />
-            <div className="absolute -right-1 bottom-0">
-              <img src={getChainLogo(community.coreChainId)} alt={""} className="h-4 w-4 rounded-full" />
-            </div>
           </div>
           <div className="ml-3 text-sm text-[#FFFFFFBF]">
             {numberWithCommas(totalBalance.toFixed(2))} {community.currencies[community.coreChainId].symbol} in my
@@ -86,8 +84,7 @@ const CommunitySummary = ({ community, circulatingSupply }: { community: any; ci
             {FixedSVG}
           </div>
           <div className="ml-3 text-sm text-[#FFFFFFBF]">
-            {((totalBalance / circulatingSupply) * 100).toFixed(4)}%{" "}
-            {community.currencies[community.coreChainId].symbol}{" "}
+            {((totalBalance / totalSupply) * 100).toFixed(4)}% {community.currencies[community.coreChainId].symbol}{" "}
           </div>
         </div>
         <div className="mt-3 flex items-center">
