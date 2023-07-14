@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, use } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo, useContext } from "react";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
@@ -355,7 +355,7 @@ const CurrencySelector = ({
         onKeyDown={onInputEnter}
         type="text"
         placeholder="Search by contract address..."
-        className="input-bordered input w-full"
+        className="input input-bordered w-full"
       />
 
       <div className="mt-3 px-2">
