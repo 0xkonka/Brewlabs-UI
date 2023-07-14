@@ -54,7 +54,6 @@ const Directory = ({ page }: { page: number }) => {
   });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
   const [status, setStatus] = useState("active");
-  const [deployerOpen, setDeployerOpen] = useState(false);
 
   const { address: account } = useAccount();
   const { pools, dataFetched } = usePools();
@@ -261,7 +260,6 @@ const Directory = ({ page }: { page: number }) => {
 
   return (
     <PageWrapper>
-      <DeployerModal open={deployerOpen} setOpen={setDeployerOpen} />
       {renderDetailPage()}
 
       <AnimatePresence>
@@ -287,7 +285,11 @@ const Directory = ({ page }: { page: number }) => {
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
                 {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
                   <div className="-mb-4 -mt-4 flex justify-end">
-                    <Link href={"/deployer"}>
+                    <Link
+                      href={`/deployer/${
+                        curFilter === Category.FARM ? "farm" : curFilter === Category.INDEXES ? "index" : ""
+                      }`}
+                    >
                       <StyledButton className="!w-fit p-[6px_12px] !text-sm">
                         Create {curFilter === Category.FARM ? "Farm" : curFilter === Category.INDEXES ? "Index" : ""}
                       </StyledButton>

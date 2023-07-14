@@ -152,8 +152,16 @@ const PoolCard = ({
             ) : (
               <div className="mr-2">{<SkeletonComponent />}</div>
             )
+          ) : data.priceChanges ? (
+            <div
+              className={`${
+                data.priceChanges[2].percent >= 0 ? "text-success" : "text-danger"
+              } overflow-hidden text-ellipsis`}
+            >
+              {isNaN(data.priceChanges[2].percent) ? "0.00" : Math.abs(data.priceChanges[2].percent).toFixed(2)}% 3D
+            </div>
           ) : (
-            "N/A"
+            <SkeletonComponent />
           )}
         </div>
       </div>
