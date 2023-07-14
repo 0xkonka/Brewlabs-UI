@@ -265,7 +265,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                       <div>Brewlabs</div>
                       {/* <div className="absolute -left-6 top-2 text-primary">{KYCSVG}</div> */}
                     </div>
-                    <div className="overflow-hidden text-ellipsis text-lg text-[#FFFFFF80]">{deployer}</div>
+                    <div className="overflow-hidden text-ellipsis text-base text-[#FFFFFF80]">{deployer}</div>
                     <div className="mt-1.5 flex max-w-[260px] items-center justify-between">
                       <div className="flex items-center">
                         <div className="mr-3 cursor-pointer text-primary" id={"numberoffollowers"}>

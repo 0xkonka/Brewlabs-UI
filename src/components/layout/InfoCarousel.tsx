@@ -1,8 +1,8 @@
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import {
   BarChartSVG,
+  ChevronDownSVG,
   CommunitySVG,
-  DeployerSVG,
   DetailSVG,
   FixedSVG,
   InfoSVG,
@@ -11,14 +11,8 @@ import {
   UpDownSVG,
   chevronLeftSVG,
 } from "@components/dashboard/assets/svgs";
-import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
-import useTokenMarketChart from "@hooks/useTokenMarketChart";
-import useTokenBalances from "@hooks/useTokenMultiChainBalance";
-import clsx from "clsx";
-import { NFT_RARE_COUNT } from "config/constants/nft";
-import { tokens } from "config/constants/tokens";
 import { CommunityContext } from "contexts/CommunityContext";
-import React, { ReactNode, useContext } from "react";
+import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { Tooltip } from "react-tooltip";
 import { useIndexes } from "state/indexes/hooks";
@@ -48,28 +42,23 @@ const responsive = {
 };
 
 const InfoCarousel = () => {
-  const { treasuryValue, tvl, buybackValue, transactionCount, communities, feeCollectedValue }: any =
-    useContext(CommunityContext);
+  const {
+    treasuryValues,
+    totalStakedValues,
+    transactionCount,
+    communities,
+    feeCollectedValues,
+    nftStakingValues,
+    transactionCounts,
+  }: any = useContext(CommunityContext);
+
   const { indexes } = useIndexes();
-
-  const OETHMontlyAPY = useOETHMonthlyAPY();
-  const { balances: NFT_wallet_balance } = useTokenBalances(
-    { 1: [tokens[1].oeth, tokens[1].oeth] },
-    {
-      1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
-    }
+  const recentIndexes = indexes.filter(
+    (index) => new Date(index.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
   );
-
-  const tokenMarketData = useTokenMarketChart(1);
-
-  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
-    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
-    : null;
-
-  const NFT_MontlyApr =
-    NFT_wallet_balance && OETHMontlyAPY && OETHPrice
-      ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
-      : null;
+  const recentCommunities = communities.filter(
+    (community) => new Date(community.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
+  );
 
   const items = [
     {
@@ -77,55 +66,85 @@ const InfoCarousel = () => {
       suffix: "USD",
       icon: BarChartSVG,
       value:
-        treasuryValue === null ? (
+        treasuryValues.value === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `$${numberWithCommas(treasuryValue.toFixed(2))}`
+          `$${numberWithCommas(treasuryValues.value.toFixed(2))}`
         ),
       tooltip: "Total treasury value across all chains.",
+      subItem: {
+        value:
+          treasuryValues.changedValue === null ? (
+            <SkeletonComponent className="!min-w-[60px]" />
+          ) : (
+            `$${numberWithCommas(treasuryValues.changedValue.toFixed(2))}`
+          ),
+        suffix: "USD",
+      },
     },
     {
       name: "Total Value Locked",
       suffix: "USD",
       icon: LockSVG,
-      value: tvl === null ? <SkeletonComponent className="!min-w-[100px]" /> : `$${numberWithCommas(tvl.toFixed(2))}`,
-      tooltip: "Total TVL or Total Value Locked across all chains.",
-    },
-    {
-      name: "BREWLABS Buy Back",
-      suffix: "USD",
-      icon: DeployerSVG,
       value:
-        buybackValue === null ? (
+        totalStakedValues.value === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `$${numberWithCommas(buybackValue.toFixed(2))}`
+          `$${numberWithCommas(totalStakedValues.value.toFixed(2))}`
         ),
-      tooltip: "Total USD value of Brewlabs buy backs from fees since March 2022.",
+      tooltip: "TotaTVL or Total Value Locked across all chains.",
+      subItem: {
+        value:
+          totalStakedValues.changedValue === null ? (
+            <SkeletonComponent className="!min-w-[60px]" />
+          ) : (
+            `$${numberWithCommas(totalStakedValues.changedValue.toFixed(2))}`
+          ),
+        suffix: "USD",
+      },
     },
+
     {
       name: "Fee’s collected",
       suffix: "USD",
       icon: UpDownSVG,
       value:
-        feeCollectedValue === null ? (
+        feeCollectedValues.value === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `$${numberWithCommas(feeCollectedValue.toFixed(2))}`
+          `$${numberWithCommas(feeCollectedValues.value.toFixed(2))}`
         ),
       tooltip: "Total fees collected.",
+      subItem: {
+        value:
+          feeCollectedValues.changedValue === null ? (
+            <SkeletonComponent className="!min-w-[60px]" />
+          ) : (
+            `$${numberWithCommas(feeCollectedValues.changedValue.toFixed(2))}`
+          ),
+        suffix: "USD",
+      },
     },
     {
       name: "Transactions",
       suffix: "Tx",
       icon: FixedSVG,
       value:
-        transactionCount === null ? (
+        transactionCounts.value === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `${numberWithCommas(transactionCount)}`
+          `${numberWithCommas(transactionCounts.value)}`
         ),
       tooltip: "Total transactions made across Brewlabs dAPP.",
+      subItem: {
+        value:
+          transactionCounts.changedValue === null ? (
+            <SkeletonComponent className="!min-w-[60px]" />
+          ) : (
+            `${numberWithCommas(transactionCounts.changedValue)}`
+          ),
+        suffix: "Tx",
+      },
     },
     {
       name: "Communities",
@@ -133,6 +152,10 @@ const InfoCarousel = () => {
       icon: CommunitySVG,
       value: numberWithCommas(communities.length),
       tooltip: "Total communities added.",
+      subItem: {
+        value: numberWithCommas(recentCommunities.length),
+        suffix: "ADDED",
+      },
     },
     {
       name: "User Indexes",
@@ -140,13 +163,31 @@ const InfoCarousel = () => {
       icon: DetailSVG,
       value: numberWithCommas(indexes.length),
       tooltip: "Total user indexes active.",
+      subItem: {
+        value: numberWithCommas(recentIndexes.length),
+        suffix: "ADDED",
+      },
     },
     {
       name: "Brewlabs NFT Staking",
       suffix: "APR",
       icon: NFTFillSVG,
-      value: NFT_MontlyApr === null ? <SkeletonComponent className="!min-w-[100px]" /> : `${NFT_MontlyApr.toFixed(2)}%`,
+      value:
+        nftStakingValues.NFT_MontlyApr === null ? (
+          <SkeletonComponent className="!min-w-[100px]" />
+        ) : (
+          `${nftStakingValues.NFT_MontlyApr.toFixed(2)}%`
+        ),
       tooltip: "Best performing NFT staking pool.",
+      subItem: {
+        value:
+          nftStakingValues.mintCount === null ? (
+            <SkeletonComponent className="!min-w-[60px]" />
+          ) : (
+            `${numberWithCommas(nftStakingValues.mintCount)}`
+          ),
+        suffix: "STAKED",
+      },
     },
   ];
   const CustomRightArrow = ({ onClick }) => {
@@ -171,22 +212,29 @@ const InfoCarousel = () => {
         infinite={true}
         draggable={false}
         autoPlay={true}
-        autoPlaySpeed={2500}
+        autoPlaySpeed={25000000}
         arrows={true}
         customRightArrow={<CustomRightArrow onClick={undefined} />}
         customLeftArrow={<CustomLeftArrow onClick={undefined} />}
-        className="!static"
+        className="!static !overflow-visible !overflow-x-clip"
         itemClass="flex justify-center"
       >
         {items.map((data, i) => {
           return (
             <div key={i} className="p-2">
-              <div className="primary-shadow h-[80px] rounded-[12px] bg-[linear-gradient(180deg,#35353B_1.04%,rgba(35,35,38,0.00)_100%)] p-4 w-[210px]">
+              <div className="primary-shadow relative h-[80px] w-[210px] cursor-pointer rounded-[12px] bg-[linear-gradient(180deg,#35353B_1.04%,rgba(35,35,38,0.00)_100%)] p-4 [&>*:first-child]:hover:!opacity-100">
+                <div className="primary-shadow absolute -bottom-4 right-4 flex items-center rounded-[10px] bg-[#262629] p-[6px_16px] opacity-0 transition">
+                  <div className="mr-1.5 -scale-y-100 text-primary [&>svg]:!h-2 [&>svg]:!w-2">{ChevronDownSVG}</div>
+                  <div className="flex items-end text-xs text-white">
+                    {data.subItem.value}&nbsp;
+                    <span className="text-[10px] leading-[1.2] text-[#FFFFFF80]">{data.subItem.suffix} 24hrs</span>
+                  </div>
+                </div>
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-primary">{data.name}</div>
                   <div className="text-tailwind [&>svg]:!h-4 [&>svg]:!w-4">{data.icon}</div>
                 </div>
-                <div className="flex items-center justify-between text-xl text-white">
+                <div className="flex h-[30px] items-center justify-between text-xl text-white">
                   <div className="flex items-end">
                     {data.value}&nbsp;<span className="text-base text-sm text-[#FFFFFF80]">{data.suffix}</span>
                   </div>
