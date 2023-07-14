@@ -20,21 +20,29 @@ import { tokens } from "config/constants/tokens";
 import { CommunityContext } from "contexts/CommunityContext";
 import React, { ReactNode, useContext } from "react";
 import Carousel from "react-multi-carousel";
-import { Tooltip as ReactTooltip } from "react-tooltip";
+import { Tooltip } from "react-tooltip";
 import { useIndexes } from "state/indexes/hooks";
 import { numberWithCommas } from "utils/functions";
 
 const responsive = {
-  desktop: {
-    breakpoint: { max: 10000, min: 1080 },
+  1: {
+    breakpoint: { max: 10000, min: 1280 },
+    items: 5,
+  },
+  2: {
+    breakpoint: { max: 1280, min: 1024 },
+    items: 4,
+  },
+  3: {
+    breakpoint: { max: 1024, min: 768 },
     items: 3,
   },
-  mobile: {
-    breakpoint: { max: 1080, min: 700 },
+  4: {
+    breakpoint: { max: 768, min: 500 },
     items: 2,
   },
-  small: {
-    breakpoint: { max: 700, min: 0 },
+  5: {
+    breakpoint: { max: 500, min: 0 },
     items: 1,
   },
 };
@@ -70,7 +78,7 @@ const InfoCarousel = () => {
       icon: BarChartSVG,
       value:
         treasuryValue === null ? (
-          <SkeletonComponent className="!min-w-[120px]" />
+          <SkeletonComponent className="!min-w-[100px]" />
         ) : (
           `$${numberWithCommas(treasuryValue.toFixed(2))}`
         ),
@@ -80,7 +88,7 @@ const InfoCarousel = () => {
       name: "TVL",
       suffix: "USD",
       icon: LockSVG,
-      value: tvl === null ? <SkeletonComponent className="!min-w-[120px]" /> : `$${numberWithCommas(tvl.toFixed(2))}`,
+      value: tvl === null ? <SkeletonComponent className="!min-w-[100px]" /> : `$${numberWithCommas(tvl.toFixed(2))}`,
       tooltip: "TotaTVL or Total Value Locked across all chains.",
     },
     {
@@ -89,7 +97,7 @@ const InfoCarousel = () => {
       icon: DeployerSVG,
       value:
         buybackValue === null ? (
-          <SkeletonComponent className="!min-w-[120px]" />
+          <SkeletonComponent className="!min-w-[100px]" />
         ) : (
           `$${numberWithCommas(buybackValue.toFixed(2))}`
         ),
@@ -101,7 +109,7 @@ const InfoCarousel = () => {
       icon: UpDownSVG,
       value:
         feeCollectedValue === null ? (
-          <SkeletonComponent className="!min-w-[120px]" />
+          <SkeletonComponent className="!min-w-[100px]" />
         ) : (
           `$${numberWithCommas(feeCollectedValue.toFixed(2))}`
         ),
@@ -113,7 +121,7 @@ const InfoCarousel = () => {
       icon: FixedSVG,
       value:
         transactionCount === null ? (
-          <SkeletonComponent className="!min-w-[120px]" />
+          <SkeletonComponent className="!min-w-[100px]" />
         ) : (
           `${numberWithCommas(transactionCount)}`
         ),
@@ -137,7 +145,7 @@ const InfoCarousel = () => {
       name: "Brewlabs NFT Staking",
       suffix: "APR",
       icon: NFTFillSVG,
-      value: NFT_MontlyApr === null ? <SkeletonComponent className="!min-w-[120px]" /> : `${NFT_MontlyApr.toFixed(2)}%`,
+      value: NFT_MontlyApr === null ? <SkeletonComponent className="!min-w-[100px]" /> : `${NFT_MontlyApr.toFixed(2)}%`,
       tooltip: "Best performing NFT staking pool.",
     },
   ];
@@ -162,8 +170,8 @@ const InfoCarousel = () => {
         responsive={responsive}
         infinite={true}
         draggable={false}
-        autoPlay={false}
-        autoPlaySpeed={100000000}
+        autoPlay={true}
+        autoPlaySpeed={2500}
         arrows={true}
         customRightArrow={<CustomRightArrow onClick={undefined} />}
         customLeftArrow={<CustomLeftArrow onClick={undefined} />}
@@ -173,18 +181,20 @@ const InfoCarousel = () => {
         {items.map((data, i) => {
           return (
             <div key={i} className="p-2">
-              <div className="primary-shadow h-[100px] w-[260px] rounded-[12px] bg-[linear-gradient(180deg,#35353B_1.04%,rgba(35,35,38,0.00)_100%)] p-5 xsm:w-[300px]">
+              <div className="primary-shadow h-[80px] rounded-[12px] bg-[linear-gradient(180deg,#35353B_1.04%,rgba(35,35,38,0.00)_100%)] p-4 w-[210px]">
                 <div className="flex items-center justify-between">
-                  <div className="text-primary">{data.name}</div>
+                  <div className="text-sm text-primary">{data.name}</div>
                   <div className="text-tailwind [&>svg]:!h-4 [&>svg]:!w-4">{data.icon}</div>
                 </div>
-                <div className="flex items-center justify-between text-3xl text-white">
+                <div className="flex items-center justify-between text-xl text-white">
                   <div className="flex items-end">
-                    {data.value}&nbsp;<span className="text-base text-[#FFFFFF80]">{data.suffix}</span>
+                    {data.value}&nbsp;<span className="text-base text-sm text-[#FFFFFF80]">{data.suffix}</span>
                   </div>
                   <div
                     className="mt-1 cursor-pointer text-tailwind transition hover:text-[#FFFFFF80] [&>svg]:!h-4 [&>svg]:!w-4 [&>svg]:!opacity-100 "
-                    id={data.tooltip}
+                    data-tooltip-id={"my-tooltip"}
+                    data-tooltip-content={data.tooltip}
+                    data-tooltip-place="top"
                   >
                     {InfoSVG}
                   </div>
@@ -194,9 +204,7 @@ const InfoCarousel = () => {
           );
         })}
       </Carousel>
-      {items.map((data, i) => (
-        <ReactTooltip anchorId={data.tooltip} place="top" content={data.tooltip} key={i} />
-      ))}
+      <Tooltip id={"my-tooltip"} />
     </div>
   );
 };
