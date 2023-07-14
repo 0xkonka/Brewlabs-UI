@@ -83,7 +83,7 @@ const InfoCarousel = () => {
       },
     },
     {
-      name: "TVL",
+      name: "Total Value Locked",
       suffix: "USD",
       icon: LockSVG,
       value:

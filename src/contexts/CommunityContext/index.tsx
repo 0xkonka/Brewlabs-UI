@@ -1,9 +1,10 @@
-import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
-import axios from "axios";
-import { API_URL } from "config/constants";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
+
+import { API_URL } from "config/constants";
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { useCommunuityValues } from "./useCommunityValues";
 
 const CommunityContext: any = React.createContext({

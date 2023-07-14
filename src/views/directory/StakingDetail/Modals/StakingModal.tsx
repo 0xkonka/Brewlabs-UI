@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
 import { toast } from "react-toastify";
@@ -222,7 +223,7 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  {accountData?.allowance?.gt(1000) ? (
+                  {+amount <= +formatUnits(accountData?.allowance ? accountData.allowance.toString() : "0", data.stakingToken.decimals) ? (
                     <StyledButton
                       type="primary"
                       disabled={!amount || insufficient || pending}
