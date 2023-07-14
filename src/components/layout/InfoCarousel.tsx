@@ -85,11 +85,11 @@ const InfoCarousel = () => {
       tooltip: "Total treasury value across all chains.",
     },
     {
-      name: "TVL",
+      name: "Total Value Locked",
       suffix: "USD",
       icon: LockSVG,
       value: tvl === null ? <SkeletonComponent className="!min-w-[100px]" /> : `$${numberWithCommas(tvl.toFixed(2))}`,
-      tooltip: "TotaTVL or Total Value Locked across all chains.",
+      tooltip: "Total TVL or Total Value Locked across all chains.",
     },
     {
       name: "BREWLABS Buy Back",

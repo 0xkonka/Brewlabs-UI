@@ -1,16 +1,14 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
+
+import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
+import { API_URL } from "config/constants";
+import { tokens } from "config/constants/tokens";
 import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import { getBalances } from "@hooks/useTokenMultiChainBalance";
-import axios from "axios";
-import { API_URL } from "config/constants";
-import { tokens } from "config/constants/tokens";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { getBep20Contract, getContract } from "utils/contractHelpers";
-import bep20Abi from "config/abi/erc20.json";
-import { useAccount } from "wagmi";
-import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
-import { ethers } from "ethers";
 import { simpleRpcProvider } from "utils/providers";
 
 const CommunityContext: any = React.createContext({
