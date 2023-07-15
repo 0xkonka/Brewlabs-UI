@@ -212,7 +212,7 @@ const InfoCarousel = () => {
         infinite={true}
         draggable={false}
         autoPlay={true}
-        autoPlaySpeed={25000000}
+        autoPlaySpeed={2500}
         arrows={true}
         customRightArrow={<CustomRightArrow onClick={undefined} />}
         customLeftArrow={<CustomLeftArrow onClick={undefined} />}
