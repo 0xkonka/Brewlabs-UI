@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import PhoneFrame from "@components/PhoneFrame";
 import { ArrowPathRoundedSquareIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Container from "./Container";
+import { NFTSVG } from "@components/dashboard/assets/svgs";
+import Soon from "@components/Soon";
 
 const PageHero = () => {
   return (
@@ -11,7 +13,7 @@ const PageHero = () => {
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
           <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none xl:col-span-6">
-            <header className="mt-4 mb-4 font-brand sm:mt-5 lg:mt-6">
+            <header className="mb-4 mt-4 font-brand sm:mt-5 lg:mt-6">
               <h1 className="bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-4xl text-transparent lg:text-5xl">
                 Get ready for the next generation in blockchain utilities
               </h1>
@@ -22,21 +24,31 @@ const PageHero = () => {
               your portfolio.
             </p>
 
-            <div className="mt-4">
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-4 flex w-full flex-col sm:w-[400px]">
+              <div className="flex flex-col flex-wrap xmd:flex-row">
                 <a
-                  className="btn-outline btn grow border-amber-200 text-amber-200 sm:grow-0"
+                  className="btn-outline btn mb-2 mr-0 flex-1 border-amber-200 text-amber-200 xmd:mb-0 xmd:mr-2 sm:flex-none"
                   href="https://t.me/brewlabs"
                   target="_blank"
                 >
                   <ChatBubbleLeftRightIcon className="mr-1 h-6 w-6 text-amber-200" />
                   Join our community
                 </a>
-                <Link className="btn-outline btn grow border-gray-400 sm:grow-0" href="/swap">
+                <Link className="btn-outline btn flex-1  border-gray-400" href="/swap">
                   <ArrowPathRoundedSquareIcon className="mr-1 h-6 w-6" />
                   Swap tokens
                 </Link>
               </div>
+              <Link
+                className="relative mt-3.5 w-full rounded-lg bg-[url('/images/directory/brewlabs-nft-banner.png')] bg-cover p-[10px_12px]"
+                href={"/nft"}
+              >
+                <Soon text={"New"} className="!h-5" fade={true} />
+                <div className="flex w-fit items-center rounded-md bg-[#FFFFFF99] p-[8px_10px]">
+                  <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{NFTSVG}</div>
+                  <div className="ml-3 font-semibold text-[#1B212D]">VIEW BREWLABS NFT COLLECTION INFO</div>
+                </div>
+              </Link>
             </div>
           </div>
 
@@ -49,9 +61,9 @@ const PageHero = () => {
             }}
             className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6"
           >
-            <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-top-10 lg:-bottom-20 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
+            <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-bottom-20 lg:-top-10 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
               <PhoneFrame className="mx-auto max-w-[366px]" priority>
-                <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute top-2 left-0" />
+                <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute left-0 top-2" />
               </PhoneFrame>
             </div>
           </motion.div>

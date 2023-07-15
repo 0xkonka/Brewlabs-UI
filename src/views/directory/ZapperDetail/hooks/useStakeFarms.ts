@@ -3,7 +3,6 @@ import BigNumber from "bignumber.js";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 
-import { NULL_ADDRESS } from "config/constants";
 import { Chef } from "config/constants/types";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useExternalMasterchef } from "hooks/useContract";
@@ -12,6 +11,7 @@ import { BIG_TEN, BIG_ZERO } from "utils/bigNumber";
 import { getExternalMasterChefContract } from "utils/contractHelpers";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { useAppId } from "state/zap/hooks";
+import { ethers } from "ethers";
 
 const stakeFarm = async (
   currency,
@@ -27,7 +27,7 @@ const stakeFarm = async (
   const value = currency.isNative ? _amount.plus(performanceFee).toString() : performanceFee.toString();
 
   let gasLimit = await masterChefContract.estimateGas.zapIn(
-    currency.isNative ? NULL_ADDRESS : currency.address,
+    currency.isNative ? ethers.constants.AddressZero : currency.address,
     lpAddress,
     pid,
     _amount.toString(),
@@ -38,7 +38,7 @@ const stakeFarm = async (
   gasLimit = calculateGasMargin(gasLimit);
 
   const tx = await masterChefContract.zapIn(
-    currency.isNative ? NULL_ADDRESS : currency.address,
+    currency.isNative ? ethers.constants.AddressZero : currency.address,
     lpAddress,
     pid,
     _amount.toString(),

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
 import { useAccount } from "wagmi";
@@ -26,7 +26,7 @@ import StakingDetail from "views/directory/StakingDetail";
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
 
-const Deployer = ({ page }: { page: number }) => {
+const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
   const [sortOrder, setSortOrder] = useState("default");
@@ -37,6 +37,16 @@ const Deployer = ({ page }: { page: number }) => {
   });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
   const [status, setStatus] = useState("active");
+
+  const [deployerOpen, setDeployerOpen] = useState(false);
+  const [step, setStep] = useState(0);
+  const [deployType, setDeployType] = useState("Yield Farm");
+
+  useEffect(() => {
+    setDeployType(type === "index" ? "Index" : "Yield Farm");
+    setStep(type ? 1 : 0);
+    setDeployerOpen(type ? true : false);
+  }, [type]);
 
   const { pools, dataFetched } = usePools();
   const { data: farms } = useFarms();
@@ -66,7 +76,9 @@ const Deployer = ({ page }: { page: number }) => {
     }),
   ];
 
-  const allPools = totalPools.filter((data) => data.deployer?.toLowerCase() === account?.toLowerCase());
+  const allPools = totalPools.filter(
+    (data) => data.deployer && account && data.deployer.toLowerCase() === account.toLowerCase()
+  );
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
       case "apr":
@@ -215,6 +227,12 @@ const Deployer = ({ page }: { page: number }) => {
                     setCurPool={setCurPool}
                     setSortOrder={setSortOrder}
                     loading={dataFetched}
+                    deployerOpen={deployerOpen}
+                    setDeployerOpen={setDeployerOpen}
+                    step={step}
+                    setStep={setStep}
+                    deployType={deployType}
+                    setDeployType={setDeployType}
                   />
                 </div>
               </Container>

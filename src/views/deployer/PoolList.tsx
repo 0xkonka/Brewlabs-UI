@@ -10,17 +10,35 @@ const PoolList = ({
   setCurPool,
   setSortOrder,
   loading,
+  deployerOpen,
+  setDeployerOpen,
+  step,
+  setStep,
+  deployType,
+  setDeployType,
 }: {
   pools: any;
   setSelectPoolDetail: any;
   setCurPool: any;
   setSortOrder: any;
   loading: boolean;
+  deployerOpen: any;
+  setDeployerOpen: any;
+  step: any;
+  setStep: any;
+  deployType: any;
+  setDeployType: any;
 }) => {
-  const [deployerOpen, setDeployerOpen] = useState(false);
   return (
     <StyledContainer>
-      <DeployerModal open={deployerOpen} setOpen={setDeployerOpen} />
+      <DeployerModal
+        open={deployerOpen}
+        setOpen={setDeployerOpen}
+        step={step}
+        setStep={setStep}
+        deployType={deployType}
+        setDeployType={setDeployType}
+      />
       <PoolHeader>
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
           Network
@@ -57,7 +75,10 @@ const PoolList = ({
       </PoolPanel>
       <div
         className="mx-auto my-8 mt-5 flex w-full max-w-[320px] cursor-pointer items-center justify-center rounded-lg border border-[#FFFFFF80] bg-[#B9B8B80D] py-2.5 text-lg text-[#FFFFFF80] transition hover:text-white hover:shadow-[0px_1px_3px_white]"
-        onClick={() => setDeployerOpen(true)}
+        onClick={() => {
+          setDeployerOpen(true);
+          setStep(0);
+        }}
       >
         <div className="-mt-0.5 mr-2.5 scale-150 text-primary">{PlusSVG}</div>
         <div>Deploy a Brewlabs Product</div>

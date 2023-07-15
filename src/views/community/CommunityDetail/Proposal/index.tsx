@@ -5,7 +5,7 @@ import SelectionPanel from "./SelectionPanel";
 import ProposalList from "./ProposalList";
 import { useAccount } from "wagmi";
 
-const Proposal = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
+const Proposal = ({ community }: { community: any }) => {
   const [curFilter, setCurFilter] = useState(0);
   const [criteria, setCriteria] = useState("");
   const { address: account } = useAccount();
@@ -35,7 +35,7 @@ const Proposal = ({ community, circulatingSupply }: { community: any; circulatin
         />
       </div>
       <div className="mt-9" />
-      <ProposalList community={community} circulatingSupply={circulatingSupply} proposals={filteredProposals} />
+      <ProposalList community={community} proposals={filteredProposals} />
     </div>
   );
 };

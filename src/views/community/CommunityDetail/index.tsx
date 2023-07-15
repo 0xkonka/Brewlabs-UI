@@ -11,18 +11,14 @@ import CommunitySummary from "./CommunitySummary";
 import InfoPanel from "./InfoPanel";
 import Proposal from "./Proposal";
 import { useEffect, useState } from "react";
-import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 
 const CommunityDetail = ({ community }: { community: any }) => {
-  const [totalBalance, setTotalBalance] = useState(0);
-
-  const communityStringified = JSON.stringify(community);
-  useEffect(() => {
-    getTreasuryBalances(
-      Object.keys(community.currencies).map((key) => community.currencies[key]),
-      community.treasuries
-    ).then((balance) => setTotalBalance(balance));
-  }, [communityStringified]);
+  let tokens = new Object();
+  Object.keys(community.currencies).map(
+    (key, i) => (tokens[key] = community.treasuries[key].map((data) => community.currencies[key]))
+  );
+  const { totalBalance } = useTokenBalances(tokens, community.treasuries);
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
   const circulatingSupply = totalSupply - totalBalance;
@@ -51,11 +47,11 @@ const CommunityDetail = ({ community }: { community: any }) => {
               </Link>
             </header>
             <div className="mt-4" />
-            <CommunitySummary community={community} circulatingSupply={circulatingSupply} />
+            <CommunitySummary community={community} />
             <div className="mt-4" />
             <InfoPanel community={community} circulatingSupply={circulatingSupply} />
             <div className="mt-10 sm:mt-2" />
-            <Proposal community={community} circulatingSupply={circulatingSupply} />
+            <Proposal community={community} />
           </Container>
         </div>
       </motion.div>

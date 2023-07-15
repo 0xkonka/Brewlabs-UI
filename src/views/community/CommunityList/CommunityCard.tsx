@@ -2,6 +2,7 @@ import Notification from "@components/Notification";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import { StarIcon as StarOutlineIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import Link from "next/link";
 import StyledButton from "views/directory/StyledButton";
 import { useAccount } from "wagmi";
@@ -17,6 +18,47 @@ const CommunityCard = ({
 }) => {
   const { address: account } = useAccount();
 
+  let tokens = new Object();
+  Object.keys(community.currencies).map(
+    (key, i) => (tokens[key] = community.treasuries[key].map((data) => community.currencies[key]))
+  );
+  const { totalBalance } = useTokenBalances(tokens, community.treasuries);
+
+  const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
+
+  const archivedProposalCount = community.proposals.filter(
+    (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
+  ).length;
+  const activeProposalCount = community.proposals.length - archivedProposalCount;
+
+  let addresses = new Object();
+  tokens = new Object();
+  Object.keys(community.currencies).map((key, i) => {
+    let result = [];
+    community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
+    addresses[key] = [...(addresses[key] ?? []), ...result];
+  });
+  Object.keys(community.currencies).map((key, i) => {
+    let result = [];
+    community.proposals.map((proposal) =>
+      [...proposal.yesVoted, ...proposal.noVoted].map((data) => (result = [...result, community.currencies[key]]))
+    );
+    tokens[key] = [...(tokens[key] ?? []), ...result];
+  });
+
+  const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
+  const totalVotePercent = community.proposals.length
+    ? (totalVoteBalance / community.proposals.length / totalSupply) * 100
+    : 0;
+
+  const newCount = account
+    ? community.proposals.filter(
+        (proposal) =>
+          community.members.includes(account.toLowerCase()) &&
+          ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+      ).length
+    : 0;
+
   const onFavourites = (_address: string, type: number) => {
     if (type === 1) {
       localStorage.setItem(`communityfavourites`, JSON.stringify([...favourites, _address]));
@@ -29,30 +71,6 @@ const CommunityCard = ({
       getFavourites();
     }
   };
-
-  const archivedProposalCount = community.proposals.filter(
-    (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
-  ).length;
-  const activeProposalCount = community.proposals.length - archivedProposalCount;
-
-  let totalVoteCount = 0;
-  community.proposals.map(
-    (data) =>
-      (totalVoteCount +=
-        community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !data.isFeeToVote)
-          ? 0
-          : [...data.yesVoted, ...data.noVoted].length)
-  );
-
-  const totalVotePercent =
-    ((community.feeToVote.amount * totalVoteCount) /
-      Math.pow(10, community.currencies[community.coreChainId].decimals) /
-      community.circulatingSupply) *
-    100;
-
-  const newCount = community.proposals.filter(
-    (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
-  ).length;
 
   return (
     <div className="primary-shadow mt-2.5 flex w-full cursor-pointer flex-col items-start justify-between rounded bg-[#B9B8B80D] p-[15px_12px] hover:bg-[#b9b8b81c] sm:p-[15px_44px] xl:flex-row xl:items-center">
@@ -89,7 +107,7 @@ const CommunityCard = ({
         </div>
       </div>
       <div className="mt-4 flex w-full max-w-full flex-col items-start justify-between sm:flex-row sm:items-center xl:mt-0 xl:w-[55%] xl:max-w-[600px]">
-        <div className="mb-4 leading-[1.2] text-white xl:mb-0 relative">
+        <div className="relative mb-4 leading-[1.2] text-white xl:mb-0">
           <div className="text-lg">{activeProposalCount}</div>
           <div className="text-xs text-[#FFFFFFBF]">Active proposals</div>
           <Notification count={newCount} />
@@ -100,7 +118,11 @@ const CommunityCard = ({
         </div>
         <div className="mb-4 leading-[1.2] text-white xl:mb-0">
           <div className="flex text-lg">
-            {!community.circulatingSupply ? <SkeletonComponent /> : `${totalVotePercent.toFixed(2)}%`}
+            {totalVoteBalance === null && totalBalance === null ? (
+              <SkeletonComponent />
+            ) : (
+              `${totalVotePercent.toFixed(2)}%`
+            )}
           </div>
           <div className="text-xs text-[#FFFFFFBF] text-[#FFFFFFBF]">Engagement</div>
         </div>

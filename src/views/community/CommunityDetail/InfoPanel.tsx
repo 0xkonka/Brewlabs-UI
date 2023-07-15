@@ -16,10 +16,11 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import { NETWORKS } from "config/constants/networks";
 import { getChainLogo, numberWithCommas } from "utils/functions";
 import { useEffect, useState } from "react";
-import { getTreasuryBalances } from "@hooks/useTokenMultiChainBalance";
 import ProposalModal from "./ProposalModal";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
+import Soon from "@components/Soon";
 
-const   InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
+const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   let explorers = [
     ...Object.keys(community.currencies)
       .filter((key) => key !== "97")
@@ -36,22 +37,28 @@ const   InfoPanel = ({ community, circulatingSupply }: { community: any; circula
   if (community.socials.telegram) explorers.push({ icon: TelegramSVG, link: community.socials.telegram });
   if (community.socials.twitter) explorers.push({ icon: TwitterSVG, link: community.socials.twitter });
 
-  let totalVoteCount = 0;
-  community.proposals.map(
-    (data) =>
-      (totalVoteCount +=
-        community.feeToVote.type === "no" || (community.feeToVote.type === "Sometimes" && !data.isFeeToVote)
-          ? 0
-          : [...data.yesVoted, ...data.noVoted].length)
-  );
-
-  const totalVotePercent =
-    ((community.feeToVote.amount * totalVoteCount) /
-      Math.pow(10, community.currencies[community.coreChainId].decimals) /
-      circulatingSupply) *
-    100;
+  let addresses = new Object();
+  let tokens = new Object();
+  Object.keys(community.currencies).map((key, i) => {
+    let result = [];
+    community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
+    addresses[key] = [...(addresses[key] ?? []), ...result];
+  });
+  Object.keys(community.currencies).map((key, i) => {
+    let result = [];
+    community.proposals.map((proposal) =>
+      [...proposal.yesVoted, ...proposal.noVoted].map((data) => (result = [...result, community.currencies[key]]))
+    );
+    tokens[key] = [...(tokens[key] ?? []), ...result];
+  });
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
+
+  const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
+  const totalVotePercent = community.proposals.length
+    ? (totalVoteBalance / community.proposals.length / totalSupply) * 100
+    : 0;
+
   const circulatingPercent = (circulatingSupply / totalSupply) * 100;
 
   const [proposalOpen, setProposalOpen] = useState(false);
@@ -59,8 +66,8 @@ const   InfoPanel = ({ community, circulatingSupply }: { community: any; circula
   const durations = [7, 14, 30];
   const infos = [
     { icon: PeopleSVG, data: `${community.members.length} Members` },
-    { icon: EngagementSVG, data: `${totalVotePercent.toFixed(2)}% Governance Engagement` },
-    { icon: RequirementSVG, data: "30.00% Quorum Requirement" },
+    { icon: EngagementSVG, data: `${(totalVotePercent ?? 0).toFixed(2)}% Governance Engagement` },
+    { icon: RequirementSVG, data: `${Number(community.quoroumReq).toFixed(2)}% Quorum Requirement` },
     {
       icon: BellSVG,
       data: `${community.maxProposal ? "7-" : ""}${durations[community.maxProposal]} Day Proposal Duration`,
@@ -73,7 +80,15 @@ const   InfoPanel = ({ community, circulatingSupply }: { community: any; circula
       icon: RefreshSVG,
       data: `${circulatingPercent.toFixed(2)}% Circulating Supply`,
     },
-    { icon: NoteSVG, data: `Sometimes a fee to vote` },
+    {
+      icon: NoteSVG,
+      data:
+        community.feeToVote.type === "Sometimes"
+          ? `Sometimes a fee to vote`
+          : community.feeToVote.type === "Yes"
+          ? "Fee to vote"
+          : "No fee to vote",
+    },
   ];
 
   return (
@@ -106,17 +121,30 @@ const   InfoPanel = ({ community, circulatingSupply }: { community: any; circula
           );
         })}
       </div>
-      <div className="mt-7 flex items-center">
-        <div className="mr-2.5 cursor-pointer text-tailwind transition hover:text-white" id={"No Brewlabs NFTs Found"}>
+      <div className="mt-7 flex">
+        <div
+          className="mr-2.5 mt-1.5 cursor-pointer text-tailwind transition hover:text-white"
+          id={"No Brewlabs NFTs Found"}
+        >
           {NFTSVG}
         </div>
-        <StyledButton
-          className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
-          onClick={() => setProposalOpen(true)}
-          // disabled
-        >
-          Submit&nbsp;<span className="font-normal">new proposal</span>
-        </StyledButton>
+        <div className="flex flex-col xsm:flex-row">
+          <StyledButton
+            className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
+            onClick={() => setProposalOpen(true)}
+            // disabled
+          >
+            Submit&nbsp;<span className="font-normal">new proposal</span>
+          </StyledButton>
+          <div className="mr-0 mt-4 xsm:mr-3 xsm:mt-0" />
+          <StyledButton
+            className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
+            // disabled
+          >
+            Submit&nbsp;<span className="font-normal">new poll</span>
+            <Soon className="!-right-5" />
+          </StyledButton>
+        </div>
       </div>
       <ReactTooltip anchorId={"No Brewlabs NFTs Found"} place="top" content="No Brewlabs NFTs Found" />
     </div>

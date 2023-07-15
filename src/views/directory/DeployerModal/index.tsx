@@ -100,14 +100,21 @@ const HeroSection = ({
   );
 };
 
-const DeployerModal = ({ open, setOpen }: { open: boolean; setOpen: any }) => {
-  const [step, setStep] = useState(0);
-  const [deployType, setDeployType] = useState("Yield Farm");
-
-  useEffect(() => {
-    setStep(0);
-  }, [open]);
-
+const DeployerModal = ({
+  open,
+  setOpen,
+  step,
+  setStep,
+  deployType,
+  setDeployType,
+}: {
+  open: boolean;
+  setOpen: any;
+  step: any;
+  setStep: any;
+  deployType: any;
+  setDeployType: any;
+}) => {
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog

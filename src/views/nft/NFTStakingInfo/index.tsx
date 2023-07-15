@@ -21,9 +21,8 @@ import useTokenMarketChart from "@hooks/useTokenMarketChart";
 const NFTStakingInfo = () => {
   const [mintOpen, setMintOpen] = useState(false);
 
-  const OETHWeeklyAPY = useOETHWeeklyAPY();
   const OETHMontlyAPY = useOETHMonthlyAPY();
-  const NFT_wallet_balance = useTokenBalances(
+  const { balances: NFT_wallet_balance } = useTokenBalances(
     { 1: [tokens[1].oeth, tokens[1].oeth] },
     {
       1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
@@ -45,11 +44,6 @@ const NFTStakingInfo = () => {
       NFT_wallet_balance && OETHMontlyAPY && OETHPrice
         ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
         : null,
-  };
-
-  const NFT_Weekly_ROI = {
-    1: NFT_wallet_balance && OETHWeeklyAPY ? ((OETHWeeklyAPY * NFT_wallet_balance[1][0].balance) / 9) * 12 : null,
-    56: NFT_wallet_balance && OETHMontlyAPY ? ((OETHWeeklyAPY * NFT_wallet_balance[1][1].balance) / 9) * 12 : null,
   };
 
   const infos = [
@@ -87,14 +81,22 @@ const NFTStakingInfo = () => {
       chainId: 1,
       apr: NFT_MontlyApr[1],
       totalPosition: NFT_wallet_balance && OETHPrice ? NFT_wallet_balance[1][0].balance * OETHPrice : null,
-      weeklyROI: OETHPrice ? NFT_Weekly_ROI[1] * OETHPrice : null,
+      weeklyROI:
+        OETHPrice && OETHMontlyAPY && NFT_wallet_balance
+          ? NFT_wallet_balance[1][0].balance * OETHPrice * OETHMontlyAPY
+          : null,
+      chainName: "ETH",
     },
 
     {
       chainId: 56,
       apr: NFT_MontlyApr[56],
       totalPosition: NFT_wallet_balance && OETHPrice ? NFT_wallet_balance[1][1].balance * OETHPrice : null,
-      weeklyROI: OETHPrice ? NFT_Weekly_ROI[56] * OETHPrice : null,
+      weeklyROI:
+        OETHPrice && OETHMontlyAPY && NFT_wallet_balance
+          ? NFT_wallet_balance[1][1].balance * OETHPrice * OETHMontlyAPY
+          : null,
+      chainName: "BNB",
     },
 
     {
@@ -102,6 +104,7 @@ const NFTStakingInfo = () => {
       apr: null,
       totalPosition: null,
       weeklyROI: null,
+      chainName: "MATIC",
     },
   ];
   return (
@@ -234,10 +237,15 @@ const NFTStakingInfo = () => {
                               "Pending..."
                             )}
                           </div>
+                          <div className="mt-2 flex items-center">
+                            <img src={getChainLogo(data.chainId)} alt={""} className="mr-1 h-4 w-4 rounded-full" />
+                            <div>{data.chainName}</div>
+                          </div>
                         </div>
                         <div className="text-[#FFFFFFBF]">
                           <div>Total position</div>
-                          <div className="mt-2">Avg weekly ROI</div>
+                          <div className="mt-2">Avg annual ROI</div>
+                          <div className="mt-2">Staking reward</div>
                         </div>
                       </div>
                     </div>

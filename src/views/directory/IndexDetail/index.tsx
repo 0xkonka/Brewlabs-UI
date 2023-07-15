@@ -322,9 +322,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           <div className="flex items-center">
                             <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                           </div>
-                          {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
-                            Soon
-                          </div> */}
                         </StyledButton>
                         <div className="mt-2" />
                         <OptionDropdown
@@ -388,9 +385,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         <div className="flex items-center">
                           <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                         </div>
-                        {/* <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
-                          Soon
-                        </div> */}
                       </StyledButton>
                       <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
                       <div className="hidden xl:block">
@@ -423,7 +417,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                 </div>
 
                 <div className="mt-2 flex flex-col items-center justify-between md:flex-row">
-                  <div className="sm:hidden block w-full my-2">
+                  <div className="my-2 block w-full sm:hidden">
                     <div className="mr-0 h-12 flex-none sm:mr-5 sm:flex-1">
                       <StyledButton
                         type={"quaternary"}

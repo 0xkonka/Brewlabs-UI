@@ -1,17 +1,27 @@
-import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
-import axios from "axios";
-import { API_URL } from "config/constants";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 
-const CommunityContext: any = React.createContext({ communities: [], joinOrLeaveCommunity: () => {} });
+import { API_URL } from "config/constants";
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
+import { useCommunuityValues } from "./useCommunityValues";
+
+const CommunityContext: any = React.createContext({
+  communities: [],
+  joinOrLeaveCommunity: () => {},
+  treasuryValue: 0,
+});
 
 const CommunityContextProvider = ({ children }: any) => {
-  const { address: account } = useAccount();
-
   const [communities, setCommunities] = useState([]);
   const [newProposalCount, setNewProposalCount] = useState(0);
+
+  const { address: account } = useAccount();
+  const [transactions, setTransactions] = useState(null);
+
+  const { treasuryValues, totalStakedValues, feeCollectedValues, nftStakingValues, transactionCounts } =
+    useCommunuityValues();
 
   const handleError = (data, successText = "") => {
     if (!data.success) toast.error(data.msg);
@@ -19,11 +29,7 @@ const CommunityContextProvider = ({ children }: any) => {
   };
   async function getCommunities() {
     axios.post(`${API_URL}/community/getCommunities`, {}).then((data) => {
-      setCommunities(
-        data.data.map((data) => {
-          return { ...data, circulatingSupply: 0 };
-        })
-      );
+      setCommunities(data.data);
     });
   }
 
@@ -67,13 +73,15 @@ const CommunityContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     let proposalCount = 0;
-    communities.map(
-      (community) =>
-        (proposalCount += community.proposals.filter(
-          (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
-        ).length)
-    );
-    console.log(proposalCount);
+    account &&
+      communities.map(
+        (community) =>
+          (proposalCount += community.members.includes(account.toLowerCase())
+            ? community.proposals.filter(
+                (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+              ).length
+            : 0)
+      );
     setNewProposalCount(proposalCount);
   }, [stringifiedCommunities]);
 
@@ -86,6 +94,12 @@ const CommunityContextProvider = ({ children }: any) => {
         voteOrAgainst,
         addCommunity,
         newProposalCount,
+        treasuryValues: treasuryValues,
+        totalStakedValues: totalStakedValues,
+        transactionCount: transactions,
+        feeCollectedValues: feeCollectedValues,
+        nftStakingValues: nftStakingValues,
+        transactionCounts: transactionCounts,
       }}
     >
       {children}

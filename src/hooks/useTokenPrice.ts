@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import axios from "axios";
 import { DEX_GURU_CHAIN_NAME } from "config";
+import { useSlowRefreshEffect } from "./useRefreshEffect";
 
 export const useTokenPrices = () => {
   const { tokenPrices } = useContext(TokenPriceContext);
@@ -20,18 +21,21 @@ const useTokenPrice = (chainId: ChainId, address: string | undefined, isLiquidit
     : 0;
 };
 
-export const fetchDexPrice = async (chainId: ChainId, address: string) => {
-  try {
-    const result = await axios.post("https://api.dex.guru/v3/tokens", {
-      ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
-      limit: 1,
-      network: DEX_GURU_CHAIN_NAME[chainId],
-    });
-    console.log(result);
-  } catch (e) {
-    console.log(e);
-    return 0;
-  }
+export const useDexPrice = (chainId: ChainId, address: string) => {
+  const [price, setPrice] = useState(null);
+
+  useSlowRefreshEffect(() => {
+    axios
+      .post("https://api.dex.guru/v3/tokens", {
+        ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
+        limit: 1,
+        network: DEX_GURU_CHAIN_NAME[chainId],
+      })
+      .then((result) => setPrice(result.data.data[0].priceUSD))
+      .catch((e) => console.log(e));
+  }, [chainId, address]);
+
+  return { price };
 };
 
 export default useTokenPrice;

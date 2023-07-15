@@ -91,10 +91,18 @@ const PoolCard = ({
               </div>
             )}
             <div className="overflow-hidden text-ellipsis text-xs">
-              {poolNames[data.type]} -{" "}
-              {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
-                ? "Flexible"
-                : `${data.duration ? data.duration : "__"} days lock`}
+              {data.type === Category.INDEXES ? (
+                <div className="overflow-hidden text-ellipsis text-sm leading-none">
+                  {data.name ? data.name : getIndexName(data.tokens)}
+                </div>
+              ) : (
+                <>
+                  {poolNames[data.type]} -{" "}
+                  {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
+                    ? "Flexible"
+                    : `${data.duration ? data.duration : "__"} days lock`}
+                </>
+              )}
             </div>
             <div className="text-xs leading-none ">
               {data.type === Category.INDEXES ? (
@@ -152,8 +160,16 @@ const PoolCard = ({
             ) : (
               <div className="mr-2">{<SkeletonComponent />}</div>
             )
+          ) : data.priceChanges ? (
+            <div
+              className={`${
+                data.priceChanges[2].percent >= 0 ? "text-success" : "text-danger"
+              } overflow-hidden text-ellipsis`}
+            >
+              {isNaN(data.priceChanges[2].percent) ? "0.00" : Math.abs(data.priceChanges[2].percent).toFixed(2)}% 30D
+            </div>
           ) : (
-            "N/A"
+            <SkeletonComponent />
           )}
         </div>
       </div>
