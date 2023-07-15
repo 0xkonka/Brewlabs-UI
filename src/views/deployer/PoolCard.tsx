@@ -94,10 +94,18 @@ const PoolCard = ({
               </div>
             )}
             <div className="overflow-hidden text-ellipsis text-xs">
-              {poolNames[data.type]} -{" "}
-              {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
-                ? "Flexible"
-                : `${data.duration ? data.duration : "__"} days lock`}
+              {data.type === Category.INDEXES ? (
+                <div className="overflow-hidden text-ellipsis text-sm leading-none">
+                  {data.name ? data.name : getIndexName(data.tokens)}
+                </div>
+              ) : (
+                <>
+                  {poolNames[data.type]} -{" "}
+                  {data.poolCategory === PoolCategory.CORE || data.type !== Category.POOL
+                    ? "Flexible"
+                    : `${data.duration ? data.duration : "__"} days lock`}
+                </>
+              )}
             </div>
             <div className="text-xs leading-none ">
               {data.type === Category.INDEXES ? (
