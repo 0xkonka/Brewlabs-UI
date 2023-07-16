@@ -27,7 +27,7 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
   }, [error]);
 
   return (
-    <Modal open={open} onClose={() => {}}>
+    <Modal open={open}>
       <div className="p-8">
         <div className="flex items-center justify-center">
           <div
@@ -71,7 +71,7 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
                   {isLoading && (
                     <div role="status">
                       <svg
-                        className="mr-2 inline h-5 w-5 animate-spin fill-yellow-500 text-gray-200 dark:text-gray-600"
+                        className="fill-yellow-500 mr-2 inline h-5 w-5 animate-spin text-gray-200 dark:text-gray-600"
                         viewBox="0 0 100 101"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +91,7 @@ const WrongNetworkModal = ({ open, currentChain }: WrongNetworkModalProps) => {
               </Button>
             ) : (
               <div
-                className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-600"
+                className="border-yellow-400 bg-yellow-100 relative mt-2 rounded border px-4 py-3 text-red-600"
                 role="alert"
               >
                 <strong className="font-bold">Unable to switch network. Please try it on your wallet</strong>
