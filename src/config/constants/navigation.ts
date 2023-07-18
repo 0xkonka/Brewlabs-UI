@@ -18,13 +18,13 @@ export const navigationData = [
     external: false,
     icon: "HomeIcon",
   },
-  // {
-  //   name: "Chart",
-  //   href: "/chart",
-  //   external: false,
-  //   coming: false,
-  //   icon: "PresentationChartLineIcon",
-  // },
+  {
+    name: "Chart",
+    href: "/chart",
+    external: false,
+    coming: false,
+    icon: "PresentationChartLineIcon",
+  },
   {
     name: "Staking",
     href: "/staking",

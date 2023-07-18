@@ -51,8 +51,8 @@ const useTransactionCounts = () => {
               method: "GET",
             }
           );
+          if (resp.status === 429) return "failed";
           const result = await resp.json();
-          if (result.status === 429) return "failed";
           totalCount += result.total_txs;
           recentTxCount += result.transactions.filter((tx) => tx.date / 1 >= Date.now() / 1000 - 3600 * 24).length;
         })
@@ -62,8 +62,7 @@ const useTransactionCounts = () => {
         apiKeyIndex++;
         if (apiKeyIndex === UNMARSHAL_API_KEYS.length) break;
         continue;
-      }
-      break;
+      } else break;
     } while (1);
     return { totalCount, recentTxCount };
   }
