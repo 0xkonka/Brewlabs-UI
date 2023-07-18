@@ -23,7 +23,7 @@ export async function fetchTokenBalances(address: string, chainId: number) {
     do {
       const query = new URLSearchParams({
         pageSize: "100",
-        auth_key: "K82WDxM7Ej3y9u8VSmLYa8pdeqTVqziA2VGQaSRq",
+        auth_key: UNMARSHAL_API_KEYS[apiKeyIndex],
         offset: offset.toString(),
       }).toString();
 
