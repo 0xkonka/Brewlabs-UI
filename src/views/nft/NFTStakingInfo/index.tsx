@@ -226,17 +226,7 @@ const NFTStakingInfo = () => {
                               "Pending..."
                             )}
                           </div>
-                          <div className="mt-2">
-                            {i !== 2 ? (
-                              data.weeklyROI ? (
-                                `$${numberWithCommas(data.weeklyROI.toFixed(2))}`
-                              ) : (
-                                <SkeletonComponent />
-                              )
-                            ) : (
-                              "Pending..."
-                            )}
-                          </div>
+
                           <div className="mt-2 flex items-center">
                             <img src={getChainLogo(data.chainId)} alt={""} className="mr-1 h-4 w-4 rounded-full" />
                             <div>{data.chainName}</div>
@@ -244,7 +234,6 @@ const NFTStakingInfo = () => {
                         </div>
                         <div className="text-[#FFFFFFBF]">
                           <div>Total position</div>
-                          <div className="mt-2">Avg annual ROI</div>
                           <div className="mt-2">Staking reward</div>
                         </div>
                       </div>
