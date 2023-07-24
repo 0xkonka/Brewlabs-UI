@@ -1,11 +1,16 @@
-import PageHeader from "components/layout/PageHeader";
 import PageWrapper from "components/layout/PageWrapper";
-import Header1 from "./components/header1";
-import Header2 from "./components/header2";
-import ChartContent from "./components/content";
-import SearchModal from "./components/modal";
+import Header from "./components/Header";
+import TokenInfo from "./components/TokenInfo";
+import { useState } from "react";
+import { tokens } from "config/constants/tokens";
+import TradingPanel from "./components/TradingPanel";
 
 export default function Chart() {
+  const [selectedCurrency, setSelectedCurrency] = useState({
+    token0: tokens[1].brews,
+    token1: tokens[1].weth,
+    chainId: 1,
+  });
   return (
     <PageWrapper>
       {/* <PageHeader
@@ -13,13 +18,14 @@ export default function Chart() {
         title={
           <Header1 />
         }
-      /> */}  
-      <div className="flex flex-col mt-[5rem] pl-[2rem] pr-[2rem] gap-[21px] max-[480px]:pl-[1rem] max-[480px]:pr-[1rem] ">
-        <Header1 />
-        <Header2/>
-        <ChartContent />
+      /> */}
+      <div className="px-6 font-brand pb-[100px]">
+        <div className="mx-auto w-full max-w-[1560px]">
+          <Header />
+          <TokenInfo currency={selectedCurrency} />
+          <TradingPanel currency={selectedCurrency} />
+        </div>
       </div>
-      <SearchModal />
     </PageWrapper>
   );
 }

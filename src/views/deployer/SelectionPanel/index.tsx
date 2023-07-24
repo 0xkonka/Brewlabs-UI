@@ -3,9 +3,8 @@ import styled from "styled-components";
 import { Category } from "config/constants/types";
 import { useChainCurrentBlocks } from "state/block/hooks";
 import { filterPoolsByStatus } from "utils";
-
-import DropDown from "./Dropdown";
-import ActivityDropdown from "./ActivityDropdown";
+import ActivityDropdown from "views/directory/SelectionPanel/ActivityDropdown";
+import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 
 const SelectionPanel = ({
   pools,
@@ -111,8 +110,8 @@ const SelectionPanel = ({
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
-      <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
-        <DropDown value={curFilter - 2} setValue={(i) => setCurFilter(i + 2)} data={filters} />
+      <div className="ml-4 block w-[120px] xsm:ml-10 xsm:w-[160px]  md:hidden">
+        <DropDown value={curFilter - 2} setValue={(i) => setCurFilter(i + 2)} data={filters} className="!text-xs" />
         <div className="mt-2 w-full">
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>

@@ -4,8 +4,8 @@ import { Category } from "config/constants/types";
 import { useChainCurrentBlocks } from "state/block/hooks";
 import { filterPoolsByStatus } from "utils";
 
-import DropDown from "./Dropdown";
 import ActivityDropdown from "./ActivityDropdown";
+import DropDown from "../IndexDetail/Dropdowns/Dropdown";
 
 const SelectionPanel = ({
   pools,

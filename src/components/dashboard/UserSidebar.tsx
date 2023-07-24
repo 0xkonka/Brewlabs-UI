@@ -54,7 +54,7 @@ const UserSidebar = () => {
                   <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                 </button>
               </div>
-              <div className="relative flex h-full w-full flex-1 flex-col items-center px-6 py-6">
+              <div className="relative flex h-full w-full flex-1 flex-col items-center xsm:px-6 px-2 py-6">
                 {sidebarContent ?? <UserDashboard />}
               </div>
               <ConnectWallet allowDisconnect />

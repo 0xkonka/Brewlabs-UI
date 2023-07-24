@@ -33,7 +33,7 @@ const StyledInput = ({
   };
 
   return (
-    <div className="relative flex flex-col">
+    <>
       {type === "number" ? (
         <input
           value={value}
@@ -61,7 +61,7 @@ const StyledInput = ({
         />
       )}
       {!isValid ? <RequireAlert text={requireText} value={isValid} /> : ""}
-    </div>
+    </>
   );
 };
 

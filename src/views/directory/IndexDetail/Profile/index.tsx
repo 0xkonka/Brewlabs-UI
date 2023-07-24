@@ -205,7 +205,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                 <div className="flex flex-1 justify-end">
                   <div className="ml-3 flex w-full max-w-fit flex-col items-end justify-end sm:ml-[30px] xl:max-w-[520px] xl:flex-row xl:items-center">
                     <StyledButton
-                      className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary transition hover:border-white hover:text-white xs:!w-[200px] xl:flex"
+                      className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand  text-primary transition hover:border-white hover:text-white xs:!w-[200px] xl:flex"
                       type={"default"}
                     >
                       <div className="flex w-full items-center px-2">
@@ -214,13 +214,13 @@ const Profile = ({ deployer }: { deployer: string }) => {
                         </div>
                         <div className="scale-[125%]">{UserAddSVG}</div>
                       </div>
-                      <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs font-bold text-black">
+                      <div className="absolute -right-3 -top-2 z-10 flex h-4 w-10 items-center justify-center rounded-[30px] bg-primary font-brand text-xs  text-black">
                         Soon
                       </div>
                     </StyledButton>
                     <div className="mr-4 mt-2 xl:mt-0" />
                     <StyledButton
-                      className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white xl:flex"
+                      className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand  text-primary hover:border-white hover:text-white xl:flex"
                       type={"default"}
                       onClick={onSharePortfolio}
                     >

@@ -1,10 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import dynamic from "next/dynamic";
-import { getAverageHistory } from "state/indexes/fetchIndexes";
-import { formatAmount } from "utils/formatApy";
-import Skeleton from "react-loading-skeleton";
-import { SkeletonComponent } from "components/SkeletonComponent";
 import { useState } from "react";
 import DropDown from "../Dropdowns/Dropdown";
 
@@ -69,7 +65,7 @@ const DrawChart = ({ data, type }: { data: any; type: string }) => {
       },
       stroke: {
         curve: "smooth",
-        width :1
+        width: 1,
       },
       xaxis: {
         labels: {
@@ -123,7 +119,16 @@ const ChartHistory = ({ data, type }: { data: any; type: string }) => {
           </span>
         </div>
         <div className="w-[60px]">
-          <DropDown value={period} setValue={setPeriod} data={["24hrs", "7D", "30D"]} />
+          <DropDown
+            value={period}
+            setValue={setPeriod}
+            data={["24hrs", "7D", "30D"]}
+            height={"20px"}
+            rounded={"12px"}
+            className="!bg-[#2e343e] !text-xs !text-[#ffffffbf]"
+            bodyClassName="!bg-none !bg-[#2e343e]"
+            itemClassName="hover:!bg-[#424444bf]"
+          />
         </div>
       </div>
       <DrawChart data={curData} type={type} />
