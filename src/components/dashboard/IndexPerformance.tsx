@@ -12,6 +12,7 @@ import { getChainLogo, getIndexName } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { InfoSVG } from "./assets/svgs";
+import { useMediaQuery } from "react-responsive";
 
 const responsive = {
   desktop: {
@@ -34,6 +35,8 @@ const IndexPerformance = () => {
   const router = useRouter();
   let splitIndex: any = [];
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
+
+  const isMd = useMediaQuery({ query: "(max-width: 640px)" });
 
   const CustomDot = ({ onClick, ...rest }: any) => {
     const { active } = rest;
@@ -59,7 +62,7 @@ const IndexPerformance = () => {
 
   return (
     <StyledContainer className="-mt-2 w-full">
-      <div className="relative  text-yellow">
+      <div className="relative  ml-4 text-yellow xsm:ml-0">
         Index Performance
         <div className="absolute -left-4 top-1.5 [&>*:first-child]:!opacity-100" id={"Top9"}>
           {InfoSVG}
@@ -73,7 +76,7 @@ const IndexPerformance = () => {
             responsive={responsive}
             infinite={true}
             autoPlay={true}
-            autoPlaySpeed={4000}
+            autoPlaySpeed={4000000}
             ref={carouselRef}
             customDot={<CustomDot onClick={() => {}} />}
             showDots={true}
@@ -91,8 +94,8 @@ const IndexPerformance = () => {
                           setIsOpen(0);
                         }}
                       >
-                        <div className="flex items-center">
-                          <div className="flex w-[70px]">
+                        <div className="flex items-center flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                          <div className="flex w-[64px]">
                             {data.tokens.map((data, i) => {
                               return (
                                 <TokenLogo
@@ -104,16 +107,19 @@ const IndexPerformance = () => {
                             })}
                           </div>
                           <img src={getChainLogo(data.chainId)} alt={""} className="ml-3 h-5 w-5" />
-                          <div className="ml-3 w-[70px] overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs  text-white sm:w-[140px]">
+                          <div className="ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-brand text-xs text-white">
                             {getIndexName(data.tokens)}
                           </div>
                         </div>
                         <div className="flex">
                           {data.sortedPercentChanges.map((data, i) => {
-                            if (window.innerWidth < 550 && i != 0) return;
+                            if (isMd && i != 0) return;
                             const names = ["24hrs", "7D", "30D"];
                             return (
-                              <div key={i} className="mr-5 text-xs  ">
+                              <div
+                                key={i}
+                                className="mr-0 w-[50px] text-right text-xs xsm:mr-2 xsm:w-fit sm:xsm:mr-5 sm:text-left"
+                              >
                                 {data ? (
                                   <div className={data < 0 ? "text-danger" : "text-green"}>
                                     {data >= 0 ? "+" : ""} {data.toFixed(2)}% {names[i]}

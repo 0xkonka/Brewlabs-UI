@@ -4,8 +4,8 @@ import StyledButton from "../../StyledButton";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { useEffect, useState } from "react";
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
-import DropDown from "./Dropdown";
 import SwitchButton from "./SwitchButton";
+import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 
 const Deploy = ({ step, setStep, setOpen }) => {
   const [contractAddress, setContractAddress] = useState("");
@@ -105,9 +105,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         </div>
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
-            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              {InfoSVG}
-            </div>
+            <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
             <div>Withdrawal fee</div>
           </div>
           <div className="flex items-center">
@@ -128,9 +126,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         </div>
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="flex items-center">
-            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              {InfoSVG}
-            </div>
+            <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
             <div>Deposit fee</div>
           </div>
           <div className="flex items-center">
@@ -151,9 +147,7 @@ const Deploy = ({ step, setStep, setOpen }) => {
         </div>
         <div className="mt-4 flex flex-col items-center justify-between xs:mt-1 xs:flex-row">
           <div className="flex items-center">
-            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              {InfoSVG}
-            </div>
+            <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
             <div>Lockup Period</div>
           </div>
           <div className="w-[100px]">

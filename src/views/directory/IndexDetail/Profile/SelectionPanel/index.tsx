@@ -4,10 +4,7 @@ import { Category } from "config/constants/types";
 import { BLOCKS_PER_DAY } from "config/constants";
 import { useChainCurrentBlocks } from "state/block/hooks";
 
-import DropDown from "./Dropdown";
-import ActivityDropdown from "./ActivityDropdown";
-import { useAppId } from "state/zap/hooks";
-import { useActiveChainId } from "@hooks/useActiveChainId";
+import ActivityDropdown from "views/directory/SelectionPanel/ActivityDropdown";
 
 const SelectionPanel = ({
   pools,
