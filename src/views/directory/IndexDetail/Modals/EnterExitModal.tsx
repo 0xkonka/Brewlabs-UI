@@ -39,7 +39,7 @@ const EnterExitModal = ({
   type: string;
   data: DeserializedIndex;
 }) => {
-  const { tokens, priceHistories, userData } = data;
+  const { tokens, priceHistories, userData }: any = data;
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
   const [maxPressed, setMaxPressed] = useState(false);
@@ -248,7 +248,7 @@ const EnterExitModal = ({
               <div className="flex flex-col-reverse items-center justify-between border-b border-b-[#FFFFFF80] pb-3 xmd:flex-row">
                 <div className="mt-5 flex items-center pl-3 text-xl text-[#FFFFFFBF] xmd:mt-0">
                   <LogoIcon classNames="w-9 text-brand mr-3" />
-                  <div>{type === "enter" ? "Enter" : "Exit"} Brewlabs Origin Index</div>
+                  <div>{type === "enter" ? "Enter" : "Exit"} Brewlabs Index</div>
                 </div>
                 <div className="h-10 w-full min-w-[130px] xmd:w-fit">
                   <StyledButton type="secondary" onClick={() => setOpen(false)}>
@@ -321,7 +321,11 @@ const EnterExitModal = ({
 
               <div className="mx-auto mb-4 mt-4 flex w-full max-w-[480px] items-center">
                 {type === "enter" ? (
-                  <TokenLogo src={getTokenLogoURL(tokens[0].address, tokens[0].chainId)} classNames="w-14" large />
+                  <TokenLogo
+                    src={getTokenLogoURL(tokens[0].address, tokens[0].chainId, tokens[0].logo)}
+                    classNames="w-14"
+                    large
+                  />
                 ) : (
                   <IndexLogo tokens={tokens} classNames="mr-0 scale-125" />
                 )}
@@ -343,7 +347,11 @@ const EnterExitModal = ({
               {type === "enter" ? (
                 tokens.slice(1).map((token, index) => (
                   <div key={token.address} className="mx-auto mb-4 mt-4 flex w-full max-w-[480px] items-center">
-                    <TokenLogo src={getTokenLogoURL(token.address, token.chainId)} classNames="w-14" large />
+                    <TokenLogo
+                      src={getTokenLogoURL(token.address, token.chainId, token.logo)}
+                      classNames="w-14"
+                      large
+                    />
                     <StyledSlider
                       value={percents[index]}
                       setValue={(v) => percentChanged(index + 1, v)}

@@ -315,7 +315,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       <div className="block xl:hidden">
                         <div className="mt-2" />
                         <StyledButton
-                          className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white"
+                          className="!h-8 !w-[140px] bg-[#B9B8B81A] font-brand  text-primary hover:border-white hover:text-white"
                           type={"default"}
                           onClick={onShareIndex}
                         >
@@ -343,7 +343,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                     <div className="hidden w-full max-w-[480px] items-center sm:flex">
                       <img src={"/images/non-logo.png"} alt={""} className="mr-2 h-10 w-10 rounded-full" />
                       <StyledButton
-                        className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand font-semibold text-primary hover:text-white xl:flex"
+                        className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand  text-primary hover:text-white xl:flex"
                         type={"default"}
                         onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
                       >
@@ -361,7 +361,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           className="mr-2 hidden h-10 w-10 rounded-full xs:block"
                         />
                         <StyledButton
-                          className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand font-semibold text-primary hover:border-white hover:text-white xl:flex"
+                          className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand  text-primary hover:border-white hover:text-white xl:flex"
                           type={"default"}
                           onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
                         >
@@ -378,7 +378,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         {NFTSVG}
                       </div>
                       <StyledButton
-                        className="hidden !h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white xl:flex"
+                        className="hidden !h-8 !w-[140px] bg-[#B9B8B81A] font-brand  text-primary hover:border-white hover:text-white xl:flex"
                         type={"default"}
                         onClick={() => onShareIndex()}
                       >
@@ -480,7 +480,16 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                             <SkeletonComponent />
                           )}
                           <div className="ml-1 w-[60px]">
-                            <DropDown value={curAPR} setValue={setCurAPR} data={aprTexts} />
+                            <DropDown
+                              value={curAPR}
+                              setValue={setCurAPR}
+                              data={aprTexts}
+                              height={"20px"}
+                              rounded={"12px"}
+                              className="!bg-[#2e343e] !text-[#ffffffbf] !text-xs"
+                              bodyClassName="!bg-none !bg-[#2e343e]"
+                              itemClassName="hover:!bg-[#424444bf]"
+                            />
                           </div>
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import DropDown from "views/directory/SelectionPanel/Dropdown";
+import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 
 const SelectionPanel = ({
   curFilter,

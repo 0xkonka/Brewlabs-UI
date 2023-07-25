@@ -1,9 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 
-const DropDown = ({ value, setValue, data }: { setValue?: any; value: number; data: string[] }) => {
+const DropDown = ({
+  value,
+  setValue,
+  data,
+  className,
+  bodyClassName,
+  itemClassName,
+  rounded = "8px",
+  height = "30px",
+}: {
+  setValue?: any;
+  value: number;
+  data: any[];
+  className?: string;
+  bodyClassName?: string;
+  itemClassName?: string;
+  rounded?: string;
+  height?: string;
+}) => {
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
 
@@ -16,49 +33,38 @@ const DropDown = ({ value, setValue, data }: { setValue?: any; value: number; da
   }, []);
 
   return (
-    <StyledDropDown
-      className="primary-shadow relative z-10 flex h-[20px] w-full cursor-pointer items-center justify-between text-xs text-black"
+    <div
+      className={`primary-shadow relative z-[100] flex w-full cursor-pointer items-center justify-between bg-primary px-2 text-sm text-black transition ${className}`}
+      style={{ borderRadius: open ? `${rounded} ${rounded} 0 0` : `${rounded}`, height }}
       ref={dropRef}
       onClick={() => setOpen(!open)}
-      open={open}
     >
       <div>{data[value]}</div>
       <div>{!open ? <ChevronDownIcon className={"h-3"} /> : <ChevronUpIcon className={"h-3 "} />}</div>
-      <DropDownBody className={"primary-shadow absolute"} open={open}>
+
+      <div
+        className={`primary-shadow absolute  left-0 w-full overflow-hidden bg-[linear-gradient(180deg,#ffcc32,#e5cc7e)] transition-all ${bodyClassName}`}
+        style={{
+          borderRadius: `0 0 ${rounded} ${rounded}`,
+          height: open ? parseInt(height) * data.length : 0,
+          top: height,
+        }}
+      >
         {data.map((data, i) => {
           return (
             <div
               key={i}
-              className="flex h-[20px] cursor-pointer items-center justify-center transition-all hover:bg-[#424444bf]"
+              className={`flex cursor-pointer items-center justify-center transition-all hover:!bg-[#ffde7c] ${itemClassName}`}
+              style={{ height }}
               onClick={() => setValue(i)}
             >
               {data}
             </div>
           );
         })}
-      </DropDownBody>
-    </StyledDropDown>
+      </div>
+    </div>
   );
 };
 
 export default DropDown;
-
-const StyledDropDown = styled.div<{ open: boolean }>`
-  border-radius: 12px;
-  background: rgb(46, 52, 62);
-  border-bottom-left-radius: ${({ open }) => (open ? 0 : "12px")};
-  border-bottom-right-radius: ${({ open }) => (open ? 0 : "12px")};
-  color: #ffffffbf;
-  padding: 0 8px;
-`;
-
-const DropDownBody = styled.div<{ open: boolean }>`
-  height: ${({ open }) => (open ? "auto" : 0)};
-  overflow: hidden;
-  background: rgb(46, 52, 62);
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  width: 100%;
-  left: 0px;
-  top: 20px;
-`;

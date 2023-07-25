@@ -22,6 +22,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
 
   const [isVoted, setIsVoted] = useState("none");
   const { pending, setPending }: any = useContext(DashboardContext);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   async function onVoteOrAgainst(account: string, pid: number, index: number, type: string) {
     if ([...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())) {
@@ -159,8 +160,13 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
               </span>
               &nbsp;{proposal.title}
             </div>
-            <div className="line-clamp-[7] w-full max-w-full overflow-hidden text-ellipsis text-sm text-[#FFFFFF80] md:max-w-[400px]">
-              {proposal.description}
+            <div className="w-full max-w-full text-sm text-[#FFFFFF80] md:max-w-[400px]">
+              <div className={`${detailOpen ? "line-clamp-[100]" : "line-clamp-[5]"} overflow-hidden text-ellipsis`}>
+                {proposal.description}
+              </div>
+              <div className="cursor-pointer text-right hover:text-white" onClick={() => setDetailOpen(!detailOpen)}>
+                {detailOpen ? "(show less)" : "(details)"}
+              </div>
             </div>
           </div>
         </div>

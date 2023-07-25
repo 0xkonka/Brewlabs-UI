@@ -62,13 +62,13 @@ const UserDashboard = () => {
                 value={chartPeriod}
                 setValue={setChartPeriod}
                 values={["1D", "1W", "1M", "1Y", "ALL"]}
-                className="h-[25px] w-[240px]"
+                className="h-[25px] w-[240px] xsm:text-sm text-xs"
               />
               <SwitchButton
                 value={showType}
                 setValue={setShowType}
                 values={["My Wallet", "Total Market"]}
-                className="h-[25px] w-[220px]"
+                className="h-[25px] w-[220px] xsm:text-sm text-xs"
               />
             </div>
           </ChartPanel>
