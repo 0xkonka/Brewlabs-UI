@@ -132,13 +132,14 @@ export const fetchIndexPerformance = async (pool) => {
   let keys = { 1: "eth", 56: "bsc", 137: "polygon" };
 
   const to = Math.floor(Date.now() / 1000);
+  const startTime = Math.floor(new Date(pool.createdAt).getTime() / 1000);
   let prices = [];
   let tokenPrices = [];
   try {
     for (let i = 0; i < pool.numTokens; i++) {
       const tokenYearUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${
         keys[pool.chainId]
-      }_USD&resolution=720&from=${to - 3600 * 24 * 365}&to=${to}`;
+      }_USD&resolution=720&from=${startTime < to - 3600 * 24 * 365 ? startTime : to - 3600 * 24 * 365}&to=${to}`;
 
       let priceResult = await axios.get(tokenYearUrl);
       const yearlyPrice = priceResult.data;
@@ -173,8 +174,11 @@ export const fetchIndexPerformance = async (pool) => {
       prices.map((p) => p[0]),
       30 * 86400 * 1000
     ),
+    getPriceChange(
+      prices.map((p) => p[0]),
+      (to - startTime) * 1000
+    ),
   ];
-
   const timeBefore7d = Math.floor(new Date().setHours(new Date().getHours() - 24 * 7) / 1000);
   const timeBefore30d = Math.floor(new Date().setHours(new Date().getHours() - 24 * 30) / 1000);
   return {

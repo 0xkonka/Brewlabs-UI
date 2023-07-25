@@ -56,7 +56,7 @@ import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
 
-const aprTexts = ["24hrs", "7D", "30D"];
+const aprTexts = ["24hrs", "7D", "30D", "Release"];
 const availableActions = [
   "Mint Index NFT",
   "Add Index NFT",
