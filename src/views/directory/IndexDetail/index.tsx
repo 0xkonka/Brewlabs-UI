@@ -56,7 +56,7 @@ import IndexLogo from "./IndexLogo";
 import StakingHistory from "./StakingHistory";
 import TotalStakedChart from "./TotalStakedChart";
 
-const aprTexts = ["24hrs", "7D", "30D", "Release"];
+const aprTexts = ["24hrs", "7D", "30D", "Deploy"];
 const availableActions = [
   "Mint Index NFT",
   "Add Index NFT",
@@ -453,7 +453,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                     </div>
                   </div>
                   <div className="flex max-w-full flex-1 flex-wrap justify-end xl:flex-nowrap">
-                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_25px_8px_40px] md:max-w-[500px]">
+                    <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_8px_8px_40px] md:max-w-[500px]">
                       <div className="flex flex-wrap justify-between text-xl">
                         <div className="relative mr-4 whitespace-nowrap">
                           <span className="mr-1 hidden sm:inline-block">Index: </span>
@@ -479,7 +479,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           ) : (
                             <SkeletonComponent />
                           )}
-                          <div className="ml-1 w-[60px]">
+                          <div className="ml-1 w-[70px]">
                             <DropDown
                               value={curAPR}
                               setValue={setCurAPR}
