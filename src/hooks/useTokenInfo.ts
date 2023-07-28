@@ -148,7 +148,7 @@ export function useTradingHistory(address: string, chainId: number, pair: string
       const { data } = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
         amm,
         current_token_id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
-        limit: 1000,
+        limit: 100,
         offset: 0,
         order: "desc",
         pool_address: pair,
@@ -157,7 +157,10 @@ export function useTradingHistory(address: string, chainId: number, pair: string
         transaction_types: ["swap"],
         with_full_totals: true,
       });
-      const histories = data.data;
+      let histories = data.data;
+      histories = histories.map((history) => {
+        return { ...history, chainId };
+      });
       setHistories(histories);
     } catch (e) {
       console.log(e);

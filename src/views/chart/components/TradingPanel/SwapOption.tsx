@@ -6,6 +6,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import { isAddress } from "utils";
 import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat } from "utils/functions";
+import TokenLogo from "@components/logo/TokenLogo";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [showType, setShowType] = useState(0);
@@ -22,11 +23,11 @@ export default function SwapOption({ currency, marketInfos }) {
   const exisitingToken = tokens && tokens.map((token) => token.address === currency.tokenAddresses[0].toLowerCase());
 
   return (
-    <div className="flex sm:w-full w-fit flex-col sm:flex-row 2xl:sm:flex-col">
+    <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
       <div className="primary-shadow flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-3 2xl:w-full">
         <SwapPanel />
       </div>
-      <div className="sm:ml-4 ml-0 mt-0 flex-1 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none sm:w-fit w-[320px]">
+      <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 sm:w-fit 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
         {/* <div className="primary-shadow rounded-[6px] bg-[#B9B8B80D] p-3">
           <div className="flex items-center justify-between">
             <DropDown
@@ -74,12 +75,12 @@ export default function SwapOption({ currency, marketInfos }) {
             })}
           </div>
         </div> */}
-        <div className="primary-shadow mt-2 flex items-center rounded-[6px] bg-[#B9B8B80D] p-3">
-          <img
+        <div className="primary-shadow mt-2 flex items-center rounded-[6px] w-[320px] bg-[#B9B8B80D] p-3">
+          <TokenLogo
             src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
-            alt={""}
-            className="primary-shadow h-8 w-8 rounded-full"
+            classNames="primary-shadow h-8 w-8 rounded-full"
           />
+
           <div className="ml-2">
             <div className="text-sm leading-none text-white">
               {BigNumberFormat(exisitingToken ? exisitingToken.balance : 0)} {currency.symbols[0]} Balance
