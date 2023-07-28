@@ -21,12 +21,22 @@ import { usePairVoteInfo } from "./hooks/usePairInfo";
 import { useAccount } from "wagmi";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
+import { addTokenToMetamask } from "lib/bridge/helpers";
+import { BridgeToken } from "config/constants/types";
 
 export default function TokenInfo({ currency, marketInfos }) {
   const { info: pairInfo, voteOrAgainst } = usePairVoteInfo(currency.address, currency.chainId);
-  const { address: account } = useAccount();
+  const { address: account, connector } = useAccount();
   const { favourites, onFavourites }: any = useContext(ChartContext);
 
+  function onAddToMetamask() {
+    if (!marketInfos || !marketInfos.address) return;
+    addTokenToMetamask(connector, {
+      address: marketInfos.address,
+      decimals: marketInfos.decimals,
+      symbol: marketInfos.symbol,
+    } as BridgeToken);
+  }
   const socials = [
     { icon: LockSVG, isActive: false },
     { icon: checkCircleSVG, isActive: marketInfos?.audit?.codeVerified },
@@ -35,7 +45,7 @@ export default function TokenInfo({ currency, marketInfos }) {
     { icon: TelegramSVG, href: marketInfos?.links?.telegram ?? "#" },
     {
       icon: <img src={"/images/wallets/metamask.png"} alt={""} className="h-[18px] w-[18px] rounded-full" />,
-      action: "",
+      action: true,
     },
   ];
 
@@ -96,7 +106,7 @@ export default function TokenInfo({ currency, marketInfos }) {
           </div>
           <div className="mt-2 flex items-center md:mt-0">
             <div className="ml-0 flex md:ml-4">
-              {socials.map((social, i) => {
+              {socials.map((social: any, i) => {
                 if (social.href === "#") return;
                 return (
                   <a
@@ -106,6 +116,7 @@ export default function TokenInfo({ currency, marketInfos }) {
                     } transition [&>svg]:!h-[18px] [&>svg]:!w-[18px]`}
                     target="_blank"
                     href={social.href}
+                    onClick={() => social.action && onAddToMetamask()}
                   >
                     {social.icon}
                   </a>
@@ -149,7 +160,7 @@ export default function TokenInfo({ currency, marketInfos }) {
       <div className="flex items-center">
         <div className={`flex items-center ${marketInfos.priceChange >= 0 ? "text-green" : "text-danger"}`}>
           <div className="mr-1 text-sm">
-            {marketInfos.priceChange >= 0 ? "+" : "-"}
+            {marketInfos.priceChange >= 0 ? "+" : ""}
             {(marketInfos.priceChange ?? 0).toFixed(2)}% (24h)
           </div>
           <div className="scale-[80%]">{upSVG}</div>

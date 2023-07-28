@@ -50,7 +50,7 @@ export default function Chart() {
   return (
     <PageWrapper>
       <div className="px-3 pb-[100px] font-brand md:px-6">
-        <div className="mx-auto w-full max-w-[1560px]">
+        <div className="mx-auto w-full max-w-[1720px]">
           <Header selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
           <TokenInfo currency={selectedCurrency} marketInfos={marketInfos} />
           <TradingPanel currency={selectedCurrency} marketInfos={marketInfos} />

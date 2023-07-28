@@ -1,14 +1,16 @@
 import { DeployerSVG, InfoSVG, NFTSVG, SwapSVG, SwitchSVG } from "@components/dashboard/assets/svgs";
 import { ChartContext } from "contexts/ChartContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NETWORKS } from "config/constants/networks";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { getChainLogo } from "utils/functions";
 import { SearchInput } from "./SearchInput";
 import TrendingList from "./TrendingList";
 import { tokens } from "config/constants/tokens";
+import { useWeb3React } from "contexts/wagmi";
 
 export default function Header({ selectedCurrency, setSelectedCurrency }) {
+  const { chainId } = useWeb3React();
   const networks = [NETWORKS[1], NETWORKS[56]];
   const trendings = [
     { logo: "/images/chart/trending/cmc.png", name: "CMC Trending" },
@@ -19,6 +21,11 @@ export default function Header({ selectedCurrency, setSelectedCurrency }) {
   ];
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedTrending, setSelectedTrending] = useState(0);
+
+  useEffect(() => {
+    if (Number(chainId) === 56) setSelectedNetwork(1);
+    else setSelectedNetwork(0);
+  }, [chainId]);
 
   return (
     <div className="mt-[100px] flex flex-col items-center justify-between 3xl:flex-row">
@@ -91,10 +98,10 @@ export default function Header({ selectedCurrency, setSelectedCurrency }) {
               <div className="whitespace-nowrap text-xs text-[#D9D9D9]">What is the trending heat map?</div>
             </div>
           </div>
-          <div className="mx-4 md:block hidden">
+          <div className="mx-4 hidden md:block">
             <TrendingList trendings={[tokens[1].brews, tokens[56].brews, tokens[1].roo]} />
           </div>
-          <div className="flex items-center text-tailwind md:ml-0 ml-4">
+          <div className="ml-4 flex items-center text-tailwind md:ml-0">
             <div className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5">
               {SwitchSVG}
             </div>

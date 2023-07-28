@@ -66,7 +66,7 @@ export const SearchInput = ({ selectedChainId, selectedCurrency, setSelectedCurr
                         {pair.symbols[0]} <span className="text-white">${pair.price.toFixed(3)}</span>
                       </div>
                       <div className={`text-xs ${pair.priceChange24h >= 0 ? "text-green" : "text-danger"}`}>
-                        ({pair.priceChange24h >= 0 ? "+" : "-"}
+                        ({pair.priceChange24h >= 0 ? "+" : ""}
                         {pair.priceChange24h.toFixed(2)}%)
                       </div>
                     </div>

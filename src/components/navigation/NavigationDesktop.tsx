@@ -12,7 +12,7 @@ const NavigationDesktop = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (router.pathname === "/") {
+    if (router.pathname === "/" || router.pathname === "/chart") {
       setSlimVersion(true);
     } else {
       setSlimVersion(false);

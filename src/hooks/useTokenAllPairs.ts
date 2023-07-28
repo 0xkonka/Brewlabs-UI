@@ -10,13 +10,12 @@ export const useTokenAllPairs = (criteria, chainId) => {
 
   async function fetchAllPairs() {
     try {
-      if (criteria === "") {
+      if (criteria === "" || wrappedCriteria !== criteria) {
         setPairs([]);
         return;
       }
-      if (wrappedCriteria !== criteria) return;
       let { data: tokens } = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc`);
-      tokens = tokens.data.filter((token) => token.verified && token.network === DEX_GURU_CHAIN_NAME[chainId]);
+      tokens = tokens.data.filter((token) => token.network === DEX_GURU_CHAIN_NAME[chainId]);
       const result = await Promise.all(
         tokens.map((token) =>
           axios.post("https://api.dex.guru/v3/pools/", {
@@ -55,7 +54,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
         })
       );
       _pairs = _pairs
-        .filter((pair) => pair.amm === "1" || pair.amm === "2")
+        .filter((pair) => Object.keys(DEX_GURU_SWAP_AMM).includes(pair.amm))
         .sort((a, b) => b.liquidityStable - a.liquidityStable);
       setPairs(_pairs.slice(0, 10));
     } catch (e) {

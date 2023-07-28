@@ -13,8 +13,8 @@ export default function HistoryToolBar({ showType, setShowType, histories }: any
   let totalPrice = walletHistories.length ? walletHistories[walletHistories.length - 1] : 0;
 
   return (
-    <div className="mt-2 flex items-center justify-between px-3">
-      <div className="flex">
+    <div className="mt-2 flex flex-col items-start justify-between px-0 md:flex-row md:items-center md:px-3">
+      <div className="flex w-full md:w-fit">
         <StyledButton
           type={"secondary"}
           className="!h-8 !w-[110px] !border-transparent text-white"
@@ -45,9 +45,9 @@ export default function HistoryToolBar({ showType, setShowType, histories }: any
           </div>
         </StyledButton>
       </div>
-      <div className="primary-shadow ml-4 flex h-8 flex-1 items-center justify-between rounded bg-[#B9B8B81A] px-3 text-sm text-white">
+      <div className="primary-shadow ml-0 mt-2 flex h-fit w-full flex-none flex-wrap items-center justify-between rounded bg-[#B9B8B81A] px-3 text-sm text-white sm:h-8 md:ml-4 md:mt-0 md:w-fit md:flex-1">
         <div>Performance</div>
-        <div className="flex">
+        <div className="flex whitespace-nowrap flex-wrap">
           <div className="mr-6 flex">
             <div className="mr-2">Swaps made</div>
             <div>{histories.length}</div>
