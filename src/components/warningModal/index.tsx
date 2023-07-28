@@ -92,7 +92,7 @@ const WarningModal = ({
             <div>
               <h5 className="relative mb-2 text-2xl">
                 Warning
-                <div className="absolute -left-6 top-2 scale-125 text-[#D9563A]">{warningFillSVG}</div>
+                <div className="absolute -left-6 top-2 scale-125 text-danger">{warningFillSVG}</div>
               </h5>
               <p className="text-white">{warningText}</p>
               <div className="mt-5 flex">

@@ -54,7 +54,7 @@ const DropDown = ({
           return (
             <div
               key={i}
-              className={`flex cursor-pointer items-center justify-center transition-all hover:!bg-[#ffde7c] ${itemClassName}`}
+              className={`flex cursor-pointer items-center justify-center transition-all hover:bg-[#ffde7c] ${itemClassName}`}
               style={{ height }}
               onClick={() => setValue(i)}
             >

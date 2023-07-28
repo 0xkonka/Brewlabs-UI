@@ -10,6 +10,7 @@ export function numberWithCommas(x: any) {
 }
 
 export const BigNumberFormat = (str: any, decimals: number = 2) => {
+  if (!str) return (0).toFixed(decimals);
   const length = Math.floor(Math.log10(str));
   if (Number(str) >= 1000000000000000)
     return `${numberWithCommas((str / Math.pow(10, length)).toFixed(decimals))}e+${length - 12}T`;
@@ -116,4 +117,9 @@ export const getStringfy = (data: any) => {
 
 export const showError = (errorMsg: string) => {
   if (errorMsg) toast.error(errorMsg);
+};
+
+export const getEllipsis = (address: string, left = 6, right = 4) => {
+  if (!address) return;
+  return address.slice(0, left) + "..." + address.substring(address.length - right);
 };

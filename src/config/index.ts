@@ -131,14 +131,24 @@ export const UNMARSHAL_API_KEYS = [
   "gxzF8K9KM98XQaLuypeVC6HJ9TJq8d0V89nbd7G3",
 ];
 
+export const UNMARSHAL_CHAIN_NAME = {
+  1: "ethereum",
+  56: "bsc",
+  137: "matic",
+};
+
 export const DEX_GURU_CHAIN_NAME = {
   1: "eth",
   56: "bsc",
   137: "polygon",
 };
 
-export const UNMARSHAL_CHAIN_NAME = {
-  1: "ethereum",
+export const DEX_GURU_SWAP_AMM = {
+  2: "uniswap-v3",
+  1: "uniswap",
+};
+
+export const DEXTOOLS_CHAINNAME = {
+  1: "ether",
   56: "bsc",
-  137: "matic",
 };

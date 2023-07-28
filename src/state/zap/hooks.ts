@@ -47,6 +47,7 @@ import { useFastRefreshEffect, useSlowRefreshEffect } from "@hooks/useRefreshEff
 export const usePollFarmsWithUserData = () => {
   const dispatch = useAppDispatch();
   const { address: account } = useAccount();
+  // const account = "0x9b89af7653f79aec714c22d4ab2b96453e2048b1";
 
   useSWRImmutable(
     ["publicFarmData"],

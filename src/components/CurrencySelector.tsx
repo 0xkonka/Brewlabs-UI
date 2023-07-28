@@ -123,14 +123,6 @@ const CurrencyRow = ({
           } else {
             onConfirm();
             return;
-
-            isVerified(currency).then((result) => {
-              if (result) onConfirm();
-              else {
-                setWarningOpen(true);
-                setWarningType("notverified");
-              }
-            });
           }
         }}
       >
@@ -355,7 +347,7 @@ const CurrencySelector = ({
         onKeyDown={onInputEnter}
         type="text"
         placeholder="Search by contract address..."
-        className="input input-bordered w-full"
+        className="input-bordered input w-full"
       />
 
       <div className="mt-3 px-2">
