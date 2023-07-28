@@ -137,8 +137,8 @@ export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | u
   return balances ?? {};
 }
 
-export async function isVerified(curreny?: Currency) {
-  if (curreny.isNative) return true;
+export async function isVerified(curreny?: any) {
+  if (curreny?.isNative) return true;
   const result = await axios.get(
     `${EXPLORER_API_URLS[curreny.chainId]}?module=contract&action=getabi&address=${curreny.address}&apikey=${
       EXPLORER_API_KEYS[curreny.chainId]

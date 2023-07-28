@@ -22,14 +22,22 @@ const ChartContextProvider = ({ children }: any) => {
     }
   };
 
-  const onFavourites = (_address: string, type: number) => {
+  const onFavourites = (_address: string, chainId: number, tokenAddress: string, symbol1: string, type: number) => {
     if (type === 1) {
-      localStorage.setItem(`chart-favourites`, JSON.stringify([...favourites, _address]));
+      localStorage.setItem(
+        `chart-favourites`,
+        JSON.stringify([...favourites, { chainId, address: _address, tokenAddress, symbol1 }])
+      );
       getFavourites();
     }
     if (type === 2) {
+      console.log(_address, chainId, tokenAddress, symbol1, type);
       let temp = [...favourites];
-      temp.splice(favourites.indexOf(_address), 1);
+
+      const index = favourites.findIndex(
+        (favourite) => favourite.address === _address && favourite.chainId === chainId
+      );
+      temp.splice(index, 1);
       localStorage.setItem(`chart-favourites`, JSON.stringify(temp));
       getFavourites();
     }
@@ -43,7 +51,6 @@ const ChartContextProvider = ({ children }: any) => {
     <ChartContext.Provider
       value={{
         favourites,
-        setFavourites,
         onFavourites,
       }}
     >

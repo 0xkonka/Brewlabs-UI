@@ -173,7 +173,7 @@ const FeaturedPriceList = () => {
                 <img src={getTokenLogoURL(data.address, data.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
                 <div className="">
                   <div className="text-sm text-white">{data.symbol}</div>
-                  <div className={`${percent >= 0 ? "text-[#2FD35D]" : "text-[#ea3943]"} text-xs`}>
+                  <div className={`${percent >= 0 ? "text-green" : "text-[#ea3943]"} text-xs`}>
                     {percent >= 0 ? "+" : ""}
                     {percent.toFixed(2)}%
                   </div>

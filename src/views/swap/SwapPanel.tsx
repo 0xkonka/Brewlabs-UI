@@ -53,7 +53,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const trade = showWrap ? undefined : v2Trade;
 
-  const { onUserInput, onSwitchTokens, onCurrencySelection } = useSwapActionHandlers();
+  const { onUserInput, onSwitchTokens } = useSwapActionHandlers();
 
   // txn values
   const [deadline] = useUserTransactionTTL();

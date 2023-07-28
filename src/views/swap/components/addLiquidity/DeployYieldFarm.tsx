@@ -197,7 +197,7 @@ export default function DeployYieldFarm({
           ))}
 
           <div className="mt-8 flex items-center justify-between">
-            <div className={`${!justEntered ? "text-[#2FD35D]" : ""}`}>
+            <div className={`${!justEntered ? "text-green" : ""}`}>
               {attemptingTxn ? "Deploying..." : hash ? "Deployed" : "Deployment transactions remaining"}
             </div>
             <div className="ml-2 flex min-w-[100px] items-center">

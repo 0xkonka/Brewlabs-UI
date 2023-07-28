@@ -11,7 +11,7 @@ const responsive = {
 };
 
 export default function TrendingList({ trendings }) {
-  const showCount = 4;
+  const showCount = 3;
   const carouselRef = useRef();
   const [filteredTrendings, setFilteredTrendings] = useState([]);
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function TrendingList({ trendings }) {
     setFilteredTrendings(_fTrendings);
   }, [trendings]);
   return (
-    <div className="primary-shadow flex h-[44px] w-[450px] flex-col justify-center rounded bg-[#b9b8b8f] px-4">
+    <div className="primary-shadow flex h-[44px] md:w-[360px] w-[300px] flex-col justify-center rounded bg-[#b9b8b8f] px-4">
       <Carousel
         arrows={false}
         responsive={responsive}

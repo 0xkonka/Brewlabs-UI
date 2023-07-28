@@ -17,7 +17,7 @@ import {
 } from "state/zap";
 import BigNumber from "bignumber.js";
 import { useTranslation } from "contexts/localization";
-import { getFullDisplayBalance } from "utils/formatBalance";
+import { formatBigNumber, getFullDisplayBalance } from "utils/formatBalance";
 import { toast } from "react-toastify";
 import { useBananaPrice, useFarmLpAprs, useFarmUser } from "state/zap/hooks";
 import useUnstakeFarms from "../hooks/useUnstakeFarms";
@@ -27,14 +27,15 @@ import { useAppDispatch } from "state";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useLpTokenPrices } from "state/lpPrices/hooks";
 import { DashboardContext } from "contexts/DashboardContext";
+import { parseUnits } from "ethers/lib/utils.js";
 
 const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const { lpAddress, pid, earningToken, chef, appId } = data;
-
   const [val, setVal] = useState("");
   const [pendingTx, setPendingTx] = useState(false);
   const { t } = useTranslation();
   const { stakedBalance } = useFarmUser(pid, appId);
+
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(stakedBalance);
   }, [stakedBalance]);
@@ -51,7 +52,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
   const { lpTokenPrices } = useLpTokenPrices();
   const bananaPrice = useBananaPrice();
   const farmLpAprs = useFarmLpAprs();
-  const lpSymbol = data.lpSymbol.split(" ")[0]
+  const lpSymbol = data.lpSymbol.split(" ")[0];
 
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
@@ -61,6 +62,17 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
     },
     [setVal]
   );
+
+  const isBalanceZero = fullBalance === "0" || !fullBalance;
+
+  const displayBalance = (balance: string) => {
+    if (isBalanceZero) {
+      return "0";
+    }
+
+    const balanceUnits = parseUnits(balance, 18);
+    return formatBigNumber(balanceUnits, 18, 18);
+  };
 
   // const handleSelectMax = useCallback(() => {
   //   setVal(fullBalance);
@@ -141,8 +153,23 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                   </StyledButton>
                 </div>
                 <div className="flex-1">
-                  <StyledButton type="secondary">
-                    Zap out all &nbsp;<span className="text-primary">CAKE-BNB LP</span>
+                  <StyledButton
+                    type="secondary"
+                    onClick={async () => {
+                      setPending(true);
+                      try {
+                        await handleUnstake(fullBalance);
+                        toast.success(t("Your earnings have also been harvested to your wallet"));
+                      } catch (e: any) {
+                        toast.error(e.message.split("(")[0]);
+                        console.error(e);
+                      } finally {
+                        setPending(false);
+                      }
+                    }}
+                    disabled={pending || Number(fullBalance) === 0}
+                  >
+                    Zap out all &nbsp;<span className="text-primary">{data.lpSymbol} LP</span>
                   </StyledButton>
                 </div>
               </div>
@@ -153,7 +180,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
               <div className="mt-1 text-right text-sm">
                 <div>
                   Staked <span className="text-primary">{lpSymbol}</span> :{" "}
-                  {stakedBalance ? stakedBalance.toFixed(2) : "0.00"}
+                  {displayBalance(fullBalance) ? Number(displayBalance(fullBalance)).toFixed(2) : "0.00"}
                 </div>
                 <div>$4,531.00 USD</div>
               </div>
@@ -182,7 +209,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

@@ -17,14 +17,15 @@ export const ROUTER_SUBGRAPH_NAMES = {
 };
 
 export const SUPPORTED_DEXES = {
-  [ChainId.ETHEREUM]: ["uniswap-v2"],
+  [ChainId.ETHEREUM]: ["uniswap"],
   [ChainId.BSC_MAINNET]: ["pcs-v2"],
   [ChainId.BSC_TESTNET]: ["brewlabs", "pcs-v2"],
 };
 
 export const DEX_LOGOS = {
   brewlabs: "/images/brewlabsRouter.png",
-  "uniswap-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
+  uniswap: "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
+  "uniswap-v3": "https://assets-stage.dex.guru/icons/1/0xE592427A0AEce92De3Edee1F18E0157C05861564.svg",
   "pcs-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
   quickswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/4098.png",
   spookyswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/1455.png",

@@ -275,7 +275,7 @@ const TokenList = ({
                       else t = new Token(chainId, data.address, data.decimals);
                       // t.address = data.address;
                       // t.isNative = data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-                      onCurrencySelection(Field.OUTPUT, t);
+                      onCurrencySelection(Field.OUTPUT, t); 
                       setViewType(1);
                     }}
                     rel="noreferrer"
@@ -348,7 +348,7 @@ const TokenList = ({
                       BigNumberFormat(data.balance)
                     )}
                   </div>
-                  <div className={`min-w-[75px] text-center ${priceUp ? "text-[#2FD35D]" : "text-[#D9563A]"}`}>
+                  <div className={`min-w-[75px] text-center ${priceUp ? "text-green" : "text-danger"}`}>
                     ${BigNumberFormat(data.price, 3)}
                   </div>
                   <div className={"min-w-[75px] text-center"}>${BigNumberFormat(data.balance * data.price)}</div>
@@ -363,7 +363,7 @@ const TokenList = ({
                       <div className={"text-white opacity-25"}>{NoneSVG}</div>
                     )}
                   </div>
-                  <div className={"flex min-w-[120px] justify-center text-[#2FD35D]"}>
+                  <div className={"flex min-w-[120px] justify-center text-green"}>
                     {data.isReward ? (
                       `${BigNumberFormat(
                         data.name.toLowerCase() === "brewlabs"
