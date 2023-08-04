@@ -31,7 +31,9 @@ export const useTokenAllPairs = (criteria) => {
       let _pairs = [];
       result.map((data, i) =>
         data.data.data.map((pool, j) => {
-          const chainId = Object.keys(DEX_GURU_CHAIN_NAME).find((key, i) => pool.network === DEX_GURU_CHAIN_NAME[key]);
+          const chainId = Number(
+            Object.keys(DEX_GURU_CHAIN_NAME).find((key, i) => pool.network === DEX_GURU_CHAIN_NAME[key])
+          );
           if (Object.keys(DEX_GURU_SWAP_AMM).includes(pool.amm) && _pairs.length <= 10 && pool.liquidityStable)
             _pairs.push({
               ...pool,
@@ -109,6 +111,7 @@ export const useTokenAllPairs = (criteria) => {
             address: response.pair,
           };
         });
+      console.log(_pairs);
       setPairs(_pairs.slice(0, 10));
       setLoading(false);
     } catch (e) {
