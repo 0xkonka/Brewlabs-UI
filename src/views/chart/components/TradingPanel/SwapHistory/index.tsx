@@ -19,7 +19,7 @@ export default function SwapHistory({ currency }) {
   return (
     <div>
       <HistoryToolBar showType={showType} setShowType={setShowType} histories={filteredHitories} />
-      <HistoryList histories={filteredHitories} />
+      <HistoryList histories={filteredHitories} currency={currency} />
     </div>
   );
 }
