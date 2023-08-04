@@ -53,7 +53,7 @@ export default function Chart() {
         <div className="mx-auto w-full max-w-[1720px]">
           <Header selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
           <TokenInfo currency={selectedCurrency} marketInfos={marketInfos} />
-          <TradingPanel currency={selectedCurrency} marketInfos={marketInfos} />
+          <TradingPanel currency={selectedCurrency} marketInfos={marketInfos} setSelectedCurrency={setSelectedCurrency} />
         </div>
       </div>
     </PageWrapper>

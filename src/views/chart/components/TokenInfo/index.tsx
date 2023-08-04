@@ -23,11 +23,18 @@ import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
 import { addTokenToMetamask } from "lib/bridge/helpers";
 import { BridgeToken } from "config/constants/types";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useFlaskNftData } from "state/nfts/hooks";
+import StyledButton from "views/directory/StyledButton";
 
 export default function TokenInfo({ currency, marketInfos }) {
   const { info: pairInfo, voteOrAgainst } = usePairVoteInfo(currency.address, currency.chainId);
   const { address: account, connector } = useAccount();
   const { favourites, onFavourites }: any = useContext(ChartContext);
+
+  const { chainId } = useActiveChainId();
+  const flaskNft = useFlaskNftData(chainId);
+  const activeNFT = flaskNft.userData?.balances?.length;
 
   function onAddToMetamask() {
     if (!marketInfos || !marketInfos.address) return;
@@ -55,13 +62,13 @@ export default function TokenInfo({ currency, marketInfos }) {
       value: `${BigNumberFormat(marketInfos.liquidity)} Pool liquidity`,
     },
     { icon: ChartSVG, value: `$${BigNumberFormat(marketInfos.marketCap, 0)} Marketcap` },
-    { icon: FixedSVG, value: `${marketInfos.holders ? marketInfos.holders : 0} Holders` },
+    { icon: FixedSVG, value: `${BigNumberFormat(marketInfos.holders ? marketInfos.holders : 0)} Holders` },
     { icon: VolumeSVG, value: `${BigNumberFormat(marketInfos.volume24h)} Volume (24h)` },
   ];
 
   return (
     <div className="mt-5 flex flex-col items-start justify-between md:flex-row md:items-center">
-      <div className="flex flex-col items-start md:items-center 3xl:flex-row">
+      <div className="flex flex-col items-start md:items-center ls:flex-row">
         <div className="item-start flex flex-col md:flex-row md:items-center ">
           <div className="flex items-center">
             <div
@@ -78,12 +85,10 @@ export default function TokenInfo({ currency, marketInfos }) {
             >
               <StarIcon
                 className={`h-5 w-5 ${
-                  favourites.includes({
-                    chainId: currency.chainId,
-                    address: currency.address,
-                    tokenAddress: currency.tokenAddresses[0],
-                    symbol1: currency.symbols[1],
-                  })
+                  favourites.find(
+                    (favourite) =>
+                      favourite.address === currency.address.toLowerCase() && favourite.chainId === currency.chainId
+                  )
                     ? "text-primary"
                     : "text-tailwind"
                 }`}
@@ -125,27 +130,29 @@ export default function TokenInfo({ currency, marketInfos }) {
             </div>
             <div className="ml-5 flex items-center">
               <div className="flex items-center">
-                <div
-                  className="mr-2 cursor-pointer text-[#2FD35DBF] [&>svg]:!h-4 [&>svg]:!w-4"
+                <StyledButton
+                  className="mr-2 !bg-transparent !text-[#2FD35DBF] [&>svg]:!h-4 [&>svg]:!w-4 disabled:!text-tailwind"
                   onClick={() => voteOrAgainst(currency.address, account, currency.chainId, "voted")}
+                  disabled={!activeNFT}
                 >
                   {VoteSVG}
-                </div>
+                </StyledButton>
                 <div className="text-white">{pairInfo ? pairInfo.voted.length : 0}</div>
               </div>
               <div className="ml-3 flex items-center">
-                <div
-                  className="mr-2 mt-1 rotate-180 cursor-pointer text-[#DC4545] [&>svg]:!h-4 [&>svg]:!w-4"
+                <StyledButton
+                  className="mr-2 mt-1 rotate-180 !bg-transparent !text-[#DC4545] [&>svg]:!h-4 [&>svg]:!w-4 disabled:!text-tailwind"
                   onClick={() => voteOrAgainst(currency.address, account, currency.chainId, "devoted")}
+                  disabled={!activeNFT}
                 >
                   {VoteSVG}
-                </div>
+                </StyledButton>
                 <div className="text-white">{pairInfo ? pairInfo.devoted.length : 0}</div>
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap 3xl:mt-0">
+        <div className="mt-4 flex flex-wrap ls:mt-0">
           {infos.map((data, i) => {
             return (
               <div key={i} className="mb-2 ml-0 flex w-[calc(50%-8px)] items-center md:mb-0 md:ml-4 md:w-fit">

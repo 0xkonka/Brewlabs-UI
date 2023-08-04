@@ -3,7 +3,7 @@ import FavouritePanel from "./FavouritePanel";
 import SwapHistory from "./SwapHistory";
 import SwapOption from "./SwapOption";
 
-export default function TradingPanel({ currency, marketInfos }) {
+export default function TradingPanel({ currency, marketInfos, setSelectedCurrency }) {
   return (
     <div className="mt-6">
       <div className="flex">
@@ -11,13 +11,13 @@ export default function TradingPanel({ currency, marketInfos }) {
           <SwapOption currency={currency} marketInfos={marketInfos} />
         </div>
         <div className="mx-0 flex-1 2xl:mx-4">
-          <div className="h-[600px]">
+          <div className="h-[660px]">
             <TradingViewChart currency={currency} />
           </div>
           <SwapHistory currency={currency} />
         </div>
         <div className="hidden w-[280px] 2xl:block">
-          <FavouritePanel />
+          <FavouritePanel setSelectedCurrency={setSelectedCurrency} />
         </div>
       </div>
       <div className="mt-10 flex flex-col items-center justify-between sm:items-start xl:flex-row 2xl:hidden">
@@ -25,7 +25,7 @@ export default function TradingPanel({ currency, marketInfos }) {
           <SwapOption currency={currency} marketInfos={marketInfos} />
         </div>
         <div className="mt-6 w-full max-w-[300px] xl:mt-0">
-          <FavouritePanel />
+          <FavouritePanel setSelectedCurrency={setSelectedCurrency} />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import { usePairDexInfo } from "../../TokenInfo/hooks/usePairInfo";
 import { ChartContext } from "contexts/ChartContext";
 
-export default function FavouriteCard({ pair }) {
+export default function FavouriteCard({ pair, setSelectedCurrency }) {
   const [isFade, setIsFade] = useState(false);
   const { info }: any = usePairDexInfo(pair.tokenAddress, pair.chainId);
 
@@ -13,9 +13,16 @@ export default function FavouriteCard({ pair }) {
 
   return (
     <div
-      className={`${
-        isFade ? "opacity-0 transition-all duration-300" : ""
-      } primary-shadow relative mb-3 flex items-center justify-between rounded-md bg-[#B9B8B80D] p-3.5`}
+      className={`${isFade ? "opacity-0 transition-all duration-300" : ""
+        } primary-shadow relative mb-3 flex items-center justify-between rounded-md bg-[#B9B8B80D] p-3.5 cursor-pointer hover:bg-[#B9B8B822]`}
+    // onClick={() => setSelectedCurrency({
+    //   tokenAddresses: ["0xdad33e12e61dc2f2692f2c12e6303b5ade7277ba", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"],
+    //   symbols: ["BREWLABS", "WETH"],
+    //   chainId: pair.chainId,
+    //   address: pair.address,
+    //   verified: true,
+    //   swap: "uniswap",
+    // })}
     >
       <div className="flex items-center">
         <img
@@ -23,7 +30,7 @@ export default function FavouriteCard({ pair }) {
           alt={""}
           className="h-4 w-4 rounded-full"
         />
-        <div className="mx-2 text-sm text-white">{info?.symbol}</div>
+        <div className="mx-2 flex-1 overflow-hidden text-ellipsis text-sm text-white">{info?.symbol}</div>
         <div className="text-xs text-[#FFFFFF80]">{pair.symbol1}</div>
       </div>
       <div className="flex items-center text-sm">

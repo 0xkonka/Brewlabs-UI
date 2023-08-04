@@ -11,6 +11,7 @@ export const DEX_API_URL = process.env.NEXT_PUBLIC_DEX_API_URL;
 
 const ChartContextProvider = ({ children }: any) => {
   const [favourites, setFavourites] = useState([]);
+  const [criteria, setCriteria] = useState("");
 
   const getFavourites = () => {
     try {
@@ -24,6 +25,10 @@ const ChartContextProvider = ({ children }: any) => {
 
   const onFavourites = (_address: string, chainId: number, tokenAddress: string, symbol1: string, type: number) => {
     if (type === 1) {
+      const index = favourites.findIndex(
+        (favourite) => favourite.address === _address && favourite.chainId === chainId
+      );
+      if (index !== -1) return;
       localStorage.setItem(
         `chart-favourites`,
         JSON.stringify([...favourites, { chainId, address: _address, tokenAddress, symbol1 }])
@@ -31,7 +36,6 @@ const ChartContextProvider = ({ children }: any) => {
       getFavourites();
     }
     if (type === 2) {
-      console.log(_address, chainId, tokenAddress, symbol1, type);
       let temp = [...favourites];
 
       const index = favourites.findIndex(
@@ -52,6 +56,8 @@ const ChartContextProvider = ({ children }: any) => {
       value={{
         favourites,
         onFavourites,
+        criteria,
+        setCriteria,
       }}
     >
       {children}
