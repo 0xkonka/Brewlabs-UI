@@ -8,12 +8,24 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { CopySVG, PlusSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
 import VolumeInfo from "./VolumeInfo";
 import SlippageInfo from "./SlippageInfo";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
+import { useAccount } from "wagmi";
+import useTokenMarketChart from "@hooks/useTokenMarketChart";
+import useTokenInfo from "@hooks/useTokenInfo";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [isCopied, setIsCopied] = useState(false);
 
-  const { tokens }: any = useContext(DashboardContext);
-  const exisitingToken = tokens && tokens.map((token) => token.address === currency.tokenAddresses[0].toLowerCase());
+  const { address: account } = useAccount();
+  // const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
+  const { decimals } = useTokenInfo(currency.tokenAddresses[0], currency.chainId);
+
+  const { balances } = useTokenBalances(
+    { [currency.chainId]: [{ address: currency.tokenAddresses[0], decimals }] },
+    { [currency.chainId]: [account] }
+  );
+
+  const prices = useTokenMarketChart(currency.chainId);
 
   const onCopyAddress = () => {
     setIsCopied(true);
@@ -41,10 +53,19 @@ export default function SwapOption({ currency, marketInfos }) {
 
             <div className="ml-2">
               <div className="text-sm leading-none text-white">
-                {BigNumberFormat(exisitingToken ? exisitingToken.balance : 0)} {currency.symbols[0]} Balance
+                {BigNumberFormat(balances && balances[currency.chainId] ? balances[currency.chainId][0].balance : 0)}{" "}
+                {currency.symbols[0]} Balance
               </div>
               <div className="mt-0.5 text-xs leading-none text-[#FFFFFF80]">
-                {exisitingToken ? BigNumberFormat(exisitingToken.balance * exisitingToken.price) : 0} USD
+                {balances && balances[currency.chainId]
+                  ? BigNumberFormat(
+                      balances[currency.chainId][0].balance *
+                        (prices[currency.tokenAddresses[0].toLowerCase()]
+                          ? prices[currency.tokenAddresses[0].toLowerCase()].usd
+                          : 0)
+                    )
+                  : 0}{" "}
+                USD
               </div>
             </div>
           </div>

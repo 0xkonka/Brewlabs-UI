@@ -1,3 +1,5 @@
+import axios from "axios";
+import { API_URL } from "config/constants";
 import { isArray } from "lodash";
 import React, { useEffect, useState } from "react";
 
@@ -47,8 +49,20 @@ const ChartContextProvider = ({ children }: any) => {
     }
   };
 
+  async function getScrappingSites() {
+    try {
+      const {data:response} = await axios.post(`${API_URL}/html/getHTML`, {
+        url: "https://www.dextools.io/app/en/ether/pairs",
+      });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
     getFavourites();
+    getScrappingSites();
   }, []);
 
   return (

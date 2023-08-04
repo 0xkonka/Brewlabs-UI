@@ -1,49 +1,47 @@
-import { OpenWalletSVG } from "@components/dashboard/assets/svgs";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { ChartContext } from "contexts/ChartContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import FavouriteCard from "./FavouriteCard";
-import CurrencySelector from "@components/CurrencySelector";
-import { useGlobalState } from "state";
+import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 
 export default function FavouritePanel({ setSelectedCurrency }) {
-  const { favourites, setCriteria }: any = useContext(ChartContext);
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
-  const [, setSidebarContent] = useGlobalState("userSidebarContent");
+  const { favourites }: any = useContext(ChartContext);
 
-  function onUserInput(input, currency) { }
-  function onCurrencySelect(input, currency) {
-    setCriteria(currency.address);
-  }
-  return (
-    <div className="w-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center text-primary">
-          <div>
-            <StarIcon className="h-4 w-4" />
-          </div>
-          <div className=" ml-1 text-sm">Favourites</div>
-        </div>
-        <div
-          className="primary-shadow flex cursor-pointer items-center rounded-md bg-[#B9B8B80D]  p-[6px_10px] text-primary"
-          onClick={() => {
-            setIsOpen(isOpen === 1 ? 1 : 2);
-            setSidebarContent(
-              <CurrencySelector
-                inputType={"input"}
-                selectedCurrency={null}
-                onUserInput={onUserInput}
-                type={""}
-                onCurrencySelect={onCurrencySelect}
-              />
-            );
-          }}
-        >
-          <div className="mr-1 text-sm leading-none">Open wallet</div>
-          <div>{OpenWalletSVG}</div>
-        </div>
+  const filters = [
+    <div className="flex items-center text-primary" key={0}>
+      <div>
+        <StarIcon className="h-4 w-4" />
       </div>
-      <div className="mt-3 yellowScroll overflow-x-clip max-h-[540px] overflow-y-scroll pr-2 pt-2">
+      <div className=" ml-1 text-sm">Favourites</div>
+    </div>,
+    // <div className="flex items-center text-[#FFFFFF80]" key={0}>
+    //   <div>
+    //     <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />
+    //   </div>
+    //   <div className=" ml-1 text-sm">CMC Trendings</div>
+    // </div>,
+    // <div className="flex items-center text-[#FFFFFF80]" key={0}>
+    //   <div>
+    //     <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />
+    //   </div>
+    //   <div className=" ml-1 text-sm">CMC Recently Added</div>
+    // </div>,
+  ];
+  const [selectedFilter, setSelectedFilter] = useState(0);
+
+  return (
+    <div className="flex h-[660px] w-full flex-col">
+      <DropDown
+        value={selectedFilter}
+        setValue={setSelectedFilter}
+        data={filters}
+        height={"40px"}
+        rounded={"6px"}
+        className="!w-[200px] !bg-[#202023] !text-xs !text-tailwind"
+        bodyClassName="!bg-none !bg-[#202023]"
+        itemClassName="hover:!bg-[#29292b] !justify-start !px-2"
+      />
+      <div className="yellowScroll mt-3 flex-1 overflow-x-clip overflow-y-scroll pr-2 pt-2">
         {favourites.map((favourite, i) => {
           return <FavouriteCard key={i} pair={favourite} setSelectedCurrency={setSelectedCurrency} />;
         })}

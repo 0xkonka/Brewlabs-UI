@@ -19,7 +19,7 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { criteria, setCriteria }: any = useContext(ChartContext);
 
-  const { pairs, loading } = useTokenAllPairs(criteria, selectedChainId);
+  const { pairs, loading } = useTokenAllPairs(criteria);
 
   function onUserInput(input, currency) {}
   function onCurrencySelect(input, currency) {

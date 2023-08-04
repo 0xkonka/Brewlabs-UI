@@ -3,12 +3,12 @@ import { RefreshSVG } from "@components/dashboard/assets/svgs";
 import { useTokenTaxes } from "@hooks/useTokenInfo";
 
 export default function SlippageInfo({ currency }) {
-  const { buyTaxes, sellTaxes }: any = useTokenTaxes(
-    currency.tokenAddresses[0],
-    currency.chainId,
-    currency.address,
-    currency.swap
-  );
+  // const { buyTaxes, sellTaxes }: any = useTokenTaxes(
+  //   currency.tokenAddresses[0],
+  //   currency.chainId,
+  //   currency.address,
+  //   currency.swap
+  // );
   return (
     <div className="primary-shadow rounded-[6px] bg-[#B9B8B80D] p-[20px_12px] text-sm leading-none">
       <div className="mx-auto flex max-w-[280px] items-center justify-between">

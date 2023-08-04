@@ -11,7 +11,6 @@ export default function VolumeInfo({ currency }) {
     currency.address,
     currency.swap,
     3600 * 24 * 7 * 1000,
-    1000
   );
 
   // const data = [];

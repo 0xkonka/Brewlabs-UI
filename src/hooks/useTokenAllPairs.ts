@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 let searchTimeout;
 let wrappedCriteria = "";
 
-export const useTokenAllPairs = (criteria, chainId) => {
+export const useTokenAllPairs = (criteria) => {
   const [pairs, setPairs] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +16,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
       }
       setLoading(true);
       let { data: tokens } = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc`);
-      tokens = tokens.data.filter((token) => token.network === DEX_GURU_CHAIN_NAME[chainId]);
+      tokens = tokens.data;
       const result = await Promise.all(
         tokens.map((token) =>
           axios.post("https://api.dex.guru/v3/pools/", {
@@ -31,6 +31,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
       let _pairs = [];
       result.map((data, i) =>
         data.data.data.map((pool, j) => {
+          const chainId = Object.keys(DEX_GURU_CHAIN_NAME).find((key, i) => pool.network === DEX_GURU_CHAIN_NAME[key]);
           if (Object.keys(DEX_GURU_SWAP_AMM).includes(pool.amm) && _pairs.length <= 10 && pool.liquidityStable)
             _pairs.push({
               ...pool,
@@ -38,6 +39,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
               address: pool.id.replace(`-${chainId}`, ""),
               volume24hUSD: tokens[i].volume24hUSD,
               amm: DEX_GURU_SWAP_AMM[pool.amm],
+              chainId,
             });
         })
       );
@@ -51,8 +53,8 @@ export const useTokenAllPairs = (criteria, chainId) => {
           if (pair.volume24hStable)
             response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
               amm: pair.amm,
-              current_token_id: `${pair.token}-${DEX_GURU_CHAIN_NAME[chainId]}`,
-              limit: 1000,
+              current_token_id: `${pair.token}-${pair.network}`,
+              limit: 100,
               offset: 0,
               order: "desc",
               date: { start_date: Date.now() - 3600 * 24 * 1000, end_date: Date.now() },
@@ -65,7 +67,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
           else
             response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
               amm: pair.amm,
-              current_token_id: `${pair.token}-${DEX_GURU_CHAIN_NAME[chainId]}`,
+              current_token_id: `${pair.token}-${pair.network}`,
               limit: 1,
               offset: 0,
               order: "desc",
@@ -80,6 +82,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
             volume24hStable: pair.volume24hStable,
             token: pair.token,
             pair: pair.address,
+            chainId: pair.chainId,
           };
         })
       );
@@ -97,7 +100,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
             prices24h = [prices24h[1], prices24h[0]];
           }
           return {
-            chainId,
+            chainId: response.chainId,
             swap: response.data[0].type,
             tokenAddresses,
             symbols,
@@ -117,7 +120,7 @@ export const useTokenAllPairs = (criteria, chainId) => {
     if (searchTimeout != undefined) clearTimeout(searchTimeout);
     wrappedCriteria = criteria;
     searchTimeout = setTimeout(fetchAllPairs, 500);
-  }, [criteria, chainId]);
+  }, [criteria]);
 
   return { pairs, loading };
 };
