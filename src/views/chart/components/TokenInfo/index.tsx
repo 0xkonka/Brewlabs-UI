@@ -67,7 +67,7 @@ export default function TokenInfo({ currency, marketInfos }) {
   ];
 
   return (
-    <div className="mt-5 flex flex-col items-start justify-between md:flex-row md:items-center">
+    <div className="mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center 2xl:mr-[296px]">
       <div className="flex flex-col items-start md:items-center ls:flex-row">
         <div className="item-start flex flex-col md:flex-row md:items-center ">
           <div className="flex items-center">
@@ -131,7 +131,7 @@ export default function TokenInfo({ currency, marketInfos }) {
             <div className="ml-5 flex items-center">
               <div className="flex items-center">
                 <StyledButton
-                  className="mr-2 !bg-transparent !text-[#2FD35DBF] [&>svg]:!h-4 [&>svg]:!w-4 disabled:!text-tailwind"
+                  className="mr-2 !bg-transparent !text-[#2FD35DBF] disabled:!text-tailwind [&>svg]:!h-4 [&>svg]:!w-4"
                   onClick={() => voteOrAgainst(currency.address, account, currency.chainId, "voted")}
                   disabled={!activeNFT}
                 >
@@ -141,7 +141,7 @@ export default function TokenInfo({ currency, marketInfos }) {
               </div>
               <div className="ml-3 flex items-center">
                 <StyledButton
-                  className="mr-2 mt-1 rotate-180 !bg-transparent !text-[#DC4545] [&>svg]:!h-4 [&>svg]:!w-4 disabled:!text-tailwind"
+                  className="mr-2 mt-1 rotate-180 !bg-transparent !text-[#DC4545] disabled:!text-tailwind [&>svg]:!h-4 [&>svg]:!w-4"
                   onClick={() => voteOrAgainst(currency.address, account, currency.chainId, "devoted")}
                   disabled={!activeNFT}
                 >

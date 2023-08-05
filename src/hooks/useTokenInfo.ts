@@ -100,7 +100,7 @@ export function useTokenMarketInfos(chainId: number, address: string, pair: stri
         }),
         axios.post(`https://api.dex.guru/v3/pools/`, {
           id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
-          limit: 1000,
+          limit: 100,
           network: DEX_GURU_CHAIN_NAME[chainId],
           order: "desc",
           sort_by: "volume24h_stable",
@@ -148,7 +148,7 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
     address,
     chainId,
     pair,
-    amm,
+  amm,
     period,
     limit,
     type,
