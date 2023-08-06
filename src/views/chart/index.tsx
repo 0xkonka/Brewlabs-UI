@@ -43,7 +43,7 @@ export default function Chart() {
 
   useEffect(() => {
     setTokens();
-  }, [stringifiedCurrency, currencies[Field.INPUT]]);
+  }, [stringifiedCurrency]);
 
   useEffect(() => {
     setTimeout(() => {
