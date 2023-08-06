@@ -17,7 +17,7 @@ const ChartContextProvider = ({ children }: any) => {
 
   const getFavourites = () => {
     try {
-      let _favourites: any = localStorage.getItem(`chart-favourites`);
+      let _favourites: any = localStorage.getItem(`chart-favorites`);
       _favourites = JSON.parse(_favourites);
       setFavourites(isArray(_favourites) ? _favourites : []);
     } catch (error) {
@@ -31,7 +31,7 @@ const ChartContextProvider = ({ children }: any) => {
         (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
       );
       if (index !== -1) return;
-      localStorage.setItem(`chart-favourites`, JSON.stringify([...favourites, currency]));
+      localStorage.setItem(`chart-favorites`, JSON.stringify([...favourites, currency]));
       getFavourites();
     }
     if (type === 2) {
@@ -41,7 +41,7 @@ const ChartContextProvider = ({ children }: any) => {
         (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
       );
       temp.splice(index, 1);
-      localStorage.setItem(`chart-favourites`, JSON.stringify(temp));
+      localStorage.setItem(`chart-favorites`, JSON.stringify(temp));
       getFavourites();
     }
   };
