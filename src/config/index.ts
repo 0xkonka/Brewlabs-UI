@@ -144,7 +144,7 @@ export const DEX_GURU_CHAIN_NAME = {
 };
 
 export const DEX_GURU_SWAP_AMM = {
-  2: "uniswap-v3",
+  2: "uniswap_v3",
   1: "uniswap",
   4: "pancakeswap",
   193: "pancakeswap_v3",

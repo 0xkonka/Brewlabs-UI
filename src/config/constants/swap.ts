@@ -28,7 +28,7 @@ export const DEX_LOGOS = {
   pancakeswap_v3: "https://assets-stage.dex.guru/icons/56/0x10ED43C718714eb63d5aA57B78B54704E256024E.svg",
   pancakeswap_v1: "https://assets-stage.dex.guru/icons/56/0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F.svg",
   uniswap: "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
-  "uniswap-v3": "https://assets-stage.dex.guru/icons/1/0xE592427A0AEce92De3Edee1F18E0157C05861564.svg",
+  "uniswap_v3": "https://assets-stage.dex.guru/icons/1/0xE592427A0AEce92De3Edee1F18E0157C05861564.svg",
   "pcs-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
   quickswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/4098.png",
   spookyswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/1455.png",

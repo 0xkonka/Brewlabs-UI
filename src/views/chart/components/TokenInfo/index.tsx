@@ -9,6 +9,7 @@ import {
   VoteSVG,
   WebSiteSVG,
   checkCircleSVG,
+  downSVG,
   upSVG,
 } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
@@ -27,7 +28,7 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useFlaskNftData } from "state/nfts/hooks";
 import StyledButton from "views/directory/StyledButton";
 
-export default function TokenInfo({ currency, marketInfos }) {
+export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const { info: pairInfo, voteOrAgainst } = usePairVoteInfo(currency.address, currency.chainId);
   const { address: account, connector } = useAccount();
   const { favourites, onFavourites }: any = useContext(ChartContext);
@@ -51,7 +52,7 @@ export default function TokenInfo({ currency, marketInfos }) {
     { icon: FlagSVG, href: marketInfos?.community ?? "#" },
     { icon: TelegramSVG, href: marketInfos?.links?.telegram ?? "#" },
     {
-      icon: <img src={"/images/wallets/metamask.png"} alt={""} className="h-[18px] w-[18px] rounded-full" />,
+      icon: <img src={"/images/wallets/metamask.png"} alt={""} className="h-4 w-4 rounded-full" />,
       action: true,
     },
   ];
@@ -67,22 +68,15 @@ export default function TokenInfo({ currency, marketInfos }) {
   ];
 
   return (
-    <div className="mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center 2xl:mr-[296px]">
-      <div className="flex flex-col items-start md:items-center ls:flex-row">
+    <div
+      className={`mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center relative z-0 ${
+        showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
+      }`}
+    >
+      <div className="flex flex-col items-start ls:flex-row ls:items-center">
         <div className="item-start flex flex-col md:flex-row md:items-center ">
           <div className="flex items-center">
-            <div
-              className="cursor-pointer"
-              onClick={() =>
-                onFavourites(
-                  currency.address.toLowerCase(),
-                  currency.chainId,
-                  currency.tokenAddresses[0].toLowerCase(),
-                  currency.symbols[1],
-                  1
-                )
-              }
-            >
+            <div className="cursor-pointer" onClick={() => onFavourites(currency, 1)}>
               <StarIcon
                 className={`h-5 w-5 ${
                   favourites.find(
@@ -94,31 +88,31 @@ export default function TokenInfo({ currency, marketInfos }) {
                 }`}
               />
             </div>
-            <img src={DEX_LOGOS["uniswap"]} alt={""} className="primary-shadow mx-3 h-7 w-7 rounded-full" />
+            <img src={DEX_LOGOS["uniswap"]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
             <div className="flex">
               <TokenLogo
                 src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
-                classNames="primary-shadow z-10 -mr-4 h-7 w-7 rounded-full"
+                classNames="primary-shadow z-10 -mr-4 h-6 w-6 rounded-full"
               />
               <TokenLogo
                 src={getTokenLogoURL(isAddress(currency.tokenAddresses[1]), currency.chainId)}
-                classNames="primary-shadow h-7 w-7 rounded-full"
+                classNames="primary-shadow h-6 w-6 rounded-full"
               />
             </div>
-            <div className="ml-4 text-lg text-white">
+            <div className="ml-2 text-white">
               {currency.symbols[0]}-{currency.symbols[1]}
             </div>
           </div>
           <div className="mt-2 flex items-center md:mt-0">
-            <div className="ml-0 flex md:ml-4">
+            <div className="mx-0 flex md:mx-3">
               {socials.map((social: any, i) => {
                 if (social.href === "#") return;
                 return (
                   <a
                     key={i}
-                    className={`mr-1.5 cursor-pointer ${
+                    className={`mr-1 cursor-pointer ${
                       social.href ? "!text-white hover:opacity-60" : social.isActive ? "!text-green" : "!text-tailwind"
-                    } transition [&>svg]:!h-[18px] [&>svg]:!w-[18px]`}
+                    } primary-shadow transition [&>svg]:!h-4 [&>svg]:!w-4`}
                     target="_blank"
                     href={social.href}
                     onClick={() => social.action && onAddToMetamask()}
@@ -128,7 +122,7 @@ export default function TokenInfo({ currency, marketInfos }) {
                 );
               })}
             </div>
-            <div className="ml-5 flex items-center">
+            {/* <div className="ml-5 flex items-center">
               <div className="flex items-center">
                 <StyledButton
                   className="mr-2 !bg-transparent !text-[#2FD35DBF] disabled:!text-tailwind [&>svg]:!h-4 [&>svg]:!w-4"
@@ -149,15 +143,15 @@ export default function TokenInfo({ currency, marketInfos }) {
                 </StyledButton>
                 <div className="text-white">{pairInfo ? pairInfo.devoted.length : 0}</div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="mt-4 flex flex-wrap ls:mt-0">
           {infos.map((data, i) => {
             return (
-              <div key={i} className="mb-2 ml-0 flex w-[calc(50%-8px)] items-center md:mb-0 md:ml-4 md:w-fit">
-                <div className="text-tailwind ">{data.icon}</div>
-                <div className="ml-1.5 text-sm text-white">{data.value}</div>
+              <div key={i} className="mb-2 mr-0 flex w-[calc(50%-8px)] items-center md:mb-0 md:mr-4 md:w-fit">
+                <div className="primary-shadow -mr-[3px] -mt-0.5 scale-[.8] text-tailwind">{data.icon}</div>
+                <div className="ml-1.5 text-xs text-white">{data.value}</div>
               </div>
             );
           })}
@@ -170,7 +164,7 @@ export default function TokenInfo({ currency, marketInfos }) {
             {marketInfos.priceChange >= 0 ? "+" : ""}
             {(marketInfos.priceChange ?? 0).toFixed(2)}% (24h)
           </div>
-          <div className="scale-[80%]">{upSVG}</div>
+          <div className="scale-[80%]">{marketInfos.priceChange >= 0 ? upSVG : downSVG}</div>
         </div>
         <div className="ml-2 text-lg text-white">${(marketInfos.price ?? 0).toFixed(3)}</div>
       </div>

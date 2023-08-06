@@ -19,11 +19,13 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { criteria, setCriteria }: any = useContext(ChartContext);
 
-  const { pairs, loading } = useTokenAllPairs(criteria);
+  const { pairs, loading, fetchAllPairs } = useTokenAllPairs(criteria);
 
   function onUserInput(input, currency) {}
-  function onCurrencySelect(input, currency) {
-    setCriteria(currency.address);
+  async function onCurrencySelect(input, currency) {
+    const pair = await fetchAllPairs(currency.address, 1);
+    console.log(pair);
+    if (pair && pair.length) setSelectedCurrency(pair[0]);
   }
 
   return (
@@ -37,7 +39,6 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
               placeholder="Search contract, name, symbol..."
               className="!h-full flex-1 bg-transparent !p-[14px] !text-base !shadow-none focus:!shadow-none focus:!ring-0"
             />
-            <div className="mr-3 text-[#B9B8B8] [&>svg]:!h-5 [&>svg]:!w-5">{CircleRightSVG}</div>
           </div>
           <div className="absolute left-0 w-full overflow-hidden rounded-b bg-[#29292b]">
             {loading ? (
@@ -56,7 +57,7 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
                 return (
                   <div
                     key={i}
-                    className="flex h-[44px] cursor-pointer items-center px-3 transition hover:bg-[#5b5b5c]"
+                    className="flex h-[44px] cursor-pointer items-center overflow-hidden text-ellipsis px-3 transition hover:bg-[#5b5b5c]"
                     onClick={() => {
                       setSelectedCurrency(pair);
                       setCriteria("");
@@ -73,13 +74,13 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
                     <div
                       className={`mx-2 flex flex-1 items-center justify-between ${
                         i !== pairs.length - 1 ? "border-b border-dotted border-[#D9D9D980]" : ""
-                      } h-full text-sm leading-none`}
+                      } h-full overflow-hidden text-ellipsis text-sm leading-none`}
                     >
-                      <div className="text-[#FFFFFFBF]">
+                      <div className="flex-1 overflow-hidden text-ellipsis text-[#FFFFFFBF]">
                         <div>
                           <span className="text-white">{pair.symbols[0]}</span> ({pair.symbols[1]})
                         </div>
-                        <div className="text-xs">{pair.address}</div>
+                        <div className="overflow-hidden text-ellipsis text-xs">{pair.address}</div>
                       </div>
                       <div className="text-right">
                         <div>

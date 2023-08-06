@@ -55,15 +55,17 @@ export default function HistoryList({ histories, currency }) {
           return (
             <a href={getExplorerLink(list.chainId, "transaction", list.txHash)} key={i} target="_blank">
               <div
-                className={`flex justify-between ${i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
-                  } cursor-pointer items-center rounded-[2px] border border-transparent p-[4px_0px_4px_12px] ${list.action === "Buy"
+                className={`flex justify-between ${
+                  i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
+                } cursor-pointer items-center rounded-[2px] border border-transparent p-[4px_0px_4px_12px] ${
+                  list.action === "Buy"
                     ? "text-[#32FFB5] hover:border-[#32ffb473]"
                     : "text-[#DC4545] hover:border-[#DC454573]"
-                  }`}
+                }`}
               >
                 <div className="flex">
                   <div className="flex w-[90px] items-center text-white">
-                    <img src={getExplorerLogo(list.chainId)} alt={""} className="mr-1.5" />
+                    <img src={getExplorerLogo(list.chainId)} alt={""} className="mr-1.5 h-4 w-4 rounded-full" />
                     <div>{getEllipsis(list.txHash, 6, 0)}</div>
                   </div>
                   <div className="w-[160px] whitespace-nowrap">{list.time}</div>
@@ -87,17 +89,18 @@ export default function HistoryList({ histories, currency }) {
           return (
             <a href={getExplorerLink(list.chainId, "transaction", list.txHash)} key={i} target="_blank">
               <div
-                className={`mb-2 flex flex-col ${i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
-                  } cursor-pointer rounded-[2px] border border-transparent p-[4px_12px] ${list.action === "Buy"
+                className={`mb-2 flex flex-col ${
+                  i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
+                } cursor-pointer rounded-[2px] border border-transparent p-[4px_12px] ${
+                  list.action === "Buy"
                     ? "text-[#32FFB5] hover:border-[#32ffb473]"
                     : "text-[#DC4545] hover:border-[#DC454573]"
-                  }`}
+                }`}
               >
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center text-white">
-
                     <div className="flex items-center">
-                      <img src={getExplorerLogo(list.chainId)} alt={""} className="mr-1.5" />
+                      <img src={getExplorerLogo(list.chainId)} alt={""} className="mr-1.5 h-4 w-4 rounded-full" />
                       <div>{getEllipsis(list.txHash, 20, 0)}</div>
                     </div>
                   </div>
@@ -106,7 +109,6 @@ export default function HistoryList({ histories, currency }) {
                   </div>
                 </div>
                 <div className="flex flex-wrap justify-between">
-
                   <div className="flex items-center text-white">
                     <div>Price:</div>&nbsp;
                     <div className="">{list.price}</div>
@@ -115,7 +117,6 @@ export default function HistoryList({ histories, currency }) {
                     <div>Ago:</div>&nbsp;
                     <div className="whitespace-nowrap">{list.ago}</div>
                   </div>
-
                 </div>
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center">

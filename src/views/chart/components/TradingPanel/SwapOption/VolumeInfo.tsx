@@ -1,7 +1,7 @@
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { useState } from "react";
-import { formatAmount } from "utils/formatApy";
 import { useTradingHistory } from "@hooks/useTokenInfo";
+import { BigNumberFormat } from "utils/functions";
 
 export default function VolumeInfo({ currency }) {
   const [showType, setShowType] = useState(0);
@@ -10,7 +10,7 @@ export default function VolumeInfo({ currency }) {
     currency.chainId,
     currency.address,
     currency.swap,
-    3600 * 24 * 7 * 1000,
+    3600 * 24 * 7 * 1000
   );
 
   // const data = [];
@@ -37,7 +37,7 @@ export default function VolumeInfo({ currency }) {
     return { buyVolume, sellVolume, buyCount, sellCount };
   }
   const histories = {
-    v: {
+    volume: {
       "5m": {
         buys: getVolume(5 * 60).buyCount,
         sells: getVolume(5 * 60).sellCount,
@@ -59,7 +59,7 @@ export default function VolumeInfo({ currency }) {
         isUp: getVolume(3600 * 24 * 7).buyCount >= getVolume(3600 * 24 * 7).sellCount,
       },
     },
-    "v(usd)": {
+    "volume(usd)": {
       "5m": {
         buys: getVolume(5 * 60).buyVolume,
         sells: getVolume(5 * 60).sellVolume,
@@ -83,8 +83,8 @@ export default function VolumeInfo({ currency }) {
     },
   };
   const showTypes = [
-    { key: "v", values: ["buys", "sells"] },
-    { key: "v(usd)", values: ["buys", "sells"] },
+    { key: "volume", values: ["buys", "sells"] },
+    { key: "volume(usd)", values: ["buys", "sells"] },
   ];
 
   return (
@@ -94,7 +94,7 @@ export default function VolumeInfo({ currency }) {
           value={showType}
           setValue={setShowType}
           data={showTypes.map((data) => data.key.toUpperCase())}
-          className="!w-[70px] !bg-[#29292C] text-white"
+          className="!w-[90px] !bg-[#29292C] !text-xs text-white"
           bodyClassName="!bg-none !bg-[#29292C]"
           itemClassName="hover:!bg-[#86868644]"
         />
@@ -102,7 +102,7 @@ export default function VolumeInfo({ currency }) {
           return (
             <div
               key={i}
-              className={`w-12 text-right ${
+              className={`w-12 text-right text-sm ${
                 histories[showTypes[showType].key][key].isUp ? " text-[#3AFDB7]" : "text-[#DC4545]"
               }`}
             >
@@ -116,15 +116,15 @@ export default function VolumeInfo({ currency }) {
           return (
             <div
               key={i}
-              className={`flex items-center justify-between py-1.5 ${
+              className={`flex items-center justify-between py-1.5 text-sm ${
                 i === showTypes[showType].values.length - 1 ? "" : "border-b border-[#FFFFFF40]"
               }`}
             >
-              <div className={`w-[70px] uppercase ${i % 2 === 0 ? " text-[#3AFDB7]" : "text-[#DC4545]"}`}>{data}</div>
+              <div className={`w-[90px] uppercase ${i % 2 === 0 ? " text-[#3AFDB7]" : "text-[#DC4545]"}`}>{data}</div>
               {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
                 return (
-                  <div key={i} className="w-12 text-right text-sm text-white">
-                    {formatAmount(histories[showTypes[showType].key][key][data])}
+                  <div key={i} className="w-12 text-right  text-white">
+                    {BigNumberFormat(histories[showTypes[showType].key][key][data], showType ? 2 : 0)}
                   </div>
                 );
               })}

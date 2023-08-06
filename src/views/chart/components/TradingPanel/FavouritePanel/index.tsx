@@ -30,22 +30,25 @@ export default function FavouritePanel({ setSelectedCurrency }) {
   const [selectedFilter, setSelectedFilter] = useState(0);
 
   return (
-    <div className="flex h-[660px] w-full flex-col">
-      <DropDown
-        value={selectedFilter}
-        setValue={setSelectedFilter}
-        data={filters}
-        height={"40px"}
-        rounded={"6px"}
-        className="!w-[200px] !bg-[#202023] !text-xs !text-tailwind"
-        bodyClassName="!bg-none !bg-[#202023]"
-        itemClassName="hover:!bg-[#29292b] !justify-start !px-2"
-      />
-      <div className="yellowScroll mt-3 flex-1 overflow-x-clip overflow-y-scroll pr-2 pt-2">
-        {favourites.map((favourite, i) => {
-          return <FavouriteCard key={i} pair={favourite} setSelectedCurrency={setSelectedCurrency} />;
-        })}
+    <>
+      <div className="flex h-[660px] w-[calc(100%+24px)] flex-col">
+        <DropDown
+          value={selectedFilter}
+          setValue={setSelectedFilter}
+          data={filters}
+          height={"40px"}
+          rounded={"6px"}
+          className="!w-[200px] !bg-[#202023] !text-xs !text-[#FFFFB2]"
+          bodyClassName="!bg-none !bg-[#202023]"
+          itemClassName="hover:!bg-[#29292b] !justify-start !px-2"
+        />
+        <div className="yellowScroll -ml-3 mt-3 w-[calc(100%+24px)] flex-1 overflow-x-clip overflow-y-scroll pl-3 pr-5 pt-2">
+          {favourites.map((favourite, i) => {
+            return <FavouriteCard key={i} pair={favourite} setSelectedCurrency={setSelectedCurrency} />;
+          })}
+        </div>
       </div>
-    </div>
+      <div className={`mb-4 mt-4 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] 2xl:block`} />
+    </>
   );
 }

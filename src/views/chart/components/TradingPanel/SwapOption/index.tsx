@@ -38,11 +38,11 @@ export default function SwapOption({ currency, marketInfos }) {
   return (
     <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
       <div className="primary-shadow flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-3 2xl:w-full">
-        <SwapPanel />
+        <SwapPanel showHistory={false} />
       </div>
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 sm:w-fit 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
-        <SlippageInfo currency={currency} />
-        <div className="mt-2" />
+        {/* <SlippageInfo currency={currency} /> */}
+        {/* <div className="mt-2" /> */}
         <VolumeInfo currency={currency} />
         <div className="primary-shadow mt-2 flex w-[320px] items-center justify-between rounded-[6px] bg-[#B9B8B80D] p-3">
           <div className="flex items-center">
@@ -71,11 +71,11 @@ export default function SwapOption({ currency, marketInfos }) {
           </div>
           <div
             className={`cursor-pointer ${
-              isCopied ? "!text-green" : "text-tailwind"
-            } hover:text-white [&>svg]:!h-4 [&>svg]:!w-4`}
+              isCopied ? "!text-[#FFFFFFBF]" : "text-tailwind"
+            } text-sm hover:text-white [&>svg]:!h-4 [&>svg]:!w-4`}
             onClick={() => onCopyAddress()}
           >
-            {isCopied ? checkCircleSVG : CopySVG}
+            {isCopied ? "Copied" : CopySVG}
           </div>
         </div>
         <div>
@@ -95,6 +95,7 @@ export default function SwapOption({ currency, marketInfos }) {
           </div>
         </div>
       </div>
+      <div className={`mb-4 mt-4 hidden h-[120px] rounded-lg bg-[url('/images/directory/truenft.png')] 2xl:block`} />
     </div>
   );
 }
