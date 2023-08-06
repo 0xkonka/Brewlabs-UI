@@ -58,9 +58,9 @@ export function usePairDexInfo(address, chainId) {
         const data = result.data.data[0];
         setInfo({
           price: data.priceUSD,
-          priceChange: data.priceUSDChange24h,
+          priceChange: data.priceUSDChange24h * 100,
           symbol: data.symbols[0],
-        });
+      });
       })
       .catch((e) => console.log(e));
   }, [address, chainId]);

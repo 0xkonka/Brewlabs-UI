@@ -47,7 +47,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   return (
     <div className="flex w-full flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
-      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
+      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)} className="!z-[100]">
         <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
       </Modal>
       <SwitchNetworkModal

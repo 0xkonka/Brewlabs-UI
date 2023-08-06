@@ -25,23 +25,20 @@ const ChartContextProvider = ({ children }: any) => {
     }
   };
 
-  const onFavourites = (_address: string, chainId: number, tokenAddress: string, symbol1: string, type: number) => {
+  const onFavourites = (currency: any, type: number) => {
     if (type === 1) {
       const index = favourites.findIndex(
-        (favourite) => favourite.address === _address && favourite.chainId === chainId
+        (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
       );
       if (index !== -1) return;
-      localStorage.setItem(
-        `chart-favourites`,
-        JSON.stringify([...favourites, { chainId, address: _address, tokenAddress, symbol1 }])
-      );
+      localStorage.setItem(`chart-favourites`, JSON.stringify([...favourites, currency]));
       getFavourites();
     }
     if (type === 2) {
       let temp = [...favourites];
 
       const index = favourites.findIndex(
-        (favourite) => favourite.address === _address && favourite.chainId === chainId
+        (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
       );
       temp.splice(index, 1);
       localStorage.setItem(`chart-favourites`, JSON.stringify(temp));
@@ -51,7 +48,7 @@ const ChartContextProvider = ({ children }: any) => {
 
   async function getScrappingSites() {
     try {
-      const {data:response} = await axios.post(`${API_URL}/html/getHTML`, {
+      const { data: response } = await axios.post(`${API_URL}/html/getHTML`, {
         url: "https://www.dextools.io/app/en/ether/pairs",
       });
       console.log(response);
@@ -62,7 +59,7 @@ const ChartContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     getFavourites();
-    getScrappingSites();
+    // getScrappingSites();
   }, []);
 
   return (

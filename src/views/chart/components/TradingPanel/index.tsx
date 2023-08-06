@@ -3,10 +3,10 @@ import FavouritePanel from "./FavouritePanel";
 import SwapHistory from "./SwapHistory";
 import SwapOption from "./SwapOption";
 
-export default function TradingPanel({ currency, marketInfos, setSelectedCurrency }) {
+export default function TradingPanel({ currency, marketInfos, setSelectedCurrency, showReverse }) {
   return (
     <div className="mt-6">
-      <div className="flex">
+      <div className={`flex ${showReverse ? "flex-row-reverse" : ""}`}>
         <div className="hidden w-[320px] 2xl:block">
           <SwapOption currency={currency} marketInfos={marketInfos} />
         </div>

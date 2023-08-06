@@ -12,7 +12,7 @@ import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import { useDexPrice } from "@hooks/useTokenPrice";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 
-export default function Header({ selectedCurrency, setSelectedCurrency }) {
+export default function Header({ selectedCurrency, setSelectedCurrency, showReverse, setShowReverse }) {
   const { chainId } = useWeb3React();
   const networks = [NETWORKS[1], NETWORKS[56]];
   const trendings = [
@@ -35,10 +35,10 @@ export default function Header({ selectedCurrency, setSelectedCurrency }) {
   const price = { 1: ethPrice ?? 0, 56: bnbPrice ?? 0 };
 
   return (
-    <div className="mt-[100px] flex flex-col items-center justify-between 2xl:flex-row">
-      <div className="relative z-10 flex w-full flex-none flex-col items-center md:flex-row 2xl:flex-1">
+    <div className="flex flex-col items-center justify-between 2xl:flex-row z-10 relative">
+      <div className="flex w-full flex-none flex-col items-center md:flex-row 2xl:flex-1">
         <div className="flex w-full items-center justify-between md:w-fit md:justify-start">
-          <div className="flex items-center text-primary w-fit 2xl:w-[320px]">
+          <div className={`flex w-fit items-center text-primary ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
             <div className="mr-1 [&>svg]:!h-4 [&>svg]:!w-4">{DeployerSVG}</div>
             <div className="relative text-2xl">
               BrewCharts
@@ -74,15 +74,22 @@ export default function Header({ selectedCurrency, setSelectedCurrency }) {
             />
           </div>
         </div>
-        <div className="flex items-center flex-1 justify-between md:w-fit w-full mt-4 md:mt-0 xsm:flex-row flex-col">
+        <div className="mt-4 flex w-full flex-1 items-center justify-between md:mt-0 md:w-fit">
           <div className="ml-0 flex-1 md:ml-4 md:w-fit">
             <SearchInput
               selectedChainId={parseInt(networks[selectedNetwork].chainId)}
               setSelectedCurrency={setSelectedCurrency}
             />
           </div>
-          <div className="flex items-center text-tailwind xsm:ml-4 ml-0 xsm:mt-0 mt-4 w-fit 2xl:w-[280px] justify-end">
-            <div className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5">
+          <div
+            className={`ml-0 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
+              showReverse ? "2xl:w-[332px]" : "2xl:w-[292px]"
+            }`}
+          >
+            <div
+              className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5"
+              onClick={() => setShowReverse(!showReverse)}
+            >
               {SwitchSVG}
             </div>
             <div className="cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5">{NFTSVG}</div>

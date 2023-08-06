@@ -28,7 +28,7 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
 
-export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
+export default function SwapPanel({ showHistory = true }: { showHistory?: boolean }) {
   const { account, chainId } = useActiveWeb3React();
 
   const { t } = useTranslation();
@@ -368,7 +368,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           <Button disabled={!0}>{t("Coming Soon")}</Button>
         ))}
 
-      <History />
+      {showHistory ? <History /> : ""}
     </>
   );
 }
