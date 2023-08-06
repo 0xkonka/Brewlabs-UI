@@ -38,7 +38,7 @@ export default function SwapOption({ currency, marketInfos }) {
   return (
     <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
       <div className="primary-shadow flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-3 2xl:w-full">
-        <SwapPanel showHistory={false} />
+        <SwapPanel showHistory={false} size="sm" />
       </div>
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 sm:w-fit 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
         {/* <SlippageInfo currency={currency} /> */}

@@ -28,7 +28,7 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
 
-export default function SwapPanel({ showHistory = true }: { showHistory?: boolean }) {
+export default function SwapPanel({ showHistory = true, size }: { showHistory?: boolean; size?: string }) {
   const { account, chainId } = useActiveWeb3React();
 
   const { t } = useTranslation();
@@ -265,6 +265,7 @@ export default function SwapPanel({ showHistory = true }: { showHistory?: boolea
           currency={currencies[Field.INPUT]}
           balance={currencyBalances[Field.INPUT]}
           currencies={currencies}
+          size = {size}
         />
       </div>
 
@@ -289,6 +290,7 @@ export default function SwapPanel({ showHistory = true }: { showHistory?: boolea
           sellTax={sellTax}
           currencies={currencies}
           noLiquidity={noLiquidity}
+          size = {size}
         />
       </div>
       {account &&

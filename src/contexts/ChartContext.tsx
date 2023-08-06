@@ -49,20 +49,8 @@ const ChartContextProvider = ({ children }: any) => {
     }
   };
 
-  async function getScrappingSites() {
-    try {
-      const { data: response } = await axios.post(`${API_URL}/html/getHTML`, {
-        url: "https://www.dextools.io/app/en/ether/pairs",
-      });
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   useEffect(() => {
     getFavourites();
-    // getScrappingSites();
   }, []);
 
   return (
