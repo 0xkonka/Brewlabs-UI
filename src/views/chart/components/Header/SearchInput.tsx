@@ -17,15 +17,16 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
 
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
-  const { criteria, setCriteria }: any = useContext(ChartContext);
+  const { criteria, setCriteria, pending, setPending }: any = useContext(ChartContext);
 
   const { pairs, loading, fetchAllPairs } = useTokenAllPairs(criteria);
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {
+    setPending(true);
     const pair = await fetchAllPairs(currency.address, 1);
-    console.log(pair);
     if (pair && pair.length) setSelectedCurrency(pair[0]);
+    setPending(false);
   }
 
   return (

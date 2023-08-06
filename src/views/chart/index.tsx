@@ -1,13 +1,14 @@
 import PageWrapper from "components/layout/PageWrapper";
 import Header from "./components/Header";
 import TokenInfo from "./components/TokenInfo";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TradingPanel from "./components/TradingPanel";
 import { useTokenMarketInfos } from "@hooks/useTokenInfo";
 import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
 import { Field } from "state/swap/actions";
 import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { useActiveChainId } from "@hooks/useActiveChainId";
+import { ChartContext } from "contexts/ChartContext";
 
 export default function Chart() {
   const [selectedCurrency, setSelectedCurrency] = useState({
@@ -57,9 +58,11 @@ export default function Chart() {
     selectedCurrency.address
   );
 
+  const { pending }: any = useContext(ChartContext);
+
   return (
     <PageWrapper>
-      <div className="px-3 pb-[100px] font-brand md:px-6">
+      <div className={`px-3 pb-[100px] font-brand md:px-6 ${pending ? "opacity-50" : ""}`}>
         <div className="mx-auto w-full max-w-[1720px]">
           <div
             className={`mb-4 ${
