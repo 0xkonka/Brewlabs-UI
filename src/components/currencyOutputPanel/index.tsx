@@ -100,7 +100,7 @@ const CurrencyOutputPanel = ({
         )}
       </div>
       {price ? (
-        <div className="mx-6 mb-2 mt-3">
+        <div className={`${size === "sm" ? "" : "sm:mx-6"} mx-2 mb-2 mt-3`}>
           <TradeCard
             data={data}
             slippage={slippage}
@@ -108,6 +108,7 @@ const CurrencyOutputPanel = ({
             buyTax={buyTax}
             sellTax={sellTax}
             noLiquidity={noLiquidity}
+            size={size}
           />
         </div>
       ) : null}

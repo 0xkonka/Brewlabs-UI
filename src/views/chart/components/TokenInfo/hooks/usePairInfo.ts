@@ -47,6 +47,7 @@ export function usePairVoteInfo(address: any, chainId: number) {
 export function usePairDexInfo(address, chainId) {
   const [info, setInfo] = useState(null);
   useEffect(() => {
+    setInfo(null);
     if (!isAddress(address)) return;
     axios
       .post("https://api.dex.guru/v3/tokens", {
@@ -60,7 +61,7 @@ export function usePairDexInfo(address, chainId) {
           price: data.priceUSD,
           priceChange: data.priceUSDChange24h * 100,
           symbol: data.symbols[0],
-      });
+        });
       })
       .catch((e) => console.log(e));
   }, [address, chainId]);

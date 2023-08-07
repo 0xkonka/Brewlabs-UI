@@ -65,9 +65,7 @@ export default function Chart() {
       <div className={`px-3 pb-[100px] font-brand md:px-6 ${pending ? "opacity-50" : ""}`}>
         <div className="mx-auto w-full max-w-[1720px]">
           <div
-            className={`mb-4 ${
-              showReverse ? "ml-[296px] mr-[332px]" : "ml-[336px] mr-[292px]"
-            } mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] 2xl:block`}
+            className={`mb-4 mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] bg-cover 2xl:block`}
           />
           <div className="mt-32 block 2xl:hidden" />
           <Header

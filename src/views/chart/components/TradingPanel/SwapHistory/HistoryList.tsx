@@ -71,7 +71,7 @@ export default function HistoryList({ histories, currency }) {
                   </div>
                   <div className="w-[160px] whitespace-nowrap">{list.time}</div>
                   <div className="w-[90px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
-                  <div className="flex w-16 justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div>
+                  <div className="flex w-16 items-center justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div>
                   <div className="w-[90px]">Swap</div>
                   <div className="w-[60px]">{list.action}</div>
                   <div className="w-[90px] text-white">{list.price}</div>
