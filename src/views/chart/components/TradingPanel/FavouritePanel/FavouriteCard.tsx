@@ -34,7 +34,11 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
       className={`${
         isFade ? "opacity-0" : ""
       } primary-shadow relative mb-3 flex cursor-pointer items-center justify-between rounded-md bg-[#B9B8B80D]  p-3.5 transition-all duration-300 hover:scale-[1.05] hover:bg-[#B9B8B822]`}
-      onClick={(e) => !closeRef.current.contains(e.target) && wrappedPair && setSelectedCurrency(wrappedPair)}
+      onClick={(e) =>
+        (!closeRef.current || (closeRef.current && !closeRef.current.contains(e.target))) &&
+        wrappedPair &&
+        setSelectedCurrency(wrappedPair)
+      }
     >
       <div className="flex items-center">
         <TokenLogo
