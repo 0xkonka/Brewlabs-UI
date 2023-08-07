@@ -27,7 +27,7 @@ import { fetchFarmFeeHistories, fetchFarmTotalRewards } from "state/farms/fetchP
 import { BIG_ZERO } from "utils/bigNumber";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
-import { numberWithCommas } from "utils/functions";
+import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -327,15 +327,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </a>
                       )}
                       <Link
-                        href={`/add/${data.chainId}/${
-                          quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
-                            ? getNativeSybmol(data.chainId)
-                            : quoteToken.address
-                        }/${
-                          token.isNative || token.symbol === WNATIVE[data.chainId].symbol
-                            ? getNativeSybmol(data.chainId)
-                            : token.address
-                        }`}
+                        href={getAddLiquidityUrl(data.lpManager, quoteToken, token, data.chainId)}
                         passHref
                       >
                         <div className="ml-0 h-[32px] w-[140px] lg:ml-5 ">

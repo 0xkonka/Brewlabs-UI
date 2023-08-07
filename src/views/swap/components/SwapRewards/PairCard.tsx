@@ -59,7 +59,7 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
       </div>
       <div className="mb-4 mt-4 flex w-full flex-col sm:mb-0 sm:mt-0 sm:w-fit sm:flex-row">
         {isRemovable ? (
-          <Link href={getAddLiquidityUrl(currency0, currency1, chainId)} target={"_blank"}>
+          <Link href={getAddLiquidityUrl("brewlabs", currency0, currency1, chainId)} target={"_blank"}>
             <StyledButton type={"secondary"} className="relative mr-0 !h-9 !w-full !border-0 sm:mr-2 sm:!w-[130px]">
               <div className="-ml-4 text-xs leading-none">Remove Liquidity</div>
               <div className="absolute right-2 -scale-y-125 scale-x-125 text-[#EEBB19]">{ChevronCircleDownSVG}</div>

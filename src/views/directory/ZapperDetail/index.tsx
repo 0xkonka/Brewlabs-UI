@@ -35,7 +35,7 @@ import {
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
 import { useSushiPrice } from "state/zap/sushiswap/hooks";
-import { numberWithCommas } from "utils/functions";
+import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import useHarvestFarm from "./hooks/useHarvestFarm";
@@ -212,15 +212,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <a
                           className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
-                          href={`/add/${data.chainId}/${
-                            quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
-                              ? getNativeSybmol(data.chainId)
-                              : quoteToken.address
-                          }/${
-                            token.isNative || token.symbol === WNATIVE[data.chainId].symbol
-                              ? getNativeSybmol(data.chainId)
-                              : token.address
-                          }`}
+                          href={getAddLiquidityUrl(data.lpManager, quoteToken, token, data.chainId)}
                           rel="noreferrer"
                         >
                           <StyledButton>

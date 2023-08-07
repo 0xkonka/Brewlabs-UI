@@ -37,6 +37,7 @@ import { useNativeTokenPrice } from "@hooks/useUsdPrice";
 import useUnstakeFarms from "../hooks/useUnstakeFarms";
 import Link from "next/link";
 import { getNativeSybmol } from "lib/bridge/helpers";
+import { getAddLiquidityUrl } from "utils/functions";
 
 const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
   const { chainId } = useActiveChainId();
@@ -167,15 +168,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                 </div>
                 <Link
                   className="flex-1"
-                  href={`/add/${data.chainId}/${
-                    quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
-                      ? getNativeSybmol(data.chainId)
-                      : quoteToken.address
-                  }/${
-                    token.isNative || token.symbol === WNATIVE[data.chainId].symbol
-                      ? getNativeSybmol(data.chainId)
-                      : token.address
-                  }`}
+                  href={getAddLiquidityUrl(data.lpManager, quoteToken, token, data.chainId)}
                   target={"_blank"}
                   rel="noreferrer"
                 >
