@@ -148,7 +148,7 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
     address,
     chainId,
     pair,
-  amm,
+    amm,
     period,
     limit,
     type,

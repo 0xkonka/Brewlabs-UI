@@ -108,7 +108,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
           </div>
           <div className="scale-[80%]">{marketInfos.priceChange >= 0 ? upSVG : downSVG}</div>
         </div>
-        <div className="ml-2 text-lg text-white">${(marketInfos.price ?? 0).toFixed(3)}</div>
+        <div className="ml-2 text-lg text-white">${(marketInfos.price ?? 0).toFixed(6)}</div>
       </div>
     </div>
   );
