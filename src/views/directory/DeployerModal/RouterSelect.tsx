@@ -11,14 +11,14 @@ import { SUPPORTED_DEXES } from "config/constants/swap";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getDexLogo } from "utils/functions";
 
-const RouterSelect = ({ router, setRouter, dexId = undefined }) => {
+const RouterSelect = ({ router, setRouter, dexId = undefined, type = "liquidity" }) => {
   const { chainId } = useActiveChainId();
 
   const [open, setOpen] = useState(false);
   const [supportedRouters, setSupportedRouters] = useState([]);
 
   useEffect(() => {
-    setSupportedRouters(EXCHANGE_MAP[chainId].filter((dex) => SUPPORTED_DEXES[chainId]?.includes(dex.id)));
+    setSupportedRouters(EXCHANGE_MAP[chainId].filter((dex) => SUPPORTED_DEXES[type][chainId]?.includes(dex.id)));
   }, [chainId]);
 
   useEffect(() => {

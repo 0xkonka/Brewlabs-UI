@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { Currency, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import useStakeFarms from "../hooks/useStakeFarms";
-import { AppId, Chef } from "config/constants/types";
+import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
 import { usePerformanceFee } from "../hooks/useStakeFarms";
 import { useAccount } from "wagmi";
 import { useAppDispatch } from "state";
@@ -168,7 +168,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                 </div>
                 <Link
                   className="flex-1"
-                  href={getAddLiquidityUrl(data.lpManager, quoteToken, token, data.chainId)}
+                  href={getAddLiquidityUrl(ZAPPER_DEXIDS[appId], quoteToken, token, chainId)}
                   target={"_blank"}
                   rel="noreferrer"
                 >

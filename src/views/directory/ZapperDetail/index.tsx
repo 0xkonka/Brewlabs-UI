@@ -15,7 +15,7 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { AppId, Chef } from "config/constants/types";
+import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { earningTokens, quoteTokens, tokens } from "config/constants/tokens";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -212,7 +212,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <a
                           className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
-                          href={getAddLiquidityUrl(data.lpManager, quoteToken, token, data.chainId)}
+                          href={getAddLiquidityUrl(ZAPPER_DEXIDS[data.appId], quoteToken, token, data.chainId)}
                           rel="noreferrer"
                         >
                           <StyledButton>
