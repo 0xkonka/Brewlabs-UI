@@ -48,7 +48,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
                 }`}
               />
             </div>
-            <img src={DEX_LOGOS["uniswap"]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
+            <img src={DEX_LOGOS[currency.swap]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
             <div className="flex">
               <TokenLogo
                 src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
@@ -88,7 +88,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
             </div> */}
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap xl:mt-0 lg:ml-4 ml-0">
+        <div className="ml-0 mt-4 flex flex-wrap lg:ml-4 xl:mt-0">
           {infos.map((data, i) => {
             return (
               <div key={i} className="mb-2 mr-0 flex w-[calc(50%-8px)] items-center md:mb-0 md:mr-4 md:w-fit">

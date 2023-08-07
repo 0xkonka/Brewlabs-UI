@@ -94,7 +94,7 @@ export default function VolumeInfo({ currency }) {
           value={showType}
           setValue={setShowType}
           data={showTypes.map((data) => data.key.toUpperCase())}
-          className="!w-[90px] !bg-[#29292C] !text-xs text-white"
+          className="!w-[100px] !bg-[#29292C] !text-[11px] text-white"
           bodyClassName="!bg-none !bg-[#29292C]"
           itemClassName="hover:!bg-[#86868644]"
         />
