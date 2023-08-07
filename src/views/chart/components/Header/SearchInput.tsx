@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 
 import { CircleRightSVG, CopySVG, DrawSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
 import StyledInput from "@components/StyledInput";
-import { useTokenAllPairs } from "@hooks/useTokenAllPairs";
+import { fetchAllPairs, useTokenAllPairs } from "@hooks/useTokenAllPairs";
 import { getChainLogo, getDexLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { isAddress } from "utils";
@@ -19,7 +19,7 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { criteria, setCriteria, pending, setPending }: any = useContext(ChartContext);
 
-  const { pairs, loading, fetchAllPairs } = useTokenAllPairs(criteria);
+  const { pairs, loading } = useTokenAllPairs(criteria);
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {

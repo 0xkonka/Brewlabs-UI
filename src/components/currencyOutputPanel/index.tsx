@@ -23,6 +23,7 @@ interface CurrencyOutputPanelProps {
   sellTax?: number;
   currencies: any;
   noLiquidity?: boolean;
+  size?: string;
 }
 
 const CurrencyOutputPanel = ({
@@ -39,6 +40,7 @@ const CurrencyOutputPanel = ({
   sellTax,
   currencies,
   noLiquidity = false,
+  size,
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
@@ -47,7 +49,7 @@ const CurrencyOutputPanel = ({
 
   return (
     <>
-      <div className="px-4 py-2 sm:ml-2 lg:ml-6">
+      <div className={`${size === "sm" ? "" : "sm:pr-4 lg:ml-6"} ml-0 py-2 pl-4 pr-2`}>
         <div>{label}</div>
         <div className="mt-1 overflow-hidden">
           <div className="flex justify-between">
@@ -58,8 +60,9 @@ const CurrencyOutputPanel = ({
               }}
               decimals={currency?.decimals}
               disable={noLiquidity}
+              size={size}
             />
-            <CurrencySelectButton inputCurrencySelect={false} currencies={currencies} />
+            <CurrencySelectButton inputCurrencySelect={false} currencies={currencies} size={size} />
           </div>
           <div className="flex justify-between">
             <div className="ml-1 text-sm opacity-40">
@@ -97,7 +100,7 @@ const CurrencyOutputPanel = ({
         )}
       </div>
       {price ? (
-        <div className="mx-6 mt-3 mb-2">
+        <div className="mx-6 mb-2 mt-3">
           <TradeCard
             data={data}
             slippage={slippage}

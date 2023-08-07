@@ -20,7 +20,7 @@ export default function HistoryList({ histories, currency }) {
     return {
       time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
       action,
-      price: BigNumberFormat(history.pricesStable[index], 3),
+      price: BigNumberFormat(history.pricesStable[index], 6),
       usdValue: BigNumberFormat(history.amountStable),
       amount: BigNumberFormat(history.amounts[index]),
       nativeAmount: BigNumberFormat(history.amountNative),
@@ -33,16 +33,16 @@ export default function HistoryList({ histories, currency }) {
     };
   });
   return (
-    <div className="mt-2 rounded-md border border-[#FFFFFF40] p-1.5 text-sm">
+    <div className="mt-2 rounded-md p-1.5 text-sm">
       <div className="hidden justify-between rounded-[2px] bg-[#D9D9D91A] p-[4px_12px] text-[#FFFFFFBF] lg:flex">
         <div className="flex">
           <div className="w-[90px]">Tx</div>
           <div className="w-[160px] ">Time</div>
           <div className="w-[90px] ">Ago</div>
           <div className="w-16 text-center">Type</div>
-          {/* <div className="w-[60px] ">Transaction</div> */}
+          <div className="w-[90px] ">Transaction</div>
           <div className="w-[60px] ">Action</div>
-          <div className="w-[75px] ">Price</div>
+          <div className="w-[90px] ">Price</div>
         </div>
         <div className="flex">
           <div className="w-[100px] ">{currency.symbols[0]}</div>
@@ -71,8 +71,9 @@ export default function HistoryList({ histories, currency }) {
                   <div className="w-[160px] whitespace-nowrap">{list.time}</div>
                   <div className="w-[90px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
                   <div className="flex w-16 justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div>
+                  <div className="w-[90px]">Swap</div>
                   <div className="w-[60px]">{list.action}</div>
-                  <div className="w-[75px] text-white">{list.price}</div>
+                  <div className="w-[90px] text-white">{list.price}</div>
                 </div>
                 <div className="flex">
                   <div className="w-[100px]">{list.amount}</div>
@@ -141,6 +142,10 @@ export default function HistoryList({ histories, currency }) {
                   <div className="flex items-center">
                     <div>USD.Val:</div>&nbsp;
                     <div className="">{list.usdValue}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <div>Transaction:</div>&nbsp;
+                    <div className="">Swap</div>
                   </div>
                 </div>
               </div>

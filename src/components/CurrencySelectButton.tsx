@@ -8,6 +8,7 @@ import { Field } from "state/swap/actions";
 import { Field as LiquidityField } from "state/mint/actions";
 import { useDerivedSwapInfo } from "state/swap/hooks";
 import { useEffect, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 const CurrencySelectButton = ({
   inputCurrencySelect,
@@ -15,16 +16,20 @@ const CurrencySelectButton = ({
   type,
   onCurrencySelect,
   currencies,
+  size,
 }: {
   inputCurrencySelect: boolean;
   onUserInput?: any;
   type?: any;
   onCurrencySelect?: any;
   currencies: any;
+  size?: string;
 }) => {
   const [inputValue, setInputValue] = useState(null);
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
+
+  const isSM = useMediaQuery({ query: "(max-width: 640px)" });
 
   useEffect(() => {
     setInputValue(
@@ -53,17 +58,27 @@ const CurrencySelectButton = ({
           />
         );
       }}
-      className="btn font-brand font-light"
+      className={`${
+        size === "sm" ? "" : "sm:!min-h-12 sm:!h-12 sm:!px-4"
+      } !min-h-8 btn !h-8 !px-2 font-brand font-light`}
     >
       {inputValue ? (
-        <span className="flex items-center justify-between gap-2 pr-8 text-base xsm:pr-1 sm:text-2xl">
-          <CurrencyLogo currency={inputValue} size="24px" />
+        <span
+          className={`${
+            size === "sm" ? "" : "sm:pr-1 sm:text-2xl"
+          } flex items-center justify-between gap-2 pr-0 text-base`}
+        >
+          <CurrencyLogo currency={inputValue} size={isSM || size === "sm" ? "18px" : "24px"} />
           {inputValue?.symbol}
         </span>
       ) : (
         <span>Select Token</span>
       )}
-      <ChevronDownIcon className="mb-1 ml-2 hidden h-5 w-5 dark:text-primary xsm:block" />
+      <ChevronDownIcon
+        className={`${
+          size === "sm" ? "" : "sm:mb-1 sm:h-5 sm:w-5"
+        } mb-0 ml-2 hidden h-3 w-3 dark:text-primary xsm:block`}
+      />
     </button>
   );
 };

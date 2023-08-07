@@ -121,7 +121,7 @@ export function useTokenMarketInfos(chainId: number, address: string, pair: stri
         holders: tokenInfos.metrics.holders,
         marketCap: tokenInfos.metrics.totalSupply * priceInfos.priceUSD,
         chainId,
-        volume24h: _pool.volume24hStable,
+        volume24h: _pool.volume24hUSD,
         priceChange: priceInfos.priceUSDChange24h * 100,
         price: priceInfos.priceUSD,
       });

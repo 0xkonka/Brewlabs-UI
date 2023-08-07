@@ -6,7 +6,9 @@ import { DEX_LOGOS } from "config/constants/swap";
 import { toast } from "react-toastify";
 
 export function numberWithCommas(x: any) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const strList = x.split(".");
+  if (strList.length === 1) return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return strList[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + strList[1];
 }
 
 export const BigNumberFormat = (str: any, decimals: number = 2) => {
