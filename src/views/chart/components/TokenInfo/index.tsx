@@ -1,61 +1,15 @@
-import {
-  ChartSVG,
-  FixedSVG,
-  FlagSVG,
-  LiquiditySVG,
-  LockSVG,
-  TelegramSVG,
-  VolumeSVG,
-  VoteSVG,
-  WebSiteSVG,
-  checkCircleSVG,
-  downSVG,
-  upSVG,
-} from "@components/dashboard/assets/svgs";
+import { ChartSVG, FixedSVG, LiquiditySVG, VolumeSVG, downSVG, upSVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { DEX_LOGOS } from "config/constants/swap";
 import { isAddress } from "utils";
 import { BigNumberFormat } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
-import { usePairVoteInfo } from "./hooks/usePairInfo";
-import { useAccount } from "wagmi";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
-import { addTokenToMetamask } from "lib/bridge/helpers";
-import { BridgeToken } from "config/constants/types";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useFlaskNftData } from "state/nfts/hooks";
-import StyledButton from "views/directory/StyledButton";
 
 export default function TokenInfo({ currency, marketInfos, showReverse }) {
-  const { info: pairInfo, voteOrAgainst } = usePairVoteInfo(currency.address, currency.chainId);
-  const { address: account, connector } = useAccount();
   const { favourites, onFavourites }: any = useContext(ChartContext);
-
-  const { chainId } = useActiveChainId();
-  const flaskNft = useFlaskNftData(chainId);
-  const activeNFT = flaskNft.userData?.balances?.length;
-
-  function onAddToMetamask() {
-    if (!marketInfos || !marketInfos.address) return;
-    addTokenToMetamask(connector, {
-      address: marketInfos.address,
-      decimals: marketInfos.decimals,
-      symbol: marketInfos.symbol,
-    } as BridgeToken);
-  }
-  const socials = [
-    { icon: LockSVG, isActive: false },
-    { icon: checkCircleSVG, isActive: marketInfos?.audit?.codeVerified },
-    { icon: WebSiteSVG, href: marketInfos?.links?.website ?? "#" },
-    { icon: FlagSVG, href: marketInfos?.community ?? "#" },
-    { icon: TelegramSVG, href: marketInfos?.links?.telegram ?? "#" },
-    {
-      icon: <img src={"/images/wallets/metamask.png"} alt={""} className="h-4 w-4 rounded-full" />,
-      action: true,
-    },
-  ];
 
   const infos = [
     {
@@ -63,17 +17,23 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
       value: `${BigNumberFormat(marketInfos.liquidity)} Pool liquidity`,
     },
     { icon: ChartSVG, value: `$${BigNumberFormat(marketInfos.marketCap, 0)} Marketcap` },
-    { icon: FixedSVG, value: `${BigNumberFormat(marketInfos.holders ? marketInfos.holders : 0)} Holders` },
+    {
+      icon: FixedSVG,
+      value: `${BigNumberFormat(
+        marketInfos.holders ? marketInfos.holders : 0,
+        (marketInfos.holders ? marketInfos.holders : 0) >= 1000 ? 2 : 0
+      )} Holders`,
+    },
     { icon: VolumeSVG, value: `${BigNumberFormat(marketInfos.volume24h)} Volume (24h)` },
   ];
 
   return (
     <div
-      className={`mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center relative z-0 ${
+      className={`relative z-0 mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center ${
         showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
       }`}
     >
-      <div className="flex flex-col items-start ls:flex-row ls:items-center">
+      <div className="flex flex-col items-start xl:flex-row xl:items-center">
         <div className="item-start flex flex-col md:flex-row md:items-center ">
           <div className="flex items-center">
             <div className="cursor-pointer" onClick={() => onFavourites(currency, 1)}>
@@ -104,24 +64,6 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
             </div>
           </div>
           <div className="mt-2 flex items-center md:mt-0">
-            <div className="mx-0 flex md:mx-3">
-              {socials.map((social: any, i) => {
-                if (social.href === "#") return;
-                return (
-                  <a
-                    key={i}
-                    className={`mr-1 cursor-pointer ${
-                      social.href ? "!text-white hover:opacity-60" : social.isActive ? "!text-green" : "!text-tailwind"
-                    } primary-shadow transition [&>svg]:!h-4 [&>svg]:!w-4`}
-                    target="_blank"
-                    href={social.href}
-                    onClick={() => social.action && onAddToMetamask()}
-                  >
-                    {social.icon}
-                  </a>
-                );
-              })}
-            </div>
             {/* <div className="ml-5 flex items-center">
               <div className="flex items-center">
                 <StyledButton
@@ -146,7 +88,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
             </div> */}
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap ls:mt-0">
+        <div className="mt-4 flex flex-wrap xl:mt-0 lg:ml-4 ml-0">
           {infos.map((data, i) => {
             return (
               <div key={i} className="mb-2 mr-0 flex w-[calc(50%-8px)] items-center md:mb-0 md:mr-4 md:w-fit">

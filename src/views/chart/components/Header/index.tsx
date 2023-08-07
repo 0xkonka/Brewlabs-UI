@@ -11,10 +11,11 @@ import { useWeb3React } from "contexts/wagmi";
 import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import { useDexPrice } from "@hooks/useTokenPrice";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
+import { ChainId } from "@brewlabs/sdk";
 
 export default function Header({ selectedCurrency, setSelectedCurrency, showReverse, setShowReverse }) {
   const { chainId } = useWeb3React();
-  const networks = [NETWORKS[1], NETWORKS[56]];
+  const networks = [NETWORKS[1], NETWORKS[56], NETWORKS[ChainId.POLYGON], NETWORKS[ChainId.ARBITRUM]];
   const trendings = [
     { logo: "/images/chart/trending/cmc.png", name: "CMC Trending" },
     { logo: "/images/chart/trending/mixed.svg", name: "Mixed" },
@@ -32,10 +33,17 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
 
   const { price: ethPrice } = useDexPrice(1, DEX_GURU_WETH_ADDR);
   const { price: bnbPrice } = useDexPrice(56, DEX_GURU_WETH_ADDR);
-  const price = { 1: ethPrice ?? 0, 56: bnbPrice ?? 0 };
+  const { price: maticPrice } = useDexPrice(ChainId.POLYGON, DEX_GURU_WETH_ADDR);
+  const { price: arbitrumPrice } = useDexPrice(ChainId.ARBITRUM, "0x82af49447d8a07e3bd95bd0d56f35241523fbab1");
+  const price = {
+    1: ethPrice ?? 0,
+    56: bnbPrice ?? 0,
+    [ChainId.POLYGON]: maticPrice ?? 0,
+    [ChainId.ARBITRUM]: arbitrumPrice ?? 0,
+  };
 
   return (
-    <div className="flex flex-col items-center justify-between 2xl:flex-row z-10 relative">
+    <div className="relative z-10 flex flex-col items-center justify-between 2xl:flex-row">
       <div className="flex w-full flex-none flex-col items-center md:flex-row 2xl:flex-1">
         <div className="flex w-full items-center justify-between md:w-fit md:justify-start">
           <div className={`flex w-fit items-center text-primary ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>

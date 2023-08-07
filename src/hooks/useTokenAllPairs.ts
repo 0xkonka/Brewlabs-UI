@@ -41,7 +41,7 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
   const infoResponse = await Promise.all(
     _pairs.map(async (pair) => {
       let response;
-      if (pair.volume24hStable)
+      if (pair.volume24hUSD)
         response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
           amm: pair.amm,
           current_token_id: `${pair.token}-${pair.network}`,
@@ -70,7 +70,7 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
         });
       return {
         ...response.data,
-        volume24hStable: pair.volume24hStable,
+        volume24hUSD: pair.volume24hUSD,
         token: pair.token,
         pair: pair.address,
         chainId: pair.chainId,
@@ -97,7 +97,7 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
         tokenAddresses,
         symbols,
         price: prices[0],
-        priceChange24h: response.volume24hStable ? ((prices[0] - prices24h[0]) / prices[0]) * 100 : 0,
+        priceChange24h: response.volume24hUSD ? ((prices[0] - prices24h[0]) / prices[0]) * 100 : 0,
         address: response.pair,
       };
     });

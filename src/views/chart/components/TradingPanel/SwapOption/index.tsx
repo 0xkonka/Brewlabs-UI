@@ -5,18 +5,28 @@ import { isAddress } from "utils";
 import { DashboardContext } from "contexts/DashboardContext";
 import { BigNumberFormat } from "utils/functions";
 import TokenLogo from "@components/logo/TokenLogo";
-import { CopySVG, PlusSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import {
+  CopySVG,
+  FlagSVG,
+  LockSVG,
+  PlusSVG,
+  TelegramSVG,
+  WebSiteSVG,
+  checkCircleSVG,
+} from "@components/dashboard/assets/svgs";
 import VolumeInfo from "./VolumeInfo";
 import SlippageInfo from "./SlippageInfo";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { useAccount } from "wagmi";
 import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import useTokenInfo from "@hooks/useTokenInfo";
+import { addTokenToMetamask } from "lib/bridge/helpers";
+import { BridgeToken } from "config/constants/types";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [isCopied, setIsCopied] = useState(false);
 
-  const { address: account } = useAccount();
+  const { address: account, connector } = useAccount();
   // const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
   const { decimals } = useTokenInfo(currency.tokenAddresses[0], currency.chainId);
 
@@ -34,6 +44,27 @@ export default function SwapOption({ currency, marketInfos }) {
     }, 1000);
     navigator.clipboard.writeText(currency.tokenAddresses[0]);
   };
+
+  const socials = [
+    { icon: LockSVG, isActive: false },
+    { icon: checkCircleSVG, isActive: marketInfos?.audit?.codeVerified },
+    { icon: WebSiteSVG, href: marketInfos?.links?.website ?? "#" },
+    { icon: FlagSVG, href: marketInfos?.community ?? "#" },
+    { icon: TelegramSVG, href: marketInfos?.links?.telegram ?? "#" },
+    {
+      icon: <img src={"/images/wallets/metamask.png"} alt={""} className="h-[18px] w-[18px] rounded-full" />,
+      action: true,
+    },
+  ];
+
+  function onAddToMetamask() {
+    if (!marketInfos || !marketInfos.address) return;
+    addTokenToMetamask(connector, {
+      address: marketInfos.address,
+      decimals: marketInfos.decimals,
+      symbol: marketInfos.symbol,
+    } as BridgeToken);
+  }
 
   return (
     <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
@@ -79,9 +110,31 @@ export default function SwapOption({ currency, marketInfos }) {
           </div>
         </div>
         <div>
-          <div className="primary-shadow mt-2 w-full rounded-[6px] bg-[#B9B8B80D] p-3 text-[#FFFFFFBF]">
-            <div>Description</div>
+          <div className="font-roboto primary-shadow mt-2 w-full rounded-[6px] bg-[#B9B8B80D] p-3 text-[#FFFFFFBF]">
+            <div className="font-bold mb-2">Description</div>
             <div className="line-clamp-[7] overflow-hidden text-ellipsis text-xs">{marketInfos?.info?.description}</div>
+            <div className="mb-2 mt-4 flex">
+              {socials.map((social: any, i) => {
+                if (social.href === "#") return;
+                return (
+                  <a
+                    key={i}
+                    className={`mr-1.5 cursor-pointer ${
+                      social.href
+                        ? "!text-tailwind hover:!text-white"
+                        : social.isActive
+                        ? "!text-green"
+                        : "!text-tailwind"
+                    } primary-shadow transition [&>svg]:!h-[18px] [&>svg]:!w-[18px]`}
+                    target="_blank"
+                    href={social.href}
+                    onClick={() => social.action && onAddToMetamask()}
+                  >
+                    {social.icon}
+                  </a>
+                );
+              })}
+            </div>
           </div>
           <div className="mt-2 flex justify-end text-[#FFFFFFBF]">
             <div className="mr-2.5 flex cursor-pointer items-center text-xs hover:text-white">
