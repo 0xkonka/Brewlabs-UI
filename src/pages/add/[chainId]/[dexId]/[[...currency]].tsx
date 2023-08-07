@@ -1,11 +1,16 @@
-import { useCurrency } from "hooks/Tokens";
+import { useContext } from "react";
 import { useRouter } from "next/router";
 import { WNATIVE } from "@brewlabs/sdk";
+import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { brewsToken, usdToken } from "config/constants/tokens";
+import { SwapContext } from "contexts/SwapContext";
+import { useLPTokens } from "hooks/constructor/useLPTokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useCurrency } from "hooks/Tokens";
 import { getExplorerLink } from "lib/bridge/helpers";
+import { useUserSlippageTolerance } from "state/user/hooks";
 import { getLpManagerAddress } from "utils/addressHelpers";
 
 import PageHeader from "components/layout/PageHeader";
@@ -14,13 +19,37 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
 
+import Modal from "components/Modal";
+import SettingModal from "views/swap/components/modal/SettingModal";
 import AddLiquidityPanel from "views/contructor/AddLiquidityPanel";
-import { useLPTokens } from "@hooks/constructor/useLPTokens";
 
 const AddLiquidityPage = () => {
   const router = useRouter();
   const { chainId } = useActiveChainId();
   const { fetchLPTokens }: any = useLPTokens();
+
+  const {
+    slippageInput,
+    autoMode,
+    slippage,
+    setSlippageInput,
+    setAutoMode,
+    openSettingModal,
+    setOpenSettingModal,
+  }: any = useContext(SwapContext);
+  const [, setUserSlippageTolerance] = useUserSlippageTolerance();
+
+  const parseCustomSlippage = (value: string) => {
+    setSlippageInput(value);
+    try {
+      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
+      if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
+        setUserSlippageTolerance(valueAsIntFromRoundedFloat);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const selectedChainId = +router.query.chainId ?? chainId;
   const dexId = router.query.dexId;
@@ -46,6 +75,9 @@ const AddLiquidityPage = () => {
       <Container className="overflow-hidden font-brand">
         <div className="relative mx-auto mb-4 flex w-fit min-w-[90%] max-w-[660px] flex-col gap-1 rounded-3xl border-t px-4 pb-10 pt-4 dark:border-slate-600 dark:bg-zinc-900 sm:min-w-[540px] sm:px-10 md:mx-0">
           <div className="mt-2 text-2xl text-white">Liquidity Constructor</div>
+          <div className="absolute right-7 top-6" onClick={() => setOpenSettingModal(true)}>
+            <Cog8ToothIcon className="h-6 w-6 cursor-pointer hover:animate-spin dark:text-primary" />
+          </div>
           <a
             className="mt-9 flex cursor-pointer items-center justify-center rounded-[30px] border border-[#FFFFFF80] text-[#FFFFFFBF] transition hover:text-white"
             target="_blank"
@@ -71,6 +103,23 @@ const AddLiquidityPage = () => {
           />
         </div>
       </Container>
+      
+      {openSettingModal && (
+        <Modal
+          open={openSettingModal}
+          onClose={() => {
+            setOpenSettingModal(false);
+          }}
+        >
+          <SettingModal
+            autoMode={autoMode}
+            setAutoMode={setAutoMode}
+            slippage={slippage}
+            slippageInput={slippageInput}
+            parseCustomSlippage={parseCustomSlippage}
+          />
+        </Modal>
+      )}
     </PageWrapper>
   );
 };

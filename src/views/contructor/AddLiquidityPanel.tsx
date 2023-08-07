@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TokenAmount } from "@brewlabs/sdk";
 import { BigNumber, TransactionResponse } from "alchemy-sdk";
 import router from "next/router";
+import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import { useAccount, useConnect, useSigner } from "wagmi";
 
 import { ONE_BIPS } from "config/constants";
+import { DashboardContext } from "contexts/DashboardContext";
 import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -16,7 +18,7 @@ import { Field } from "state/mint/actions";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { calculateGasMargin, calculateSlippageAmount } from "utils";
-import { getLpManagerAddress, getLpManagerV2Address } from "utils/addressHelpers";
+import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -53,6 +55,7 @@ export default function AddLiquidityPanel({
   const addTransaction = useTransactionAdder();
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
   const { isLoading } = useConnect();
+  const { pending, setPending }: any = useContext(DashboardContext);
 
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const [dexrouter, setDexRouter] = useState<any>({ name: "" });
@@ -71,15 +74,16 @@ export default function AddLiquidityPanel({
   } = useDerivedMintInfo(currencyA_ ?? undefined, currencyB_ ?? undefined, dexrouter?.key);
   const { handleCurrencyASelect, handleCurrencyBSelect } = useCurrencySelectRoute();
 
-  const lpManager =
-    (chainId === 1 && dexrouter?.key === "uniswap-v2") || (chainId === 56 && dexrouter?.key == "pcs-v2")
-      ? getLpManagerAddress(chainId)
-      : getLpManagerV2Address(chainId);
+  const lpManager = getLpManagerV2Address(chainId);
+  // (chainId === 1 && dexrouter?.key === "uniswap-v2") || (chainId === 56 && dexrouter?.key == "pcs-v2")
+  //   ? getLpManagerAddress(chainId)
+  //   : getLpManagerV2Address(chainId);
 
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];
 
   const isUsingRouter = lpManager === "" || dexrouter?.name === "brewlabs";
+
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
     isUsingRouter ? dexrouter?.address : lpManager
@@ -131,6 +135,7 @@ export default function AddLiquidityPanel({
   const isValid = !error;
   async function onAdd() {
     if (!chainId || !library || !account) return;
+
     const gasPrice = await getNetworkGasPrice(library, chainId);
 
     const swapRouter = getBrewlabsRouterContract(chainId, dexrouter.address, signer);
@@ -141,6 +146,7 @@ export default function AddLiquidityPanel({
       return;
     }
 
+    setPending(true);
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? 0 : allowedSlippage)[0],
       [Field.CURRENCY_B]: calculateSlippageAmount(parsedAmountB, noLiquidity ? 0 : allowedSlippage)[0],
@@ -170,7 +176,8 @@ export default function AddLiquidityPanel({
           dexrouter.address,
           wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
-          noLiquidity ? 0 : allowedSlippage, // slippage
+          noLiquidity ? 0 : allowedSlippage, // slippage,
+          deadline.toHexString(),
         ];
       }
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
@@ -198,6 +205,7 @@ export default function AddLiquidityPanel({
           parsedAmountA.raw.toString(),
           parsedAmountB.raw.toString(),
           noLiquidity ? 0 : allowedSlippage,
+          deadline.toHexString(),
         ];
       }
       value = null;
@@ -232,6 +240,9 @@ export default function AddLiquidityPanel({
         if (err?.code !== 4001) {
           console.error(err);
         }
+      })
+      .finally(() => {
+        setPending(false);
       });
   }
 
@@ -488,22 +499,34 @@ export default function AddLiquidityPanel({
                 : "bg-primary"
             }`}
             onClick={() => {
-              if (
-                (chainId === 1 && dexrouter?.key === "uniswap-v2") ||
-                (chainId === 56 && dexrouter?.key == "pcs-v2")
-              ) {
-                onAddV1();
-              } else {
-                onAdd();
-              }
+              // if (
+              //   (chainId === 1 && dexrouter?.key === "uniswap-v2") ||
+              //   (chainId === 56 && dexrouter?.key == "pcs-v2")
+              // ) {
+              //   onAddV1();
+              // } else {
+              onAdd();
+              // }
               if (error === "Connect Wallet") setOpenWalletModal(true);
             }}
             disabled={
-              (!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED) &&
+              (!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED || pending) &&
               error !== "Connect Wallet"
             }
           >
             {error ?? t("Supply")}
+            {pending && (
+              <div className="absolute right-2 top-0 flex h-full items-center">
+                <Oval
+                  width={21}
+                  height={21}
+                  color={"white"}
+                  secondaryColor="black"
+                  strokeWidth={3}
+                  strokeWidthSecondary={3}
+                />
+              </div>
+            )}
           </SolidButton>
         ) : (
           ""

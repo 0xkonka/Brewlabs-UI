@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
+import { useContext, useState } from "react";
+import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
+import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 
+import { SwapContext } from "contexts/SwapContext";
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -11,9 +13,13 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import { getLpManagerAddress } from "utils/addressHelpers";
 
+import Modal from "components/Modal";
+import SettingModal from "views/swap/components/modal/SettingModal";
+
 import BasePanel from "./BasePanel";
 import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
+import { useUserSlippageTolerance } from "state/user/hooks";
 
 export default function Constructor() {
   const { chainId } = useActiveChainId();
@@ -23,6 +29,28 @@ export default function Constructor() {
   const [showCount, setShowCount] = useState(3);
 
   const { ethLPTokens, bscLPTokens, fetchLPTokens }: any = useLPTokens();
+  const {
+    slippageInput,
+    autoMode,
+    slippage,
+    setSlippageInput,
+    setAutoMode,
+    openSettingModal,
+    setOpenSettingModal,
+  }: any = useContext(SwapContext);
+  const [, setUserSlippageTolerance] = useUserSlippageTolerance();
+
+  const parseCustomSlippage = (value: string) => {
+    setSlippageInput(value);
+    try {
+      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
+      if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
+        setUserSlippageTolerance(valueAsIntFromRoundedFloat);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const lpTokens = [...(ethLPTokens ?? []), ...(bscLPTokens ?? [])];
   const sortedTokens =
@@ -44,6 +72,9 @@ export default function Constructor() {
       <Container className="overflow-hidden font-brand">
         <div className="relative mx-auto mb-4 flex w-fit min-w-[90%] max-w-[660px] flex-col gap-1 rounded-3xl border-t px-4 pb-10 pt-4 dark:border-slate-600 dark:bg-zinc-900 sm:min-w-[540px] sm:px-10 md:mx-0">
           <div className="mt-2 text-2xl text-white">Liquidity Constructor</div>
+          <div className="absolute right-7 top-6" onClick={() => setOpenSettingModal(true)}>
+            <Cog8ToothIcon className="h-6 w-6 cursor-pointer hover:animate-spin dark:text-primary" />
+          </div>
           <a
             className="mt-9 flex cursor-pointer items-center justify-center rounded-[30px] border border-[#FFFFFF80] text-[#FFFFFFBF] transition hover:text-white"
             target="_blank"
@@ -75,7 +106,8 @@ export default function Constructor() {
               selectedChainId={sortedTokens[selectedLP]?.chainId ?? chainId}
               selecedDexId={SYMBOL_VS_SWAP_TABLE[sortedTokens[selectedLP]?.symbol]}
               currencyA={
-                sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)
+                sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)||
+                sortedTokens[selectedLP]?.token0.symbol === WNATIVE[sortedTokens[selectedLP]?.chainId].symbol
                   ? NATIVE_CURRENCIES[sortedTokens[selectedLP]?.chainId]
                   : new Token(
                       sortedTokens[selectedLP]?.chainId,
@@ -85,7 +117,8 @@ export default function Constructor() {
                     )
               }
               currencyB={
-                sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)
+                sortedTokens[selectedLP]?.token1.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId) ||
+                sortedTokens[selectedLP]?.token1.symbol === WNATIVE[sortedTokens[selectedLP]?.chainId].symbol
                   ? NATIVE_CURRENCIES[sortedTokens[selectedLP]?.chainId]
                   : new Token(
                       sortedTokens[selectedLP]?.chainId,
@@ -107,6 +140,23 @@ export default function Constructor() {
           )}
         </div>
       </Container>
+
+      {openSettingModal && (
+        <Modal
+          open={openSettingModal}
+          onClose={() => {
+            setOpenSettingModal(false);
+          }}
+        >
+          <SettingModal
+            autoMode={autoMode}
+            setAutoMode={setAutoMode}
+            slippage={slippage}
+            slippageInput={slippageInput}
+            parseCustomSlippage={parseCustomSlippage}
+          />
+        </Modal>
+      )}
     </PageWrapper>
   );
 }

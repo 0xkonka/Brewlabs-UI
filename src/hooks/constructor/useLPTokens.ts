@@ -19,7 +19,7 @@ const Supported_LPs = {
 export const SYMBOL_VS_SWAP_TABLE = {
   "UNI-V2": "uniswap-v2",
   "Cake-LP": "pcs-v2",
-}
+};
 
 export const useLPTokens = () => {
   const { address: account } = useAccount();
@@ -35,6 +35,7 @@ export const useLPTokens = () => {
           limit: 1,
           network: chain,
         });
+
         const addresses = result.data.data[0].underlyingAddresses;
         let info = {
           pool_address: data.address,
@@ -55,8 +56,9 @@ export const useLPTokens = () => {
           axios.post("https://api.dex.guru/v3/tokens/transactions/count", info),
         ]);
         const priceResult = response[0];
-        const txCount = response[1].data.count;
-        info.offset = 15 * Math.floor(txCount / 15);
+
+        // const txCount = response[1].data.count;
+        // info.offset = 15 * Math.floor(txCount / 15);
         let lastTx: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", info);
         const token0 = priceResult.data.data[0];
         let token1 = priceResult.data.data[1];

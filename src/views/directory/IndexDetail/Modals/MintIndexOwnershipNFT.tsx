@@ -42,7 +42,7 @@ const MintIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpen
         try {
           const log = iface.parseLog(tx.logs[i]);
           if (log.name === "DeployerNftMinted") {
-            console.log("deployerNftId", log.args.tokenId, log);
+            // console.log("deployerNftId", log.args.tokenId, log);
             dispatch(setIndexesPublicData([{ pid: data.pid, deployerNftId: log.args.tokenId }]));
             break;
           }
