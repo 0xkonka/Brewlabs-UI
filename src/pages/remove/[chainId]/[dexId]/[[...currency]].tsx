@@ -1,12 +1,10 @@
 import { useCurrency } from "hooks/Tokens";
 import { useRouter } from "next/router";
-import { WNATIVE } from "@brewlabs/sdk";
 
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
-import { brewsToken, usdToken } from "config/constants/tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { getExplorerLink } from "lib/bridge/helpers";
 import { getLpManagerAddress } from "utils/addressHelpers";
+import { getExplorerLink } from "lib/bridge/helpers";
 
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
@@ -14,22 +12,19 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
 
-import AddLiquidityPanel from "views/contructor/AddLiquidityPanel";
+import RemoveLiquidityPanel from "views/contructor/RemoveLiquidityPanel";
 import { useLPTokens } from "@hooks/constructor/useLPTokens";
 
-const AddLiquidityPage = () => {
+const RemoveLiquidityPage = () => {
   const router = useRouter();
   const { chainId } = useActiveChainId();
   const { fetchLPTokens }: any = useLPTokens();
 
-  const selectedChainId = +router.query.chainId ?? chainId;
+  const dexId = router.query.dexId;
+  const [currencyIdA, currencyIdB] = router.query.currency || [];
 
-  const [currencyIdA, currencyIdB] = router.query.currency || [
-    WNATIVE[selectedChainId]?.symbol,
-    brewsToken[selectedChainId]?.address || usdToken[selectedChainId]?.address,
-  ];
-  const currencyA = useCurrency(currencyIdA);
-  const currencyB = useCurrency(currencyIdB);
+  const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined];
+  const selectedChainId = +router.query.chainId ?? chainId;
 
   return (
     <PageWrapper>
@@ -61,12 +56,13 @@ const AddLiquidityPage = () => {
             </div>
           </a>
 
-          <AddLiquidityPanel
-            onBack={() => router.back()}
+          <RemoveLiquidityPanel
+            selectedChainId={selectedChainId}
+            selecedDexId={dexId}
             fetchLPTokens={fetchLPTokens}
-            selectedChainId={chainId}
             currencyA={currencyA}
             currencyB={currencyB}
+            onBack={() => router.back()}
           />
         </div>
       </Container>
@@ -74,6 +70,6 @@ const AddLiquidityPage = () => {
   );
 };
 
-AddLiquidityPage.chains = PAGE_SUPPORTED_CHAINS["swap"];
+RemoveLiquidityPage.chains = PAGE_SUPPORTED_CHAINS["swap"];
 
-export default AddLiquidityPage;
+export default RemoveLiquidityPage;

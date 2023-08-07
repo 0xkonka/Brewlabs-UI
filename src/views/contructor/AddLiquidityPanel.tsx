@@ -16,8 +16,8 @@ import { Field } from "state/mint/actions";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { calculateGasMargin, calculateSlippageAmount } from "utils";
-import { getLpManagerAddress } from "utils/addressHelpers";
-import { getLpManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
+import { getLpManagerAddress, getLpManagerV2Address } from "utils/addressHelpers";
+import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import maxAmountSpend from "utils/maxAmountSpend";
@@ -38,6 +38,7 @@ export default function AddLiquidityPanel({
   onBack,
   fetchLPTokens,
   selectedChainId,
+  selecedDexId = undefined,
   currencyA: currencyA_ = undefined,
   currencyB: currencyB_ = undefined,
 }) {
@@ -67,21 +68,25 @@ export default function AddLiquidityPanel({
     price,
     pair,
     error,
-  } = useDerivedMintInfo(currencyA_ ?? undefined, currencyB_ ?? undefined);
+  } = useDerivedMintInfo(currencyA_ ?? undefined, currencyB_ ?? undefined, dexrouter?.key);
   const { handleCurrencyASelect, handleCurrencyBSelect } = useCurrencySelectRoute();
 
-  const lpManager = getLpManagerAddress(chainId);
+  const lpManager =
+    (chainId === 1 && dexrouter?.key === "uniswap-v2") || (chainId === 56 && dexrouter?.key == "pcs-v2")
+      ? getLpManagerAddress(chainId)
+      : getLpManagerV2Address(chainId);
 
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];
 
+  const isUsingRouter = lpManager === "" || dexrouter?.name === "brewlabs";
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    lpManager === "" ? dexrouter?.address : lpManager
+    isUsingRouter ? dexrouter?.address : lpManager
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    lpManager === "" ? dexrouter?.address : lpManager
+    isUsingRouter ? dexrouter?.address : lpManager
   );
 
   const { onFieldAInput, onFieldBInput, onCurrencySelection } = useMintActionHandlers(noLiquidity);
@@ -125,6 +130,112 @@ export default function AddLiquidityPanel({
 
   const isValid = !error;
   async function onAdd() {
+    if (!chainId || !library || !account) return;
+    const gasPrice = await getNetworkGasPrice(library, chainId);
+
+    const swapRouter = getBrewlabsRouterContract(chainId, dexrouter.address, signer);
+    const lpManagerContract = getLpManagerV2Contract(chainId, signer);
+
+    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;
+    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
+      return;
+    }
+
+    const amountsMin = {
+      [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? 0 : allowedSlippage)[0],
+      [Field.CURRENCY_B]: calculateSlippageAmount(parsedAmountB, noLiquidity ? 0 : allowedSlippage)[0],
+    };
+
+    let estimate;
+    let method: (...args: any) => Promise<TransactionResponse>;
+    let args: Array<string | string[] | number>;
+    let value: BigNumber | null;
+    if (currencyA.isNative || currencyB.isNative) {
+      const tokenBIsETH = currencyB.isNative;
+      if (isUsingRouter) {
+        estimate = swapRouter.estimateGas.addLiquidityETH;
+        method = swapRouter.addLiquidityETH;
+        args = [
+          wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
+          (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
+          amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
+          amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
+          account,
+          deadline.toHexString(),
+        ];
+      } else {
+        estimate = lpManagerContract.estimateGas.addLiquidityETH;
+        method = lpManagerContract.addLiquidityETH;
+        args = [
+          dexrouter.address,
+          wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
+          (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
+          noLiquidity ? 0 : allowedSlippage, // slippage
+        ];
+      }
+      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
+    } else {
+      if (isUsingRouter) {
+        estimate = swapRouter.estimateGas.addLiquidity;
+        method = swapRouter.addLiquidity;
+        args = [
+          wrappedCurrency(currencyA, chainId)?.address ?? "",
+          wrappedCurrency(currencyB, chainId)?.address ?? "",
+          parsedAmountA.raw.toString(),
+          parsedAmountB.raw.toString(),
+          amountsMin[Field.CURRENCY_A].toString(),
+          amountsMin[Field.CURRENCY_B].toString(),
+          account,
+          deadline.toHexString(),
+        ];
+      } else {
+        estimate = lpManagerContract.estimateGas.addLiquidity;
+        method = lpManagerContract.addLiquidity;
+        args = [
+          dexrouter.address,
+          wrappedCurrency(currencyA, chainId)?.address ?? "",
+          wrappedCurrency(currencyB, chainId)?.address ?? "",
+          parsedAmountA.raw.toString(),
+          parsedAmountB.raw.toString(),
+          noLiquidity ? 0 : allowedSlippage,
+        ];
+      }
+      value = null;
+    }
+
+    setAttemptingTxn(true);
+    await estimate(...args, value ? { value } : {})
+      .then((estimatedGasLimit) =>
+        method(...args, {
+          ...(value ? { value } : {}),
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          gasPrice,
+        }).then((response) => {
+          setAttemptingTxn(false);
+
+          addTransaction(response, {
+            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+              currencies[Field.CURRENCY_A]?.symbol
+            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
+          });
+
+          // setTxHash(response.hash);
+          toast.success("Liquidity was added");
+
+          fetchLPTokens(chainId);
+          onBack();
+        })
+      )
+      .catch((err) => {
+        setAttemptingTxn(false);
+        // we only care if the error is something _other_ than the user rejected the tx
+        if (err?.code !== 4001) {
+          console.error(err);
+        }
+      });
+  }
+
+  async function onAddV1() {
     if (!chainId || !library || !account) return;
     const gasPrice = await getNetworkGasPrice(library, chainId);
 
@@ -237,7 +348,7 @@ export default function AddLiquidityPanel({
         <ChainSelect />
       </div>
       <div className="-mt-2">
-        <RouterSelect router={dexrouter} setRouter={setDexRouter} />
+        <RouterSelect router={dexrouter} setRouter={setDexRouter} dexId={selecedDexId} />
       </div>
       <div className="my-2 rounded-[30px] border border-[#FFFFFF80]">
         <CurrencyInputPanel
@@ -377,7 +488,14 @@ export default function AddLiquidityPanel({
                 : "bg-primary"
             }`}
             onClick={() => {
-              onAdd();
+              if (
+                (chainId === 1 && dexrouter?.key === "uniswap-v2") ||
+                (chainId === 56 && dexrouter?.key == "pcs-v2")
+              ) {
+                onAddV1();
+              } else {
+                onAdd();
+              }
               if (error === "Connect Wallet") setOpenWalletModal(true);
             }}
             disabled={

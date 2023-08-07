@@ -19,7 +19,8 @@ export enum PairState {
 
 export function usePairs(
   currencies: [Currency | undefined, Currency | undefined][],
-  isExternal?: boolean
+  isExternal?: boolean,
+  dexId?: string
 ): [PairState, Pair | null][] {
   const { chainId } = useActiveChainId();
 
@@ -39,7 +40,7 @@ export function usePairs(
         return tokenA && tokenB && !tokenA.equals(tokenB)
           ? chainId === ChainId.ETHEREUM && isExternal
             ? V2Pair.getAddress(tokenA as unknown as V2Token, tokenB as unknown as V2Token)
-            : Pair.getAddress(tokenA, tokenB)
+            : Pair.getAddress(tokenA, tokenB, dexId)
           : undefined;
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,13 +68,13 @@ export function usePairs(
               new V2TokenAmount(token0 as unknown as V2Token, reserve0.toString()),
               new V2TokenAmount(token1 as unknown as V2Token, reserve1.toString())
             ) as unknown as Pair)
-          : new Pair(new TokenAmount(token0, reserve0.toString()), new TokenAmount(token1, reserve1.toString())),
+          : new Pair(new TokenAmount(token0, reserve0.toString()), new TokenAmount(token1, reserve1.toString()), dexId),
       ];
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results, tokens, chainId]);
 }
 
-export function usePair(tokenA?: Currency, tokenB?: Currency, isExternal?: boolean) {
-  return usePairs([[tokenA, tokenB]], isExternal)[0];
+export function usePair(tokenA?: Currency, tokenB?: Currency, isExternal?: boolean, dexId?: string) {
+  return usePairs([[tokenA, tokenB]], isExternal, dexId)[0];
 }

@@ -19,7 +19,8 @@ export function useBurnState(): AppState["burn"] {
 
 export function useDerivedBurnInfo(
   currencyA: Currency | undefined,
-  currencyB: Currency | undefined
+  currencyB: Currency | undefined,
+  dexId?: string
 ): {
   pair?: Pair | null;
   parsedAmounts: {
@@ -37,7 +38,7 @@ export function useDerivedBurnInfo(
   const { t } = useTranslation();
 
   // pair + totalsupply
-  const [, pair] = usePair(currencyA, currencyB);
+  const [, pair] = usePair(currencyA, currencyB, false, dexId);
 
   // balances
   const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken]);

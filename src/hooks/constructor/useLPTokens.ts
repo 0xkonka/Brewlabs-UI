@@ -6,6 +6,21 @@ import { useAccount } from "wagmi";
 import { useFastRefreshEffect } from "hooks/useRefreshEffect";
 import { API_URL } from "config/constants";
 
+const DEX_GURU_CHAINIDS = {
+  eth: ChainId.ETHEREUM,
+  bsc: ChainId.BSC_MAINNET,
+};
+
+const Supported_LPs = {
+  [ChainId.ETHEREUM]: ["UNI-V2"],
+  [ChainId.BSC_MAINNET]: ["Cake-LP"],
+};
+
+export const SYMBOL_VS_SWAP_TABLE = {
+  "UNI-V2": "uniswap-v2",
+  "Cake-LP": "pcs-v2",
+}
+
 export const useLPTokens = () => {
   const { address: account } = useAccount();
 
@@ -46,7 +61,7 @@ export const useLPTokens = () => {
         const token0 = priceResult.data.data[0];
         let token1 = priceResult.data.data[1];
         if (token0.address == token1.address) {
-          token1 = WNATIVE[chain === "eth" ? ChainId.ETHEREUM : ChainId.BSC_MAINNET];
+          token1 = WNATIVE[DEX_GURU_CHAINIDS[chain]];
           token1.symbol = "ETH";
         }
         const lpInfo = result.data.data[0];
@@ -55,6 +70,7 @@ export const useLPTokens = () => {
           timeStamp: lastTx.length ? lastTx[lastTx.length - 1].timestamp : 0,
           address: getAddress(data.address),
           balance: data.balance,
+          symbol: data.symbol,
           token0: {
             decimals: token0.decimals,
             symbol: token0.symbols[0],
@@ -69,7 +85,7 @@ export const useLPTokens = () => {
           },
           price: lpInfo.priceUSD,
           volume: lpInfo.volume24hUSD,
-          chainId: chain === "eth" ? 1 : 56,
+          chainId: DEX_GURU_CHAINIDS[chain],
         };
       })
     );
@@ -81,12 +97,13 @@ export const useLPTokens = () => {
       try {
         const result1 = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${account}/tokens`);
         const nonZeroBalances = result1.data.tokenAccounts.filter(
-          (data: any) => data.balance / 1 > 0 && data.tokenSymbol === "UNI-V2"
+          (data: any) => data.balance / 1 > 0 && Supported_LPs[ChainId.ETHEREUM].includes(data.tokenSymbol)
         );
         const addresses = nonZeroBalances.map((data) => {
           return {
             address: data.tokenHash,
             balance: data.balance / Math.pow(10, data.decimals),
+            symbol: data.tokenSymbol,
           };
         });
         const info = await fetchLPInfo(addresses, "eth");
@@ -102,7 +119,7 @@ export const useLPTokens = () => {
           chainId,
         });
         tokenBalances = tokenBalances.data;
-        let _lps = tokenBalances.filter((data) => data.symbol === "Cake-LP");
+        let _lps = tokenBalances.filter((data) => Supported_LPs[ChainId.BSC_MAINNET].includes(data.symbol));
         _lps = await fetchLPInfo(_lps, "bsc");
         setBSCLpTokens(_lps);
       } catch (e) {
