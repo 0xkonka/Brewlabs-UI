@@ -1,4 +1,4 @@
-import { WalletSVG } from "@components/dashboard/assets/svgs";
+import { ContractSVG, NonSellerSVG, WalletSVG } from "@components/dashboard/assets/svgs";
 import { BigNumberFormat, getEllipsis, getExplorerLogo } from "utils/functions";
 import TimeAgo from "javascript-time-ago";
 
@@ -24,7 +24,8 @@ export default function HistoryList({ histories, currency }) {
       usdValue: BigNumberFormat(history.amountStable),
       amount: BigNumberFormat(history.amounts[index]),
       nativeAmount: BigNumberFormat(history.amountNative),
-      type: WalletSVG,
+      type:
+        action === "Buy" ? WalletSVG : history.walletsCategories.includes("Liquiditypool") ? ContractSVG : NonSellerSVG,
       txHash: history.transactionAddress,
       ago: timeAgo.format(history.timestamp * 1000),
       wallet: history.sender,

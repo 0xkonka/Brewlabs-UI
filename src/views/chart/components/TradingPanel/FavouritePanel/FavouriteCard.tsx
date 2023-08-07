@@ -1,5 +1,5 @@
 import { CloseCircle } from "@components/dashboard/assets/svgs";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { usePairDexInfo } from "../../TokenInfo/hooks/usePairInfo";
@@ -27,12 +27,14 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
 
   const wrappedPair = type === 0 ? pair : fpair;
 
+  const closeRef: any = useRef();
+
   return wrappedPair ? (
     <div
       className={`${
-        isFade ? "opacity-0 duration-300" : ""
-      } primary-shadow relative mb-3 flex cursor-pointer items-center justify-between rounded-md bg-[#B9B8B80D] p-3.5 transition-all hover:scale-[1.05] hover:bg-[#B9B8B822]`}
-      onClick={() => wrappedPair && setSelectedCurrency(wrappedPair)}
+        isFade ? "opacity-0" : ""
+      } primary-shadow relative mb-3 flex cursor-pointer items-center justify-between rounded-md bg-[#B9B8B80D]  p-3.5 transition-all duration-300 hover:scale-[1.05] hover:bg-[#B9B8B822]`}
+      onClick={(e) => !closeRef.current.contains(e.target) && wrappedPair && setSelectedCurrency(wrappedPair)}
     >
       <div className="flex items-center">
         <TokenLogo
@@ -61,6 +63,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
             }, 300);
             //   { chainId, address: _address, tokenAddress, symbol1 }
           }}
+          ref={closeRef}
         >
           {CloseCircle}
         </button>

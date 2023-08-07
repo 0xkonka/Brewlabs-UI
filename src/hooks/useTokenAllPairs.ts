@@ -5,7 +5,9 @@ let searchTimeout;
 let wrappedCriteria = "";
 
 export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stable") {
-  let { data: tokens } = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc`);
+  let { data: tokens } = await axios.get(
+    `https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc,polygon,arbitrum`
+  );
   tokens = tokens.data;
   const result = await Promise.all(
     tokens.map((token) =>
