@@ -39,3 +39,19 @@ export function useCMCListings() {
   }, []);
   return { trendings, newListings };
 }
+
+export function useCGListings() {
+  const [trendings, setTrendings] = useState([]);
+  async function getTrendings() {
+    try {
+      const { data: response } = await axios.get(`https://api.coingecko.com/api/v3/search/trending`);
+      setTrendings(response.coins.map((coin) => coin.item.name));
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  useSlowRefreshEffect(() => {
+    getTrendings();
+  }, []);
+  return { trendings };
+}

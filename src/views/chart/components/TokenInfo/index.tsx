@@ -3,10 +3,11 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { DEX_LOGOS } from "config/constants/swap";
 import { isAddress } from "utils";
-import { BigNumberFormat } from "utils/functions";
+import { BigNumberFormat, priceFormat } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
+import StyledPrice from "@components/StyledPrice";
 
 export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const { favourites, onFavourites }: any = useContext(ChartContext);
@@ -27,6 +28,8 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
     { icon: VolumeSVG, value: `${BigNumberFormat(marketInfos.volume24h)} Volume (24h)` },
   ];
 
+  const price = marketInfos.price ?? 0;
+
   return (
     <div
       className={`relative z-0 mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center ${
@@ -35,7 +38,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
     >
       <div className="flex flex-col items-start xl:flex-row xl:items-center">
         <div className="item-start flex flex-col md:flex-row md:items-center ">
-          <div className="flex items-center">
+          <div className={`flex w-fit items-center ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
             <div className="cursor-pointer" onClick={() => onFavourites(currency, 1)}>
               <StarIcon
                 className={`h-5 w-5 ${
@@ -52,14 +55,14 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
             <div className="flex">
               <TokenLogo
                 src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
-                classNames="primary-shadow z-10 -mr-4 h-6 w-6 rounded-full"
+                classNames="primary-shadow z-10 -mr-2 h-6 w-6 rounded-full"
               />
               <TokenLogo
                 src={getTokenLogoURL(isAddress(currency.tokenAddresses[1]), currency.chainId)}
                 classNames="primary-shadow h-6 w-6 rounded-full"
               />
             </div>
-            <div className="ml-2 text-white">
+            <div className="ml-2 text-lg font-bold text-white">
               {currency.symbols[0]}-{currency.symbols[1]}
             </div>
           </div>
@@ -108,7 +111,9 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
           </div>
           <div className="scale-[80%]">{marketInfos.priceChange >= 0 ? upSVG : downSVG}</div>
         </div>
-        <div className="ml-2 text-lg text-white">${(marketInfos.price ?? 0).toFixed(6)}</div>
+        <div className="ml-2 text-lg font-bold text-white">
+          <StyledPrice price={price} />
+        </div>
       </div>
     </div>
   );

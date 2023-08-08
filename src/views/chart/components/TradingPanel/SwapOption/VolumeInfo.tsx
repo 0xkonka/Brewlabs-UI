@@ -34,57 +34,72 @@ export default function VolumeInfo({ currency }) {
       )
       .map((history) => (buyVolume += history.amountStable)).length;
 
-    return { buyVolume, sellVolume, buyCount, sellCount };
+    return {
+      buyVolume,
+      sellVolume,
+      buyCount,
+      sellCount,
+      totalCount: buyCount + sellCount,
+      totalVolume: buyVolume + sellVolume,
+    };
   }
   const histories = {
-    volume: {
+    vol: {
       "5m": {
         buys: getVolume(5 * 60).buyCount,
         sells: getVolume(5 * 60).sellCount,
+        total: getVolume(5 * 60).totalCount,
         isUp: getVolume(5 * 60).buyCount >= getVolume(5 * 60).sellCount,
       },
       "30m": {
         buys: getVolume(30 * 60).buyCount,
         sells: getVolume(30 * 60).sellCount,
+        total: getVolume(30 * 60).totalCount,
         isUp: getVolume(30 * 60).buyCount >= getVolume(30 * 60).sellCount,
       },
       "24hr": {
         buys: getVolume(24 * 3600).buyCount,
         sells: getVolume(24 * 3600).sellCount,
+        total: getVolume(24 * 3600).totalCount,
         isUp: getVolume(24 * 3600).buyCount >= getVolume(24 * 3600).sellCount,
       },
       "7d": {
         buys: getVolume(3600 * 24 * 7).buyCount,
         sells: getVolume(3600 * 24 * 7).sellCount,
+        total: getVolume(3600 * 24 * 7).totalCount,
         isUp: getVolume(3600 * 24 * 7).buyCount >= getVolume(3600 * 24 * 7).sellCount,
       },
     },
-    "volume(usd)": {
+    "vol(usd)": {
       "5m": {
         buys: getVolume(5 * 60).buyVolume,
         sells: getVolume(5 * 60).sellVolume,
         isUp: getVolume(5 * 60).buyVolume >= getVolume(5 * 60).sellVolume,
+        total: getVolume(5 * 60).totalVolume,
       },
       "30m": {
         buys: getVolume(30 * 60).buyVolume,
         sells: getVolume(30 * 60).sellVolume,
         isUp: getVolume(30 * 60).buyVolume >= getVolume(30 * 60).sellVolume,
+        total: getVolume(30 * 60).totalVolume,
       },
       "24hr": {
         buys: getVolume(24 * 3600).buyVolume,
         sells: getVolume(24 * 3600).sellVolume,
         isUp: getVolume(24 * 3600).buyVolume >= getVolume(24 * 3600).sellVolume,
+        total: getVolume(24 * 3600).totalVolume,
       },
       "7d": {
         buys: getVolume(3600 * 24 * 7).buyVolume,
         sells: getVolume(3600 * 24 * 7).sellVolume,
         isUp: getVolume(3600 * 24 * 7).buyVolume >= getVolume(3600 * 24 * 7).sellVolume,
+        total: getVolume(3600 * 24 * 7).totalVolume,
       },
     },
   };
   const showTypes = [
-    { key: "volume", values: ["buys", "sells"] },
-    { key: "volume(usd)", values: ["buys", "sells"] },
+    { key: "vol", values: ["buys", "sells", "total"] },
+    { key: "vol(usd)", values: ["buys", "sells", "total"] },
   ];
 
   return (
@@ -94,7 +109,7 @@ export default function VolumeInfo({ currency }) {
           value={showType}
           setValue={setShowType}
           data={showTypes.map((data) => data.key.toUpperCase())}
-          className="!w-[100px] !bg-[#29292C] !text-[11px] text-white"
+          className="!w-[84px] !bg-[#29292C] !text-xs text-white"
           bodyClassName="!bg-none !bg-[#29292C]"
           itemClassName="hover:!bg-[#86868644]"
         />
@@ -120,7 +135,13 @@ export default function VolumeInfo({ currency }) {
                 i === showTypes[showType].values.length - 1 ? "" : "border-b border-[#FFFFFF40]"
               }`}
             >
-              <div className={`w-[90px] uppercase ${i % 2 === 0 ? " text-[#3AFDB7]" : "text-[#DC4545]"}`}>{data}</div>
+              <div
+                className={`w-[90px] uppercase ${
+                  i < 2 ? (i % 2 === 0 ? " text-[#3AFDB7]" : "text-[#DC4545]") : "text-white"
+                }`}
+              >
+                {data}
+              </div>
               {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
                 return (
                   <div key={i} className="w-12 text-right  text-white">

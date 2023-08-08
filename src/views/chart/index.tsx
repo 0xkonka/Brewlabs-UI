@@ -62,10 +62,10 @@ export default function Chart() {
 
   return (
     <PageWrapper>
-      <div className={`px-3 pb-[100px] font-brand md:px-6 ${pending ? "opacity-50" : ""}`}>
+      <div className={`px-3 pb-[100px] font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
         <div className="mx-auto w-full max-w-[1720px]">
           <div
-            className={`mb-4 mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] bg-cover 2xl:block`}
+            className={`mb-6 mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] bg-cover 2xl:block`}
           />
           <div className="mt-32 block 2xl:hidden" />
           <Header

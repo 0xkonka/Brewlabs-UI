@@ -33,12 +33,12 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
     <div className="relative z-10 flex w-full">
       <div className="primary-shadow flex h-[44px] flex-1">
         <div className="relative flex-1">
-          <div className=" flex items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A]">
+          <div className=" flex items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A] h-full">
             <StyledInput
               value={criteria}
               setValue={setCriteria}
               placeholder="Search contract, name, symbol..."
-              className="!h-full flex-1 bg-transparent !p-[14px] !text-base !shadow-none focus:!shadow-none focus:!ring-0"
+              className="!h-full flex-1 bg-transparent  !text-base !shadow-none focus:!shadow-none focus:!ring-0"
             />
           </div>
           <div className="absolute left-0 w-full overflow-hidden rounded-b bg-[#29292b]">

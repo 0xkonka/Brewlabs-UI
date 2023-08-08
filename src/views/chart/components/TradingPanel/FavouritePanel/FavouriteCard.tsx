@@ -7,6 +7,7 @@ import { ChartContext } from "contexts/ChartContext";
 import TokenLogo from "@components/logo/TokenLogo";
 import { fetchAllPairs } from "@hooks/useTokenAllPairs";
 import { SkeletonComponent } from "@components/SkeletonComponent";
+import StyledPrice from "@components/StyledPrice";
 
 export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
   const [isFade, setIsFade] = useState(false);
@@ -62,7 +63,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
             <SkeletonComponent />
           )}
         </div>
-        <div className="text-white">{info ? `$${info.price.toFixed(3)}` : <SkeletonComponent />}</div>
+        <div className="text-white">{info ? <StyledPrice price={info.price} decimals={4}/> : <SkeletonComponent />}</div>
       </div>
       {type === 0 ? (
         <button

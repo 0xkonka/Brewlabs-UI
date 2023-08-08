@@ -5,6 +5,7 @@ import TimeAgo from "javascript-time-ago";
 // English.
 import en from "javascript-time-ago/locale/en";
 import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
+import StyledPrice from "@components/StyledPrice";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -40,7 +41,7 @@ export default function HistoryList({ histories, currency }) {
           <div className="w-[90px]">Tx</div>
           <div className="w-[160px] ">Time</div>
           <div className="w-[90px] ">Ago</div>
-          <div className="w-16 text-center">Type</div>
+          {/* <div className="w-16 text-center">Type</div> */}
           <div className="w-[90px] ">Transaction</div>
           <div className="w-[60px] ">Action</div>
           <div className="w-[90px] ">Price</div>
@@ -71,10 +72,12 @@ export default function HistoryList({ histories, currency }) {
                   </div>
                   <div className="w-[160px] whitespace-nowrap">{list.time}</div>
                   <div className="w-[90px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
-                  <div className="flex w-16 items-center justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div>
+                  {/* <div className="flex w-16 items-center justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div> */}
                   <div className="w-[90px]">Swap</div>
                   <div className="w-[60px]">{list.action}</div>
-                  <div className="w-[90px] text-white">{list.price}</div>
+                  <div className="w-[90px] text-white">
+                    <StyledPrice price={list.price} />
+                  </div>
                 </div>
                 <div className="flex">
                   <div className="w-[100px]">{list.amount}</div>
@@ -113,7 +116,9 @@ export default function HistoryList({ histories, currency }) {
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center text-white">
                     <div>Price:</div>&nbsp;
-                    <div className="">{list.price}</div>
+                    <div className="">
+                      <StyledPrice price={list.price} />
+                    </div>
                   </div>
                   <div className="flex items-center text-[#FFFFFF80]">
                     <div>Ago:</div>&nbsp;
@@ -125,9 +130,9 @@ export default function HistoryList({ histories, currency }) {
                     <div>Action:</div>&nbsp;
                     <div className="">{list.action}</div>
                   </div>
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     <div className="flex justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="flex flex-wrap justify-between">
                   <div className="flex  items-center ">

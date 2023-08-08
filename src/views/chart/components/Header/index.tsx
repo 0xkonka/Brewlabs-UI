@@ -71,7 +71,7 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
                       className="primary-shadow h-6 w-6 rounded-full"
                     />
                     <div className="ml-2">
-                      <div className="leading-none">{network.nativeCurrency.symbol}</div>
+                      <div className="text-xs font-bold">{network.nativeCurrency.symbol}</div>
                       <div className="text-xs leading-none text-[#FFFFFFBF]">
                         ${price[parseInt(network.chainId)].toFixed(2)}
                       </div>
@@ -83,7 +83,14 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
           </div>
         </div>
         <div className="mt-4 flex w-full flex-1 items-center justify-between md:mt-0 md:w-fit">
-          <div className="ml-0 flex-1 md:ml-4 md:w-fit">
+          <div className="relative ml-0 flex-1 md:ml-4 md:w-fit">
+            <a
+              href={"https://t.me/MaverickBL"}
+              target={"_blank"}
+              className="absolute -top-5 mb-1 w-full cursor-pointer text-right font-brand text-xs !text-[#FFFFFF59] hover:!text-white"
+            >
+              Advertise with us
+            </a>
             <SearchInput
               selectedChainId={parseInt(networks[selectedNetwork].chainId)}
               setSelectedCurrency={setSelectedCurrency}
@@ -100,7 +107,12 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
             >
               {SwitchSVG}
             </div>
-            <div className="cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5">{NFTSVG}</div>
+            <div
+              className="cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5 tooltip"
+              data-tip="No Brewlabs NFT found."
+            >
+              {NFTSVG}
+            </div>
           </div>
         </div>
       </div>

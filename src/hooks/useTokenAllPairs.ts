@@ -31,7 +31,6 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
           ...pool,
           token: tokens[i].address,
           address: pool.id.replace(`-${chainId}`, ""),
-          volume24hUSD: tokens[i].volume24hUSD,
           amm: DEX_GURU_SWAP_AMM[pool.amm],
           chainId,
         });
@@ -39,11 +38,11 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
   );
   const isExisting = _pairs.find((pair) => pair.address === criteria.toLowerCase());
   if (isExisting) _pairs = [isExisting];
-
+  console.log(_pairs);
   const infoResponse = await Promise.all(
     _pairs.map(async (pair) => {
       let response;
-      if (pair.volume24hUSD)
+      if (pair.volume24hStable)
         response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
           amm: pair.amm,
           current_token_id: `${pair.token}-${pair.network}`,
@@ -72,7 +71,6 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
         });
       return {
         ...response.data,
-        volume24hUSD: pair.volume24hUSD,
         token: pair.token,
         pair: pair.address,
         chainId: pair.chainId,
@@ -99,11 +97,10 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
         tokenAddresses,
         symbols,
         price: prices[0],
-        priceChange24h: response.volume24hUSD ? ((prices[0] - prices24h[0]) / prices[0]) * 100 : 0,
+        priceChange24h: response.data.length > 1 ? ((prices[0] - prices24h[0]) / prices[0]) * 100 : 0,
         address: response.pair,
       };
     });
-
   return _pairs.slice(0, limit);
 }
 
@@ -116,14 +113,14 @@ export const useTokenAllPairs = (criteria) => {
     wrappedCriteria = criteria;
 
     searchTimeout = setTimeout(async () => {
-      if (criteria === "" || wrappedCriteria !== criteria) {
+      if (criteria === "") {
         setPairs([]);
         return;
       }
       setLoading(true);
       try {
         const result = await fetchAllPairs(criteria);
-        setPairs(result);
+        if (wrappedCriteria === criteria) setPairs(result);
       } catch (e) {
         console.log(e);
       }
