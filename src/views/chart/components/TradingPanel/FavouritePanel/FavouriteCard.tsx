@@ -63,7 +63,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
             <SkeletonComponent />
           )}
         </div>
-        <div className="text-white">{info ? <StyledPrice price={info.price} decimals={4}/> : <SkeletonComponent />}</div>
+        <div className="text-white">{info ? <StyledPrice price={info.price} decimals={4} itemClassName="!text-[8px]"/> : <SkeletonComponent />}</div>
       </div>
       {type === 0 ? (
         <button

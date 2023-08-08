@@ -21,7 +21,7 @@ export default function HistoryList({ histories, currency }) {
     return {
       time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
       action,
-      price: BigNumberFormat(history.pricesStable[index], 6),
+      price: history.pricesStable[index],
       usdValue: BigNumberFormat(history.amountStable),
       amount: BigNumberFormat(history.amounts[index]),
       nativeAmount: BigNumberFormat(history.amountNative),
@@ -76,7 +76,7 @@ export default function HistoryList({ histories, currency }) {
                   <div className="w-[90px]">Swap</div>
                   <div className="w-[60px]">{list.action}</div>
                   <div className="w-[90px] text-white">
-                    <StyledPrice price={list.price} />
+                    <StyledPrice price={list.price} itemClassName="!text-[8px]" />
                   </div>
                 </div>
                 <div className="flex">
@@ -117,7 +117,7 @@ export default function HistoryList({ histories, currency }) {
                   <div className="flex items-center text-white">
                     <div>Price:</div>&nbsp;
                     <div className="">
-                      <StyledPrice price={list.price} />
+                      <StyledPrice price={list.price} itemClassName="!text-[8px]" />
                     </div>
                   </div>
                   <div className="flex items-center text-[#FFFFFF80]">
