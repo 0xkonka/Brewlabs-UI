@@ -82,7 +82,7 @@ export default function AddLiquidityPanel({
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];
 
-  const isUsingRouter = lpManager === "" || dexrouter?.name === "brewlabs";
+  const isUsingRouter = !lpManager || dexrouter?.id === "brewlabs";
 
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
@@ -269,7 +269,7 @@ export default function AddLiquidityPanel({
     let value: BigNumber | null;
     if (currencyA.isNative || currencyB.isNative) {
       const tokenBIsETH = currencyB.isNative;
-      if (lpManager === "") {
+      if (!lpManager) {
         estimate = swapRouter.estimateGas.addLiquidityETH;
         method = swapRouter.addLiquidityETH;
         args = [
@@ -291,7 +291,7 @@ export default function AddLiquidityPanel({
       }
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
     } else {
-      if (lpManager === "") {
+      if (!lpManager) {
         estimate = swapRouter.estimateGas.addLiquidity;
         method = swapRouter.addLiquidity;
         args = [

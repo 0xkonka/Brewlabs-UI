@@ -22,7 +22,7 @@ const RouterSelect = ({ router, setRouter, dexId = undefined, type = "liquidity"
   }, [chainId]);
 
   useEffect(() => {
-    const exchange = supportedRouters.find((dex) => dex.key.indexOf(dexId) >= 0);
+    const exchange = supportedRouters.find((dex) => dex.key.indexOf(dexId) >= 0 || dex.id == dexId);
     if (exchange) {
       setRouter({
         ...exchange,

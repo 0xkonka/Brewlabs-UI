@@ -62,7 +62,7 @@ export default function RemoveLiquidityPanel({
   const { pair, parsedAmounts, error } = useDerivedBurnInfo(
     currencyA ?? undefined,
     currencyB ?? undefined,
-    selecedDexId
+    ROUTER_ADDRESS_MAP[selecedDexId]?.[chainId] ? selecedDexId : "default"
   );
 
   const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts;
@@ -76,7 +76,7 @@ export default function RemoveLiquidityPanel({
   //   ? getLpManagerAddress(chainId)
   //   : getLpManagerV2Address(chainId);
 
-  const isUsingRouter = lpManager === "" || selecedDexId === "brewlabs";
+  const isUsingRouter = !lpManager || selecedDexId === "brewlabs";
   const deadline = useTransactionDeadline();
 
   const [isGetWETH, setIsGetWETH] = useState(false);
@@ -669,18 +669,18 @@ export default function RemoveLiquidityPanel({
                 disabled={pending || !library || !account || !tokenA || !tokenB || !parsedAmounts[Field.LIQUIDITY]}
               >
                 Remove Liquidity
-            {pending && (
-              <div className="absolute right-2 top-0 flex h-full items-center">
-                <Oval
-                  width={21}
-                  height={21}
-                  color={"white"}
-                  secondaryColor="black"
-                  strokeWidth={3}
-                  strokeWidthSecondary={3}
-                />
-              </div>
-            )}
+                {pending && (
+                  <div className="absolute right-2 top-0 flex h-full items-center">
+                    <Oval
+                      width={21}
+                      height={21}
+                      color={"white"}
+                      secondaryColor="black"
+                      strokeWidth={3}
+                      strokeWidthSecondary={3}
+                    />
+                  </div>
+                )}
               </SolidButton>
             ) : (
               <SolidButton
