@@ -125,9 +125,7 @@ export default function SwapPanel({ showHistory = true, size }: { showHistory?: 
       })
       .catch((error) => {
         if (error.reason) {
-          if (error.reason == "BrewlabsAggregatonRouter: Insufficient output amount") {
-            toast.error("Slippage requirement not met.");
-          } else toast.error(error.reason.split(":").slice(-1)[0]);
+          toast.error(error.reason.split(":").slice(-1)[0]);
         } else if (error.message) {
           toast.error(error.message.split("(")[0]);
         }
@@ -182,7 +180,9 @@ export default function SwapPanel({ showHistory = true, size }: { showHistory?: 
       })
       .catch((error) => {
         if (error.reason) {
-          toast.error(error.reason.split(":").slice(-1)[0]);
+          if (error.reason == "BrewlabsAggregatonRouter: Insufficient output amount") {
+            toast.error("Insufficient output amount, please check slippage.");
+          } else toast.error(error.reason.split(":").slice(-1)[0]);
         } else if (error.message) {
           toast.error(error.message.split("(")[0]);
         }

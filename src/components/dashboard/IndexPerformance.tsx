@@ -94,7 +94,7 @@ const IndexPerformance = () => {
                           setIsOpen(0);
                         }}
                       >
-                        <div className="flex items-center flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                        <div className="flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap">
                           <div className="flex w-[64px]">
                             {data.tokens.map((data, i) => {
                               return (
@@ -113,7 +113,7 @@ const IndexPerformance = () => {
                         </div>
                         <div className="flex">
                           {data.sortedPercentChanges.map((data, i) => {
-                            if (isMd && i != 0) return;
+                            if ((isMd && i != 0) || i > 2) return;
                             const names = ["24hrs", "7D", "30D"];
                             return (
                               <div
