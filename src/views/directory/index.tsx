@@ -257,8 +257,6 @@ const Directory = ({ page }: { page: number }) => {
         return "";
     }
   };
-
-  
   return (
     <PageWrapper>
       {renderDetailPage()}
@@ -284,15 +282,28 @@ const Directory = ({ page }: { page: number }) => {
               />
               <Container className="font-brand">
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
-                {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
+                {curFilter === Category.FARM || curFilter === Category.INDEXES || curFilter === Category.POOL ? (
                   <div className="-mb-4 -mt-4 flex justify-end">
                     <Link
-                      href={`/deployer/${
-                        curFilter === Category.FARM ? "farm" : curFilter === Category.INDEXES ? "index" : ""
+                      href={`${
+                        curFilter === Category.FARM
+                          ? "/deployer/farm"
+                          : curFilter === Category.INDEXES
+                          ? "/deployer/index"
+                          : curFilter === Category.POOL
+                          ? "https://t.me/MaverickBL"
+                          : ""
                       }`}
+                      target={curFilter === Category.POOL ? "_blank" : ""}
                     >
                       <StyledButton className="!w-fit p-[6px_12px] !text-sm">
-                        Create {curFilter === Category.FARM ? "Farm" : curFilter === Category.INDEXES ? "Index" : ""}
+                        {curFilter === Category.FARM
+                          ? "Create Farm"
+                          : curFilter === Category.INDEXES
+                          ? "Create Index"
+                          : curFilter === Category.POOL
+                          ? "Advertise with us"
+                          : ""}
                       </StyledButton>
                     </Link>
                   </div>

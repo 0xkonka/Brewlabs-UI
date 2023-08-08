@@ -38,7 +38,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
         >
           <div className={`flex-1 space-y-1 px-2 font-brand tracking-wider ${!slim ? "overflow-y-scroll" : ""}`}>
             {navigationData.map((item) => (
-              <Link href={item.href} passHref key={item.name}>
+              <Link href={item.href} passHref key={item.name} className="flex flex-col">
                 <motion.a
                   layout="position"
                   whileTap={{ scale: 0.9 }}
@@ -50,7 +50,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     item.href === router.pathname
                       ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-500 dark:hover:bg-gray-800",
-                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium home:tooltip home:tooltip-right"
+                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium tooltip tooltip-right"
                   )}
                 >
                   {item.svg ? (

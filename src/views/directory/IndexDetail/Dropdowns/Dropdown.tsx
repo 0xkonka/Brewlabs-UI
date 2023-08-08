@@ -11,6 +11,7 @@ const DropDown = ({
   itemClassName,
   rounded = "8px",
   height = "30px",
+  itemBorder = "",
 }: {
   setValue?: any;
   value: number;
@@ -20,6 +21,7 @@ const DropDown = ({
   itemClassName?: string;
   rounded?: string;
   height?: string;
+  itemBorder?: string;
 }) => {
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
@@ -50,15 +52,17 @@ const DropDown = ({
           top: height,
         }}
       >
-        {data.map((data, i) => {
+        {data.map((_data, i) => {
           return (
             <div
               key={i}
-              className={`flex cursor-pointer items-center justify-center transition-all hover:bg-[#ffde7c] ${itemClassName}`}
+              className={`flex cursor-pointer items-center justify-center transition-all hover:bg-[#ffde7c] ${itemClassName} ${
+                i !== data.length - 1 ? itemBorder : ""
+              }`}
               style={{ height }}
               onClick={() => setValue(i)}
             >
-              {data}
+              {_data}
             </div>
           );
         })}

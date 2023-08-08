@@ -62,6 +62,10 @@ export default function SwapOption({ currency, marketInfos }) {
   };
 
   const socials = [
+    {
+      icon: <img src={getExplorerLogo(currency.chainId)} alt={""} className="h-[18px] w-[18px] rounded-full" />,
+      href: getExplorerLink(currency.chainId, "token", currency.tokenAddresses[0]),
+    },
     { icon: LockSVG, isActive: false },
     { icon: checkCircleSVG, isActive: marketInfos?.audit?.codeVerified },
     { icon: WebSiteSVG, href: marketInfos?.links?.website ?? "#" },
@@ -70,10 +74,6 @@ export default function SwapOption({ currency, marketInfos }) {
     {
       icon: <img src={"/images/wallets/metamask.png"} alt={""} className="h-[18px] w-[18px] rounded-full" />,
       action: true,
-    },
-    {
-      icon: <img src={getExplorerLogo(currency.chainId)} alt={""} className="h-[18px] w-[18px] rounded-full" />,
-      href: getExplorerLink(currency.chainId, "token", currency.tokenAddresses[0]),
     },
   ];
 
