@@ -13,6 +13,7 @@ import brewlabsAggregationRouterAbi from "config/abi/swap/BrewlabsAggregationRou
 import verifictionAbi from "config/abi/brewlabsFactoryVerification.json";
 import lockupStaking from "config/abi/staking/brewlabsLockup.json";
 import lpManagerAbi from "config/abi/brewlabsLiquidityManager.json";
+import lpManagerV2Abi from "config/abi/brewlabsLiquidityManagerV2.json";
 import zapperAbi from "config/abi/brewlabsZapInConstructor.json";
 import externalMasterChefAbi from "config/abi/externalMasterchef.json";
 import lpTokenAbi from "config/abi/lpToken.json";
@@ -36,6 +37,7 @@ import NftStakingAbi from "config/abi/nfts/nftStaking.json";
 import {
   getMulticallAddress,
   getLpManagerAddress,
+  getLpManagerV2Address,
   getAggregatorAddress,
   getZapperAddress,
   getVerificationAddress,
@@ -126,6 +128,9 @@ export const getUnLockStakingContract = (
 
 export const getLpManagerContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getLpManagerAddress(chainId), lpManagerAbi, signer);
+};
+export const getLpManagerV2Contract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getLpManagerV2Address(chainId), lpManagerV2Abi, signer);
 };
 export const getMasterchefContract = (
   chainId: ChainId,

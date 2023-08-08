@@ -34,7 +34,10 @@ export const getNftStakingAddress = (chainId: ChainId) => {
 };
 
 export const getLpManagerAddress = (chainId: ChainId) => {
-  return getAddress(addresses.lpManager, chainId);
+  return addresses.lpManager[chainId];
+};
+export const getLpManagerV2Address = (chainId: ChainId) => {
+  return addresses.lpManagerV2[chainId];
 };
 export const getTokenTransferAddress = (chainId: ChainId) => {
   return getAddress(addresses.tokenTransfer, chainId);

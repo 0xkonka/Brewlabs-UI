@@ -17,7 +17,7 @@ import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import useTokenPrice from "hooks/useTokenPrice";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
-import { numberWithCommas } from "utils/functions";
+import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
@@ -161,27 +161,19 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <a
+                  target="_blank"
                   className="flex-1"
-                  href={`/add/${data.chainId}/${
-                    data.quoteToken.isNative || data.quoteToken.symbol === WNATIVE[data.chainId].symbol
-                      ? getNativeSybmol(data.chainId)
-                      : data.quoteToken.address
-                  }/${
-                    data.token.isNative || data.token.symbol === WNATIVE[data.chainId].symbol
-                      ? getNativeSybmol(data.chainId)
-                      : data.token.address
-                  }`}
+                  href={getAddLiquidityUrl(data.lpManager, data.quoteToken, data.token, data.chainId)}
+                  rel="noreferrer"
                 >
-                  <a target="_blank" className="flex-1">
-                    <StyledButton type="secondary">
-                      <div className="flex items-center text-[#FFFFFFBF]">
-                        <div>
-                          Get <span className="text-primary">{data.lpSymbol}</span>
-                        </div>
-                        <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
+                  <StyledButton type="secondary">
+                    <div className="flex items-center text-[#FFFFFFBF]">
+                      <div>
+                        Get <span className="text-primary">{data.lpSymbol}</span>
                       </div>
-                    </StyledButton>
-                  </a>
+                      <div className="ml-2 -scale-100">{chevronLeftSVG}</div>
+                    </div>
+                  </StyledButton>
                 </a>
               </div>
               <div className="mt-[30px]">
