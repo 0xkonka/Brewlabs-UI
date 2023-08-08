@@ -41,7 +41,7 @@ const TradingViewChart = ({ currency }) => {
     window.tvWidget = new widget({
       locale: getLanguageFromURL() || ("en" as any),
       symbol: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}_USD`, // default symbol
-      interval: "30", // default interval
+      interval: "1D", // default interval
       fullscreen: false, // displays the chart in the fullscreen mode
       container_id: "tv_chart_container",
       datafeed: Datafeed,

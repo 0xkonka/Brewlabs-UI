@@ -110,6 +110,7 @@ export function useTokenMarketInfos(chainId: number, address: string, pair: stri
           limit: 1,
         }),
       ]);
+      console.log(result);
       const _token = result[0].data.result;
       const _pool = result[1].data.data.find((pool) => pool.id.replace(`-${chainId}`, "") === pair);
       if (_token.statusCode !== 200) return;
@@ -148,7 +149,7 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
     address,
     chainId,
     pair,
-  amm,
+    amm,
     period,
     limit,
     type,

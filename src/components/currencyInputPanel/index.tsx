@@ -19,6 +19,7 @@ interface CurrencyInputPanelProps {
   onCurrencySelect?: any;
   inputCurrencySelect?: boolean;
   currencies?: any;
+  size?: string;
 }
 
 const CurrencyInputPanel = ({
@@ -32,6 +33,7 @@ const CurrencyInputPanel = ({
   onCurrencySelect,
   inputCurrencySelect = true,
   currencies,
+  size,
 }: CurrencyInputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   let tokenPrice, wrappedPrice;
@@ -39,7 +41,7 @@ const CurrencyInputPanel = ({
   tokenPrice = wrappedPrice;
 
   return (
-    <div className="px-4 py-2 sm:ml-2 lg:ml-6">
+    <div className={`${size === "sm" ? "" : "sm:pr-4 lg:ml-6"} ml-0 pl-4 pr-2 py-2`}>
       <span>{label}</span>
       <div className="mt-1 overflow-hidden">
         <div className="flex justify-between">
@@ -49,6 +51,7 @@ const CurrencyInputPanel = ({
               onUserInput(val);
             }}
             decimals={currency?.decimals}
+            size={size}
           />
           <CurrencySelectButton
             inputCurrencySelect={inputCurrencySelect}
@@ -56,6 +59,7 @@ const CurrencyInputPanel = ({
             type={type}
             onCurrencySelect={onCurrencySelect}
             currencies={currencies}
+            size={size}
           />
         </div>
         <div className="flex justify-between">

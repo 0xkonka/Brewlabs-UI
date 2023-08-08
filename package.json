@@ -27,6 +27,7 @@
     "axios": "^1.2.1",
     "axios-retry": "^3.4.0",
     "bignumber.js": "^9.1.0",
+    "cheerio": "^1.0.0-rc.12",
     "cids": "^1.1.9",
     "clsx": "^1.2.1",
     "daisyui": "^2.40.0",

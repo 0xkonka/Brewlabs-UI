@@ -6,7 +6,7 @@ type NavigationItem = {
   href: string;
   external: boolean;
   icon: IconName;
-  coming?: boolean;
+  isBeta?: boolean;
   svg?: boolean;
   newItem?: number;
 };
@@ -22,8 +22,8 @@ export const navigationData = [
     name: "Chart",
     href: "/chart",
     external: false,
-    coming: false,
     icon: "PresentationChartLineIcon",
+    isBeta: true,
   },
   {
     name: "Staking",
@@ -71,7 +71,6 @@ export const navigationData = [
     name: "Product deployer",
     href: "/deployer",
     external: false,
-    // coming: true,
     icon: "ArrowDownOnSquareIcon",
     svg: DeployerSVG,
   },
@@ -79,7 +78,6 @@ export const navigationData = [
     name: "Brewlabs NFT",
     href: "/nft",
     external: false,
-    // coming: true,
     icon: "ShoppingBagIcon",
     svg: NFTSVG,
   },
@@ -87,7 +85,6 @@ export const navigationData = [
     name: "Communities",
     href: "/communities",
     external: false,
-    // coming: true,
     icon: "ShoppingBagIcon",
     svg: CommunitySVG,
     newItem: 5,

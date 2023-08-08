@@ -141,10 +141,11 @@ export const DEX_GURU_CHAIN_NAME = {
   1: "eth",
   56: "bsc",
   137: "polygon",
+  [ChainId.ARBITRUM]: "arbitrum",
 };
 
 export const DEX_GURU_SWAP_AMM = {
-  2: "uniswap-v3",
+  2: "uniswap_v3",
   1: "uniswap",
   4: "pancakeswap",
   193: "pancakeswap_v3",

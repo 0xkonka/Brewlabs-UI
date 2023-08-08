@@ -7,6 +7,8 @@ const ChartContext: any = React.createContext({
   favourites: [],
   setFavourites: () => {},
   onFavourites: () => {},
+  pending: false,
+  setPending: () => {},
 });
 
 export const DEX_API_URL = process.env.NEXT_PUBLIC_DEX_API_URL;
@@ -14,10 +16,11 @@ export const DEX_API_URL = process.env.NEXT_PUBLIC_DEX_API_URL;
 const ChartContextProvider = ({ children }: any) => {
   const [favourites, setFavourites] = useState([]);
   const [criteria, setCriteria] = useState("");
+  const [pending, setPending] = useState(false);
 
   const getFavourites = () => {
     try {
-      let _favourites: any = localStorage.getItem(`chart-favourites`);
+      let _favourites: any = localStorage.getItem(`chart-favorites`);
       _favourites = JSON.parse(_favourites);
       setFavourites(isArray(_favourites) ? _favourites : []);
     } catch (error) {
@@ -25,44 +28,29 @@ const ChartContextProvider = ({ children }: any) => {
     }
   };
 
-  const onFavourites = (_address: string, chainId: number, tokenAddress: string, symbol1: string, type: number) => {
+  const onFavourites = (currency: any, type: number) => {
     if (type === 1) {
       const index = favourites.findIndex(
-        (favourite) => favourite.address === _address && favourite.chainId === chainId
+        (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
       );
       if (index !== -1) return;
-      localStorage.setItem(
-        `chart-favourites`,
-        JSON.stringify([...favourites, { chainId, address: _address, tokenAddress, symbol1 }])
-      );
+      localStorage.setItem(`chart-favorites`, JSON.stringify([...favourites, currency]));
       getFavourites();
     }
     if (type === 2) {
       let temp = [...favourites];
 
       const index = favourites.findIndex(
-        (favourite) => favourite.address === _address && favourite.chainId === chainId
+        (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
       );
       temp.splice(index, 1);
-      localStorage.setItem(`chart-favourites`, JSON.stringify(temp));
+      localStorage.setItem(`chart-favorites`, JSON.stringify(temp));
       getFavourites();
     }
   };
 
-  async function getScrappingSites() {
-    try {
-      const {data:response} = await axios.post(`${API_URL}/html/getHTML`, {
-        url: "https://www.dextools.io/app/en/ether/pairs",
-      });
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   useEffect(() => {
     getFavourites();
-    getScrappingSites();
   }, []);
 
   return (
@@ -72,6 +60,8 @@ const ChartContextProvider = ({ children }: any) => {
         onFavourites,
         criteria,
         setCriteria,
+        pending,
+        setPending,
       }}
     >
       {children}
