@@ -104,7 +104,7 @@ export default function VolumeInfo({ currency }) {
 
   return (
     <div className="primary-shadow rounded-[6px] bg-[#B9B8B80D] p-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <DropDown
           value={showType}
           setValue={setShowType}
@@ -113,25 +113,27 @@ export default function VolumeInfo({ currency }) {
           bodyClassName="!bg-none !bg-[#29292C]"
           itemClassName="hover:!bg-[#86868644]"
         />
-        {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
-          return (
-            <div
-              key={i}
-              className={`w-12 text-right text-sm ${
-                histories[showTypes[showType].key][key].isUp ? " text-[#3AFDB7]" : "text-[#DC4545]"
-              }`}
-            >
-              {key.toUpperCase()}
-            </div>
-          );
-        })}
+        <div className="items-center flex flex-1 justify-between">
+          {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
+            return (
+              <div
+                key={i}
+                className={`flex-1 text-right text-sm ${
+                  histories[showTypes[showType].key][key].isUp ? " text-[#3AFDB7]" : "text-[#DC4545]"
+                }`}
+              >
+                {key.toUpperCase()}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div className="py-2">
         {showTypes[showType].values.map((data, i) => {
           return (
             <div
               key={i}
-              className={`flex items-center justify-between py-1.5 text-sm ${
+              className={`flex py-1.5 text-sm ${
                 i === showTypes[showType].values.length - 1 ? "" : "border-b border-[#FFFFFF40]"
               }`}
             >
@@ -142,13 +144,15 @@ export default function VolumeInfo({ currency }) {
               >
                 {data}
               </div>
-              {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
-                return (
-                  <div key={i} className="w-12 text-right  text-white">
-                    {BigNumberFormat(histories[showTypes[showType].key][key][data], showType ? 2 : 0)}
-                  </div>
-                );
-              })}
+              <div className="flex flex-1 items-center justify-between">
+                {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
+                  return (
+                    <div key={i} className="flex-1 text-right text-[11px] text-white">
+                      {BigNumberFormat(histories[showTypes[showType].key][key][data], showType ? 2 : 0)}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}

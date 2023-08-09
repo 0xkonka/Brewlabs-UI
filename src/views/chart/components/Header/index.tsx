@@ -57,9 +57,9 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
             <DropDown
               value={selectedNetwork}
               setValue={setSelectedNetwork}
-              className="!w-[120px] !bg-[#29292b] !px-3 !text-white"
+              className="!w-[120px] !bg-[#29292b] !px-2 !text-white"
               bodyClassName="!bg-none !bg-[#29292b]"
-              itemClassName="!px-3 !justify-start hover:!bg-[#b9b8b83d]"
+              itemClassName="!px-2 !justify-start hover:!bg-[#b9b8b83d]"
               height="44px"
               rounded="4px"
               data={networks.map((network, i) => {
@@ -84,20 +84,13 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
         </div>
         <div className="mt-4 flex w-full flex-1 items-center justify-between md:mt-0 md:w-fit">
           <div className="relative ml-0 flex-1 md:ml-4 md:w-fit">
-            <a
-              href={"https://t.me/MaverickBL"}
-              target={"_blank"}
-              className="absolute -top-5 mb-1 w-full cursor-pointer text-right font-brand text-xs !text-[#FFFFFF59] hover:!text-white"
-            >
-              Advertise with us
-            </a>
             <SearchInput
               selectedChainId={parseInt(networks[selectedNetwork].chainId)}
               setSelectedCurrency={setSelectedCurrency}
             />
           </div>
           <div
-            className={`ml-0 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
+            className={`ml-4 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
               showReverse ? "2xl:w-[332px]" : "2xl:w-[292px]"
             }`}
           >
@@ -108,7 +101,7 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
               {SwitchSVG}
             </div>
             <div
-              className="cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5 tooltip"
+              className="tooltip cursor-pointer transition  hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
               data-tip="No Brewlabs NFT found."
             >
               {NFTSVG}
