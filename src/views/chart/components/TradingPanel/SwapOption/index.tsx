@@ -63,7 +63,13 @@ export default function SwapOption({ currency, marketInfos }) {
 
   const socials = [
     {
-      icon: <img src={getExplorerLogo(currency.chainId)} alt={""} className="h-[18px] w-[18px] rounded-full" />,
+      icon: (
+        <img
+          src={getExplorerLogo(currency.chainId)}
+          alt={""}
+          className="h-[18px] w-[18px] rounded-full border border-white bg-white"
+        />
+      ),
       href: getExplorerLink(currency.chainId, "token", currency.tokenAddresses[0]),
     },
     { icon: LockSVG, isActive: false },
@@ -104,7 +110,7 @@ export default function SwapOption({ currency, marketInfos }) {
         <div className="absolute right-3 top-2" onClick={() => setOpenSettingModal(true)}>
           <Cog8ToothIcon className="h-5 w-5 cursor-pointer hover:animate-spin dark:text-primary" />
         </div>
-        <SwapPanel showHistory={false} size="sm" />
+        <SwapPanel showHistory={false} size="sm" toChainId={currency.chainId} />
         {openSettingModal && (
           <Modal
             open={openSettingModal}

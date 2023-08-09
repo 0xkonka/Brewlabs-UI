@@ -44,10 +44,10 @@ export default function FavouritePanel({ setSelectedCurrency }) {
           ))}
           height={"40px"}
           rounded={"6px"}
-          className="!w-[200px] !bg-[#202023] !text-xs !text-[#FFFFB2]"
+          className="!w-[200px] !bg-[#202023] !text-xs !text-[#ffffff58]"
           bodyClassName="!bg-none !bg-[#202023]"
           itemClassName={`hover:!bg-[#29292b] !justify-start !px-2`}
-          itemBorder={"border-b border-dotted border-[#D9D9D980]"}
+          isBorder={true}
         />
         <div className="yellowScroll -ml-3 mt-3 w-[calc(100%+24px)] flex-1 overflow-x-clip overflow-y-scroll pl-3 pr-5 pt-2">
           {arrays[selectedFilter].map((favourite, i) => {

@@ -40,7 +40,7 @@ export default function HistoryList({ histories, currency }) {
         <div className="flex">
           <div className="w-[90px]">Tx</div>
           <div className="w-[160px] ">Time</div>
-          <div className="w-[90px] ">Ago</div>
+          <div className="w-[110px] ">Ago</div>
           {/* <div className="w-16 text-center">Type</div> */}
           <div className="w-[90px] ">Transaction</div>
           <div className="w-[60px] ">Action</div>
@@ -67,11 +67,15 @@ export default function HistoryList({ histories, currency }) {
               >
                 <div className="flex">
                   <div className="flex w-[90px] items-center text-white">
-                    <img src={getExplorerLogo(list.chainId)} alt={""} className="mr-1.5 h-4 w-4 rounded-full" />
+                    <img
+                      src={getExplorerLogo(list.chainId)}
+                      alt={""}
+                      className="mr-1.5 h-4 w-4 rounded-full border border-white bg-white"
+                    />
                     <div>{getEllipsis(list.txHash, 6, 0)}</div>
                   </div>
                   <div className="w-[160px] whitespace-nowrap">{list.time}</div>
-                  <div className="w-[90px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
+                  <div className="w-[110px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
                   {/* <div className="flex w-16 items-center justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div> */}
                   <div className="w-[90px]">Swap</div>
                   <div className="w-[60px]">{list.action}</div>
@@ -105,7 +109,11 @@ export default function HistoryList({ histories, currency }) {
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center text-white">
                     <div className="flex items-center">
-                      <img src={getExplorerLogo(list.chainId)} alt={""} className="mr-1.5 h-4 w-4 rounded-full" />
+                      <img
+                        src={getExplorerLogo(list.chainId)}
+                        alt={""}
+                        className="mr-1.5 h-4 w-4 rounded-full border border-white bg-white"
+                      />
                       <div>{getEllipsis(list.txHash, 20, 0)}</div>
                     </div>
                   </div>

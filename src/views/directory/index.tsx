@@ -282,7 +282,7 @@ const Directory = ({ page }: { page: number }) => {
               />
               <Container className="font-brand">
                 <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
-                {curFilter === Category.FARM || curFilter === Category.INDEXES || curFilter === Category.POOL ? (
+                {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
                   <div className="-mb-4 -mt-4 flex justify-end">
                     <Link
                       href={`${
@@ -290,23 +290,26 @@ const Directory = ({ page }: { page: number }) => {
                           ? "/deployer/farm"
                           : curFilter === Category.INDEXES
                           ? "/deployer/index"
-                          : curFilter === Category.POOL
-                          ? "https://t.me/MaverickBL"
                           : ""
                       }`}
-                      target={curFilter === Category.POOL ? "_blank" : ""}
                     >
                       <StyledButton className="!w-fit p-[6px_12px] !text-sm">
                         {curFilter === Category.FARM
                           ? "Create Farm"
                           : curFilter === Category.INDEXES
                           ? "Create Index"
-                          : curFilter === Category.POOL
-                          ? "Advertise with us"
                           : ""}
                       </StyledButton>
                     </Link>
                   </div>
+                ) : curFilter === Category.POOL ? (
+                  <a
+                    href={"https://t.me/MaverickBL"}
+                    target="_blank"
+                    className="flex justify-end text-sm !text-[#FFFFFF80] hover:!text-white -mb-4 -mt-4"
+                  >
+                    Advertise with us
+                  </a>
                 ) : (
                   ""
                 )}

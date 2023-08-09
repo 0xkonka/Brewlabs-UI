@@ -9,6 +9,7 @@ import { Field } from "state/swap/actions";
 import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { ChartContext } from "contexts/ChartContext";
+import { useWeb3React } from "contexts/wagmi";
 
 export default function Chart() {
   const [selectedCurrency, setSelectedCurrency] = useState({
@@ -22,7 +23,7 @@ export default function Chart() {
   const [showReverse, setShowReverse] = useState(false);
 
   const { onCurrencySelection } = useSwapActionHandlers();
-  const { currencies } = useDerivedSwapInfo();
+  const { chainId } = useWeb3React();
 
   const stringifiedCurrency = JSON.stringify(selectedCurrency);
 
@@ -50,7 +51,7 @@ export default function Chart() {
     setTimeout(() => {
       setTokens();
     }, 2000);
-  }, []);
+  }, [chainId]);
 
   const { infos: marketInfos }: any = useTokenMarketInfos(
     selectedCurrency.chainId,
@@ -63,10 +64,17 @@ export default function Chart() {
   return (
     <PageWrapper>
       <div className={`px-3 pb-[100px] font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
-        <div className="mx-auto w-full max-w-[1720px]">
+        <div className="relative mx-auto w-full max-w-[1720px]">
           <div
-            className={`mb-6 mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] bg-cover 2xl:block`}
+            className={`mb-2 mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] bg-cover 2xl:block`}
           />
+          <a
+            href={"https://t.me/MaverickBL"}
+            target={"_blank"}
+            className="mb-2 flex w-full cursor-pointer justify-end font-brand text-xs !text-[#FFFFFF59] hover:!text-white"
+          >
+            Advertise with us
+          </a>
           <div className="mt-32 block 2xl:hidden" />
           <Header
             selectedCurrency={selectedCurrency}
