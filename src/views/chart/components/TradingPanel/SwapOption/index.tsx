@@ -5,6 +5,7 @@ import { isAddress } from "utils";
 import { BigNumberFormat, getExplorerLogo } from "utils/functions";
 import TokenLogo from "@components/logo/TokenLogo";
 import {
+  ChevronDownSVG,
   CopySVG,
   FlagSVG,
   LockSVG,
@@ -26,20 +27,27 @@ import SettingModal from "views/swap/components/modal/SettingModal";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useDexPrice } from "@hooks/useTokenPrice";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [isCopied, setIsCopied] = useState(false);
 
-  const { address: account, connector } = useAccount();
-  // const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
+  const { connector, address: account } = useAccount();
+  // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
   const { decimals } = useTokenInfo(currency.tokenAddresses[0], currency.chainId);
 
   const { balances } = useTokenBalances(
-    { [currency.chainId]: [{ address: currency.tokenAddresses[0], decimals }] },
-    { [currency.chainId]: [account] }
+    {
+      [currency.chainId]: [
+        { address: currency.tokenAddresses[0], decimals },
+        { address: currency.address, decimals: 18 },
+      ],
+    },
+    { [currency.chainId]: [account, account] }
   );
 
-  const prices = useTokenMarketChart(currency.chainId);
+  const { price: lpPrice } = useDexPrice(currency.chainId, currency.address);
+  const { price } = useDexPrice(currency.chainId, currency.tokenAddresses[0]);
 
   const {
     slippageInput,
@@ -52,13 +60,14 @@ export default function SwapOption({ currency, marketInfos }) {
   }: any = useContext(SwapContext);
 
   const [, setUserSlippageTolerance] = useUserSlippageTolerance();
+  const [switchBalance, setSwitchBalance] = useState(false);
 
   const onCopyAddress = () => {
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);
     }, 1000);
-    navigator.clipboard.writeText(currency.tokenAddresses[0]);
+    navigator.clipboard.writeText(switchBalance ? currency.address : currency.tokenAddresses[0]);
   };
 
   const socials = [
@@ -104,6 +113,15 @@ export default function SwapOption({ currency, marketInfos }) {
     }
   };
 
+  const balance = switchBalance
+    ? balances && balances[currency.chainId]
+      ? balances[currency.chainId][1].balance
+      : 0
+    : balances && balances[currency.chainId]
+    ? balances[currency.chainId][0].balance
+    : 0;
+
+  const symbol = switchBalance ? `${currency.symbols[0]}-${currency.symbols[1]}` : currency.symbols[0];
   return (
     <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
       <div className="primary-shadow relative flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-[34px_12px_12px_12px] 2xl:w-full">
@@ -133,7 +151,8 @@ export default function SwapOption({ currency, marketInfos }) {
         {/* <div className="mt-2" /> */}
         <VolumeInfo currency={currency} />
         <div className="primary-shadow mt-2 flex w-[320px] items-center justify-between rounded-[6px] bg-[#B9B8B80D] p-3">
-          <div className="flex items-center">
+          <div className="flex cursor-pointer items-center" onClick={() => setSwitchBalance(!switchBalance)}>
+            <div className={`mr-2 text-white ${switchBalance ? "-scale-y-100" : ""}`}>{ChevronDownSVG}</div>
             <TokenLogo
               src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
               classNames="primary-shadow h-8 w-8 rounded-full"
@@ -141,19 +160,10 @@ export default function SwapOption({ currency, marketInfos }) {
 
             <div className="ml-2">
               <div className="text-sm leading-none text-white">
-                {BigNumberFormat(balances && balances[currency.chainId] ? balances[currency.chainId][0].balance : 0)}{" "}
-                {currency.symbols[0]} Balance
+                {BigNumberFormat(balance)} {symbol} Balance
               </div>
               <div className="mt-0.5 text-xs leading-none text-[#FFFFFF80]">
-                {balances && balances[currency.chainId]
-                  ? BigNumberFormat(
-                      balances[currency.chainId][0].balance *
-                        (prices[currency.tokenAddresses[0].toLowerCase()]
-                          ? prices[currency.tokenAddresses[0].toLowerCase()].usd
-                          : 0)
-                    )
-                  : 0}{" "}
-                USD
+                {BigNumberFormat(balance * (switchBalance ? lpPrice : price))} USD
               </div>
             </div>
           </div>

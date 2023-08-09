@@ -38,7 +38,6 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
   );
   const isExisting = _pairs.find((pair) => pair.address === criteria.toLowerCase());
   if (isExisting) _pairs = [isExisting];
-  console.log(_pairs);
   const infoResponse = await Promise.all(
     _pairs.map(async (pair) => {
       let response;

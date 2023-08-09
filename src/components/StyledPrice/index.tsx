@@ -19,7 +19,7 @@ const StyledPrice = ({
         wrappedPrice.toFixed(decimals)
       ) : (
         <div>
-          $0.0<span className={`text-sm ${itemClassName}`}>{priceFormat(wrappedPrice).count}</span>
+          0.0<span className={`text-sm ${itemClassName}`}>{priceFormat(wrappedPrice).count}</span>
           {priceFormat(wrappedPrice).value}
         </div>
       )}

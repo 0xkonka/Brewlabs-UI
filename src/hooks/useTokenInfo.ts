@@ -110,7 +110,6 @@ export function useTokenMarketInfos(chainId: number, address: string, pair: stri
           limit: 1,
         }),
       ]);
-      console.log(result);
       const _token = result[0].data.result;
       const _pool = result[1].data.data.find((pool) => pool.id.replace(`-${chainId}`, "") === pair);
       if (_token.statusCode !== 200) return;
@@ -142,8 +141,65 @@ export function useTokenMarketInfos(chainId: number, address: string, pair: stri
   return { infos: { ...infos, community } };
 }
 
+let wrappedAddress;
+
+const defaultVolume = {
+  vol: {
+    "5m": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+    "30m": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+    "24hr": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+    "7d": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+  },
+  "vol (usd)": {
+    "5m": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+    "30m": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+    "24hr": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+    "7d": {
+      Buys: 0,
+      Sells: 0,
+      Total: 0,
+      isUp: true,
+    },
+  },
+};
 export function useTradingHistory(address, chainId, pair, amm, period = 0, limit = 100, type = "all") {
   const [histories, setHistories] = useState([]);
+  const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
 
   const stringifiedValue = JSON.stringify({
     address,
@@ -154,13 +210,41 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
     limit,
     type,
   });
+
+  function getVolume(data, period) {
+    let buyVolume = 0,
+      sellVolume = 0;
+
+    const sellCount = data
+      .filter(
+        (history) =>
+          history.fromAddress === address.toLowerCase() && Number(history.timestamp) >= Date.now() / 1000 - period
+      )
+      .map((history) => (sellVolume += history.amountStable)).length;
+
+    const buyCount = data
+      .filter(
+        (history) =>
+          history.fromAddress !== address.toLowerCase() && Number(history.timestamp) >= Date.now() / 1000 - period
+      )
+      .map((history) => (buyVolume += history.amountStable)).length;
+
+    return {
+      buyVolume,
+      sellVolume,
+      buyCount,
+      sellCount,
+      totalCount: buyCount + sellCount,
+      totalVolume: buyVolume + sellVolume,
+    };
+  }
+
   async function fetchHistories() {
     try {
+      let histories = [];
       let query: any = {
         amm,
         current_token_id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
-        limit,
-        offset: 0,
         order: "desc",
         pool_address: pair,
         sort_by: "timestamp",
@@ -171,25 +255,102 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
       if (period) {
         query = { ...query, date: { start_date: Date.now() - period, end_date: Date.now() } };
       }
-      const { data } = await axios.post("https://api.dex.guru/v3/tokens/transactions", query);
-      let histories = data.data;
-      histories = histories.map((history) => {
-        return { ...history, chainId };
-      });
-      setHistories(histories);
+      let count = limit;
+      if (period) {
+        const { data: response } = await axios.post("https://api.dex.guru/v3/tokens/transactions/count", query);
+        count = response.count;
+      }
+      await Promise.all(
+        new Array(Math.ceil(count / 100)).fill("").map(async (result, i) => {
+          query = { ...query, limit: 100, offset: 100 * i };
+          const { data }: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", query);
+
+          histories = [
+            ...histories,
+            ...data.data.map((history) => {
+              return { ...history, chainId };
+            }),
+          ];
+          return histories;
+        })
+      );
+      if (wrappedAddress === address) {
+        setHistories(histories);
+        const v5m = getVolume(histories, 5 * 60);
+        const v30m = getVolume(histories, 30 * 60);
+        const v24hr = getVolume(histories, 3600 * 24);
+        const v7d = getVolume(histories, 3600 * 24 * 7);
+        setVolumeDatas({
+          vol: {
+            "5m": {
+              Buys: v5m.buyCount,
+              Sells: v5m.sellCount,
+              Total: v5m.totalCount,
+              isUp: v5m.buyCount >= v5m.sellCount,
+            },
+            "30m": {
+              Buys: v30m.buyCount,
+              Sells: v30m.sellCount,
+              Total: v30m.totalCount,
+              isUp: v30m.buyCount >= v30m.sellCount,
+            },
+            "24hr": {
+              Buys: v24hr.buyCount,
+              Sells: v24hr.sellCount,
+              Total: v24hr.totalCount,
+              isUp: v24hr.buyCount >= v24hr.sellCount,
+            },
+            "7d": {
+              Buys: v7d.buyCount,
+              Sells: v7d.sellCount,
+              Total: v7d.totalCount,
+              isUp: v7d.buyCount >= v7d.sellCount,
+            },
+          },
+          "vol (usd)": {
+            "5m": {
+              Buys: v5m.buyVolume,
+              Sells: v5m.sellVolume,
+              Total: v5m.totalVolume,
+              isUp: v5m.buyVolume >= v5m.sellVolume,
+            },
+            "30m": {
+              Buys: v30m.buyVolume,
+              Sells: v30m.sellVolume,
+              Total: v30m.totalVolume,
+              isUp: v30m.buyVolume >= v30m.sellVolume,
+            },
+            "24hr": {
+              Buys: v24hr.buyVolume,
+              Sells: v24hr.sellVolume,
+              Total: v24hr.totalVolume,
+              isUp: v24hr.buyVolume >= v24hr.sellVolume,
+            },
+            "7d": {
+              Buys: v7d.buyVolume,
+              Sells: v7d.sellVolume,
+              Total: v7d.totalVolume,
+              isUp: v7d.buyVolume >= v7d.sellVolume,
+            },
+          },
+        });
+      }
     } catch (e) {
       console.log(e);
     }
   }
-  useSlowRefreshEffect(() => {
+
+  useEffect(() => {
+    setHistories([]);
+    setVolumeDatas(defaultVolume);
     if (!isAddress(address)) {
-      setHistories([]);
       return;
     }
+    wrappedAddress = address;
     fetchHistories();
   }, [stringifiedValue]);
 
-  return { histories };
+  return { histories, volumeDatas };
 }
 
 export function useTokenTaxes(address, chainId, pair, amm) {
