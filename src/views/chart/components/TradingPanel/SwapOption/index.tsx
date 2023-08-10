@@ -49,17 +49,8 @@ export default function SwapOption({ currency, marketInfos }) {
   const { price: lpPrice } = useDexPrice(currency.chainId, currency.address);
   const { price } = useDexPrice(currency.chainId, currency.tokenAddresses[0]);
 
-  const {
-    slippageInput,
-    autoMode,
-    slippage,
-    setSlippageInput,
-    setAutoMode,
-    openSettingModal,
-    setOpenSettingModal,
-  }: any = useContext(SwapContext);
+  const { setOpenSettingModal }: any = useContext(SwapContext);
 
-  const [, setUserSlippageTolerance] = useUserSlippageTolerance();
   const [switchBalance, setSwitchBalance] = useState(false);
 
   const onCopyAddress = () => {
@@ -101,18 +92,6 @@ export default function SwapOption({ currency, marketInfos }) {
     } as BridgeToken);
   }
 
-  const parseCustomSlippage = (value: string) => {
-    setSlippageInput(value);
-    try {
-      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
-      if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
-        setUserSlippageTolerance(valueAsIntFromRoundedFloat);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const balance = switchBalance
     ? balances && balances[currency.chainId]
       ? balances[currency.chainId][1].balance
@@ -129,22 +108,6 @@ export default function SwapOption({ currency, marketInfos }) {
           <Cog8ToothIcon className="h-5 w-5 cursor-pointer hover:animate-spin dark:text-primary" />
         </div>
         <SwapPanel showHistory={false} size="sm" toChainId={currency.chainId} />
-        {openSettingModal && (
-          <Modal
-            open={openSettingModal}
-            onClose={() => {
-              setOpenSettingModal(false);
-            }}
-          >
-            <SettingModal
-              autoMode={autoMode}
-              setAutoMode={setAutoMode}
-              slippage={slippage}
-              slippageInput={slippageInput}
-              parseCustomSlippage={parseCustomSlippage}
-            />
-          </Modal>
-        )}
       </div>
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 sm:w-fit 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
         {/* <SlippageInfo currency={currency} /> */}
@@ -207,6 +170,7 @@ export default function SwapOption({ currency, marketInfos }) {
             <a
               href={"https://t.me/MaverickBL"}
               className="mr-2.5 flex cursor-pointer items-center text-xs hover:text-white"
+              target="_blank"
             >
               <div className="-mt-1 mr-1 text-tailwind">{PlusSVG}</div>
               <div>UPDATE DETAILS</div>

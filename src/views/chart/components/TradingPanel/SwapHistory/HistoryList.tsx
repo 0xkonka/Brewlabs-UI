@@ -52,7 +52,7 @@ export default function HistoryList({ histories, currency }) {
           <div className="w-14">USD</div>
         </div>
       </div>
-      <div className="yellowScroll mt-2.5 hidden max-h-[300px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:block">
+      <div className="yellowScroll mt-2.5 hidden max-h-[400px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:block">
         {wrappedHistories.map((list, i) => {
           return (
             <a href={getExplorerLink(list.chainId, "transaction", list.txHash)} key={i} target="_blank">
