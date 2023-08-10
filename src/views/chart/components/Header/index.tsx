@@ -66,15 +66,20 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
               rounded="4px"
               data={networks.map((network, i) => {
                 return (
-                  <div className="flex items-center" key={i}>
+                  <div className="flex items-center switch-name w-full h-full" key={i}>
                     <img
                       src={getChainLogo(parseInt(network.chainId))}
                       alt={""}
                       className="primary-shadow h-6 w-6 rounded-full"
                     />
-                    <div className="ml-2">
-                      <div className="text-xs font-bold">{network.nativeCurrency.symbol}</div>
-                      <div className="text-xs leading-none text-[#FFFFFFBF]">
+                    <div className="relative ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                      <div className="absolute left-0 top-0 text-xs font-bold transition w-full">
+                        {network.nativeCurrency.symbol}
+                      </div>
+                      <div className="absolute left-0 top-0 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold opacity-0 transition w-full">
+                        {network.chainName}
+                      </div>
+                      <div className="text-xs leading-none text-[#FFFFFFBF] mt-5">
                         ${price[parseInt(network.chainId)].toFixed(2)}
                       </div>
                     </div>
