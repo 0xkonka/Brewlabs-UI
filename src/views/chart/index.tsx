@@ -13,14 +13,14 @@ import { useWeb3React } from "contexts/wagmi";
 
 export default function Chart() {
   const [selectedCurrency, setSelectedCurrency] = useState({
-    tokenAddresses: ["0xdad33e12e61dc2f2692f2c12e6303b5ade7277ba", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"],
-    symbols: ["BREWLABS", "WETH"],
-    chainId: 1,
-    address: "0xd8a8442013f071bb118c3c3e03f6d07576d85a53",
+    tokenAddresses: ["0x6aac56305825f712fd44599e59f2ede51d42c3e7", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"],
+    symbols: ["BREWLABS", "WBNB"],
+    chainId: 56,
+    address: "0xc9cc6515a1df94aaed156f3bd6efe86a100308fa",
     verified: true,
-    swap: "uniswap",
+    swap: "pancakeswap",
   });
-  const [showReverse, setShowReverse] = useState(false);
+  const [showReverse, setShowReverse] = useState(true);
 
   const { onCurrencySelection } = useSwapActionHandlers();
   const { chainId } = useWeb3React();

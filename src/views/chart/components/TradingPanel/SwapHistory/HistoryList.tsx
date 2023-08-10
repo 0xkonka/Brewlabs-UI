@@ -49,7 +49,7 @@ export default function HistoryList({ histories, currency }) {
         <div className="flex">
           <div className="w-[100px] ">{currency.symbols[0]}</div>
           <div className="w-[80px] ">{getNativeSybmol(currency.chainId)}</div>
-          <div className="w-14">USD.Val</div>
+          <div className="w-14">USD</div>
         </div>
       </div>
       <div className="yellowScroll mt-2.5 hidden max-h-[300px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:block">
@@ -154,7 +154,7 @@ export default function HistoryList({ histories, currency }) {
                 </div>
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center">
-                    <div>USD.Val:</div>&nbsp;
+                    <div>USD:</div>&nbsp;
                     <div className="">{list.usdValue}</div>
                   </div>
                   <div className="flex items-center">

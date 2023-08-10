@@ -303,13 +303,15 @@ const Directory = ({ page }: { page: number }) => {
                     </Link>
                   </div>
                 ) : curFilter === Category.POOL ? (
-                  <a
-                    href={"https://t.me/MaverickBL"}
-                    target="_blank"
-                    className="flex justify-end text-sm !text-[#FFFFFF80] hover:!text-white -mb-4 -mt-4"
-                  >
-                    Advertise with us
-                  </a>
+                  <div className="flex w-full justify-end -mt-[44px]">
+                    <a
+                      href={"https://t.me/MaverickBL"}
+                      target="_blank"
+                      className="text-sm !text-[#FFFFFF80] hover:!text-white"
+                    >
+                      Advertise with us
+                    </a>
+                  </div>
                 ) : (
                   ""
                 )}
