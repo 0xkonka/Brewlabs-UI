@@ -142,6 +142,7 @@ export const DEX_GURU_CHAIN_NAME = {
   56: "bsc",
   137: "polygon",
   [ChainId.ARBITRUM]: "arbitrum",
+  8453: "base",
 };
 
 export const DEX_GURU_SWAP_AMM = {
@@ -150,6 +151,8 @@ export const DEX_GURU_SWAP_AMM = {
   4: "pancakeswap",
   193: "pancakeswap_v3",
   60: "pancakeswap_v1",
+  3: "sushiswap",
+  236: "sushiswap_v3",
 };
 
 export const DEXTOOLS_CHAINNAME = {

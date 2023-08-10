@@ -15,7 +15,7 @@ import { ChainId } from "@brewlabs/sdk";
 
 export default function Header({ selectedCurrency, setSelectedCurrency, showReverse, setShowReverse }) {
   const { chainId } = useWeb3React();
-  const networks = [NETWORKS[1], NETWORKS[56], NETWORKS[ChainId.POLYGON], NETWORKS[ChainId.ARBITRUM]];
+  const networks = [NETWORKS[1], NETWORKS[56], NETWORKS[ChainId.POLYGON], NETWORKS[ChainId.ARBITRUM], NETWORKS[8453]];
   const trendings = [
     { logo: "/images/chart/trending/cmc.png", name: "CMC Trending" },
     { logo: "/images/chart/trending/mixed.svg", name: "Mixed" },
@@ -35,11 +35,13 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
   const { price: bnbPrice } = useDexPrice(56, DEX_GURU_WETH_ADDR);
   const { price: maticPrice } = useDexPrice(ChainId.POLYGON, DEX_GURU_WETH_ADDR);
   const { price: arbitrumPrice } = useDexPrice(ChainId.ARBITRUM, "0x82af49447d8a07e3bd95bd0d56f35241523fbab1");
+  const { price: basePrice } = useDexPrice(8453, "0x4200000000000000000000000000000000000006");
   const price = {
     1: ethPrice ?? 0,
     56: bnbPrice ?? 0,
     [ChainId.POLYGON]: maticPrice ?? 0,
     [ChainId.ARBITRUM]: arbitrumPrice ?? 0,
+    8453: basePrice ?? 0,
   };
 
   return (

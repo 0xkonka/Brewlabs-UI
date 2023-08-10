@@ -10,6 +10,10 @@ import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { ChartContext } from "contexts/ChartContext";
 import { useWeb3React } from "contexts/wagmi";
+import Modal from "@components/Modal";
+import SettingModal from "views/swap/components/modal/SettingModal";
+import { SwapContext } from "contexts/SwapContext";
+import { useUserSlippageTolerance } from "state/user/hooks";
 
 export default function Chart() {
   const [selectedCurrency, setSelectedCurrency] = useState({
@@ -61,9 +65,48 @@ export default function Chart() {
 
   const { pending }: any = useContext(ChartContext);
 
+  const {
+    slippageInput,
+    autoMode,
+    slippage,
+    setSlippageInput,
+    setAutoMode,
+    openSettingModal,
+    setOpenSettingModal,
+  }: any = useContext(SwapContext);
+  const [, setUserSlippageTolerance] = useUserSlippageTolerance();
+
+  const parseCustomSlippage = (value: string) => {
+    setSlippageInput(value);
+    try {
+      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
+      if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
+        setUserSlippageTolerance(valueAsIntFromRoundedFloat);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <PageWrapper>
-      <div className={`px-3 pb-[100px] font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
+      {openSettingModal && (
+        <Modal
+          open={openSettingModal}
+          onClose={() => {
+            setOpenSettingModal(false);
+          }}
+        >
+          <SettingModal
+            autoMode={autoMode}
+            setAutoMode={setAutoMode}
+            slippage={slippage}
+            slippageInput={slippageInput}
+            parseCustomSlippage={parseCustomSlippage}
+          />
+        </Modal>
+      )}
+      <div className={`px-3 pb-10 font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
         <div className="relative mx-auto w-full max-w-[1720px]">
           <div
             className={`mb-2 mt-10 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] bg-cover 2xl:block`}

@@ -38,9 +38,11 @@ export const DEX_LOGOS = {
   apeswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/1281.png",
   uniswap: "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
   "uniswap-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png",
-  "uniswap_v3": "https://assets-stage.dex.guru/icons/1/0xE592427A0AEce92De3Edee1F18E0157C05861564.svg",
+  uniswap_v3: "https://assets-stage.dex.guru/icons/1/0xE592427A0AEce92De3Edee1F18E0157C05861564.svg",
   quickswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/4098.png",
   spookyswap: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/1455.png",
   tradejoe: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/6799.png",
   mmfinance: "https://s2.coinmarketcap.com/static/img/exchanges/64x64/1572.png",
+  sushiswap: "https://assets-stage.dex.guru/icons/1/0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F.svg",
+  sushiswap_v3: "https://assets-stage.dex.guru/icons/1/0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F.svg",
 };

@@ -21,7 +21,7 @@ const useTokenPrice = (chainId: ChainId, address: string | undefined, isLiquidit
     : 0;
 };
 
-export const useDexPrice = (chainId: ChainId, address: string) => {
+export const useDexPrice = (chainId: number, address: string) => {
   const [price, setPrice] = useState(null);
 
   useSlowRefreshEffect(() => {
