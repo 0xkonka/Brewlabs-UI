@@ -353,52 +353,17 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
   return { histories, volumeDatas };
 }
 
-export function useTokenTaxes(address, chainId, pair, amm) {
-  const [buyTaxes, setBuyTaxes] = useState(0);
-  const [sellTaxes, setSellTaxes] = useState(0);
-
-  const { histories: buyTransaction } = useTradingHistory(address, chainId, pair, amm, 0, 1, "buy");
-  const { histories: sellTransaction } = useTradingHistory(address, chainId, pair, amm, 0, 1, "sell");
-
-  const stringifiedValue = JSON.stringify({
-    address,
-    chainId,
-    pair,
-    amm,
-    buyTransaction,
-    sellTransaction,
-  });
+export function useTokenTaxes(address, chainId) {
+  const [buyTaxes, setBuyTaxes] = useState(null);
+  const [sellTaxes, setSellTaxes] = useState(null);
 
   async function fetchTaxes() {
     try {
-      console.log(buyTransaction);
-      if (!buyTransaction || !buyTransaction.length || buyTransaction[0].type !== amm) return;
-      console.log(address, chainId, pair, amm);
-      console.log(buyTransaction);
-      const response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
-        network: "bsc",
-        transaction_address: "0x5885a689ac2a2a16914cd432542d1eb4c7c7ee1f17811d24ec1356d11346dab7",
-        limit: 1000,
+      const { data: response } = await axios.get(`https://api.gopluslabs.io/api/v1/token_security/${chainId}`, {
+        params: { contract_addresses: address },
       });
-      console.log(response);
-      // const provider = simpleRpcProvider(chainId);
-      // const { logs } = await provider.getTransactionReceipt(buyTransaction[0].transactionAddress);
-
-      // const log = logs.find((log: any) => {
-      //   if (
-      //     log.topics[0] === "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" &&
-      //     log.address.toLowerCase() === address.toLowerCase()
-      //   )
-      //     console.log(
-      //       ethers.utils.defaultAbiCoder.decode(["address"], log.topics[2])[0].toLowerCase(),
-      //       buyTransaction[0].sender
-      //     );
-      //   return (
-      //     log.topics[0] === "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" &&
-      //     log.address.toLowerCase() === address.toLowerCase() &&
-      //     ethers.utils.defaultAbiCoder.decode(["address"], log.topics[2])[0].toLowerCase() === buyTransaction[0].sender
-      //   );
-      // });
+      setBuyTaxes(response.result[address].buy_tax * 100);
+      setSellTaxes(response.result[address].sell_tax * 100);
     } catch (e) {
       console.log(e);
     }
@@ -406,7 +371,7 @@ export function useTokenTaxes(address, chainId, pair, amm) {
 
   useEffect(() => {
     fetchTaxes();
-  }, [stringifiedValue]);
+  }, [address, chainId]);
 
   return { buyTaxes, sellTaxes };
 }

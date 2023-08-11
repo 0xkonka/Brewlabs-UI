@@ -44,11 +44,11 @@ export default function HistoryList({ histories, currency }) {
           {/* <div className="w-16 text-center">Type</div> */}
           <div className="w-[90px] ">Transaction</div>
           <div className="w-[60px] ">Action</div>
-          <div className="w-[90px] ">Price</div>
+          <div className="w-[70px] ">Price</div>
         </div>
         <div className="flex">
-          <div className="w-[100px] ">{currency.symbols[0]}</div>
-          <div className="w-[80px] ">{getNativeSybmol(currency.chainId)}</div>
+          <div className="w-20 overflow-hidden text-ellipsis">{currency.symbols[0]}</div>
+          <div className="w-14 ">{getNativeSybmol(currency.chainId)}</div>
           <div className="w-14">USD</div>
         </div>
       </div>
@@ -79,13 +79,13 @@ export default function HistoryList({ histories, currency }) {
                   {/* <div className="flex w-16 items-center justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div> */}
                   <div className="w-[90px]">Swap</div>
                   <div className="w-[60px]">{list.action}</div>
-                  <div className="w-[90px] text-white">
+                  <div className="w-[70px] text-white">
                     <StyledPrice price={list.price} itemClassName="!text-[8px]" />
                   </div>
                 </div>
                 <div className="flex">
-                  <div className="w-[100px]">{list.amount}</div>
-                  <div className="w-[80px]">{list.nativeAmount}</div>
+                  <div className="w-20">{list.amount}</div>
+                  <div className="w-14">{list.nativeAmount}</div>
                   <div className="w-14">{list.usdValue}</div>
                 </div>
               </div>
