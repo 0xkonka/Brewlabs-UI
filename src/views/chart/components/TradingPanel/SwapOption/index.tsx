@@ -28,6 +28,7 @@ import { useUserSlippageTolerance } from "state/user/hooks";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useDexPrice } from "@hooks/useTokenPrice";
+import SlippageInfo from "./SlippageInfo";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [isCopied, setIsCopied] = useState(false);
@@ -110,8 +111,8 @@ export default function SwapOption({ currency, marketInfos }) {
         <SwapPanel showHistory={false} size="sm" toChainId={currency.chainId} />
       </div>
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 sm:w-fit 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
-        {/* <SlippageInfo currency={currency} /> */}
-        {/* <div className="mt-2" /> */}
+        <SlippageInfo currency={currency} />
+        <div className="mt-2" />
         <VolumeInfo currency={currency} />
         <div className="primary-shadow mt-2 flex w-[320px] items-center justify-between rounded-[6px] bg-[#B9B8B80D] p-3">
           <div className="flex cursor-pointer items-center" onClick={() => setSwitchBalance(!switchBalance)}>

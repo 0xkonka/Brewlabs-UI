@@ -26,7 +26,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
       .catch((e) => console.log(e));
   }, [type, pair]);
 
-  const { onFavourites }: any = useContext(ChartContext);
+  const { onFavourites, setCriteria }: any = useContext(ChartContext);
 
   const wrappedPair = type === 0 ? pair : fpair;
 
@@ -37,11 +37,12 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
       className={`${
         isFade ? "opacity-0" : ""
       } primary-shadow relative mb-3 flex cursor-pointer items-center justify-between rounded-md bg-[#B9B8B80D] p-3.5 transition-all duration-300 hover:scale-[1.05] hover:bg-[#B9B8B822]`}
-      onClick={(e) =>
-        (!closeRef.current || (closeRef.current && !closeRef.current.contains(e.target))) &&
-        wrappedPair &&
-        setSelectedCurrency(wrappedPair)
-      }
+      onClick={(e) => {
+        if ((!closeRef.current || (closeRef.current && !closeRef.current.contains(e.target))) && wrappedPair) {
+          setSelectedCurrency(wrappedPair);
+          setCriteria("");
+        }
+      }}
     >
       <div className="flex items-center">
         <TokenLogo
@@ -49,7 +50,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
           alt={""}
           classNames="h-4 w-4 rounded-full"
         />
-        <div className="mx-2 flex-1 overflow-hidden text-ellipsis text-sm text-white max-w-[64px]">
+        <div className="mx-2 max-w-[64px] flex-1 overflow-hidden text-ellipsis text-sm text-white">
           {wrappedPair ? wrappedPair.symbols[0] : <SkeletonComponent />}
         </div>
         <div className="text-xs text-[#FFFFFF80]">{wrappedPair ? wrappedPair.symbols[1] : <SkeletonComponent />}</div>
