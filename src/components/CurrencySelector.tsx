@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo, useContext } from "react";
+import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, useEffect } from "react";
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
@@ -256,6 +256,10 @@ const CurrencySelector = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  useEffect(() => {
+    if (window) setRowsPerPage(Math.floor((window.innerHeight - 325) / 96));
+  }, []);
+
   const ethBalance = useNativeBalances([account])[account];
 
   const listingTokens: (Currency | undefined)[] = useMemo(() => {
@@ -346,7 +350,7 @@ const CurrencySelector = ({
         onChange={onInputAddress}
         onKeyDown={onInputEnter}
         type="text"
-        placeholder="Search by contract address..."
+        placeholder="Search by contract address or by name"
         className="input-bordered input w-full"
       />
 

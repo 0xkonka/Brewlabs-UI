@@ -25,7 +25,10 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
   async function onCurrencySelect(input, currency) {
     setPending(true);
     const pair = await fetchAllPairs(currency.address, 1);
-    if (pair && pair.length) setSelectedCurrency(pair[0]);
+    if (pair && pair.length) {
+      setSelectedCurrency(pair[0]);
+      setCriteria("");
+    }
     setPending(false);
   }
 
@@ -33,7 +36,7 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
     <div className="relative z-10 flex w-full">
       <div className="primary-shadow flex h-[44px] flex-1">
         <div className="relative flex-1">
-          <div className=" flex items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A] h-full">
+          <div className=" flex h-full items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A]">
             <StyledInput
               value={criteria}
               setValue={setCriteria}
