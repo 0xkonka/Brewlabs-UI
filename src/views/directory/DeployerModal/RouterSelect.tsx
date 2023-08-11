@@ -11,23 +11,32 @@ import { SUPPORTED_DEXES } from "config/constants/swap";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getDexLogo } from "utils/functions";
 
-const RouterSelect = ({ router, setRouter }) => {
+const RouterSelect = ({ router, setRouter, dexId = undefined, type = "liquidity" }) => {
   const { chainId } = useActiveChainId();
 
   const [open, setOpen] = useState(false);
   const [supportedRouters, setSupportedRouters] = useState([]);
 
   useEffect(() => {
-    setSupportedRouters(EXCHANGE_MAP[chainId].filter((dex) => SUPPORTED_DEXES[chainId]?.includes(dex.id)));
+    setSupportedRouters(EXCHANGE_MAP[chainId].filter((dex) => SUPPORTED_DEXES[type][chainId]?.includes(dex.id)));
   }, [chainId]);
 
   useEffect(() => {
-    setRouter({
-      ...supportedRouters[0],
-      address: ROUTER_ADDRESS_MAP[supportedRouters[0]?.key]?.[chainId],
-      factory: FACTORY_ADDRESS_MAP[supportedRouters[0]?.key]?.[chainId],
-    });
-  }, [supportedRouters]);
+    const exchange = supportedRouters.find((dex) => dex.key.indexOf(dexId) >= 0 || dex.id == dexId);
+    if (exchange) {
+      setRouter({
+        ...exchange,
+        address: ROUTER_ADDRESS_MAP[exchange.key]?.[chainId],
+        factory: FACTORY_ADDRESS_MAP[exchange.key]?.[chainId],
+      });
+    } else {
+      setRouter({
+        ...supportedRouters[0],
+        address: ROUTER_ADDRESS_MAP[supportedRouters[0]?.key]?.[chainId],
+        factory: FACTORY_ADDRESS_MAP[supportedRouters[0]?.key]?.[chainId],
+      });
+    }
+  }, [supportedRouters, dexId]);
 
   const handleRouterSelected = (index) => {
     setRouter({
@@ -36,7 +45,7 @@ const RouterSelect = ({ router, setRouter }) => {
       factory: FACTORY_ADDRESS_MAP[supportedRouters[index]?.key]?.[chainId],
     });
 
-    setOpen(false)
+    setOpen(false);
   };
 
   return (
@@ -122,7 +131,7 @@ const RouterSelect = ({ router, setRouter }) => {
               backgroundImage: `url(${getDexLogo(router?.id)})`,
             }}
           ></div>
-          <span className="pl-4 pr-1">{router?.name}</span>
+          <span className="pl-4 pr-1">{router?.name ?? "Unsupported"}</span>
         </div>
         <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
       </button>

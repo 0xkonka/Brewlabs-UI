@@ -26,6 +26,7 @@ const TokenLogo: React.FC<LogoProps> = ({ src, classNames, large, alt, ...rest }
             e.target.src = "/images/unknown.png";
             setIsError(true);
           }}
+          onLoad={()=>setIsError(false)}
         />
         {(isError || src === "/images/unknown.png") && (
           <div

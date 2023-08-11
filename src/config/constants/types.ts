@@ -192,3 +192,9 @@ export enum AppId {
   // KNIGHT = "knight",
   SUSHISWAP = "sushiswap",
 }
+
+export const ZAPPER_DEXIDS = {
+  [AppId.PANCAKESWAP]: 'pcs-v2',
+  [AppId.APESWAP]: 'apeswap',
+  [AppId.SUSHISWAP]: 'sushi-v2',
+}

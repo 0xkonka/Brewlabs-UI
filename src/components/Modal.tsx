@@ -7,12 +7,13 @@ type ModalProps = {
   open: boolean;
   children?: ReactNode;
   onClose?: () => void;
+  className?: string;
 };
 
-const Modal = ({ open, children, onClose }: ModalProps): ReactElement | null => {
+const Modal = ({ open, children, onClose, className = "" }: ModalProps): ReactElement | null => {
   return (
     <AnimatePresence exitBeforeEnter>
-      <Dialog open={open} className="relative z-50" onClose={onClose ? onClose: () => {}}>
+      <Dialog open={open} className={`relative z-50 ${className}`} onClose={onClose ? onClose : () => {}}>
         <div className="fixed inset-0 overflow-y-auto bg-gray-300 bg-opacity-90 dark:bg-zinc-900 dark:bg-opacity-80">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="relative w-full md:w-2/6 md:min-w-[400px]">

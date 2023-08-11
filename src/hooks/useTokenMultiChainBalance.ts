@@ -42,6 +42,7 @@ export async function getBalances(tokens: any, addresses: any) {
   await Promise.all(
     Object.keys(tokens).map(async (key: any, i) => {
       try {
+        if (!tokens[key][i].decimals) return null;
         const calls = addresses[key].map((address, i) => {
           return {
             name: "balanceOf",

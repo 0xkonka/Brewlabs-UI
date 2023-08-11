@@ -15,7 +15,7 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { AppId, Chef } from "config/constants/types";
+import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { earningTokens, quoteTokens, tokens } from "config/constants/tokens";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -35,7 +35,7 @@ import {
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
 import { useSushiPrice } from "state/zap/sushiswap/hooks";
-import { numberWithCommas } from "utils/functions";
+import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import useHarvestFarm from "./hooks/useHarvestFarm";
@@ -50,6 +50,7 @@ import ProgressBar from "./ProgressBar";
 import StyledButton from "../StyledButton";
 import TotalStakedChart from "./TotalStakedChart";
 import { RewardType } from "./types";
+import { getBalanceNumber } from "utils/formatBalance";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
@@ -133,6 +134,9 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
     }
   };
 
+  const earnings = getBalanceNumber(new BigNumber(data.userData.earnings ?? 0));
+  const totalEarnings = getBalanceNumber(new BigNumber(data.userData.totalRewards ?? 0));
+
   return (
     <>
       <ZapInModal open={zapInModalOpen} setOpen={setZapInModalOpen} data={data} />
@@ -208,15 +212,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <a
                           className="ml-0 mt-2 h-[32px] w-[140px] sm:ml-5 sm:mt-0"
                           target="_blank"
-                          href={`/add/${data.chainId}/${
-                            quoteToken.isNative || quoteToken.symbol === WNATIVE[data.chainId].symbol
-                              ? getNativeSybmol(data.chainId)
-                              : quoteToken.address
-                          }/${
-                            token.isNative || token.symbol === WNATIVE[data.chainId].symbol
-                              ? getNativeSybmol(data.chainId)
-                              : token.address
-                          }`}
+                          href={getAddLiquidityUrl(ZAPPER_DEXIDS[data.appId], quoteToken, token, data.chainId)}
                           rel="noreferrer"
                         >
                           <StyledButton>
@@ -295,11 +291,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="text-xl">Pending</div>
                           {data.userData !== undefined ? (
                             <div className=" flex text-primary">
-                              {!account
-                                ? "0.00"
-                                : (Number(data.userData.earnings) / Math.pow(10, data.earningToken.decimals)).toFixed(
-                                    2
-                                  )}
+                              {!account ? "0.00" : earnings.toFixed(2)}
                               &nbsp;
                               {data.earningToken.symbol}
                             </div>
@@ -308,11 +300,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           )}
                           {prices[data.appId] && data.userData !== undefined ? (
                             <div className="text-primary">
-                              $
-                              {(
-                                (prices[data.appId] * Number(data.userData.earnings)) /
-                                Math.pow(10, data.earningToken.decimals)
-                              ).toFixed(2)}
+                              ${(prices[data.appId] * earnings).toFixed(2)}
                               &nbsp;
                               <span className="text-[#FFFFFF80]">earned</span>
                             </div>
@@ -323,20 +311,12 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="mt-2">
                           <div className="text-xl">Total</div>
                           <div className=" flex text-primary">
-                            {!account
-                              ? "0.00"
-                              : (Number(data.totalRewards) / Math.pow(10, data.earningToken.decimals)).toFixed(2)}
+                            {!account ? "0.00" : totalEarnings.toFixed(2)}
                             &nbsp;
                             {data.earningToken.symbol}
                           </div>
                           {prices[data.appId] ? (
-                            <div className="text-primary">
-                              $
-                              {(
-                                (prices[data.appId] * Number(data.totalRewards)) /
-                                Math.pow(10, data.earningToken.decimals)
-                              ).toFixed(2)}
-                            </div>
+                            <div className="text-primary">${(prices[data.appId] * totalEarnings).toFixed(2)}</div>
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -375,13 +355,13 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="mt-1.5 h-[56px] w-full">
                             <StyledButton
                               type="teritary"
-                              boxShadow={!(!account || !data.userData || !Number(data.userData.earnings))}
-                              disabled={!account || !data.userData || !Number(data.userData.earnings) || pending}
+                              boxShadow={!(!account || !data.userData || !Number(earnings))}
+                              disabled={!account || !data.userData || !Number(earnings) || pending}
                               onClick={() => handleHarvest(RewardType.EARNING_TOKEN)}
                             >
                               <div className="flex text-sm">
                                 Harvest&nbsp;
-                                {!account || !data.userData ? 0 : Number(data.userData.earnings).toFixed(2)}
+                                {!account || !data.userData ? 0 : Number(earnings).toFixed(2)}
                                 <span className="text-primary">&nbsp;{data.earningToken.symbol}</span>
                               </div>
                             </StyledButton>
@@ -392,8 +372,8 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="mt-1.5 h-[56px] w-full">
                             <StyledButton
                               type="teritary"
-                              disabled={!data.userData || !Number(data.userData.earnings) || pending}
-                              boxShadow={!(!data.userData || !Number(data.userData.earnings))}
+                              disabled={!data.userData || !Number(earnings) || pending}
+                              boxShadow={!(!data.userData || !Number(earnings))}
                               onClick={() => {
                                 setTokenId(0);
                                 handleHarvest(RewardType.QUOTE_TOKEN);
@@ -403,7 +383,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 Convert
                                 {data.userData !== undefined ? (
                                   <span className="text-primary">
-                                    &nbsp;{Number(data.userData.earnings).toFixed(0)} {data.earningToken.symbol}&nbsp;
+                                    &nbsp;{earnings.toFixed(0)} {data.earningToken.symbol}&nbsp;
                                   </span>
                                 ) : (
                                   <SkeletonComponent />
@@ -411,8 +391,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 &nbsp;to&nbsp;
                                 {prices[data.appId] && data.userData !== undefined ? (
                                   <span className="text-primary">
-                                    ${(prices[data.appId] * data.userData.earnings).toFixed(2)}{" "}
-                                    {data.chainId === 1 ? "USDC" : "BUSD"}
+                                    ${(prices[data.appId] * earnings).toFixed(2)} {data.chainId === 1 ? "USDC" : "BUSD"}
                                   </span>
                                 ) : (
                                   <SkeletonComponent />
@@ -423,8 +402,8 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="mt-1.5 h-[56px] w-full">
                             <StyledButton
                               type="teritary"
-                              disabled={!data.userData || !Number(data.userData.earnings) || pending}
-                              boxShadow={!(!data.userData || !Number(data.userData.earnings))}
+                              disabled={!data.userData || !earnings || pending}
+                              boxShadow={!(!data.userData || !earnings)}
                               onClick={() => {
                                 setTokenId(1);
                                 handleHarvest(RewardType.QUOTE_TOKEN);
@@ -434,7 +413,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 Convert
                                 {data.userData !== undefined ? (
                                   <span className="text-primary">
-                                    &nbsp;{Number(data.userData.earnings).toFixed(0)} {data.earningToken.symbol}&nbsp;
+                                    &nbsp;{earnings.toFixed(0)} {data.earningToken.symbol}&nbsp;
                                   </span>
                                 ) : (
                                   <SkeletonComponent />
@@ -442,7 +421,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                                 &nbsp;to&nbsp;
                                 {prices[data.appId] && data.userData !== undefined ? (
                                   <span className="text-primary">
-                                    ${(prices[data.appId] * data.userData.earnings).toFixed(2)} USDT
+                                    ${(prices[data.appId] * earnings).toFixed(2)} USDT
                                   </span>
                                 ) : (
                                   <SkeletonComponent />

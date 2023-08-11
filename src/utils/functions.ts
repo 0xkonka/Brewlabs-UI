@@ -6,10 +6,13 @@ import { DEX_LOGOS } from "config/constants/swap";
 import { toast } from "react-toastify";
 
 export function numberWithCommas(x: any) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const strList = x.toString().split(".");
+  if (strList.length === 1) return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return strList[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + strList[1];
 }
 
 export const BigNumberFormat = (str: any, decimals: number = 2) => {
+  if (!str) return (0).toFixed(decimals);
   const length = Math.floor(Math.log10(str));
   if (Number(str) >= 1000000000000000)
     return `${numberWithCommas((str / Math.pow(10, length)).toFixed(decimals))}e+${length - 12}T`;
@@ -104,8 +107,8 @@ export const formatIPFSString = (url) => {
   return _url;
 };
 
-export const getAddLiquidityUrl = (token1: Currency, token2: Currency, chainId: number) => {
-  return `/add/${chainId}/${
+export const getAddLiquidityUrl = (dexId: string, token1: Currency, token2: Currency, chainId: number) => {
+  return `/add/${chainId}/${dexId}/${
     token1.isNative || token1.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token1.address
   }/${token2.isNative || token2.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token2.address}`;
 };
@@ -117,3 +120,9 @@ export const getStringfy = (data: any) => {
 export const showError = (errorMsg: string) => {
   if (errorMsg) toast.error(errorMsg);
 };
+
+export const getEllipsis = (address: string, left = 6, right = 4) => {
+  if (!address) return;
+  return address.slice(0, left) + "..." + address.substring(address.length - right);
+};
+

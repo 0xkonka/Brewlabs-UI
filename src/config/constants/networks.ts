@@ -5,15 +5,7 @@ export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fant
 
 export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
-  chart: [
-    ChainId.ETHEREUM,
-    ChainId.BSC_MAINNET,
-    ChainId.POLYGON,
-    ChainId.FANTOM,
-    ChainId.AVALANCHE,
-    ChainId.CRONOS,
-    ChainId.BRISE,
-  ],
+  chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   farms: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
@@ -123,6 +115,7 @@ export const CHAIN_ICONS = {
 
   [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
+  8453: "/images/networks/base.png",
 };
 
 export const EXPLORER_LOGO = {
@@ -259,5 +252,16 @@ export const NETWORKS = {
     },
     rpcUrls: ["https://evm.cronos.org"],
     blockExplorerUrls: ["https://cronoscan.com"],
+  },
+  8453: {
+    chainId: `0x2105`,
+    chainName: "Base Mainnet",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://mainnet.base.org"],
+    blockExplorerUrls: ["https://basescan.org"],
   },
 };

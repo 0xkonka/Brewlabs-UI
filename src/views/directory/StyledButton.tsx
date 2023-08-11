@@ -25,7 +25,7 @@ const StyledButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`border border-[#FFFFFF80] bg-[#B9B8B81A] font-medium  enabled:hover:bg-[#b9b8b837] disabled:bg-transparent disabled:text-white ${base} ${className}`}
+      className={`border border-[#FFFFFF80] bg-[#B9B8B81A] font-medium  enabled:hover:bg-[#b9b8b837] disabled:bg-transparent disabled:opacity-70 ${base} ${className}`}
     >
       {children}
     </button>

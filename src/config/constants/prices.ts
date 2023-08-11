@@ -10,9 +10,7 @@ const prices = [
   tokens[ChainId.ETHEREUM].gcc,
   tokens[ChainId.BSC_MAINNET].vlk,
   tokens[ChainId.BSC_MAINNET].roo,
-  tokens[ChainId.ETHEREUM].balto,
   tokens[ChainId.BSC_MAINNET].bvst,
-  tokens[ChainId.BSC_MAINNET].dtt,
 ];
 
 export default prices;

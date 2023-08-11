@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Datafeed from "./datafeed/datafeed";
 import { widget } from "charting_library/charting_library.min";
 import liquidity from "./datafeed/indicators/liquidity";
+import { DEX_GURU_CHAIN_NAME } from "config";
 
 export const defaultOverrides = {
   "mainSeriesProperties.candleStyle.upColor": "#26a69a",
@@ -34,12 +35,13 @@ function getLanguageFromURL() {
   return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-const TradingViewChart = () => {
+const TradingViewChart = ({ currency }) => {
+  const stringifiedCurrency = JSON.stringify(currency);
   useEffect(() => {
     window.tvWidget = new widget({
       locale: getLanguageFromURL() || ("en" as any),
-      symbol: "0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba-eth_USD", // default symbol
-      interval: "10", // default interval
+      symbol: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}_USD`, // default symbol
+      interval: "1D", // default interval
       fullscreen: false, // displays the chart in the fullscreen mode
       container_id: "tv_chart_container",
       datafeed: Datafeed,
@@ -93,9 +95,9 @@ const TradingViewChart = () => {
       },
     });
     //Do not forget to remove the script on unmounting the component!
-  }, []); //eslint-disable-line
+  }, [stringifiedCurrency]); //eslint-disable-line
 
-  return <div id="tv_chart_container" className="h-full rounded-lg overflow-hidden"></div>;
+  return <div id="tv_chart_container" className="h-full overflow-hidden rounded-lg"></div>;
 };
 
 export default TradingViewChart;

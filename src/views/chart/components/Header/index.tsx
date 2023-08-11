@@ -1,16 +1,21 @@
 import { DeployerSVG, InfoSVG, NFTSVG, SwapSVG, SwitchSVG } from "@components/dashboard/assets/svgs";
 import { ChartContext } from "contexts/ChartContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NETWORKS } from "config/constants/networks";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { getChainLogo } from "utils/functions";
 import { SearchInput } from "./SearchInput";
 import TrendingList from "./TrendingList";
 import { tokens } from "config/constants/tokens";
+import { useWeb3React } from "contexts/wagmi";
+import useTokenMarketChart from "@hooks/useTokenMarketChart";
+import { useDexPrice } from "@hooks/useTokenPrice";
+import { DEX_GURU_WETH_ADDR } from "config/constants";
+import { ChainId } from "@brewlabs/sdk";
 
-export default function Header() {
-  const { showFavorite, setShowFavorite, tokenData }: any = useContext(ChartContext);
-  const networks = [NETWORKS[1], NETWORKS[56]];
+export default function Header({ selectedCurrency, setSelectedCurrency, showReverse, setShowReverse }) {
+  const { chainId } = useWeb3React();
+  const networks = [NETWORKS[1], NETWORKS[56], NETWORKS[ChainId.POLYGON], NETWORKS[ChainId.ARBITRUM], NETWORKS[8453]];
   const trendings = [
     { logo: "/images/chart/trending/cmc.png", name: "CMC Trending" },
     { logo: "/images/chart/trending/mixed.svg", name: "Mixed" },
@@ -21,77 +26,95 @@ export default function Header() {
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedTrending, setSelectedTrending] = useState(0);
 
+  useEffect(() => {
+    if (Number(chainId) === 56) setSelectedNetwork(1);
+    else setSelectedNetwork(0);
+  }, [chainId]);
+
+  const { price: ethPrice } = useDexPrice(1, DEX_GURU_WETH_ADDR);
+  const { price: bnbPrice } = useDexPrice(56, DEX_GURU_WETH_ADDR);
+  const { price: maticPrice } = useDexPrice(ChainId.POLYGON, DEX_GURU_WETH_ADDR);
+  const { price: arbitrumPrice } = useDexPrice(ChainId.ARBITRUM, "0x82af49447d8a07e3bd95bd0d56f35241523fbab1");
+  const { price: basePrice } = useDexPrice(8453, "0x4200000000000000000000000000000000000006");
+  const price = {
+    1: ethPrice ?? 0,
+    56: bnbPrice ?? 0,
+    [ChainId.POLYGON]: maticPrice ?? 0,
+    [ChainId.ARBITRUM]: arbitrumPrice ?? 0,
+    8453: basePrice ?? 0,
+  };
+
   return (
-    <div className="mt-[100px] flex items-center justify-between">
-      <div className="flex flex-1 items-center">
-        <div className="flex items-center text-primary">
-          <div className="mr-1 [&>svg]:!h-4 [&>svg]:!w-4">{DeployerSVG}</div>
-          <div className="relative text-2xl">
-            BrewCharts
-            <div className="absolute -bottom-2.5 right-0 text-xs text-[#D9D9D9]">Beta 1.00</div>
-          </div>
-        </div>
-        <div className="ml-4">
-          <DropDown
-            value={selectedNetwork}
-            setValue={setSelectedNetwork}
-            className="!w-[120px] !bg-[#29292b] !px-3 !text-white"
-            bodyClassName="!bg-none !bg-[#29292b]"
-            itemClassName="!px-3 !justify-start hover:!bg-[#b9b8b83d]"
-            height="44px"
-            rounded="4px"
-            data={networks.map((network, i) => {
-              return (
-                <div className="flex items-center" key={i}>
-                  <img
-                    src={getChainLogo(parseInt(network.chainId))}
-                    alt={""}
-                    className="primary-shadow h-6 w-6 rounded-full"
-                  />
-                  <div className="ml-2">
-                    <div className="leading-none">{network.nativeCurrency.symbol}</div>
-                    <div className="text-xs leading-none text-[#FFFFFFBF]">$335.00</div>
-                  </div>
-                </div>
-              );
-            })}
-          />
-        </div>
-        <div className="ml-4 max-w-[600px] flex-1">
-          <SearchInput />
-        </div>
-      </div>
-      <div className="flex items-center">
-        <div className="relative ml-4">
-          <DropDown
-            value={selectedTrending}
-            setValue={setSelectedTrending}
-            data={trendings.map((trending, i) => (
-              <div key={i} className="flex items-center text-base">
-                <img src={trending.logo} alt={""} className="mr-2 w-4" />
-                <div className="text-white">{trending.name}</div>
-              </div>
-            ))}
-            className="!w-[180px] !bg-[#29292b] !px-4 !text-white"
-            bodyClassName="!bg-none !bg-[#29292b]"
-            itemClassName="!px-4 !justify-start hover:!bg-[#b9b8b83d]"
-            height="44px"
-            rounded="4px"
-          />
-          <div className="absolute -top-5 left-0 flex items-center">
-            <div className="mr-1 cursor-pointer text-tailwind transition hover:text-white [&>svg]:!h-3 [&>svg]:!w-3">
-              {InfoSVG}
+    <div className="relative z-10 flex flex-col items-center justify-between 2xl:flex-row">
+      <div className="flex w-full flex-none flex-col items-center md:flex-row 2xl:flex-1">
+        <div className="flex w-full items-center justify-between md:w-fit md:justify-start">
+          <div className={`flex w-fit items-center text-primary ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
+            <div className="mr-1 [&>svg]:!h-4 [&>svg]:!w-4">{DeployerSVG}</div>
+            <div className="relative text-2xl">
+              BrewCharts
+              <div className="absolute -bottom-2.5 right-0 text-xs text-[#D9D9D9]">Beta 1.00</div>
             </div>
-            <div className="whitespace-nowrap text-xs text-[#D9D9D9]">What is the trending heat map?</div>
+          </div>
+          <div className="ml-4 ">
+            <DropDown
+              value={selectedNetwork}
+              setValue={setSelectedNetwork}
+              className="!w-[120px] !bg-[#29292b] !px-2 !text-white"
+              bodyClassName="!bg-none !bg-[#29292b]"
+              itemClassName="!px-2 !justify-start hover:!bg-[#b9b8b83d]"
+              height="44px"
+              rounded="4px"
+              data={networks.map((network, i) => {
+                return (
+                  <div className="flex items-center switch-name w-full h-full" key={i}>
+                    <img
+                      src={getChainLogo(parseInt(network.chainId))}
+                      alt={""}
+                      className="primary-shadow h-6 w-6 rounded-full"
+                    />
+                    <div className="relative ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                      <div className="absolute left-0 top-0 text-xs font-bold transition w-full">
+                        {network.nativeCurrency.symbol}
+                      </div>
+                      <div className="absolute left-0 top-0 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold opacity-0 transition w-full">
+                        {network.chainName}
+                      </div>
+                      <div className="text-xs leading-none text-[#FFFFFFBF] mt-5">
+                        ${price[parseInt(network.chainId)].toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            />
           </div>
         </div>
-        <div className="mx-4">
-          <TrendingList trendings={new Array(11).fill(tokens[56].brews)} />
+        <div className="mt-4 flex w-full flex-1 items-center justify-between md:mt-0 md:w-fit">
+          <div className="relative ml-0 flex-1 md:ml-4 md:w-fit">
+            <SearchInput
+              selectedChainId={parseInt(networks[selectedNetwork].chainId)}
+              setSelectedCurrency={setSelectedCurrency}
+            />
+          </div>
+          <div
+            className={`ml-4 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
+              showReverse ? "2xl:w-[332px]" : "2xl:w-[292px]"
+            }`}
+          >
+            <div
+              className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5"
+              onClick={() => setShowReverse(!showReverse)}
+            >
+              {SwitchSVG}
+            </div>
+            <div
+              className="tooltip cursor-pointer transition  hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
+              data-tip="No Brewlabs NFT found."
+            >
+              {NFTSVG}
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center text-tailwind">
-        <div className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5">{SwitchSVG}</div>
-        <div className="cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5">{NFTSVG}</div>
       </div>
     </div>
   );

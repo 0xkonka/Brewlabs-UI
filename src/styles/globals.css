@@ -146,10 +146,17 @@ html.dark h3 {
 
 @keyframes fadeIn {
   from {
-    opacity:20%;
+    opacity: 20%;
   }
 }
 
 .animate-flicker {
   animation: fadeIn 1s infinite alternate;
+}
+
+.switch-name:hover > div > div:nth-child(2) {
+  opacity: 1;
+}
+.switch-name:hover > div > div:nth-child(1) {
+  opacity: 0;
 }

@@ -12,6 +12,7 @@ import { navigationData, navigationExtraData } from "../../config/constants/navi
 import { useMediaQuery } from "react-responsive";
 import Notification from "@components/Notification";
 import { CommunityContext } from "contexts/CommunityContext";
+import Soon from "@components/Soon";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
@@ -37,7 +38,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
         >
           <div className={`flex-1 space-y-1 px-2 font-brand tracking-wider ${!slim ? "overflow-y-scroll" : ""}`}>
             {navigationData.map((item) => (
-              <Link href={item.href} passHref key={item.name}>
+              <Link href={item.href} passHref key={item.name} className="flex flex-col">
                 <motion.a
                   layout="position"
                   whileTap={{ scale: 0.9 }}
@@ -49,7 +50,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     item.href === router.pathname
                       ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-500 dark:hover:bg-gray-800",
-                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium home:tooltip home:tooltip-right"
+                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium tooltip tooltip-right"
                   )}
                 >
                   {item.svg ? (
@@ -74,10 +75,8 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                   )}
                   <span className={`${clsx(slim ? "sr-only" : "relative")}`}>
                     {item.name}
-                    {item.coming ? (
-                      <div className="absolute -right-10 -top-2 z-10 flex h-3 w-8 items-center	 justify-center rounded-[30px] bg-primary font-brand text-[10px] font-bold tracking-normal text-black">
-                        Soon
-                      </div>
+                    {item.isBeta ? (
+                      <Soon text={"Beta"} className="!-right-12 !-top-3 !rounded !px-0.5 !py-0.5 !text-[10px]" />
                     ) : (
                       ""
                     )}

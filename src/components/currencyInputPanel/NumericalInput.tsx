@@ -7,6 +7,7 @@ const NumericalInput = ({
   onUserInput,
   placeholder,
   decimals = 18,
+  size,
 }: {
   value: string | number;
   onUserInput: (input: string) => void;
@@ -16,6 +17,7 @@ const NumericalInput = ({
   align?: "right" | "left";
   decimals?: number;
   isZap?: boolean;
+  size?: string;
 }) => {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === "" || inputRegex.test(escapeRegExp(nextUserInput))) {
@@ -36,7 +38,9 @@ const NumericalInput = ({
       inputMode="decimal"
       placeholder={placeholder || "0.0"}
       pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
-      className="w-full max-w-[250px] truncate bg-transparent text-4xl outline-0"
+      className={`w-full max-w-[250px] truncate bg-transparent ${
+        size === "sm" ? "" : "sm:text-4xl"
+      } text-2xl outline-0`}
       maxLength={79}
     />
   );

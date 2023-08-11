@@ -12,9 +12,10 @@ interface TradeCardProps {
   buyTax?: number;
   sellTax?: number;
   noLiquidity?: boolean;
+  size?: string;
 }
 
-const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax, noLiquidity }) => {
+const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax, noLiquidity, size }) => {
   const { chainId } = useActiveWeb3React();
   const { t } = useTranslation();
 
@@ -38,11 +39,14 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
     <>
       {price ? (
         <div className="select-none rounded-xl border border-amber-300 px-2 py-1">
-          <div className="mr-2 flex cursor-pointer justify-between">
+          <div className={`${size === "sm" ? "" : "sm:mr-2"} mr-0 flex cursor-pointer justify-between`}>
             <div className="flex items-center gap-1" style={{ marginRight: "4px" }}>
               <ExclamationCircleIcon className="h-5 w-5 dark:text-primary" data-tooltip-target="tooltip-default" />
               {!tradePanelToggled}
-              <p className="text-[13px]" onClick={() => setPriceInverted(!priceInverted)}>
+              <p
+                className={`${size === "sm" ? "" : "sm:text-[13px]"} text-[11px]`}
+                onClick={() => setPriceInverted(!priceInverted)}
+              >
                 {priceInverted ? (
                   formattedPrice.includes("sub") ? (
                     <>
@@ -75,26 +79,28 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
             <div className="flex items-center" onClick={() => setTradePanelToggled(!tradePanelToggled)}>
               {noLiquidity ? (
                 <>
-                {adapters.length > 1 && (
-                  <button className="btn-protocol-shadow mr-2 hidden rounded rounded-2xl bg-primary px-3 text-xs text-black sm:block">
-                    MULTI
-                  </button>
-                )}
-                {adapters.map((adapter, index) => (
-                  <img
-                    className={`${index > 0 ? "-ml-2" : ""} h-6 w-6 rounded-full`}
-                    src={adapter.logo}
-                    alt={adapter.name}
-                    key={index}
-                  />
-                ))}
+                  {adapters.length > 1 && (
+                    <button
+                      className={`btn-protocol-shadow mr-2 hidden rounded rounded-2xl bg-primary px-1.5 ${
+                        size === "sm" ? "" : "sm:px-3 sm:text-xs"
+                      } text-[10px] text-black sm:block`}
+                    >
+                      MULTI
+                    </button>
+                  )}
+                  {adapters.map((adapter, index) => (
+                    <img
+                      className={`${index > 0 ? "-ml-2" : ""} ${
+                        size === "sm" ? "" : "w-6 sm:h-6"
+                      } h-5 w-5 rounded-full`}
+                      src={adapter.logo}
+                      alt={adapter.name}
+                      key={index}
+                    />
+                  ))}
                 </>
               ) : (
-                <img
-                  className={`h-6 w-6 rounded-full`}
-                  src={"/images/brewlabs.png"}
-                  alt={"brewlabs"}
-              />
+                <img className={`h-6 w-6 rounded-full`} src={"/images/brewlabs.png"} alt={"brewlabs"} />
               )}
             </div>
           </div>

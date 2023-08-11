@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Carousel from "react-multi-carousel";
+import { useGlobalState } from "state";
 import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -11,9 +12,13 @@ const responsive = {
 };
 
 export default function TrendingList({ trendings }) {
-  const showCount = 4;
+  const showCount = 3;
   const carouselRef = useRef();
   const [filteredTrendings, setFilteredTrendings] = useState([]);
+
+  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
+  const [, setSidebarContent] = useGlobalState("userSidebarContent");
+
   useEffect(() => {
     let temp = [],
       _fTrendings = [];
@@ -27,8 +32,9 @@ export default function TrendingList({ trendings }) {
     if (temp.length) _fTrendings.push(temp);
     setFilteredTrendings(_fTrendings);
   }, [trendings]);
+  
   return (
-    <div className="primary-shadow flex h-[44px] w-[450px] flex-col justify-center rounded bg-[#b9b8b8f] px-4">
+    <div className="primary-shadow flex h-[44px] w-[300px] flex-col justify-center rounded bg-[#b9b8b8f] px-4 md:w-[360px]">
       <Carousel
         arrows={false}
         responsive={responsive}

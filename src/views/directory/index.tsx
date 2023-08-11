@@ -257,7 +257,6 @@ const Directory = ({ page }: { page: number }) => {
         return "";
     }
   };
-
   return (
     <PageWrapper>
       {renderDetailPage()}
@@ -286,14 +285,32 @@ const Directory = ({ page }: { page: number }) => {
                 {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
                   <div className="-mb-4 -mt-4 flex justify-end">
                     <Link
-                      href={`/deployer/${
-                        curFilter === Category.FARM ? "farm" : curFilter === Category.INDEXES ? "index" : ""
+                      href={`${
+                        curFilter === Category.FARM
+                          ? "/deployer/farm"
+                          : curFilter === Category.INDEXES
+                          ? "/deployer/index"
+                          : ""
                       }`}
                     >
                       <StyledButton className="!w-fit p-[6px_12px] !text-sm">
-                        Create {curFilter === Category.FARM ? "Farm" : curFilter === Category.INDEXES ? "Index" : ""}
+                        {curFilter === Category.FARM
+                          ? "Create Farm"
+                          : curFilter === Category.INDEXES
+                          ? "Create Index"
+                          : ""}
                       </StyledButton>
                     </Link>
+                  </div>
+                ) : curFilter === Category.POOL ? (
+                  <div className="flex w-full justify-end -mt-[44px]">
+                    <a
+                      href={"https://t.me/MaverickBL"}
+                      target="_blank"
+                      className="text-sm !text-[#FFFFFF80] hover:!text-white"
+                    >
+                      Advertise with us
+                    </a>
                   </div>
                 ) : (
                   ""

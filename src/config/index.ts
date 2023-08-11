@@ -131,14 +131,31 @@ export const UNMARSHAL_API_KEYS = [
   "gxzF8K9KM98XQaLuypeVC6HJ9TJq8d0V89nbd7G3",
 ];
 
-export const DEX_GURU_CHAIN_NAME = {
-  1: "eth",
-  56: "bsc",
-  137: "polygon",
-};
-
 export const UNMARSHAL_CHAIN_NAME = {
   1: "ethereum",
   56: "bsc",
   137: "matic",
+};
+
+export const DEX_GURU_CHAIN_NAME = {
+  1: "eth",
+  56: "bsc",
+  137: "polygon",
+  [ChainId.ARBITRUM]: "arbitrum",
+  8453: "base",
+};
+
+export const DEX_GURU_SWAP_AMM = {
+  2: "uniswap_v3",
+  1: "uniswap",
+  4: "pancakeswap",
+  193: "pancakeswap_v3",
+  60: "pancakeswap_v1",
+  3: "sushiswap",
+  236: "sushiswap_v3",
+};
+
+export const DEXTOOLS_CHAINNAME = {
+  1: "ether",
+  56: "bsc",
 };

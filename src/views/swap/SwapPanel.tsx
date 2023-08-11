@@ -27,8 +27,19 @@ import WarningModal from "@components/warningModal";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
+import StyledButton from "views/directory/StyledButton";
+import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
+import { NETWORKS } from "config/constants/networks";
 
-export default function SwapPanel({ type = "swap", disableChainSelect = false }) {
+export default function SwapPanel({
+  showHistory = true,
+  size,
+  toChainId,
+}: {
+  showHistory?: boolean;
+  size?: string;
+  toChainId?: ChainId;
+}) {
   const { account, chainId } = useActiveWeb3React();
 
   const { t } = useTranslation();
@@ -53,7 +64,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const trade = showWrap ? undefined : v2Trade;
 
-  const { onUserInput, onSwitchTokens, onCurrencySelection } = useSwapActionHandlers();
+  const { onUserInput, onSwitchTokens } = useSwapActionHandlers();
 
   // txn values
   const [deadline] = useUserTransactionTTL();
@@ -82,6 +93,8 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
   );
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
+
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
 
   const confirmPriceImpactWithoutFee = (priceImpactWithoutFee: Percent) => {
     if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
@@ -265,6 +278,7 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           currency={currencies[Field.INPUT]}
           balance={currencyBalances[Field.INPUT]}
           currencies={currencies}
+          size={size}
         />
       </div>
 
@@ -289,9 +303,11 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           sellTax={sellTax}
           currencies={currencies}
           noLiquidity={noLiquidity}
+          size={size}
         />
       </div>
-      {account &&
+      {!(toChainId && toChainId !== chainId) ? (
+        account &&
         (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
           <>
             {inputError ? (
@@ -366,9 +382,20 @@ export default function SwapPanel({ type = "swap", disableChainSelect = false })
           </>
         ) : (
           <Button disabled={!0}>{t("Coming Soon")}</Button>
-        ))}
+        ))
+      ) : (
+        <StyledButton
+          className="!w-full !font-roboto whitespace-nowrap p-[10px_12px]"
+          onClick={() => {
+            switchNetwork(toChainId);
+          }}
+          disabled={!canSwitch}
+        >
+          Switch {NETWORKS[toChainId].chainName}
+        </StyledButton>
+      )}
 
-      <History />
+      {showHistory ? <History /> : ""}
     </>
   );
 }

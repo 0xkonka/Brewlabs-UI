@@ -121,7 +121,7 @@ const useNFTStakingValues = () => {
   useSlowRefreshEffect(() => {
     getRecentMintCount()
       .then((result: any) => setMintCount(result))
-      .catch((e) => console.log(e));
+      .catch((e) => "");
   }, []);
 
   return { NFT_MontlyApr, mintCount };
@@ -178,7 +178,7 @@ const useFeeCollectedValues = () => {
       .catch((e) => console.log(e));
     getChangedFeeCollected()
       .then((result) => setChangedValue(result))
-      .catch((e) => console.log(e));
+      .catch((e) => "");
   }, []);
 
   return {
@@ -245,6 +245,7 @@ const useTreasuryValues = () => {
                   addresses[chainId][j]
                 }&page=1&offset=50&sort=desc&apikey=${EXPLORER_API_KEYS[chainId]}`
               );
+              if (result.data.message !== "OK") return 0;
               const txs = result.data.result.filter(
                 (tx) =>
                   tx.timeStamp / 1 >= Date.now() / 1000 - 24 * 3600 && tx.to === addresses[chainId][j].toLowerCase()
