@@ -6,20 +6,37 @@ import { useAccount } from "wagmi";
 
 export default function SwapHistory({ currency }) {
   const { address: account } = useAccount();
-  const [showType, setShowType] = useState("All");
+  const [showType, setShowType] = useState(0);
+  const [criteria, setCriteria] = useState("");
   const { histories } = useTradingHistory(
     currency.tokenAddresses[0],
     currency.chainId,
     currency.address,
     currency.swap
   );
-  const filteredHitories = histories.filter(
-    (history) => (showType === "Mine" && history.sender === account.toLowerCase()) || showType === "All"
+
+  // const action = history.fromAddress === currency.tokenAddresses[0].toLowerCase() ? "Sell" : "Buy";
+  const filterHistory = (histories) => {
+    switch (showType) {
+      case 0:
+        return histories;
+      case 1:
+        return histories.filter((history) => history.fromAddress !== currency.tokenAddresses[0].toLowerCase());
+      case 2:
+        return histories.filter((history) => history.fromAddress === currency.tokenAddresses[0].toLowerCase());
+      case 3:
+        return histories.filter((history) => history.sender === account.toLowerCase());
+    }
+  };
+
+  const _histories = filterHistory(
+    histories.filter((history) => history.transactionAddress.toLowerCase().includes(criteria.toLowerCase()))
   );
+
   return (
     <div>
-      <HistoryToolBar showType={showType} setShowType={setShowType} histories={filteredHitories} />
-      <HistoryList histories={filteredHitories} currency={currency} />
+      <HistoryToolBar showType={showType} setShowType={setShowType} criteria={criteria} setCriteria={setCriteria} />
+      <HistoryList histories={_histories} currency={currency} />
     </div>
   );
 }
