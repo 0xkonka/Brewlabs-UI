@@ -17,18 +17,15 @@ import {
 import VolumeInfo from "./VolumeInfo";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { useAccount } from "wagmi";
-import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import useTokenInfo from "@hooks/useTokenInfo";
 import { addTokenToMetamask, getExplorerLink } from "lib/bridge/helpers";
 import { BridgeToken } from "config/constants/types";
 import { SwapContext } from "contexts/SwapContext";
-import Modal from "@components/Modal";
-import SettingModal from "views/swap/components/modal/SettingModal";
-import { useUserSlippageTolerance } from "state/user/hooks";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useDexPrice } from "@hooks/useTokenPrice";
 import SlippageInfo from "./SlippageInfo";
+import VotePanel from "./VotePanel";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [isCopied, setIsCopied] = useState(false);
@@ -183,6 +180,8 @@ export default function SwapOption({ currency, marketInfos }) {
           </div>
         </div>
       </div>
+
+      {/* <VotePanel /> */}
       <div className={`mb-4 mt-4 hidden h-[120px] rounded-lg bg-[url('/images/directory/truenft.png')] 2xl:block`} />
     </div>
   );
