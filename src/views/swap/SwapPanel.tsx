@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useContext } from "react";
+import { useState, useMemo, useCallback, useContext, useEffect } from "react";
 import { CurrencyAmount, Percent, Price, ChainId } from "@brewlabs/sdk";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -30,6 +30,7 @@ import ConfirmationModal from "./components/modal/ConfirmationModal";
 import StyledButton from "views/directory/StyledButton";
 import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
 import { NETWORKS } from "config/constants/networks";
+import { useTokenTaxes } from "@hooks/useTokenInfo";
 
 export default function SwapPanel({
   showHistory = true,
@@ -52,7 +53,7 @@ export default function SwapPanel({
 
   // ----------------- ROUTER SWAP --------------------- //
 
-  const { autoMode, buyTax, sellTax, slippage }: any = useContext(SwapContext);
+  const { autoMode, buyTax, sellTax, slippage, setAutoMode, setSlippageInput }: any = useContext(SwapContext);
   // swap state
   const { independentField, typedValue, recipient } = useSwapState();
   const { currencies, currencyBalances, parsedAmount, inputError, v2Trade } = useDerivedSwapInfo();
@@ -68,7 +69,7 @@ export default function SwapPanel({
 
   // txn values
   const [deadline] = useUserTransactionTTL();
-  const [userSlippageTolerance] = useUserSlippageTolerance();
+  const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
 
   const noLiquidity = useMemo(() => {
     if (chainId === ChainId.BSC_TESTNET || chainId === ChainId.POLYGON)
@@ -258,6 +259,28 @@ export default function SwapPanel({
     }
   };
 
+  const parseCustomSlippage = (value: string) => {
+    setSlippageInput(value);
+    try {
+      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
+      if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
+        setUserSlippageTolerance(valueAsIntFromRoundedFloat);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const { buyTaxes, sellTaxes }: any = useTokenTaxes(currencies[Field.OUTPUT]?.address, chainId);
+
+  useEffect(() => {
+    if (!buyTaxes) {
+      setAutoMode(true);
+    } else {
+      setAutoMode(false);
+      parseCustomSlippage(buyTaxes);
+    }
+  }, [buyTaxes, currencies[Field.OUTPUT]?.address]);
+
   return (
     <>
       <WarningModal open={warningOpen} setOpen={setWarningOpen} type={"highpriceimpact"} onClick={onConfirm} />
@@ -385,7 +408,7 @@ export default function SwapPanel({
         ))
       ) : (
         <StyledButton
-          className="!w-full !font-roboto whitespace-nowrap p-[10px_12px]"
+          className="!w-full whitespace-nowrap p-[10px_12px] !font-roboto"
           onClick={() => {
             switchNetwork(toChainId);
           }}

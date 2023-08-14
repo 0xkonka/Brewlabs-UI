@@ -2,6 +2,7 @@ import TradingViewChart from "./TradingViewChart";
 import FavouritePanel from "./FavouritePanel";
 import SwapHistory from "./SwapHistory";
 import SwapOption from "./SwapOption";
+import UserInfo from "./UserInfo";
 
 export default function TradingPanel({ currency, marketInfos, setSelectedCurrency, showReverse }) {
   return (
@@ -14,6 +15,7 @@ export default function TradingPanel({ currency, marketInfos, setSelectedCurrenc
           <div className="h-[660px]">
             <TradingViewChart currency={currency} />
           </div>
+          <UserInfo currency={currency} />
           <SwapHistory currency={currency} />
         </div>
         <div className="hidden w-[280px] 2xl:block">

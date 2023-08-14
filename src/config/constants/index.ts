@@ -10,8 +10,8 @@ export const SLOW_INTERVAL = 60000;
 export const BIGSLOW_INTERVAL = 60000 * 2;
 export const DAY_INTERVAL = 60000 * 24 * 60;
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL;
-// export const API_URL = "http://localhost:5050/api";
+// export const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export const API_URL = "http://localhost:5050/api";
 export const MULTICALL_FETCH_LIMIT = 120;
 
 export const ETH_ADDRESSES = [

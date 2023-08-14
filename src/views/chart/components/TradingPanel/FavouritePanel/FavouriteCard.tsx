@@ -9,7 +9,7 @@ import { fetchAllPairs } from "@hooks/useTokenAllPairs";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import StyledPrice from "@components/StyledPrice";
 
-export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
+export default function FavouriteCard({ pair, setSelectedCurrency, type, network }) {
   const [isFade, setIsFade] = useState(false);
   const [fpair, setFPair] = useState(null);
 
@@ -32,6 +32,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type }) {
 
   const closeRef: any = useRef();
 
+  if (!(network === "All" || wrappedPair?.chainId === parseInt(network.chainId))) return;
   return wrappedPair !== undefined ? (
     <div
       className={`${

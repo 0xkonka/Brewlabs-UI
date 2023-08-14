@@ -162,7 +162,9 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             </div>
             <div className="w-full max-w-full text-sm text-[#FFFFFF80] md:max-w-[400px]">
               <div className={`${detailOpen ? "line-clamp-[100]" : "line-clamp-[5]"} overflow-hidden text-ellipsis`}>
-                {proposal.description}
+                {proposal.description.split("\n").map((data: any, i: number) => {
+                  return data === "" ? <br key={i} /> : <p>{data}</p>;
+                })}
               </div>
               <div className="cursor-pointer text-right hover:text-white" onClick={() => setDetailOpen(!detailOpen)}>
                 {detailOpen ? "(show less)" : "(details)"}

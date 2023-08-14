@@ -12,7 +12,9 @@ export default function SwapHistory({ currency }) {
     currency.tokenAddresses[0],
     currency.chainId,
     currency.address,
-    currency.swap
+    currency.swap,
+    0,
+    100
   );
 
   // const action = history.fromAddress === currency.tokenAddresses[0].toLowerCase() ? "Sell" : "Buy";
