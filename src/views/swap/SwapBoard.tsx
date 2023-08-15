@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useUserSlippageTolerance } from "state/user/hooks";
 
 import { Tooltip as ReactTooltip } from "react-tooltip";

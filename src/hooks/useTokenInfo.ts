@@ -197,7 +197,7 @@ const defaultVolume = {
     },
   },
 };
-export function useTradingHistory(address, chainId, pair, amm, period = 0, limit = 100, type = "all") {
+export function useTradingHistory(address, chainId, pair, amm, period = 0, limit = 0, type = "all", account = null) {
   const [histories, setHistories] = useState([]);
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
 
@@ -255,8 +255,11 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
       if (period) {
         query = { ...query, date: { start_date: Date.now() - period, end_date: Date.now() } };
       }
+      if (account) {
+        query = { ...query, account: account.toLowerCase() };
+      }
       let count = limit;
-      if (period) {
+      if (!limit) {
         const { data: response } = await axios.post("https://api.dex.guru/v3/tokens/transactions/count", query);
         count = response.count;
       }
@@ -264,7 +267,6 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
         new Array(Math.ceil(count / 100)).fill("").map(async (result, i) => {
           query = { ...query, limit: 100, offset: 100 * i };
           const { data }: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", query);
-
           histories = [
             ...histories,
             ...data.data.map((history) => {
@@ -356,20 +358,20 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
 export function useTokenTaxes(address, chainId) {
   const [buyTaxes, setBuyTaxes] = useState(null);
   const [sellTaxes, setSellTaxes] = useState(null);
-
   async function fetchTaxes() {
     try {
       const { data: response } = await axios.get(`https://api.gopluslabs.io/api/v1/token_security/${chainId}`, {
         params: { contract_addresses: address },
       });
-      setBuyTaxes(response.result[address].buy_tax * 100);
-      setSellTaxes(response.result[address].sell_tax * 100);
+      setBuyTaxes(response.result[address.toLowerCase()].buy_tax * 100);
+      setSellTaxes(response.result[address.toLowerCase()].sell_tax * 100);
     } catch (e) {
       console.log(e);
     }
   }
 
   useEffect(() => {
+    if (!isAddress(address)) return;
     fetchTaxes();
   }, [address, chainId]);
 

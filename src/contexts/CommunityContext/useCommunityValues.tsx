@@ -1,9 +1,10 @@
+import { ChainId } from "@brewlabs/sdk";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
 import useTokenBalances, { getBalances } from "@hooks/useTokenMultiChainBalance";
 import { useDexPrice } from "@hooks/useTokenPrice";
 import axios from "axios";
-import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
+import { DEX_GURU_CHAIN_NAME, UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
 import contracts from "config/constants/contracts";
 import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { NFT_RARE_COUNT } from "config/constants/nft";
@@ -30,40 +31,28 @@ const useTransactionCounts = () => {
   const [changedValue, setChangedValue] = useState(null);
 
   async function getTransactionCount() {
-    let apiKeyIndex = 0;
-    let totalCount = 0;
-    let recentTxCount = 0;
-    do {
-      const query = new URLSearchParams({
-        page: "1",
-        pageSize: "50",
-        chainId: "false",
-        auth_key: UNMARSHAL_API_KEYS[apiKeyIndex],
-      }).toString();
-
-      totalCount = 0;
+    let totalCount = 0,
       recentTxCount = 0;
-      const results = await Promise.all(
-        [1, 56].map(async (chainId) => {
-          const resp = await fetch(
-            `https://api.unmarshal.com/v1/${UNMARSHAL_CHAIN_NAME[chainId]}/token/${tokens[chainId].brews.address}/transactions?${query}`,
-            {
-              method: "GET",
-            }
-          );
-          if (resp.status === 429) return "failed";
-          const result = await resp.json();
-          totalCount += result.total_txs;
-          recentTxCount += result.transactions.filter((tx) => tx.date / 1 >= Date.now() / 1000 - 3600 * 24).length;
-        })
-      );
-
-      if (results.includes("failed")) {
-        apiKeyIndex++;
-        if (apiKeyIndex === UNMARSHAL_API_KEYS.length) break;
-        continue;
-      } else break;
-    } while (1);
+    const _tokens: any = [tokens[ChainId.ETHEREUM].brews, tokens[ChainId.BSC_MAINNET].brews];
+    await Promise.all(
+      _tokens.map(async (token, i) => {
+        let query = {
+          current_token_id: `${token.address.toLowerCase()}-${DEX_GURU_CHAIN_NAME[token.chainId]}`,
+          order: "desc",
+          sort_by: "timestamp",
+          token_status: "all",
+          with_full_totals: true,
+        };
+        const query24h = { ...query, date: { start_date: Date.now() - 3600 * 24 * 1000, end_date: Date.now() } };
+        const response = await Promise.all([
+          axios.post("https://api.dex.guru/v3/tokens/transactions/count", query),
+          axios.post("https://api.dex.guru/v3/tokens/transactions/count", query24h),
+        ]);
+        totalCount += response[0].data.count;
+        recentTxCount += response[1].data.count;
+        return;
+      })
+    );
     return { totalCount, recentTxCount };
   }
 

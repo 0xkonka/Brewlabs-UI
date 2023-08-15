@@ -20,15 +20,14 @@ export function usePairVoteInfo(address: any, chainId: number) {
     }
   }
 
-  async function voteOrAgainst(pair, account, chainId, type) {
+  async function voteOrAgainst(pair, account, chainId, rate) {
     try {
       const { data: response } = await axios.post(`${API_URL}/chart/voteOrAgainstPair`, {
         pair: pair.toLowerCase(),
         account: account.toLowerCase(),
         chainId,
-        type,
+        rate,
       });
-      console.log(response);
       if (!response.success) toast.error(response.msg);
       fetchPairInfo();
     } catch (e) {

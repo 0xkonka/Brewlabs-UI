@@ -26,6 +26,8 @@ import Link from "next/link";
 import { useDexPrice } from "@hooks/useTokenPrice";
 import SlippageInfo from "./SlippageInfo";
 import VotePanel from "./VotePanel";
+import Security from "@components/SwapComponents/Security";
+import SlippageText from "@components/SwapComponents/SlippageText";
 
 export default function SwapOption({ currency, marketInfos }) {
   const [isCopied, setIsCopied] = useState(false);
@@ -101,9 +103,15 @@ export default function SwapOption({ currency, marketInfos }) {
   const symbol = switchBalance ? `${currency.symbols[0]}-${currency.symbols[1]}` : currency.symbols[0];
   return (
     <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
-      <div className="primary-shadow relative flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-[34px_12px_12px_12px] 2xl:w-full">
-        <div className="absolute right-3 top-2" onClick={() => setOpenSettingModal(true)}>
-          <Cog8ToothIcon className="h-5 w-5 cursor-pointer hover:animate-spin dark:text-primary" />
+      <div className="primary-shadow relative flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-3 2xl:w-full">
+        <div className="mb-1 flex items-center justify-between">
+          <Security />
+          <div className="flex items-center">
+            <SlippageText />
+            <div onClick={() => setOpenSettingModal(true)} className="ml-1">
+              <Cog8ToothIcon className="h-5 w-5 cursor-pointer hover:animate-spin dark:text-primary" />
+            </div>
+          </div>
         </div>
         <SwapPanel showHistory={false} size="sm" toChainId={currency.chainId} />
       </div>
@@ -179,9 +187,9 @@ export default function SwapOption({ currency, marketInfos }) {
             </Link>
           </div>
         </div>
+        <VotePanel currency={currency} />
       </div>
 
-      {/* <VotePanel /> */}
       <div className={`mb-4 mt-4 hidden h-[120px] rounded-lg bg-[url('/images/directory/truenft.png')] 2xl:block`} />
     </div>
   );
