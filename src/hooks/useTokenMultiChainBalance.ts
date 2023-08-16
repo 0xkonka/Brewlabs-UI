@@ -5,6 +5,7 @@ import { Contract } from "ethers";
 import { useEffect, useState } from "react";
 import multicall from "utils/multicall";
 import { simpleRpcProvider } from "utils/providers";
+import { useSecondRefreshEffect } from "./useRefreshEffect";
 
 export async function getMultiChainTotalBalances(tokens: any, address: any) {
   let totalBalance = 0;
@@ -76,7 +77,7 @@ const useTokenBalances = (tokens: any, addresses: any) => {
   }
   const strigifiedTokens = JSON.stringify(tokens);
   const strigifiedAddresses = JSON.stringify(addresses);
-  useEffect(() => {
+  useSecondRefreshEffect(() => {
     fetchBalances();
   }, [strigifiedTokens, strigifiedAddresses]);
   return { balances, totalBalance };

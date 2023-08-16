@@ -1,4 +1,11 @@
-import { FAST_INTERVAL, SLOW_INTERVAL, BIGSLOW_INTERVAL, DAY_INTERVAL, MEDIUM_INTERVAL } from "config/constants";
+import {
+  FAST_INTERVAL,
+  SLOW_INTERVAL,
+  BIGSLOW_INTERVAL,
+  DAY_INTERVAL,
+  MEDIUM_INTERVAL,
+  SECOND_INTERVAL,
+} from "config/constants";
 import { DependencyList, EffectCallback, useEffect } from "react";
 import useSWR from "swr";
 import { useActiveChainId } from "./useActiveChainId";
@@ -37,9 +44,9 @@ export function useBigSlowRefreshEffect(effect: BlockEffectCallback, deps?: Depe
   useEffect(effect.bind(null, data), [data, ...(deps || [])]);
 }
 
-export function useDailyRefreshEffect(effect: BlockEffectCallback, deps?: DependencyList) {
+export function useSecondRefreshEffect(effect: BlockEffectCallback, deps?: DependencyList) {
   const { chainId } = useActiveChainId();
-  const { data = 0 } = useSWR([DAY_INTERVAL, "blockNumber", chainId]);
+  const { data = 0 } = useSWR([SECOND_INTERVAL, "blockNumber", chainId]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect.bind(null, data), [data, ...(deps || [])]);

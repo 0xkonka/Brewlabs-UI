@@ -21,7 +21,7 @@ export default function VotePanel({ currency }) {
     { index: 4, value: 0 },
   ];
   info?.votedList.map((voted, i) => rates[voted.rate].value++);
-  const bestVoted = info?.votedList.length ? rates.sort((a, b) => b.value - a.value)[0].index : -1;
+  const bestVoted = info?.votedList.length ? rates.sort((a, b) => b.value - a.value)[0].index : 2;
 
   const activeRarity = useActiveNFT();
 

@@ -3,7 +3,7 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { DEX_LOGOS } from "config/constants/swap";
 import { isAddress } from "utils";
-import { BigNumberFormat, priceFormat } from "utils/functions";
+import { BigNumberFormat, numberWithCommas, priceFormat } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
@@ -15,17 +15,14 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const infos = [
     {
       icon: LiquiditySVG,
-      value: `${BigNumberFormat(marketInfos.liquidity)} Pool liquidity`,
+      value: `${numberWithCommas((marketInfos.liquidity ?? 0).toFixed(2))} Pool liquidity`,
     },
-    { icon: ChartSVG, value: `$${BigNumberFormat(marketInfos.marketCap, 0)} Marketcap` },
+    { icon: ChartSVG, value: `$${numberWithCommas((marketInfos.marketCap ?? 0)?.toFixed(2))} Marketcap` },
     {
       icon: FixedSVG,
-      value: `${BigNumberFormat(
-        marketInfos.holders ? marketInfos.holders : 0,
-        (marketInfos.holders ? marketInfos.holders : 0) >= 1000 ? 2 : 0
-      )} Holders`,
+      value: `${numberWithCommas(marketInfos?.holders ?? 0)} Holders`,
     },
-    { icon: VolumeSVG, value: `${BigNumberFormat(marketInfos.volume24h)} Volume (24h)` },
+    { icon: VolumeSVG, value: `${numberWithCommas((marketInfos.volume24h ?? 0)?.toFixed(2))} Volume (24h)` },
   ];
 
   const price = marketInfos.price ?? 0;

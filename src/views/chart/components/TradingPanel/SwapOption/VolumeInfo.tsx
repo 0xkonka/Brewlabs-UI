@@ -5,13 +5,13 @@ import { BigNumberFormat } from "utils/functions";
 
 export default function VolumeInfo({ currency }) {
   const [showType, setShowType] = useState(0);
-  const { histories: data, volumeDatas: histories } = useTradingHistory(
-    currency.tokenAddresses[0],
-    currency.chainId,
-    currency.address,
-    currency.swap,
-    3600 * 24 * 7 * 1000
-  );
+  const { histories: data, volumeDatas: histories } = useTradingHistory({
+    address: currency.tokenAddresses[0],
+    chainId: currency.chainId,
+    pair: currency.address,
+    amm: currency.swap,
+    period: 3600 * 24 * 7 * 1000,
+  });
 
   // const data = [];
 
