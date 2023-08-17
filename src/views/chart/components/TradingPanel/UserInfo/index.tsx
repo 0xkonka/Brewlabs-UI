@@ -14,7 +14,7 @@ TimeAgo.addDefaultLocale(en);
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
 
-export default function UserInfo({ currency }) {
+export default function UserInfo({ currency, active }) {
   const { address: account } = useAccount();
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
@@ -22,16 +22,20 @@ export default function UserInfo({ currency }) {
   const name = useENSName(account);
   const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0 });
   const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0 });
-  const { histories } = useTradingHistory(
-    currency.tokenAddresses[0],
-    currency.chainId,
-    currency.address,
-    currency.swap,
-    0,
-    0,
-    "all",
-    account
-  );
+  const [isFade, setIsFade] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const { histories } = useTradingHistory({
+    address: currency.tokenAddresses[0],
+    chainId: currency.chainId,
+    pair: currency.address,
+    amm: currency.swap,
+    period: 0,
+    limit: 0,
+    offset: 0,
+    status: "all",
+    account,
+  });
 
   const holdingTime = histories.length ? histories[histories.length - 1].timestamp : 0;
   const strigifiedHistories = JSON.stringify(histories);
@@ -57,8 +61,27 @@ export default function UserInfo({ currency }) {
 
   const profit = sellInfo.usd - buyInfo.usd;
 
+  useEffect(() => {
+    if (active) {
+      setShow(true);
+      setIsFade(true);
+      setTimeout(() => {
+        setIsFade(false);
+      }, 300);
+    } else {
+      setIsFade(true);
+      setTimeout(() => {
+        setShow(false);
+      }, 300);
+    }
+  }, [active]);
+
   return (
-    <div className="mt-2 flex h-fit lg:h-[120px]">
+    <div
+      className={`transtion-all mt-2 h-fit duration-300 lg:h-[120px] ${isFade ? "opacity-0" : "opacity-100"} ${
+        show ? "flex" : "hidden"
+      }`}
+    >
       <div className="primary-shadow relative flex flex-1 flex-col justify-between rounded bg-[#B9B8B81A] p-[16px_24px_12px_44px] text-sm lg:flex-row">
         <a
           href={getExplorerLink(currency.chainId, "address", account)}

@@ -159,8 +159,8 @@ const FindProject = () => {
   return (
     <div className="bg-zinc-900">
       <div className="mx-auto max-w-7xl px-6 pt-12 sm:pt-16 lg:px-8  lg:pt-24">
-        <div className="flex justify-between flex-wrap">
-          <div className="max-w-[240px] mt-10">
+        <div className="flex flex-wrap justify-between">
+          <div className="mt-10 max-w-[240px]">
             <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
               Find a product
             </h2>
@@ -169,7 +169,7 @@ const FindProject = () => {
               Each listed product or tool generates income for the Brewlabs ecosytem.
             </p>
           </div>
-          <div className="sm:mx-8 mx-0 mt-10">
+          <div className="mx-0 mt-10 sm:mx-8">
             {networks.map((network, i) => {
               return (
                 <div
@@ -191,7 +191,7 @@ const FindProject = () => {
               );
             })}
           </div>
-          <div className="flex xsm:h-[300px] h-fit w-[450px] flex-col flex-wrap text-sm mt-10">
+          <div className="mt-10 flex h-fit w-[450px] flex-col flex-wrap text-sm xsm:h-[300px]">
             {items.map((item: any, i) => {
               return (
                 <div
@@ -214,22 +214,26 @@ const FindProject = () => {
               );
             })}
           </div>
-          <div className="primary-shadow mt-10 flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
-            <div className="text-2xl text-primary">{items[selectedItem].name}</div>
-            <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
-            <div className="flex w-full flex-1 items-end justify-end">
-              <a
-                target="_blank"
-                href={
-                  selectedItem === 14
-                    ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
-                    : items[selectedItem].link
-                }
-              >
-                <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
-              </a>
+          {selectedItem !== -1 ? (
+            <div className="primary-shadow mt-10 flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
+              <div className="text-2xl text-primary">{items[selectedItem].name}</div>
+              <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
+              <div className="flex w-full flex-1 items-end justify-end">
+                <a
+                  target="_blank"
+                  href={
+                    selectedItem === 14
+                      ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
+                      : items[selectedItem].link
+                  }
+                >
+                  <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
+                </a>
+              </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </div>

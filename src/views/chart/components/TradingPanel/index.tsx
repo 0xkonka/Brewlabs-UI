@@ -15,7 +15,6 @@ export default function TradingPanel({ currency, marketInfos, setSelectedCurrenc
           <div className="h-[660px]">
             <TradingViewChart currency={currency} />
           </div>
-          <UserInfo currency={currency} />
           <SwapHistory currency={currency} />
         </div>
         <div className="hidden w-[280px] 2xl:block">

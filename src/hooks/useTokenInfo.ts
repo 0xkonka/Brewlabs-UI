@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { useFastRefreshEffect, useSlowRefreshEffect } from "./useRefreshEffect";
+import { useSecondRefreshEffect, useSlowRefreshEffect } from "./useRefreshEffect";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
@@ -10,9 +10,7 @@ import { getContract } from "utils/contractHelpers";
 import { isAddress } from "ethers/lib/utils.js";
 import { API_URL } from "config/constants";
 import { CommunityContext } from "contexts/CommunityContext";
-import { isVerified } from "state/wallet/hooks";
 import { BASE_URL, DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
-import { simpleRpcProvider } from "utils/providers";
 
 function useTokenInfo(address: string, chainId: number) {
   const [owner, setOwner] = useState("");
@@ -197,9 +195,20 @@ const defaultVolume = {
     },
   },
 };
-export function useTradingHistory(address, chainId, pair, amm, period = 0, limit = 0, type = "all", account = null) {
+export function useTradingHistory({
+  address,
+  chainId,
+  pair,
+  amm,
+  period = 0,
+  limit = 0,
+  offset = 0,
+  status = "all",
+  account = null,
+}) {
   const [histories, setHistories] = useState([]);
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
+  const [loading, setLoading] = useState(false);
 
   const stringifiedValue = JSON.stringify({
     address,
@@ -208,7 +217,9 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
     amm,
     period,
     limit,
-    type,
+    offset,
+    status,
+    account,
   });
 
   function getVolume(data, period) {
@@ -239,107 +250,89 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
     };
   }
 
-  async function fetchHistories() {
-    try {
-      let histories = [];
-      let query: any = {
-        amm,
-        current_token_id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
-        order: "desc",
-        pool_address: pair,
-        sort_by: "timestamp",
-        token_status: type,
-        transaction_types: ["swap"],
-        with_full_totals: true,
-      };
-      if (period) {
-        query = { ...query, date: { start_date: Date.now() - period, end_date: Date.now() } };
-      }
-      if (account) {
-        query = { ...query, account: account.toLowerCase() };
-      }
-      let count = limit;
-      if (!limit) {
-        const { data: response } = await axios.post("https://api.dex.guru/v3/tokens/transactions/count", query);
-        count = response.count;
-      }
-      await Promise.all(
-        new Array(Math.ceil(count / 100)).fill("").map(async (result, i) => {
-          query = { ...query, limit: 100, offset: 100 * i };
-          const { data }: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", query);
-          histories = [
-            ...histories,
-            ...data.data.map((history) => {
-              return { ...history, chainId };
-            }),
-          ];
-          return histories;
-        })
-      );
-      if (wrappedAddress === address) {
-        setHistories(histories);
-        const v5m = getVolume(histories, 5 * 60);
-        const v30m = getVolume(histories, 30 * 60);
-        const v24hr = getVolume(histories, 3600 * 24);
-        const v7d = getVolume(histories, 3600 * 24 * 7);
-        setVolumeDatas({
-          vol: {
-            "5m": {
-              Buys: v5m.buyCount,
-              Sells: v5m.sellCount,
-              Total: v5m.totalCount,
-              isUp: v5m.buyCount >= v5m.sellCount,
-            },
-            "30m": {
-              Buys: v30m.buyCount,
-              Sells: v30m.sellCount,
-              Total: v30m.totalCount,
-              isUp: v30m.buyCount >= v30m.sellCount,
-            },
-            "24hr": {
-              Buys: v24hr.buyCount,
-              Sells: v24hr.sellCount,
-              Total: v24hr.totalCount,
-              isUp: v24hr.buyCount >= v24hr.sellCount,
-            },
-            "7d": {
-              Buys: v7d.buyCount,
-              Sells: v7d.sellCount,
-              Total: v7d.totalCount,
-              isUp: v7d.buyCount >= v7d.sellCount,
-            },
-          },
-          "vol (usd)": {
-            "5m": {
-              Buys: v5m.buyVolume,
-              Sells: v5m.sellVolume,
-              Total: v5m.totalVolume,
-              isUp: v5m.buyVolume >= v5m.sellVolume,
-            },
-            "30m": {
-              Buys: v30m.buyVolume,
-              Sells: v30m.sellVolume,
-              Total: v30m.totalVolume,
-              isUp: v30m.buyVolume >= v30m.sellVolume,
-            },
-            "24hr": {
-              Buys: v24hr.buyVolume,
-              Sells: v24hr.sellVolume,
-              Total: v24hr.totalVolume,
-              isUp: v24hr.buyVolume >= v24hr.sellVolume,
-            },
-            "7d": {
-              Buys: v7d.buyVolume,
-              Sells: v7d.sellVolume,
-              Total: v7d.totalVolume,
-              isUp: v7d.buyVolume >= v7d.sellVolume,
-            },
-          },
-        });
-      }
-    } catch (e) {
-      console.log(e);
+  async function fetchHistories(query) {
+    let histories = [];
+
+    let count = query.limit;
+    if (!query.limit) {
+      const { data: response } = await axios.post("https://api.dex.guru/v3/tokens/transactions/count", query);
+      count = response.count;
     }
+    await Promise.all(
+      new Array(Math.min(Math.ceil(count / 100), 100)).fill("").map(async (result, i) => {
+        query = { ...query, limit: 100, offset: query.offset ? query.offset : 100 * i };
+        const { data }: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", query);
+        histories = [
+          ...histories,
+          ...data.data.map((history) => {
+            return { ...history, chainId };
+          }),
+        ];
+        return histories;
+      })
+    );
+    if (wrappedAddress === address) {
+      const v5m = getVolume(histories, 5 * 60);
+      const v30m = getVolume(histories, 30 * 60);
+      const v24hr = getVolume(histories, 3600 * 24);
+      const v7d = getVolume(histories, 3600 * 24 * 7);
+      setVolumeDatas({
+        vol: {
+          "5m": {
+            Buys: v5m.buyCount,
+            Sells: v5m.sellCount,
+            Total: v5m.totalCount,
+            isUp: v5m.buyCount >= v5m.sellCount,
+          },
+          "30m": {
+            Buys: v30m.buyCount,
+            Sells: v30m.sellCount,
+            Total: v30m.totalCount,
+            isUp: v30m.buyCount >= v30m.sellCount,
+          },
+          "24hr": {
+            Buys: v24hr.buyCount,
+            Sells: v24hr.sellCount,
+            Total: v24hr.totalCount,
+            isUp: v24hr.buyCount >= v24hr.sellCount,
+          },
+          "7d": {
+            Buys: v7d.buyCount,
+            Sells: v7d.sellCount,
+            Total: v7d.totalCount,
+            isUp: v7d.buyCount >= v7d.sellCount,
+          },
+        },
+        "vol (usd)": {
+          "5m": {
+            Buys: v5m.buyVolume,
+            Sells: v5m.sellVolume,
+            Total: v5m.totalVolume,
+            isUp: v5m.buyVolume >= v5m.sellVolume,
+          },
+          "30m": {
+            Buys: v30m.buyVolume,
+            Sells: v30m.sellVolume,
+            Total: v30m.totalVolume,
+            isUp: v30m.buyVolume >= v30m.sellVolume,
+          },
+          "24hr": {
+            Buys: v24hr.buyVolume,
+            Sells: v24hr.sellVolume,
+            Total: v24hr.totalVolume,
+            isUp: v24hr.buyVolume >= v24hr.sellVolume,
+          },
+          "7d": {
+            Buys: v7d.buyVolume,
+            Sells: v7d.sellVolume,
+            Total: v7d.totalVolume,
+            isUp: v7d.buyVolume >= v7d.sellVolume,
+          },
+        },
+      });
+      return histories;
+    }
+    return [];
   }
 
   useEffect(() => {
@@ -349,10 +342,67 @@ export function useTradingHistory(address, chainId, pair, amm, period = 0, limit
       return;
     }
     wrappedAddress = address;
-    fetchHistories();
+    setLoading(true);
+    let query: any = {
+      amm,
+      current_token_id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
+      order: "desc",
+      pool_address: pair,
+      sort_by: "timestamp",
+      token_status: status,
+      transaction_types: ["swap"],
+      with_full_totals: true,
+      limit,
+      offset,
+    };
+    if (period) {
+      query = { ...query, date: { start_date: Date.now() - period, end_date: Date.now() } };
+    }
+    if (account) {
+      query = { ...query, account: account.toLowerCase() };
+    }
+    fetchHistories(query)
+      .then((result) => {
+        setHistories(result);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   }, [stringifiedValue]);
 
-  return { histories, volumeDatas };
+  useSecondRefreshEffect(() => {
+    console.log("SecondRefreshEffect");
+    const query: any = {
+      amm,
+      current_token_id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
+      order: "desc",
+      pool_address: pair,
+      sort_by: "timestamp",
+      token_status: status,
+      transaction_types: ["swap"],
+      with_full_totals: true,
+      limit: 100,
+      offset: 0,
+    };
+    fetchHistories(query)
+      .then((result) => {
+        let temp = [...histories];
+        for (let i = 0; i < result.length; i++) {
+          const isExisting = histories.find((history) => history.transactionAddress === result[i].transactionAddress);
+          if (!isExisting) {
+            temp.push(result[i]);
+          }
+        }
+        setHistories(temp.sort((a, b) => b.timestamp - a.timestamp));
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+
+  return { histories, volumeDatas, loading };
 }
 
 export function useTokenTaxes(address, chainId) {

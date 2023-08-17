@@ -1,18 +1,20 @@
 import { ContractSVG, NonSellerSVG, WalletSVG } from "@components/dashboard/assets/svgs";
-import { BigNumberFormat, getEllipsis, getExplorerLogo } from "utils/functions";
+import { BigNumberFormat, getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
 import TimeAgo from "javascript-time-ago";
 
 // English.
 import en from "javascript-time-ago/locale/en";
 import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
+import { Oval } from "react-loader-spinner";
+import { useCallback, useEffect, useRef } from "react";
 
 TimeAgo.addDefaultLocale(en);
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
 
-export default function HistoryList({ histories, currency }) {
+export default function HistoryList({ histories, currency, loading, offset, setOffset }) {
   const wrappedHistories = histories.map((history) => {
     const date = new Date(history.timestamp * 1000);
     let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
@@ -22,7 +24,7 @@ export default function HistoryList({ histories, currency }) {
       time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
       action,
       price: history.pricesStable[index],
-      usdValue: BigNumberFormat(history.amountStable),
+      usdValue: numberWithCommas(history.amountStable.toFixed(0)),
       amount: BigNumberFormat(history.amounts[index]),
       nativeAmount: BigNumberFormat(history.amountNative),
       type:
@@ -34,6 +36,23 @@ export default function HistoryList({ histories, currency }) {
       chainId: history.chainId,
     };
   });
+
+  const node: any = useRef();
+  const handleScroll = useCallback(() => {
+    const { scrollTop, scrollHeight, clientHeight } = node.current;
+    if (scrollTop + clientHeight === scrollHeight && !loading) {
+      console.log("reached bottom hook in scroll component");
+      setOffset(offset + 1);
+    } else {
+    }
+  }, [node, offset, loading]);
+  useEffect(() => {
+    if (node.current) {
+      node.current.addEventListener("scroll", handleScroll);
+      return () => node.current?.removeEventListener("scroll", handleScroll);
+    }
+  }, [node, handleScroll]);
+
   return (
     <div className="mt-2 rounded-md p-1.5 text-sm">
       <div className="hidden justify-between rounded-[2px] bg-[#D9D9D91A] p-[4px_12px] text-[#FFFFFFBF] lg:flex">
@@ -49,10 +68,13 @@ export default function HistoryList({ histories, currency }) {
         <div className="flex">
           <div className="w-20 overflow-hidden text-ellipsis">{currency.symbols[0]}</div>
           <div className="w-14 ">{getNativeSybmol(currency.chainId)}</div>
-          <div className="w-14">USD</div>
+          <div className="w-20">USD</div>
         </div>
       </div>
-      <div className="yellowScroll mt-2.5 hidden max-h-[400px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:block">
+      <div
+        className="yellowScroll mt-2.5 hidden max-h-[400px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:block"
+        ref={node}
+      >
         {wrappedHistories.map((list, i) => {
           return (
             <a href={getExplorerLink(list.chainId, "transaction", list.txHash)} key={i} target="_blank">
@@ -86,12 +108,27 @@ export default function HistoryList({ histories, currency }) {
                 <div className="flex">
                   <div className="w-20">{list.amount}</div>
                   <div className="w-14">{list.nativeAmount}</div>
-                  <div className="w-14">{list.usdValue}</div>
+                  <div className="w-20">${list.usdValue}</div>
                 </div>
               </div>
             </a>
           );
         })}
+
+        {loading ? (
+          <div className="flex w-full justify-center py-2">
+            <Oval
+              width={21}
+              height={21}
+              color={"white"}
+              secondaryColor="black"
+              strokeWidth={3}
+              strokeWidthSecondary={3}
+            />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       <div className="yellowScroll mt-2.5 block max-h-[500px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:hidden">
         {wrappedHistories.map((list, i) => {
@@ -155,7 +192,7 @@ export default function HistoryList({ histories, currency }) {
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center">
                     <div>USD:</div>&nbsp;
-                    <div className="">{list.usdValue}</div>
+                    <div className="">${list.usdValue}</div>
                   </div>
                   <div className="flex items-center">
                     <div>Transaction:</div>&nbsp;

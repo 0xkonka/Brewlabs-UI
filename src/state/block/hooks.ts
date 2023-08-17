@@ -4,7 +4,7 @@ import useSWR, { useSWRConfig, unstable_serialize } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useProvider } from "wagmi";
 
-import { FAST_INTERVAL, SLOW_INTERVAL } from "config/constants";
+import { FAST_INTERVAL, SECOND_INTERVAL, SLOW_INTERVAL } from "config/constants";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
 const REFRESH_BLOCK_INTERVAL = 6000;
@@ -36,6 +36,16 @@ export const usePollBlockNumber = () => {
     },
     {
       refreshInterval: FAST_INTERVAL,
+    }
+  );
+
+  useSWR(
+    [SECOND_INTERVAL, "blockNumber", chainId],
+    async () => {
+      return data;
+    },
+    {
+      refreshInterval: SECOND_INTERVAL,
     }
   );
 

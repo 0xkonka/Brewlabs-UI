@@ -52,12 +52,12 @@ export default function FavouritePanel({ setSelectedCurrency }) {
             data={filters.map((filter, i) => (
               <div className="flex items-center text-primary" key={i}>
                 <div>{filter.icon}</div>
-                <div className=" ml-1 text-sm">{filter.name}</div>
+                <div className=" ml-1 text-xs">{filter.name}</div>
               </div>
             ))}
             height={"40px"}
             rounded={"6px"}
-            className="!w-[200px] !bg-[#202023] !text-xs !text-[#ffffff58]"
+            className="!w-[172px] !bg-[#202023] !text-xs !text-[#ffffff58]"
             bodyClassName="!bg-none !bg-[#202023]"
             itemClassName={`hover:!bg-[#29292b] !justify-start !px-2`}
             isBorder={true}
@@ -68,21 +68,38 @@ export default function FavouritePanel({ setSelectedCurrency }) {
             setValue={setSelectedNetwork}
             data={networks.map((network: any, i: number) =>
               i === 0 ? (
-                <div key={i} className="text-base text-white">
-                  {network}
+                <div className="switch-name flex h-full w-full items-center" key={i}>
+                  <img
+                    src={"/images/networks/multichain.png"}
+                    alt={""}
+                    className="primary-shadow h-6 w-6 rounded-full"
+                  />
+                  <div className="relative ml-2 w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-bold">
+                    ALL
+                  </div>
                 </div>
               ) : (
-                <img
-                  key={i}
-                  src={getChainLogo(parseInt(network.chainId))}
-                  alt={""}
-                  className="primary-shadow h-6 w-6 rounded-full"
-                />
+                <div className="switch-name flex h-full w-full items-center" key={i}>
+                  <img
+                    src={getChainLogo(parseInt(network.chainId))}
+                    alt={""}
+                    className="primary-shadow h-6 w-6 rounded-full"
+                  />
+                  <div className="relative ml-2 w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                    <div className="absolute left-0 top-0 w-full text-xs font-bold transition">
+                      {network.nativeCurrency.symbol}
+                    </div>
+                    <div className="absolute left-0 top-0 w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold opacity-0 transition">
+                      {network.chainName}
+                    </div>
+                    <div className="opacity-0">a</div>
+                  </div>
+                </div>
               )
             )}
             height={"40px"}
             rounded={"6px"}
-            className="!w-[72px] !bg-[#202023] !text-xs !text-[#ffffff58]"
+            className="!w-[100px] !bg-[#202023] !text-xs !text-white"
             bodyClassName="!bg-none !bg-[#202023]"
             itemClassName={`hover:!bg-[#29292b] !justify-start !px-2`}
             isBorder={true}
