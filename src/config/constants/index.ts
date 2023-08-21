@@ -336,13 +336,4 @@ export const CHART_PERIOD_RESOLUTION = {
 
 export const DEX_GURU_WETH_ADDR = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
-export const BREWNFT_COLORS = [
-  "text-white",
-  "text-[#46F181]",
-  "text-[#1A82FF]",
-  "text-[#B95AFE]",
-  "text-[#FF9D5B]",
-  "text-[#C80045]",
-];
-
 export const BREWNFT_RARITIES = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MODS"];

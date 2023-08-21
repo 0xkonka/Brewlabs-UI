@@ -29,7 +29,7 @@ import VotePanel from "./VotePanel";
 import Security from "@components/SwapComponents/Security";
 import SlippageText from "@components/SwapComponents/SlippageText";
 
-export default function SwapOption({ currency, marketInfos }) {
+export default function SwapOption({ currency, marketInfos, volumeDatas }) {
   const [isCopied, setIsCopied] = useState(false);
 
   const { connector, address: account } = useAccount();
@@ -118,7 +118,7 @@ export default function SwapOption({ currency, marketInfos }) {
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 sm:w-fit 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
         <SlippageInfo currency={currency} />
         <div className="mt-2" />
-        <VolumeInfo currency={currency} />
+        <VolumeInfo volumeDatas={volumeDatas} />
         <div className="primary-shadow mt-2 flex w-[320px] items-center justify-between rounded-[6px] bg-[#B9B8B80D] p-3">
           <div className="flex cursor-pointer items-center" onClick={() => setSwitchBalance(!switchBalance)}>
             <div className={`mr-2 text-white ${switchBalance ? "-scale-y-100" : ""}`}>{ChevronDownSVG}</div>

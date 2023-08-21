@@ -1,6 +1,5 @@
 import { LinkSVG } from "@components/dashboard/assets/svgs";
 import useENSName from "@hooks/ENS/useENSName";
-import { useTradingHistory } from "@hooks/useTokenInfo";
 import { getExplorerLink } from "lib/bridge/helpers";
 import { getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
 import { useAccount } from "wagmi";
@@ -8,14 +7,18 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import { isAddress } from "utils";
+import { fetchTradingHistories } from "@hooks/useTokenAllPairs";
+import { DEX_GURU_CHAIN_NAME } from "config";
+import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 
 TimeAgo.addDefaultLocale(en);
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
+let wrappedQuery;
 
-export default function UserInfo({ currency, active }) {
-  const { address: account } = useAccount();
+export default function UserInfo({ currency, active, account }) {
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
@@ -24,25 +27,98 @@ export default function UserInfo({ currency, active }) {
   const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0 });
   const [isFade, setIsFade] = useState(false);
   const [show, setShow] = useState(false);
+  const [histories, setHistories] = useState([]);
+  const [totalHistories, setTotalHistories] = useState([]);
+  const [recentHistories, setRecentHistories] = useState([]);
 
-  const { histories } = useTradingHistory({
-    address: currency.tokenAddresses[0],
-    chainId: currency.chainId,
-    pair: currency.address,
-    amm: currency.swap,
-    period: 0,
-    limit: 0,
-    offset: 0,
-    status: "all",
-    account,
-  });
+  const getQuery = () => {
+    const query: any = {
+      address: currency.tokenAddresses[0],
+      current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
+      chainId: currency.chainId,
+      pool_address: currency.address,
+      amm: currency.swap,
+      limit: 0,
+      offset: 0,
+      with_full_totals: true,
+      order: "desc",
+      token_status: "all",
+      transaction_types: ["swap"],
+      sort_by: "timestamp",
+      account: account ? account.toLowerCase() : "0x0",
+    };
+    return query;
+  };
 
-  const holdingTime = histories.length ? histories[histories.length - 1].timestamp : 0;
+  useEffect(() => {
+    const query: any = getQuery();
+    if (!isAddress(query.address)) {
+      return;
+    }
+    setHistories([]);
+    wrappedQuery = JSON.stringify(query);
+    fetchTradingHistories(query, currency.chainId)
+      .then((result) => {
+        if (wrappedQuery === JSON.stringify(query)) {
+          setHistories(result);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [currency.address]);
+
+  useEffect(() => {
+    setTotalHistories([]);
+  }, [currency.address]);
+
+  useSecondRefreshEffect(() => {
+    let query = getQuery();
+    query.offset = 0;
+
+    fetchTradingHistories(query, currency.chainId)
+      .then((result) => {
+        if (wrappedQuery === JSON.stringify(query)) setRecentHistories(result);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [currency.address]);
+
   const strigifiedHistories = JSON.stringify(histories);
+  const strigifiedRecentHistories = JSON.stringify(recentHistories);
+
+  useEffect(() => {
+    const total = [...histories];
+    let temp = [...totalHistories];
+    for (let i = 0; i < total.length; i++) {
+      const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
+      if (!isExisting && total[i].poolAddress === currency.address.toLowerCase()) {
+        temp.push(total[i]);
+      }
+    }
+    setTotalHistories(temp.sort((a, b) => b.timestamp - a.timestamp));
+  }, [strigifiedHistories]);
+
+  useEffect(() => {
+    const total = [...recentHistories];
+    let temp = [...totalHistories];
+    for (let i = 0; i < total.length; i++) {
+      const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
+      if (!isExisting && total[i].poolAddress === currency.address.toLowerCase()) {
+        temp.push(total[i]);
+      }
+    }
+    setTotalHistories(temp.sort((a, b) => b.timestamp - a.timestamp));
+  }, [strigifiedRecentHistories]);
+
+  const stringifiedTotalHistories = JSON.stringify(totalHistories);
+
+  const holdingTime = totalHistories.length ? totalHistories[totalHistories.length - 1].timestamp : 0;
   useEffect(() => {
     let _buyInfo = { usd: 0, amount: 0, txns: 0 },
       _sellInfo = { usd: 0, amount: 0, txns: 0 };
-    histories.map((history) => {
+    totalHistories.map((history) => {
       let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
       index = index === -1 ? 0 : index;
       if (history.fromAddress !== currency.tokenAddresses[0].toLowerCase()) {
@@ -57,7 +133,7 @@ export default function UserInfo({ currency, active }) {
     });
     setBuyInfo(_buyInfo);
     setSellInfo(_sellInfo);
-  }, [strigifiedHistories]);
+  }, [stringifiedTotalHistories]);
 
   const profit = sellInfo.usd - buyInfo.usd;
 
@@ -96,7 +172,9 @@ export default function UserInfo({ currency, active }) {
         </a>
         <div>
           <a href={getExplorerLink(currency.chainId, "address", account)} target="_blank" className="flex items-center">
-            <div className="flex-1 !text-white">{isXs ? getEllipsis(account, 20, 0) : account}</div>
+            <div className="flex-1 !text-white">
+              {account ? (isXs ? getEllipsis(account, 20, 0) : account) : "No wallet connected"}
+            </div>
             <div className="ml-1 text-tailwind hover:text-white [&>svg]:h-3 [&>svg]:w-3">{LinkSVG}</div>
           </a>
           <div>{name.loading ? <br /> : name.ENSName ?? <br />}</div>

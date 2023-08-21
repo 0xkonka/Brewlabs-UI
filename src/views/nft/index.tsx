@@ -23,9 +23,6 @@ const NFT = () => {
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Brewlabs NFT's" />
-                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
-                    Brewlabs NFT Artificer
-                  </div>
                 </div>
               }
             />

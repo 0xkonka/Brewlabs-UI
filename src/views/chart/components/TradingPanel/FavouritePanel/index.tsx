@@ -57,7 +57,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
             ))}
             height={"40px"}
             rounded={"6px"}
-            className="!w-[172px] !bg-[#202023] !text-xs !text-[#ffffff58]"
+            className="!w-[172px] !bg-[#202023] !text-xs !font-medium !text-[#ffffff58]"
             bodyClassName="!bg-none !bg-[#202023]"
             itemClassName={`hover:!bg-[#29292b] !justify-start !px-2`}
             isBorder={true}
@@ -66,37 +66,21 @@ export default function FavouritePanel({ setSelectedCurrency }) {
           <DropDown
             value={selectedNetwork}
             setValue={setSelectedNetwork}
-            data={networks.map((network: any, i: number) =>
-              i === 0 ? (
-                <div className="switch-name flex h-full w-full items-center" key={i}>
-                  <img
-                    src={"/images/networks/multichain.png"}
-                    alt={""}
-                    className="primary-shadow h-6 w-6 rounded-full"
-                  />
-                  <div className="relative ml-2 w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-bold">
-                    ALL
-                  </div>
+            data={networks.map((network: any, i: number) => (
+              <div
+                className="switch-name flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap"
+                key={i}
+              >
+                <img
+                  src={i === 0 ? "/images/networks/multichain.svg" : getChainLogo(parseInt(network.chainId))}
+                  alt={""}
+                  className="primary-shadow h-5 w-5 rounded-full"
+                />
+                <div className="relative ml-1.5 w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap !text-xs font-medium">
+                  {i === 0 ? "ALL" : network.chainName}
                 </div>
-              ) : (
-                <div className="switch-name flex h-full w-full items-center" key={i}>
-                  <img
-                    src={getChainLogo(parseInt(network.chainId))}
-                    alt={""}
-                    className="primary-shadow h-6 w-6 rounded-full"
-                  />
-                  <div className="relative ml-2 w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                    <div className="absolute left-0 top-0 w-full text-xs font-bold transition">
-                      {network.nativeCurrency.symbol}
-                    </div>
-                    <div className="absolute left-0 top-0 w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold opacity-0 transition">
-                      {network.chainName}
-                    </div>
-                    <div className="opacity-0">a</div>
-                  </div>
-                </div>
-              )
-            )}
+              </div>
+            ))}
             height={"40px"}
             rounded={"6px"}
             className="!w-[100px] !bg-[#202023] !text-xs !text-white"
