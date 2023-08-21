@@ -3,6 +3,7 @@ import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
+import useTokenPrice from "hooks/useTokenPrice";
 import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import CurrencySelectButton from "components/CurrencySelectButton";
@@ -45,7 +46,8 @@ const CurrencyOutputPanel = ({
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
   const tokenMarketData = useTokenMarketChart(chainId);
-  const { usd: tokenPrice, usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
+  const { usd: tokenPrice1, usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
+  const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
 
   return (
     <>
