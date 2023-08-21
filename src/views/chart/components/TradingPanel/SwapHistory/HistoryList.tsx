@@ -24,7 +24,7 @@ export default function HistoryList({ histories, currency, loading, offset, setO
       time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
       action,
       price: history.pricesStable[index],
-      usdValue: numberWithCommas(history.amountStable.toFixed(0)),
+      usdValue: numberWithCommas(history.amountStable.toFixed(2)),
       amount: BigNumberFormat(history.amounts[index]),
       nativeAmount: BigNumberFormat(history.amountNative),
       type:
@@ -40,7 +40,7 @@ export default function HistoryList({ histories, currency, loading, offset, setO
   const node: any = useRef();
   const handleScroll = useCallback(() => {
     const { scrollTop, scrollHeight, clientHeight } = node.current;
-    if (scrollTop + clientHeight === scrollHeight && !loading) {
+    if (scrollTop + clientHeight === scrollHeight && !loading && scrollHeight > 50) {
       console.log("reached bottom hook in scroll component");
       setOffset(offset + 1);
     } else {

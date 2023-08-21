@@ -20,7 +20,7 @@ export const navigationData = [
   },
   {
     name: "Chart",
-    href: "/chart",
+    href: "/chart/bsc/0xc9cc6515a1df94aaed156f3bd6efe86a100308fa",
     external: false,
     icon: "PresentationChartLineIcon",
     isBeta: true,

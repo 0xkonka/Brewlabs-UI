@@ -1,14 +1,8 @@
-import { DeployerSVG, InfoSVG, NFTSVG, SwapSVG, SwitchSVG } from "@components/dashboard/assets/svgs";
-import { ChartContext } from "contexts/ChartContext";
-import { useContext, useEffect, useState } from "react";
+import { ChartSquareSVG, NFTSVG, SwitchSVG } from "@components/dashboard/assets/svgs";
+import { useEffect, useState } from "react";
 import { NETWORKS } from "config/constants/networks";
-import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
-import { getChainLogo } from "utils/functions";
 import { SearchInput } from "./SearchInput";
-import TrendingList from "./TrendingList";
-import { tokens } from "config/constants/tokens";
 import { useWeb3React } from "contexts/wagmi";
-import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import { useDexPrice } from "@hooks/useTokenPrice";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 import { ChainId } from "@brewlabs/sdk";
@@ -45,74 +39,40 @@ export default function Header({ selectedCurrency, setSelectedCurrency, showReve
   };
 
   return (
-    <div className="relative z-10 flex flex-col items-center justify-between 2xl:flex-row">
-      <div className="flex w-full flex-none flex-col items-center md:flex-row 2xl:flex-1">
-        <div className="flex w-full items-center justify-between md:w-fit md:justify-start">
-          <div className={`flex w-fit items-center text-primary ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
-            <div className="mr-1 [&>svg]:!h-4 [&>svg]:!w-4">{DeployerSVG}</div>
-            <div className="relative text-2xl">
-              BrewCharts
-              <div className="absolute -bottom-2.5 right-0 text-xs text-[#D9D9D9]">Beta 1.00</div>
-            </div>
-          </div>
-          <div className="ml-4 ">
-            <DropDown
-              value={selectedNetwork}
-              setValue={setSelectedNetwork}
-              className="!w-[120px] !bg-[#29292b] !px-2 !text-white"
-              bodyClassName="!bg-none !bg-[#29292b]"
-              itemClassName="!px-2 !justify-start hover:!bg-[#b9b8b83d]"
-              height="44px"
-              rounded="4px"
-              data={networks.map((network, i) => {
-                return (
-                  <div className="flex items-center switch-name w-full h-full" key={i}>
-                    <img
-                      src={getChainLogo(parseInt(network.chainId))}
-                      alt={""}
-                      className="primary-shadow h-6 w-6 rounded-full"
-                    />
-                    <div className="relative ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap w-full">
-                      <div className="absolute left-0 top-0 text-xs font-bold transition w-full">
-                        {network.nativeCurrency.symbol}
-                      </div>
-                      <div className="absolute left-0 top-0 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold opacity-0 transition w-full">
-                        {network.chainName}
-                      </div>
-                      <div className="text-xs leading-none text-[#FFFFFFBF] mt-5">
-                        ${price[parseInt(network.chainId)].toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            />
-          </div>
+    <div className="relative z-10 mt-10 flex">
+      <div className="flex flex-1">
+        <div className="relative flex-1">
+          <SearchInput setSelectedCurrency={setSelectedCurrency} />
+          <a
+            href={"https://t.me/MaverickBL"}
+            target={"_blank"}
+            className="absolute -bottom-5 right-0 cursor-pointer font-brand text-xs !text-[#FFFFFF59] hover:!text-white"
+          >
+            Advertise with us
+          </a>
         </div>
-        <div className="mt-4 flex w-full flex-1 items-center justify-between md:mt-0 md:w-fit">
-          <div className="relative ml-0 flex-1 md:ml-4 md:w-fit">
-            <SearchInput
-              selectedChainId={parseInt(networks[selectedNetwork].chainId)}
-              setSelectedCurrency={setSelectedCurrency}
-            />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div
+          className={`ml-4 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
+            showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
+          }`}
+        >
+          <div className="mr-4 cursor-pointer  transition hover:text-white [&>svg]:!h-5 [&>svg]:!w-5">
+            {ChartSquareSVG}
           </div>
           <div
-            className={`ml-4 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
-              showReverse ? "2xl:w-[332px]" : "2xl:w-[292px]"
-            }`}
+            className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5"
+            onClick={() => setShowReverse(!showReverse)}
           >
-            <div
-              className="mr-4 cursor-pointer transition hover:text-white  [&>svg]:!h-5 [&>svg]:!w-5"
-              onClick={() => setShowReverse(!showReverse)}
-            >
-              {SwitchSVG}
-            </div>
-            <div
-              className="tooltip cursor-pointer transition  hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
-              data-tip="No Brewlabs NFT found."
-            >
-              {NFTSVG}
-            </div>
+            {SwitchSVG}
+          </div>
+          <div
+            className="tooltip cursor-pointer transition  hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
+            data-tip="No Brewlabs NFT found."
+          >
+            {NFTSVG}
           </div>
         </div>
       </div>

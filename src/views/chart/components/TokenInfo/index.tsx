@@ -1,9 +1,9 @@
-import { ChartSVG, FixedSVG, LiquiditySVG, VolumeSVG, downSVG, upSVG } from "@components/dashboard/assets/svgs";
+import { ChartSVG, FilledFixedSVG, LiquiditySVG, VolumeSVG, downSVG, upSVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { DEX_LOGOS } from "config/constants/swap";
 import { isAddress } from "utils";
-import { BigNumberFormat, numberWithCommas, priceFormat } from "utils/functions";
+import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
@@ -15,21 +15,31 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const infos = [
     {
       icon: LiquiditySVG,
-      value: `${numberWithCommas((marketInfos.liquidity ?? 0).toFixed(2))} Pool liquidity`,
+      value: `$${numberWithCommas((marketInfos.liquidity ?? 0).toFixed(2))} Pool liquidity`,
     },
-    { icon: ChartSVG, value: `$${numberWithCommas((marketInfos.marketCap ?? 0)?.toFixed(2))} Marketcap` },
     {
-      icon: FixedSVG,
+      icon: FilledFixedSVG,
       value: `${numberWithCommas(marketInfos?.holders ?? 0)} Holders`,
     },
-    { icon: VolumeSVG, value: `${numberWithCommas((marketInfos.volume24h ?? 0)?.toFixed(2))} Volume (24h)` },
+    {
+      icon: VolumeSVG,
+      value: (
+        <span>
+          {`$${numberWithCommas((marketInfos.volume24h ?? 0)?.toFixed(2))} Volume`}&nbsp;&nbsp;&nbsp;
+          <span className={marketInfos.volume24hChange >= 0 ? "text-[#32FFB5]" : "text-[#DC4545]"}>{`${
+            marketInfos.volume24hChange >= 0 ? "+" : ""
+          }${(marketInfos.volume24hChange ?? 0).toFixed(2)}% (24H)`}</span>
+        </span>
+      ),
+    },
+    { icon: ChartSVG, value: `$${numberWithCommas((marketInfos.marketCap ?? 0)?.toFixed(2))} Marketcap` },
   ];
 
   const price = marketInfos.price ?? 0;
 
   return (
     <div
-      className={`relative z-0 mr-0 mt-5 flex flex-col items-start justify-between md:flex-row md:items-center ${
+      className={`relative z-0 mr-0 mt-8 flex flex-col items-start justify-between md:flex-row md:items-center ${
         showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
       }`}
     >
@@ -63,37 +73,17 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
               {currency.symbols[0]}-{currency.symbols[1]}
             </div>
           </div>
-          <div className="mt-2 flex items-center md:mt-0">
-            {/* <div className="ml-5 flex items-center">
-              <div className="flex items-center">
-                <StyledButton
-                  className="mr-2 !bg-transparent !text-[#2FD35DBF] disabled:!text-tailwind [&>svg]:!h-4 [&>svg]:!w-4"
-                  onClick={() => voteOrAgainst(currency.address, account, currency.chainId, "voted")}
-                  disabled={!activeNFT}
-                >
-                  {VoteSVG}
-                </StyledButton>
-                <div className="text-white">{pairInfo ? pairInfo.voted.length : 0}</div>
-              </div>
-              <div className="ml-3 flex items-center">
-                <StyledButton
-                  className="mr-2 mt-1 rotate-180 !bg-transparent !text-[#DC4545] disabled:!text-tailwind [&>svg]:!h-4 [&>svg]:!w-4"
-                  onClick={() => voteOrAgainst(currency.address, account, currency.chainId, "devoted")}
-                  disabled={!activeNFT}
-                >
-                  {VoteSVG}
-                </StyledButton>
-                <div className="text-white">{pairInfo ? pairInfo.devoted.length : 0}</div>
-              </div>
-            </div> */}
-          </div>
+          <div className="mt-2 flex items-center md:mt-0"></div>
         </div>
         <div className="ml-0 mt-4 flex flex-wrap lg:ml-4 xl:mt-0">
           {infos.map((data, i) => {
             return (
-              <div key={i} className="mb-2 mr-0 flex w-[calc(50%-8px)] items-center md:mb-0 md:mr-4 md:w-fit">
-                <div className="primary-shadow -mr-[3px] -mt-0.5 scale-[.8] text-tailwind">{data.icon}</div>
-                <div className="ml-1.5 text-xs text-white">{data.value}</div>
+              <div
+                key={i}
+                className="mb-2 mr-0 flex w-[calc(50%-8px)] items-center rounded-[5px] bg-[#FFFFFF0D] p-[4px_10px] md:mb-0 md:mr-1.5 md:w-fit"
+              >
+                <div className="mr-0.5 text-tailwind">{data.icon}</div>
+                <div className="ml-1.5 text-xs font-[500] text-white">{data.value}</div>
               </div>
             );
           })}

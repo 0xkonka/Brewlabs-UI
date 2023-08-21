@@ -27,7 +27,7 @@ import StyledButton from "views/directory/StyledButton";
 
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
-import { BREWNFT_COLORS } from "config/constants";
+import NFTRarityText from "@components/NFTRarityText";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -135,7 +135,7 @@ const NFTActions = () => {
       action: onUpgrade,
       info: "Combine rarities to upgrade your Brewlabs NFT. Epic and Legendary NFT’s must be minted.",
     },
-    activeNFT
+    activeRarity !== -1
       ? {
           name: "ACTIVE NFT",
           rarity: NFT_RARITY_NAME[activeRarity].toUpperCase(),
@@ -143,8 +143,8 @@ const NFTActions = () => {
           info: (
             <div>
               <div>
-                <span className={`font-bold ${BREWNFT_COLORS[activeRarity]}`}>
-                  {NFT_RARITY_NAME[activeRarity].toUpperCase()}
+                <span className={`font-bold`}>
+                  <NFTRarityText rarity={activeRarity}>{NFT_RARITY_NAME[activeRarity].toUpperCase()}</NFTRarityText>
                 </span>{" "}
                 Benefit level
               </div>
@@ -197,7 +197,9 @@ const NFTActions = () => {
             <div key={i} className="relative mb-[164px] w-[220px]">
               <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
-                <div className={`${BREWNFT_COLORS[activeRarity]}`}>{data.rarity}</div>
+                <div>
+                  <NFTRarityText rarity={activeRarity}>{data.rarity}</NFTRarityText>
+                </div>
               </div>
               <div className="primary-shadow flex h-[180px] w-full flex-col items-center justify-center overflow-hidden rounded bg-[#B9B8B80D]">
                 {data.logo ? (

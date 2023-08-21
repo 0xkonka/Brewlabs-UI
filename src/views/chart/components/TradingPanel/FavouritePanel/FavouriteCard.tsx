@@ -8,10 +8,14 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { fetchAllPairs } from "@hooks/useTokenAllPairs";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import StyledPrice from "@components/StyledPrice";
+import { useRouter } from "next/router";
+import { DEX_GURU_CHAIN_NAME } from "config";
 
 export default function FavouriteCard({ pair, setSelectedCurrency, type, network }) {
   const [isFade, setIsFade] = useState(false);
   const [fpair, setFPair] = useState(null);
+
+  const router = useRouter();
 
   const { info }: any = usePairDexInfo(
     type === 0 ? pair.tokenAddresses[0] : fpair?.tokenAddresses[0],
@@ -40,8 +44,7 @@ export default function FavouriteCard({ pair, setSelectedCurrency, type, network
       } primary-shadow relative mb-3 flex cursor-pointer items-center justify-between rounded-md bg-[#B9B8B80D] p-3.5 transition-all duration-300 hover:scale-[1.05] hover:bg-[#B9B8B822]`}
       onClick={(e) => {
         if ((!closeRef.current || (closeRef.current && !closeRef.current.contains(e.target))) && wrappedPair) {
-          setSelectedCurrency(wrappedPair);
-          setCriteria("");
+          router.push(`/chart/${DEX_GURU_CHAIN_NAME[wrappedPair.chainId]}/${wrappedPair.address}`);
         }
       }}
     >

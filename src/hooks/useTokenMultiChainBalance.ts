@@ -59,7 +59,7 @@ export async function getBalances(tokens: any, addresses: any) {
         });
         balances[key] = tokenDatas;
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     })
   );

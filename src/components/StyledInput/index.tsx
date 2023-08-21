@@ -11,6 +11,7 @@ const StyledInput = ({
   type = "text",
   isValid = true,
   requireText = "Please input field",
+  onClick,
 }: {
   value: any;
   setValue: any;
@@ -19,6 +20,7 @@ const StyledInput = ({
   type?: string;
   isValid?: boolean | string;
   requireText?: string;
+  onClick?: any;
 }) => {
   const enforcer = (nextUserInput) => {
     if (nextUserInput === "" || inputRegex.test(escapeRegExp(nextUserInput))) {
@@ -41,25 +43,29 @@ const StyledInput = ({
           inputMode="decimal"
           placeholder={placeholder || "0.00"}
           pattern={`^[0-9]*[.,]?[0-9]{0,18}$`}
-          className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
+          className={`${className} primary-shadow focusShadow relative z-10 h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
           maxLength={79}
+          onClick={onClick}
         />
       ) : type === "text" ? (
         <input
           type={"text"}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
           placeholder={placeholder}
+          onChange={(e) => setValue(e.target.value)}
+          className={`${className} primary-shadow focusShadow relative z-10 h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
+          onClick={onClick}
         />
       ) : (
         <textarea
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className={`${className} primary-shadow focusShadow h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
           placeholder={placeholder}
+          onChange={(e) => setValue(e.target.value)}
+          className={`${className} primary-shadow focusShadow relative z-10 h-10 rounded border-none bg-[#B9B8B81A] p-[16px_14px] text-sm text-white outline-none`}
+          onClick={onClick}
         />
       )}
+
       {!isValid ? <RequireAlert text={requireText} value={isValid} /> : ""}
     </>
   );

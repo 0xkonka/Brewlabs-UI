@@ -12,7 +12,8 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import CommunityModal from "./CommunityModal";
 import { useState } from "react";
 import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
-import { BREWNFT_COLORS, BREWNFT_RARITIES } from "config/constants";
+import { BREWNFT_RARITIES } from "config/constants";
+import NFTRarityText from "@components/NFTRarityText";
 
 const Community = () => {
   const [communityOpen, setCommunityOpen] = useState(false);
@@ -50,12 +51,10 @@ const Community = () => {
                 </div>
                 <div className="ml-0 mt-6 flex w-full items-center justify-end sm:ml-6 sm:mt-0 sm:w-fit sm:justify-start">
                   <div
-                    className={`mr-3 cursor-pointer ${
-                      BREWNFT_COLORS[activeRarity] ?? "text-[#3F3F46]"
-                    } transition hover:text-white [&>*:first-child]:!h-5`}
+                    className={`mr-3 cursor-pointer transition hover:text-white [&>*:first-child]:!h-5`}
                     id={"nftsvg"}
                   >
-                    {NFTSVG}
+                    <NFTRarityText rarity={activeRarity}>{NFTSVG}</NFTRarityText>
                   </div>
                   {/* <a href="https://t.me/MaverickBL" target="_blank"> */}
                   <StyledButton className="whitespace-nowrap p-[10px_12px]" onClick={() => setCommunityOpen(true)}>

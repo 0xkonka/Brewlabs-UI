@@ -22,12 +22,12 @@ import { getChainLogo } from "utils/functions";
 
 import { useNftStaking } from "../hooks/useNftStaking";
 import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
-import { BREWNFT_COLORS } from "config/constants";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 import useTokenMarketChart from "@hooks/useTokenMarketChart";
+import NFTRarityText from "@components/NFTRarityText";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -174,7 +174,9 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{nft.name}</div>
         </div>
         <div className="w-[60px]  overflow-hidden text-ellipsis whitespace-nowrap">ID {nft.tokenId}</div>
-        <div className={`uppercase ${BREWNFT_COLORS[nft.rarity - 1]} w-[80px]`}>{NFT_RARITY_NAME[nft.rarity - 1]}</div>
+        <div className={`w-[80px]  uppercase`}>
+          <NFTRarityText rarity={nft.rarity - 1}>{NFT_RARITY_NAME[nft.rarity - 1]}</NFTRarityText>
+        </div>
         {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (
           <>
             <div className="w-[116px]">
@@ -280,8 +282,8 @@ const NFTCard = ({ nft }: { nft: any }) => {
               ID {nft.tokenId}
             </div>
           </div>
-          <div className={`uppercase ${BREWNFT_COLORS[nft.rarity - 1]} mt-4 w-full text-right sm:mt-0 sm:w-fit`}>
-            {NFT_RARITY_NAME[nft.rarity - 1]}
+          <div className={`mt-4 w-full text-right uppercase sm:mt-0 sm:w-fit`}>
+            <NFTRarityText rarity={nft.rarity - 1}>{NFT_RARITY_NAME[nft.rarity - 1]}</NFTRarityText>
           </div>
         </div>
         {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (

@@ -29,7 +29,6 @@ export default function VotePanel({ currency }) {
     <div className="primary-shadow mt-2 rounded-md bg-[#B9B8B80D] p-[8px_16px_16px_16px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <NFTComponent />
           <div
             className="mx-1.5 cursor-pointer text-tailwind opacity-100 hover:text-white [&>svg]:!h-4 [&>svg]:!w-4"
             id="CommunityPair"
@@ -43,15 +42,18 @@ export default function VotePanel({ currency }) {
           </div>
           <div className="text-base font-bold text-[#FFFFFFBF]">Vibe</div>
         </div>
-        <div
-          className={`text-xs ${isVoted ? "" : "hidden"}`}
-          style={{ color: isVoted ? voteColors[isVoted.rate] : "" }}
-        >
-          VOTED
+        <div className="flex items-center">
+          <div
+            className={`text-xs ${isVoted ? "" : "hidden"} mr-2`}
+            style={{ color: isVoted ? voteColors[isVoted.rate] : "" }}
+          >
+            VOTED
+          </div>
+          <NFTComponent />
         </div>
       </div>
-      <div className="mt-4 flex items-center text-sm max-w-[288px] mx-auto">
-        <div className="text-white">Avoid</div>
+      <div className="mx-auto mt-4 flex max-w-[288px] items-center text-sm">
+        <div className="text-[#FFFFFF80]">Avoid</div>
         <div className="mx-2 flex flex-1 items-center">
           {voteColors.map((color, i) => {
             return (
