@@ -91,15 +91,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
         </div>
         <div className="yellowScroll -ml-3 mt-3 w-[calc(100%+24px)] flex-1 overflow-x-clip overflow-y-scroll pl-3 pr-5 pt-2">
           {arrays[selectedFilter].map((favourite, i) => {
-            return (
-              <FavouriteCard
-                key={i}
-                network={networks[selectedNetwork]}
-                pair={favourite}
-                setSelectedCurrency={setSelectedCurrency}
-                type={selectedFilter}
-              />
-            );
+            return <FavouriteCard key={i} network={networks[selectedNetwork]} pair={favourite} type={selectedFilter} />;
           })}
         </div>
       </div>
