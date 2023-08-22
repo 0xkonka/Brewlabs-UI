@@ -15,7 +15,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const infos = [
     {
       icon: LiquiditySVG,
-      value: `$${numberWithCommas((marketInfos.liquidity ?? 0).toFixed(2))} Pool liquidity`,
+      value: `$${numberWithCommas((marketInfos.liquidity ?? 0).toFixed(2))} Liquidity`,
     },
     {
       icon: FilledFixedSVG,
@@ -35,53 +35,69 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
     { icon: ChartSVG, value: `$${numberWithCommas((marketInfos.marketCap ?? 0)?.toFixed(2))} Marketcap` },
   ];
 
-  const price = marketInfos.price ?? 0;
+  const price = currency.price ?? 0;
+
+  const makePricePanel = () => {
+    return (
+      <div className="flex items-center">
+        <div className={`flex items-center ${currency.priceChange24h >= 0 ? "text-green" : "text-danger"}`}>
+          <div className="mr-1 whitespace-nowrap text-sm">
+            {currency.priceChange24h >= 0 ? "+" : ""}
+            {(currency.priceChange24h ?? 0).toFixed(2)}% (24h)
+          </div>
+          <div className="scale-[80%]">{currency.priceChange24h >= 0 ? upSVG : downSVG}</div>
+        </div>
+        <div className="ml-2 text-lg font-bold text-white">
+          <StyledPrice price={price} />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div
-      className={`relative z-0 mr-0 mt-8 flex flex-col items-start justify-between md:flex-row md:items-center ${
+      className={`relative z-0 mr-0 mt-8 flex flex-col items-start justify-between lg:flex-row lg:items-center ${
         showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
       }`}
     >
-      <div className="flex flex-col items-start xl:flex-row xl:items-center">
-        <div className="item-start flex flex-col md:flex-row md:items-center ">
-          <div className={`flex w-fit items-center ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
-            <div className="cursor-pointer" onClick={() => onFavourites(currency, 1)}>
-              <StarIcon
-                className={`h-5 w-5 ${
-                  favourites.find(
-                    (favourite) =>
-                      favourite.address === currency.address.toLowerCase() && favourite.chainId === currency.chainId
-                  )
-                    ? "text-primary"
-                    : "text-tailwind"
-                }`}
-              />
-            </div>
-            <img src={DEX_LOGOS[currency.swap]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
-            <div className="flex">
-              <TokenLogo
-                src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
-                classNames="primary-shadow z-10 -mr-2 h-6 w-6 rounded-full"
-              />
-              <TokenLogo
-                src={getTokenLogoURL(isAddress(currency.tokenAddresses[1]), currency.chainId)}
-                classNames="primary-shadow h-6 w-6 rounded-full"
-              />
-            </div>
-            <div className="ml-2 text-lg font-bold text-white">
-              {currency.symbols[0]}-{currency.symbols[1]}
+      <div className="flex w-full flex-col items-start xl:flex-row xl:items-center">
+        <div className="flex w-full flex-col items-start justify-between sm:flex-row sm:items-center xl:w-fit">
+          <div className="flex flex-col items-center lg:flex-row ">
+            <div className={`flex w-fit items-center ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
+              <div className="cursor-pointer" onClick={() => onFavourites(currency, 1)}>
+                <StarIcon
+                  className={`h-5 w-5 ${
+                    favourites.find(
+                      (favourite) =>
+                        favourite.address === currency.address.toLowerCase() && favourite.chainId === currency.chainId
+                    )
+                      ? "text-primary"
+                      : "text-tailwind"
+                  }`}
+                />
+              </div>
+              <img src={DEX_LOGOS[currency.swap]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
+              <div className="flex">
+                <TokenLogo
+                  src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
+                  classNames="primary-shadow z-10 -mr-2 h-6 w-6 rounded-full"
+                />
+                <TokenLogo
+                  src={getTokenLogoURL(isAddress(currency.tokenAddresses[1]), currency.chainId)}
+                  classNames="primary-shadow h-6 w-6 rounded-full"
+                />
+              </div>
+              <div className="ml-2 text-lg font-bold text-white">
+                {currency.symbols[0]}-{currency.symbols[1]}
+              </div>
             </div>
           </div>
-          <div className="mt-2 flex items-center md:mt-0"></div>
+          <div className="-mb-1 mt-3 block sm:mb-0 sm:mt-0 xl:hidden">{makePricePanel()}</div>
         </div>
         <div className="ml-0 mt-4 flex flex-wrap lg:ml-4 xl:mt-0">
           {infos.map((data, i) => {
             return (
-              <div
-                key={i}
-                className="mb-2 mr-0 flex w-[calc(50%-8px)] items-center rounded-[5px] bg-[#FFFFFF0D] p-[4px_10px] md:mb-0 md:mr-1.5 md:w-fit"
-              >
+              <div key={i} className="my-1 mr-1.5 flex items-center rounded-[5px] bg-[#FFFFFF0D] p-[4px_10px]">
                 <div className="mr-0.5 text-tailwind">{data.icon}</div>
                 <div className="ml-1.5 text-xs font-[500] text-white">{data.value}</div>
               </div>
@@ -89,19 +105,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
           })}
         </div>
       </div>
-
-      <div className="flex items-center">
-        <div className={`flex items-center ${marketInfos.priceChange >= 0 ? "text-green" : "text-danger"}`}>
-          <div className="mr-1 text-sm">
-            {marketInfos.priceChange >= 0 ? "+" : ""}
-            {(marketInfos.priceChange ?? 0).toFixed(2)}% (24h)
-          </div>
-          <div className="scale-[80%]">{marketInfos.priceChange >= 0 ? upSVG : downSVG}</div>
-        </div>
-        <div className="ml-2 text-lg font-bold text-white">
-          <StyledPrice price={price} />
-        </div>
-      </div>
+      <div className="hidden xl:block">{makePricePanel()}</div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import NFTComponent from "@components/NFTComponent";
 import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
 
 export default function VotePanel({ currency }) {
-  const voteColors = ["#DC4545", "#E96E6E", "#FFDE00", "#32FFB5", "#2FD35DBF"];
+  const voteColors = ["#DC4545", "#E96E6E", "#FFDE00", "#32FFB5", "#2FD35D"];
 
   const { voteOrAgainst, info } = usePairVoteInfo(currency.address, currency.chainId);
   const { address: account } = useAccount();
@@ -59,7 +59,7 @@ export default function VotePanel({ currency }) {
             return (
               <div
                 key={i}
-                className={`mx-[1px] ${bestVoted === i ? "h-3.5 w-10" : "h-2 flex-1"} ${
+                className={`mx-[1px] ${bestVoted === i ? "h-4 w-10" : "h-2 flex-1"} ${
                   isVoted && isVoted.rate === i ? "border-white" : "border-transparent"
                 } primary-shadow cursor-pointer border transition-all hover:scale-[1.2]`}
                 style={{ background: color }}

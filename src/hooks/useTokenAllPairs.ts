@@ -195,7 +195,7 @@ export function getVolumeDatas(address, histories) {
   const v24hr = getVolume(address, histories, 3600 * 24);
   const v7d = getVolume(address, histories, 3600 * 24 * 7);
   return {
-    vol: {
+    txn: {
       "5m": {
         Buys: v5m.buyCount,
         Sells: v5m.sellCount,
@@ -221,7 +221,7 @@ export function getVolumeDatas(address, histories) {
         isUp: v7d.buyCount >= v7d.sellCount,
       },
     },
-    "vol (usd)": {
+    "txn (usd)": {
       "5m": {
         Buys: v5m.buyVolume,
         Sells: v5m.sellVolume,
@@ -251,7 +251,7 @@ export function getVolumeDatas(address, histories) {
 }
 
 export const defaultVolume = {
-  vol: {
+  txn: {
     "5m": {
       Buys: 0,
       Sells: 0,
@@ -277,7 +277,7 @@ export const defaultVolume = {
       isUp: true,
     },
   },
-  "vol (usd)": {
+  "txn (usd)": {
     "5m": {
       Buys: 0,
       Sells: 0,

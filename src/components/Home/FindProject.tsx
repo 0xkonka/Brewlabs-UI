@@ -1,6 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import Soon from "@components/Soon";
-import { InfoSVG, XMarkSVG } from "@components/dashboard/assets/svgs";
+import { InfoSVG, XMarkSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
 import { NETWORKS } from "config/constants/networks";
 import { useEffect, useState } from "react";
 import { getChainLogo } from "utils/functions";
@@ -32,7 +32,7 @@ const FindProject = () => {
       detail:
         "Brewlabs airdrop tool is a simple multisend tool that allows users to transfer tokens or NFTs to target wallets. Transfer tokens to hundreds or thousands of addresses quickly and seemlessly with this affordable solution to suite your multi-transfer needs.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.AVALANCHE, ChainId.FANTOM],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Decentralised Exchange",
@@ -40,7 +40,7 @@ const FindProject = () => {
       detail:
         "BrewSwap allow users to swap pairs of tokens in a decentralised liquidity pools. Liquidity providers can earn fees in real time for the provision of liquidity. ",
       activeNetwork: [],
-      isSoon: true,
+      isSoon: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
     },
     {
       name: "Staking",
@@ -48,7 +48,7 @@ const FindProject = () => {
       detail:
         "Teams can deploy staking pools directly to the Brewlabs pool directory. Staking pools are similar to real world term deposits, users will lock tokens for a period of time and earn interest on they locked tokens.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Yield farm",
@@ -56,7 +56,7 @@ const FindProject = () => {
       detail:
         "Teams can deploy yield farms directly to the Brewlabs pool directory. Yield farms incentivise user to create and stake liquidity tokens for certain pairs, when a user stakes a liquidity token, the user can earn a reward.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Yield farm deployer",
@@ -64,7 +64,7 @@ const FindProject = () => {
       detail:
         "Teams can use this tool to deploy a yield farm for their project, the deployer wizard will create the contract for the team and post it to the yield farm directory",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Indexes",
@@ -72,7 +72,7 @@ const FindProject = () => {
       detail:
         "A simple tool to allow a user to create baskets (index) of up to 5 tokens that can be purchased in a single transaction. Users can share their index with other users and communities. Earn a commission when a user enter and exits your index.",
       activeNetwork: [ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Zapper",
@@ -80,7 +80,7 @@ const FindProject = () => {
       detail:
         "Create liquidity positions across various yield farms within your selected network with a simple one-click entry. Easily convert your earned rewards into stablecoins.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Swap aggegation",
@@ -88,7 +88,7 @@ const FindProject = () => {
       detail:
         "BrewSwap will seek to find the best price for your swap across multiple liquidity pools, this tool will always quote the user the best price and pathway to take, then allow the user to process the quoted swap.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Communities",
@@ -96,7 +96,7 @@ const FindProject = () => {
       detail:
         "A tool allowing teams and token holders to freely or with a fee to post proposals, polls, important community decisions, bounties and noteworthy news. ",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Constructor",
@@ -104,7 +104,7 @@ const FindProject = () => {
       detail:
         "The core tool that creates liquidity pairs for users, if you are exploring liquidity provision, this tool will allow you to make a pair for your desired liquidity pool. ",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "NFT Staking",
@@ -112,28 +112,28 @@ const FindProject = () => {
       detail:
         "Brewlabs NFTs offer a range of benefits across multiple products and platforms. Find out more about the Brewlabs NFT value proposition, long term use case and earning features as a Brewlabs NFT holder.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Token Bridge",
       link: "https://earn.brewlabs.info/bridge",
       detail: "Transfer a range of assets between networks. Including layer one and layer two networks.",
       activeNetwork: [],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "LP Token lock",
       link: "https://freezer.brewlabs.info",
       detail: "Lock your liquidity with the Brewlabs Freezer, a token locking and vesting platform",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Brewlabs token bridge",
       link: "https://earn.brewlabs.info/bridge",
       detail: "Transfer your Brewlabs token between networks with this tool.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Treasury",
@@ -144,7 +144,7 @@ const FindProject = () => {
       detail:
         "Visit the Brewlabs treasury on this network, observe the balances and fees collected by a range of products and tools in real-time.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: false,
+      isSoon: [],
     },
     {
       name: "Charting tools",
@@ -152,13 +152,13 @@ const FindProject = () => {
       detail:
         "BrewCharts allow simple cryptocurrency charting for users including of orderboook, community information and score, swap and advdance charting tools for users.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: false,
+      isSoon: [],
     },
   ];
 
   return (
-    <div className="bg-zinc-900">
-      <div className="mx-auto max-w-7xl px-6 pt-12 sm:pt-16 lg:px-8  lg:pt-24">
+    <div>
+      <div className={`mx-auto ${selectedItem === -1 ? "max-w-7xl" : "max-w-[1500px]"} px-3 sm:px-6  lg:px-8 `}>
         <div className="flex flex-wrap justify-between">
           <div className="mt-10 max-w-[240px]">
             <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
@@ -207,9 +207,17 @@ const FindProject = () => {
                     item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
                   }
                 >
-                  <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">{XMarkSVG}</div>
+                  <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
+                    {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
+                      ? checkCircleSVG
+                      : XMarkSVG}
+                  </div>
                   <div>{item.name}</div>
-                  {item.isSoon ? <Soon className="!relative !top-0 !text-[10px]" /> : ""}
+                  {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                    <Soon className="!relative !top-0 !text-[10px]" />
+                  ) : (
+                    ""
+                  )}
                 </div>
               );
             })}

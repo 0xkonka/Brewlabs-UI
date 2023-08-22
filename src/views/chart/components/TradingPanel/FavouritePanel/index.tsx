@@ -15,7 +15,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
     { icon: <StarIcon className="h-4 w-4" />, name: "Favourites" },
     {
       icon: <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />,
-      name: <div className="text-white">CMC Trendings</div>,
+      name: <div className="text-white">CMC Trending</div>,
     },
     {
       icon: <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />,
@@ -23,7 +23,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
     },
     {
       icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
-      name: <div className="text-white">CG Trendings</div>,
+      name: <div className="text-white">CG Trending</div>,
     },
   ];
   const [selectedFilter, setSelectedFilter] = useState(0);
