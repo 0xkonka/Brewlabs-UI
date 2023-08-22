@@ -169,6 +169,7 @@ export const NETWORKS = {
       "https://ethereum.publicnode.com",
       "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       "https://eth.meowrpc.com",
+      "https://mainnet.gateway.tenderly.co",
     ],
     blockExplorerUrls: ["https://etherscan.io"],
   },

@@ -16,7 +16,7 @@ import { getNetworkGasPrice } from "utils/getGasPrice";
 
 const zapIn = async (indexContract, token, amount, percents, gasPrice) => {
   const value = parseEther(amount);
- 
+
   const queries = await indexContract.precomputeZapIn(
     token,
     value,
@@ -27,13 +27,10 @@ const zapIn = async (indexContract, token, amount, percents, gasPrice) => {
   let trades = [];
   for (let i = 0; i < queries.length; i++) {
     // if (queries[i].adapters.length === 0) return;
-
-    trades.push([
-      queries[i].amounts[0] ?? 0,
-      queries[i].amounts[queries[i].amounts.length - 1] ?? 0,
-      queries[i].path,
-      queries[i].adapters,
-    ]);
+    let amountOut = queries[i].amounts[queries[i].amounts.length - 1]
+      ? queries[i].amounts[queries[i].amounts.length - 1].mul(9900).div(10000)
+      : 0;
+    trades.push([queries[i].amounts[0] ?? 0, amountOut, queries[i].path, queries[i].adapters]);
   }
 
   let gasLimit = await indexContract.estimateGas.zapIn(
@@ -79,12 +76,10 @@ const zapOut = async (indexContract, token, gasPrice) => {
   for (let i = 0; i < queries.length; i++) {
     // if (queries[i].adapters.length === 0) return;
 
-    trades.push([
-      queries[i].amounts[0] ?? 0,
-      queries[i].amounts[queries[i].amounts.length - 1] ?? 0,
-      queries[i].path,
-      queries[i].adapters,
-    ]);
+    let amountOut = queries[i].amounts[queries[i].amounts.length - 1]
+      ? queries[i].amounts[queries[i].amounts.length - 1].mul(9900).div(10000)
+      : 0;
+    trades.push([queries[i].amounts[0] ?? 0, amountOut, queries[i].path, queries[i].adapters]);
   }
 
   let gasLimit = await indexContract.estimateGas.zapOut(token, trades);
