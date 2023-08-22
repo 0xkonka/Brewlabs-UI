@@ -55,7 +55,7 @@ export async function getBalances(tokens: any, addresses: any) {
         const tokenDatas = result.map((data, i) => {
           const balance = data / Math.pow(10, tokens[key][i].decimals);
           totalBalance += balance;
-          return { ...tokens[key][i], balance };
+          return { ...tokens[key][i], balance, account: addresses[key][i] };
         });
         balances[key] = tokenDatas;
       } catch (e) {

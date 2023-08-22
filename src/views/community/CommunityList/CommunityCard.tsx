@@ -55,7 +55,8 @@ const CommunityCard = ({
     ? community.proposals.filter(
         (proposal) =>
           community.members.includes(account.toLowerCase()) &&
-          ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+          ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase()) &&
+          proposal.createdTime / 1 + proposal.duration / 1 >= Date.now()
       ).length
     : 0;
 
