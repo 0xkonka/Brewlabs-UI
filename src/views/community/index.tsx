@@ -50,11 +50,10 @@ const Community = () => {
                   </div>
                 </div>
                 <div className="ml-0 mt-6 flex w-full items-center justify-end sm:ml-6 sm:mt-0 sm:w-fit sm:justify-start">
-                  <div
-                    className={`mr-3 cursor-pointer transition hover:text-white [&>*:first-child]:!h-5`}
-                    id={"nftsvg"}
-                  >
-                    <NFTRarityText rarity={activeRarity}>{NFTSVG}</NFTRarityText>
+                  <div className={`mr-3 cursor-pointer transition hover:text-white `} id={"nftsvg"}>
+                    <NFTRarityText rarity={activeRarity} className="[&>svg]:!h-5 [&>svg]:!w-5">
+                      {NFTSVG}
+                    </NFTRarityText>
                   </div>
                   {/* <a href="https://t.me/MaverickBL" target="_blank"> */}
                   <StyledButton className="whitespace-nowrap p-[10px_12px]" onClick={() => setCommunityOpen(true)}>

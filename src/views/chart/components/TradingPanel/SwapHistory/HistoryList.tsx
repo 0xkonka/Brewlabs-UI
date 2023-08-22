@@ -61,7 +61,7 @@ export default function HistoryList({ histories, currency, loading, offset, setO
           <div className="w-[160px] ">Time</div>
           <div className="w-[110px] ">Ago</div>
           {/* <div className="w-16 text-center">Type</div> */}
-          <div className="w-[90px] ">Transaction</div>
+          {/* <div className="w-[90px] ">Transaction</div> */}
           <div className="w-[60px] ">Action</div>
           <div className="w-[70px] ">Price</div>
         </div>
@@ -99,7 +99,7 @@ export default function HistoryList({ histories, currency, loading, offset, setO
                   <div className="w-[160px] whitespace-nowrap">{list.time}</div>
                   <div className="w-[110px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
                   {/* <div className="flex w-16 items-center justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div> */}
-                  <div className="w-[90px]">Swap</div>
+                  {/* <div className="w-[90px]">Swap</div> */}
                   <div className="w-[60px]">{list.action}</div>
                   <div className="w-[70px] text-white">
                     <StyledPrice price={list.price} itemClassName="!text-[8px]" />
@@ -171,15 +171,6 @@ export default function HistoryList({ histories, currency, loading, offset, setO
                   </div>
                 </div>
                 <div className="flex flex-wrap justify-between">
-                  <div className="flex items-center">
-                    <div>Action:</div>&nbsp;
-                    <div className="">{list.action}</div>
-                  </div>
-                  {/* <div className="flex items-center">
-                    <div className="flex justify-center [&>svg]:!h-3 [&>svg]:!w-3">{list.type}</div>
-                  </div> */}
-                </div>
-                <div className="flex flex-wrap justify-between">
                   <div className="flex  items-center ">
                     <div>{currency.symbols[0]}:</div>&nbsp;
                     <div className="">{list.amount}</div>
@@ -191,12 +182,12 @@ export default function HistoryList({ histories, currency, loading, offset, setO
                 </div>
                 <div className="flex flex-wrap justify-between">
                   <div className="flex items-center">
-                    <div>USD:</div>&nbsp;
-                    <div className="">${list.usdValue}</div>
+                    <div>Action:</div>&nbsp;
+                    <div className="">{list.action}</div>
                   </div>
                   <div className="flex items-center">
-                    <div>Transaction:</div>&nbsp;
-                    <div className="">Swap</div>
+                    <div>USD:</div>&nbsp;
+                    <div className="">${list.usdValue}</div>
                   </div>
                 </div>
               </div>

@@ -1,12 +1,17 @@
 import Container from "@components/layout/Container";
 import CardVideo from "@components/cards/CardVideo";
 import InfoCarousel from "./layout/InfoCarousel";
+import FindProject from "./Home/FindProject";
 
 const VideoSection = () => {
   return (
     <section className="bg-gradient-to-b from-zinc-800 to-zinc-900 pb-16 pt-20">
       <Container>
         <InfoCarousel />
+      </Container>
+
+      <FindProject />
+      <Container className="mt-32">
         <div className="grid grid-cols-4 gap-16">
           <div className="col-span-4 sm:mr-24 md:col-span-2">
             <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">

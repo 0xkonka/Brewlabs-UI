@@ -7,8 +7,10 @@ import NFTRarityText from "@components/NFTRarityText";
 const NFTComponent = ({ className = "" }: { className?: string }) => {
   const activeRarity = useActiveNFT();
   return (
-    <div className={`cursor-pointer hover:text-white [&>svg]:!h-4 [&>svg]:!w-4`} id={"ActiveNFT"}>
-      <NFTRarityText rarity={activeRarity}>{NFTSVG}</NFTRarityText>
+    <div className={`cursor-pointer hover:text-white`} id={"ActiveNFT"}>
+      <NFTRarityText rarity={activeRarity} className="[&>svg]:!h-5 [&>svg]:!w-5">
+        {NFTSVG}
+      </NFTRarityText>
       <ReactTooltip
         anchorId={"ActiveNFT"}
         place="top"

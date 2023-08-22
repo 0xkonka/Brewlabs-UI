@@ -52,7 +52,7 @@ export const SearchInput = ({ setSelectedCurrency }) => {
             />
             {!criteria ? (
               <div
-                className={`absolute left-0 top-0 flex h-full w-full items-center p-[0px_14px] font-brand !text-base text-[#FFFFFFBF]`}
+                className={`absolute left-0 top-0 flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap p-[0px_14px] font-brand !text-base text-[#FFFFFFBF]`}
               >
                 Search&nbsp;<span className="text-[#FFFFFF40]">contract, name, symbol...</span>
               </div>
@@ -79,7 +79,7 @@ export const SearchInput = ({ setSelectedCurrency }) => {
                     key={i}
                     className="flex h-[44px] cursor-pointer items-center overflow-hidden text-ellipsis px-3 transition hover:bg-[#5b5b5c]"
                     onClick={() => {
-                      setSelectedCurrency(pair);
+                      router.push(`/chart/${DEX_GURU_CHAIN_NAME[pair.chainId]}/${pair.address}`);
                       setCriteria("");
                     }}
                   >

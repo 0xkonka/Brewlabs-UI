@@ -83,6 +83,7 @@ const NFTActions = () => {
   const activeRarity: any = activeNFT
     ? [...flaskNft.userData.balances].sort((a, b) => b.rarity - a.rarity)[0].rarity - 1
     : -1;
+
   const isApproved = +flaskNft.userData?.allowances?.[0] >= +flaskNft.mintFee?.brews;
 
   const actions = [

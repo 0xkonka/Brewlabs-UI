@@ -7,8 +7,8 @@ export default function VolumeInfo({ volumeDatas }) {
   const [showType, setShowType] = useState(0);
 
   const showTypes = [
-    { key: "vol", values: ["Buys", "Sells", "Total"] },
-    { key: "vol (usd)", values: ["Buys", "Sells", "Total"] },
+    { key: "txn", values: ["Buys", "Sells", "Total"] },
+    { key: "txn (usd)", values: ["Buys", "Sells", "Total"] },
   ];
 
   return (

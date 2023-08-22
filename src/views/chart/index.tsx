@@ -104,7 +104,7 @@ export default function Chart({ chain, address }) {
       )}
       <div className={`px-3 pb-10 font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
         {selectedCurrency ? (
-          <div className="relative mx-auto w-full max-w-[1720px]">
+          <div className="relative mx-auto w-full max-w-[1720px] lg:mt-0 mt-24">
             <Header
               selectedCurrency={selectedCurrency}
               setSelectedCurrency={setSelectedCurrency}

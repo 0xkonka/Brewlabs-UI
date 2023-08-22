@@ -9,7 +9,7 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
   const filters2 = ["My swaps", "My buys", "My sells"];
   return (
     <div className="mt-2 flex flex-col items-start justify-between md:flex-row md:items-center ">
-      <div className="flex w-full flex-col items-center xs:flex-row-reverse md:xs:flex-row">
+      <div className="flex ">
         <div className="mr-1.5">
           <DropDown
             value={showType >= 3 ? 0 : showType}
@@ -52,29 +52,29 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
             itemClassName={`hover:!bg-[#48484b] !justify-start !px-2`}
           />
         </div>
-        <div className="primary-shadow flex h-8 w-full flex-none overflow-hidden rounded xs:w-fit xs:flex-1">
-          <div className="relative flex-1">
-            <StyledInput
-              value={criteria}
-              setValue={setCriteria}
-              className="h-full w-full !rounded-none font-brand !shadow-none"
-            />
-            {!criteria ? (
-              <div
-                className={`absolute left-0 top-0 flex h-full w-full items-center p-[0px_14px] font-brand !text-sm text-white`}
-              >
-                Find&nbsp;<span className="text-[#FFFFFF80]">a wallet for swaps in this pair...</span>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
-          <div
-            className="flex h-full w-14 cursor-pointer items-center justify-center  bg-[#202023] text-primary [&>svg]:!h-4 [&>svg]:!w-4"
-            onClick={() => setShowType(6)}
-          >
-            {SearchCircleSVG}
-          </div>
+      </div>
+      <div className="primary-shadow mt-2 flex h-8 w-full flex-none overflow-hidden rounded md:mt-0 md:w-fit md:flex-1">
+        <div className="relative flex-1">
+          <StyledInput
+            value={criteria}
+            setValue={setCriteria}
+            className="h-full w-full !rounded-none font-brand !shadow-none"
+          />
+          {!criteria ? (
+            <div
+              className={`text-ellpsis absolute left-0 top-0 flex h-full w-full items-center overflow-hidden whitespace-nowrap p-[0px_14px] font-brand !text-sm text-white`}
+            >
+              Find&nbsp;<span className="text-[#FFFFFF80]">a wallet for swaps in this pair...</span>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <div
+          className="flex h-full w-14 cursor-pointer items-center justify-center  bg-[#202023] text-primary [&>svg]:!h-4 [&>svg]:!w-4"
+          onClick={() => setShowType(6)}
+        >
+          {SearchCircleSVG}
         </div>
       </div>
     </div>
