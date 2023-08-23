@@ -5,7 +5,7 @@ import CurrencySelector from "@components/CurrencySelector";
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { useRouter } from "next/router";
 
-export default function Header({ setSelectedCurrency, showReverse, setShowReverse }) {
+export default function Header({ showReverse, setShowReverse }) {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
 
@@ -20,7 +20,7 @@ export default function Header({ setSelectedCurrency, showReverse, setShowRevers
     <div className="relative z-10 mt-10 flex">
       <div className="flex flex-1">
         <div className="relative flex-1">
-          <SearchInput setSelectedCurrency={setSelectedCurrency} />
+          <SearchInput />
           <a
             href={"https://t.me/MaverickBL"}
             target={"_blank"}

@@ -14,7 +14,7 @@ import { ChartContext } from "contexts/ChartContext";
 import { useRouter } from "next/router";
 import { DEX_GURU_CHAIN_NAME } from "config";
 
-export const SearchInput = ({ setSelectedCurrency }) => {
+export const SearchInput = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { criteria, setCriteria }: any = useContext(ChartContext);
