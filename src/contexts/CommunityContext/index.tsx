@@ -78,7 +78,9 @@ const CommunityContextProvider = ({ children }: any) => {
         (community) =>
           (proposalCount += community.members.includes(account.toLowerCase())
             ? community.proposals.filter(
-                (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+                (proposal) =>
+                  ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase()) &&
+                  proposal.createdTime / 1 + proposal.duration / 1 >= Date.now()
               ).length
             : 0)
       );

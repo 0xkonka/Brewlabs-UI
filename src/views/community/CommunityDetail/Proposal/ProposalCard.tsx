@@ -124,7 +124,11 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             <div className="mt-3 flex items-center text-sm">
               <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
               <div className="ml-2.5 text-[#FFFFFFBF]">
-                <CountDown time={proposal.createdTime + proposal.duration} />
+                {proposal.createdTime + proposal.duration >= Date.now()? (
+                  <CountDown time={proposal.createdTime + proposal.duration} />
+                ) : (
+                  "Time elapsed"
+                )}
               </div>
             </div>
           </div>

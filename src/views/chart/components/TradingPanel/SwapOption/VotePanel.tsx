@@ -59,9 +59,9 @@ export default function VotePanel({ currency }) {
             return (
               <div
                 key={i}
-                className={`mx-[1px] ${bestVoted === i ? "h-4 w-10" : "h-2 flex-1"} ${
-                  isVoted && isVoted.rate === i ? "border-white" : "border-transparent"
-                } primary-shadow cursor-pointer border transition-all hover:scale-[1.2]`}
+                className={`mx-[1px] ${
+                  bestVoted === i ? "h-4 w-10" : "h-2 flex-1"
+                }  primary-shadow cursor-pointer transition-all hover:scale-[1.2]`}
                 style={{ background: color }}
                 onClick={() => activeRarity >= 1 && voteOrAgainst(currency.address, account, currency.chainId, i)}
               />

@@ -11,7 +11,6 @@ export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stab
     `https://api.dex.guru/v3/tokens/search/${criteria}?network=${chain ?? "eth,bsc,polygon,arbitrum"}`
   );
   tokens = tokens.data;
-  console.log(tokens);
 
   const result = await Promise.all(
     tokens.map((token) =>
