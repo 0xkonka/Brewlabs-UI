@@ -69,17 +69,19 @@ export async function getBalances(tokens: any, addresses: any) {
 const useTokenBalances = (tokens: any, addresses: any) => {
   const [balances, setBalances] = useState(null);
   const [totalBalance, setTotalBalance] = useState(null);
-  async function fetchBalances() {
-    const result = await getBalances(tokens, addresses);
-    const { balances: _balances, totalBalance: _totalBalance } = result;
-    setTotalBalance(_totalBalance);
-    setBalances(_balances);
-  }
+
   const strigifiedTokens = JSON.stringify(tokens);
   const strigifiedAddresses = JSON.stringify(addresses);
-  useSecondRefreshEffect(() => {
-    fetchBalances();
+
+  useEffect(() => {
+    getBalances(tokens, addresses)
+      .then((result) => {
+        setTotalBalance(result.totalBalance);
+        setBalances(result.balances);
+      })
+      .catch((e) => console.log(e));
   }, [strigifiedTokens, strigifiedAddresses]);
+
   return { balances, totalBalance };
 };
 

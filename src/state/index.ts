@@ -11,7 +11,7 @@ import deploy from "./deploy";
 import farms from "./farms";
 import pools from "./pools";
 import indexes from "./indexes";
-import nfts from "./nfts"
+import nfts from "./nfts";
 
 import burn from "./burn/reducer";
 import lists from "./lists/reducer";
@@ -23,7 +23,8 @@ import user from "./user/reducer";
 import lpPricesReducer from "./lpPrices";
 import storage from "./storage";
 import zap from "./zap";
-import chart from './charts/reducer';
+import home from "./home";
+import chart from "./charts/reducer";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -53,6 +54,7 @@ const persistedReducer = persistReducer(
     transactions,
     burn,
     mint,
+    home,
   })
 );
 

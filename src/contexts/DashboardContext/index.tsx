@@ -220,7 +220,7 @@ const DashboardContextProvider = ({ children }: any) => {
     }
   }, [chainId, signer, JSON.stringify(tokenMarketData)]);
 
-  useSlowRefreshEffect(() => {
+  useEffect(() => {
     if (!PAGE_SUPPORTED_CHAINS.draw.includes(chainId)) {
       setMarketHistory([]);
     } else {

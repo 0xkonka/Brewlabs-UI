@@ -24,7 +24,6 @@ export const SearchInput = ({ setSelectedCurrency }) => {
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {
-    console.log("onCurrencySelect");
     router.push(`/chart/${DEX_GURU_CHAIN_NAME[currency.chainId]}/${currency.address}`);
   }
 
