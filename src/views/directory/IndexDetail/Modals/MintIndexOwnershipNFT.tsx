@@ -24,7 +24,7 @@ const MintIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpen
   const dispatch = useAppDispatch();
   const { pending, setPending }: any = useContext(DashboardContext);
 
-  const { onMintDeployerNft } = useIndexImpl(data.pid, data.address, data.performanceFee);
+  const { onMintDeployerNft } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
