@@ -44,7 +44,7 @@ const DropDown = ({
       ref={dropRef}
       onClick={() => setOpen(!open)}
     >
-      <div>{data[value]}</div>
+      <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{data[value]}</div>
       <div className={`${open ? "-scale-y-100" : ""} [&>svg]:!h-3 [&>svg]:!w-3`}>{ChevronDownSVG}</div>
 
       <div

@@ -11,38 +11,53 @@ import CurrencySelector from "@components/CurrencySelector";
 import { useGlobalState } from "state";
 import { Oval } from "react-loader-spinner";
 import { ChartContext } from "contexts/ChartContext";
+import { useRouter } from "next/router";
+import { DEX_GURU_CHAIN_NAME } from "config";
 
-export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
-  const [isCopied, setIsCopied] = useState(false);
-
+export const SearchInput = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
-  const { criteria, setCriteria, pending, setPending }: any = useContext(ChartContext);
+  const { criteria, setCriteria }: any = useContext(ChartContext);
 
   const { pairs, loading } = useTokenAllPairs(criteria);
+  const router = useRouter();
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {
-    setPending(true);
-    const pair = await fetchAllPairs(currency.address, 1);
-    if (pair && pair.length) {
-      setSelectedCurrency(pair[0]);
-      setCriteria("");
-    }
-    setPending(false);
+    router.push(`/chart/${DEX_GURU_CHAIN_NAME[currency.chainId]}/${currency.address}`);
   }
 
   return (
     <div className="relative z-10 flex w-full">
       <div className="primary-shadow flex h-[44px] flex-1">
         <div className="relative flex-1">
-          <div className=" flex h-full items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A]">
+          <div className=" relative flex h-full items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A]">
             <StyledInput
               value={criteria}
               setValue={setCriteria}
-              placeholder="Search contract, name, symbol..."
-              className="!h-full flex-1 bg-transparent  !text-base !shadow-none focus:!shadow-none focus:!ring-0"
+              className="!h-full flex-1 bg-transparent  font-brand !text-base !shadow-none focus:!shadow-none focus:!ring-0"
+              onClick={() => {
+                setIsOpen(isOpen === 1 ? 1 : 2);
+                setSidebarContent(
+                  <CurrencySelector
+                    inputType={"input"}
+                    selectedCurrency={null}
+                    onUserInput={onUserInput}
+                    type={""}
+                    onCurrencySelect={onCurrencySelect}
+                  />
+                );
+              }}
             />
+            {!criteria ? (
+              <div
+                className={`absolute left-0 top-0 flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap p-[0px_14px] font-brand !text-base text-[#FFFFFFBF]`}
+              >
+                Search&nbsp;<span className="text-[#FFFFFF40]">contract, name, symbol...</span>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
           <div className="absolute left-0 w-full overflow-hidden rounded-b bg-[#29292b]">
             {loading ? (
@@ -63,7 +78,7 @@ export const SearchInput = ({ selectedChainId, setSelectedCurrency }) => {
                     key={i}
                     className="flex h-[44px] cursor-pointer items-center overflow-hidden text-ellipsis px-3 transition hover:bg-[#5b5b5c]"
                     onClick={() => {
-                      setSelectedCurrency(pair);
+                      router.push(`/chart/${DEX_GURU_CHAIN_NAME[pair.chainId]}/${pair.address}`);
                       setCriteria("");
                     }}
                   >

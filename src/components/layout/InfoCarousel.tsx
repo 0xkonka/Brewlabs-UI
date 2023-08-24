@@ -15,6 +15,7 @@ import { CommunityContext } from "contexts/CommunityContext";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { Tooltip } from "react-tooltip";
+import { useAllHomeData, useHomeTransaction } from "state/home/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { numberWithCommas } from "utils/functions";
 
@@ -42,16 +43,9 @@ const responsive = {
 };
 
 const InfoCarousel = () => {
-  const {
-    treasuryValues,
-    totalStakedValues,
-    transactionCount,
-    communities,
-    feeCollectedValues,
-    nftStakingValues,
-    transactionCounts,
-  }: any = useContext(CommunityContext);
+  const { totalStakedValues, communities }: any = useContext(CommunityContext);
 
+  const homeDatas = useAllHomeData();
   const { indexes } = useIndexes();
   const recentIndexes = indexes.filter(
     (index) => new Date(index.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
@@ -66,18 +60,18 @@ const InfoCarousel = () => {
       suffix: "USD",
       icon: BarChartSVG,
       value:
-        treasuryValues.value === null ? (
+        homeDatas.treasuryValues.value === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `$${numberWithCommas(treasuryValues.value.toFixed(2))}`
+          `$${numberWithCommas(homeDatas.treasuryValues.value.toFixed(2))}`
         ),
       tooltip: "Total treasury value across all chains.",
       subItem: {
         value:
-          treasuryValues.changedValue === null ? (
+          homeDatas.treasuryValues.value24h === null ? (
             <SkeletonComponent className="!min-w-[60px]" />
           ) : (
-            `$${numberWithCommas(treasuryValues.changedValue.toFixed(2))}`
+            `$${numberWithCommas(homeDatas.treasuryValues.value24h.toFixed(2))}`
           ),
         suffix: "USD",
       },
@@ -109,18 +103,18 @@ const InfoCarousel = () => {
       suffix: "USD",
       icon: UpDownSVG,
       value:
-        feeCollectedValues.value === null ? (
+        homeDatas.feeCollected.fee === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `$${numberWithCommas(feeCollectedValues.value.toFixed(2))}`
+          `$${numberWithCommas(homeDatas.feeCollected.fee.toFixed(2))}`
         ),
       tooltip: "Total fees collected.",
       subItem: {
         value:
-          feeCollectedValues.changedValue === null ? (
+          homeDatas.feeCollected.fee24h === null ? (
             <SkeletonComponent className="!min-w-[60px]" />
           ) : (
-            `$${numberWithCommas(feeCollectedValues.changedValue.toFixed(2))}`
+            `$${numberWithCommas(homeDatas.feeCollected.fee24h.toFixed(2))}`
           ),
         suffix: "USD",
       },
@@ -130,18 +124,18 @@ const InfoCarousel = () => {
       suffix: "Tx",
       icon: FixedSVG,
       value:
-        transactionCounts.value === null ? (
+        homeDatas.transactions.count === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `${numberWithCommas(transactionCounts.value)}`
+          `${numberWithCommas(homeDatas.transactions.count)}`
         ),
       tooltip: "Total transactions made across Brewlabs dAPP.",
       subItem: {
         value:
-          transactionCounts.changedValue === null ? (
+          homeDatas.transactions.count24h === null ? (
             <SkeletonComponent className="!min-w-[60px]" />
           ) : (
-            `${numberWithCommas(transactionCounts.changedValue)}`
+            `${numberWithCommas(homeDatas.transactions.count24h)}`
           ),
         suffix: "Tx",
       },
@@ -173,18 +167,18 @@ const InfoCarousel = () => {
       suffix: "APR",
       icon: NFTFillSVG,
       value:
-        nftStakingValues.NFT_MontlyApr === null ? (
+        homeDatas.nftStakings.apy === null ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `${nftStakingValues.NFT_MontlyApr.toFixed(2)}%`
+          `${homeDatas.nftStakings.apy.toFixed(2)}%`
         ),
       tooltip: "Best performing NFT staking pool.",
       subItem: {
         value:
-          nftStakingValues.mintCount === null ? (
+          homeDatas.nftStakings.mintCount === null ? (
             <SkeletonComponent className="!min-w-[60px]" />
           ) : (
-            `${numberWithCommas(nftStakingValues.mintCount)}`
+            `${numberWithCommas(homeDatas.nftStakings.mintCount)}`
           ),
         suffix: "STAKED",
       },

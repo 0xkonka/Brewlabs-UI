@@ -5,6 +5,7 @@ import { Contract } from "ethers";
 import { useEffect, useState } from "react";
 import multicall from "utils/multicall";
 import { simpleRpcProvider } from "utils/providers";
+import { useSecondRefreshEffect } from "./useRefreshEffect";
 
 export async function getMultiChainTotalBalances(tokens: any, address: any) {
   let totalBalance = 0;
@@ -54,11 +55,11 @@ export async function getBalances(tokens: any, addresses: any) {
         const tokenDatas = result.map((data, i) => {
           const balance = data / Math.pow(10, tokens[key][i].decimals);
           totalBalance += balance;
-          return { ...tokens[key][i], balance };
+          return { ...tokens[key][i], balance, account: addresses[key][i] };
         });
         balances[key] = tokenDatas;
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     })
   );
@@ -68,17 +69,19 @@ export async function getBalances(tokens: any, addresses: any) {
 const useTokenBalances = (tokens: any, addresses: any) => {
   const [balances, setBalances] = useState(null);
   const [totalBalance, setTotalBalance] = useState(null);
-  async function fetchBalances() {
-    const result = await getBalances(tokens, addresses);
-    const { balances: _balances, totalBalance: _totalBalance } = result;
-    setTotalBalance(_totalBalance);
-    setBalances(_balances);
-  }
+
   const strigifiedTokens = JSON.stringify(tokens);
   const strigifiedAddresses = JSON.stringify(addresses);
+
   useEffect(() => {
-    fetchBalances();
+    getBalances(tokens, addresses)
+      .then((result) => {
+        setTotalBalance(result.totalBalance);
+        setBalances(result.balances);
+      })
+      .catch((e) => console.log(e));
   }, [strigifiedTokens, strigifiedAddresses]);
+
   return { balances, totalBalance };
 };
 

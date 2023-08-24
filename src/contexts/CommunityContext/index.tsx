@@ -18,10 +18,8 @@ const CommunityContextProvider = ({ children }: any) => {
   const [newProposalCount, setNewProposalCount] = useState(0);
 
   const { address: account } = useAccount();
-  const [transactions, setTransactions] = useState(null);
 
-  const { treasuryValues, totalStakedValues, feeCollectedValues, nftStakingValues, transactionCounts } =
-    useCommunuityValues();
+  const { totalStakedValues } = useCommunuityValues();
 
   const handleError = (data, successText = "") => {
     if (!data.success) toast.error(data.msg);
@@ -78,7 +76,9 @@ const CommunityContextProvider = ({ children }: any) => {
         (community) =>
           (proposalCount += community.members.includes(account.toLowerCase())
             ? community.proposals.filter(
-                (proposal) => ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase())
+                (proposal) =>
+                  ![...proposal.yesVoted, ...proposal.noVoted].includes(account?.toLowerCase()) &&
+                  proposal.createdTime / 1 + proposal.duration / 1 >= Date.now()
               ).length
             : 0)
       );
@@ -94,12 +94,7 @@ const CommunityContextProvider = ({ children }: any) => {
         voteOrAgainst,
         addCommunity,
         newProposalCount,
-        treasuryValues: treasuryValues,
         totalStakedValues: totalStakedValues,
-        transactionCount: transactions,
-        feeCollectedValues: feeCollectedValues,
-        nftStakingValues: nftStakingValues,
-        transactionCounts: transactionCounts,
       }}
     >
       {children}

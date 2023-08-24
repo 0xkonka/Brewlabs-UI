@@ -5,7 +5,6 @@ export const useReplaceQueryParams = () => {
 
   const replaceQueryParams = (key: string, val: any) => {
     let isLiquidityPage = ["add", "remove"].includes(router.pathname.split("/")[1]);
-
     router.query[key] = val;
     router.push({
       pathname: isLiquidityPage

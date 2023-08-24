@@ -116,6 +116,7 @@ export const CHAIN_ICONS = {
   [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
   8453: "/images/networks/base.png",
+  324: "/images/networks/zksync.png",
 };
 
 export const EXPLORER_LOGO = {
@@ -264,5 +265,16 @@ export const NETWORKS = {
     },
     rpcUrls: ["https://mainnet.base.org"],
     blockExplorerUrls: ["https://basescan.org"],
+  },
+  324: {
+    chainId: `0x144`,
+    chainName: "zkSync Era Mainnet",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://mainnet.era.zksync.io"],
+    blockExplorerUrls: ["https://explorer.zksync.io/"],
   },
 };

@@ -13,7 +13,6 @@ const Home: NextPage = () => (
 
     <main className="min-h-screen">
       <VideoSection />
-
       <FeaturePlug />
     </main>
 

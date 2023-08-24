@@ -12,7 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { BASE_URL } from "config";
+import { BASE_URL, DEX_GURU_CHAIN_NAME } from "config";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -48,6 +48,7 @@ import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -298,7 +299,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </StyledButton>
                     </div>
                     {data.isCustody && (
-                      <div className="mt-2 block h-[32px] w-[140px] lg:mt-0 lg:hidden">
+                      <div className="mt-2 block h-[32px] w-[140px] xl:mt-0 xl:hidden">
                         <StyledButton>
                           <div className="absolute left-2 top-2.5">{lockSVG}</div>
                           <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
@@ -308,8 +309,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-1 justify-end">
                     {data.isCustody && (
-                      <div className="ml-5 hidden w-full max-w-[470px] lg:block">
-                        <div className="mt-2 h-[32px] w-[140px] lg:mt-0">
+                      <div className="ml-5 hidden w-full max-w-[470px] xl:block">
+                        <div className="mt-2 h-[32px] w-[140px] xl:mt-0">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
@@ -317,9 +318,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       </div>
                     )}
-                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end lg:ml-5 lg:max-w-[520px] lg:flex-row">
+                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end xl:ml-5 xl:max-w-[520px] xl:flex-row">
                       {data.enableEmergencyWithdraw && (
-                        <div className="mr-0 h-[32px] w-[180px] lg:mr-5">
+                        <div className="mr-0 h-[32px] w-[180px] xl:mr-5">
                           <StyledButton
                             type={"danger"}
                             onClick={() => setEmergencyOpen(true)}
@@ -330,7 +331,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         </div>
                       )}
                       <StyledButton
-                        className="primary-shadow mb-2 !h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white lg:mb-0"
+                        className="primary-shadow mb-2 !h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white xl:mb-0"
                         type={"default"}
                         onClick={onSharePool}
                       >
@@ -340,7 +341,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </StyledButton>
                       {data.earningToken.projectLink && (
                         <a
-                          className="ml-0 h-[32px] w-[140px] lg:ml-5"
+                          className="ml-0 h-[32px] w-[140px] xl:ml-5"
                           href={data.earningToken.projectLink}
                           target="_blank"
                           rel="noreferrer"
@@ -351,8 +352,19 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </StyledButton>
                         </a>
                       )}
+                      <Link
+                        className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
+                        target="_blank"
+                        href={`/chart/${DEX_GURU_CHAIN_NAME[stakingToken.chainId]}/${stakingToken.address}`}
+                        rel="noreferrer"
+                      >
+                        <StyledButton>
+                          <div>Chart</div>
+                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
+                        </StyledButton>
+                      </Link>
                       <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] lg:ml-5 lg:mt-0"
+                        className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
                         target="_blank"
                         href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
                         rel="noreferrer"
@@ -375,7 +387,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
                     <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_12px_8px_12px] sm:p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
-                      <div className="flex justify-between text-xl xsm:flex-row flex-col">
+                      <div className="flex flex-col justify-between text-xl xsm:flex-row">
                         <div>
                           Pool: <span className="text-primary">{earningToken.symbol}</span>
                           <a
@@ -574,7 +586,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         curGraph === 1
                           ? "bg-primary text-black"
                           : "bg-[#B9B8B81A] text-[#FFFFFFBF] hover:bg-[#b9b8b82f]"
-                      } p-[12px_15px] lg:mt-20`}
+                      } p-[12px_15px] xl:mt-20`}
                       onClick={() => setCurGraph(1)}
                     >
                       <div>Total Staked Value</div>

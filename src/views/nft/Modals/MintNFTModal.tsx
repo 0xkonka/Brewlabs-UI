@@ -205,9 +205,15 @@ const MintNFTModal = ({ open, setOpen }) => {
     }
 
     return isValid && isBrewsValid ? (
-      <StyledButton className="p-[10px_12px] !font-normal" onClick={handleMint} disabled={pending}>
-        Mint&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on&nbsp;
-        <span className="font-bold">{getNetworkLabel(chainId)}</span>
+      <StyledButton
+        className={`overflow-hidden text-ellipsis whitespace-nowrap p-[10px_12px] !font-normal`}
+        onClick={handleMint}
+        disabled={pending}
+      >
+        <div className={pending ? "mr-6" : ""}>
+          Mint&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;NFT on&nbsp;
+          <span className="font-bold">{getNetworkLabel(chainId)}</span>
+        </div>
         {pending && (
           <div className="absolute right-2 top-0 flex h-full items-center">
             <Oval

@@ -1,10 +1,9 @@
 import { StarIcon } from "@heroicons/react/24/solid";
 import { ChartContext } from "contexts/ChartContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import FavouriteCard from "./FavouriteCard";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { useCGListings, useCMCListings } from "@hooks/chart/useScrappingSite";
-import { useActiveChainId } from "@hooks/useActiveChainId";
 import { NETWORKS } from "config/constants/networks";
 import { ChainId } from "@brewlabs/sdk";
 import { getChainLogo } from "utils/functions";
@@ -16,7 +15,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
     { icon: <StarIcon className="h-4 w-4" />, name: "Favourites" },
     {
       icon: <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />,
-      name: <div className="text-white">CMC Trendings</div>,
+      name: <div className="text-white">CMC Trending</div>,
     },
     {
       icon: <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />,
@@ -24,7 +23,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
     },
     {
       icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
-      name: <div className="text-white">CG Trendings</div>,
+      name: <div className="text-white">CG Trending</div>,
     },
   ];
   const [selectedFilter, setSelectedFilter] = useState(0);
@@ -32,21 +31,16 @@ export default function FavouritePanel({ setSelectedCurrency }) {
 
   const { trendings, newListings }: any = useCMCListings();
   const { trendings: cgTrendings }: any = useCGListings();
-  const { chainId } = useActiveChainId();
 
   const arrays = [favourites, trendings, newListings, cgTrendings];
-  const networks = [
+  const networks: any = [
+    "All",
     NETWORKS[ChainId.ETHEREUM],
     NETWORKS[ChainId.BSC_MAINNET],
     NETWORKS[ChainId.POLYGON],
     NETWORKS[ChainId.ARBITRUM],
     NETWORKS[8453],
   ];
-
-  useEffect(() => {
-    if (Number(chainId) === 56) setSelectedNetwork(1);
-    else setSelectedNetwork(0);
-  }, [chainId]);
 
   return (
     <>
@@ -58,12 +52,12 @@ export default function FavouritePanel({ setSelectedCurrency }) {
             data={filters.map((filter, i) => (
               <div className="flex items-center text-primary" key={i}>
                 <div>{filter.icon}</div>
-                <div className=" ml-1 text-sm">{filter.name}</div>
+                <div className=" ml-1 text-xs">{filter.name}</div>
               </div>
             ))}
             height={"40px"}
             rounded={"6px"}
-            className="!w-[188px] !bg-[#202023] !text-xs !text-[#ffffff58]"
+            className="!w-[172px] !bg-[#202023] !text-xs !font-medium !text-[#ffffff58]"
             bodyClassName="!bg-none !bg-[#202023]"
             itemClassName={`hover:!bg-[#29292b] !justify-start !px-2`}
             isBorder={true}
@@ -72,38 +66,36 @@ export default function FavouritePanel({ setSelectedCurrency }) {
           <DropDown
             value={selectedNetwork}
             setValue={setSelectedNetwork}
-            data={networks.map((network, i) => (
-              <img
+            data={networks.map((network: any, i: number) => (
+              <div
+                className="switch-name flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap"
                 key={i}
-                src={getChainLogo(parseInt(network.chainId))}
-                alt={""}
-                className="primary-shadow h-6 w-6 rounded-full"
-              />
+              >
+                <img
+                  src={i === 0 ? "/images/networks/multichain.svg" : getChainLogo(parseInt(network.chainId))}
+                  alt={""}
+                  className="primary-shadow h-5 w-5 rounded-full"
+                />
+                <div className="relative ml-1.5 w-full flex-1 overflow-hidden text-ellipsis whitespace-nowrap !text-xs font-medium">
+                  {i === 0 ? "ALL" : network.chainName}
+                </div>
+              </div>
             ))}
             height={"40px"}
             rounded={"6px"}
-            className="!w-16 !bg-[#202023] !text-xs !text-[#ffffff58]"
+            className="!w-[100px] !bg-[#202023] !text-xs !text-white"
             bodyClassName="!bg-none !bg-[#202023]"
             itemClassName={`hover:!bg-[#29292b] !justify-start !px-2`}
             isBorder={true}
           />
         </div>
         <div className="yellowScroll -ml-3 mt-3 w-[calc(100%+24px)] flex-1 overflow-x-clip overflow-y-scroll pl-3 pr-5 pt-2">
-          {arrays[selectedFilter]
-            .filter((data) => Number(data.chainId) === parseInt(networks[selectedNetwork].chainId))
-            .map((favourite, i) => {
-              return (
-                <FavouriteCard
-                  key={i}
-                  pair={favourite}
-                  setSelectedCurrency={setSelectedCurrency}
-                  type={selectedFilter}
-                />
-              );
-            })}
+          {arrays[selectedFilter].map((favourite, i) => {
+            return <FavouriteCard key={i} network={networks[selectedNetwork]} pair={favourite} type={selectedFilter} />;
+          })}
         </div>
       </div>
-      <div className={`mb-4 mt-4 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] 2xl:block`} />
+      <div className={`mb-4 mt-2 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] 2xl:block`} />
     </>
   );
 }

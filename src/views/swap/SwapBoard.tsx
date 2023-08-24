@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useUserSlippageTolerance } from "state/user/hooks";
 
 import { Tooltip as ReactTooltip } from "react-tooltip";
@@ -12,6 +12,8 @@ import SwapPanel from "./SwapPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
 import SwapRewards from "./components/SwapRewards";
 import { NFTSVG } from "@components/dashboard/assets/svgs";
+import Security from "@components/SwapComponents/Security";
+import SlippageText from "@components/SwapComponents/SlippageText";
 
 export default function SwapBoard({ type = "swap", disableChainSelect = false }) {
   const {
@@ -56,6 +58,11 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
       <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
       {!disableChainSelect && <ChainSelect id="chain-select" />}
+
+      <div className="flex items-center justify-between">
+        <Security size="lg" />
+        <SlippageText className="!text-xs" />
+      </div>
 
       {swapTab === 0 ? (
         <SwapPanel />

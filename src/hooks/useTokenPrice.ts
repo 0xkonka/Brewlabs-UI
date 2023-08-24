@@ -21,17 +21,20 @@ const useTokenPrice = (chainId: ChainId, address: string | undefined, isLiquidit
     : 0;
 };
 
+export async function fetchDexGuruPrice(chainId: number, address: string) {
+  const { data: response } = await axios.post("https://api.dex.guru/v3/tokens", {
+    ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
+    limit: 1,
+    network: DEX_GURU_CHAIN_NAME[chainId],
+  });
+  return response.data[0].priceUSD;
+}
 export const useDexPrice = (chainId: number, address: string) => {
   const [price, setPrice] = useState(null);
 
   useSlowRefreshEffect(() => {
-    axios
-      .post("https://api.dex.guru/v3/tokens", {
-        ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
-        limit: 1,
-        network: DEX_GURU_CHAIN_NAME[chainId],
-      })
-      .then((result) => setPrice(result.data.data[0].priceUSD))
+    fetchDexGuruPrice(chainId, address)
+      .then((result) => setPrice(result))
       .catch((e) => console.log(e));
   }, [chainId, address]);
 

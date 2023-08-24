@@ -124,7 +124,11 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             <div className="mt-3 flex items-center text-sm">
               <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
               <div className="ml-2.5 text-[#FFFFFFBF]">
-                <CountDown time={proposal.createdTime + proposal.duration} />
+                {proposal.createdTime + proposal.duration >= Date.now()? (
+                  <CountDown time={proposal.createdTime + proposal.duration} />
+                ) : (
+                  "Time elapsed"
+                )}
               </div>
             </div>
           </div>
@@ -162,7 +166,9 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             </div>
             <div className="w-full max-w-full text-sm text-[#FFFFFF80] md:max-w-[400px]">
               <div className={`${detailOpen ? "line-clamp-[100]" : "line-clamp-[5]"} overflow-hidden text-ellipsis`}>
-                {proposal.description}
+                {proposal.description.split("\n").map((data: any, i: number) => {
+                  return data === "" ? <br key={i} /> : <p>{data}</p>;
+                })}
               </div>
               <div className="cursor-pointer text-right hover:text-white" onClick={() => setDetailOpen(!detailOpen)}>
                 {detailOpen ? "(show less)" : "(details)"}

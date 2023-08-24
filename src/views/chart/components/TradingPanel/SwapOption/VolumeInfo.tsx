@@ -1,23 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { useState } from "react";
-import { useTradingHistory } from "@hooks/useTokenInfo";
 import { BigNumberFormat } from "utils/functions";
 
-export default function VolumeInfo({ currency }) {
+export default function VolumeInfo({ volumeDatas }) {
   const [showType, setShowType] = useState(0);
-  const { histories: data, volumeDatas: histories } = useTradingHistory(
-    currency.tokenAddresses[0],
-    currency.chainId,
-    currency.address,
-    currency.swap,
-    3600 * 24 * 7 * 1000
-  );
-
-  // const data = [];
 
   const showTypes = [
-    { key: "vol", values: ["Buys", "Sells", "Total"] },
-    { key: "vol (usd)", values: ["Buys", "Sells", "Total"] },
+    { key: "txn", values: ["Buys", "Sells", "Total"] },
+    { key: "txn (usd)", values: ["Buys", "Sells", "Total"] },
   ];
 
   return (
@@ -32,12 +23,12 @@ export default function VolumeInfo({ currency }) {
           itemClassName="hover:!bg-[#86868644]"
         />
         <div className="flex flex-1 items-center justify-between">
-          {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
+          {Object.keys(volumeDatas[showTypes[showType].key]).map((key, i) => {
             return (
               <div
                 key={i}
                 className={`flex-1 text-right text-sm ${
-                  histories[showTypes[showType].key][key].isUp ? " text-[#3AFDB7]" : "text-[#DC4545]"
+                  volumeDatas[showTypes[showType].key][key].isUp ? " text-[#3AFDB7]" : "text-[#DC4545]"
                 }`}
               >
                 {key.toUpperCase()}
@@ -61,10 +52,10 @@ export default function VolumeInfo({ currency }) {
                 {data}
               </div>
               <div className="flex flex-1 items-center justify-between">
-                {Object.keys(histories[showTypes[showType].key]).map((key, i) => {
+                {Object.keys(volumeDatas[showTypes[showType].key]).map((key, i) => {
                   return (
                     <div key={i} className="flex-1 text-right text-[11px] text-white">
-                      {BigNumberFormat(histories[showTypes[showType].key][key][data], showType ? 2 : 0)}
+                      {BigNumberFormat(volumeDatas[showTypes[showType].key][key][data], showType ? 2 : 0)}
                     </div>
                   );
                 })}

@@ -1,3 +1,5 @@
+import { getBalances } from "@hooks/useTokenMultiChainBalance";
+import { useEffect, useState } from "react";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { useAccount } from "wagmi";
 
@@ -7,23 +9,42 @@ const SelectionPanel = ({
   criteria,
   setCriteria,
   proposals,
+  community,
+  balances,
+  totalSupply,
 }: {
   curFilter: number;
   setCurFilter: any;
   criteria: string;
   setCriteria: any;
   proposals: any;
+  community: any;
+  balances: any;
+  totalSupply: any;
 }) => {
   const { address: account } = useAccount();
   const filterNames = ["All", "Open", "Resolved", "Failed", "My proposals"];
+
   const filters = filterNames.map(
     (name, index) =>
       `${name} (${
         proposals.filter((data) => {
+          let totalVoteBalance = 0;
+          [...data.yesVoted, ...data.noVoted].map((account, i) => {
+            balances &&
+              Object.keys(balances).map((key, j) => {
+                const exsitingAccount = balances[key].find((balance) => balance.account === account);
+                if (exsitingAccount) totalVoteBalance += exsitingAccount.balance;
+              });
+          });
+
+          totalVoteBalance = (totalVoteBalance / totalSupply) * 100;
           if (name === "All") return true;
           if (name === "Open") return data.createdTime + data.duration >= Date.now();
-          if (name === "Resolved") return data.createdTime + data.duration < Date.now();
-          if (name === "Failed") return data.createdTime + data.duration < Date.now();
+          if (name === "Resolved")
+            return data.createdTime + data.duration < Date.now() && totalVoteBalance >= community.quoroumReq / 1;
+          if (name === "Failed")
+            return data.createdTime + data.duration < Date.now() && totalVoteBalance < community.quoroumReq / 1;
           return data.owner === account?.toLowerCase();
         }).length
       })`
