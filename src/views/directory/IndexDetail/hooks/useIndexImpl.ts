@@ -14,14 +14,24 @@ import {
 import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
-const zapIn = async (indexContract, token, amount, percents, gasPrice) => {
+const zapIn = async (indexContract, token, amount, percents, category, gasPrice) => {
   const value = parseEther(amount);
 
-  const queries = await indexContract.precomputeZapIn(
-    token,
-    value,
-    percents.map((p) => (p * 100).toFixed(0))
-  );
+  let queries;
+  if (category > 0) {
+    queries = await indexContract.precomputeZapIn(
+      token,
+      value,
+      percents.map((p) => (p * 100).toFixed(0)),
+      gasPrice
+    );
+  } else {
+    queries = await indexContract.precomputeZapIn(
+      token,
+      value,
+      percents.map((p) => (p * 100).toFixed(0))
+    );
+  }
   // if (token != ethers.constants.AddressZero && queries[0].adapters.length === 0) return;
 
   let trades = [];
@@ -59,17 +69,38 @@ const zapIn = async (indexContract, token, amount, percents, gasPrice) => {
   return receipt;
 };
 
-const claimTokens = async (indexContract, percent, gasPrice) => {
-  let gasLimit = await indexContract.estimateGas.claimTokens(Math.floor(percent * 100));
-  gasLimit = calculateGasMargin(gasLimit);
+const claimTokens = async (indexContract, percent, category, gasPrice) => {
+  let tx;
 
-  const tx = await indexContract.claimTokens((percent * 100).toFixed(0), { gasPrice, gasLimit });
+  if (category > 0) {
+    const queries = await indexContract.precomputeZapOut(ethers.constants.AddressZero, gasPrice);
+    let trades = [];
+    for (let i = 0; i < queries.length - 1; i++) {
+      // if (queries[i].adapters.length === 0) return;
+      trades.push([0, 0, queries[i].path, queries[i].adapters]);
+    }
+
+    let gasLimit = await indexContract.estimateGas.claimTokens(Math.floor(percent * 100), trades);
+    gasLimit = calculateGasMargin(gasLimit);
+
+    tx = await indexContract.claimTokens((percent * 100).toFixed(0), trades, { gasPrice, gasLimit });
+  } else {
+    let gasLimit = await indexContract.estimateGas.claimTokens(Math.floor(percent * 100));
+    gasLimit = calculateGasMargin(gasLimit);
+
+    tx = await indexContract.claimTokens((percent * 100).toFixed(0), { gasPrice, gasLimit });
+  }
   const receipt = await tx.wait();
   return receipt;
 };
 
-const zapOut = async (indexContract, token, gasPrice) => {
-  const queries = await indexContract.precomputeZapOut(token);
+const zapOut = async (indexContract, token, category, gasPrice) => {
+  let queries;
+  if (category > 0) {
+    queries = await indexContract.precomputeZapOut(token, gasPrice);
+  } else {
+    queries = await indexContract.precomputeZapOut(token);
+  }
   // if (token != ethers.constants.AddressZero && queries[queries.length - 1].adapters.length === 0) return;
 
   let trades = [];
@@ -144,48 +175,48 @@ const updateFeeWallet = async (indexContract, wallet, gasPrice, performanceFee =
   return receipt;
 };
 
-const useIndexImpl = (pid, contractAddress, performanceFee) => {
+const useIndexImpl = (pid, contractAddress, category, performanceFee) => {
   const dispatch = useAppDispatch();
   const { account, chainId, library } = useActiveWeb3React();
-  const indexContract = useIndexContract(chainId, contractAddress);
+  const indexContract = useIndexContract(chainId, contractAddress, category);
 
   const handleZapIn = useCallback(
     async (token, amount, percents) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await zapIn(indexContract, token, amount, percents, gasPrice);
+      const receipt = await zapIn(indexContract, token, amount, percents, category, gasPrice);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid]
+    [account, chainId, library, dispatch, indexContract, pid, category]
   );
 
   const handleZapOut = useCallback(
     async (token) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await zapOut(indexContract, token, gasPrice);
+      const receipt = await zapOut(indexContract, token, category, gasPrice);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid]
+    [account, chainId, library, dispatch, indexContract, pid, category]
   );
 
   const handleClaim = useCallback(
     async (percent) => {
       const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await claimTokens(indexContract, percent, gasPrice);
+      const receipt = await claimTokens(indexContract, percent, category, gasPrice);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid]
+    [account, chainId, library, dispatch, indexContract, pid, category]
   );
 
   const handleMintNft = useCallback(async () => {

@@ -31,6 +31,10 @@ import StyledButton from "views/directory/StyledButton";
 import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
 import { NETWORKS } from "config/constants/networks";
 import { useTokenTaxes } from "@hooks/useTokenInfo";
+import ConnectWallet from "@components/wallet/ConnectWallet";
+import Modal from "@components/Modal";
+import WalletSelector from "@components/wallet/WalletSelector";
+import { useConnect } from "wagmi";
 
 export default function SwapPanel({
   showHistory = true,
@@ -44,12 +48,15 @@ export default function SwapPanel({
   const { account, chainId } = useActiveWeb3React();
 
   const { t } = useTranslation();
+  const { isLoading } = useConnect();
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [txConfirmInfo, setTxConfirmInfo] = useState({ type: "confirming", tx: "" });
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
+
+  const [openWalletModal, setOpenWalletModal] = useState(false);
 
   // ----------------- ROUTER SWAP --------------------- //
 
@@ -283,6 +290,9 @@ export default function SwapPanel({
 
   return (
     <>
+      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)} className="!z-[100]">
+        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
+      </Modal>
       <WarningModal open={warningOpen} setOpen={setWarningOpen} type={"highpriceimpact"} onClick={onConfirm} />
       <ConfirmationModal
         open={openConfirmationModal}
@@ -329,92 +339,103 @@ export default function SwapPanel({
           size={size}
         />
       </div>
-      {!(toChainId && toChainId !== chainId) ? (
-        account &&
-        (Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
-          <>
-            {inputError ? (
-              <button className="btn-outline btn" disabled={true}>
-                {t(inputError)}
-              </button>
-            ) : currencyBalances[Field.INPUT] === undefined ? (
-              <button className="btn-outline btn" disabled={true}>
-                {t("Loading")}
-              </button>
-            ) : showWrap ? (
-              <PrimarySolidButton disabled={Boolean(wrapInputError)} onClick={onWrap}>
-                {wrapInputError ??
-                  (wrapType === WrapType.WRAP ? "Wrap" : wrapType === WrapType.UNWRAP ? "Unwrap" : null)}
-              </PrimarySolidButton>
-            ) : approval <= ApprovalState.PENDING ? (
-              <>
+      {account ? (
+        !(toChainId && toChainId !== chainId) ? (
+          Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
+            <>
+              {inputError ? (
+                <button className="btn-outline btn" disabled={true}>
+                  {t(inputError)}
+                </button>
+              ) : currencyBalances[Field.INPUT] === undefined ? (
+                <button className="btn-outline btn" disabled={true}>
+                  {t("Loading")}
+                </button>
+              ) : showWrap ? (
+                <PrimarySolidButton disabled={Boolean(wrapInputError)} onClick={onWrap}>
+                  {wrapInputError ??
+                    (wrapType === WrapType.WRAP ? "Wrap" : wrapType === WrapType.UNWRAP ? "Unwrap" : null)}
+                </PrimarySolidButton>
+              ) : approval <= ApprovalState.PENDING ? (
+                <>
+                  <PrimarySolidButton
+                    onClick={() => {
+                      handleApproveUsingRouter();
+                    }}
+                    pending={approval === ApprovalState.PENDING}
+                    disabled={approval === ApprovalState.PENDING}
+                  >
+                    {approval === ApprovalState.PENDING ? (
+                      <span>{t("Approving %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                    ) : approval === ApprovalState.UNKNOWN ? (
+                      <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                    ) : (
+                      t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                    )}
+                  </PrimarySolidButton>
+                </>
+              ) : (
                 <PrimarySolidButton
                   onClick={() => {
-                    handleApproveUsingRouter();
+                    if (priceImpactSeverity === 3) setWarningOpen(true);
+                    else onConfirm();
                   }}
-                  pending={approval === ApprovalState.PENDING}
-                  disabled={approval === ApprovalState.PENDING}
+                  pending={attemptingTxn}
+                  disabled={
+                    attemptingTxn ||
+                    (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
+                    (noLiquidity && !!aggregationCallbackError)
+                  }
                 >
-                  {approval === ApprovalState.PENDING ? (
-                    <span>{t("Approving %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                  ) : approval === ApprovalState.UNKNOWN ? (
-                    <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                  ) : (
-                    t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                  {attemptingTxn
+                    ? "Swapping..."
+                    : !noLiquidity
+                    ? !!swapCallbackError
+                      ? swapCallbackError
+                      : priceImpactSeverity > 3
+                      ? "Price Impact Too High"
+                      : "Swap"
+                    : !!aggregationCallbackError
+                    ? aggregationCallbackError
+                    : "Swap"}
+                  {(attemptingTxn || aggregationCallbackError === "Querying swap path...") && (
+                    <div className="absolute right-2 top-0 flex h-full items-center">
+                      <Oval
+                        width={21}
+                        height={21}
+                        color={"white"}
+                        secondaryColor="black"
+                        strokeWidth={3}
+                        strokeWidthSecondary={3}
+                      />
+                    </div>
                   )}
                 </PrimarySolidButton>
-              </>
-            ) : (
-              <PrimarySolidButton
-                onClick={() => {
-                  if (priceImpactSeverity === 3) setWarningOpen(true);
-                  else onConfirm();
-                }}
-                pending={attemptingTxn}
-                disabled={
-                  attemptingTxn ||
-                  (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
-                  (noLiquidity && !!aggregationCallbackError)
-                }
-              >
-                {attemptingTxn
-                  ? "Swapping..."
-                  : !noLiquidity
-                  ? !!swapCallbackError
-                    ? swapCallbackError
-                    : priceImpactSeverity > 3
-                    ? "Price Impact Too High"
-                    : "Swap"
-                  : !!aggregationCallbackError
-                  ? aggregationCallbackError
-                  : "Swap"}
-                {(attemptingTxn || aggregationCallbackError === "Querying swap path...") && (
-                  <div className="absolute right-2 top-0 flex h-full items-center">
-                    <Oval
-                      width={21}
-                      height={21}
-                      color={"white"}
-                      secondaryColor="black"
-                      strokeWidth={3}
-                      strokeWidthSecondary={3}
-                    />
-                  </div>
-                )}
-              </PrimarySolidButton>
-            )}
-          </>
+              )}
+            </>
+          ) : (
+            <Button disabled={!0}>{t("Coming Soon")}</Button>
+          )
         ) : (
-          <Button disabled={!0}>{t("Coming Soon")}</Button>
-        ))
+          <StyledButton
+            className="!w-full whitespace-nowrap p-[10px_12px] !font-roboto"
+            onClick={() => {
+              switchNetwork(toChainId);
+            }}
+            disabled={!canSwitch}
+          >
+            Switch {NETWORKS[toChainId].chainName}
+          </StyledButton>
+        )
       ) : (
         <StyledButton
           className="!w-full whitespace-nowrap p-[10px_12px] !font-roboto"
           onClick={() => {
-            switchNetwork(toChainId);
+            setOpenWalletModal(true);
           }}
-          disabled={!canSwitch}
+          pending={isLoading}
         >
-          Switch {NETWORKS[toChainId].chainName}
+          Connect Wallet
         </StyledButton>
       )}
 

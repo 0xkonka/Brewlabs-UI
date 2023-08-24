@@ -26,6 +26,7 @@ import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import UnLockAbi from "config/abi/staking/brewlabsUnLockup.json";
 import IndexAbi from "config/abi/indexes/index.json";
 import IndexImplAbi from "config/abi/indexes/indexImpl.json";
+import IndexImplV2Abi from "config/abi/indexes/indexImpl_v2.json";
 import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
 import FarmFactoryAbi from "config/abi/farm/factory.json";
@@ -181,8 +182,10 @@ export const getIndexFactoryContract = (chainId: ChainId, signer?: ethers.Signer
 export const getIndexContract = (
   chainId: ChainId,
   address: string,
+  category: number,
   signer?: ethers.Signer | ethers.providers.Provider
 ) => {
+  if(category > 0)  return getContract(chainId, address, IndexImplV2Abi, signer);
   return getContract(chainId, address, IndexImplAbi, signer);
 };
 
