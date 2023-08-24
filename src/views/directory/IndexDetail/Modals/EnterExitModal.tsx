@@ -50,7 +50,7 @@ const EnterExitModal = ({
 
   const { pending, setPending }: any = useContext(DashboardContext);
   const { onZapOut: onZapOutOld, onClaim: onClaimOld } = useIndex(data.pid, data.address, data.performanceFee);
-  const { onZapIn, onZapOut, onClaim } = useIndexImpl(data.pid, data.address, data.performanceFee);
+  const { onZapIn, onZapOut, onClaim } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
 
   const ethbalance = ethers.utils.formatEther(userData.ethBalance);
   const stakedBalances = userData.stakedBalances?.length

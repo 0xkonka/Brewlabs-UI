@@ -24,7 +24,7 @@ const UpdateFeeModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
   const dispatch = useAppDispatch();
 
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { onUpdateFeeAddress } = useIndexImpl(data.pid, data.address, data.performanceFee);
+  const { onUpdateFeeAddress } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
 
   const [feeAddress, setFeeAddress] = useState("");
 
