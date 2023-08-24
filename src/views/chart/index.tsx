@@ -104,13 +104,8 @@ export default function Chart({ chain, address }) {
       )}
       <div className={`px-3 pb-10 font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
         {selectedCurrency ? (
-          <div className="relative mx-auto w-full max-w-[1720px] lg:mt-0 mt-24">
-            <Header
-              selectedCurrency={selectedCurrency}
-              setSelectedCurrency={setSelectedCurrency}
-              setShowReverse={setShowReverse}
-              showReverse={showReverse}
-            />
+          <div className="relative mx-auto mt-24 w-full max-w-[1720px] lg:mt-0">
+            <Header setShowReverse={setShowReverse} showReverse={showReverse} />
             <TokenInfo currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />
             <TradingPanel
               currency={selectedCurrency}

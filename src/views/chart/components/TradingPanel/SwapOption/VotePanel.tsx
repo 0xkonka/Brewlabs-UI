@@ -52,7 +52,8 @@ export default function VotePanel({ currency }) {
           <NFTComponent />
         </div>
       </div>
-      <div className="mx-auto mt-4 flex max-w-[288px] items-center text-sm">
+      <div className="text-sm text-[#FFFFFFBF] my-3">Community perspective on this pair.</div>
+      <div className="mx-auto flex max-w-[288px] items-center text-sm">
         <div className="text-[#FFFFFF80]">Avoid</div>
         <div className="mx-2 flex flex-1 items-center">
           {voteColors.map((color, i) => {

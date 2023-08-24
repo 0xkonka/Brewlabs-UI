@@ -57,7 +57,11 @@ export default function FavouriteCard({ pair, type, network }) {
       <div className="flex items-center text-sm">
         <div
           className={`mx-2 text-xs ${
-            wrappedPair?.priceChange24h >= 0 ? "text-green" : "text-danger"
+            wrappedPair?.priceChange24h === 0
+              ? "text-white"
+              : wrappedPair?.priceChange24 > 0
+              ? "text-green"
+              : "text-danger"
           } whitespace-nowrap`}
         >
           {wrappedPair && wrappedPair.priceChange24h !== undefined ? (

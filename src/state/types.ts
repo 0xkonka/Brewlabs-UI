@@ -13,6 +13,12 @@ import { SerializedPool } from "./pools/types";
 import { SwapState } from "./swap/reducer";
 import { TransactionState } from "./transactions/reducer";
 import { UserState } from "./user/reducer";
+import {
+  SerializedFeeCollectedData,
+  SerializedNFTStakingData,
+  SerializedTransactionData,
+  SerializedTreasuryData,
+} from "./home/type";
 
 export interface SerializedDeposit {
   amount: string;
@@ -59,10 +65,17 @@ export interface DeployState {
 }
 
 export interface NftState {
-  flaskNft: FlaskNftData[]
-  mirrorNft: MirrorNftData[]
-  data: NftStakingData[]
+  flaskNft: FlaskNftData[];
+  mirrorNft: MirrorNftData[];
+  data: NftStakingData[];
   userDataLoaded: boolean;
+}
+
+export interface HomeState {
+  transactions: SerializedTransactionData;
+  nftStakings: SerializedNFTStakingData;
+  feeCollected: SerializedFeeCollectedData;
+  treasuryValues: SerializedTreasuryData;
 }
 
 interface SerializedZapFarmUserData {
@@ -119,6 +132,7 @@ export interface State {
   swap: SwapState;
   transactions: TransactionState;
   lpTokenPrices: LpTokenPricesState;
+  home: HomeState;
 }
 
 //zap

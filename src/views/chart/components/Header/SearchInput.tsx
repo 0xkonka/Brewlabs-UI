@@ -14,7 +14,7 @@ import { ChartContext } from "contexts/ChartContext";
 import { useRouter } from "next/router";
 import { DEX_GURU_CHAIN_NAME } from "config";
 
-export const SearchInput = ({ setSelectedCurrency }) => {
+export const SearchInput = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { criteria, setCriteria }: any = useContext(ChartContext);
@@ -24,7 +24,6 @@ export const SearchInput = ({ setSelectedCurrency }) => {
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {
-    console.log("onCurrencySelect");
     router.push(`/chart/${DEX_GURU_CHAIN_NAME[currency.chainId]}/${currency.address}`);
   }
 
