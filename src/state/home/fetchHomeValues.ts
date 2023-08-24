@@ -55,8 +55,7 @@ export async function getNFTStakingValues() {
     ]);
     const OETHMontlyAPY = response[0];
     const { balances: NFT_wallet_balance } = response[1];
-
-    const { price: OETHPrice } = response[2];
+    const OETHPrice = response[2];
 
     const apy =
       NFT_wallet_balance && OETHMontlyAPY && OETHPrice
