@@ -10,8 +10,8 @@ import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 
 let wrappedQuery;
 export default function SwapHistory({ currency }) {
-  // const { address: account } = useAccount();
-  const account = "0x61d8F1baE35A2F71E6868023F16c88E8d9e6200f";
+  const { address: account } = useAccount();
+  // const account = "0x61d8F1baE35A2F71E6868023F16c88E8d9e6200f";
   const [showType, setShowType] = useState(0);
   const [criteria, setCriteria] = useState("");
   const [offset, setOffset] = useState(0);
