@@ -17,7 +17,7 @@ export default function Header({ showReverse, setShowReverse }) {
   }
 
   return (
-    <div className="relative z-10 mt-10 flex">
+    <div className="relative z-[101] mt-10 flex">
       <div className="flex flex-1">
         <div className="relative flex-1">
           <SearchInput />

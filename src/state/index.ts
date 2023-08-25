@@ -24,7 +24,7 @@ import lpPricesReducer from "./lpPrices";
 import storage from "./storage";
 import zap from "./zap";
 import home from "./home";
-import chart from "./charts/reducer";
+import chart from "./chart";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -50,11 +50,11 @@ const persistedReducer = persistReducer(
     lpTokenPrices: lpPricesReducer,
     multicall,
     swap,
-    chart,
     transactions,
     burn,
     mint,
     home,
+    chart,
   })
 );
 

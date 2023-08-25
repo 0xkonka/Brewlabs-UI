@@ -1,17 +1,20 @@
-import TradingViewChart from "./TradingViewChart";
-import FavouritePanel from "./FavouritePanel";
-import SwapHistory from "./SwapHistory";
 import SwapOption from "./SwapOption";
-import UserInfo from "./UserInfo";
 import { useEffect, useState } from "react";
 import { defaultVolume, fetchTradingHistories, getVolumeDatas } from "@hooks/useTokenAllPairs";
-import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 import { isAddress } from "utils";
 import { DEX_GURU_CHAIN_NAME } from "config";
+import { getBaseInfos } from "@hooks/useTokenInfo";
+import { useAccount } from "wagmi";
+import { getBalances } from "@hooks/useTokenMultiChainBalance";
+import { fetchDexGuruPrice } from "@hooks/useTokenPrice";
+import FavouritePanel from "./FavouritePanel";
+import SwapHistory from "./SwapHistory";
+import TradingViewChart from "./TradingViewChart";
+import { useMediaQuery } from "react-responsive";
 
 let wrappedQuery;
 
-export default function TradingPanel({ currency, marketInfos, setSelectedCurrency, showReverse }) {
+export default function TradingPanel({ currency, marketInfos, showReverse }) {
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
 
   const getQuery = () => {
@@ -33,7 +36,10 @@ export default function TradingPanel({ currency, marketInfos, setSelectedCurrenc
     return query;
   };
 
+  const stringifiedCurrency = JSON.stringify(currency && Object.keys(currency).filter((key) => key !== "params"));
+
   useEffect(() => {
+    if (!currency) return;
     const query: any = getQuery();
     if (!isAddress(query.address)) {
       return;
@@ -49,31 +55,98 @@ export default function TradingPanel({ currency, marketInfos, setSelectedCurrenc
       .catch((e) => {
         console.log(e);
       });
-  }, [currency.address]);
+  }, [stringifiedCurrency]);
+
+  const [decimals, setDecimals] = useState([18, 18]);
+  const [balances, setBalances] = useState({});
+  const [price, setPrice] = useState(0);
+  const [lpPrice, setLPPrice] = useState(0);
+
+  useEffect(() => {
+    if (!currency) return;
+    Promise.all([
+      getBaseInfos(currency.tokenAddresses[0], currency.chainId),
+      getBaseInfos(currency.tokenAddresses[1], currency.chainId),
+    ])
+      .then((result) => setDecimals([result[0].decimals, result[1].decimals]))
+      .catch((e) => console.log(e));
+
+    Promise.all([
+      fetchDexGuruPrice(currency.chainId, currency.tokenAddresses[0]),
+      fetchDexGuruPrice[(currency.chainId, currency.address)],
+    ])
+      .then((result) => {
+        setPrice(result[0]);
+        setLPPrice(result[1]);
+      })
+      .catch((e) => console.log(e));
+  }, [stringifiedCurrency]);
+
+  const { address: account } = useAccount();
+
+  const stringifiedDecimals = JSON.stringify(decimals);
+  useEffect(() => {
+    if (!currency) return;
+    getBalances(
+      {
+        [currency.chainId]: [
+          { address: currency.tokenAddresses[0], decimals: decimals[0] },
+          { address: currency.address, decimals: decimals[1] },
+        ],
+      },
+      { [currency.chainId]: [account, account] }
+    )
+      .then((result) => setBalances(result.balances))
+      .catch((e) => console.log(e));
+  }, [stringifiedCurrency, stringifiedDecimals, account]);
+
+  const w2xl = useMediaQuery({ query: "(min-width: 1536px)" });
 
   return (
     <div className="mt-6">
       <div className={`flex ${showReverse ? "flex-row-reverse" : ""}`}>
         <div className="hidden w-[320px] 2xl:block">
-          <SwapOption currency={currency} marketInfos={marketInfos} volumeDatas={volumeDatas} />
+          <SwapOption
+            currency={currency}
+            marketInfos={marketInfos}
+            volumeDatas={volumeDatas}
+            balances={balances}
+            price={price}
+            lpPrice={lpPrice}
+          />
         </div>
         <div className="mx-0 flex-1 2xl:mx-4">
           <div className="h-[660px]">
             <TradingViewChart currency={currency} />
           </div>
-          <SwapHistory currency={currency} />
+          {currency ? <SwapHistory currency={currency} /> : ""}
         </div>
-        <div className="hidden w-[280px] 2xl:block">
-          <FavouritePanel setSelectedCurrency={setSelectedCurrency} />
-        </div>
+        {w2xl ? (
+          <div className="w-[280px]">
+            <FavouritePanel />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       <div className="mt-10 flex flex-col items-center justify-between sm:items-start xl:flex-row 2xl:hidden">
         <div className="mr-0 flex-1 xl:mr-4">
-          <SwapOption currency={currency} marketInfos={marketInfos} volumeDatas={volumeDatas} />
+          <SwapOption
+            currency={currency}
+            marketInfos={marketInfos}
+            volumeDatas={volumeDatas}
+            balances={balances}
+            price={price}
+            lpPrice={lpPrice}
+          />
         </div>
-        <div className="mt-6 w-full max-w-[300px] xl:mt-0">
-          <FavouritePanel setSelectedCurrency={setSelectedCurrency} />
-        </div>
+        {!w2xl ? (
+          <div className="mt-6 w-full max-w-[300px] xl:mt-0">
+            <FavouritePanel />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

@@ -1,133 +1,36 @@
 import axios from "axios";
-import { DEX_GURU_CHAIN_NAME, DEX_GURU_SWAP_AMM } from "config";
+import { Adapters } from "config/constants/aggregator";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { addPairs, fetchPairPriceInfoAsync } from "state/chart";
+import { fetchAllPairs } from "state/chart/fetchPairInfo";
+import { usePairInfoByParams } from "state/chart/hooks";
 import { isAddress } from "utils";
 let searchTimeout;
 let wrappedCriteria = "";
 
-export async function fetchAllPairs(criteria, limit = 10, sort = "liquidity_stable", chain = null) {
-  if (!criteria) return;
-  let { data: tokens } = await axios.get(
-    `https://api.dex.guru/v3/tokens/search/${criteria}?network=${chain ?? "eth,bsc,polygon,arbitrum"}`
-  );
-  tokens = tokens.data;
-
-  const result = await Promise.all(
-    tokens.map((token) =>
-      axios.post("https://api.dex.guru/v3/pools/", {
-        id: `${token.id}`,
-        limit: 10,
-        network: token.network,
-        order: "desc",
-        sort_by: sort,
-      })
-    )
-  );
-  let _pairs = [];
-  result.map((data, i) =>
-    data.data.data.map((pool, j) => {
-      const chainId = Number(
-        Object.keys(DEX_GURU_CHAIN_NAME).find((key, i) => pool.network === DEX_GURU_CHAIN_NAME[key])
-      );
-      if (Object.keys(DEX_GURU_SWAP_AMM).includes(pool.amm) && pool.liquidityStable)
-        _pairs.push({
-          ...pool,
-          token: tokens[i].address,
-          address: pool.id.replace(`-${chainId}`, ""),
-          amm: DEX_GURU_SWAP_AMM[pool.amm],
-          chainId,
-        });
-    })
-  );
-  const isExisting = _pairs.find((pair) => pair.address === criteria.toLowerCase());
-  if (isExisting) _pairs = [isExisting];
-  _pairs = _pairs.slice(0, limit);
-  const infoResponse = await Promise.all(
-    _pairs.map(async (pair) => {
-      let response;
-      if (pair.volume24hStable)
-        response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
-          amm: pair.amm,
-          current_token_id: `${pair.token}-${pair.network}`,
-          limit: 100,
-          offset: 0,
-          order: "desc",
-          date: { start_date: Date.now() - 3600 * 24 * 1000, end_date: Date.now() },
-          pool_address: pair.address,
-          sort_by: "timestamp",
-          token_status: "all",
-          transaction_types: ["swap"],
-          with_full_totals: true,
-        });
-      else
-        response = await axios.post("https://api.dex.guru/v3/tokens/transactions", {
-          amm: pair.amm,
-          current_token_id: `${pair.token}-${pair.network}`,
-          limit: 1,
-          offset: 0,
-          order: "desc",
-          pool_address: pair.address,
-          sort_by: "timestamp",
-          token_status: "all",
-          transaction_types: ["swap"],
-          with_full_totals: true,
-        });
-      return {
-        ...response.data,
-        token: pair.token,
-        pair: pair.address,
-        chainId: pair.chainId,
-      };
-    })
-  );
-
-  _pairs = infoResponse
-    .filter((response) => response.data.length)
-    .map((response: any, i) => {
-      let tokenAddresses = response.data[0].tokenAddresses,
-        symbols = response.data[0].symbols,
-        prices = response.data[0].pricesStable,
-        prices24h = response.data[response.data.length - 1].pricesStable;
-      if (tokenAddresses[1] === response.token) {
-        tokenAddresses = [tokenAddresses[1], tokenAddresses[0]];
-        symbols = [symbols[1], symbols[0]];
-        prices = [prices[1], prices[0]];
-        prices24h = [prices24h[1], prices24h[0]];
-      }
-      return {
-        chainId: response.chainId,
-        swap: response.data[0].type,
-        tokenAddresses,
-        symbols,
-        price: prices[0],
-        priceChange24h: response.data.length > 1 ? ((prices[0] - prices24h[0]) / prices[0]) * 100 : 0,
-        address: response.pair,
-      };
-    });
-  return _pairs.slice(0, limit);
-}
-
 export const useTokenAllPairs = (criteria) => {
-  const [pairs, setPairs] = useState([]);
+  const pairs: any = usePairInfoByParams({
+    criteria,
+    limit: 10,
+    sort: "volume24h_stable",
+    chain: null,
+  });
   const [loading, setLoading] = useState(false);
+
+  const dispatch: any = useDispatch();
 
   useEffect(() => {
     if (searchTimeout != undefined) clearTimeout(searchTimeout);
     wrappedCriteria = criteria;
 
     searchTimeout = setTimeout(async () => {
-      if (criteria === "") {
-        setPairs([]);
-        return;
-      }
+      if (criteria === "") return;
       setLoading(true);
-      try {
-        const result = await fetchAllPairs(criteria);
-        if (wrappedCriteria === criteria) setPairs(result);
-      } catch (e) {
-        console.log(e);
-      }
+      const pairs = await fetchAllPairs(criteria, 10, "volume24h_stable", null);
       setLoading(false);
+      dispatch(addPairs(pairs));
+      dispatch(fetchPairPriceInfoAsync(pairs));
     }, 500);
   }, [criteria]);
 
@@ -157,6 +60,42 @@ export async function fetchTradingHistories(query, chainId) {
       return histories;
     })
   );
+
+  if (isAddress(query.pool)) {
+    const pools = [...Adapters[chainId].map((adapter) => adapter.address.toLowerCase()), query.pool];
+    const erc20txs = histories
+      .filter((history) => history.transactionType === "transfer")
+      .filter((history) =>
+        query.type === "buy"
+          ? pools.includes(history.fromAddress)
+          : query.type === "sell"
+          ? pools.includes(history.toAddress)
+          : pools.includes(history.toAddress) || pools.includes(history.fromAddress)
+      )
+      .map((history) => {
+        const pool = pools.find((pool) => pool === history.fromAddress || pool === history.toAddress);
+        return {
+          ...history,
+          fromAddress: history.fromAddress === pool ? "" : history.tokenAddresses[0],
+          amountStable: history.amountsStable[0],
+          nativeAmount: null,
+          walletsCategories: [],
+          sender: query.account,
+          type: "",
+          poolAddress: query.pool,
+        };
+      });
+    const swapTxs = histories
+      .filter((history) => history.transactionType === "swap")
+      .filter((history) =>
+        query.type === "buy"
+          ? query.address === history.fromAddress
+          : query.type === "sell"
+          ? query.address !== history.fromAddress
+          : true
+      );
+    return [...erc20txs, ...swapTxs];
+  }
   return histories;
 }
 

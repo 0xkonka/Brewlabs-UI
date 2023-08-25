@@ -123,6 +123,8 @@ export const BANANA_PER_BLOCK = new BigNumber(10);
 export const BLOCKS_PER_YEAR = new BigNumber(10512000);
 export const BANANA_PER_YEAR = BANANA_PER_BLOCK.times(BLOCKS_PER_YEAR);
 
+export const COVALENT_API_KEYS = ["cqt_rQYkrrFc34HqD4T4R7XvPM76gh6D", "cqt_rQ4tXTKbyY7qbvywfdQbctPFbjWC"];
+
 export const UNMARSHAL_API_KEYS = [
   "5yA1HYPCmf4xpXjZQMOAa5BJPnupBs45eLE3D7O1",
   "K82WDxM7Ej3y9u8VSmLYa8pdeqTVqziA2VGQaSRq",

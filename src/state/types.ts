@@ -19,6 +19,8 @@ import {
   SerializedTransactionData,
   SerializedTreasuryData,
 } from "./home/type";
+import { SerializedWalletNFT } from "./wallet/type";
+import { SerializedPairData } from "./chart/type";
 
 export interface SerializedDeposit {
   amount: string;
@@ -78,6 +80,14 @@ export interface HomeState {
   treasuryValues: SerializedTreasuryData;
 }
 
+export interface ChartState {
+  pairs: Record<number, Record<string, SerializedPairData>>;
+}
+
+export interface WalletState {
+  nfts: Record<string, SerializedWalletNFT>;
+}
+
 interface SerializedZapFarmUserData {
   stakedBalance: string;
   earnings: string;
@@ -133,6 +143,7 @@ export interface State {
   transactions: TransactionState;
   lpTokenPrices: LpTokenPricesState;
   home: HomeState;
+  chart: ChartState;
 }
 
 //zap

@@ -3,6 +3,7 @@ import Datafeed from "./datafeed/datafeed";
 import { widget } from "charting_library/charting_library.min";
 import liquidity from "./datafeed/indicators/liquidity";
 import { DEX_GURU_CHAIN_NAME } from "config";
+import { ThreeDots } from "react-loader-spinner";
 
 export const defaultOverrides = {
   "mainSeriesProperties.candleStyle.upColor": "#26a69a",
@@ -36,8 +37,8 @@ function getLanguageFromURL() {
 }
 
 const TradingViewChart = ({ currency }) => {
-  const stringifiedCurrency = JSON.stringify(currency);
   useEffect(() => {
+    if (!currency) return;
     window.tvWidget = new widget({
       locale: getLanguageFromURL() || ("en" as any),
       symbol: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}_USD`, // default symbol
@@ -95,9 +96,23 @@ const TradingViewChart = ({ currency }) => {
       },
     });
     //Do not forget to remove the script on unmounting the component!
-  }, [stringifiedCurrency]); //eslint-disable-line
+  }, [currency.tokenAddresses[0], currency.chainId]); //eslint-disable-line
 
-  return <div id="tv_chart_container" className="h-full overflow-hidden rounded-lg"></div>;
+  return currency ? (
+    <div id="tv_chart_container" className="h-full overflow-hidden rounded-lg"></div>
+  ) : (
+    <div className="flex h-full w-full items-center justify-center">
+      <ThreeDots
+        height="60"
+        width="60"
+        radius="9"
+        color="#ffffff45"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        visible={true}
+      />
+    </div>
+  );
 };
 
 export default TradingViewChart;

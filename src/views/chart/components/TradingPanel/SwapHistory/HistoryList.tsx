@@ -8,6 +8,8 @@ import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
 import { Oval } from "react-loader-spinner";
 import { useCallback, useEffect, useRef } from "react";
+import useTokenMarketChart from "@hooks/useTokenMarketChart";
+import { WNATIVE } from "@brewlabs/sdk";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -15,6 +17,8 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 export default function HistoryList({ histories, currency, loading, offset, setOffset }) {
+  const tokenMarketData = useTokenMarketChart(currency.chainId);
+
   const wrappedHistories = histories.map((history) => {
     const date = new Date(history.timestamp * 1000);
     let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
@@ -26,7 +30,10 @@ export default function HistoryList({ histories, currency, loading, offset, setO
       price: history.pricesStable[index],
       usdValue: numberWithCommas(history.amountStable.toFixed(2)),
       amount: BigNumberFormat(history.amounts[index]),
-      nativeAmount: BigNumberFormat(history.amountNative),
+      nativeAmount: BigNumberFormat(
+        history.nativeAmount ??
+          history.amountStable / tokenMarketData[WNATIVE[currency.chainId].address.toLowerCase()]?.usd
+      ),
       type:
         action === "Buy" ? WalletSVG : history.walletsCategories.includes("Liquiditypool") ? ContractSVG : NonSellerSVG,
       txHash: history.transactionAddress,

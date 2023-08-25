@@ -29,18 +29,7 @@ export default function VotePanel({ currency }) {
     <div className="primary-shadow mt-2 rounded-md bg-[#B9B8B80D] p-[8px_16px_16px_16px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <div
-            className="mx-1.5 cursor-pointer text-tailwind opacity-100 hover:text-white [&>svg]:!h-4 [&>svg]:!w-4"
-            id="CommunityPair"
-          >
-            {InfoSVG}
-            <ReactTooltip
-              anchorId={"CommunityPair"}
-              place="top"
-              content="Community perspective on this pair. Brewlabs uncommon NFT and above can vote."
-            />
-          </div>
-          <div className="text-base font-bold text-[#FFFFFFBF]">Vibe</div>
+          <div className="text-base font-bold text-white">Vibe</div>
         </div>
         <div className="flex items-center">
           <div
@@ -52,7 +41,7 @@ export default function VotePanel({ currency }) {
           <NFTComponent />
         </div>
       </div>
-      <div className="text-sm text-[#FFFFFFBF] my-3">Community perspective on this pair.</div>
+      <div className="my-3 text-sm text-[#FFFFFFBF]">Community perspective on this pair.</div>
       <div className="mx-auto flex max-w-[288px] items-center text-sm">
         <div className="text-[#FFFFFF80]">Avoid</div>
         <div className="mx-2 flex flex-1 items-center">

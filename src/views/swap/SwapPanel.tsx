@@ -284,7 +284,7 @@ export default function SwapPanel({
       setAutoMode(true);
     } else {
       setAutoMode(false);
-      parseCustomSlippage(buyTaxes);
+      parseCustomSlippage(buyTaxes + 1);
     }
   }, [buyTaxes, currencies[Field.OUTPUT]?.address]);
 

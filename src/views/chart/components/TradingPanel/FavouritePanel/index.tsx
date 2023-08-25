@@ -8,7 +8,7 @@ import { NETWORKS } from "config/constants/networks";
 import { ChainId } from "@brewlabs/sdk";
 import { getChainLogo } from "utils/functions";
 
-export default function FavouritePanel({ setSelectedCurrency }) {
+export default function FavouritePanel() {
   const { favourites }: any = useContext(ChartContext);
 
   const filters = [
@@ -44,7 +44,7 @@ export default function FavouritePanel({ setSelectedCurrency }) {
 
   return (
     <>
-      <div className="flex h-[660px] w-[calc(100%+24px)] flex-col">
+      <div className="flex max-h-[660px] w-[calc(100%+24px)] flex-col">
         <div className="flex items-center justify-between pr-5">
           <DropDown
             value={selectedFilter}

@@ -10,7 +10,8 @@ import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 
 let wrappedQuery;
 export default function SwapHistory({ currency }) {
-  const { address: account } = useAccount();
+  // const { address: account } = useAccount();
+  const account = "0x61d8F1baE35A2F71E6868023F16c88E8d9e6200f";
   const [showType, setShowType] = useState(0);
   const [criteria, setCriteria] = useState("");
   const [offset, setOffset] = useState(0);
@@ -24,7 +25,6 @@ export default function SwapHistory({ currency }) {
       address: currency.tokenAddresses[0],
       current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
       chainId: currency.chainId,
-      pool_address: currency.address,
       amm: currency.swap,
       period: 0,
       limit: 100,
@@ -32,29 +32,48 @@ export default function SwapHistory({ currency }) {
       with_full_totals: true,
       order: "desc",
       token_status: "all",
-      transaction_types: ["swap"],
       sort_by: "timestamp",
     };
     switch (showType) {
       case 0:
-        return query;
+        return { ...query, pool_address: currency.address, transaction_types: ["swap"] };
       case 1:
-        query = { ...query, token_status: "buy" };
+        query = { ...query, token_status: "buy", pool_address: currency.address, transaction_types: ["swap"] };
         return query;
       case 2:
-        query = { ...query, token_status: "sell" };
+        query = { ...query, token_status: "sell", pool_address: currency.address, transaction_types: ["swap"] };
         return query;
       case 3:
-        query = { ...query, account: account ? account.toLowerCase() : "0x0" };
+        query = {
+          ...query,
+          account: account ? account.toLowerCase() : "0x0",
+          type: "all",
+          pool: currency.address,
+        };
         return query;
       case 4:
-        query = { ...query, account: account ? account.toLowerCase() : "0x0", token_status: "buy" };
+        query = {
+          ...query,
+          account: account ? account.toLowerCase() : "0x0",
+          type: "buy",
+          pool: currency.address,
+        };
         return query;
       case 5:
-        query = { ...query, account: account ? account.toLowerCase() : "0x0", token_status: "sell" };
+        query = {
+          ...query,
+          account: account ? account.toLowerCase() : "0x0",
+          type: "sell",
+          pool: currency.address,
+        };
         return query;
       case 6:
-        query = { ...query, account: criteria ? criteria.toLowerCase() : "0x0" };
+        query = {
+          ...query,
+          account: criteria ? criteria.toLowerCase() : "0x0",
+          type: "all",
+          pool: currency.address,
+        };
         return query;
     }
   };
@@ -78,12 +97,12 @@ export default function SwapHistory({ currency }) {
         console.log(e);
         setLoading(false);
       });
-  }, [showType, currency.address, offset]);
+  }, [showType, currency.address, offset, criteria]);
 
   useEffect(() => {
     setTotalHistories([]);
     setOffset(0);
-  }, [showType, currency.address]);
+  }, [showType, currency.address, criteria]);
 
   useSecondRefreshEffect(() => {
     let query = getQuery();
@@ -96,7 +115,7 @@ export default function SwapHistory({ currency }) {
       .catch((e) => {
         console.log(e);
       });
-  }, [showType, currency.address, offset]);
+  }, [showType, currency.address, offset, criteria]);
 
   const strigifiedHistories = JSON.stringify(histories);
   const strigifiedRecentHistories = JSON.stringify(recentHistories);
