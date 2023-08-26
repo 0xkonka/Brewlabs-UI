@@ -7,6 +7,7 @@ import StyledButton from "views/directory/StyledButton";
 export default function HistoryToolBar({ showType, setShowType, criteria, setCriteria }: any) {
   const filters1 = ["Swaps", "Buys", "Sells"];
   const filters2 = ["My swaps", "My buys", "My sells"];
+  const [address, setAddress] = useState("");
   return (
     <div className="mt-2 flex flex-col items-start justify-between md:flex-row md:items-center ">
       <div className="flex ">
@@ -56,8 +57,8 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
       <div className="primary-shadow mt-2 flex h-8 w-full flex-none overflow-hidden rounded md:mt-0 md:w-fit md:flex-1">
         <div className="relative flex-1">
           <StyledInput
-            value={criteria}
-            setValue={setCriteria}
+            value={address}
+            setValue={setAddress}
             className="h-full w-full !rounded-none font-brand !shadow-none"
           />
           {!criteria ? (
@@ -72,7 +73,10 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
         </div>
         <div
           className="flex h-full w-14 cursor-pointer items-center justify-center  bg-[#202023] text-primary [&>svg]:!h-4 [&>svg]:!w-4"
-          onClick={() => setShowType(6)}
+          onClick={() => {
+            setShowType(6);
+            setCriteria(address);
+          }}
         >
           {SearchCircleSVG}
         </div>
