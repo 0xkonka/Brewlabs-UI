@@ -4,26 +4,31 @@ import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { ChartContext } from "contexts/ChartContext";
 import TokenLogo from "@components/logo/TokenLogo";
-import { fetchAllPairs } from "@hooks/useTokenAllPairs";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import StyledPrice from "@components/StyledPrice";
 import { useRouter } from "next/router";
 import { DEX_GURU_CHAIN_NAME } from "config";
+import { useDispatch } from "react-redux";
+import { fetchPairsAsync } from "state/chart";
+import { useAllPairInfo, usePairInfoByParams } from "state/chart/hooks";
 
 export default function FavouriteCard({ pair, type, network }) {
   const [isFade, setIsFade] = useState(false);
-  const [wrappedPair, setWrappedPair] = useState(null);
 
   const router = useRouter();
+  const dispatch: any = useDispatch();
+  const pairs: any = usePairInfoByParams({
+    criteria: type === 0 ? pair.address : pair,
+    limit: 1,
+    sort: "volume24h_stable",
+    chain: null,
+  });
 
+  const wrappedPair = pairs[0];
+  const stringifiedPair = JSON.stringify({ type, pair });
   useEffect(() => {
-    setWrappedPair({ ...pair, price: undefined, priceChange24h: undefined });
-    fetchAllPairs(type === 0 ? pair.address : pair, 1, "volume24h_stable")
-      .then((result) => {
-        setWrappedPair(result ? { ...pair, ...result[0] } : pair);
-      })
-      .catch((e) => console.log(e));
-  }, [type, pair]);
+    dispatch(fetchPairsAsync(type === 0 ? pair.address : pair, 1, "volume24h_stable"));
+  }, [stringifiedPair]);
 
   const { onFavourites }: any = useContext(ChartContext);
 
@@ -57,10 +62,10 @@ export default function FavouriteCard({ pair, type, network }) {
       <div className="flex items-center text-sm">
         <div
           className={`mx-2 text-xs ${
-            wrappedPair?.priceChange24h === 0
-              ? "text-white"
-              : wrappedPair?.priceChange24 > 0
+            wrappedPair?.priceChange24h > 0
               ? "text-green"
+              : wrappedPair?.priceChange24 === 0
+              ? "text-white"
               : "text-danger"
           } whitespace-nowrap`}
         >

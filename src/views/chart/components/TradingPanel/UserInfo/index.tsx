@@ -36,16 +36,16 @@ export default function UserInfo({ currency, active, account }) {
       address: currency.tokenAddresses[0],
       current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
       chainId: currency.chainId,
-      pool_address: currency.address,
       amm: currency.swap,
       limit: 0,
       offset: 0,
       with_full_totals: true,
       order: "desc",
       token_status: "all",
-      transaction_types: ["swap"],
       sort_by: "timestamp",
       account: account ? account.toLowerCase() : "0x0",
+      type: "all",
+      pool: currency.address,
     };
     return query;
   };
@@ -66,11 +66,11 @@ export default function UserInfo({ currency, active, account }) {
       .catch((e) => {
         console.log(e);
       });
-  }, [currency.address]);
+  }, [currency.address, account]);
 
   useEffect(() => {
     setTotalHistories([]);
-  }, [currency.address]);
+  }, [currency.address, account]);
 
   useSecondRefreshEffect(() => {
     let query = getQuery();
@@ -83,7 +83,7 @@ export default function UserInfo({ currency, active, account }) {
       .catch((e) => {
         console.log(e);
       });
-  }, [currency.address]);
+  }, [currency.address, account]);
 
   const strigifiedHistories = JSON.stringify(histories);
   const strigifiedRecentHistories = JSON.stringify(recentHistories);

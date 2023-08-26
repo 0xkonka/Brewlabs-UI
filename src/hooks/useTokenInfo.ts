@@ -11,7 +11,31 @@ import { isAddress } from "ethers/lib/utils.js";
 import { API_URL } from "config/constants";
 import { CommunityContext } from "contexts/CommunityContext";
 import { BASE_URL, DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
+import { fetchTradingHistories } from "./useTokenAllPairs";
 
+export async function getBaseInfos(address, chainId) {
+  try {
+    const calls = [
+      {
+        name: "name",
+        address: address,
+      },
+      {
+        name: "symbol",
+        address: address,
+      },
+      {
+        name: "decimals",
+        address: address,
+      },
+    ];
+    const result = await multicall(brewlabsABI, calls, chainId);
+    return { name: result[0][0], symbol: result[1][0], decimals: result[2][0] / 1 };
+  } catch (e) {
+    console.log(e);
+    return { name: "", symbol: "", decimals: 0 };
+  }
+}
 function useTokenInfo(address: string, chainId: number) {
   const [owner, setOwner] = useState("");
   const [deployer, setDeployer] = useState("");
@@ -22,22 +46,7 @@ function useTokenInfo(address: string, chainId: number) {
 
   async function fetchInfo() {
     try {
-      const calls = [
-        {
-          name: "name",
-          address: address,
-        },
-        {
-          name: "symbol",
-          address: address,
-        },
-        {
-          name: "decimals",
-          address: address,
-        },
-      ];
       const tokenContract = getContract(chainId, address, brewlabsABI);
-
       axios
         .get(
           `${EXPLORER_API_URLS[chainId]}?module=account&action=tokentx&contractaddress=${address}&address=${ethers.constants.AddressZero}&page=1&offset=1&apikey=${EXPLORER_API_KEYS[chainId]}`
@@ -47,11 +56,11 @@ function useTokenInfo(address: string, chainId: number) {
         })
         .catch((e) => console.log(e));
 
-      multicall(brewlabsABI, calls, chainId)
+      getBaseInfos(address, chainId)
         .then((result) => {
-          setName(result[0][0]);
-          setSymbol(result[1][0]);
-          setDecimals(result[2][0] / 1);
+          setName(result.name);
+          setSymbol(result.symbol);
+          setDecimals(result.decimals);
         })
         .catch((e) => console.log(e));
 
@@ -80,64 +89,104 @@ function useTokenInfo(address: string, chainId: number) {
   return { owner, deployer, totalSupply, name, symbol, decimals };
 }
 
-export function useTokenMarketInfos(chainId: number, address: string, pair: string) {
-  const [infos, setInfos] = useState({});
+export async function fetchDexInfos(address, chainId, pair) {
+  try {
+    const result = await Promise.all([
+      axios.post(`${API_URL}/chart/getDexData`, {
+        url: `https://api.dextools.io/v1/token?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${address}&page=1&pageSize=5`,
+      }),
+      axios.post(`${API_URL}/chart/getDexData`, {
+        url: `https://api.dextools.io/v1/pair?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${pair}`,
+      }),
+    ]);
+    let tokenInfos = { metrics: { holders: 0, totalSupply: 0 } },
+      pairInfos: any = { liquidity: 0, price: 0, price24h: 0 };
+    if (result[0].data.success) tokenInfos = result[0].data.result.data;
+    if (result[1].data.success) {
+      const data = result[1].data.result.data;
+      pairInfos = {
+        liquidity: data.metrics.liquidity,
+      };
+    }
+    return {
+      ...tokenInfos,
+      ...pairInfos,
+      holders: tokenInfos.metrics.holders,
+      totalSupply: tokenInfos.metrics.totalSupply,
+      chainId,
+    };
+  } catch (e) {
+    console.log(e);
+    return {};
+  }
+}
+
+export function useTokenMarketInfos(currency: any) {
+  const [dexInfos, setDexInfos] = useState<any>({});
+  const [pairInfos, setPairInfos] = useState<any>({});
+
   const { communities }: any = useContext(CommunityContext);
+
   const isExisitngCommunity = communities.find((community) =>
     Object.keys(community.currencies).find(
-      (key, i) => community.currencies[key].address.toLowerCase() === address?.toLowerCase()
+      (key, i) => community.currencies[key].address.toLowerCase() === currency?.tokenAddresses[0]?.toLowerCase()
     )
   );
   const community = isExisitngCommunity ? `${BASE_URL}/communities/${isExisitngCommunity.pid}` : "";
-
-  async function fetchInfos() {
-    try {
-      const result = await Promise.all([
-        axios.post(`${API_URL}/chart/getDexData`, {
-          url: `https://api.dextools.io/v1/token?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${address}&page=1&pageSize=5`,
-        }),
-        axios.post(`https://api.dex.guru/v3/pools/`, {
-          id: `${address}-${DEX_GURU_CHAIN_NAME[chainId]}`,
-          limit: 100,
-          network: DEX_GURU_CHAIN_NAME[chainId],
-          order: "desc",
-          sort_by: "volume24h_stable",
-        }),
-        axios.post(`https://api.dex.guru/v3/tokens`, {
-          ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
-          limit: 1,
-        }),
-      ]);
-      const _token = result[0].data.result;
-      const _pool = result[1].data.data.find((pool) => pool.id.replace(`-${chainId}`, "") === pair);
-      if (_token.statusCode !== 200) return;
-      const tokenInfos = _token.data;
-      const priceInfos = result[2].data.data[0];
-      setInfos({
-        ...tokenInfos,
-        liquidity: _pool.liquidityStable,
-        holders: tokenInfos.metrics.holders,
-        marketCap: tokenInfos.metrics.totalSupply * priceInfos.priceUSD,
-        chainId,
-        volume24h: _pool.volume24hStable,
-        priceChange: priceInfos.priceUSDChange24h * 100,
-        price: priceInfos.priceUSD,
-        volume24hChange: priceInfos.volumeUSDChange24h * 100,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
+  const strigifiedCurrency = JSON.stringify(currency && Object.keys(currency).filter((key) => key !== "params"));
   useEffect(() => {
-    if (!isAddress(address) || !isAddress(pair)) {
-      setInfos({});
+    if (!isAddress(currency?.tokenAddresses[0]) || !isAddress(currency?.address)) {
+      setDexInfos({});
+      setPairInfos({});
       return;
     }
-    fetchInfos();
-  }, [address, chainId, pair]);
+    fetchDexInfos(currency.tokenAddresses[0], currency.chainId, currency.address)
+      .then((result) => {
+        setDexInfos(result);
+      })
+      .catch((e) => console.log(e));
 
-  return { infos: { ...infos, community } };
+    fetchTradingHistories(
+      {
+        address: currency.tokenAddresses[0],
+        current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
+        chainId: currency.chainId,
+        pool_address: currency.address,
+        amm: currency.swap,
+        date: { start_date: Date.now() - 3600 * 24 * 2 * 1000, end_date: Date.now() },
+        limit: 0,
+        offset: 0,
+        with_full_totals: true,
+        order: "desc",
+        token_status: "all",
+        transaction_types: ["swap"],
+        sort_by: "timestamp",
+      },
+      currency.chainId
+    )
+      .then((result) => {
+        let volume = 0,
+          volume24h = 0;
+        const txs = result.filter((tx) => tx.timestamp >= Date.now() / 1000 - 3600 * 24);
+        const txs24h = result.filter((tx) => tx.timestamp < Date.now() / 1000 - 3600 * 24);
+        txs.map((tx) => (volume += tx.amountStable));
+        txs24h.map((tx) => (volume24h += tx.amountStable));
+        setPairInfos({
+          volume24h: volume,
+          volume24hChange: volume ? ((volume - volume24h) / volume) * 100 : 0,
+        });
+      })
+      .catch((e) => console.log(e));
+  }, [strigifiedCurrency]);
+
+  return {
+    infos: {
+      ...dexInfos,
+      ...pairInfos,
+      community,
+      totalSupply: dexInfos.totalSupply ?? 0,
+    },
+  };
 }
 
 export function useTokenTaxes(address, chainId) {

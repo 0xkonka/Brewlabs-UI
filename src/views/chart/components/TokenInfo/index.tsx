@@ -8,9 +8,13 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
 import StyledPrice from "@components/StyledPrice";
+import { SkeletonComponent } from "@components/SkeletonComponent";
+import { usePairInfo } from "state/chart/hooks";
 
 export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const { favourites, onFavourites }: any = useContext(ChartContext);
+  const pair: any = usePairInfo(currency.chainId, currency.address);
+  const price = pair.price;
 
   const infos = [
     {
@@ -32,20 +36,21 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
         </span>
       ),
     },
-    { icon: ChartSVG, value: `$${numberWithCommas((marketInfos.marketCap ?? 0)?.toFixed(2))} Marketcap` },
+    {
+      icon: ChartSVG,
+      value: `$${numberWithCommas(((marketInfos.totalSupply ?? 0) * (price ?? 0))?.toFixed(2))} Marketcap`,
+    },
   ];
-
-  const price = currency.price ?? 0;
 
   const makePricePanel = () => {
     return (
       <div className="flex items-center">
-        <div className={`flex items-center ${currency.priceChange24h >= 0 ? "text-green" : "text-danger"}`}>
+        <div className={`flex items-center ${pair.priceChange24h >= 0 ? "text-green" : "text-danger"}`}>
           <div className="mr-1 whitespace-nowrap text-sm">
-            {currency.priceChange24h >= 0 ? "+" : ""}
-            {(currency.priceChange24h ?? 0).toFixed(2)}% (24h)
+            {pair.priceChange24h >= 0 ? "+" : ""}
+            {(pair.priceChange24h ?? 0).toFixed(2)}% (24h)
           </div>
-          <div className="scale-[80%]">{currency.priceChange24h >= 0 ? upSVG : downSVG}</div>
+          <div className="scale-[80%]">{pair.priceChange24h >= 0 ? upSVG : downSVG}</div>
         </div>
         <div className="ml-2 text-lg font-bold text-white">
           <StyledPrice price={price} />
@@ -54,7 +59,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
     );
   };
 
-  return (
+  return currency ? (
     <div
       className={`relative z-0 mr-0 mt-8 flex flex-col items-start justify-between lg:flex-row lg:items-center ${
         showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
@@ -76,7 +81,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
                   }`}
                 />
               </div>
-              <img src={DEX_LOGOS[currency.swap]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
+              <img src={DEX_LOGOS[currency.amm]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
               <div className="flex">
                 <TokenLogo
                   src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
@@ -107,5 +112,11 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
       </div>
       <div className="hidden xl:block">{makePricePanel()}</div>
     </div>
+  ) : (
+    <SkeletonComponent
+      className={`!max-w-full ${
+        showReverse ? "2xl:!max-w-[calc(100%-332px)]" : "2xl:!max-w-[calc(100%-292px)]"
+      } mt-6 h-8`}
+    />
   );
 }

@@ -4,23 +4,33 @@ import TokenInfo from "./components/TokenInfo";
 import { useContext, useEffect, useState } from "react";
 import TradingPanel from "./components/TradingPanel";
 import { useTokenMarketInfos } from "@hooks/useTokenInfo";
-import { useDerivedSwapInfo, useSwapActionHandlers } from "state/swap/hooks";
+import { useSwapActionHandlers } from "state/swap/hooks";
 import { Field } from "state/swap/actions";
 import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
-import { useActiveChainId } from "@hooks/useActiveChainId";
 import { ChartContext } from "contexts/ChartContext";
-import { useWeb3React } from "contexts/wagmi";
 import Modal from "@components/Modal";
 import SettingModal from "views/swap/components/modal/SettingModal";
 import { SwapContext } from "contexts/SwapContext";
 import { useUserSlippageTolerance } from "state/user/hooks";
-import { fetchAllPairs } from "@hooks/useTokenAllPairs";
+import { Bars } from "react-loader-spinner";
+import { fetchPairsAsync } from "state/chart";
+import { useDispatch } from "react-redux";
+import { usePairInfoByParams } from "state/chart/hooks";
+import { isAddress } from "utils";
 
 export default function Chart({ chain, address }) {
-  const [selectedCurrency, setSelectedCurrency] = useState<any>(null);
+  const pairs: any = usePairInfoByParams({
+    criteria: address,
+    limit: 1,
+    sort: "volume24h_stable",
+    chain,
+  });
+
+  const selectedCurrency = pairs[0];
   const [showReverse, setShowReverse] = useState(true);
 
   const { onCurrencySelection } = useSwapActionHandlers();
+  const dispatch: any = useDispatch();
 
   const stringifiedCurrency = JSON.stringify(selectedCurrency);
 
@@ -46,18 +56,11 @@ export default function Chart({ chain, address }) {
   }, [stringifiedCurrency]);
 
   useEffect(() => {
-    fetchAllPairs(address, 1, "volume24h_stable", chain)
-      .then((result) => {
-        setSelectedCurrency(result ? result[0] : undefined);
-      })
-      .catch((e) => console.log(e));
+    if (!isAddress(address)) return;
+    dispatch(fetchPairsAsync(address, 1, "volume24h_stable", chain));
   }, [chain, address]);
 
-  const { infos: marketInfos }: any = useTokenMarketInfos(
-    selectedCurrency?.chainId,
-    selectedCurrency?.tokenAddresses[0],
-    selectedCurrency?.address
-  );
+  const { infos: marketInfos }: any = useTokenMarketInfos(selectedCurrency);
 
   const { pending }: any = useContext(ChartContext);
 
@@ -107,15 +110,20 @@ export default function Chart({ chain, address }) {
           <div className="relative mx-auto mt-24 w-full max-w-[1720px] lg:mt-0">
             <Header setShowReverse={setShowReverse} showReverse={showReverse} />
             <TokenInfo currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />
-            <TradingPanel
-              currency={selectedCurrency}
-              marketInfos={marketInfos}
-              setSelectedCurrency={setSelectedCurrency}
-              showReverse={showReverse}
-            />
+            <TradingPanel currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />
           </div>
         ) : (
-          ""
+          <div className="flex h-screen w-full items-center justify-center">
+            <Bars
+              height="80"
+              width="80"
+              color="#3F3F46"
+              ariaLabel="bars-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+            />
+          </div>
         )}
       </div>
     </PageWrapper>
