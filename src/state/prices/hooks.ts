@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "state";
 import { LpTokenPricesState, State } from "state/types";
-import { fetchLpTokenPrices } from ".";
+import { fetchLpTokenPrices, fetchMarketDataAsync } from ".";
 
 export const useFetchLpTokenPrices = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +15,22 @@ export const useFetchLpTokenPrices = () => {
   }, [dispatch, farms, chainId]);
 };
 
+export const useFetchMarketData = (chainId) => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchMarketDataAsync(chainId));
+  }, [dispatch, chainId]);
+};
+
 export const useLpTokenPrices = () => {
-  const { isInitialized, isLoading, data }: LpTokenPricesState = useSelector((state: State) => state.lpTokenPrices);
+  const { isInitialized, isLoading, data }: LpTokenPricesState = useSelector(
+    (state: State) => state.prices.lpTokenPrices
+  );
   return { lpTokenPrices: data, isInitialized, isLoading };
+};
+
+export const useTokenMarketChart = (chainId) => {
+  const marketData = useSelector((state: State) => state.prices.marketDatas[chainId] ?? {});
+  return marketData;
 };

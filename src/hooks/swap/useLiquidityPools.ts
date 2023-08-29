@@ -9,8 +9,9 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenBalancesWithLoadingIndicator } from "state/wallet/hooks";
 import { usePendingRewards } from "./usePendingRewards";
 import { rewardInUSD } from "views/swap/components/SwapRewards";
-import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
 import { useTokens } from "@hooks/Tokens";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { defaultMarketData } from "state/prices/types";
 
 type FeeDistribution = {
   lpFee: number;
@@ -75,6 +76,7 @@ export const useOwnedLiquidityPools = () => {
 
   const lpTokens = useMemo(() => pairs.map((pair) => new Token(chainId, pair.id, 18)), [chainId, pairs]);
   const [lpBalances] = useTokenBalancesWithLoadingIndicator(account, lpTokens);
+  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
 
   const ownedPairs = useMemo(() => {

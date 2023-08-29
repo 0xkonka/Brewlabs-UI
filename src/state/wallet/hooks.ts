@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, JSBI, NATIVE_CURRENCIES, Token, TokenAmount } from "@brewlabs/sdk";
+import { ChainId, Currency, CurrencyAmount, JSBI, NATIVE_CURRENCIES, Token, TokenAmount } from "@brewlabs/sdk";
 import { useEffect, useMemo, useState } from "react";
 import ERC20_INTERFACE from "config/abi/erc20";
 import { useAllTokens } from "hooks/Tokens";
@@ -10,6 +10,14 @@ import { simpleRpcProvider } from "utils/providers";
 import axios from "axios";
 import { EXPLORER_API_KEYS } from "config/constants/networks";
 import { EXPLORER_API_URLS } from "config/constants/networks";
+import { useAppDispatch } from "state";
+import { useAccount, useSigner } from "wagmi";
+import { useFastRefreshEffect, useSlowRefreshEffect } from "@hooks/useRefreshEffect";
+import { fetchNFTBalancesAsync, fetchTokenBalancesAsync } from ".";
+import { SerializedWalletNFT, SerializedWalletToken } from "./type";
+import { useSelector } from "react-redux";
+import { State } from "state/types";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
@@ -146,3 +154,38 @@ export async function isVerified(curreny?: any) {
   );
   return result.data.message === "OK";
 }
+
+export const useFetchNFTBalance = (account, chainIds: ChainId[]) => {
+  const dispatch = useAppDispatch();
+
+  const stringifiedChainId = JSON.stringify(chainIds);
+
+  useFastRefreshEffect(() => {
+    chainIds.map((chainId) => dispatch(fetchNFTBalancesAsync(account, chainId)));
+  }, [dispatch, account, stringifiedChainId]);
+};
+
+export const useFetchTokenBalance = (account, chainId: ChainId, signer) => {
+  const dispatch = useAppDispatch();
+  useFetchMarketData(chainId);
+  const tokenMarketData = useTokenMarketChart(chainId);
+
+  const stringifiedData = JSON.stringify({
+    dispatch: JSON.stringify(dispatch),
+    account,
+    chainId,
+    tokenMarketData: JSON.stringify(tokenMarketData),
+  });
+
+  useFastRefreshEffect(() => {
+    dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData, signer));
+  }, [stringifiedData]);
+};
+
+export const useUserNFTData = (chainId: ChainId, account: string): SerializedWalletNFT[] => {
+  return useSelector((state: State) => state.wallet.nfts[chainId]?.[account] ?? []);
+};
+
+export const useUserTokenData = (chainId: ChainId, account: string): SerializedWalletToken[] => {
+  return useSelector((state: State) => state.wallet.tokens[chainId]?.[account] ?? []);
+};

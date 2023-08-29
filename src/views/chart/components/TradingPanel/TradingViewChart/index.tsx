@@ -3,7 +3,7 @@ import Datafeed from "./datafeed/datafeed";
 import { widget } from "charting_library/charting_library.min";
 import liquidity from "./datafeed/indicators/liquidity";
 import { DEX_GURU_CHAIN_NAME } from "config";
-import { ThreeDots } from "react-loader-spinner";
+import { Oval } from "react-loader-spinner";
 
 export const defaultOverrides = {
   "mainSeriesProperties.candleStyle.upColor": "#26a69a",
@@ -102,15 +102,7 @@ const TradingViewChart = ({ currency }) => {
     <div id="tv_chart_container" className="h-full overflow-hidden rounded-lg"></div>
   ) : (
     <div className="flex h-full w-full items-center justify-center">
-      <ThreeDots
-        height="60"
-        width="60"
-        radius="9"
-        color="#ffffff45"
-        ariaLabel="three-dots-loading"
-        wrapperStyle={{}}
-        visible={true}
-      />
+      <Oval width={60} height={60} color={"#3F3F46"} secondaryColor="black" strokeWidth={4} strokeWidthSecondary={4} />
     </div>
   );
 };

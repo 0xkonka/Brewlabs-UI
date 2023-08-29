@@ -8,22 +8,33 @@ import FullOpenVector from "./FullOpenVector";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import NavButton from "./NavButton";
-import FeaturedPriceList from "./FeaturedPriceList";
 import styled from "styled-components";
 import SwapBoard from "views/swap/SwapBoard";
 import IndexPerformance from "./IndexPerformance";
 import NFTList from "./NFTList";
+import { useFetchTokenBalance, useUserTokenData } from "state/wallet/hooks";
+import { useAccount, useSigner } from "wagmi";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import FeaturedPriceList from "./FeaturedPriceList";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
   const [fullOpen, setFullOpen] = useState(false);
-  const { tokens, viewType, setViewType, chartPeriod, setChartPeriod }: any = useContext(DashboardContext);
+  const { viewType, setViewType, chartPeriod, setChartPeriod }: any = useContext(DashboardContext);
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(0);
   const [archives, setArchives] = useState<any>([]);
   const [listType, setListType] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
-  const [filteredTokens, setFilteredTokens] = useState([]);
+
+  const { address: account } = useAccount();
+  // const account = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+  const { data: signer } = useSigner();
+  const { chainId } = useActiveChainId();
+
+  const tokens = useUserTokenData(chainId, account);
+
+  useFetchTokenBalance(account, chainId, signer);
 
   useEffect(() => {
     if (window.innerHeight < 790) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
@@ -39,8 +50,8 @@ const UserDashboard = () => {
       _filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
     }
     setMaxPage(Math.ceil(_filteredTokens.length / itemsPerPage));
-    setFilteredTokens(_filteredTokens);
   }, [listType, tokens, archives, itemsPerPage]);
+
   return (
     <>
       <StyledContainer className="relative mr-1.5 flex w-full  flex-col  pb-3">
@@ -55,20 +66,20 @@ const UserDashboard = () => {
         {viewType === 0 ? (
           <ChartPanel>
             <div className={"mt-4"}>
-              <PerformanceChart showType={showType} />
+              <PerformanceChart showType={showType} tokens={tokens} />
             </div>
             <div className={"relative z-10 flex w-full justify-between"}>
               <SwitchButton
                 value={chartPeriod}
                 setValue={setChartPeriod}
                 values={["1D", "1W", "1M", "1Y", "ALL"]}
-                className="h-[25px] w-[240px] xsm:text-sm text-xs"
+                className="h-[25px] w-[240px] text-xs xsm:text-sm"
               />
               <SwitchButton
                 value={showType}
                 setValue={setShowType}
                 values={["My Wallet", "Total Market"]}
-                className="h-[25px] w-[220px] xsm:text-sm text-xs"
+                className="h-[25px] w-[220px] text-xs xsm:text-sm"
               />
             </div>
           </ChartPanel>

@@ -2,13 +2,14 @@ import { Currency, CurrencyAmount } from "@brewlabs/sdk";
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 import useTokenPrice from "hooks/useTokenPrice";
 import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import CurrencySelectButton from "components/CurrencySelectButton";
 import NumericalInput from "./NumericalInput";
 import TradeCard from "./TradeCard";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { defaultMarketData } from "state/prices/types";
 
 interface CurrencyOutputPanelProps {
   value: string;
@@ -30,7 +31,6 @@ interface CurrencyOutputPanelProps {
 const CurrencyOutputPanel = ({
   value,
   onUserInput,
-  onCurrencySelect,
   label,
   currency,
   balance,
@@ -45,8 +45,9 @@ const CurrencyOutputPanel = ({
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
+  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
-  const { usd: tokenPrice1, usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
+  const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
   const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
 
   return (

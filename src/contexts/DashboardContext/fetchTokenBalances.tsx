@@ -76,5 +76,6 @@ export async function fetchTokenBalances(address: string, chainId: number) {
       symbol: WNATIVE[chainId].symbol,
     });
   }
+
   return data;
 }

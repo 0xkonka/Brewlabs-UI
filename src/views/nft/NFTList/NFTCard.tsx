@@ -26,8 +26,8 @@ import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
-import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import NFTRarityText from "@components/NFTRarityText";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -57,7 +57,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
         +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
         (pool?.totalStaked ?? 0))
     : 0;
-
+  useFetchMarketData(1);
   const tokenMarketData = useTokenMarketChart(1);
 
   const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]

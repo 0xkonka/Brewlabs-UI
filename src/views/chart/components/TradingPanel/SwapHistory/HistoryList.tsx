@@ -8,8 +8,8 @@ import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
 import { Oval } from "react-loader-spinner";
 import { useCallback, useEffect, useRef } from "react";
-import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import { WNATIVE } from "@brewlabs/sdk";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -17,6 +17,7 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 export default function HistoryList({ histories, currency, loading, offset, setOffset }) {
+  useFetchMarketData(currency.chainId);
   const tokenMarketData = useTokenMarketChart(currency.chainId);
 
   const wrappedHistories = histories.map((history) => {

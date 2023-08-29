@@ -4,6 +4,7 @@ import { useGlobalState } from "state";
 import CurrencySelector from "@components/CurrencySelector";
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { useRouter } from "next/router";
+import UserDashboard from "@components/dashboard/UserDashboard";
 
 export default function Header({ showReverse, setShowReverse }) {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
@@ -41,15 +42,7 @@ export default function Header({ showReverse, setShowReverse }) {
             className="mr-4 cursor-pointer  transition hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
             onClick={() => {
               setIsOpen(isOpen === 1 ? 1 : 2);
-              setSidebarContent(
-                <CurrencySelector
-                  inputType={"input"}
-                  selectedCurrency={null}
-                  onUserInput={onUserInput}
-                  type={""}
-                  onCurrencySelect={onCurrencySelect}
-                />
-              );
+              setSidebarContent(<UserDashboard />);
             }}
           >
             {ChartSquareSVG}
