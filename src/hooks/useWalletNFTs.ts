@@ -1,32 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import { formatIPFSString } from "utils/functions";
-import multicall from "utils/multicall";
-import NFTABI from "config/abi/NFTABI.json";
-import { AnkrProvider } from "@ankr.com/ankr.js";
 import { useSlowRefreshEffect } from "./useRefreshEffect";
 import { UNMARSHAL_API_KEYS } from "config";
 
 const useWalletNFTs = (account: string) => {
   const [bscNFTs, setBSCNFTs] = useState([]);
   const [ethNFTs, setETHNFTs] = useState([]);
-
-  async function fetchBaseData(address, chainId) {
-    try {
-      let calls = [
-        {
-          name: "name",
-          address,
-        },
-      ];
-
-      const name = await multicall(NFTABI, calls, chainId);
-      return name[0][0];
-    } catch (e) {
-      console.log(e);
-      return "";
-    }
-  }
 
   async function fetchBSCNFTs() {
     try {

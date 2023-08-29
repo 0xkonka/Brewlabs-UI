@@ -20,11 +20,12 @@ import multicall from "./multicall/reducer";
 import swap from "./swap/reducer";
 import transactions from "./transactions/reducer";
 import user from "./user/reducer";
-import lpPricesReducer from "./lpPrices";
+import prices from "./prices";
 import storage from "./storage";
 import zap from "./zap";
 import home from "./home";
 import chart from "./chart";
+import wallet from "./wallet";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -47,7 +48,7 @@ const persistedReducer = persistReducer(
     zap,
     user,
     lists,
-    lpTokenPrices: lpPricesReducer,
+    prices,
     multicall,
     swap,
     transactions,
@@ -55,6 +56,7 @@ const persistedReducer = persistReducer(
     mint,
     home,
     chart,
+    wallet,
   })
 );
 

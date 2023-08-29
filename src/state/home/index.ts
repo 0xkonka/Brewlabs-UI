@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { HomeState } from "state/types";
 
 import { getFeeCollectedValues, getNFTStakingValues, getTransactions, getTreasuryValues } from "./fetchHomeValues";
+import { getMarketInfo } from "./fetchMarketInfo";
 
 const initialState: HomeState = {
   transactions: {
@@ -21,6 +22,7 @@ const initialState: HomeState = {
     value: null,
     value24h: null,
   },
+  marketValues: {},
 };
 
 export const fetchTransactionDataAsync = () => async (dispatch) => {
@@ -43,6 +45,11 @@ export const fetchTreasuryValueAsync = () => async (dispatch) => {
   dispatch(setTreasuryValuesData(treasuryValues));
 };
 
+export const fetchMarketInfoAsync = (period) => async (dispatch) => {
+  const marketValues = await getMarketInfo(period);
+  dispatch(setMarketValues({ period, marketValues }));
+};
+
 export const HomeSlice = createSlice({
   name: "home",
   initialState,
@@ -63,10 +70,15 @@ export const HomeSlice = createSlice({
       const treasuryValues = action.payload;
       state.treasuryValues = treasuryValues;
     },
+    setMarketValues: (state, action) => {
+      const { marketValues, period } = action.payload;
+      state.marketValues[period] = marketValues;
+    },
   },
 });
 
 // Actions
-export const { setTransactionData, setNFTStakingData, setFeeCollectedData,setTreasuryValuesData } = HomeSlice.actions;
+export const { setTransactionData, setNFTStakingData, setFeeCollectedData, setTreasuryValuesData, setMarketValues } =
+  HomeSlice.actions;
 
 export default HomeSlice.reducer;

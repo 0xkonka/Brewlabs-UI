@@ -7,6 +7,9 @@ import { upSVG, downSVG } from "./assets/svgs";
 import { TailSpin } from "react-loader-spinner";
 import { BigNumberFormat } from "utils/functions";
 import { useAccount } from "wagmi";
+import { fetchWalletHistories } from "contexts/DashboardContext/fetchWalletHistories";
+import { CHART_PERIOD_RESOLUTION } from "config/constants";
+import { useFetchMarketValues, useMarketValues } from "state/home/hooks";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -25,9 +28,22 @@ const Loading = () => {
     </div>
   );
 };
-const PerformanceChart = ({ showType }: { showType: number }) => {
+const PerformanceChart = ({ showType, tokens }: { showType: number; tokens: any }) => {
   let pricehistory: any = [];
-  const { marketHistory, walletHistories, chartPeriod }: any = useContext(DashboardContext);
+
+  const [walletHistories, setWalletHistories] = useState([]);
+  const { chartPeriod }: any = useContext(DashboardContext);
+  useFetchMarketValues(chartPeriod);
+  const marketHistory = useMarketValues(chartPeriod);
+
+  useEffect(() => {
+    fetchWalletHistories(
+      tokens,
+      CHART_PERIOD_RESOLUTION[chartPeriod].period,
+      CHART_PERIOD_RESOLUTION[chartPeriod].resolution
+    ).then((data) => setWalletHistories(data));
+  }, [JSON.stringify(tokens), chartPeriod]);
+
   if (showType === 1) {
     if (!marketHistory.length) return <Loading />;
     pricehistory = marketHistory;

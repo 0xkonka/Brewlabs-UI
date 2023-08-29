@@ -8,13 +8,14 @@ import { useClaim } from "hooks/swap/useClaim";
 import { Currency, JSBI, Pair, TokenAmount } from "@brewlabs/sdk";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useLiquidityPools } from "@hooks/swap/useLiquidityPools";
-import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
 import { BigNumber } from "ethers";
 import { getPairDayDatas } from "lib/swap/pairs";
 import { useGraphEndPoint } from "@hooks/swap/useGraphEndPoint";
 import StyledButton from "views/directory/StyledButton";
 import { SwapContext } from "contexts/SwapContext";
 import Notification from "@components/Notification";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { defaultMarketData } from "state/prices/types";
 
 export const rewardInUSD = (token0, token1, token0Price, token1Price, reward) => {
   const { lpRewards, ownerRewards, referralRewards } = reward || {};
@@ -53,6 +54,7 @@ const SwapRewards = () => {
   const { swapFeeData }: any = useContext(SwapContext);
   const { eligiblePairs, ownedPairs, lpBalances, collectiblePairs, rewards, pairTokens } = swapFeeData;
 
+  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
   const pairs = useLiquidityPools();
 

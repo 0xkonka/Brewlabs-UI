@@ -50,6 +50,7 @@ import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
 import LoadingPage from "@components/LoadingPage";
 import { ChartContextProvider } from "contexts/ChartContext";
 import { CommunityContextProvider } from "contexts/CommunityContext";
+import { useFetchMarketData } from "state/prices/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 

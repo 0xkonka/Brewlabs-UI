@@ -7,7 +7,7 @@ import { AppId, Chef } from "config/constants/types";
 import { SLOW_INTERVAL } from "config/constants";
 import useSWRImmutable from "swr/immutable";
 import { AppState, useAppDispatch } from "state";
-import { useFetchLpTokenPrices, useLpTokenPrices } from "state/lpPrices/hooks";
+import { useFetchLpTokenPrices, useLpTokenPrices } from "state/prices/hooks";
 import { State } from "state/types";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import {

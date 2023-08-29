@@ -11,3 +11,22 @@ export interface SerializedWalletNFT {
   tokenId: number;
   balance: number;
 }
+
+export interface SerializedWalletToken {
+  address: string;
+  balance: number;
+  name: string;
+  symbol: string;
+  decimals: number;
+  price: number;
+  reward: SerializedRewardToken;
+  isScam: boolean;
+  isReward: boolean;
+  chainId: number;
+}
+
+interface SerializedRewardToken {
+  totalRewards: number;
+  pendingRewards: number;
+  symbol: string;
+}
