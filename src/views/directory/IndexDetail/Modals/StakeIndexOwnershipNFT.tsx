@@ -41,7 +41,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
   const [selIndexId, setSelectedIndexId] = useState(0);
 
   const { onApprove } = useNftApprove(data.category >= 0 ? data.deployerNft : data.nft);
-  const { onStakeDeployerNft } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
+  const { onStakeDeployerNft } = useIndexImpl(data.pid, data.address, data.version, data.performanceFee);
 
   let allPools = indexes.filter(
     (_index) => _index.chainId === chainId && _index.deployerNftId && _index.userData?.deployerNftItem
@@ -90,7 +90,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
         await onApprove(selectedIndex.address);
       }
 
-      const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, selectedIndex.category, signer);
+      const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, selectedIndex.version, signer);
       const gasPrice = await getNetworkGasPrice(signer, chainId);
 
       let gasLimit = await indexContract.estimateGas.stakeDeployerNft({ value: selectedIndex.performanceFee ?? "0" });

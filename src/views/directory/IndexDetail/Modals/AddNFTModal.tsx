@@ -37,7 +37,7 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
   const [tokenId, setTokenId] = useState<number | undefined>();
 
   const { onStakeNft: onStakeNftOld } = useIndex(data.pid, data.address, data.performanceFee);
-  const { onStakeNft } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
+  const { onStakeNft } = useIndexImpl(data.pid, data.address, data.version, data.performanceFee);
   const { onApprove } = useNftApprove(data.category === undefined ? data.nft : data.indexNft);
 
   useEffect(() => {
