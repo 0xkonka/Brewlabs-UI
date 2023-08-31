@@ -40,6 +40,7 @@ interface PoolConfigBaseProps {
   lockup?: number;
   isServiceFee?: boolean;
   isFinished?: boolean;
+  isRevenue?: boolean;
   visible?: boolean;
   migration?: boolean;
   unverified?: boolean;
