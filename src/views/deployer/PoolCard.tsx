@@ -76,7 +76,11 @@ const PoolCard = ({
             <IndexLogo tokens={[data.token, data.quoteToken]} />
           ) : (
             <TokenLogo
-              src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId, data.earningToken.logo)}
+              src={
+                data.sousId !== 227
+                  ? getTokenLogoURL(data.earningToken.address, data.chainId, data.earningToken.logo)
+                  : getTokenLogoURL(data.stakingToken.address, data.chainId, data.stakingToken.logo)
+              }
               classNames="mr-3 h-7 w-7"
             />
           )}
@@ -157,15 +161,14 @@ const PoolCard = ({
           )}
         </div>
         <div className="min-w-[80px]">
-          {data.type !== Category.INDEXES ? (
-            data.apr || data.apr === 0.0 ? (
-              `${(+data.apr).toFixed(2)}%`
-            ) : (
-              <div className="mr-2">{<SkeletonComponent />}</div>
-            )
-          ) : (
-            "N/A"
-          )}
+          {data.type !== Category.INDEXES
+            ? data.sousId !== 227 &&
+              (data.apr || data.apr === 0.0 ? (
+                `${(+data.apr).toFixed(2)}%`
+              ) : (
+                <div className="mr-2">{<SkeletonComponent />}</div>
+              ))
+            : "N/A"}
         </div>
       </div>
       <div className="flex hidden flex-col px-6">
@@ -175,7 +178,11 @@ const PoolCard = ({
               <IndexLogo tokens={data.tokens} />
             ) : (
               <TokenLogo
-                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId, data.earningToken.logo)}
+                src={
+                  data.sousId !== 227
+                    ? getTokenLogoURL(data.earningToken.address, data.chainId, data.earningToken.logo)
+                    : getTokenLogoURL(data.stakingToken.address, data.chainId, data.stakingToken.logo)
+                }
                 classNames="mr-3 h-7 w-7"
               />
             )}
