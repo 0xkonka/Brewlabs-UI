@@ -380,7 +380,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                   <div className="mt-4 flex w-[160px] items-center justify-center ">
                     <img
-                      src={getTokenLogoURL(earningToken.address, data.chainId)}
+                      src={getTokenLogoURL(data.isRevenue ? stakingToken.address : earningToken.address, data.chainId)}
                       alt={""}
                       className="w-[100px] rounded-full"
                     />
@@ -400,10 +400,14 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </a>
                         </div>
                         <div className="flex">
-                          APR:&nbsp;
-                          <span className="text-primary">
-                            {data.apr || data.apr === 0.0 ? `${data.apr.toFixed(2)}%` : <SkeletonComponent />}
-                          </span>
+                          {!data.isRevenue && (
+                            <>
+                              APR:&nbsp;
+                              <span className="text-primary">
+                                {data.apr || data.apr === 0.0 ? `${data.apr.toFixed(2)}%` : <SkeletonComponent />}
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                       <div className="flex justify-between text-base  text-[#FFFFFF80]">

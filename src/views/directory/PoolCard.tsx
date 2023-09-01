@@ -73,7 +73,11 @@ const PoolCard = ({
             <IndexLogo tokens={[data.token, data.quoteToken]} appId={data.appId} />
           ) : (
             <TokenLogo
-              src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId, data.earningToken.logo)}
+              src={
+                data.isRevenue
+                  ? getTokenLogoURL(data.stakingToken.address, data.chainId, data.stakingToken.logo)
+                  : getTokenLogoURL(data.earningToken.address, data.chainId, data.earningToken.logo)
+              }
               classNames="mr-3 h-7 w-7"
             />
           )}
@@ -155,11 +159,12 @@ const PoolCard = ({
         </div>
         <div className="min-w-[105px]">
           {data.type !== Category.INDEXES ? (
-            data.apr || data.apr === 0.0 ? (
+            !data.isRevenue &&
+            (data.apr || data.apr === 0.0 ? (
               `${(+data.apr).toFixed(2)}%`
             ) : (
               <div className="mr-2">{<SkeletonComponent />}</div>
-            )
+            ))
           ) : data.priceChanges ? (
             <div
               className={`${
@@ -180,7 +185,11 @@ const PoolCard = ({
               <IndexLogo tokens={data.tokens} />
             ) : (
               <TokenLogo
-                src={getTokenLogoURL(data.earningToken.address, data.earningToken.chainId, data.earningToken.logo)}
+                src={
+                  !data.isRevenue
+                    ? getTokenLogoURL(data.earningToken.address, data.chainId, data.earningToken.logo)
+                    : getTokenLogoURL(data.stakingToken.address, data.chainId, data.stakingToken.logo)
+                }
                 classNames="mr-3 h-7 w-7"
               />
             )}
