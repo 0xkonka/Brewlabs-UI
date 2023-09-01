@@ -90,11 +90,11 @@ export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
   );
 };
 
-export const useIndexContract = (chainId: ChainId, contractAddress: string, category: number = 0) => {
+export const useIndexContract = (chainId: ChainId, contractAddress: string, version: string = "V1") => {
   const { data: signer } = useSigner();
   return useMemo(
-    () => getIndexContract(chainId, contractAddress, category, signer ?? undefined),
-    [chainId, contractAddress, category, signer]
+    () => getIndexContract(chainId, contractAddress, version, signer ?? undefined),
+    [chainId, contractAddress, version, signer]
   );
 };
 

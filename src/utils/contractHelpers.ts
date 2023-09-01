@@ -182,10 +182,13 @@ export const getIndexFactoryContract = (chainId: ChainId, signer?: ethers.Signer
 export const getIndexContract = (
   chainId: ChainId,
   address: string,
-  category: number,
+  version: string,
   signer?: ethers.Signer | ethers.providers.Provider
 ) => {
-  if(category > 0)  return getContract(chainId, address, IndexImplV2Abi, signer);
+  if (version > "V1") {
+    return getContract(chainId, address, IndexImplV2Abi, signer);
+  }
+
   return getContract(chainId, address, IndexImplAbi, signer);
 };
 
