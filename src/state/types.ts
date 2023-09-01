@@ -19,7 +19,7 @@ import {
   SerializedTransactionData,
   SerializedTreasuryData,
 } from "./home/type";
-import { SerializedWalletNFT } from "./wallet/type";
+import { SerializedWalletNFT, SerializedWalletToken } from "./wallet/type";
 import { SerializedPairData } from "./chart/type";
 
 export interface SerializedDeposit {
@@ -78,6 +78,7 @@ export interface HomeState {
   nftStakings: SerializedNFTStakingData;
   feeCollected: SerializedFeeCollectedData;
   treasuryValues: SerializedTreasuryData;
+  marketValues: Record<number, number[]>;
 }
 
 export interface ChartState {
@@ -85,7 +86,8 @@ export interface ChartState {
 }
 
 export interface WalletState {
-  nfts: Record<string, SerializedWalletNFT>;
+  nfts: Record<number, Record<string, SerializedWalletNFT[]>>;
+  tokens: Record<number, Record<string, SerializedWalletToken[]>>;
 }
 
 interface SerializedZapFarmUserData {
@@ -141,9 +143,10 @@ export interface State {
   user: UserState;
   swap: SwapState;
   transactions: TransactionState;
-  lpTokenPrices: LpTokenPricesState;
   home: HomeState;
   chart: ChartState;
+  wallet: WalletState;
+  prices: TokenPricesState;
 }
 
 //zap
@@ -159,6 +162,16 @@ export interface LpTokenPricesState {
   isInitialized: boolean;
   isLoading: boolean;
   data: LpTokenPrices[];
+}
+
+export interface TokenPricesState {
+  lpTokenPrices: LpTokenPricesState;
+  marketDatas: Record<number, Record<string, MarketDataState>>;
+}
+
+export interface MarketDataState {
+  usd: number;
+  usd_24h_change: number;
 }
 
 enum QuoteToken {

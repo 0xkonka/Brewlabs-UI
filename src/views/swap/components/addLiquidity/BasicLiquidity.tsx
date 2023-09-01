@@ -23,12 +23,13 @@ import { wrappedCurrency } from "utils/wrappedCurrency";
 import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { CurrencyLogo } from "@components/logo";
-import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
 import useTotalSupply from "@hooks/useTotalSupply";
 import { getChainLogo } from "utils/functions";
 import { BurnSVG, InfoSVG, LockFillSVG, PoolFeeSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
 import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import WarningModal from "@components/warningModal";
+import { defaultMarketData } from "state/prices/types";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -200,6 +201,7 @@ export default function BasicLiquidity() {
 
   const tokenMarketData = useTokenMarketChart(chainId);
   const { usd: baseTokenPrice } = tokenMarketData[baseToken?.wrapped.address.toLowerCase()] || defaultMarketData;
+
   const quoteTotalSupply = useTotalSupply(quoteToken as Token);
   const [marketcap, poolTokenPrice] = useMemo(() => {
     if (

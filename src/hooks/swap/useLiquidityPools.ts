@@ -9,8 +9,9 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenBalancesWithLoadingIndicator } from "state/wallet/hooks";
 import { usePendingRewards } from "./usePendingRewards";
 import { rewardInUSD } from "views/swap/components/SwapRewards";
-import useTokenMarketChart, { defaultMarketData } from "@hooks/useTokenMarketChart";
 import { useTokens } from "@hooks/Tokens";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { defaultMarketData } from "state/prices/types";
 
 type FeeDistribution = {
   lpFee: number;

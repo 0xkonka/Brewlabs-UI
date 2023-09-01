@@ -47,7 +47,7 @@ const UnstakeIndexOwnershipNFT = ({
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const [selIndexId, setSelectedIndexId] = useState(0);
-  const { onUnstakeDeployerNft } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
+  const { onUnstakeDeployerNft } = useIndexImpl(data.pid, data.address, data.version, data.performanceFee);
 
   let allPools = indexes.filter(
     (_index) =>
@@ -82,7 +82,7 @@ const UnstakeIndexOwnershipNFT = ({
     setSelectedIndexId(indexId);
     setPending(true);
     try {
-      const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, selectedIndex.category, signer);
+      const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, selectedIndex.version, signer);
       const gasPrice = await getNetworkGasPrice(signer, chainId);
 
       let gasLimit = await indexContract.estimateGas.unstakeDeployerNft({ value: selectedIndex.performanceFee ?? "0" });

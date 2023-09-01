@@ -12,7 +12,7 @@ import Modal from "@components/Modal";
 import SettingModal from "views/swap/components/modal/SettingModal";
 import { SwapContext } from "contexts/SwapContext";
 import { useUserSlippageTolerance } from "state/user/hooks";
-import { Bars } from "react-loader-spinner";
+import { Bars, Oval } from "react-loader-spinner";
 import { fetchPairsAsync } from "state/chart";
 import { useDispatch } from "react-redux";
 import { usePairInfoByParams } from "state/chart/hooks";
@@ -114,14 +114,13 @@ export default function Chart({ chain, address }) {
           </div>
         ) : (
           <div className="flex h-screen w-full items-center justify-center">
-            <Bars
-              height="80"
-              width="80"
-              color="#3F3F46"
-              ariaLabel="bars-loading"
-              wrapperStyle={{}}
-              wrapperClass=""
-              visible={true}
+            <Oval
+              width={80}
+              height={80}
+              color={"#3F3F46"}
+              secondaryColor="black"
+              strokeWidth={4}
+              strokeWidthSecondary={4}
             />
           </div>
         )}

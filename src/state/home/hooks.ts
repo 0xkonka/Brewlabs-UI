@@ -7,6 +7,7 @@ import { HomeState, State } from "../types";
 import { SerializedTransactionData } from "./type";
 import {
   fetchFeeCollectedDataAsync,
+  fetchMarketInfoAsync,
   fetchNFTStakingDataAsync,
   fetchTransactionDataAsync,
   fetchTreasuryValueAsync,
@@ -23,6 +24,13 @@ export const useFetchHomeData = () => {
   }, [dispatch]);
 };
 
+export const useFetchMarketValues = (period) => {
+  const dispatch = useAppDispatch();
+  useSlowRefreshEffect(() => {
+    dispatch(fetchMarketInfoAsync(period));
+  }, [dispatch, period]);
+};
+
 export const useHomeTransaction = (): { transactions: SerializedTransactionData } => {
   const { transactions } = useSelector((state: State) => ({
     transactions: state.home.transactions,
@@ -31,3 +39,5 @@ export const useHomeTransaction = (): { transactions: SerializedTransactionData 
 };
 
 export const useAllHomeData = () => useSelector((state: State) => state.home);
+
+export const useMarketValues = (period) => useSelector((state: State) => state.home.marketValues[period] ?? []);

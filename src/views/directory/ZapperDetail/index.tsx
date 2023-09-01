@@ -25,7 +25,7 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
-import { useLpTokenPrices } from "state/lpPrices/hooks";
+import { useLpTokenPrices } from "state/prices/hooks";
 import { useAppId, useFarmLpAprs } from "state/zap/hooks";
 import {
   fetchApeFarmUserDataAsync,

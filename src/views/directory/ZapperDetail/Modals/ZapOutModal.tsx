@@ -25,7 +25,7 @@ import { usePerformanceFee } from "../hooks/useStakeFarms";
 import { useAccount } from "wagmi";
 import { useAppDispatch } from "state";
 import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useLpTokenPrices } from "state/lpPrices/hooks";
+import { useLpTokenPrices } from "state/prices/hooks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { parseUnits } from "ethers/lib/utils.js";
 

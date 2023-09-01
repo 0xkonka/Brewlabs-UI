@@ -8,8 +8,8 @@ import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
 import { Oval } from "react-loader-spinner";
 import { useCallback, useEffect, useRef } from "react";
-import useTokenMarketChart from "@hooks/useTokenMarketChart";
 import { WNATIVE } from "@brewlabs/sdk";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 
 TimeAgo.addDefaultLocale(en);
 

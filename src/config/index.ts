@@ -139,6 +139,13 @@ export const UNMARSHAL_CHAIN_NAME = {
   137: "matic",
 };
 
+export const COVALENT_CHAIN_NAME = {
+  [ChainId.ETHEREUM]: "eth-mainnet",
+  [ChainId.BSC_MAINNET]: "bsc-mainnet",
+  [ChainId.POLYGON]: "matic-mainnet",
+  [ChainId.ARBITRUM]: "arbitrum-aminnet",
+};
+
 export const DEX_GURU_CHAIN_NAME = {
   1: "eth",
   56: "bsc",

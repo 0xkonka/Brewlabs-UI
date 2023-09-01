@@ -103,7 +103,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
   const isStakable = userData?.deployerNftItem?.tokenId;
 
   const factory = useIndexFactory(chainId);
-  const { onMintNft } = useIndexImpl(data.pid, data.address, data.category, data.performanceFee);
+  const { onMintNft } = useIndexImpl(data.pid, data.address, data.version, data.performanceFee);
 
   useEffect(() => {
     const fetchFeeHistoriesAsync = async () => {

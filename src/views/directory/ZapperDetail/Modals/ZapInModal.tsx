@@ -22,7 +22,7 @@ import {
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
 import BigNumber from "bignumber.js";
-import { useLpTokenPrices } from "state/lpPrices/hooks";
+import { useLpTokenPrices } from "state/prices/hooks";
 import { useBananaPrice, useFarmLpAprs, useLpTokenPrice } from "state/zap/hooks";
 import { tryParseAmount } from "state/swap/hooks";
 import { useTranslation } from "contexts/localization";

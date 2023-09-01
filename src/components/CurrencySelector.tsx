@@ -11,7 +11,6 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
-import useTokenMarketChart, { defaultMarketData } from "hooks/useTokenMarketChart";
 import useWalletTokens from "hooks/useWalletTokens";
 import { useGlobalState } from "state";
 import { Field } from "state/swap/actions";
@@ -28,6 +27,8 @@ import UserDashboard from "components/dashboard/UserDashboard";
 import NavButton from "./dashboard/NavButton";
 import WarningModal from "./warningModal";
 import DropDown from "./dashboard/TokenList/Dropdown";
+import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { defaultMarketData } from "state/prices/types";
 
 interface CurrencySelectorProps {
   inputType: "input" | "output";

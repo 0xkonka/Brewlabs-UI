@@ -787,11 +787,6 @@
         "internalType": "uint256[]",
         "name": "_percents",
         "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_gasPrice",
-        "type": "uint256"
       }
     ],
     "name": "precomputeZapIn",
@@ -833,11 +828,6 @@
         "internalType": "address",
         "name": "_token",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_gasPrice",
-        "type": "uint256"
       }
     ],
     "name": "precomputeZapOut",

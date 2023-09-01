@@ -9,6 +9,9 @@ import styled from "styled-components";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
 import { useGlobalState } from "state";
+import { useFetchNFTBalance, useUserNFTData } from "state/wallet/hooks";
+import { ChainId } from "@brewlabs/sdk";
+import { useAccount } from "wagmi";
 
 const responsive = {
   1: {
@@ -41,20 +44,35 @@ const NFTList = () => {
   const carouselRef = useRef();
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [nftCount, setNFTCount] = useState(1);
-  const { nfts, selectedDeployer }: any = useContext(DashboardContext);
+  const [nftList, setNFTList] = useState([]);
+
+  const { selectedDeployer }: any = useContext(DashboardContext);
   const { changeAvatar }: any = useContext(UserContext);
+
+  const { address: account } = useAccount();
+  // const account = "0x330518cc95c92881bCaC1526185a514283A5584D";
+  useFetchNFTBalance(account, [ChainId.ETHEREUM, ChainId.BSC_MAINNET]);
+
+  const ethNFTs = useUserNFTData(ChainId.ETHEREUM, account);
+  const bscNFTs = useUserNFTData(ChainId.BSC_MAINNET, account);
+
+  const strigifiedNFTs = JSON.stringify([...ethNFTs, ...bscNFTs]);
 
   useEffect(() => {
     const _colCount = window.innerWidth >= 590 ? 3 : window.innerWidth >= 415 ? 2 : 1;
     setNFTCount(Math.max(1, Math.floor((window.innerHeight - 400) / 227) * _colCount));
   }, []);
 
-  let nftList = [];
-  for (let i = 0; i < Math.ceil(nfts.length / nftCount); i++) {
-    let temp = [];
-    for (let j = i * nftCount; j < Math.min(i * nftCount + nftCount, nfts.length); j++) temp.push(nfts[j]);
-    nftList.push(temp);
-  }
+  useEffect(() => {
+    let nftList = [];
+    const nfts = [...ethNFTs, ...bscNFTs];
+    for (let i = 0; i < Math.ceil(nfts.length / nftCount); i++) {
+      let temp = [];
+      for (let j = i * nftCount; j < Math.min(i * nftCount + nftCount, nfts.length); j++) temp.push(nfts[j]);
+      nftList.push(temp);
+    }
+    setNFTList(nftList);
+  }, [nftCount, strigifiedNFTs]);
 
   const CustomDot = ({ onClick, ...rest }: any) => {
     const { active } = rest;
