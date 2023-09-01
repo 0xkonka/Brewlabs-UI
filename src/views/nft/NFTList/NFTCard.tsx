@@ -57,7 +57,6 @@ const NFTCard = ({ nft }: { nft: any }) => {
         +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
         (pool?.totalStaked ?? 0))
     : 0;
-  useFetchMarketData(1);
   const tokenMarketData = useTokenMarketChart(1);
 
   const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]

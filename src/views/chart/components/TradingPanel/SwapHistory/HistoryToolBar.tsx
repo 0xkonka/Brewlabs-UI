@@ -61,7 +61,7 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
             setValue={setAddress}
             className="h-full w-full !rounded-none font-brand !shadow-none"
           />
-          {!criteria ? (
+          {!address ? (
             <div
               className={`text-ellpsis absolute left-0 top-0 flex h-full w-full items-center overflow-hidden whitespace-nowrap p-[0px_14px] font-brand !text-sm text-white`}
             >

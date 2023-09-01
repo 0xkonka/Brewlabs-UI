@@ -288,7 +288,6 @@ const CurrencySelector = ({
     }
   }, [activeTab, chainId, itemData, ethBalance, walletTokens]);
 
-  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
 
   const totalPages = useMemo(() => Math.ceil(listingTokens.length / rowsPerPage), [listingTokens, rowsPerPage]);

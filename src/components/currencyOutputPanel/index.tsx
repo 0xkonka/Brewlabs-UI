@@ -45,7 +45,6 @@ const CurrencyOutputPanel = ({
 }: CurrencyOutputPanelProps) => {
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
-  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
   const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
   const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);

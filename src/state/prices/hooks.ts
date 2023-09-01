@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { useAppDispatch } from "state";
 import { LpTokenPricesState, State } from "state/types";
 import { fetchLpTokenPrices, fetchMarketDataAsync } from ".";
+import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
+import { ChainId } from "@brewlabs/sdk";
 
 export const useFetchLpTokenPrices = () => {
   const dispatch = useAppDispatch();
@@ -15,12 +17,15 @@ export const useFetchLpTokenPrices = () => {
   }, [dispatch, farms, chainId]);
 };
 
-export const useFetchMarketData = (chainId) => {
+export const useFetchMarketData = () => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(fetchMarketDataAsync(chainId));
-  }, [dispatch, chainId]);
+  useSlowRefreshEffect(() => {
+    dispatch(fetchMarketDataAsync(ChainId.ETHEREUM));
+    dispatch(fetchMarketDataAsync(ChainId.BSC_MAINNET));
+    dispatch(fetchMarketDataAsync(ChainId.ARBITRUM));
+    dispatch(fetchMarketDataAsync(ChainId.POLYGON));
+  }, [dispatch]);
 };
 
 export const useLpTokenPrices = () => {

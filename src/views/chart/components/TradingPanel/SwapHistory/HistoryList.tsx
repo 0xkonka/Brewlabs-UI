@@ -17,7 +17,6 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 export default function HistoryList({ histories, currency, loading, offset, setOffset }) {
-  useFetchMarketData(currency.chainId);
   const tokenMarketData = useTokenMarketChart(currency.chainId);
 
   const wrappedHistories = histories.map((history) => {

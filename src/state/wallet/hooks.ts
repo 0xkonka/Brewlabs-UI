@@ -167,7 +167,6 @@ export const useFetchNFTBalance = (account, chainIds: ChainId[]) => {
 
 export const useFetchTokenBalance = (account, chainId: ChainId, signer) => {
   const dispatch = useAppDispatch();
-  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
 
   const stringifiedData = JSON.stringify({
