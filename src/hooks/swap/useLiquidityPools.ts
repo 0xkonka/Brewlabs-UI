@@ -76,7 +76,6 @@ export const useOwnedLiquidityPools = () => {
 
   const lpTokens = useMemo(() => pairs.map((pair) => new Token(chainId, pair.id, 18)), [chainId, pairs]);
   const [lpBalances] = useTokenBalancesWithLoadingIndicator(account, lpTokens);
-  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
 
   const ownedPairs = useMemo(() => {

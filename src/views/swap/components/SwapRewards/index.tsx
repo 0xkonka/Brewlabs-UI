@@ -54,7 +54,6 @@ const SwapRewards = () => {
   const { swapFeeData }: any = useContext(SwapContext);
   const { eligiblePairs, ownedPairs, lpBalances, collectiblePairs, rewards, pairTokens } = swapFeeData;
 
-  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
   const pairs = useLiquidityPools();
 

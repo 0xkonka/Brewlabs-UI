@@ -28,7 +28,6 @@ const NFTStakingInfo = () => {
       1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
     }
   );
-  useFetchMarketData(1);
   const tokenMarketData = useTokenMarketChart(1);
 
   const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]

@@ -199,7 +199,6 @@ export default function BasicLiquidity() {
       ? [currencies[Field.CURRENCY_B], currencies[Field.CURRENCY_A]]
       : [currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]];
 
-  useFetchMarketData(chainId);
   const tokenMarketData = useTokenMarketChart(chainId);
   const { usd: baseTokenPrice } = tokenMarketData[baseToken?.wrapped.address.toLowerCase()] || defaultMarketData;
 

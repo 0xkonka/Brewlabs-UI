@@ -75,6 +75,8 @@ function GlobalHooks() {
   useFetchPublicNftData();
   useFetchNftUserData();
 
+  useFetchMarketData();
+
   return null;
 }
 
