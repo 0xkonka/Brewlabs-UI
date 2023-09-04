@@ -36,11 +36,11 @@ import { Category } from "config/constants/types";
 import { useGlobalState } from "state";
 import { DashboardContext } from "contexts/DashboardContext";
 import { UserContext } from "contexts/UserContext";
-import useWalletNFTs from "@hooks/useWalletNFTs";
 
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { WNATIVE } from "@brewlabs/sdk";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import { BASE_URL } from "config";
+import { useFetchNFTBalance, useUserNFTData } from "state/wallet/hooks";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([[0], [0], [0]]);
@@ -63,9 +63,15 @@ const Profile = ({ deployer }: { deployer: string }) => {
   const { userData }: any = useContext(UserContext);
   const { indexes, userDataLoaded } = useIndexes();
 
-  const nfts = useWalletNFTs(deployer);
+  useFetchNFTBalance(deployer, [ChainId.ETHEREUM, ChainId.BSC_MAINNET]);
+
+  const ethNFTs = useUserNFTData(ChainId.ETHEREUM, deployer);
+  const bscNFTs = useUserNFTData(ChainId.BSC_MAINNET, deployer);
+
   const isKYC =
-    nfts.filter((data) => data.address.toLowerCase() === "0x2B09d47D550061f995A3b5C6F0Fd58005215D7c8").length > 0;
+    [...ethNFTs, ...bscNFTs].filter(
+      (data) => data.address.toLowerCase() === "0x2B09d47D550061f995A3b5C6F0Fd58005215D7c8"
+    ).length > 0;
 
   const deployerData = userData.visitedIndexes
     ? userData.visitedIndexes.find((data: any) => data.address === deployer.toLowerCase())

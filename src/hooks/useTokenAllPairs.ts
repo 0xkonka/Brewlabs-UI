@@ -93,7 +93,10 @@ export async function fetchTradingHistories(query, chainId) {
           : query.type === "sell"
           ? query.address !== history.fromAddress
           : true
-      );
+      )
+      .map((tx) => {
+        return { ...tx, sender: query.account };
+      });
     return [...erc20txs, ...swapTxs];
   }
   return histories;
