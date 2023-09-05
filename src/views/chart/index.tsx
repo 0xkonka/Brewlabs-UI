@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import TokenInfo from "./components/TokenInfo";
 import { useContext, useEffect, useState } from "react";
 import TradingPanel from "./components/TradingPanel";
-import { useTokenMarketInfos } from "@hooks/useTokenInfo";
+import { getBaseInfos, useTokenMarketInfos } from "@hooks/useTokenInfo";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { Field } from "state/swap/actions";
 import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
@@ -26,13 +26,27 @@ export default function Chart({ chain, address }) {
     chain,
   });
 
-  const selectedCurrency = pairs[0];
   const [showReverse, setShowReverse] = useState(true);
+  const [selectedCurrency, setSelectedCurrency] = useState(null);
 
   const { onCurrencySelection } = useSwapActionHandlers();
   const dispatch: any = useDispatch();
 
   const stringifiedCurrency = JSON.stringify(selectedCurrency);
+
+  const stringifiedPairs = JSON.stringify(pairs);
+
+  useEffect(() => {
+    if (!pairs[0]) return;
+    setSelectedCurrency(pairs[0]);
+    const currency = pairs[0];
+    Promise.all([
+      getBaseInfos(currency.tokenAddresses[0], currency.chainId),
+      getBaseInfos(currency.tokenAddresses[1], currency.chainId),
+    ])
+      .then((result) => setSelectedCurrency({ ...pairs[0], decimals: [result[0].decimals, result[1].decimals] }))
+      .catch((e) => console.log(e));
+  }, [stringifiedPairs]);
 
   function setTokens() {
     let token0: any;

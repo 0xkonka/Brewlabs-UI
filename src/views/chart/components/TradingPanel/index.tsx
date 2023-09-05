@@ -57,19 +57,12 @@ export default function TradingPanel({ currency, marketInfos, showReverse }) {
       });
   }, [stringifiedCurrency]);
 
-  const [decimals, setDecimals] = useState([18, 18]);
   const [balances, setBalances] = useState({});
   const [price, setPrice] = useState(0);
   const [lpPrice, setLPPrice] = useState(0);
 
   useEffect(() => {
     if (!currency) return;
-    Promise.all([
-      getBaseInfos(currency.tokenAddresses[0], currency.chainId),
-      getBaseInfos(currency.tokenAddresses[1], currency.chainId),
-    ])
-      .then((result) => setDecimals([result[0].decimals, result[1].decimals]))
-      .catch((e) => console.log(e));
 
     Promise.all([
       fetchDexGuruPrice(currency.chainId, currency.tokenAddresses[0]),
@@ -84,21 +77,20 @@ export default function TradingPanel({ currency, marketInfos, showReverse }) {
 
   const { address: account } = useAccount();
 
-  const stringifiedDecimals = JSON.stringify(decimals);
   useEffect(() => {
-    if (!currency) return;
+    if (!currency || !currency.decimals) return;
     getBalances(
       {
         [currency.chainId]: [
-          { address: currency.tokenAddresses[0], decimals: decimals[0] },
-          { address: currency.address, decimals: decimals[1] },
+          { address: currency.tokenAddresses[0], decimals: currency.decimals[0] },
+          { address: currency.address, decimals: 18 },
         ],
       },
       { [currency.chainId]: [account, account] }
     )
       .then((result) => setBalances(result.balances))
       .catch((e) => console.log(e));
-  }, [stringifiedCurrency, stringifiedDecimals, account]);
+  }, [stringifiedCurrency, account]);
 
   const w2xl = useMediaQuery({ query: "(min-width: 1536px)" });
 
