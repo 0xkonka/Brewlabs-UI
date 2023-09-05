@@ -3,11 +3,19 @@ import { getExplorerLink } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
 import useENSName from "@hooks/ENS/useENSName";
 import { isAddress } from "utils";
+import { useRef } from "react";
 
-export default function HistoryCard({ list, i }) {
+export default function HistoryCard({ list, i, setCriteria, setShowType }) {
   const { ENSName } = useENSName(isAddress(list.wallet));
+  const makerRef: any = useRef();
   return (
-    <a href={getExplorerLink(list.chainId, "transaction", list.txHash)} target="_blank">
+    <a
+      onClick={(e) => {
+        if (!makerRef.current.contains(e.target) && window) {
+          window.open(getExplorerLink(list.chainId, "transaction", list.txHash), "_blank");
+        }
+      }}
+    >
       <div
         className={`flex justify-between ${
           i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
@@ -32,7 +40,16 @@ export default function HistoryCard({ list, i }) {
           <div className="w-[70px] text-white">
             <StyledPrice price={list.price} itemClassName="!text-[8px]" />
           </div>
-          <div className="w-[90px]">{ENSName ?? getEllipsis(list.wallet, 5, 4)}</div>
+          <div
+            className="w-[90px]"
+            onClick={() => {
+              setCriteria(list.wallet);
+              setShowType(6);
+            }}
+            ref={makerRef}
+          >
+            {ENSName ?? getEllipsis(list.wallet, 5, 4)}
+          </div>
         </div>
         <div className="flex">
           <div className="w-20">{list.amount}</div>
