@@ -17,7 +17,7 @@ TimeAgo.addDefaultLocale(en);
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
 
-export default function HistoryList({ histories, currency, loading, offset, setOffset }) {
+export default function HistoryList({ histories, currency, loading, offset, setOffset, setCriteria, setShowType }) {
   const tokenMarketData = useTokenMarketChart(currency.chainId);
 
   const wrappedHistories = histories.map((history) => {
@@ -85,7 +85,7 @@ export default function HistoryList({ histories, currency, loading, offset, setO
         ref={node}
       >
         {wrappedHistories.map((list, i) => {
-          return <HistoryCard key={i} list={list} i={i} />;
+          return <HistoryCard key={i} list={list} i={i} setCriteria={setCriteria} setShowType={setShowType} />;
         })}
 
         {loading ? (

@@ -24,8 +24,8 @@ export default function UserInfo({ currency, active, account }) {
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
   const name = useENSName(account);
-  const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0 });
-  const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0 });
+  const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
+  const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [isFade, setIsFade] = useState(false);
   const [show, setShow] = useState(false);
   const [histories, setHistories] = useState([]);
@@ -130,18 +130,20 @@ export default function UserInfo({ currency, active, account }) {
 
   const holdingTime = totalHistories.length ? totalHistories[totalHistories.length - 1].timestamp : 0;
   useEffect(() => {
-    let _buyInfo = { usd: 0, amount: 0, txns: 0 },
-      _sellInfo = { usd: 0, amount: 0, txns: 0 };
+    let _buyInfo = { usd: 0, amount: 0, txns: 0, price: 0 },
+      _sellInfo = { usd: 0, amount: 0, txns: 0, price: 0 };
     totalHistories.map((history) => {
       let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
       index = index === -1 ? 0 : index;
       if (history.fromAddress !== currency.tokenAddresses[0].toLowerCase()) {
         _buyInfo.txns++;
         _buyInfo.usd += history.amountStable;
+        _buyInfo.price += history.pricesStable[index];
         _buyInfo.amount += history.amounts[index];
       } else {
         _sellInfo.txns++;
         _sellInfo.usd += history.amountStable;
+        _sellInfo.price += history.pricesStable[index];
         _sellInfo.amount += history.amounts[index];
       }
     });
@@ -217,7 +219,7 @@ export default function UserInfo({ currency, active, account }) {
               {numberWithCommas(buyInfo.amount.toFixed(2))} {currency.symbols[0]}
             </div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
-              {numberWithCommas((buyInfo.usd / buyInfo.txns).toFixed(3))} Entry average
+              {numberWithCommas((buyInfo.txns ? buyInfo.price / buyInfo.txns : 0).toFixed(3))} Entry average
             </div>
             <div className="text-[#FFFFFF80]">{buyInfo.txns} TX TOTAL</div>
           </div>
@@ -228,7 +230,7 @@ export default function UserInfo({ currency, active, account }) {
               {numberWithCommas(sellInfo.amount.toFixed(2))} {currency.symbols[0]}
             </div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
-              {numberWithCommas((sellInfo.txns ? sellInfo.usd / sellInfo.txns : 0).toFixed(3))} Entry average
+              {numberWithCommas((sellInfo.txns ? sellInfo.price / sellInfo.txns : 0).toFixed(3))} Entry average
             </div>
             <div className="text-[#FFFFFF80]">{numberWithCommas(sellInfo.txns)} TX TOTAL</div>
           </div>
