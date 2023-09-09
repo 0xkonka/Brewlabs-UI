@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useUserSlippageTolerance } from "state/user/hooks";
 
 import { Tooltip as ReactTooltip } from "react-tooltip";
@@ -30,6 +30,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
 
   // txn values
   const [, setUserSlippageTolerance] = useUserSlippageTolerance();
+  const [swapType, setSwapType] = useState(0);
 
   const parseCustomSlippage = (value: string) => {
     setSlippageInput(value);
@@ -57,13 +58,13 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
       </div>
       <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
-      {!disableChainSelect && <ChainSelect id="chain-select" />}
-
       <div className="flex items-center justify-between">
         <Security size="lg" />
         <SlippageText className="!text-xs" />
       </div>
 
+      {!disableChainSelect && <ChainSelect id="chain-select" />}
+      <div className="flex"></div>
       {swapTab === 0 ? (
         <SwapPanel />
       ) : swapTab === 1 ? (
