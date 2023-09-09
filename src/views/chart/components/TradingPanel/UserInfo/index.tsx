@@ -11,6 +11,7 @@ import { isAddress } from "utils";
 import { fetchTradingHistories } from "@hooks/useTokenAllPairs";
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
+import { getBalances } from "@hooks/useTokenMultiChainBalance";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -23,13 +24,14 @@ export default function UserInfo({ currency, active, account }) {
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
   const name = useENSName(account);
-  const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0 });
-  const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0 });
+  const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
+  const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [isFade, setIsFade] = useState(false);
   const [show, setShow] = useState(false);
   const [histories, setHistories] = useState([]);
   const [totalHistories, setTotalHistories] = useState([]);
   const [recentHistories, setRecentHistories] = useState([]);
+  const [balance, setBalance] = useState(0);
 
   const getQuery = () => {
     const query: any = {
@@ -50,12 +52,28 @@ export default function UserInfo({ currency, active, account }) {
     return query;
   };
 
+  const stringifiedCurrency = JSON.stringify(currency);
+  useEffect(() => {
+    if (!currency.decimals || !account || !active) return;
+    getBalances(
+      { [currency.chainId]: [{ address: currency.tokenAddresses[0], decimals: currency.decimals[0] }] },
+      {
+        [currency.chainId]: [account],
+      }
+    )
+      .then((result) => {
+        setBalance(result.balances[currency.chainId][0].balance);
+      })
+      .catch((e) => console.log(e));
+  }, [stringifiedCurrency, account, active]);
+
   useEffect(() => {
     const query: any = getQuery();
     if (!isAddress(query.address)) {
       return;
     }
     setHistories([]);
+    setTotalHistories([]);
     wrappedQuery = JSON.stringify(query);
     fetchTradingHistories(query, currency.chainId)
       .then((result) => {
@@ -66,10 +84,6 @@ export default function UserInfo({ currency, active, account }) {
       .catch((e) => {
         console.log(e);
       });
-  }, [currency.address, account]);
-
-  useEffect(() => {
-    setTotalHistories([]);
   }, [currency.address, account]);
 
   useSecondRefreshEffect(() => {
@@ -116,18 +130,20 @@ export default function UserInfo({ currency, active, account }) {
 
   const holdingTime = totalHistories.length ? totalHistories[totalHistories.length - 1].timestamp : 0;
   useEffect(() => {
-    let _buyInfo = { usd: 0, amount: 0, txns: 0 },
-      _sellInfo = { usd: 0, amount: 0, txns: 0 };
+    let _buyInfo = { usd: 0, amount: 0, txns: 0, price: 0 },
+      _sellInfo = { usd: 0, amount: 0, txns: 0, price: 0 };
     totalHistories.map((history) => {
       let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
       index = index === -1 ? 0 : index;
       if (history.fromAddress !== currency.tokenAddresses[0].toLowerCase()) {
         _buyInfo.txns++;
         _buyInfo.usd += history.amountStable;
+        _buyInfo.price += history.pricesStable[index];
         _buyInfo.amount += history.amounts[index];
       } else {
         _sellInfo.txns++;
         _sellInfo.usd += history.amountStable;
+        _sellInfo.price += history.pricesStable[index];
         _sellInfo.amount += history.amounts[index];
       }
     });
@@ -154,7 +170,7 @@ export default function UserInfo({ currency, active, account }) {
 
   return (
     <div
-      className={`transtion-all mt-2 h-fit duration-300 lg:h-[120px] ${isFade ? "opacity-0" : "opacity-100"} ${
+      className={`transtion-all mt-2 h-fit duration-300 lg:h-[130px] ${isFade ? "opacity-0" : "opacity-100"} ${
         show ? "flex" : "hidden"
       }`}
     >
@@ -187,23 +203,36 @@ export default function UserInfo({ currency, active, account }) {
             <span className="text-[#32FFB5]">${numberWithCommas((buyInfo.usd + sellInfo.usd).toFixed(2))} USD</span>{" "}
             {currency.symbols[0]} VOLUME
           </div>
+          <div className="text-[11px] text-[#FFFFFF80]">
+            <span className="text-[#FFFFFFBF]">BALANCE</span>{" "}
+            <span className="text-[#FFFFFF80]">
+              {numberWithCommas(balance.toFixed(2))} {currency.symbols[0]} ~$
+              {numberWithCommas((currency.price * balance).toFixed(2))} USD
+            </span>
+          </div>
         </div>
         <div className="mt-4 flex min-w-[50%] flex-col justify-between sm:flex-row lg:mt-0">
-          <div className="font-bold">
-            <div className="font-normal text-white">Bought</div>
-            <div className="text-[#32FFB5]">${numberWithCommas(buyInfo.usd.toFixed(2))}</div>
+          <div className="text-[11px] font-medium">
+            <div className="text-sm font-normal text-white">Bought</div>
+            <div className="text-sm font-bold text-[#32FFB5]">${numberWithCommas(buyInfo.usd.toFixed(2))}</div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
               {numberWithCommas(buyInfo.amount.toFixed(2))} {currency.symbols[0]}
             </div>
-            <div className="text-[11px] text-[#FFFFFF80]">{buyInfo.txns} TX TOTAL</div>
+            <div className="whitespace-nowrap text-[#FFFFFFBF]">
+              {numberWithCommas((buyInfo.txns ? buyInfo.price / buyInfo.txns : 0).toFixed(3))} Avg. Entry
+            </div>
+            <div className="text-[#FFFFFF80]">{buyInfo.txns} TX TOTAL</div>
           </div>
-          <div className="mx-0 my-2 font-bold sm:mx-4 sm:my-0">
-            <div className="font-normal text-white">Sold</div>
-            <div className="text-[#DC4545]">-${numberWithCommas(sellInfo.usd.toFixed(2))}</div>
+          <div className="mx-0 my-2 text-[11px] font-bold font-medium sm:mx-4 sm:my-0">
+            <div className="text-sm font-normal text-white">Sold</div>
+            <div className="text-sm font-bold text-[#DC4545]">-${numberWithCommas(sellInfo.usd.toFixed(2))}</div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
               {numberWithCommas(sellInfo.amount.toFixed(2))} {currency.symbols[0]}
             </div>
-            <div className="text-[11px] text-[#FFFFFF80]">{numberWithCommas(sellInfo.txns)} TX TOTAL</div>
+            <div className="whitespace-nowrap text-[#FFFFFFBF]">
+              {numberWithCommas((sellInfo.txns ? sellInfo.price / sellInfo.txns : 0).toFixed(3))} Avg. Entry
+            </div>
+            <div className="text-[#FFFFFF80]">{numberWithCommas(sellInfo.txns)} TX TOTAL</div>
           </div>
           <div className="font-bold">
             <div className="whitespace-nowrap font-normal text-white">Realised P/L</div>

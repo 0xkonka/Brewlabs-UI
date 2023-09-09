@@ -5,19 +5,14 @@ import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
-import { NFTSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 import CommunityList from "./CommunityList";
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import CommunityModal from "./CommunityModal";
 import { useState } from "react";
-import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
-import { BREWNFT_RARITIES } from "config/constants";
-import NFTRarityText from "@components/NFTRarityText";
+import NFTComponent from "@components/NFTComponent";
 
 const Community = () => {
   const [communityOpen, setCommunityOpen] = useState(false);
-  const activeRarity = useActiveNFT();
   return (
     <PageWrapper>
       <CommunityModal open={communityOpen} setOpen={setCommunityOpen} />
@@ -50,10 +45,8 @@ const Community = () => {
                   </div>
                 </div>
                 <div className="ml-0 mt-6 flex w-full items-center justify-end sm:ml-6 sm:mt-0 sm:w-fit sm:justify-start">
-                  <div className={`mr-3 cursor-pointer transition hover:text-white `} id={"nftsvg"}>
-                    <NFTRarityText rarity={activeRarity} className="[&>svg]:!h-5 [&>svg]:!w-5">
-                      {NFTSVG}
-                    </NFTRarityText>
+                  <div className={`mr-3`}>
+                    <NFTComponent />
                   </div>
                   {/* <a href="https://t.me/MaverickBL" target="_blank"> */}
                   <StyledButton className="whitespace-nowrap p-[10px_12px]" onClick={() => setCommunityOpen(true)}>
@@ -63,15 +56,6 @@ const Community = () => {
                 </div>
               </div>
               <CommunityList />
-              <ReactTooltip
-                anchorId={"nftsvg"}
-                place="top"
-                content={
-                  BREWNFT_RARITIES[activeRarity]
-                    ? `${BREWNFT_RARITIES[activeRarity]} Brewlabs NFT Active`
-                    : "No Brewlabs NFTs"
-                }
-              />
             </Container>
           </div>
         </motion.div>

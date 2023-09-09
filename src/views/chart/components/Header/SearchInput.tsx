@@ -48,7 +48,7 @@ export const SearchInput = () => {
             />
             {!criteria ? (
               <div
-                className={`absolute left-0 top-0 flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap p-[0px_14px] font-brand !text-base text-[#FFFFFFBF]`}
+                className={`absolute left-0 top-0 flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap p-[0px_14px] font-brand !text-base text-white`}
               >
                 Search&nbsp;<span className="text-[#FFFFFF40]">contract, name, symbol...</span>
               </div>

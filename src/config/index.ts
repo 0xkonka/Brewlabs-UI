@@ -125,6 +125,13 @@ export const BANANA_PER_YEAR = BANANA_PER_BLOCK.times(BLOCKS_PER_YEAR);
 
 export const COVALENT_API_KEYS = ["cqt_rQYkrrFc34HqD4T4R7XvPM76gh6D", "cqt_rQ4tXTKbyY7qbvywfdQbctPFbjWC"];
 
+export const COVALENT_CHAIN_NAME = {
+  [ChainId.ETHEREUM]: "eth-mainnet",
+  [ChainId.BSC_MAINNET]: "bsc-mainnet",
+  [ChainId.POLYGON]: "matic-mainnet",
+  [ChainId.ARBITRUM]: "arbitrum-aminnet",
+};
+
 export const UNMARSHAL_API_KEYS = [
   "5yA1HYPCmf4xpXjZQMOAa5BJPnupBs45eLE3D7O1",
   "K82WDxM7Ej3y9u8VSmLYa8pdeqTVqziA2VGQaSRq",
@@ -137,13 +144,6 @@ export const UNMARSHAL_CHAIN_NAME = {
   1: "ethereum",
   56: "bsc",
   137: "matic",
-};
-
-export const COVALENT_CHAIN_NAME = {
-  [ChainId.ETHEREUM]: "eth-mainnet",
-  [ChainId.BSC_MAINNET]: "bsc-mainnet",
-  [ChainId.POLYGON]: "matic-mainnet",
-  [ChainId.ARBITRUM]: "arbitrum-aminnet",
 };
 
 export const DEX_GURU_CHAIN_NAME = {

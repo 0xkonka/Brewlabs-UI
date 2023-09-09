@@ -28,6 +28,7 @@ import StyledButton from "views/directory/StyledButton";
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
 import NFTRarityText from "@components/NFTRarityText";
+import { useActiveNFT } from "./hooks/useActiveNFT";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -79,10 +80,7 @@ const NFTActions = () => {
     setPending(false);
   };
 
-  const activeNFT = flaskNft.userData?.balances?.length;
-  const activeRarity: any = activeNFT
-    ? [...flaskNft.userData.balances].sort((a, b) => b.rarity - a.rarity)[0].rarity - 1
-    : -1;
+  const activeRarity = useActiveNFT();
 
   const isApproved = +flaskNft.userData?.allowances?.[0] >= +flaskNft.mintFee?.brews;
 
@@ -208,7 +206,7 @@ const NFTActions = () => {
                 ) : (
                   <div
                     className={`mb-4 flex h-[90px] items-center justify-center ${
-                      (i < 2 && isApproved) || (i === 2 && activeNFT) ? "text-primary" : "text-tailwind"
+                      (i < 2 && isApproved) || (i === 2 && activeRarity !== -1) ? "text-primary" : "text-tailwind"
                     } [&>*:first-child]:!h-20 [&>*:first-child]:!w-20`}
                   >
                     {data.icon}

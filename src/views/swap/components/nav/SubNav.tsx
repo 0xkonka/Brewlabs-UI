@@ -20,7 +20,7 @@ const SubNav = ({ openSettingModal }: Props) => {
   const [toggle, setToggle] = useState(false);
 
   return (
-    <div className="mb-8 flex">
+    <div className="mb-2 flex">
       <div className="tabs tabs-boxed mr-[48px] hidden sm:block">
         <button className={`tab px-3 ${swapTab === 0 ? "tab-active" : ""}`} onClick={() => setSwapTab(0)}>
           <span className="dark:text-primary">Brew</span>Swap

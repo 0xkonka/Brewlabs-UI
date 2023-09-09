@@ -154,6 +154,8 @@ export default function SwapHistory({ currency }) {
         loading={loading}
         offset={offset}
         setOffset={setOffset}
+        setCriteria={setCriteria}
+        setShowType={setShowType}
       />
     </div>
   );
