@@ -230,7 +230,7 @@ export default function UserInfo({ currency, active, account }) {
               {numberWithCommas(sellInfo.amount.toFixed(2))} {currency.symbols[0]}
             </div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
-              {numberWithCommas((sellInfo.txns ? sellInfo.price / sellInfo.txns : 0).toFixed(3))} Avg. Entry
+              {numberWithCommas((sellInfo.txns ? sellInfo.price / sellInfo.txns : 0).toFixed(3))} Avg. Exit
             </div>
             <div className="text-[#FFFFFF80]">{numberWithCommas(sellInfo.txns)} TX TOTAL</div>
           </div>
