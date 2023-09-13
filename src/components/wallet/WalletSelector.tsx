@@ -82,7 +82,7 @@ function WalletSelector({ onDismiss }: WalletSelectorProps) {
               onClick={() => {
                 const selectedConnector = connectors.find((c) => c.id === wallet.connectorId);
                 connect({ connector: selectedConnector });
-                if (isMobile && wallet.connectorId === ConnectorNames.WalletConnect) {
+                if ( wallet.connectorId === ConnectorNames.WalletConnect) {
                   checkWalletConnectModalIsOpen();
                 }
               }}
