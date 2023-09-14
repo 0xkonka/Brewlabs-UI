@@ -26,7 +26,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
+  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
