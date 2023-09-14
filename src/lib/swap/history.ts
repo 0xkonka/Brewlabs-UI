@@ -14,6 +14,8 @@ export const getSwapLogs = async (graphEndpoint: { [path: string]: string }, cal
 };
 
 export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: string, chainId: ChainId) => {
+  if (!graphEndpoint) return [];
+
   let logs: any[] = [];
   let page = 0;
   const first = pageSize;
@@ -38,7 +40,9 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
 
   const senders = await Promise.all(
     logs.map(async (log) => {
-      const { transaction: { id: transactionHash } } = log;
+      const {
+        transaction: { id: transactionHash },
+      } = log;
       const receipt = await waitForTransaction({ chainId, hash: transactionHash });
       return receipt.from;
     })
@@ -84,6 +88,8 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
 };
 
 export const getSwapLogsFromAggregator = async (graphEndpoint: string, caller: string) => {
+  if (!graphEndpoint) return [];
+
   let logs: any[] = [];
   let page = 0;
   const first = pageSize;

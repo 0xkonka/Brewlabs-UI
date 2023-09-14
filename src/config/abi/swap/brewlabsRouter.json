@@ -21,25 +21,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "prevMgr",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newMgr",
-        "type": "address"
-      }
-    ],
-    "name": "SetDiscountMgr",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "prevOwner",
         "type": "address"
       },
@@ -638,19 +619,6 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_discountMgr",
-        "type": "address"
-      }
-    ],
-    "name": "setNFTDiscountManager",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
