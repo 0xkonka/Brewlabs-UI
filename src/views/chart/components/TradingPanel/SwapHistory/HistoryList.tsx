@@ -54,6 +54,7 @@ export default function HistoryList({ histories, currency, loading, offset, setO
     } else {
     }
   }, [node, offset, loading]);
+
   useEffect(() => {
     if (node.current) {
       node.current.addEventListener("scroll", handleScroll);
@@ -81,11 +82,20 @@ export default function HistoryList({ histories, currency, loading, offset, setO
         </div>
       </div>
       <div
-        className="yellowScroll mt-2.5 hidden max-h-[400px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:block"
+        className="yellowScroll mt-2.5 max-h-[400px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll"
         ref={node}
       >
         {wrappedHistories.map((list, i) => {
-          return <HistoryCard key={i} list={list} i={i} setCriteria={setCriteria} setShowType={setShowType} />;
+          return (
+            <HistoryCard
+              key={i}
+              list={list}
+              i={i}
+              setCriteria={setCriteria}
+              setShowType={setShowType}
+              currency={currency}
+            />
+          );
         })}
 
         {loading ? (
@@ -102,71 +112,6 @@ export default function HistoryList({ histories, currency, loading, offset, setO
         ) : (
           ""
         )}
-      </div>
-      <div className="yellowScroll mt-2.5 block max-h-[500px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll lg:hidden">
-        {wrappedHistories.map((list, i) => {
-          return (
-            <a href={getExplorerLink(list.chainId, "transaction", list.txHash)} key={i} target="_blank">
-              <div
-                className={`mb-2 flex flex-col ${
-                  i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
-                } cursor-pointer rounded-[2px] border border-transparent p-[4px_12px] ${
-                  list.action === "Buy"
-                    ? "text-[#32FFB5] hover:border-[#32ffb473]"
-                    : "text-[#DC4545] hover:border-[#DC454573]"
-                }`}
-              >
-                <div className="flex flex-wrap justify-between">
-                  <div className="flex items-center text-white">
-                    <div className="flex items-center">
-                      <img
-                        src={getExplorerLogo(list.chainId)}
-                        alt={""}
-                        className="mr-1.5 h-4 w-4 rounded-full border border-white bg-white"
-                      />
-                      <div className="text-[#FFFFFF80]">{getEllipsis(list.txHash, 20, 0)}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="whitespace-nowrap">{list.time}</div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap justify-between">
-                  <div className="flex items-center text-white">
-                    <div>Price:</div>&nbsp;
-                    <div className="">
-                      <StyledPrice price={list.price} itemClassName="!text-[8px]" />
-                    </div>
-                  </div>
-                  <div className="flex items-center text-[#FFFFFF80]">
-                    <div>Ago:</div>&nbsp;
-                    <div className="whitespace-nowrap">{list.ago}</div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap justify-between">
-                  <div className="flex  items-center ">
-                    <div>{currency.symbols[0]}:</div>&nbsp;
-                    <div className="">{list.amount}</div>
-                  </div>
-                  <div className="flex items-center">
-                    <div>{getNativeSybmol(currency.chainId)}:</div>&nbsp;
-                    <div className="">{list.nativeAmount}</div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap justify-between">
-                  <div className="flex items-center">
-                    <div>Action:</div>&nbsp;
-                    <div className="">{list.action}</div>
-                  </div>
-                  <div className="flex items-center">
-                    <div>USD:</div>&nbsp;
-                    <div className="">${list.usdValue}</div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          );
-        })}
       </div>
     </div>
   );
