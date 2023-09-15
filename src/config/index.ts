@@ -128,8 +128,11 @@ export const COVALENT_API_KEYS = ["cqt_rQYkrrFc34HqD4T4R7XvPM76gh6D", "cqt_rQ4tX
 export const COVALENT_CHAIN_NAME = {
   [ChainId.ETHEREUM]: "eth-mainnet",
   [ChainId.BSC_MAINNET]: "bsc-mainnet",
+  [ChainId.BSC_TESTNET]: "bsc-testnet",
   [ChainId.POLYGON]: "matic-mainnet",
   [ChainId.ARBITRUM]: "arbitrum-aminnet",
+  [ChainId.FANTOM]: "fantom-mainnet",
+  [ChainId.AVALANCHE]: "avalanche-mainnet",
 };
 
 export const UNMARSHAL_API_KEYS = [

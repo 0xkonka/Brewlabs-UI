@@ -8,6 +8,7 @@ import { ChainId } from "@brewlabs/sdk";
 const pageSize = 1000;
 
 export const getSwapLogs = async (graphEndpoint: { [path: string]: string }, caller: string, chainId: ChainId) => {
+  if(!caller) return []
   const aggregatorSwapLogs = await getSwapLogsFromAggregator(graphEndpoint.aggregator, caller);
   const routerSwapLogs = await getSwapLogsFromRouter(graphEndpoint.router, caller, chainId);
   return routerSwapLogs.concat(aggregatorSwapLogs);
@@ -33,6 +34,7 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
       if (!data || data.logs.length < pageSize) break;
       page += 1;
     } catch (graphError) {
+      console.log(graphEndpoint)
       console.log({ graphError });
       break;
     }

@@ -338,7 +338,7 @@ const TokenList = ({
                       <div className={`h-3.5 w-3.5 ${fullOpen ? "block" : "hidden"}`}>
                         <TrashIcon
                           className={`h-full w-full cursor-pointer text-danger ${
-                            !data.name.includes("_Tracker") ? "" : "hidden"
+                            !data.name?.includes("_Tracker") ? "" : "hidden"
                           }`}
                           onClick={() => onArchive(data.address)}
                           id={"trash" + i}

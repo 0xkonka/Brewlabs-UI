@@ -1,16 +1,19 @@
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME } from "config";
-import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
-import { isAddress } from "utils";
-import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
-import multicall from "utils/multicall";
-import { erc20ABI, useSigner } from "wagmi";
+import { erc20ABI } from "wagmi";
+
+import { ERC20_ABI } from "config/abi/erc20";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
+
+import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME } from "config";
+import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
 import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrices";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
+import { isAddress } from "utils";
+import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
+import multicall from "utils/multicall";
 
 async function getNativeBalance(address: string, chainId: number) {
   let ethBalance = 0;
@@ -26,22 +29,60 @@ async function getTokenBaseBalances(account: string, chainId: number) {
   if (chainId === 56) {
     data = await axios.post(`${API_URL}/html/getTokenBalances`, { account, chainId });
     data = data.data;
-  } else if (chainId === 137 || chainId === 1) {
+  } else {
     const { data: response } = await axios.get(
-      `https://api.covalenthq.com/v1/eth-mainnet/address/${account}/balances_v2/?`,
+      `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/balances_v2/?`,
       { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
     );
     if (response.error) return [];
     const items = response.data.items;
-    data = items.map((item) => {
-      return {
-        address: item.contract_address,
-        balance: item.balance / Math.pow(10, item.contract_decimals),
-        decimals: item.contract_decimals,
-        name: item.contract_name,
-        symbol: item.contract_ticker_symbol,
-      };
-    });
+
+    data = items
+      .filter((i) => i.balance !== "0")
+      .map((item) => {
+        return {
+          address: item.contract_address,
+          balance: item.balance / Math.pow(10, item.contract_decimals),
+          decimals: item.contract_decimals,
+          name: item.contract_name,
+          symbol: item.contract_ticker_symbol,
+        };
+      });
+
+    // fetch missing symbol & decimals
+    const calls = [];
+    data
+      .filter((i) => !i.name)
+      .forEach((element) => {
+        calls.push(
+          {
+            name: "name",
+            address: element.address,
+          },
+          {
+            name: "symbol",
+            address: element.address,
+          },
+          {
+            name: "decimals",
+            address: element.address,
+          }
+        );
+      });
+    const result = await multicall(ERC20_ABI, calls, chainId);
+
+    data = [
+      ...data.filter((i) => i.name),
+      ...data
+        .filter((i) => !i.name)
+        .map((item, index) => ({
+          address: item.address,
+          balance: item.balance / Math.pow(10, result[3 * index + 2][0]),
+          decimals: result[3 * index + 2][0],
+          name: result[3 * index][0],
+          symbol: result[3 * index + 1][0],
+        })),
+    ];
   }
   if (chainId === ChainId.BSC_MAINNET) {
     const ethBalance = await getNativeBalance(account, chainId);
@@ -68,7 +109,7 @@ async function getTokenBaseBalances(account: string, chainId: number) {
 const isScamToken = async (token: any, signer: any, chainId: number) => {
   let isScam = false;
 
-  if (!token.name.includes("_Tracker")) {
+  if (!token.name?.includes("_Tracker")) {
     try {
       if (signer && token.address !== DEX_GURU_WETH_ADDR) {
         const tokenContract = getContract(chainId, token.address, erc20ABI, signer);
