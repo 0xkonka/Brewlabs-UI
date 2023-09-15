@@ -14,11 +14,14 @@ const DEX_GURU_CHAINIDS = {
 const Supported_LPs = {
   [ChainId.ETHEREUM]: ["UNI-V2"],
   [ChainId.BSC_MAINNET]: ["Cake-LP"],
+  [ChainId.BSC_TESTNET]: ["BREWSWAP-LP"],
+  [ChainId.POLYGON]: ["BREWSWAP-LP"],
 };
 
 export const SYMBOL_VS_SWAP_TABLE = {
   "UNI-V2": "uniswap-v2",
-  "Cake-LP": "pcs-v2",
+  "Cake-LP": "pcs-v2",  
+  "BREWSWAP-LP": "brewlabs",  
 };
 
 export const useLPTokens = () => {

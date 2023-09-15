@@ -49,6 +49,10 @@ export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
         date
         dailyVolumeToken0
         dailyVolumeToken1
+        dailyVolumeUSD
+        reserve0
+        reserve1
+        reserveUSD
         totalSupply
       }
     } 

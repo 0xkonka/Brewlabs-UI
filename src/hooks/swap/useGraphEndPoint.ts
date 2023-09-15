@@ -10,8 +10,12 @@ export const useGraphEndPoint = () => {
   useEffect(() => {
     if (chainId) {
       setGraphEndPoint({
-        aggregator: `https://api.thegraph.com/subgraphs/name/devscninja/${AGGREGATOR_SUBGRAPH_NAMES[chainId]}`,
-        router: `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
+        aggregator: AGGREGATOR_SUBGRAPH_NAMES[chainId]
+          ? `https://api.thegraph.com/subgraphs/name/devscninja/${AGGREGATOR_SUBGRAPH_NAMES[chainId]}`
+          : undefined,
+        router: ROUTER_SUBGRAPH_NAMES[chainId]
+          ? `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`
+          : undefined,
       });
     }
   }, [chainId]);
