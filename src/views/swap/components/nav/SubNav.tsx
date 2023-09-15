@@ -3,9 +3,7 @@ import { useContext, useState } from "react";
 
 import { SwapContext } from "../../../../contexts/SwapContext";
 import MobileNav from "./MobileNav";
-import Link from "next/link";
 import Notification from "@components/Notification";
-import { useOwnedLiquidityPools } from "@hooks/swap/useLiquidityPools";
 import Soon from "@components/Soon";
 
 type Props = {

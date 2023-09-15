@@ -21,7 +21,7 @@ type FeeDistribution = {
   referralFEe: number;
 };
 
-type PoolFeInfoOutput = {
+type PoolFeeInfoOutput = {
   token0: Address;
   token1: Address;
   tokenOwner: Address;
@@ -53,14 +53,20 @@ export const useLiquidityPools = () => {
   );
 
   const pairs = outputOfPairs.filter((data) => data.result).map((data) => data.result[0]);
-
   const outputOfPools = useSingleContractMultipleData(
     contract,
     "getPoolFeeInfo",
     pairs.map((pair) => [pair])
   );
 
-  const pools: PoolFeInfoOutput[] = outputOfPools.map((data) => data.result?.[0]);
+  const pools: PoolFeeInfoOutput[] = outputOfPools.map((data) => ({
+    token0: data.result?.token0,
+    token1: data.result?.token1,
+    tokenOwner: data.result?.tokenOwner,
+    referrer: data.result?.referer,
+    feeDistribution: data.result?.feeDistribution,
+    timeToOpen: data.result?.timeToOpen
+  }));
 
   return pools
     .map((pool, index) => ({ value: pool, key: index }))
