@@ -142,7 +142,6 @@ const TokenList = ({
 
   useEffect(() => {
 
-    console.log("DDDDDDD");
     let _showData: any = [];
     let filteredTokens: any = [];
     if (listType === 0) {

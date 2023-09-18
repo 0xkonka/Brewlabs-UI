@@ -37,7 +37,6 @@ const UserDashboard = () => {
   useFetchTokenBalance(account, chainId, signer);
 
   useEffect(() => {
-    console.log("DDDD");
     if (window.innerHeight < 790) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
     else if (window.innerHeight < 920) setItemsPerPage(Math.floor((window.innerHeight - 535) / 50));
     else setItemsPerPage(Math.floor((window.innerHeight - 548) / 50));
@@ -45,7 +44,6 @@ const UserDashboard = () => {
 
   const stringifiedValues = JSON.stringify({ listType, tokens, archives, itemsPerPage });
   useEffect(() => {
-    console.log("SSS");
     let _filteredTokens: any = [];
     if (listType === 0) {
       _filteredTokens = tokens.filter((data: any) => !archives.includes(data.address));
