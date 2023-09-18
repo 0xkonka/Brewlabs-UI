@@ -27,8 +27,8 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
-  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
+  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
@@ -132,6 +132,20 @@ export const EXPLORER_LOGO = {
   [ChainId.GOERLI]: "/images/explorer/etherscan.png",
   [ChainId.BSC_TESTNET]: "/images/explorer/bscscan.png",
 };
+
+export const EMPTY_TOKEN_LOGO = {
+  [ChainId.ETHEREUM]: "/images/dashboard/tokens/empty/eth.wep",
+  [ChainId.ARBITRUM]: "/images/dashboard/tokens/empty/arb.png",
+  [ChainId.BSC_MAINNET]: "/images/dashboard/tokens/empty/bnb.webp",
+  [ChainId.POLYGON]: "/images/dashboard/tokens/empty/matic.png",
+  [ChainId.FANTOM]: "/images/dashboard/tokens/empty/ftm.png",
+  [ChainId.AVALANCHE]: "/images/dashboard/tokens/empty/avax.png",
+  [ChainId.CRONOS]: "/images/dashboard/tokens/empty/cro.png",
+  [ChainId.BRISE]: "/images/networks/bitgert.png",
+
+  [ChainId.GOERLI]: "/images/dashboard/tokens/empty/eth.wep",
+  [ChainId.BSC_TESTNET]: "/images/dashboard/tokens/empty/bnb.webp",
+}
 
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   id: chainId,

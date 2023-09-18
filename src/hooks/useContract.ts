@@ -157,7 +157,7 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveChainId();
-  return useContract(chainId ? WNATIVE[chainId].address : undefined, WETH_ABI, withSignerIfPossible);
+  return useContract(chainId ? WNATIVE[chainId]?.address : undefined, WETH_ABI, withSignerIfPossible);
 }
 
 export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contract | null {

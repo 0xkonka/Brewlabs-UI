@@ -6,7 +6,7 @@ import { useAccount, useConnect } from "wagmi";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { isAddress } from "utils";
-import { getChainLogo, getDexLogo, numberWithCommas } from "utils/functions";
+import { getChainLogo, getDexLogo, getEmptyTokenLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "views/directory/StyledButton";
@@ -69,7 +69,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
                 alt={""}
                 className="h-10 w-10 rounded-full"
                 onError={(e: any) => {
-                  e.target.src = `/images/dashboard/tokens/empty-token-${data.chainId === 1 ? "eth" : "bsc"}.webp`;
+                  e.target.src = getEmptyTokenLogo(data.chainId);
                 }}
               />
               <img
@@ -77,7 +77,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
                 alt={""}
                 className="-ml-3 h-10 w-10 rounded-full"
                 onError={(e: any) => {
-                  e.target.src = `/images/dashboard/tokens/empty-token-${data.chainId === 1 ? "eth" : "bsc"}.webp`;
+                  e.target.src = getEmptyTokenLogo(data.chainId);
                 }}
               />
             </div>

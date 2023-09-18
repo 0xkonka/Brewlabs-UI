@@ -5,7 +5,7 @@ import contracts from "config/constants/contracts";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { isAddress } from "utils";
-import { getDexLogo } from "utils/functions";
+import { getDexLogo, getEmptyTokenLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../../StyledButton";
@@ -38,7 +38,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
         </div>
         <div>
           <div className="mb-1 text-white">2. Select router:</div>
-          <RouterSelect router={router} setRouter={setRouter} type={"deploy"}/>
+          <RouterSelect router={router} setRouter={setRouter} type={"deploy"} />
         </div>
       </div>
 
@@ -64,7 +64,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
                   alt={""}
                   className="mr-4 block h-7 w-7 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)] sm:hidden"
                   onError={(e: any) => {
-                    e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+                    e.target.src = getEmptyTokenLogo(chainId);
                   }}
                 />
                 <div className="relative mx-auto flex w-fit items-center overflow-hidden text-ellipsis whitespace-nowrap sm:flex sm:overflow-visible">
@@ -73,7 +73,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
                     alt={""}
                     className="absolute -left-12 top-0 hidden h-7 w-7 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)] sm:block"
                     onError={(e: any) => {
-                      e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+                      e.target.src = getEmptyTokenLogo(chainId);
                     }}
                   />
                   <img
@@ -81,7 +81,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
                     alt={""}
                     className="h-7 w-7 rounded-full"
                     onError={(e: any) => {
-                      e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+                      e.target.src = getEmptyTokenLogo(chainId);
                     }}
                   />
                   <img
@@ -89,7 +89,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
                     alt={""}
                     className="-ml-3 h-7 w-7 rounded-full"
                     onError={(e: any) => {
-                      e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+                      e.target.src = getEmptyTokenLogo(chainId);
                     }}
                   />
                   <div className="ml-2 flex-1  overflow-hidden text-ellipsis whitespace-nowrap xsm:flex-none">

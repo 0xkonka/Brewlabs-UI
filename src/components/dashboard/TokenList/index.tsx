@@ -20,11 +20,6 @@ import { DEX_GURU_WETH_ADDR } from "config/constants";
 import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const emptyLogos = {
-  1: "/images/dashboard/tokens/empty-token-eth.webp",
-  56: "/images/dashboard/tokens/empty-token-bsc.webp",
-};
-
 const TokenList = ({
   tokens,
   showType,

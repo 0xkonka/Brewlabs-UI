@@ -26,7 +26,7 @@ import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { formatAmount } from "utils/formatApy";
-import { getChainLogo, getExplorerLogo } from "utils/functions";
+import { getChainLogo, getEmptyTokenLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -499,7 +499,7 @@ export default function RemoveLiquidityPanel({
           alt={""}
           className="h-20 w-20 rounded-full"
           onError={(e: any) => {
-            e.target.src = `/images/dashboard/tokens/empty-token-${selectedChainId === 1 ? "eth" : "bsc"}.webp`;
+            e.target.src = getEmptyTokenLogo(selectedChainId);
           }}
         />
         <img
@@ -507,7 +507,7 @@ export default function RemoveLiquidityPanel({
           alt={""}
           className="-ml-5 h-20 w-20 rounded-full"
           onError={(e: any) => {
-            e.target.src = `/images/dashboard/tokens/empty-token-${selectedChainId === 1 ? "eth" : "bsc"}.webp`;
+            e.target.src = getEmptyTokenLogo(selectedChainId);
           }}
         />
       </div>
@@ -558,7 +558,7 @@ export default function RemoveLiquidityPanel({
                   alt={""}
                   className="mr-2 h-5 w-5 rounded-full"
                   onError={(e: any) => {
-                    e.target.src = `/images/dashboard/tokens/empty-token-${selectedChainId === 1 ? "eth" : "bsc"}.webp`;
+                    e.target.src = getEmptyTokenLogo(selectedChainId);
                   }}
                 />
                 <div>{currencyAmountA && !currencyAmountA.equalTo(0) ? currencyAmountA.toFixed(3) : "0.000"}</div>
@@ -611,7 +611,7 @@ export default function RemoveLiquidityPanel({
                   alt={""}
                   className="mr-2 h-5 w-5 rounded-full"
                   onError={(e: any) => {
-                    e.target.src = `/images/dashboard/tokens/empty-token-${selectedChainId === 1 ? "eth" : "bsc"}.webp`;
+                    e.target.src = getEmptyTokenLogo(selectedChainId);
                   }}
                 />
                 <div>{currencyAmountB && !currencyAmountB.equalTo(0) ? currencyAmountB.toFixed(3) : "0.000"}</div>
@@ -628,6 +628,9 @@ export default function RemoveLiquidityPanel({
                         }
                         alt={""}
                         className="mr-2 h-5 w-5 rounded-full"
+                        onError={(e: any) => {
+                          e.target.src = getEmptyTokenLogo(selectedChainId);
+                        }}
                       />
                       <div className="text-xs leading-none">
                         GET{" "}

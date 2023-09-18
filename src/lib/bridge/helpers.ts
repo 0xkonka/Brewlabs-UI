@@ -1,4 +1,4 @@
-import { ChainId } from "@brewlabs/sdk";
+import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 import { utils } from "ethers";
 import { Connector } from "wagmi";
 
@@ -40,7 +40,7 @@ export const getNetworkLabel = (chainId: ChainId) => {
 };
 
 export const getNativeSybmol = (chainId: ChainId) => {
-  return SupportedChains.find((n) => n.id === chainId)?.nativeCurrency.symbol ?? bsc.nativeCurrency.symbol;
+  return SupportedChains.find((n) => n.id === chainId) ? NATIVE_CURRENCIES[chainId].symbol : bsc.nativeCurrency.symbol;
 };
 
 export const getExplorerLink = (chainId: ChainId, type: string, addressOrHash: string) => {
