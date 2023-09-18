@@ -23,7 +23,8 @@ export default function UserInfo({ currency, active, account }) {
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
-  const name = useENSName(account);
+  // const name = useENSName(account);
+  const name = null;
   const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [isFade, setIsFade] = useState(false);
@@ -193,7 +194,7 @@ export default function UserInfo({ currency, active, account }) {
             </div>
             <div className="ml-1 text-tailwind hover:text-white [&>svg]:h-3 [&>svg]:w-3">{LinkSVG}</div>
           </a>
-          <div>{name.loading ? <br /> : name.ENSName ?? <br />}</div>
+          <div>{name?.loading ? <br /> : name?.ENSName ?? <br />}</div>
           <div className="text-[11px] uppercase text-[#FFFFFF80]">
             <span className="text-[#FFFFFFBF]">HOLDER</span>{" "}
             {holdingTime === 0 ? "No" : timeAgo.format(holdingTime * 1000)}

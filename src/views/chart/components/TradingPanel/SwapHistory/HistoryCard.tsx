@@ -3,11 +3,12 @@ import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
 import useENSName from "@hooks/ENS/useENSName";
 import { isAddress } from "utils";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { ChevronDownSVG } from "@components/dashboard/assets/svgs";
 
 export default function HistoryCard({ list, i, setCriteria, setShowType, currency }) {
-  const { ENSName } = useENSName(isAddress(list.wallet));
+  // const { ENSName } = useENSName(isAddress(list.wallet));
+  const ENSName = null;
   const makerRef1: any = useRef();
   const makerRef2: any = useRef();
   return (
