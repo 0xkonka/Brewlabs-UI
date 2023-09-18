@@ -42,6 +42,7 @@ const UserDashboard = () => {
     else setItemsPerPage(Math.floor((window.innerHeight - 548) / 50));
   }, [fullOpen]);
 
+  const stringifiedValues = JSON.stringify({ listType, tokens, archives, itemsPerPage });
   useEffect(() => {
     let _filteredTokens: any = [];
     if (listType === 0) {
@@ -50,7 +51,7 @@ const UserDashboard = () => {
       _filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
     }
     setMaxPage(Math.ceil(_filteredTokens.length / itemsPerPage));
-  }, [listType, tokens, archives, itemsPerPage]);
+  }, [stringifiedValues]);
 
   return (
     <>

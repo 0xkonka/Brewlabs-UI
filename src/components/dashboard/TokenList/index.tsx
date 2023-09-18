@@ -128,7 +128,20 @@ const TokenList = ({
     getArchives();
   }, [tokens]);
 
+  const stringifiedValues = JSON.stringify({
+    tokens,
+    favourites,
+    archives,
+    fullOpen,
+    filterType,
+    showType,
+    listType,
+    itemsPerPage,
+    pageIndex,
+  });
+
   useEffect(() => {
+
     let _showData: any = [];
     let filteredTokens: any = [];
     if (listType === 0) {
@@ -165,7 +178,7 @@ const TokenList = ({
         paginationData.push(_showData[i]);
       setShowData(paginationData);
     }
-  }, [tokens, favourites, archives, fullOpen, filterType, showType, listType, itemsPerPage, pageIndex]);
+  }, [stringifiedValues]);
 
   const onClaim = async (address: any) => {
     const claimableTokenContract = getClaimableTokenContract(chainId, address, signer);
@@ -275,7 +288,7 @@ const TokenList = ({
                       else t = new Token(chainId, data.address, data.decimals);
                       // t.address = data.address;
                       // t.isNative = data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-                      onCurrencySelection(Field.OUTPUT, t); 
+                      onCurrencySelection(Field.OUTPUT, t);
                       setViewType(1);
                     }}
                     rel="noreferrer"
