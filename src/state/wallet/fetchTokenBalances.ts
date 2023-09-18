@@ -24,7 +24,7 @@ async function getTokenBaseBalances(account: string, chainId: number) {
 
   let data: any = [];
   if (chainId === 56) {
-    data = await axios.post(`${API_URL}/html/getTokenBalances`, { account, chainId });
+    data = await axios.post(`${API_URL}/html/getTokenBalances`, { address: account, chainId });
     data = data.data;
   } else if (chainId === 137 || chainId === 1) {
     const { data: response } = await axios.get(
