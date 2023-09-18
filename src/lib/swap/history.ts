@@ -34,7 +34,6 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
       if (!data || data.logs.length < pageSize) break;
       page += 1;
     } catch (graphError) {
-      console.log(graphEndpoint)
       console.log({ graphError });
       break;
     }

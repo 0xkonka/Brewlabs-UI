@@ -1,23 +1,25 @@
+import axios from "axios";
 import { ChainId, Currency, CurrencyAmount, JSBI, NATIVE_CURRENCIES, Token, TokenAmount } from "@brewlabs/sdk";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+
 import ERC20_INTERFACE from "config/abi/erc20";
+import { EXPLORER_API_KEYS } from "config/constants/networks";
+import { EXPLORER_API_URLS } from "config/constants/networks";
 import { useAllTokens } from "hooks/Tokens";
 import { useMulticallContract } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { isAddress } from "utils";
-import { useSingleContractMultipleData, useMultipleContractSingleData } from "../multicall/hooks";
-import { simpleRpcProvider } from "utils/providers";
-import axios from "axios";
-import { EXPLORER_API_KEYS } from "config/constants/networks";
-import { EXPLORER_API_URLS } from "config/constants/networks";
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
-import { useAccount, useSigner } from "wagmi";
-import { useFastRefreshEffect, useSlowRefreshEffect } from "@hooks/useRefreshEffect";
+import { State } from "state/types";
+import { useTokenMarketChart } from "state/prices/hooks";
+import { isAddress } from "utils";
+
+import { useSingleContractMultipleData, useMultipleContractSingleData } from "../multicall/hooks";
 import { fetchNFTBalancesAsync, fetchTokenBalancesAsync } from ".";
 import { SerializedWalletNFT, SerializedWalletToken } from "./type";
-import { useSelector } from "react-redux";
-import { State } from "state/types";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { tokens } from "config/constants/tokens";
+import { SUPPORTED_LPs } from "config/constants/swap";
 
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
@@ -177,6 +179,7 @@ export const useFetchTokenBalance = (account, chainId: ChainId, signer) => {
   });
 
   useFastRefreshEffect(() => {
+    if (!account) return;
     dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData, signer));
   }, [stringifiedData]);
 };
@@ -187,4 +190,8 @@ export const useUserNFTData = (chainId: ChainId, account: string): SerializedWal
 
 export const useUserTokenData = (chainId: ChainId, account: string): SerializedWalletToken[] => {
   return useSelector((state: State) => state.wallet.tokens[chainId]?.[account] ?? []);
+};
+
+export const useUserLpTokenData = (chainId: ChainId, account: string): SerializedWalletToken[] => {
+  return useSelector((state: State) => state.wallet.tokens[chainId]?.[account]?.filter((token) => SUPPORTED_LPs[chainId].includes(token.symbol)) ?? []);
 };
