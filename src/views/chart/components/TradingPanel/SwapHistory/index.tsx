@@ -36,12 +36,12 @@ export default function SwapHistory({ currency }) {
     };
     switch (showType) {
       case 0:
-        return { ...query, pool_address: currency.address, transaction_types: ["swap"] };
+        return { ...query, pool: currency.address, type: "all" };
       case 1:
-        query = { ...query, token_status: "buy", pool_address: currency.address, transaction_types: ["swap"] };
+        query = { ...query, pool: "buy", pool_address: currency.address };
         return query;
       case 2:
-        query = { ...query, token_status: "sell", pool_address: currency.address, transaction_types: ["swap"] };
+        query = { ...query, pool: "sell", pool_address: currency.address };
         return query;
       case 3:
         query = {

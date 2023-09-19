@@ -62,9 +62,26 @@ export async function fetchTradingHistories(query, chainId) {
   );
 
   if (isAddress(query.pool)) {
-    const pools = [...Adapters[chainId].map((adapter) => adapter.address.toLowerCase()), query.pool];
+    const swapTxs = histories
+      .filter((history) => history.transactionType === "swap")
+      .filter((history) =>
+        query.type === "buy"
+          ? query.address === history.fromAddress
+          : query.type === "sell"
+          ? query.address !== history.fromAddress
+          : true
+      )
+      .map((tx) => {
+        return { ...tx };
+      });
+
+    const pools = [query.pool];
     const erc20txs = histories
-      .filter((history) => history.transactionType === "transfer")
+      .filter(
+        (history) =>
+          history.transactionType === "transfer" &&
+          !swapTxs.find((sHistory) => sHistory.transactionAddress === history.transactionAddress)
+      )
       .filter((history) =>
         query.type === "buy"
           ? pools.includes(history.fromAddress)
@@ -80,22 +97,10 @@ export async function fetchTradingHistories(query, chainId) {
           amountStable: history.amountsStable[0],
           nativeAmount: null,
           walletsCategories: [],
-          sender: query.account,
+          sender: query.account ?? (pools.includes(history.toAddress) ? history.fromAddress : history.toAddress),
           type: "",
           poolAddress: query.pool,
         };
-      });
-    const swapTxs = histories
-      .filter((history) => history.transactionType === "swap")
-      .filter((history) =>
-        query.type === "buy"
-          ? query.address === history.fromAddress
-          : query.type === "sell"
-          ? query.address !== history.fromAddress
-          : true
-      )
-      .map((tx) => {
-        return { ...tx, sender: query.account };
       });
     return [...erc20txs, ...swapTxs];
   }
