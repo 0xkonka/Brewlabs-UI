@@ -3,12 +3,12 @@ import { TokenAmount, Pair, Currency, ChainId } from "@brewlabs/sdk";
 import { Pair as V2Pair, Token as V2Token, TokenAmount as V2TokenAmount } from "@sushiswap-core/sdk";
 import { Interface } from "@ethersproject/abi";
 
-import IUniswapV2PairABI from "config/abi/lpToken.json";
+import BrewlabsPairABI from 'config/abi/brewlabsPair.json';
 import { useMultipleContractSingleData } from "../state/multicall/hooks";
 import { wrappedCurrency } from "../utils/wrappedCurrency";
 import { useActiveChainId } from "./useActiveChainId";
 
-const PAIR_INTERFACE = new Interface(IUniswapV2PairABI);
+const PAIR_INTERFACE = new Interface(BrewlabsPairABI);
 
 export enum PairState {
   LOADING,
