@@ -62,6 +62,8 @@ export async function fetchTradingHistories(query, chainId) {
   );
 
   if (isAddress(query.pool)) {
+    const pools = [query.pool];
+
     const swapTxs = histories
       .filter((history) => history.transactionType === "swap")
       .filter((history) =>
@@ -72,10 +74,12 @@ export async function fetchTradingHistories(query, chainId) {
           : true
       )
       .map((tx) => {
-        return { ...tx };
+        return {
+          ...tx,
+          sender: query.account ?? tx.sender ?? (pools.includes(tx.toAddress) ? tx.fromAddress : tx.toAddress),
+        };
       });
 
-    const pools = [query.pool];
     const erc20txs = histories
       .filter(
         (history) =>
