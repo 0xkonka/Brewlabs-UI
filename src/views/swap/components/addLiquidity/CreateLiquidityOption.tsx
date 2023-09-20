@@ -71,7 +71,7 @@ export default function CreateLiquidityOption() {
 
       <OutlinedButton
         image="/images/swap/database.svg"
-        className="mt-2"
+        className="mt-2 hidden"
         onClick={(e) => {
           e.preventDefault();
           setAddLiquidityStep("CreateBundleLiquidityPool");
