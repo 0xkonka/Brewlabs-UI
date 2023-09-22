@@ -14,6 +14,10 @@ import SwapRewards from "./components/SwapRewards";
 import { NFTSVG } from "@components/dashboard/assets/svgs";
 import Security from "@components/SwapComponents/Security";
 import SlippageText from "@components/SwapComponents/SlippageText";
+import TradingViewChart from "views/chart/components/TradingPanel/TradingViewChart";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useDerivedSwapInfo } from "state/swap/hooks";
+import { Field } from "state/swap/actions";
 
 export default function SwapBoard({ type = "swap", disableChainSelect = false }) {
   const {
@@ -31,6 +35,8 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
   // txn values
   const [, setUserSlippageTolerance] = useUserSlippageTolerance();
   const [swapType, setSwapType] = useState(0);
+  const { chainId } = useActiveChainId();
+  const { currencies } = useDerivedSwapInfo();
 
   const parseCustomSlippage = (value: string) => {
     setSlippageInput(value);
@@ -64,15 +70,27 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
       </div>
 
       {!disableChainSelect && <ChainSelect id="chain-select" />}
-      <div className="flex"></div>
-      {swapTab === 0 ? (
-        <SwapPanel />
-      ) : swapTab === 1 ? (
-        addLiquidityStep === "ViewHarvestFees" ? (
-          <SwapRewards />
+
+      {/* <SwapSelection swapType={swapType} setSwapType={setSwapType} /> */}
+
+      <div className="flex flex-col">
+        {swapTab === 0 ? (
+          <SwapPanel />
+        ) : swapTab === 1 ? (
+          addLiquidityStep === "ViewHarvestFees" ? (
+            <SwapRewards />
+          ) : (
+            <AddLiquidityPanel />
+          )
         ) : (
-          <AddLiquidityPanel />
-        )
+          ""
+        )}
+      </div>
+
+      {swapType === 1 && currencies[Field.INPUT] && currencies[Field.OUTPUT] ? (
+        <TradingViewChart
+          currency={{ tokenAddresses: [currencies[Field.INPUT].address, currencies[Field.OUTPUT].address], chainId }}
+        />
       ) : (
         ""
       )}
@@ -93,6 +111,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
           />
         </Modal>
       )}
+
       <ReactTooltip anchorId={"nfticon"} place="top" content="No Brewlabs NFT found." />
     </div>
   );

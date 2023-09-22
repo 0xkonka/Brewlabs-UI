@@ -10,9 +10,9 @@ export default function AddLiquidityPanel() {
   return (
     <>
       {addLiquidityStep === "default" || addLiquidityStep === "CreateNewLiquidityPool" ? (
-        <CreateLiquidityOption></CreateLiquidityOption>
+        <CreateLiquidityOption />
       ) : (
-        <BasicLiquidity></BasicLiquidity>
+        <BasicLiquidity />
       )}
     </>
   );

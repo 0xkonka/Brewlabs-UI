@@ -39,13 +39,11 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
           <div className={`flex-1 space-y-1 px-2 font-brand tracking-wider ${!slim ? "overflow-y-scroll" : ""}`}>
             {navigationData.map((item) => (
               <Link href={item.href} passHref key={item.name} className="flex flex-col">
-                <motion.a
+                <motion.div
                   layout="position"
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.05 }}
                   data-tip={item.name}
-                  target={item.external ? "_blank" : "_self"}
-                  rel={item.external ? "noopener noreferrer" : ""}
                   className={clsx(
                     item.href === router.pathname
                       ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"
@@ -82,11 +80,11 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     )}
                     {item.name === "Communities" ? (
                       <Notification count={newProposalCount} className="-right-7 -top-1" />
-                    ) : (
+                    ) : ( 
                       ""
                     )}
                   </span>
-                </motion.a>
+                </motion.div>
               </Link>
             ))}
           </div>
