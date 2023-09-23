@@ -25,11 +25,21 @@ import { useTransactionAdder } from "state/transactions/hooks";
 import { CurrencyLogo } from "@components/logo";
 import useTotalSupply from "@hooks/useTotalSupply";
 import { getChainLogo } from "utils/functions";
-import { BurnSVG, InfoSVG, LockFillSVG, PoolFeeSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import {
+  BurnSVG,
+  EditSVG,
+  InfoSVG,
+  LockFillSVG,
+  MinusSVG,
+  PlusSVG,
+  PoolFeeSVG,
+  checkCircleSVG,
+} from "@components/dashboard/assets/svgs";
 import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import WarningModal from "@components/warningModal";
 import { defaultMarketData } from "state/prices/types";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import SetWalletModal from "./SetWalletModal";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -59,6 +69,7 @@ export default function BasicLiquidity() {
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
   const [burnWarningOpen, setBurnWarningOpen] = useState<boolean>(false);
+  const [walletOpen, setWalletOpen] = useState(false);
 
   const [allowedSlippage] = useUserSlippageTolerance();
   const deadline = 1000;
@@ -137,7 +148,6 @@ export default function BasicLiquidity() {
     }
 
     setAttemptingTxn(true);
-    // const aa = await estimate(...args, value ? { value } : {})
     await estimate(...args, value ? { value } : {})
       .then((estimatedGasLimit) =>
         method(...args, {
@@ -162,11 +172,6 @@ export default function BasicLiquidity() {
           console.error(e);
         }
       });
-    // setAttemptingTxn(true);
-    // setTimeout(() => {
-    //   setAttemptingTxn(false);
-    //   setTxHash("aaaa");
-    // }, 2000);
   };
 
   const onBurnLiquidity = () => {
@@ -246,23 +251,69 @@ export default function BasicLiquidity() {
     },
   ];
 
+  const existingData = [
+    {
+      key: "Token price",
+      value: `$${poolTokenPrice.toFixed(2)}`,
+    },
+    {
+      key: "Liquidity performance",
+      value: (
+        <p className="!text-white whitespace-nowrap">
+          12.35% <span className="text-[#FFFFFF80]">vAPR</span>
+        </p>
+      ),
+    },
+    {
+      key: "Volume (24HR)",
+      value: (
+        <p className="!text-white whitespace-nowrap">
+          $523,281.00 <span className="text-[#FFFFFF80]">USD</span>
+        </p>
+      ),
+    },
+    {
+      key: "Standard pool fees",
+      value: "",
+    },
+    {
+      key: "Pool fee for liquidity providers",
+      value: `${(Math.round(liquidityProviderFee * 100) / 100).toFixed(2)}%`,
+    },
+    {
+      key: "Pool fee for Brewlabs protocol",
+      value: "0.05%",
+    },
+  ];
+
+  const [dynamicFees, setDynamicFees] = useState([0, 0, 0]);
+  const [walletAddresses, setWalletAddresses] = useState(["", "", ""]);
+  const [selectedDynamicFee, setSelectedDynamicFee] = useState(0);
+
   const dynamicData = [
     {
       key: "Pool fee directed to referral/burn address ",
-      value: `0.00%`,
+      value: `${dynamicFees[0].toFixed(2)}%`,
     },
     {
       key: "Pool fee directed to staking pool ",
-      value: `0.00%`,
+      value: `${dynamicFees[1].toFixed(2)}%`,
     },
     {
       key: "Pool fee directed to project team",
-      value: `0.00%`,
+      value: `${dynamicFees[2].toFixed(2)}%`,
     },
+    { key: "Total fixed pool fee", value: `${(dynamicFees[0] + dynamicFees[1] + dynamicFees[2]).toFixed(2)}%` },
   ];
 
   function getName(currencyA, currencyB) {
     return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
+  }
+
+  function setWalletAddress(address) {
+    let temp = [...walletAddresses];
+    temp[selectedDynamicFee] = address;
+    setWalletAddresses(temp);
   }
 
   return (
@@ -274,11 +325,14 @@ export default function BasicLiquidity() {
         data={{ pair: { name: getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]) } }}
         onClick={onBurn}
       />
+      <SetWalletModal onClick={setWalletAddress} open={walletOpen} setOpen={setWalletOpen} />
       {addLiquidityStep === "CreateBasicLiquidityPool" || addLiquidityStep === "CreateBundleLiquidityPool" ? (
         <>
-          <div className="font-brand text-xl text-white">{`${
-            addLiquidityStep === "CreateBundleLiquidityPool" ? "Step 1/2: " : ""
-          }Create basic liquidity pool`}</div>
+          <div className="font-brand text-xl text-white">
+            {pair
+              ? "Add to existing liquidity pool"
+              : `${addLiquidityStep === "CreateBundleLiquidityPool" ? "Step 1/2: " : ""}Create basic liquidity pool`}
+          </div>
 
           <div>
             {!txHash ? (
@@ -296,6 +350,7 @@ export default function BasicLiquidity() {
                     type={"liquidity"}
                     currencies={currencies}
                     showMaxButton
+                    label="Token A"
                   ></CurrencyInputPanel>
                 </div>
 
@@ -319,13 +374,14 @@ export default function BasicLiquidity() {
                     type={"liquidity"}
                     inputCurrencySelect={false}
                     showMaxButton
+                    label="Token B"
                   ></CurrencyInputPanel>
                 </div>
               </div>
             ) : (
               <div className="primary-shadow flex items-center rounded-[30px] bg-[#18181B] p-[12px_24px]">
                 <img src={getChainLogo(chainId)} alt={""} className="h-6 w-6 rounded-full" />
-                <div className="mx-3 text-primary [&>*:first-child]:!h-4">{checkCircleSVG}</div>
+                <div className={`mx-3 text-primary [&>*:first-child]:!h-4`}>{checkCircleSVG}</div>
                 <div className="flex items-center justify-center">
                   {currencies[Field.CURRENCY_A] && <CurrencyLogo currency={currencies[Field.CURRENCY_A]} size="30px" />}
                   {currencies[Field.CURRENCY_B] && (
@@ -339,9 +395,11 @@ export default function BasicLiquidity() {
                 </div>
               </div>
             )}
-            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-brand text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
+            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 text-xs font-semibold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
               <div className="mb-3 flex justify-between">
-                <div className="text-base text-gray-300 sm:text-xl">New pool metrics</div>
+                <div className="text-base text-[#FFFFFFBF] sm:text-xl">
+                  {pair ? "Pool metrics" : "New pool metrics"}
+                </div>
                 <div className="flex min-w-[60px] items-center justify-center">
                   {currencies[Field.CURRENCY_A] && <CurrencyLogo currency={currencies[Field.CURRENCY_A]} size="30px" />}
                   {currencies[Field.CURRENCY_B] && (
@@ -351,39 +409,116 @@ export default function BasicLiquidity() {
                   )}
                 </div>
               </div>
-              {data.map((item, i) => (
-                <div
-                  key={item.key}
-                  className={`mt-1 flex justify-between ${data.length - 1 === i ? "text-white" : ""}`}
-                >
-                  <div>{item.key}</div>
-                  <div className="ml-2 flex min-w-[60px] justify-center">
-                    <div>{item.value}</div>
-                  </div>
-                </div>
-              ))}
+              {pair
+                ? existingData.map((item, i) => (
+                    <div
+                      key={item.key}
+                      className={`flex justify-between ${
+                        i < 3 ? "text-lg text-white" : i === 3 ? "mt-2 text-[#FFFFFFBF]" : "text-[#FFFFFF80]"
+                      }`}
+                    >
+                      <div>{item.key}</div>
+                      <div className="ml-2 flex min-w-[60px] justify-center">
+                        <div>{item.value}</div>
+                      </div>
+                    </div>
+                  ))
+                : data.map((item, i) => (
+                    <div
+                      key={item.key}
+                      className={`flex justify-between ${
+                        data.length - 1 === i ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"
+                      }`}
+                    >
+                      <div>{item.key}</div>
+                      <div className="ml-2 flex min-w-[60px] justify-center">
+                        <div>{item.value}</div>
+                      </div>
+                    </div>
+                  ))}
             </div>
 
-            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 font-brand text-xs font-bold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
+            <div className="primary-shadow mb-6 mt-3 rounded-3xl px-3 py-3 text-xs font-semibold text-gray-400 xsm:px-5 sm:px-8 sm:text-sm ">
               <div className="flex items-center text-base text-gray-300">
-                <div className="mr-1 scale-[110%] text-[#FFFFFFB0]" id={"dynamicpoolfees"}>
+                <div className="mr-2 text-[#FFFFFFB0] [&>svg]:h-3.5 [&>svg]:w-3.5" id={"dynamicpoolfees"}>
                   {InfoSVG}
                 </div>
-                <div>Dynamic pool fees</div>
+                <div className={!txHash ? "text-[#FFFFFFBF]" : "text-white"}>Dynamic pool fees</div>
               </div>
               {dynamicData.map((item, i) => (
                 <div
                   key={item.key}
-                  className={`mt-1 flex justify-between ${data.length - 1 === i ? "text-white" : ""}`}
+                  className={`flex justify-between ${i === 3 ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"}`}
                 >
-                  <div>{item.key}</div>
-                  <div className="ml-2 flex min-w-[60px] justify-center">
-                    <div>{item.value}</div>
+                  <div className="ml-5 flex">
+                    {!txHash ? (
+                      ""
+                    ) : (
+                      <div
+                        className={`${!dynamicFees[i] ? "text-tailwind" : "text-[#32FFB5]"} ${
+                          i === 3 ? "opacity-0" : ""
+                        } mr-2 mt-[3px] [&>svg]:h-3.5 [&>svg]:w-3.5`}
+                      >
+                        {checkCircleSVG}
+                      </div>
+                    )}
+                    <div className={!dynamicFees[i] ? "" : "text-white"}>{item.key}</div>
                   </div>
+                  {!txHash && !pair ? (
+                    <div className="ml-2 flex min-w-[60px] justify-center">
+                      <div>{item.value}</div>
+                    </div>
+                  ) : i !== 3 ? (
+                    <div className="ml-2 flex items-center text-tailwind">
+                      <div
+                        className="mr-2 cursor-pointer hover:text-white"
+                        onClick={() => {
+                          let temp = [...dynamicFees];
+                          temp[i] = Math.max(temp[i] - 1, 0);
+                          setDynamicFees(temp);
+                        }}
+                      >
+                        {MinusSVG}
+                      </div>
+                      <div className="mr-1.5 text-[#FFFFFFBF]">{item.value}</div>
+                      <div
+                        className={`mr-2 cursor-pointer ${!dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"}`}
+                        onClick={() => {
+                          let temp = [...dynamicFees];
+                          temp[i] = temp[i] + 1;
+                          setDynamicFees(temp);
+                        }}
+                      >
+                        {PlusSVG}
+                      </div>
+                      <div
+                        className={`cursor-pointer ${
+                          !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
+                        } [&>svg]:h-3.5 [&>svg]:w-3.5`}
+                        onClick={() => {
+                          setWalletOpen(true);
+                          setSelectedDynamicFee(i);
+                        }}
+                      >
+                        {EditSVG}
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               ))}
             </div>
           </div>
+          {pair ? (
+            <SolidButton className="w-full mb-3">
+              <div className="mx-auto flex w-fit items-center">
+                Update dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+              </div>
+            </SolidButton>
+          ) : (
+            ""
+          )}
           {!txHash ? (
             approvalA === ApprovalState.NOT_APPROVED ||
             approvalA === ApprovalState.PENDING ||
@@ -451,8 +586,9 @@ export default function BasicLiquidity() {
                     pair?.liquidityToken.address || ZERO_ADDRESS
                   }`}
                   target="_blank"
+                  className="mb-2 mr-0 flex-1 sm:mb-0 sm:mr-3"
                 >
-                  <SolidButton className="mb-2 mr-0 flex-1 text-xs sm:mb-0 sm:mr-3">
+                  <SolidButton className="!w-full text-xs">
                     <div className="mx-auto flex w-fit items-center">
                       <div className="flex-1">
                         Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
@@ -478,7 +614,7 @@ export default function BasicLiquidity() {
             </div>
           )}
           <OutlinedButton
-            className="mt-1 font-bold"
+            className="mt-1 !rounded-xl font-bold"
             small
             onClick={() => setAddLiquidityStep("CreateNewLiquidityPool")}
             // onClick={() => setTxHash("ASDFASD")}
