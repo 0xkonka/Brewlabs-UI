@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Tooltip as ReactTooltip } from "react-tooltip";
@@ -17,7 +17,7 @@ import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { Field } from "state/mint/actions";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { calculateSlippageAmount, calculateGasMargin } from "utils";
+import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
 import { maxAmountSpend } from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
 import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
@@ -40,6 +40,7 @@ import WarningModal from "@components/warningModal";
 import { defaultMarketData } from "state/prices/types";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 import SetWalletModal from "./SetWalletModal";
+import { getPairOwner } from "@hooks/usePairs";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -259,7 +260,7 @@ export default function BasicLiquidity() {
     {
       key: "Liquidity performance",
       value: (
-        <p className="!text-white whitespace-nowrap">
+        <p className="whitespace-nowrap !text-white">
           12.35% <span className="text-[#FFFFFF80]">vAPR</span>
         </p>
       ),
@@ -267,7 +268,7 @@ export default function BasicLiquidity() {
     {
       key: "Volume (24HR)",
       value: (
-        <p className="!text-white whitespace-nowrap">
+        <p className="whitespace-nowrap !text-white">
           $523,281.00 <span className="text-[#FFFFFF80]">USD</span>
         </p>
       ),
@@ -315,6 +316,23 @@ export default function BasicLiquidity() {
     temp[selectedDynamicFee] = address;
     setWalletAddresses(temp);
   }
+
+  const [isOwner, setIsOwner] = useState(false);
+
+  const stringifiedPair = JSON.stringify({
+    account,
+    chainId,
+    token0: currencies[Field.CURRENCY_A],
+    token1: currencies[Field.CURRENCY_B],
+    pair,
+  });
+
+  useEffect(() => {
+    if (!currencies[Field.CURRENCY_A] || !currencies[Field.CURRENCY_B] || !isAddress(account)) return;
+    getPairOwner(account, chainId, currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], pair)
+      .then((result) => setIsOwner(result))
+      .catch((e) => console.log(e));
+  }, [stringifiedPair]);
 
   return (
     <>
@@ -414,7 +432,7 @@ export default function BasicLiquidity() {
                     <div
                       key={item.key}
                       className={`flex justify-between ${
-                        i < 3 ? "text-lg text-white" : i === 3 ? "mt-2 text-[#FFFFFFBF]" : "text-[#FFFFFF80]"
+                        i < 3 ? "text-sm text-white" : i === 3 ? "mt-2 text-[#FFFFFFBF]" : "text-[#FFFFFF80]"
                       }`}
                     >
                       <div>{item.key}</div>
@@ -451,7 +469,7 @@ export default function BasicLiquidity() {
                   className={`flex justify-between ${i === 3 ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"}`}
                 >
                   <div className="ml-5 flex">
-                    {!txHash ? (
+                    {!txHash && !pair ? (
                       ""
                     ) : (
                       <div
@@ -468,7 +486,7 @@ export default function BasicLiquidity() {
                     <div className="ml-2 flex min-w-[60px] justify-center">
                       <div>{item.value}</div>
                     </div>
-                  ) : i !== 3 ? (
+                  ) : i !== 3 && isOwner ? (
                     <div className="ml-2 flex items-center text-tailwind">
                       <div
                         className="mr-2 cursor-pointer hover:text-white"
@@ -482,7 +500,7 @@ export default function BasicLiquidity() {
                       </div>
                       <div className="mr-1.5 text-[#FFFFFFBF]">{item.value}</div>
                       <div
-                        className={`mr-2 cursor-pointer ${!dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"}`}
+                        className={`mr-2 cursor-pointer hover:text-white`}
                         onClick={() => {
                           let temp = [...dynamicFees];
                           temp[i] = temp[i] + 1;
@@ -510,8 +528,8 @@ export default function BasicLiquidity() {
               ))}
             </div>
           </div>
-          {pair ? (
-            <SolidButton className="w-full mb-3">
+          {pair && isOwner ? (
+            <SolidButton className="mb-3 w-full">
               <div className="mx-auto flex w-fit items-center">
                 Update dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
               </div>
@@ -573,7 +591,7 @@ export default function BasicLiquidity() {
                   : "Next: Select yield farm metrics"}
               </SolidButton>
             )
-          ) : (
+          ) : isOwner ? (
             <div className="mb-4">
               <SolidButton className="w-full">
                 <div className="mx-auto flex w-fit items-center">
@@ -612,6 +630,8 @@ export default function BasicLiquidity() {
                 </SolidButton>
               </div>
             </div>
+          ) : (
+            ""
           )}
           <OutlinedButton
             className="mt-1 !rounded-xl font-bold"
