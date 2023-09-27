@@ -36,6 +36,7 @@ const initialState: NftState = {
       chainId: +chainId,
       address: contracts.nftStaking[chainId],
       earningToken: serializeToken(NATIVE_CURRENCIES[+chainId]),
+      nftPrice: 100,
       totalStaked: 0,
       startBlock: 0,
       bonusEndBlock: 0,
