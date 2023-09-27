@@ -27,7 +27,7 @@ import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 import NFTRarityText from "@components/NFTRarityText";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -179,7 +179,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
         {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (
           <>
             <div className="w-[116px]">
-              {isPending ? (
+              {isPending || date > 0 ? (
                 <Link href={"/nft/nftstakinginfo"}>
                   <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
                     <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
@@ -201,14 +201,14 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 </StyledButton>
               )}
             </div>
-            <div className="relative w-[90px] text-xs  leading-[1.2] text-white">
+            <div className="relative w-[90px] text-xs leading-[1.2] text-white">
               {NFT_Apr[nft.chainId] === null ? "Pending" : `${NFT_Apr[nft.chainId]?.toFixed(2) ?? "0.00"}%`} APR
               <br />
-              <span className="absolute text-[10px] font-normal text-[#FFFFFF80]">
+              <div className="relative text-[10px] font-normal text-[#FFFFFF80]">
                 in {NETWORKS[nft.chainId].nativeCurrency.symbol} approx.
-              </span>
+              </div>
             </div>
-            {isPending ? (
+            {isPending && date > 0 ? (
               <div className="relative w-[80px]  leading-[1.2] text-white">
                 <CountDown time={date + Date.now()} />
                 <div className="absolute right-0 text-[10px] font-normal text-[#FFFFFF80]">Pool opens</div>
