@@ -1,4 +1,5 @@
 import axios from "axios";
+import { DEXSCREENER_CHAINNAME } from "config";
 import { Adapters } from "config/constants/aggregator";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -109,6 +110,43 @@ export async function fetchTradingHistories(query, chainId) {
     return [...erc20txs, ...swapTxs];
   }
   return histories;
+}
+
+export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default") {
+  let histories = [];
+  let tb = query.tb;
+  try {
+    do {
+      const url = `https://io.dexscreener.com/dex/log/amm/uniswap/all/${DEXSCREENER_CHAINNAME[chainId]}/${query.pair}?${
+        query.type ? `ft=${query.type}` : ""
+      }&${query.account ? `m=${query.account.toLowerCase()}` : ""}&${
+        query.quote ? `q=${query.quote.toLowerCase()}` : ""
+      }&${tb ? `tb=${tb}` : ""}`;
+
+      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+        url,
+      });
+      if (!response.result.logs) break;
+      histories = [...histories, ...response.result.logs].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+      tb = histories[histories.length - 1].blockTimestamp;
+    } while (fetch === "all" && histories.length % 100 === 0);
+
+    return histories.map((log) => ({
+      timestamp: Number(log.blockTimestamp),
+      action: log.txnType,
+      price: Number(log.priceUsd),
+      amount: Number(log.amount0),
+      nativeAmount: undefined,
+      amountStable: Number(log.volumeUsd),
+      transactionAddress: log.txnHash,
+      walletsCategories: [],
+      chainId,
+      sender: log.maker,
+    }));
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 }
 
 export function getVolume(address, data, period) {

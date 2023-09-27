@@ -17,28 +17,28 @@ TimeAgo.addDefaultLocale(en);
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
 
-export default function HistoryList({ histories, currency, loading, offset, setOffset, setCriteria, setShowType }) {
+export default function HistoryList({ histories, currency, loading, tb, setTB, setCriteria, setShowType }) {
   const tokenMarketData = useTokenMarketChart(currency.chainId);
-
   const wrappedHistories = histories.map((history) => {
-    const date = new Date(history.timestamp * 1000);
-    let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
-    index = index === -1 ? 0 : index;
-    const action = history.fromAddress === currency.tokenAddresses[0].toLowerCase() ? "Sell" : "Buy";
+    const date = new Date(history.timestamp);
     return {
       time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
-      action,
-      price: history.pricesStable[index],
+      action: history.action,
+      price: history.price,
       usdValue: numberWithCommas(history.amountStable.toFixed(2)),
-      amount: BigNumberFormat(history.amounts[index]),
+      amount: BigNumberFormat(history.amount),
       nativeAmount: BigNumberFormat(
         history.nativeAmount ??
           history.amountStable / tokenMarketData[WNATIVE[currency.chainId].address.toLowerCase()]?.usd
       ),
       type:
-        action === "Buy" ? WalletSVG : history.walletsCategories.includes("Liquiditypool") ? ContractSVG : NonSellerSVG,
+        history.action === "buy"
+          ? WalletSVG
+          : history.walletsCategories.includes("Liquiditypool")
+          ? ContractSVG
+          : NonSellerSVG,
       txHash: history.transactionAddress,
-      ago: timeAgo.format(history.timestamp * 1000),
+      ago: timeAgo.format(history.timestamp),
       wallet: history.sender,
       info: history.type,
       chainId: history.chainId,
@@ -46,14 +46,15 @@ export default function HistoryList({ histories, currency, loading, offset, setO
   });
 
   const node: any = useRef();
+  const stringifiedHistories = JSON.stringify(histories);
   const handleScroll = useCallback(() => {
     const { scrollTop, scrollHeight, clientHeight } = node.current;
     if (scrollTop + clientHeight === scrollHeight && !loading && scrollHeight > 50) {
       console.log("reached bottom hook in scroll component");
-      setOffset(offset + 1);
+      setTB(histories[histories.length - 1].timestamp);
     } else {
     }
-  }, [node, offset, loading]);
+  }, [node, loading, stringifiedHistories]);
 
   useEffect(() => {
     if (node.current) {

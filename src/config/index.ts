@@ -171,3 +171,8 @@ export const DEXTOOLS_CHAINNAME = {
   1: "ether",
   56: "bsc",
 };
+
+export const DEXSCREENER_CHAINNAME = {
+  1: "ethereum",
+  56: "bsc",
+};

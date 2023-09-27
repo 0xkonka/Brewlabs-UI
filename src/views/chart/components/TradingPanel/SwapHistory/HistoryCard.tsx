@@ -25,7 +25,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
           className={`flex justify-between ${
             i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
           } cursor-pointer items-center rounded-[2px] border border-transparent p-[4px_0px_4px_12px] ${
-            list.action === "Buy"
+            list.action === "buy"
               ? "text-[#32FFB5] hover:border-[#32ffb473]"
               : "text-[#DC4545] hover:border-[#DC454573]"
           }`}
@@ -41,7 +41,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
             </div>
             <div className="w-[160px] whitespace-nowrap">{list.time}</div>
             <div className="w-[110px] whitespace-nowrap text-[#FFFFFF80]">{list.ago}</div>
-            <div className="w-[60px]">{list.action}</div>
+            <div className="w-[60px] capitalize">{list.action}</div>
             <div className="w-[70px] text-white">
               <StyledPrice price={list.price} itemClassName="!text-[8px]" />
             </div>
@@ -78,7 +78,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
           className={`mb-2 flex flex-col ${
             i % 2 === 0 ? "bg-[#D9D9D90D]" : "bg-[#D9D9D91A]"
           } cursor-pointer rounded-[2px] border border-transparent p-[4px_12px] ${
-            list.action === "Buy"
+            list.action === "buy"
               ? "text-[#32FFB5] hover:border-[#32ffb473]"
               : "text-[#DC4545] hover:border-[#DC454573]"
           }`}
@@ -134,7 +134,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
           <div className="flex flex-wrap justify-between">
             <div className="flex items-center">
               <div>Action:</div>&nbsp;
-              <div className="">{list.action}</div>
+              <div className="capitalize">{list.action}</div>
             </div>
             <div className="flex items-center">
               <div>USD:</div>&nbsp;
