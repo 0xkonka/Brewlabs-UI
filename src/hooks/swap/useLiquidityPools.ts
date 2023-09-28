@@ -55,7 +55,7 @@ export const useLiquidityPools = () => {
   const pairs = outputOfPairs.filter((data) => data.result).map((data) => data.result[0]);
   const outputOfPools = useSingleContractMultipleData(
     contract,
-    "getPoolFeInfo",
+    "getPoolFeeInfo",
     pairs.map((pair) => [pair])
   );
 

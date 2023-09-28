@@ -455,7 +455,7 @@
         "type": "address"
       }
     ],
-    "name": "getPoolFeInfo",
+    "name": "getPoolFeeInfo",
     "outputs": [
       {
         "internalType": "address",
