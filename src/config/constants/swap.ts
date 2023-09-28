@@ -9,8 +9,11 @@ export const AGGREGATOR_SUBGRAPH_NAMES = {
 };
 
 export const ROUTER_SUBGRAPH_NAMES = {
-  [ChainId.POLYGON]: "brewswap-polygon",
-  [ChainId.BSC_TESTNET]: "brewswap-chapel",
+  [ChainId.ETHEREUM]: "brewlabs-router-mainnet",
+  [ChainId.BSC_MAINNET]: "brewlabs-router-bsc",
+  [ChainId.ARBITRUM]: "brewlabs-router-arbitrum",
+  [ChainId.POLYGON]: "brewlabs-router-polygon",
+  [ChainId.FANTOM]: "brewlabs-router-fantom",
 };
 
 export const SUPPORTED_DEXES = {
