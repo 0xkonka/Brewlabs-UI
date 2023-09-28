@@ -8,10 +8,7 @@ import BrewlabsABI from "config/abi/brewlabs.json";
 import { useMultipleContractSingleData } from "../state/multicall/hooks";
 import { wrappedCurrency } from "../utils/wrappedCurrency";
 import { useActiveChainId } from "./useActiveChainId";
-import { getBrewlabsFeeManagerAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
-import { erc20ABI } from "wagmi";
-import { getBep20Contract, getBrewlabsFeeManagerContract, getContract } from "utils/contractHelpers";
+import { getBrewlabsFeeManagerContract, getContract } from "utils/contractHelpers";
 import { ethers } from "ethers";
 
 const PAIR_INTERFACE = new Interface(BrewlabsPairABI);
@@ -88,13 +85,13 @@ export function usePair(tokenA?: Currency, tokenB?: Currency, isExternal?: boole
 export async function getPairOwner(address: string, chainId: ChainId, token0: Currency, token1: Currency, pair: Pair) {
   try {
     const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
+    const feeMangerOwner = await feeManagerContract.owner();
     if (pair) {
       const tokenOwner = await feeManagerContract.getTokenOwner(pair.liquidityToken.address);
       if (tokenOwner !== ethers.constants.AddressZero && tokenOwner.toLowerCase() === address.toLowerCase())
         return true;
     }
-    const feeManagerAddress = getBrewlabsFeeManagerAddress(chainId);
-    if (address.toLowerCase() === feeManagerAddress.toLowerCase()) return true;
+    if (address.toLowerCase() === feeMangerOwner.toLowerCase()) return true;
 
     if (!token0.isNative)
       try {
