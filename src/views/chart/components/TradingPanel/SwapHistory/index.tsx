@@ -5,16 +5,15 @@ import { useAccount } from "wagmi";
 import UserInfo from "../UserInfo";
 import { isAddress } from "utils";
 import { DEX_GURU_CHAIN_NAME } from "config";
-import { fetchTradingHistories } from "@hooks/useTokenAllPairs";
-import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
+import { fetchTradingHistoriesByDexScreener } from "@hooks/useTokenAllPairs";
+import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 
 let wrappedQuery;
 export default function SwapHistory({ currency }) {
   const { address: account } = useAccount();
-  // const account = "0x61d8F1baE35A2F71E6868023F16c88E8d9e6200f";
   const [showType, setShowType] = useState(0);
   const [criteria, setCriteria] = useState("");
-  const [offset, setOffset] = useState(0);
+  const [tb, setTB] = useState(0);
   const [loading, setLoading] = useState(false);
   const [histories, setHistories] = useState([]);
   const [totalHistories, setTotalHistories] = useState([]);
@@ -22,71 +21,56 @@ export default function SwapHistory({ currency }) {
 
   const getQuery = () => {
     let query: any = {
-      address: currency.tokenAddresses[0],
-      current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
-      chainId: currency.chainId,
-      amm: currency.swap,
-      period: 0,
-      limit: 100,
-      offset: offset * 100,
-      with_full_totals: true,
-      order: "desc",
-      token_status: "all",
-      sort_by: "timestamp",
+      pair: currency.address,
+      quote: currency.tokenAddresses[1],
+      tb,
     };
     switch (showType) {
       case 0:
-        return { ...query, pool: currency.address, type: "all" };
+        return { ...query, type: "buyOrSell" };
       case 1:
-        query = { ...query, pool: "buy", pool_address: currency.address };
-        return query;
+        return { ...query, type: "buy" };
       case 2:
-        query = { ...query, pool: "sell", pool_address: currency.address };
-        return query;
+        return { ...query, type: "sell" };
       case 3:
-        query = {
+        return {
           ...query,
           account: account ? account.toLowerCase() : "0x0",
-          type: "all",
-          pool: currency.address,
+          type: "buyOrSell",
         };
-        return query;
       case 4:
-        query = {
+        return {
           ...query,
           account: account ? account.toLowerCase() : "0x0",
           type: "buy",
-          pool: currency.address,
         };
-        return query;
       case 5:
-        query = {
+        return {
           ...query,
           account: account ? account.toLowerCase() : "0x0",
           type: "sell",
-          pool: currency.address,
         };
-        return query;
       case 6:
-        query = {
+        return {
           ...query,
           account: criteria ? criteria.toLowerCase() : "0x0",
-          type: "all",
+          type: "buyOrSell",
           pool: currency.address,
         };
-        return query;
     }
   };
 
+  const stringifiedValue = JSON.stringify({ showType, address: currency.address, tb, criteria });
+
   useEffect(() => {
     const query: any = getQuery();
-    if (!isAddress(query.address)) {
+    if (!isAddress(query.pair)) {
       return;
     }
     setLoading(true);
     setHistories([]);
     wrappedQuery = JSON.stringify(query);
-    fetchTradingHistories(query, currency.chainId)
+    fetchTradingHistoriesByDexScreener(query, currency.chainId)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
           setHistories(result);
@@ -97,25 +81,25 @@ export default function SwapHistory({ currency }) {
         console.log(e);
         setLoading(false);
       });
-  }, [showType, currency.address, offset, criteria]);
+  }, [stringifiedValue]);
 
   useEffect(() => {
     setTotalHistories([]);
-    setOffset(0);
+    setTB(0);
   }, [showType, currency.address, criteria]);
 
-  useSecondRefreshEffect(() => {
+  useFastRefreshEffect(() => {
     let query = getQuery();
-    query.offset = 0;
+    query.tb = 0;
 
-    fetchTradingHistories(query, currency.chainId)
+    fetchTradingHistoriesByDexScreener(query, currency.chainId)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) setRecentHistories(result);
       })
       .catch((e) => {
         console.log(e);
       });
-  }, [showType, currency.address, offset, criteria]);
+  }, [stringifiedValue]);
 
   const strigifiedHistories = JSON.stringify(histories);
   const strigifiedRecentHistories = JSON.stringify(recentHistories);
@@ -125,7 +109,7 @@ export default function SwapHistory({ currency }) {
     let temp = [...totalHistories];
     for (let i = 0; i < total.length; i++) {
       const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
-      if (!isExisting && total[i].poolAddress === currency.address.toLowerCase()) {
+      if (!isExisting) {
         temp.push(total[i]);
       }
     }
@@ -137,7 +121,7 @@ export default function SwapHistory({ currency }) {
     let temp = [...totalHistories];
     for (let i = 0; i < total.length; i++) {
       const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
-      if (!isExisting && total[i].poolAddress === currency.address.toLowerCase()) {
+      if (!isExisting) {
         temp.push(total[i]);
       }
     }
@@ -152,8 +136,8 @@ export default function SwapHistory({ currency }) {
         histories={totalHistories}
         currency={currency}
         loading={loading}
-        offset={offset}
-        setOffset={setOffset}
+        tb={tb}
+        setTB={setTB}
         setCriteria={setCriteria}
         setShowType={setShowType}
       />
