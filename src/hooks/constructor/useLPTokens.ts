@@ -1,39 +1,87 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
 import { getAddress } from "ethers/lib/utils.js";
-import { useAccount } from "wagmi";
-import { useFastRefreshEffect } from "hooks/useRefreshEffect";
-import { API_URL } from "config/constants";
+import { useAccount, useSigner } from "wagmi";
+
+import { ERC20_ABI } from "config/abi/erc20";
+import LpTokenAbi from "config/abi/lpToken.json";
+
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { getNativeSybmol } from "lib/bridge/helpers";
+import { useUserLpTokenData } from "state/wallet/hooks";
+import multicall from "utils/multicall";
+import { useAppDispatch } from "state";
+import { fetchTokenBalancesAsync } from "state/wallet";
+import { useTokenMarketChart } from "state/prices/hooks";
 
 const DEX_GURU_CHAINIDS = {
-  eth: ChainId.ETHEREUM,
-  bsc: ChainId.BSC_MAINNET,
-};
-
-const Supported_LPs = {
-  [ChainId.ETHEREUM]: ["UNI-V2"],
-  [ChainId.BSC_MAINNET]: ["Cake-LP"],
-};
-
-export const SYMBOL_VS_SWAP_TABLE = {
-  "UNI-V2": "uniswap-v2",
-  "Cake-LP": "pcs-v2",
+  [ChainId.ETHEREUM]: "eth",
+  [ChainId.BSC_MAINNET]: "bsc",
+  [ChainId.FANTOM]: "fantom",
+  [ChainId.ARBITRUM]: "arbitrum",
+  [ChainId.AVALANCHE]: "avalanche",
 };
 
 export const useLPTokens = () => {
+  const dispatch = useAppDispatch();
+
+  const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
+  const { data: signer } = useSigner();
 
-  const [ethLPTokens, setETHLPTokens] = useState(null);
-  const [bscLPTokens, setBSCLpTokens] = useState(null);
+  const ownedlpTokens = useUserLpTokenData(chainId, account);
+  const tokenMarketData = useTokenMarketChart(chainId);
 
-  async function fetchLPInfo(data: any, chain: string) {
+  const [lpTokens, setLPTokens] = useState([]);
+
+  async function fetchLPInfo(data: any, chainId: ChainId) {
     const pairInfos = await Promise.all(
       data.map(async (data) => {
+        if (!DEX_GURU_CHAINIDS[chainId]) {
+          let calls = [
+            { name: "token0", address: data.address },
+            { name: "token1", address: data.address },
+          ];
+          const [token0, token1] = await multicall(LpTokenAbi, calls, chainId);
+
+          calls = [
+            { name: "name", address: token0[0] },
+            { name: "symbol", address: token0[0] },
+            { name: "decimals", address: token0[0] },
+            { name: "name", address: token1[0] },
+            { name: "symbol", address: token1[0] },
+            { name: "decimals", address: token1[0] },
+          ];
+          const result = await multicall(ERC20_ABI, calls, chainId);
+
+          return {
+            timeStamp: 0,
+            address: getAddress(data.address),
+            balance: data.balance,
+            symbol: data.symbol,
+            token0: {
+              address: getAddress(token0[0]),
+              name: result[0][0],
+              symbol: result[1][0],
+              decimals: result[2][0],
+            },
+            token1: {
+              address: getAddress(token1[0]),
+              name: result[3][0],
+              symbol: result[4][0],
+              decimals: result[5][0],
+            },
+            price: 0,
+            volume: 0,
+            chainId,
+          };
+        }
+
         const result = await axios.post("https://api.dex.guru/v3/tokens", {
-          ids: [`${data.address}-${chain}`],
+          ids: [`${data.address}-${DEX_GURU_CHAINIDS[chainId]}`],
           limit: 1,
-          network: chain,
+          network: DEX_GURU_CHAINIDS[chainId],
         });
 
         const addresses = result.data.data[0].underlyingAddresses;
@@ -49,9 +97,9 @@ export const useLPTokens = () => {
         };
         const response = await Promise.all([
           axios.post("https://api.dex.guru/v3/tokens", {
-            ids: [`${addresses[0]}-${chain}`, `${addresses[1]}-${chain}`],
+            ids: [`${addresses[0]}-${DEX_GURU_CHAINIDS[chainId]}`, `${addresses[1]}-${DEX_GURU_CHAINIDS[chainId]}`],
             limit: 2,
-            network: chain,
+            network: DEX_GURU_CHAINIDS[chainId],
           }),
           axios.post("https://api.dex.guru/v3/tokens/transactions/count", info),
         ]);
@@ -63,8 +111,8 @@ export const useLPTokens = () => {
         const token0 = priceResult.data.data[0];
         let token1 = priceResult.data.data[1];
         if (token0.address == token1.address) {
-          token1 = WNATIVE[DEX_GURU_CHAINIDS[chain]];
-          token1.symbol = "ETH";
+          token1 = WNATIVE[chainId];
+          token1.symbol = getNativeSybmol(chainId);
         }
         const lpInfo = result.data.data[0];
         lastTx = lastTx.data.data;
@@ -87,7 +135,7 @@ export const useLPTokens = () => {
           },
           price: lpInfo.priceUSD,
           volume: lpInfo.volume24hUSD,
-          chainId: DEX_GURU_CHAINIDS[chain],
+          chainId,
         };
       })
     );
@@ -95,47 +143,57 @@ export const useLPTokens = () => {
   }
 
   async function fetchLPTokens(chainId) {
-    if (chainId === 1) {
-      try {
-        const result1 = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${account}/tokens`);
-        const nonZeroBalances = result1.data.tokenAccounts.filter(
-          (data: any) => data.balance / 1 > 0 && Supported_LPs[ChainId.ETHEREUM].includes(data.tokenSymbol)
-        );
-        const addresses = nonZeroBalances.map((data) => {
-          return {
-            address: data.tokenHash,
-            balance: data.balance / Math.pow(10, data.decimals),
-            symbol: data.tokenSymbol,
-          };
-        });
-        const info = await fetchLPInfo(addresses, "eth");
-        setETHLPTokens(info);
-      } catch (e) {
-        console.log(e);
-        setETHLPTokens([]);
-      }
-    } else if (chainId === 56) {
-      try {
-        let tokenBalances: any = await axios.post(`${API_URL}/html/getTokenBalances`, {
-          address: account,
-          chainId,
-        });
-        tokenBalances = tokenBalances.data;
-        let _lps = tokenBalances.filter((data) => Supported_LPs[ChainId.BSC_MAINNET].includes(data.symbol));
-        _lps = await fetchLPInfo(_lps, "bsc");
-        setBSCLpTokens(_lps);
-      } catch (e) {
-        console.log(e);
-        setBSCLpTokens([]);
-      }
-    }
+    dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData, signer));
+    // if (chainId === 1) {
+    //   try {
+    //     const result1 = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${account}/tokens`);
+    //     const nonZeroBalances = result1.data.tokenAccounts.filter(
+    //       (data: any) => data.balance / 1 > 0 && SUPPORTED_LPs[ChainId.ETHEREUM].includes(data.tokenSymbol)
+    //     );
+    //     const addresses = nonZeroBalances.map((data) => {
+    //       return {
+    //         address: data.tokenHash,
+    //         balance: data.balance / Math.pow(10, data.decimals),
+    //         symbol: data.tokenSymbol,
+    //       };
+    //     });
+    //     const info = await fetchLPInfo(addresses, "eth");
+    //     setETHLPTokens(info);
+    //   } catch (e) {
+    //     console.log(e);
+    //     setETHLPTokens([]);
+    //   }
+    // } else if (chainId === 56) {
+    //   try {
+    //     let tokenBalances: any = await axios.post(`${API_URL}/html/getTokenBalances`, {
+    //       address: account,
+    //       chainId,
+    //     });
+    //     tokenBalances = tokenBalances.data;
+    //     let _lps = tokenBalances.filter((data) => SUPPORTED_LPs[ChainId.BSC_MAINNET].includes(data.symbol));
+    //     console.log("_lps", _lps);
+    //     _lps = await fetchLPInfo(_lps, "bsc");
+    //     setBSCLpTokens(_lps);
+    //   } catch (e) {
+    //     console.log(e);
+    //     setBSCLpTokens([]);
+    //   }
+    // }
   }
 
-  useFastRefreshEffect(() => {
-    if (!account) return;
-    fetchLPTokens(1);
-    fetchLPTokens(56);
-  }, [account]);
+  useEffect(() => {
+    if (!account) {
+      setLPTokens([]);
+      return;
+    }
 
-  return { ethLPTokens, bscLPTokens, fetchLPTokens };
+    const fetchLPInfoAsync = async () => {
+      const data = await fetchLPInfo(ownedlpTokens, chainId);
+      setLPTokens(data);
+    };
+
+    fetchLPInfoAsync();
+  }, [account, chainId, JSON.stringify(ownedlpTokens)]);
+
+  return { lpTokens, loading: ownedlpTokens.length !== lpTokens.length, fetchLPTokens };
 };

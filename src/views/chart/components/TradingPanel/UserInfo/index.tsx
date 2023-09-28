@@ -8,9 +8,9 @@ import en from "javascript-time-ago/locale/en";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { isAddress } from "utils";
-import { fetchTradingHistories } from "@hooks/useTokenAllPairs";
+import { fetchTradingHistoriesByDexScreener } from "@hooks/useTokenAllPairs";
 import { DEX_GURU_CHAIN_NAME } from "config";
-import { useSecondRefreshEffect } from "@hooks/useRefreshEffect";
+import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 import { getBalances } from "@hooks/useTokenMultiChainBalance";
 
 TimeAgo.addDefaultLocale(en);
@@ -23,7 +23,8 @@ export default function UserInfo({ currency, active, account }) {
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
-  const name = useENSName(account);
+  // const name = useENSName(account);
+  const name = null;
   const [buyInfo, setBuyInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [isFade, setIsFade] = useState(false);
@@ -35,19 +36,11 @@ export default function UserInfo({ currency, active, account }) {
 
   const getQuery = () => {
     const query: any = {
-      address: currency.tokenAddresses[0],
-      current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
-      chainId: currency.chainId,
-      amm: currency.swap,
-      limit: 0,
-      offset: 0,
-      with_full_totals: true,
-      order: "desc",
-      token_status: "all",
-      sort_by: "timestamp",
-      account: account ? account.toLowerCase() : "0x0",
-      type: "all",
-      pool: currency.address,
+      pair: currency.address,
+      quote: currency.tokenAddresses[1],
+      tb: 0,
+      account,
+      type: "buyOrSell"
     };
     return query;
   };
@@ -69,13 +62,13 @@ export default function UserInfo({ currency, active, account }) {
 
   useEffect(() => {
     const query: any = getQuery();
-    if (!isAddress(query.address)) {
+    if (!isAddress(account) || !isAddress(currency.address)) {
       return;
     }
     setHistories([]);
     setTotalHistories([]);
     wrappedQuery = JSON.stringify(query);
-    fetchTradingHistories(query, currency.chainId)
+    fetchTradingHistoriesByDexScreener(query, currency.chainId, "all")
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
           setHistories(result);
@@ -86,11 +79,13 @@ export default function UserInfo({ currency, active, account }) {
       });
   }, [currency.address, account]);
 
-  useSecondRefreshEffect(() => {
+  useFastRefreshEffect(() => {
     let query = getQuery();
-    query.offset = 0;
-
-    fetchTradingHistories(query, currency.chainId)
+    query.tb = 0;
+    if (!isAddress(account) || !isAddress(currency.address)) {
+      return;
+    }
+    fetchTradingHistoriesByDexScreener(query, currency.chainId, "all")
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) setRecentHistories(result);
       })
@@ -107,7 +102,7 @@ export default function UserInfo({ currency, active, account }) {
     let temp = [...totalHistories];
     for (let i = 0; i < total.length; i++) {
       const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
-      if (!isExisting && total[i].poolAddress === currency.address.toLowerCase()) {
+      if (!isExisting) {
         temp.push(total[i]);
       }
     }
@@ -119,7 +114,7 @@ export default function UserInfo({ currency, active, account }) {
     let temp = [...totalHistories];
     for (let i = 0; i < total.length; i++) {
       const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
-      if (!isExisting && total[i].poolAddress === currency.address.toLowerCase()) {
+      if (!isExisting) {
         temp.push(total[i]);
       }
     }
@@ -133,18 +128,16 @@ export default function UserInfo({ currency, active, account }) {
     let _buyInfo = { usd: 0, amount: 0, txns: 0, price: 0 },
       _sellInfo = { usd: 0, amount: 0, txns: 0, price: 0 };
     totalHistories.map((history) => {
-      let index = history.tokenAddresses.indexOf(currency.tokenAddresses[0]);
-      index = index === -1 ? 0 : index;
-      if (history.fromAddress !== currency.tokenAddresses[0].toLowerCase()) {
+      if (history.action === "buy") {
         _buyInfo.txns++;
         _buyInfo.usd += history.amountStable;
-        _buyInfo.price += history.pricesStable[index];
-        _buyInfo.amount += history.amounts[index];
+        _buyInfo.price += history.price;
+        _buyInfo.amount += history.amount;
       } else {
         _sellInfo.txns++;
         _sellInfo.usd += history.amountStable;
-        _sellInfo.price += history.pricesStable[index];
-        _sellInfo.amount += history.amounts[index];
+        _sellInfo.price += history.price;
+        _sellInfo.amount += history.amount;
       }
     });
     setBuyInfo(_buyInfo);
@@ -193,10 +186,10 @@ export default function UserInfo({ currency, active, account }) {
             </div>
             <div className="ml-1 text-tailwind hover:text-white [&>svg]:h-3 [&>svg]:w-3">{LinkSVG}</div>
           </a>
-          <div>{name.loading ? <br /> : name.ENSName ?? <br />}</div>
+          <div>{name?.loading ? <br /> : name?.ENSName ?? <br />}</div>
           <div className="text-[11px] uppercase text-[#FFFFFF80]">
             <span className="text-[#FFFFFFBF]">HOLDER</span>{" "}
-            {holdingTime === 0 ? "No" : timeAgo.format(holdingTime * 1000)}
+            {holdingTime === 0 ? "No" : timeAgo.format(holdingTime)}
           </div>
           <div className="text-[11px] text-[#FFFFFF80]">
             <span className="text-[#FFFFFFBF]">SWAPPED</span>{" "}

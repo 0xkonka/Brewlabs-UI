@@ -20,11 +20,6 @@ import { DEX_GURU_WETH_ADDR } from "config/constants";
 import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const emptyLogos = {
-  1: "/images/dashboard/tokens/empty-token-eth.webp",
-  56: "/images/dashboard/tokens/empty-token-bsc.webp",
-};
-
 const TokenList = ({
   tokens,
   showType,
@@ -128,7 +123,20 @@ const TokenList = ({
     getArchives();
   }, [tokens]);
 
+  const stringifiedValues = JSON.stringify({
+    tokens,
+    favourites,
+    archives,
+    fullOpen,
+    filterType,
+    showType,
+    listType,
+    itemsPerPage,
+    pageIndex,
+  });
+
   useEffect(() => {
+
     let _showData: any = [];
     let filteredTokens: any = [];
     if (listType === 0) {
@@ -165,7 +173,7 @@ const TokenList = ({
         paginationData.push(_showData[i]);
       setShowData(paginationData);
     }
-  }, [tokens, favourites, archives, fullOpen, filterType, showType, listType, itemsPerPage, pageIndex]);
+  }, [stringifiedValues]);
 
   const onClaim = async (address: any) => {
     const claimableTokenContract = getClaimableTokenContract(chainId, address, signer);
@@ -275,7 +283,7 @@ const TokenList = ({
                       else t = new Token(chainId, data.address, data.decimals);
                       // t.address = data.address;
                       // t.isNative = data.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-                      onCurrencySelection(Field.OUTPUT, t); 
+                      onCurrencySelection(Field.OUTPUT, t);
                       setViewType(1);
                     }}
                     rel="noreferrer"
@@ -338,7 +346,7 @@ const TokenList = ({
                       <div className={`h-3.5 w-3.5 ${fullOpen ? "block" : "hidden"}`}>
                         <TrashIcon
                           className={`h-full w-full cursor-pointer text-danger ${
-                            !data.name.includes("_Tracker") ? "" : "hidden"
+                            !data.name?.includes("_Tracker") ? "" : "hidden"
                           }`}
                           onClick={() => onArchive(data.address)}
                           id={"trash" + i}

@@ -26,7 +26,7 @@ export default function CreateLiquidityOption() {
         <span className="text-white">Swap</span>
       </OutlinedButton>
 
-      <Link href={"/constructor"}>
+      {/* <Link href={"/constructor"}>
         <OutlinedButton image="/images/swap/plus-minus.svg" className="mt-2">
           <div className="relative">
             <span className="text-white">Add or remove </span>
@@ -34,7 +34,7 @@ export default function CreateLiquidityOption() {
             <span className="text-white">Swap</span>&nbsp;pair liquidity
           </div>
         </OutlinedButton>
-      </Link>
+      </Link> */}
 
       <OutlinedButton
         image="/images/swap/logout.svg"
@@ -71,7 +71,7 @@ export default function CreateLiquidityOption() {
 
       <OutlinedButton
         image="/images/swap/database.svg"
-        className="mt-2"
+        className="mt-2 hidden"
         onClick={(e) => {
           e.preventDefault();
           setAddLiquidityStep("CreateBundleLiquidityPool");

@@ -21,12 +21,26 @@ export const SUPPORTED_DEXES = {
     [ChainId.ETHEREUM]: ["uniswap-v2"],
     [ChainId.BSC_MAINNET]: ["pcs-v2", "apeswap"],
     [ChainId.BSC_TESTNET]: ["brewlabs", "pcs-v2"],
+    [ChainId.POLYGON]: ["brewlabs"],
   },
   deploy: {
     [ChainId.ETHEREUM]: ["uniswap-v2"],
     [ChainId.BSC_MAINNET]: ["pcs-v2"],
     [ChainId.BSC_TESTNET]: ["brewlabs", "pcs-v2"],
   },
+};
+
+export const SUPPORTED_LPs = {
+  [ChainId.ETHEREUM]: ["UNI-V2"],
+  [ChainId.BSC_MAINNET]: ["Cake-LP"],
+  [ChainId.BSC_TESTNET]: ["BREWSWAP-LP"],
+  [ChainId.POLYGON]: ["BREWSWAP-LP"],
+};
+
+export const SYMBOL_VS_SWAP_TABLE = {
+  "UNI-V2": "uniswap-v2",
+  "Cake-LP": "pcs-v2",  
+  "BREWSWAP-LP": "brewlabs",  
 };
 
 export const DEX_LOGOS = {

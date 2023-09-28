@@ -1,4 +1,5 @@
 import axios from "axios";
+import { DEXSCREENER_CHAINNAME } from "config";
 import { Adapters } from "config/constants/aggregator";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -62,9 +63,30 @@ export async function fetchTradingHistories(query, chainId) {
   );
 
   if (isAddress(query.pool)) {
-    const pools = [...Adapters[chainId].map((adapter) => adapter.address.toLowerCase()), query.pool];
+    const pools = [query.pool];
+
+    const swapTxs = histories
+      .filter((history) => history.transactionType === "swap")
+      .filter((history) =>
+        query.type === "buy"
+          ? query.address === history.fromAddress
+          : query.type === "sell"
+          ? query.address !== history.fromAddress
+          : true
+      )
+      .map((tx) => {
+        return {
+          ...tx,
+          sender: query.account ?? tx.sender ?? (pools.includes(tx.toAddress) ? tx.fromAddress : tx.toAddress),
+        };
+      });
+
     const erc20txs = histories
-      .filter((history) => history.transactionType === "transfer")
+      .filter(
+        (history) =>
+          history.transactionType === "transfer" &&
+          !swapTxs.find((sHistory) => sHistory.transactionAddress === history.transactionAddress)
+      )
       .filter((history) =>
         query.type === "buy"
           ? pools.includes(history.fromAddress)
@@ -80,26 +102,51 @@ export async function fetchTradingHistories(query, chainId) {
           amountStable: history.amountsStable[0],
           nativeAmount: null,
           walletsCategories: [],
-          sender: query.account,
+          sender: query.account ?? (pools.includes(history.toAddress) ? history.fromAddress : history.toAddress),
           type: "",
           poolAddress: query.pool,
         };
       });
-    const swapTxs = histories
-      .filter((history) => history.transactionType === "swap")
-      .filter((history) =>
-        query.type === "buy"
-          ? query.address === history.fromAddress
-          : query.type === "sell"
-          ? query.address !== history.fromAddress
-          : true
-      )
-      .map((tx) => {
-        return { ...tx, sender: query.account };
-      });
     return [...erc20txs, ...swapTxs];
   }
   return histories;
+}
+
+export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default") {
+  let histories = [];
+  let tb = query.tb;
+  try {
+    do {
+      const url = `https://io.dexscreener.com/dex/log/amm/uniswap/all/${DEXSCREENER_CHAINNAME[chainId]}/${query.pair}?${
+        query.type ? `ft=${query.type}` : ""
+      }&${query.account ? `m=${query.account.toLowerCase()}` : ""}&${
+        query.quote ? `q=${query.quote.toLowerCase()}` : ""
+      }&${tb ? `tb=${tb}` : ""}`;
+
+      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+        url,
+      });
+      if (!response.result.logs) break;
+      histories = [...histories, ...response.result.logs].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+      tb = histories[histories.length - 1].blockTimestamp;
+    } while (fetch === "all" && histories.length % 100 === 0);
+
+    return histories.map((log) => ({
+      timestamp: Number(log.blockTimestamp),
+      action: log.txnType,
+      price: Number(log.priceUsd),
+      amount: Number(log.amount0),
+      nativeAmount: undefined,
+      amountStable: Number(log.volumeUsd),
+      transactionAddress: log.txnHash,
+      walletsCategories: [],
+      chainId,
+      sender: log.maker,
+    }));
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 }
 
 export function getVolume(address, data, period) {

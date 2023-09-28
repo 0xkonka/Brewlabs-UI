@@ -12,6 +12,20 @@ const tokens = {
     "Binance USD",
     "https://www.paxos.com/busd/"
   ),
+  usdt: new Token(
+    BSC_TESTNET,
+    "0x0fB5D7c73FA349A90392f873a4FA1eCf6a3d0a96",
+    18,
+    "USDT",
+    "Tether USD"
+  ),
+  usdc: new Token(
+    BSC_TESTNET,
+    "0x64544969ed7EBf5f083679233325356EbE738930",
+    18,
+    "USDC",
+    "USDC Token"
+  ),
   test: new Token(
     BSC_TESTNET,
     "0x8428b19C97acCD93fA10f19cbbdfF4FB71C4D175",

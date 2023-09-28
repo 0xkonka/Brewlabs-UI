@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
+import { useAccount } from "wagmi";
 
 import { SwapContext } from "contexts/SwapContext";
 import PageHeader from "components/layout/PageHeader";
@@ -8,9 +9,13 @@ import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
-import { useLPTokens, SYMBOL_VS_SWAP_TABLE } from "hooks/constructor/useLPTokens";
+
+import { SYMBOL_VS_SWAP_TABLE } from "config/constants/swap";
+import { useLPTokens } from "hooks/constructor/useLPTokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
+import { useUserSlippageTolerance } from "state/user/hooks";
+import { useUserLpTokenData } from "state/wallet/hooks";
 import { getLpManagerAddress } from "utils/addressHelpers";
 
 import Modal from "components/Modal";
@@ -19,7 +24,6 @@ import SettingModal from "views/swap/components/modal/SettingModal";
 import BasePanel from "./BasePanel";
 import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
-import { useUserSlippageTolerance } from "state/user/hooks";
 
 export default function Constructor() {
   const { chainId } = useActiveChainId();
@@ -28,7 +32,8 @@ export default function Constructor() {
   const [selectedLP, setSelectedLP] = useState(0);
   const [showCount, setShowCount] = useState(3);
 
-  const { ethLPTokens, bscLPTokens, fetchLPTokens }: any = useLPTokens();
+  const { lpTokens, loading: isLoading, fetchLPTokens }: any = useLPTokens();
+
   const {
     slippageInput,
     autoMode,
@@ -52,10 +57,8 @@ export default function Constructor() {
     }
   };
 
-  const lpTokens = [...(ethLPTokens ?? []), ...(bscLPTokens ?? [])];
   const sortedTokens =
     lpTokens && lpTokens.sort((a, b) => b.balance * b.price - a.balance * a.price).slice(0, showCount);
-  const isLoading = !(lpTokens.length || (ethLPTokens !== null && bscLPTokens !== null));
 
   return (
     <PageWrapper>

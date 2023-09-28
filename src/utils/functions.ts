@@ -1,6 +1,6 @@
-import { ChainId, Currency, Token, WNATIVE } from "@brewlabs/sdk";
+import { ChainId, Currency, NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
-import { CHAIN_ICONS, EXPLORER_LOGO, EXPLORER_NAMES, EXPLORER_URLS } from "config/constants/networks";
+import { CHAIN_ICONS, EMPTY_TOKEN_LOGO, EXPLORER_LOGO, EXPLORER_NAMES, EXPLORER_URLS } from "config/constants/networks";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { DEX_LOGOS } from "config/constants/swap";
 import { toast } from "react-toastify";
@@ -83,6 +83,7 @@ export const priceFormat = (str) => {
   return { count: c - 1, value };
 };
 
+export const getEmptyTokenLogo = (chainId) => EMPTY_TOKEN_LOGO[chainId] ?? EMPTY_TOKEN_LOGO[56]
 export const getChainLogo = (chainId) => CHAIN_ICONS[chainId] ?? "/images/networks/unkown.png";
 export const getExplorerLogo = (chainId) => EXPLORER_LOGO[chainId] ?? "/images/networks/unkown.png";
 export const getDexLogo = (exchange) => DEX_LOGOS[exchange];
@@ -109,6 +110,12 @@ export const formatIPFSString = (url) => {
 
 export const getAddLiquidityUrl = (dexId: string, token1: Currency, token2: Currency, chainId: number) => {
   return `/add/${chainId}/${dexId}/${
+    token1.isNative || token1.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token1.address
+  }/${token2.isNative || token2.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token2.address}`;
+};
+
+export const getRemoveLiquidityUrl = (dexId: string, token1: Currency, token2: Currency, chainId: number) => {
+  return `/remove/${chainId}/${dexId}/${
     token1.isNative || token1.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token1.address
   }/${token2.isNative || token2.symbol === WNATIVE[chainId].symbol ? getNativeSybmol(chainId) : token2.address}`;
 };

@@ -133,6 +133,20 @@ export const EXPLORER_LOGO = {
   [ChainId.BSC_TESTNET]: "/images/explorer/bscscan.png",
 };
 
+export const EMPTY_TOKEN_LOGO = {
+  [ChainId.ETHEREUM]: "/images/dashboard/tokens/empty/eth.wep",
+  [ChainId.ARBITRUM]: "/images/dashboard/tokens/empty/arb.png",
+  [ChainId.BSC_MAINNET]: "/images/dashboard/tokens/empty/bnb.webp",
+  [ChainId.POLYGON]: "/images/dashboard/tokens/empty/matic.png",
+  [ChainId.FANTOM]: "/images/dashboard/tokens/empty/ftm.png",
+  [ChainId.AVALANCHE]: "/images/dashboard/tokens/empty/avax.png",
+  [ChainId.CRONOS]: "/images/dashboard/tokens/empty/cro.png",
+  [ChainId.BRISE]: "/images/networks/bitgert.png",
+
+  [ChainId.GOERLI]: "/images/dashboard/tokens/empty/eth.wep",
+  [ChainId.BSC_TESTNET]: "/images/dashboard/tokens/empty/bnb.webp",
+}
+
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   id: chainId,
   name: CHAIN_LABLES[chainId],

@@ -39,7 +39,6 @@ export const rewardInUSD = (token0, token1, token0Price, token1Price, reward) =>
 
 const SwapRewards = () => {
   const { chainId, account } = useActiveWeb3React();
-  // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
 
   const [curFilter, setCurFilter] = useState(0);
   const [criteria, setCriteria] = useState("");

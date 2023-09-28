@@ -5,7 +5,6 @@ import { Contract } from "ethers";
 import { useEffect, useState } from "react";
 import multicall from "utils/multicall";
 import { simpleRpcProvider } from "utils/providers";
-import { useSecondRefreshEffect } from "./useRefreshEffect";
 
 export async function getMultiChainTotalBalances(tokens: any, address: any) {
   let totalBalance = 0;

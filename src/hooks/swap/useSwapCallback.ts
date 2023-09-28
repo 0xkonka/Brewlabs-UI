@@ -61,7 +61,7 @@ function useSwapCallArguments(
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient = recipientAddressOrName === null ? account : recipientAddress;
-  const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId][0]?.key][chainId];
+  const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId]?.[0]?.key]?.[chainId];
 
   return useMemo(() => {
     if (!trade || !recipient || !library || !account || !chainId) return [];

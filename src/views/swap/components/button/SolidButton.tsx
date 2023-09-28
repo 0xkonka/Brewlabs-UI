@@ -18,7 +18,7 @@ const SolidButton = ({ children, onClick, className, disabled, pending, href }: 
         // rouetr
       }}
       disabled={disabled}
-      className={`primary-shadow relative cursor-pointer rounded-lg bg-primary py-2.5 text-center font-brand text-sm font-bold leading-[1.2] text-black transition enabled:hover:border-primary enabled:hover:bg-opacity-80 ${
+      className={`primary-shadow relative cursor-pointer rounded-xl bg-primary py-3 text-center font-brand text-sm font-bold text-black transition enabled:hover:border-primary enabled:hover:bg-opacity-80 ${
         className ?? ""
       } disabled:cursor-not-allowed disabled:opacity-70`}
     >

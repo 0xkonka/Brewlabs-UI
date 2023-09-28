@@ -1,21 +1,21 @@
 import { useContext, useEffect, useState } from "react";
-
-import LogoIcon from "../LogoIcon";
-import PerformanceChart from "./PerformanceChart";
-import SwitchButton from "./SwitchButton";
-import TokenList from "./TokenList";
-import FullOpenVector from "./FullOpenVector";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
 
 import { DashboardContext } from "contexts/DashboardContext";
-import NavButton from "./NavButton";
-import styled from "styled-components";
-import SwapBoard from "views/swap/SwapBoard";
-import IndexPerformance from "./IndexPerformance";
-import NFTList from "./NFTList";
-import { useFetchTokenBalance, useUserTokenData } from "state/wallet/hooks";
-import { useAccount, useSigner } from "wagmi";
 import { useActiveChainId } from "@hooks/useActiveChainId";
+import SwapBoard from "views/swap/SwapBoard";
+import { useUserTokenData } from "state/wallet/hooks";
+
+import LogoIcon from "../LogoIcon";
+import FullOpenVector from "./FullOpenVector";
+import SwitchButton from "./SwitchButton";
+import NavButton from "./NavButton";
+import IndexPerformance from "./IndexPerformance";
 import FeaturedPriceList from "./FeaturedPriceList";
+import PerformanceChart from "./PerformanceChart";
+import NFTList from "./NFTList";
+import TokenList from "./TokenList";
 
 const UserDashboard = () => {
   const [showType, setShowType] = useState(0);
@@ -28,13 +28,9 @@ const UserDashboard = () => {
   const [maxPage, setMaxPage] = useState(0);
 
   const { address: account } = useAccount();
-  // const account = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
-  const { data: signer } = useSigner();
   const { chainId } = useActiveChainId();
 
   const tokens = useUserTokenData(chainId, account);
-
-  useFetchTokenBalance(account, chainId, signer);
 
   useEffect(() => {
     if (window.innerHeight < 790) setItemsPerPage(Math.floor((window.innerHeight - 300) / 50));
@@ -42,6 +38,7 @@ const UserDashboard = () => {
     else setItemsPerPage(Math.floor((window.innerHeight - 548) / 50));
   }, [fullOpen]);
 
+  const stringifiedValues = JSON.stringify({ listType, tokens, archives, itemsPerPage });
   useEffect(() => {
     let _filteredTokens: any = [];
     if (listType === 0) {
@@ -50,7 +47,7 @@ const UserDashboard = () => {
       _filteredTokens = tokens.filter((data: any) => archives.includes(data.address));
     }
     setMaxPage(Math.ceil(_filteredTokens.length / itemsPerPage));
-  }, [listType, tokens, archives, itemsPerPage]);
+  }, [stringifiedValues]);
 
   return (
     <>

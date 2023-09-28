@@ -19,7 +19,7 @@ import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
 import { calculateGasMargin, isAddress } from "utils";
 import { getContract } from "utils/contractHelpers";
-import { getDexLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
+import { getDexLogo, getEmptyTokenLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
@@ -198,16 +198,16 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
             alt={""}
             className="h-8 w-8 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)]"
             onError={(e: any) => {
-              e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+              e.target.src = getEmptyTokenLogo(chainId);
             }}
           />
-          <div className="flex items-center ml-4">
+          <div className="ml-4 flex items-center">
             <img
               src={getTokenLogoURL(token0Address, chainId)}
               alt={""}
               className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
               onError={(e: any) => {
-                e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+                e.target.src = getEmptyTokenLogo(chainId);
               }}
             />
 
@@ -217,7 +217,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
                 alt={""}
                 className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
                 onError={(e: any) => {
-                  e.target.src = `/images/dashboard/tokens/empty-token-${chainId === 1 ? "eth" : "bsc"}.webp`;
+                  e.target.src = getEmptyTokenLogo(chainId);
                 }}
               />
             </div>
@@ -277,9 +277,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
 
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="tooltip flex items-center" data-tip="Deposit fees are sent to deployer address.">
-            <div className=" -mt-0.5 mr-1.5 scale-125 text-sm text-white">
-              {InfoSVG}
-            </div>
+            <div className=" -mt-0.5 mr-1.5 scale-125 text-sm text-white">{InfoSVG}</div>
             <div>Deposit fee</div>
           </div>
           <div className="flex items-center">
@@ -300,9 +298,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         </div>
         <div className="mt-4  flex flex-col items-center justify-between xs:mt-1 xs:flex-row xs:items-start">
           <div className="tooltip flex items-center" data-tip="Withdraw fees are sent to deployer address.">
-            <div className="-mt-0.5 mr-1.5 scale-125 text-white">
-              {InfoSVG}
-            </div>
+            <div className="-mt-0.5 mr-1.5 scale-125 text-white">{InfoSVG}</div>
             <div>Withdrawal fee</div>
           </div>
           <div className="flex items-center">

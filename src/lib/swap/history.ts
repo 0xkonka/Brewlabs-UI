@@ -8,12 +8,15 @@ import { ChainId } from "@brewlabs/sdk";
 const pageSize = 1000;
 
 export const getSwapLogs = async (graphEndpoint: { [path: string]: string }, caller: string, chainId: ChainId) => {
+  if(!caller) return []
   const aggregatorSwapLogs = await getSwapLogsFromAggregator(graphEndpoint.aggregator, caller);
   const routerSwapLogs = await getSwapLogsFromRouter(graphEndpoint.router, caller, chainId);
   return routerSwapLogs.concat(aggregatorSwapLogs);
 };
 
 export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: string, chainId: ChainId) => {
+  if (!graphEndpoint) return [];
+
   let logs: any[] = [];
   let page = 0;
   const first = pageSize;
@@ -38,7 +41,9 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
 
   const senders = await Promise.all(
     logs.map(async (log) => {
-      const { transaction: { id: transactionHash } } = log;
+      const {
+        transaction: { id: transactionHash },
+      } = log;
       const receipt = await waitForTransaction({ chainId, hash: transactionHash });
       return receipt.from;
     })
@@ -84,6 +89,8 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
 };
 
 export const getSwapLogsFromAggregator = async (graphEndpoint: string, caller: string) => {
+  if (!graphEndpoint) return [];
+
   let logs: any[] = [];
   let page = 0;
   const first = pageSize;

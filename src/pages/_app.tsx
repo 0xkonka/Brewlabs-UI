@@ -51,10 +51,17 @@ import LoadingPage from "@components/LoadingPage";
 import { ChartContextProvider } from "contexts/ChartContext";
 import { CommunityContextProvider } from "contexts/CommunityContext";
 import { useFetchMarketData } from "state/prices/hooks";
+import { useAccount, useSigner } from "wagmi";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useFetchTokenBalance } from "state/wallet/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
+  const { address: account } = useAccount();
+  const { data: signer } = useSigner();
+  const { chainId } = useActiveChainId();
+
   usePollBlockNumber();
   useAccountEventListener();
 
@@ -77,6 +84,7 @@ function GlobalHooks() {
 
   useFetchMarketData();
 
+  useFetchTokenBalance(account, chainId, signer);
   return null;
 }
 
