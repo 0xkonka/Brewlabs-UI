@@ -48,7 +48,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
   const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
 
-  const isPending = !pool || pool.startBlock > currentBlock;
+  const isPending = !pool || pool.startBlock < currentBlock;
   const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
 
   const apr = flaskNft.mintFee
