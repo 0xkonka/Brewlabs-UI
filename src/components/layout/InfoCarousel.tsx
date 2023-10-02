@@ -1,3 +1,4 @@
+import { WNATIVE } from "@brewlabs/sdk";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import {
   BarChartSVG,
@@ -11,12 +12,17 @@ import {
   UpDownSVG,
   chevronLeftSVG,
 } from "@components/dashboard/assets/svgs";
+import useActiveWeb3React from "@hooks/useActiveWeb3React";
+import useTokenPrice from "@hooks/useTokenPrice";
+import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
 import { CommunityContext } from "contexts/CommunityContext";
+import { formatEther, formatUnits } from "ethers/lib/utils.js";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { Tooltip } from "react-tooltip";
 import { useAllHomeData, useHomeTransaction } from "state/home/hooks";
 import { useIndexes } from "state/indexes/hooks";
+import { useAllNftData } from "state/nfts/hooks";
 import { numberWithCommas } from "utils/functions";
 
 const responsive = {
@@ -45,14 +51,31 @@ const responsive = {
 const InfoCarousel = () => {
   const { totalStakedValues, communities }: any = useContext(CommunityContext);
 
+  const { account, chainId } = useActiveWeb3React();
   const homeDatas = useAllHomeData();
   const { indexes } = useIndexes();
+  const { flaskNft: flaskNfts, data } = useAllNftData();
+
+  const flaskNft = flaskNfts.find((p) => p.chainId === chainId);
+  const pool = data.find((p) => p.chainId === chainId);
+  const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
+  const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
+
+  const apr =
+    flaskNft.mintFee && pool?.totalStaked
+      ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[chainId]) * 100) /
+        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
+          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+          (pool?.totalStaked ?? 0))
+      : 0;
+
   const recentIndexes = indexes.filter(
     (index) => new Date(index.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
   );
   const recentCommunities = communities.filter(
     (community) => new Date(community.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
   );
+
 
   const items = [
     {
@@ -167,10 +190,10 @@ const InfoCarousel = () => {
       suffix: "APR",
       icon: NFTFillSVG,
       value:
-        homeDatas.nftStakings.apy === null ? (
+        apr ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
-          `${homeDatas.nftStakings.apy.toFixed(2)}%`
+          `${apr.toFixed(2)}%`
         ),
       tooltip: "Best performing NFT staking pool.",
       subItem: {
