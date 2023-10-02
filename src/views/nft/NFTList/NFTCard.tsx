@@ -202,7 +202,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
               )}
             </div>
             <div className="relative w-[90px] text-xs leading-[1.2] text-white">
-              {apr ? "Pending" : `${apr.toFixed(2) ?? "0.00"}%`} APR
+              {!apr ? "Pending" : `${apr.toFixed(2) ?? "0.00"}%`} APR
               <br />
               <div className="relative text-[10px] font-normal text-[#FFFFFF80]">
                 in {NETWORKS[nft.chainId].nativeCurrency.symbol} approx.

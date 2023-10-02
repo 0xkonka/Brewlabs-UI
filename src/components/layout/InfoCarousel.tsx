@@ -190,7 +190,7 @@ const InfoCarousel = () => {
       suffix: "APR",
       icon: NFTFillSVG,
       value:
-        apr ? (
+        !apr ? (
           <SkeletonComponent className="!min-w-[100px]" />
         ) : (
           `${apr.toFixed(2)}%`
