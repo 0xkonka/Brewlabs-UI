@@ -5,7 +5,7 @@ const useWalletTokens = (walletAddress: string, chain: string) => {
   const [tokens, setTokens] = useState([]);
 
   const fetchTokens = useCallback(async () => {
-    if (!chain) {
+    if (!chain || !walletAddress) {
       setTokens([]);
       return;
     }
