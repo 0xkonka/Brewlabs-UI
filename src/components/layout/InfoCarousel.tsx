@@ -198,10 +198,10 @@ const InfoCarousel = () => {
       tooltip: "Best performing NFT staking pool.",
       subItem: {
         value:
-          homeDatas.nftStakings.mintCount === null ? (
+          homeDatas.nftStakings.stakedCount === null ? (
             <SkeletonComponent className="!min-w-[60px]" />
           ) : (
-            `${numberWithCommas(homeDatas.nftStakings.mintCount)}`
+            `${numberWithCommas(homeDatas.nftStakings.stakedCount)}`
           ),
         suffix: "STAKED",
       },
