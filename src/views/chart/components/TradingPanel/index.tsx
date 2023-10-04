@@ -14,7 +14,7 @@ import { useMediaQuery } from "react-responsive";
 
 let wrappedQuery;
 
-export default function TradingPanel({ currency, marketInfos, showReverse }) {
+export default function TradingPanel({ currency, marketInfos, showReverse, }) {
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
 
   const getQuery = () => {

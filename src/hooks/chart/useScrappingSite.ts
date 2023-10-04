@@ -42,6 +42,9 @@ export function useCMCListings() {
 
 export function useCGListings() {
   const [trendings, setTrendings] = useState([]);
+  const [gainers, setGainers] = useState([]);
+  const [losers, setLosers] = useState([]);
+
   async function getTrendings() {
     try {
       const { data: response } = await axios.get(`https://api.coingecko.com/api/v3/search/trending`);
@@ -50,8 +53,21 @@ export function useCGListings() {
       console.log(e);
     }
   }
+
+  async function getGainersOrLosers() {
+    try {
+      const { data: response } = await axios.post(`${API_URL}/html/getHTML`, {
+        url: "https://www.coingecko.com/en/crypto-gainers-losers",
+      });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useSlowRefreshEffect(() => {
     getTrendings();
+    getGainersOrLosers();
   }, []);
-  return { trendings };
+  return { trendings, gainers, losers };
 }

@@ -1,4 +1,4 @@
-import { LinkSVG } from "@components/dashboard/assets/svgs";
+import { ChevronCircleDownSVG, LinkSVG } from "@components/dashboard/assets/svgs";
 import useENSName from "@hooks/ENS/useENSName";
 import { getExplorerLink } from "lib/bridge/helpers";
 import { getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
@@ -19,7 +19,7 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 let wrappedQuery;
 
-export default function UserInfo({ currency, active, account }) {
+export default function UserInfo({ currency, active, account, setShowType, setCriteria }) {
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
@@ -40,7 +40,7 @@ export default function UserInfo({ currency, active, account }) {
       quote: currency.tokenAddresses[1],
       tb: 0,
       account,
-      type: "buyOrSell"
+      type: "buyOrSell",
     };
     return query;
   };
@@ -187,9 +187,17 @@ export default function UserInfo({ currency, active, account }) {
             <div className="ml-1 text-tailwind hover:text-white [&>svg]:h-3 [&>svg]:w-3">{LinkSVG}</div>
           </a>
           <div>{name?.loading ? <br /> : name?.ENSName ?? <br />}</div>
-          <div className="text-[11px] uppercase text-[#FFFFFF80]">
-            <span className="text-[#FFFFFFBF]">HOLDER</span>{" "}
-            {holdingTime === 0 ? "No" : timeAgo.format(holdingTime)}
+          <div className="relative text-[11px] uppercase text-[#FFFFFF80]">
+            <span className="text-[#FFFFFFBF]">HOLDER</span> {holdingTime === 0 ? "No" : timeAgo.format(holdingTime)}
+            <div
+              className="absolute -left-7 top-0 rotate-[90deg] cursor-pointer text-[#404045] hover:text-white [&>svg]:h-4 [&>svg]:w-4"
+              onClick={() => {
+                setShowType(0);
+                setCriteria("");
+              }}
+            >
+              {ChevronCircleDownSVG}
+            </div>
           </div>
           <div className="text-[11px] text-[#FFFFFF80]">
             <span className="text-[#FFFFFFBF]">SWAPPED</span>{" "}

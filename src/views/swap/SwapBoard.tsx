@@ -65,7 +65,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
       <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
       <div className="flex items-center justify-between">
-        <Security size="lg" />
+        {swapTab !== 1 ? <Security size="lg" /> : <div />}
         <SlippageText className="!text-xs" />
       </div>
 

@@ -7,6 +7,7 @@ import PairList from "./PairList";
 import StyledButton from "views/directory/StyledButton";
 import { chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import { useRouter } from "next/router";
+import ChartPanel from "./ChartPanel";
 
 export default function Info() {
   const [criteria, setCriteria] = useState("");
@@ -20,13 +21,17 @@ export default function Info() {
           </>
         }
       />
-      <Container>
-        <div className="mb-10 -mt-4 flex justify-end">
-          <StyledButton onClick={() => router.push("/swap")} className="!h-[32px] !w-[125px]">
-            <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
-            <div className="ml-2">Back to swap</div>
-          </StyledButton>
+      <Container className="font-brand">
+        <div className="-mt-4 mb-10">
+          <div className="text-xl text-primary">BrewSwap pools</div>
+          <div className="mt-2 text-sm">
+            Observe the volume and fee collection from various liquidity pools across the BrewSwap decentralised
+            exchange. Users can easily join pools and start earning a portion of fee revenue by using the “join pool”
+            feature. Fee revenue is generated from swap, bridge and index volume and is distributed to users who supply
+            liquidity instantly.
+          </div>
         </div>
+        <ChartPanel />
         <input
           type={"text"}
           placeholder="Search pair, token, symbol..."
