@@ -131,7 +131,13 @@ export default function SwapHistory({ currency }) {
   return (
     <div className="duraton-300 transition-all">
       <HistoryToolBar showType={showType} setShowType={setShowType} criteria={criteria} setCriteria={setCriteria} />
-      <UserInfo currency={currency} active={showType >= 3} account={showType === 6 ? criteria : account} />
+      <UserInfo
+        currency={currency}
+        active={showType >= 3}
+        account={showType === 6 ? criteria : account}
+        setShowType={setShowType}
+        setCriteria={setCriteria}
+      />
       <HistoryList
         histories={totalHistories}
         currency={currency}
@@ -140,6 +146,7 @@ export default function SwapHistory({ currency }) {
         setTB={setTB}
         setCriteria={setCriteria}
         setShowType={setShowType}
+        isAccount={showType === 6}
       />
     </div>
   );

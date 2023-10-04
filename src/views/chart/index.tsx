@@ -119,9 +119,9 @@ export default function Chart({ chain, address }) {
           />
         </Modal>
       )}
-      <div className={`px-3 pb-10 font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
+      <div className={`px-3 pb-10 font-roboto md:px-6 3xl:md:px-16 ${pending ? "opacity-50" : ""}`}>
         {selectedCurrency ? (
-          <div className="relative mx-auto mt-24 w-full max-w-[1720px] lg:mt-0">
+          <div className="relative mx-auto mt-24 w-full lg:mt-0">
             <Header setShowReverse={setShowReverse} showReverse={showReverse} />
             <TokenInfo currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />
             <TradingPanel currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />

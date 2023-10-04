@@ -5,6 +5,7 @@ import { SwapContext } from "../../../../contexts/SwapContext";
 import MobileNav from "./MobileNav";
 import Notification from "@components/Notification";
 import Soon from "@components/Soon";
+import Link from "next/link";
 
 type Props = {
   openSettingModal: () => void;
@@ -36,7 +37,7 @@ const SubNav = ({ openSettingModal }: Props) => {
           <Notification count={collectiblePairs.length} />
           {/* <Soon /> */}
         </button>
-        {/* <Link href={"/tradingPairs"}> */}
+        <Link href={"/tradingPairs"}>
           <button
             className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""} relative`}
             //  onClick={() => setSwapTab(2)}
@@ -44,7 +45,7 @@ const SubNav = ({ openSettingModal }: Props) => {
             Pools & analytics
             <Soon />
           </button>
-        {/* </Link> */}
+        </Link>
       </div>
       <MobileNav></MobileNav>
       <div className="absolute right-7 top-6" onClick={openSettingModal}>
