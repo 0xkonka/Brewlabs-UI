@@ -1,8 +1,9 @@
 import { CurrencyAmount, Price } from "@brewlabs/sdk";
-import { useOwnedLiquidityPools } from "@hooks/swap/useLiquidityPools";
-import { slippageDefault } from "config/constants";
 import { BigNumber } from "ethers";
 import React, { useEffect, useState } from "react";
+
+import { slippageDefault } from "config/constants";
+import { useOwnedLiquidityPools } from "@hooks/swap/useLiquidityPools";
 import { useDefaultsFromURLSearch } from "state/swap/hooks";
 import { getStringfy } from "utils/functions";
 
@@ -83,7 +84,7 @@ const SwapContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     setSwapFeeData({ eligiblePairs, ownedPairs, lpBalances, collectiblePairs, rewards, pairTokens });
-     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s_eligiblePairs, s_ownedPairs, s_lpBalances, s_collectiblePairs, s_rewards, s_pairTokens]);
 
   return (

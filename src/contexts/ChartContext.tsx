@@ -1,5 +1,3 @@
-import axios from "axios";
-import { API_URL } from "config/constants";
 import { isArray } from "lodash";
 import React, { useEffect, useState } from "react";
 

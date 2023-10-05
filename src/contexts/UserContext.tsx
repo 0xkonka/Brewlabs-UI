@@ -4,7 +4,6 @@ import { useAccount } from "wagmi";
 import { API_URL } from "config/constants";
 import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
 
-
 const UserContext: any = React.createContext({ userData: {}, fetchUserData: () => {}, changeAvatar: () => {} });
 const instance = axios.create({ baseURL: API_URL });
 
