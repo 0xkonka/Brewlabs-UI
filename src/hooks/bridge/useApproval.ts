@@ -1,14 +1,16 @@
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
+
 import { BridgeToken } from "config/constants/types";
 import { approveToken, fetchAllowance } from "lib/bridge/token";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useEthersSigner } from "utils/ethersAdapter";
 
 export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHash?: string) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
   const [allowance, setAllowance] = useState(BigNumber.from(0));
   const [allowed, setAllowed] = useState(true);
 

@@ -4,7 +4,7 @@ import { BigNumber, TransactionResponse } from "alchemy-sdk";
 import router from "next/router";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount, useConnect, useSigner } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 
 import { ONE_BIPS } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -21,6 +21,7 @@ import { calculateGasMargin, calculateSlippageAmount } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { getExplorerLogo } from "utils/functions";
+import { useEthersSigner } from "utils/ethersAdapter";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import maxAmountSpend from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
@@ -47,7 +48,7 @@ export default function AddLiquidityPanel({
   const { chainId, isWrongNetwork } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const deadline = useTransactionDeadline();

@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useProvider } from "wagmi";
 
 import { POLLING_INTERVAL } from "config/constants/bridge";
 import { useBridgeContext } from "contexts/BridgeContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { timeout, withTimeout } from "lib/bridge/helpers";
 import { getMessage, getMessageData, messageCallStatus, NOT_ENOUGH_COLLECTED_SIGNATURES } from "lib/bridge/message";
-import { provider } from "utils/wagmi";
 
 import { useBridgeDirection } from "./useBridgeDirection";
 import { useNeedsClaiming } from "./useNeedsClaiming";
+import { useEthersProvider } from "utils/ethersAdapter";
+import { simpleRpcProvider } from "utils/providers";
 
 export const useTransactionStatus = (setMessage: any) => {
   const needsClaiming = useNeedsClaiming();
   const { homeChainId, getBridgeChainId, getAMBAddress, getTotalConfirms } = useBridgeDirection();
   const { chainId } = useActiveChainId();
-  const ethersProvider = useProvider();
+  const ethersProvider = useEthersProvider();
   const { loading, setLoading, txHash, setTxHash }: any = useBridgeContext();
 
   const isHome = chainId === homeChainId;
@@ -32,9 +32,7 @@ export const useTransactionStatus = (setMessage: any) => {
     setLoading(false);
     setLoadingText(undefined);
     setConfirmations(0);
-    toast.success(
-      `The token has been successfully transferred. After a while it will appear in the history table.`
-    );
+    toast.success(`The token has been successfully transferred. After a while it will appear in the history table.`);
   }, [setLoading, setTxHash]);
 
   const incompleteReceipt = useCallback(() => {
@@ -53,6 +51,7 @@ export const useTransactionStatus = (setMessage: any) => {
 
   const getStatus = useCallback(async () => {
     try {
+      const bridgeProvider = simpleRpcProvider(bridgeChainId);
       const tx = await ethersProvider.getTransaction(txHash);
       const txReceipt: any = tx ? await withTimeout(5 * POLLING_INTERVAL, tx.wait()) : null;
       const numConfirmations = txReceipt ? txReceipt.confirmations : 0;
@@ -61,7 +60,6 @@ export const useTransactionStatus = (setMessage: any) => {
       if (txReceipt) {
         setConfirmations(numConfirmations);
         if (enoughConfirmations) {
-          const bridgeProvider = await provider({ chainId: bridgeChainId });
           const bridgeAmbAddress = getAMBAddress(bridgeChainId);
           if (needsClaiming) {
             setLoadingText("Collecting Signatures");

@@ -5,7 +5,7 @@ import { BigNumber, Contract, ethers } from "ethers";
 import { splitSignature } from "ethers/lib/utils";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { NETWORKS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -25,6 +25,7 @@ import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
 import { formatAmount } from "utils/formatApy";
 import { getChainLogo, getEmptyTokenLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -46,7 +47,7 @@ export default function RemoveLiquidityPanel({
   lpPrice = undefined,
 }) {
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const { chainId } = useActiveChainId();
   const { library }: any = useActiveWeb3React();

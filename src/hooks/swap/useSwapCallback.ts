@@ -11,14 +11,16 @@ import {
   TradeType,
 } from "@brewlabs/sdk";
 import { useMemo } from "react";
-import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "../../config/constants";
-import { useTransactionAdder } from "state/transactions/hooks";
-import { calculateGasMargin, isAddress, shortenAddress } from "../../utils";
-import { getBrewlabsRouterContract } from "utils/contractHelpers";
-import isZero from "../../utils/isZero";
+
+import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
+import { useTransactionAdder } from "state/transactions/hooks";
+import { calculateGasMargin, isAddress, shortenAddress } from "utils";
+import { getBrewlabsRouterContract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
+import isZero from "utils/isZero";
+
 import useENS from "../ENS/useENS";
-import { useSigner } from "wagmi";
 
 enum SwapCallbackState {
   INVALID,
@@ -57,7 +59,7 @@ function useSwapCallArguments(
   recipientAddressOrName: string | null // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapCall[] {
   const { account, chainId, library } = useActiveWeb3React();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient = recipientAddressOrName === null ? account : recipientAddress;

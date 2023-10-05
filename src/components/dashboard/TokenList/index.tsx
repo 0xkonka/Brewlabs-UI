@@ -1,24 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import ToolBar from "./ToolBar";
 import { useContext, useEffect, useRef, useState } from "react";
+import { Token, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import { StarIcon as StarOutlineIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
-import styled from "styled-components";
-import { claimSVG, disabledClaimSVG, NoneSVG, warningSVG } from "../assets/svgs";
 import { isArray } from "lodash";
-import { getClaimableTokenContract } from "utils/contractHelpers";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { useAccount, useSigner } from "wagmi";
-import { DashboardContext } from "contexts/DashboardContext";
-import { BigNumberFormat, getBlockExplorerLink, getChainLogo } from "utils/functions";
-
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { useSwapActionHandlers } from "state/swap/hooks";
-import { Field } from "state/swap/actions";
-import { Token, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
+
 import { DEX_GURU_WETH_ADDR } from "config/constants";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { Field } from "state/swap/actions";
+import { useSwapActionHandlers } from "state/swap/hooks";
 import { isAddress } from "utils";
+import { getClaimableTokenContract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
+import { BigNumberFormat } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import { claimSVG, disabledClaimSVG, NoneSVG, warningSVG } from "../assets/svgs";
+import ToolBar from "./ToolBar";
 
 const TokenList = ({
   tokens,
@@ -52,7 +54,7 @@ const TokenList = ({
 
   const { chainId } = useActiveChainId();
   const { address } = useAccount();
-  const { data: signer }: any = useSigner();
+  const signer  = useEthersSigner();
   const { pending, setPending, tokenList, viewType, setViewType }: any = useContext(DashboardContext);
   const valueRef: any = useRef();
 

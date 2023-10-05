@@ -1,15 +1,16 @@
 import { Currency, CurrencyAmount, TokenAmount, Token } from "@brewlabs/sdk";
 import useENS from "@hooks/ENS/useENS";
-import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
 import { ethers } from "ethers";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useEffect, useMemo, useState } from "react";
+
+import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { Field } from "state/swap/actions";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, isAddress, shortenAddress } from "utils";
 import { getAggregatorContract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
 import { makeBigNumber } from "utils/functions";
-import { useSigner } from "wagmi";
 
 export const useSwapAggregator = (
   currencies: { [field in Field]?: Currency },
@@ -20,7 +21,7 @@ export const useSwapAggregator = (
 ) => {
   const { account, chainId, library } = useActiveWeb3React();
 
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient = recipientAddressOrName === null ? account : recipientAddress;

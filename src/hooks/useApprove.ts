@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 import { ethers } from "ethers";
-import { useSigner } from "wagmi";
 
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getErc721Contract } from "utils/contractHelpers";
+import { getNetworkGasPrice } from "utils/getGasPrice";
+import { useEthersSigner } from "utils/ethersAdapter";
 
 export const useTokenApprove = () => {
   const { chainId, library } = useActiveWeb3React();
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner()
 
   const handleApprove = useCallback(
     async (tokenAddress, spender) => {

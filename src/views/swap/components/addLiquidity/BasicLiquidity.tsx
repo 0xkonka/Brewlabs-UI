@@ -1,30 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import { TransactionResponse } from "@ethersproject/providers";
-import DeployYieldFarm from "./DeployYieldFarm";
-import CurrencyInputPanel from "components/currencyInputPanel";
-import React, { useContext, useState } from "react";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
-import SolidButton from "../button/SolidButton";
-import OutlinedButton from "../button/OutlinedButton";
-import { SwapContext } from "contexts/SwapContext";
+import React, { useContext, useState } from "react";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
-import { useSigner } from "wagmi";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
-import { useUserSlippageTolerance } from "state/user/hooks";
-import { Field } from "state/mint/actions";
-import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
-import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
-import { maxAmountSpend } from "utils/maxAmountSpend";
-import { wrappedCurrency } from "utils/wrappedCurrency";
-import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
-import { useTransactionAdder } from "state/transactions/hooks";
-import { CurrencyLogo } from "@components/logo";
-import useTotalSupply from "@hooks/useTotalSupply";
-import { getChainLogo } from "utils/functions";
+import CurrencyInputPanel from "components/currencyInputPanel";
 import {
   BurnSVG,
   EditSVG,
@@ -35,16 +17,36 @@ import {
   PoolFeeSVG,
   checkCircleSVG,
 } from "@components/dashboard/assets/svgs";
-import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import { CurrencyLogo } from "components/logo";
 import WarningModal from "@components/warningModal";
+
+import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import { SwapContext } from "contexts/SwapContext";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
+import { getPairOwner } from "@hooks/usePairs";
+import useTotalSupply from "hooks/useTotalSupply";
+import { useUserSlippageTolerance } from "state/user/hooks";
+import { Field } from "state/mint/actions";
+import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { defaultMarketData } from "state/prices/types";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTransactionAdder } from "state/transactions/hooks";
+import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
+import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
+import { getChainLogo } from "utils/functions";
+import { maxAmountSpend } from "utils/maxAmountSpend";
+import { wrappedCurrency } from "utils/wrappedCurrency";
+
+import OutlinedButton from "../button/OutlinedButton";
+import SolidButton from "../button/SolidButton";
+import DeployYieldFarm from "./DeployYieldFarm";
 import SetWalletModal from "./SetWalletModal";
-import { getPairOwner } from "@hooks/usePairs";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
 
   const liquidityProviderFee = 0.25;

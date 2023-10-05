@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
+
 import { fetchConfirmations } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { provider } from "utils/wagmi";
+import { useEthersProvider } from "utils/ethersAdapter";
 
 export const useTotalConfirms = (
   homeChainId: ChainId,
@@ -10,6 +11,9 @@ export const useTotalConfirms = (
   homeAmbAddress: string,
   foreignAmbAddress: string
 ) => {
+  const homeProvider = useEthersProvider({ chainId: homeChainId })
+  const foreignProvider = useEthersProvider({ chainId: foreignChainId })
+
   const [homeTotalConfirms, setHomeTotalConfirms] = useState(8);
   const [foreignTotalConfirms, setForeignTotalConfirms] = useState(8);
 
@@ -22,10 +26,6 @@ export const useTotalConfirms = (
 
     const fetchConfirms = async () => {
       try {
-        const [homeProvider, foreignProvider] = await Promise.all([
-          provider({ chainId: homeChainId }),
-          provider({ chainId: foreignChainId }),
-        ]);
         const [home, foreign] = await Promise.all([
           fetchConfirmations(homeAmbAddress, homeProvider),
           fetchConfirmations(foreignAmbAddress, foreignProvider),

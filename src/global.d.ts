@@ -1,6 +1,6 @@
-import type { Ethereum } from "@wagmi/core";
+import type { WindowProvider } from 'wagmi/window'
 
-export interface ExtendEthereum extends Ethereum {
+export interface ExtendEthereum extends WindowProvider {
   isSafePal?: true;
   isCoin98?: true;
   isBlocto?: true;
@@ -16,7 +16,7 @@ declare global {
     BinanceChain?: {
       bnbSign?: (address: string, message: string) => Promise<{ publicKey: string; signature: string }>;
       switchNetwork?: (networkId: string) => Promise<string>;
-    } & Ethereum;
+    } & WindowProvider;
     dataLayer: Record<string, any>[];
   }
 }

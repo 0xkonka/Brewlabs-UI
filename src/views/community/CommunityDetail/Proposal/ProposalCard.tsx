@@ -1,24 +1,27 @@
+import { useContext, useState } from "react";
+import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
+
 import CountDown from "@components/CountDown";
 import { BellSVG, InfoSVG, RequirementSVG } from "@components/dashboard/assets/svgs";
+import StyledButton from "views/directory/StyledButton";
+
+import { CommunityContext } from "contexts/CommunityContext";
+import { DashboardContext } from "contexts/DashboardContext";
 import useENSName from "@hooks/ENS/useENSName";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
-import { CommunityContext } from "contexts/CommunityContext";
-import { DashboardContext } from "contexts/DashboardContext";
 import { handleWalletError } from "lib/bridge/helpers";
-import { useContext, useState } from "react";
-import { toast } from "react-toastify";
 import { getBep20Contract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
 import { showError } from "utils/functions";
-import StyledButton from "views/directory/StyledButton";
-import { useAccount, useSigner } from "wagmi";
 
 const ProposalCard = ({ proposal, community }: { proposal: any; community: any }) => {
   const { address: account } = useAccount();
   const name = useENSName(proposal.owner);
   const { voteOrAgainst }: any = useContext(CommunityContext);
   const { chainId } = useActiveChainId();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const [isVoted, setIsVoted] = useState("none");
   const { pending, setPending }: any = useContext(DashboardContext);

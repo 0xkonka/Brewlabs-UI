@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
+
 import { getNetworkLabel } from "lib/bridge/helpers";
 import { fetchRequiredSignatures, fetchValidatorList } from "lib/bridge/message";
-import { provider as getProvider } from "utils/wagmi";
+import { useEthersProvider } from "utils/ethersAdapter";
 
 export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress: string) => {
   const [requiredSignatures, setRequiredSignatures] = useState(0);
   const [validatorList, setValidatorList] = useState([]);
+  const provider = useEthersProvider({ chainId: foreignChainId });
 
   useEffect(() => {
     const label = getNetworkLabel(foreignChainId).toUpperCase();
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
     const fetchValue = async () => {
       try {
-        const provider = await getProvider({ chainId: foreignChainId });
         const res = await fetchRequiredSignatures(foreignAmbAddress, provider);
         const signatures = Number.parseInt(res.toString(), 10);
         setRequiredSignatures(signatures);
@@ -35,7 +36,6 @@ export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-VALIDATOR-LIST`;
     const fetchValue = async () => {
       try {
-        const provider = await getProvider({ chainId: foreignChainId });
         const res = await fetchValidatorList(foreignAmbAddress, provider);
         setValidatorList(res);
         sessionStorage.setItem(key, JSON.stringify(res));

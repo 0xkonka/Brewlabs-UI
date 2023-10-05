@@ -1,24 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
-import { useAccount, useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ethers } from "ethers";
-import GetLPModal from "./ZapInModal";
+import { AnimatePresence, motion } from "framer-motion";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useCurrency } from "hooks/Tokens";
 import { useCurrencyBalance } from "state/wallet/hooks";
-import { useCurrency } from "@hooks/Tokens";
+import { getBep20Contract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
+import { numberWithCommas } from "utils/functions";
+
+import StyledButton from "../../StyledButton";
 
 const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: any; type: string; data: any }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
-  const { data: signer }: any = useSigner();
+  const signer = useEthersSigner();
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
 

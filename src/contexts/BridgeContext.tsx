@@ -1,8 +1,7 @@
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { BigNumber, ethers, utils } from "ethers";
 import { ChainId } from "@brewlabs/sdk";
-import { toast } from "react-toastify";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { BridgeToken } from "config/constants/types";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -11,6 +10,7 @@ import { useMediatorInfo } from "hooks/bridge/useMediatorInfo";
 import { fetchToAmount, fetchToToken, relayTokens } from "lib/bridge/bridge";
 import { fetchTokenDetails } from "lib/bridge/token";
 import { getNetworkLabel } from "lib/bridge/helpers";
+import { useEthersSigner } from "utils/ethersAdapter";
 
 export interface BridgeContextState {
   amountInput: string;
@@ -79,7 +79,7 @@ export const useBridgeContext = () => useContext(BridgeContext);
 export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const { address: account, isConnected } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const {
     bridgeDirectionId,

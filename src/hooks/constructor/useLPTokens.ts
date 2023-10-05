@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
 import { getAddress } from "ethers/lib/utils.js";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { ERC20_ABI } from "config/abi/erc20";
 import LpTokenAbi from "config/abi/lpToken.json";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getNativeSybmol } from "lib/bridge/helpers";
-import { useUserLpTokenData } from "state/wallet/hooks";
-import multicall from "utils/multicall";
 import { useAppDispatch } from "state";
-import { fetchTokenBalancesAsync } from "state/wallet";
 import { useTokenMarketChart } from "state/prices/hooks";
+import { fetchTokenBalancesAsync } from "state/wallet";
+import { useUserLpTokenData } from "state/wallet/hooks";
+import { useEthersSigner } from "utils/ethersAdapter";
+import multicall from "utils/multicall";
 
 const DEX_GURU_CHAINIDS = {
   [ChainId.ETHEREUM]: "eth",
@@ -28,7 +29,7 @@ export const useLPTokens = () => {
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
   const tokenMarketData = useTokenMarketChart(chainId);

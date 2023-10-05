@@ -2,7 +2,6 @@
 import { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import { useSigner } from "wagmi";
 
 import FarmFactoryAbi from "config/abi/farm/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
@@ -19,6 +18,7 @@ import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
 import { calculateGasMargin, isAddress } from "utils";
 import { getContract } from "utils/contractHelpers";
+import { useEthersSigner } from "utils/ethersAdapter";
 import { getDexLogo, getEmptyTokenLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -35,7 +35,7 @@ const DURATIONS = [365, 180, 90, 60];
 const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const dispatch = useAppDispatch();
   const { chainId } = useActiveChainId();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
 
   const { pending, setPending, tokens }: any = useContext(DashboardContext);
 

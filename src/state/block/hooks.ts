@@ -2,17 +2,17 @@
 import { ChainId } from "@brewlabs/sdk";
 import useSWR, { useSWRConfig, unstable_serialize } from "swr";
 import useSWRImmutable from "swr/immutable";
-import { useProvider } from "wagmi";
 
 import { FAST_INTERVAL, SECOND_INTERVAL, SLOW_INTERVAL } from "config/constants";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useEthersProvider } from "utils/ethersAdapter";
 
 const REFRESH_BLOCK_INTERVAL = 6000;
 
 export const usePollBlockNumber = () => {
   const { cache, mutate } = useSWRConfig();
   const { chainId } = useActiveChainId();
-  const provider = useProvider({ chainId });
+  const provider = useEthersProvider({ chainId })
 
   const { data } = useSWR(
     ["blockNumberFetcher", chainId],
@@ -68,7 +68,8 @@ export const useCurrentBlock = (): number => {
 
 export const useChainCurrentBlock = (chainId: number): number => {
   const { chainId: activeChainId } = useActiveChainId();
-  const provider = useProvider({ chainId });
+  const provider = useEthersProvider({ chainId })
+
   const { data: currentBlock = 0 } = useSWR(
     activeChainId === chainId ? ["blockNumber", chainId] : ["chainBlockNumber", chainId],
     activeChainId !== chainId
@@ -87,14 +88,14 @@ export const useChainCurrentBlock = (chainId: number): number => {
 };
 
 export const useChainCurrentBlocks = () => {
-  let blocks = {}
-  blocks[ChainId.ETHEREUM] = useChainCurrentBlock(ChainId.ETHEREUM)
-  blocks[ChainId.BSC_MAINNET] = useChainCurrentBlock(ChainId.BSC_MAINNET)
-  blocks[ChainId.POLYGON] = useChainCurrentBlock(ChainId.POLYGON)
-  blocks[ChainId.AVALANCHE] = useChainCurrentBlock(ChainId.AVALANCHE)
+  let blocks = {};
+  blocks[ChainId.ETHEREUM] = useChainCurrentBlock(ChainId.ETHEREUM);
+  blocks[ChainId.BSC_MAINNET] = useChainCurrentBlock(ChainId.BSC_MAINNET);
+  blocks[ChainId.POLYGON] = useChainCurrentBlock(ChainId.POLYGON);
+  blocks[ChainId.AVALANCHE] = useChainCurrentBlock(ChainId.AVALANCHE);
 
-  return blocks
-}
+  return blocks;
+};
 
 export const useInitialBlock = (): number => {
   const { chainId } = useActiveChainId();

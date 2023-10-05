@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, downloadSVG, LinkSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
@@ -20,6 +20,7 @@ import { useIndexes } from "state/indexes/hooks";
 import { DeserializedIndex } from "state/indexes/types";
 import { getErc721Contract, getIndexContract } from "utils/contractHelpers";
 import { calculateGasMargin } from "utils";
+import { useEthersSigner } from "utils/ethersAdapter";
 import { getChainLogo, getIndexName } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
@@ -34,7 +35,7 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
+  const signer  = useEthersSigner();
   const { indexes } = useIndexes();
   const { pending, setPending }: any = useContext(DashboardContext);
 

@@ -1,4 +1,4 @@
-import { configureChains, createClient } from "wagmi";
+import { configureChains, createConfig, createStorage } from "wagmi";
 import memoize from "lodash/memoize";
 
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
@@ -8,11 +8,13 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { SafeConnector } from "wagmi/connectors/safe";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
-import { SupportedChains } from "config/constants/networks";
-import { BASE_URL } from "config";
 
-export const { provider, webSocketProvider, chains } = configureChains(SupportedChains, [
+import { BASE_URL } from "config";
+import { SupportedChains } from "config/constants/networks";
+
+import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
+
+export const { publicClient, chains } = configureChains(SupportedChains, [
   jsonRpcProvider({
     rpc: (chain) => {
       switch (chain.id) {
@@ -25,10 +27,19 @@ export const { provider, webSocketProvider, chains } = configureChains(Supported
   }),
 ]);
 
-export const client = createClient({
+export const noopStorage = {
+  getItem: (_key) => "",
+  setItem: (_key, _value) => null,
+  removeItem: (_key) => null,
+};
+
+export const wagmiConfig = createConfig({
+  storage: createStorage({
+    storage: typeof window !== "undefined" ? window.localStorage : noopStorage,
+    key: "wagmi_v1.4",
+  }),
   autoConnect: true,
-  provider,
-  webSocketProvider,
+  publicClient,
   connectors: [
     new MetaMaskConnector({
       chains,
@@ -50,7 +61,12 @@ export const client = createClient({
         projectId: "3f9ccaf57c23a26a29b6ede970ea33c1",
       },
     }),
-    new LedgerConnector({ chains }),
+    new LedgerConnector({
+      chains,
+      options: {
+        projectId: "e542ff314e26ff34de2d4fba98db70bb",
+      },
+    }),
     new InjectedConnector({
       chains,
       options: {

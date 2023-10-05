@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
+
 import { fetchAmbVersion } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { provider as getProvider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
 
 export const useAmbVersion = (foreignChainId: ChainId, foreignAmbAddress: string) => {
   const [foreignAmbVersion, setForeignAmbVersion] = useState<string | null>("");
@@ -12,7 +13,7 @@ export const useAmbVersion = (foreignChainId: ChainId, foreignAmbAddress: string
     const label = getNetworkLabel(foreignChainId).toUpperCase();
     const key = `${label}-AMB-VERSION`;
     const fetchVersion = async () => {
-      const provider = await getProvider({ chainId: foreignChainId });
+      const provider = simpleRpcProvider(foreignChainId);
       await fetchAmbVersion(foreignAmbAddress, provider)
         .then((versionString) => {
           setForeignAmbVersion(versionString);

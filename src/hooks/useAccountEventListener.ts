@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import { ConnectorData, useAccount } from 'wagmi'
+
 import { clearUserStates } from 'utils/clearUserStates'
 import { setGlobalState, useAppDispatch } from '../state'
+
 import { useActiveChainId } from './useActiveChainId'
 import { useReplaceQueryParams } from './useReplaceQueryParams'
 
@@ -14,7 +16,7 @@ export const useAccountEventListener = () => {
 
   useEffect(() => {
     if (account && connector) {
-      const handleUpdateEvent = (e: ConnectorData<any>) => {
+      const handleUpdateEvent = (e: ConnectorData) => {
         if (e?.chain?.id && !(e?.chain?.unsupported ?? false)) {
           replaceQueryParams('chainId', e.chain.id)
           setGlobalState("sessionChainId", e.chain.id)
