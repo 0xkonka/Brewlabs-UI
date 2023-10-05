@@ -145,7 +145,7 @@ export const EMPTY_TOKEN_LOGO = {
 
   [ChainId.GOERLI]: "/images/dashboard/tokens/empty/eth.wep",
   [ChainId.BSC_TESTNET]: "/images/dashboard/tokens/empty/bnb.webp",
-}
+};
 
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   id: chainId,
@@ -170,6 +170,28 @@ export const SUPPORTED_CHAINS = [
   ChainId.CRONOS,
 ];
 
+export const PUBLIC_NODES = {
+  [ChainId.ETHEREUM]: [
+    "https://eth.llamarpc.com",
+    "https://ethereum.publicnode.com",
+    "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+    "https://eth.meowrpc.com",
+  ],
+  [ChainId.ARBITRUM]: ["https://arb1.arbitrum.io/rpc"],
+  [ChainId.BSC_MAINNET]: [
+    "https://bsc-dataseed1.defibit.io",
+    "https://bsc-dataseed1.ninicoin.io",
+    "https://bsc-dataseed.binance.org",
+  ],
+  [ChainId.BSC_TESTNET]: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+  [ChainId.POLYGON]: ["https://polygon.llamarpc.com", "https://polygon-rpc.com/"],
+  [ChainId.FANTOM]: ["https://rpc.ftm.tools/"],
+  [ChainId.AVALANCHE]: ["https://api.avax.network/ext/bc/C/rpc"],
+  [ChainId.CRONOS]: ["https://evm.cronos.org"],
+  [ChainId.BASE]: ["https://mainnet.base.org"],
+  [ChainId.ZKSYNC]: ["https://mainnet.era.zksync.io"],
+};
+
 export const NETWORKS = {
   [ChainId.ETHEREUM]: {
     chainId: `0x${Number(ChainId.ETHEREUM).toString(16)}`,
@@ -179,12 +201,7 @@ export const NETWORKS = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: [
-      "https://eth.llamarpc.com",
-      "https://ethereum.publicnode.com",
-      "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-      "https://eth.meowrpc.com",
-    ],
+    rpcUrls: PUBLIC_NODES[ChainId.ETHEREUM],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.ARBITRUM]: {
@@ -195,7 +212,7 @@ export const NETWORKS = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+    rpcUrls: PUBLIC_NODES[ChainId.ARBITRUM],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.BSC_MAINNET]: {
@@ -206,11 +223,7 @@ export const NETWORKS = {
       symbol: "BNB",
       decimals: 18,
     },
-    rpcUrls: [
-      "https://bsc-dataseed1.defibit.io",
-      "https://bsc-dataseed1.ninicoin.io",
-      "https://bsc-dataseed.binance.org",
-    ],
+    rpcUrls: PUBLIC_NODES[ChainId.BSC_MAINNET],
     blockExplorerUrls: ["https://bscscan.com"],
   },
   [ChainId.BSC_TESTNET]: {
@@ -221,7 +234,7 @@ export const NETWORKS = {
       symbol: "TBNB",
       decimals: 18,
     },
-    rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+    rpcUrls: PUBLIC_NODES[ChainId.BSC_TESTNET],
     blockExplorerUrls: ["https://testnet.bscscan.com"],
   },
   [ChainId.POLYGON]: {
@@ -232,7 +245,7 @@ export const NETWORKS = {
       symbol: "MATIC",
       decimals: 18,
     },
-    rpcUrls: ["https://polygon.llamarpc.com", "https://polygon-rpc.com/"],
+    rpcUrls: PUBLIC_NODES[ChainId.POLYGON],
     blockExplorerUrls: ["https://polygonscan.com"],
   },
   [ChainId.FANTOM]: {
@@ -243,7 +256,7 @@ export const NETWORKS = {
       symbol: "FTM",
       decimals: 18,
     },
-    rpcUrls: ["https://rpc.ftm.tools/"],
+    rpcUrls: PUBLIC_NODES[ChainId.FANTOM],
     blockExplorerUrls: ["https://ftmscan.com"],
   },
   [ChainId.AVALANCHE]: {
@@ -254,7 +267,7 @@ export const NETWORKS = {
       symbol: "AVAX",
       decimals: 18,
     },
-    rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+    rpcUrls: PUBLIC_NODES[ChainId.AVALANCHE],
     blockExplorerUrls: ["https://snowtrace.io"],
   },
   [ChainId.CRONOS]: {
@@ -265,10 +278,10 @@ export const NETWORKS = {
       symbol: "CRO",
       decimals: 18,
     },
-    rpcUrls: ["https://evm.cronos.org"],
+    rpcUrls: PUBLIC_NODES[ChainId.CRONOS],
     blockExplorerUrls: ["https://cronoscan.com"],
   },
-  8453: {
+  [ChainId.BASE]: {
     chainId: `0x2105`,
     chainName: "Base Mainnet",
     nativeCurrency: {
@@ -276,10 +289,10 @@ export const NETWORKS = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://mainnet.base.org"],
+    rpcUrls: PUBLIC_NODES[ChainId.BASE],
     blockExplorerUrls: ["https://basescan.org"],
   },
-  324: {
+  [ChainId.ZKSYNC]: {
     chainId: `0x144`,
     chainName: "zkSync Era Mainnet",
     nativeCurrency: {
@@ -287,7 +300,7 @@ export const NETWORKS = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://mainnet.era.zksync.io"],
+    rpcUrls: PUBLIC_NODES[ChainId.ZKSYNC],
     blockExplorerUrls: ["https://explorer.zksync.io/"],
   },
 };
