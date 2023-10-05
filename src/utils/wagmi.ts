@@ -1,4 +1,5 @@
 import { configureChains, createConfig, createStorage } from "wagmi";
+import { publicProvider } from 'wagmi/providers/public'
 import memoize from "lodash/memoize";
 
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
@@ -12,20 +13,88 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { BASE_URL } from "config";
 import { SupportedChains } from "config/constants/networks";
 
-import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
+import { mainnet, BinanceWalletConnector, TrustWalletConnector } from "../contexts/wagmi";
 
-export const { publicClient, chains } = configureChains(SupportedChains, [
-  jsonRpcProvider({
-    rpc: (chain) => {
-      switch (chain.id) {
-        case mainnet.id:
-          return { http: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161" };
-        default:
-          return { http: chain.rpcUrls.default.http[0] };
-      }
+export const { publicClient, chains } = configureChains(
+  SupportedChains,
+  [
+    publicProvider(),
+    jsonRpcProvider({
+      rpc: (chain) => {
+        switch (chain.id) {
+          case mainnet.id:
+            return { http: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161" };
+          default:
+            return { http: chain.rpcUrls.default.http[0] };
+        }
+      },
+    }),
+  ],
+  {
+    batch: {
+      multicall: {
+        batchSize: 1024 * 200,
+        wait: 16,
+      },
     },
-  }),
-]);
+    pollingInterval: 6_000,
+  }
+);
+
+export const injectedConnector = new InjectedConnector({
+  chains,
+  options: {
+    name: (detectedName) => `Injected (${typeof detectedName === "string" ? detectedName : detectedName.join(", ")})`,
+    shimDisconnect: true,
+  },
+});
+
+export const metaMaskConnector = new MetaMaskConnector({
+  chains,
+  options: {
+    UNSTABLE_shimOnConnectSelectAccount: true,
+  },
+});
+
+export const coinbaseConnector = new CoinbaseWalletConnector({
+  chains,
+  options: {
+    appName: "Brewlabs Earn",
+    appLogoUrl: `${BASE_URL}/logo.png`,
+  },
+});
+
+export const walletConnectConnector = new WalletConnectConnector({
+  chains,
+  options: {
+    projectId: "3f9ccaf57c23a26a29b6ede970ea33c1",
+  },
+});
+
+const safeConnector = new SafeConnector({
+  chains,
+  options: {
+    allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/],
+    debug: false,
+  },
+});
+
+const ledgerConnector = new LedgerConnector({
+  chains,
+  options: {
+    projectId: "3f9ccaf57c23a26a29b6ede970ea33c1",
+  },
+});
+
+export const bscConnector = new BinanceWalletConnector({ chains });
+
+export const trustWalletConnector = new TrustWalletConnector({
+  chains,
+  options: {
+    shimDisconnect: false,
+    shimChainChangedDisconnect: true,
+  },
+});
 
 export const noopStorage = {
   getItem: (_key) => "",
@@ -36,52 +105,20 @@ export const noopStorage = {
 export const wagmiConfig = createConfig({
   storage: createStorage({
     storage: typeof window !== "undefined" ? window.localStorage : noopStorage,
-    key: "wagmi_v1.4",
+    key: "brewlabs_earn",
   }),
   autoConnect: true,
   publicClient,
   connectors: [
-    new MetaMaskConnector({
-      chains,
-      options: {
-        UNSTABLE_shimOnConnectSelectAccount: true,
-      },
-    }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: "Brewlabs Earn",
-        appLogoUrl: `${BASE_URL}/logo.png`,
-      },
-    }),
-    new BinanceWalletConnector({ chains }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId: "3f9ccaf57c23a26a29b6ede970ea33c1",
-      },
-    }),
-    new LedgerConnector({
-      chains,
-      options: {
-        projectId: "e542ff314e26ff34de2d4fba98db70bb",
-      },
-    }),
-    new InjectedConnector({
-      chains,
-      options: {
-        name: (detectedName) =>
-          `Injected (${typeof detectedName === "string" ? detectedName : detectedName.join(", ")})`,
-        shimDisconnect: true,
-      },
-    }),
-    new SafeConnector({
-      chains,
-      options: {
-        allowedDomains: [/https:\/\/app.safe.global$/],
-        debug: false,
-      },
-    }),
+    injectedConnector,
+    metaMaskConnector,
+    bscConnector,
+    coinbaseConnector,
+    walletConnectConnector,
+    // @ts-ignore FIXME: wagmi
+    ledgerConnector,
+    trustWalletConnector,
+    safeConnector,
   ],
 });
 

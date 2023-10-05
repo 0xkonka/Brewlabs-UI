@@ -3,6 +3,7 @@ import { isFirefox } from "react-device-detect";
 
 import { BASE_URL } from "config";
 import { WalletConfig } from "./types";
+import { getTrustWalletProvider } from "contexts/wagmi";
 
 export class WalletConnectorNotFoundError extends Error {}
 export class WalletSwitchChainError extends Error {}
@@ -13,6 +14,9 @@ export enum ConnectorNames {
   BSC = "bsc",
   WalletConnect = "walletConnect",
   WalletLink = "coinbaseWallet",
+  Ledger = "ledger",
+  GnosisSafe = "safe",
+  TrustWallet = "trustWallet",
 }
 
 export const wallets: WalletConfig<ConnectorNames>[] = [
@@ -63,16 +67,20 @@ export const wallets: WalletConfig<ConnectorNames>[] = [
     description: "Connect to your Trust Wallet",
     icon: "/images/wallets/trust.png",
     connectorId: ConnectorNames.Injected,
-    installed:
-      typeof window !== "undefined" &&
-      !(window.ethereum as ExtendEthereum)?.isSafePal && // SafePal has isTrust flag
-      (Boolean(window.ethereum?.isTrust) ||
-        // @ts-ignore
-        Boolean(window.ethereum?.isTrustWallet)),
+    installed: !!getTrustWalletProvider(),
     deepLink: `https://link.trustwallet.com/open_url?coin_id=20000714&url=${BASE_URL}`,
     downloadLink: {
       desktop: "https://chrome.google.com/webstore/detail/trust-wallet/egjidjbpglichdcondbcbdnbeeppgdph/related",
     },
+  },
+  {
+    id: "safepal",
+    title: "SafePal",
+    description: "Connect to your SafePal Wallet",
+    icon: "/images/wallets/safepal.png",
+    connectorId: ConnectorNames.Injected,
+    installed: typeof window !== "undefined" && Boolean((window.ethereum as ExtendEthereum)?.isSafePal),
+    downloadLink: "https://chrome.google.com/webstore/detail/safepal-extension-wallet/lgmpcpglpngdoalbgeoldeajfclnhafa",
   },
   {
     id: "walletconnect",
@@ -80,5 +88,19 @@ export const wallets: WalletConfig<ConnectorNames>[] = [
     description: "Scan with WalletConnect to connect",
     icon: "/images/wallets/walletconnect.png",
     connectorId: ConnectorNames.WalletConnect,
+  },
+  {
+    id: "safe",
+    title: "Gnosis Safe",
+    description: "Connect to safe apps",
+    icon: `/images/wallets/safe.webp`,
+    connectorId: ConnectorNames.GnosisSafe,
+  },
+  {
+    id: "ledger",
+    title: "Ledger",
+    description: "Connect to your Ledger Wallet",
+    icon: `/images/wallets/ledger.png`,
+    connectorId: ConnectorNames.Ledger,
   },
 ];
