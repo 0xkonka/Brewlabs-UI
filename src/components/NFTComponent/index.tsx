@@ -1,8 +1,8 @@
 import { NFTSVG } from "@components/dashboard/assets/svgs";
 import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { BREWNFT_RARITIES } from "config/constants";
 import NFTRarityText from "@components/NFTRarityText";
+import { BREWNFT_RARITIES } from "config/constants/nft";
 
 const NFTComponent = ({ className = "" }: { className?: string }) => {
   const activeRarity = useActiveNFT();

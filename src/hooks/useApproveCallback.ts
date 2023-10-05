@@ -4,7 +4,6 @@ import { Trade, CurrencyAmount, ROUTER_ADDRESS_MAP, EXCHANGE_MAP } from "@brewla
 import { useCallback, useMemo } from "react";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import { ROUTER_ADDRESS } from "config/constants";
 import useTokenAllowance from "./useTokenAllowance";
 import { Field } from "state/swap/actions";
 import { useTransactionAdder, useHasPendingApproval } from "state/transactions/hooks";

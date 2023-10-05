@@ -1,4 +1,7 @@
 import { useCallback } from "react";
+import { ethers } from "ethers";
+
+import { forceGasLimits } from "config/constants/pools";
 import { useSingleStaking } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAppDispatch } from "state";
@@ -10,10 +13,8 @@ import {
 } from "state/pools";
 import { updatePoolsUserData } from "state/pools";
 import { calculateGasMargin } from "utils";
-import { BIG_TEN, BIG_ZERO } from "utils/bigNumber";
+import { BIG_ZERO } from "utils/bigNumber";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import { ethers } from "ethers";
-import { forceGasLimits } from "config/constants/pools";
 
 const stake = async (stakingContract, amount, decimals, performanceFee, gasPrice) => {
   const _amount = ethers.utils.parseUnits(amount, decimals);

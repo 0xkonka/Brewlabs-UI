@@ -26,6 +26,8 @@ export const stableCoins = {
   [ChainId.BSC_TESTNET]: [tokens[ChainId.BSC_TESTNET].busd],
 };
 
+export const BREWNFT_RARITIES = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MODS"];
+
 export const rarities = [
   {
     type: "Common",
