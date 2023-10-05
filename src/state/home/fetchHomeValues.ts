@@ -73,7 +73,7 @@ export async function getNFTStakingValues() {
             data.address
           }&page=1&offset=50&sort=desc&apikey=${EXPLORER_API_KEYS[data.chainId]}`
         );
-        const txs = result.data.result.filter(
+        const txs = result.data.result?.filter(
           (tx) => tx.functionName.includes("mint") && tx.timeStamp > Date.now() / 1000 - 3600 * 24
         );
         mintCount += txs.length;

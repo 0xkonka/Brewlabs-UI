@@ -1,10 +1,11 @@
 import { WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
+
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { ERC20_ABI } from "config/abi/erc20";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 import prices from "config/constants/prices";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchTokenBaseInfo = async (
   address: any,
@@ -12,21 +13,16 @@ export const fetchTokenBaseInfo = async (
   type = "name symbol decimals",
   accountAddress: string = null
 ) => {
+  const client = getViemClients({ chainId });
+
   let calls: any = [];
   const splitList = type === "" ? [] : type.split(" ");
-  for (let i = 0; i < splitList.length; i++)
-    calls.push({
-      address: address,
-      name: splitList[i],
-    });
-  if (accountAddress)
-    calls.push({
-      address: address,
-      name: "balanceOf",
-      params: [accountAddress],
-    });
-  const result = await multicall(ERC20_ABI, calls, chainId);
-  return result;
+
+  for (let i = 0; i < splitList.length; i++) calls.push({ address, abi: ERC20_ABI, name: splitList[i] });
+  if (accountAddress) calls.push({ address, abi: ERC20_ABI, name: "balanceOf", params: [accountAddress] });
+
+  const result = await client.multicall({ contracts: calls });
+  return result.map((r) => r?.result);
 };
 
 export async function fetchPrice(address: any, chainId: number, resolution: number, period = 86400) {

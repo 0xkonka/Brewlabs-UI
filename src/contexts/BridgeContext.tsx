@@ -79,7 +79,7 @@ export const useBridgeContext = () => useContext(BridgeContext);
 export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const { address: account, isConnected } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
 
   const {
     bridgeDirectionId,

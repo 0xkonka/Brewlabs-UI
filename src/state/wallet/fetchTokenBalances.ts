@@ -1,4 +1,5 @@
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { fetchBalance } from "@wagmi/core";
 import axios from "axios";
 import { erc20ABI } from "wagmi";
 
@@ -12,15 +13,8 @@ import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrice
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
-import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
+import { getContract, getDividendTrackerContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
-
-async function getNativeBalance(address: string, chainId: number) {
-  let ethBalance = 0;
-  const multicallContract = getMulticallContract(chainId);
-  ethBalance = await multicallContract.getEthBalance(address);
-  return ethBalance;
-}
 
 async function getTokenBaseBalances(account: string, chainId: number) {
   if (!isAddress(account) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString())) return [];
@@ -85,10 +79,10 @@ async function getTokenBaseBalances(account: string, chainId: number) {
     ];
   }
   if (chainId === ChainId.BSC_MAINNET) {
-    const ethBalance = await getNativeBalance(account, chainId);
+    const ethBalance = await fetchBalance({ address: account as `0x${string}`, chainId, formatUnits: "ether" });
     data.push({
       address: DEX_GURU_WETH_ADDR,
-      balance: ethBalance / Math.pow(10, 18),
+      balance: ethBalance.value,
       decimals: 18,
       name: "Binance",
       symbol: "BNB",

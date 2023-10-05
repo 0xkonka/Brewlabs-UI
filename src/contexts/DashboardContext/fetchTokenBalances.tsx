@@ -1,15 +1,9 @@
 import axios from "axios";
-import { getMulticallContract } from "utils/contractHelpers";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { fetchBalance } from "@wagmi/core";
+
 import { UNMARSHAL_API_KEYS, UNMARSHAL_CHAIN_NAME } from "config";
 import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
-
-async function getNativeBalance(address: string, chainId: number) {
-  let ethBalance = 0;
-  const multicallContract = getMulticallContract(chainId);
-  ethBalance = await multicallContract.getEthBalance(address);
-  return ethBalance;
-}
 
 export async function fetchTokenBalances(address: string, chainId: number) {
   let data: any = [];
@@ -58,10 +52,10 @@ export async function fetchTokenBalances(address: string, chainId: number) {
     });
   }
   if (chainId === ChainId.BSC_MAINNET) {
-    const ethBalance = await getNativeBalance(address, chainId);
+    const ethBalance = await fetchBalance({ address: address as `0x${string}`, chainId, formatUnits: "ether" });
     data.push({
       address: DEX_GURU_WETH_ADDR,
-      balance: ethBalance / Math.pow(10, 18),
+      balance: ethBalance.value,
       decimals: 18,
       name: "Binance",
       symbol: "BNB",

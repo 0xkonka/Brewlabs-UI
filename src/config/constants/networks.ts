@@ -183,13 +183,15 @@ export const PUBLIC_NODES = {
     "https://bsc-dataseed1.ninicoin.io",
     "https://bsc-dataseed.binance.org",
   ],
-  [ChainId.BSC_TESTNET]: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
   [ChainId.POLYGON]: ["https://polygon.llamarpc.com", "https://polygon-rpc.com/"],
   [ChainId.FANTOM]: ["https://rpc.ftm.tools/"],
   [ChainId.AVALANCHE]: ["https://api.avax.network/ext/bc/C/rpc"],
   [ChainId.CRONOS]: ["https://evm.cronos.org"],
   [ChainId.BASE]: ["https://mainnet.base.org"],
   [ChainId.ZKSYNC]: ["https://mainnet.era.zksync.io"],
+  [ChainId.BRISE]: ["https://mainnet-rpc.brisescan.com/"],
+  [ChainId.GOERLI]: ["https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"],
+  [ChainId.BSC_TESTNET]: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
 };
 
 export const NETWORKS = {
