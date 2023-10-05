@@ -30,7 +30,7 @@ import { useUserSlippageTolerance } from "state/user/hooks";
 import { Field } from "state/mint/actions";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
 import { defaultMarketData } from "state/prices/types";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
 import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
