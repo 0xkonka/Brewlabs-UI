@@ -1,18 +1,18 @@
 import { useMemo } from "react";
+import Link from "next/link";
 
 import { ChevronCircleDownSVG, InfoSVG } from "components/dashboard/assets/svgs";
+import { CurrencyLogo } from "components/logo";
+import StyledButton from "views/directory/StyledButton";
 
 import { NetworkOptions } from "config/constants/networks";
 import { useClaim } from "hooks/swap/useClaim";
 import { useCurrency } from "hooks/Tokens";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { usePair } from "hooks/usePairs";
 import useTotalSupply from "hooks/useTotalSupply";
-import { CurrencyLogo } from "components/logo";
+import { getRemoveLiquidityUrl } from "utils/functions";
 import { rewardInUSD } from ".";
-import StyledButton from "views/directory/StyledButton";
-import Link from "next/link";
-import { getAddLiquidityUrl, getRemoveLiquidityUrl } from "utils/functions";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { usePair } from "data/Reserves";
 
 const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemovable, lpBalance }) => {
   const { token0, token1 } = pair;
@@ -29,7 +29,7 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
     const numerator = Number(lpBalance);
     const denominator = Number(lpTotalSupply?.toExact() ?? "0");
     if (totalVolumeInUSD === 0 || denominator === 0) return 0;
-    return totalVolumeInUSD * numerator / denominator;
+    return (totalVolumeInUSD * numerator) / denominator;
   }, [totalVolumeInUSD, lpTotalSupply, lpBalance]);
   const tradeVolumeIn24hr =
     Number(token0Price) * Number(pairDayData?.dailyVolumeToken0 ?? "0") +
@@ -72,9 +72,7 @@ const PairCard = ({ pair, token0Price, token1Price, reward, pairDayData, isRemov
                     {InfoSVG}
                   </div>
                 </div>
-                <div className="text-xs text-[#FFFFFF80]">
-                  ${ownedVolumeInUSD.toFixed(4) ?? 0} USD
-                </div>
+                <div className="text-xs text-[#FFFFFF80]">${ownedVolumeInUSD.toFixed(4) ?? 0} USD</div>
               </div>
             </StyledButton>
           </Link>
