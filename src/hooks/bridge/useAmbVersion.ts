@@ -3,7 +3,6 @@ import { ChainId } from "@brewlabs/sdk";
 
 import { fetchAmbVersion } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { simpleRpcProvider } from "utils/providers";
 import { getViemClients } from "utils/viem";
 
 export const useAmbVersion = (foreignChainId: ChainId, foreignAmbAddress: string) => {

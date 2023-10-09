@@ -2,11 +2,14 @@ import axios from "axios";
 import { ChainId, Currency, CurrencyAmount, JSBI, NATIVE_CURRENCIES, Token, TokenAmount } from "@brewlabs/sdk";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useAccount } from "wagmi";
 
 import ERC20_INTERFACE from "config/abi/erc20";
 import { EXPLORER_API_KEYS } from "config/constants/networks";
 import { EXPLORER_API_URLS } from "config/constants/networks";
+import { SUPPORTED_LPs } from "config/constants/swap";
 import { useAllTokens } from "hooks/Tokens";
+import { useActiveChainId } from "hooks/useActiveChainId";
 import { useMulticallContract } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
@@ -16,10 +19,8 @@ import { useTokenMarketChart } from "state/prices/hooks";
 import { isAddress } from "utils";
 
 import { useSingleContractMultipleData, useMultipleContractSingleData } from "../multicall/hooks";
-import { fetchNFTBalancesAsync, fetchTokenBalancesAsync } from ".";
 import { SerializedWalletNFT, SerializedWalletToken } from "./type";
-import { tokens } from "config/constants/tokens";
-import { SUPPORTED_LPs } from "config/constants/swap";
+import { fetchNFTBalancesAsync, fetchTokenBalancesAsync } from ".";
 
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
@@ -70,11 +71,17 @@ export function useTokenBalancesWithLoadingIndicator(
     [tokens]
   );
 
-  const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [JSON.stringify(validatedTokens)]);
+  const validatedTokenAddresses = useMemo(
+    () => validatedTokens.map((vt) => vt.address),
+    [JSON.stringify(validatedTokens)]
+  );
 
   const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, "balanceOf", [address]);
 
-  const anyLoading: boolean = useMemo(() => balances.some((callState) => callState.loading), [JSON.stringify(balances)]);
+  const anyLoading: boolean = useMemo(
+    () => balances.some((callState) => callState.loading),
+    [JSON.stringify(balances)]
+  );
 
   return [
     useMemo(
@@ -167,8 +174,11 @@ export const useFetchNFTBalance = (account, chainIds: ChainId[]) => {
   }, [dispatch, account, stringifiedChainId]);
 };
 
-export const useFetchTokenBalance = (account, chainId: ChainId, signer) => {
+export const useFetchTokenBalance = () => {
   const dispatch = useAppDispatch();
+
+  const { chainId } = useActiveChainId();
+  const { address: account } = useAccount();
   const tokenMarketData = useTokenMarketChart(chainId);
 
   const stringifiedData = JSON.stringify({
@@ -180,7 +190,7 @@ export const useFetchTokenBalance = (account, chainId: ChainId, signer) => {
 
   useFastRefreshEffect(() => {
     if (!account) return;
-    dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData, signer));
+    dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData));
   }, [stringifiedData]);
 };
 
@@ -193,5 +203,8 @@ export const useUserTokenData = (chainId: ChainId, account: string): SerializedW
 };
 
 export const useUserLpTokenData = (chainId: ChainId, account: string): SerializedWalletToken[] => {
-  return useSelector((state: State) => state.wallet.tokens[chainId]?.[account]?.filter((token) => SUPPORTED_LPs[chainId].includes(token.symbol)) ?? []);
+  return useSelector(
+    (state: State) =>
+      state.wallet.tokens[chainId]?.[account]?.filter((token) => SUPPORTED_LPs[chainId].includes(token.symbol)) ?? []
+  );
 };

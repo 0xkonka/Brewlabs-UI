@@ -1,5 +1,3 @@
-import { ChainId } from "@brewlabs/sdk";
-import { ethers } from "ethers";
 import { gql, request } from "graphql-request";
 
 const pageSize = 1000;

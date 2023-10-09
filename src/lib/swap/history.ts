@@ -1,14 +1,14 @@
-import { request } from "graphql-request";
+import { ChainId } from "@brewlabs/sdk";
 import { waitForTransaction } from "@wagmi/core";
+import { request } from "graphql-request";
 
 import { SWAP_LOGS as AGGREGATOR_SWAP_LOGS } from "config/queries/aggregator";
 import { SWAP_LOGS as ROUTER_SWAP_LOGS } from "config/queries/router";
-import { ChainId } from "@brewlabs/sdk";
 
 const pageSize = 1000;
 
 export const getSwapLogs = async (graphEndpoint: { [path: string]: string }, caller: string, chainId: ChainId) => {
-  if(!caller) return []
+  if (!caller) return [];
   const aggregatorSwapLogs = await getSwapLogsFromAggregator(graphEndpoint.aggregator, caller);
   const routerSwapLogs = await getSwapLogsFromRouter(graphEndpoint.router, caller, chainId);
   return routerSwapLogs.concat(aggregatorSwapLogs);

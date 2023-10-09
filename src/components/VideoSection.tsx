@@ -1,12 +1,13 @@
 import Container from "@components/layout/Container";
 import CardVideo from "@components/cards/CardVideo";
+import { useFetchHomeData } from "state/home/hooks";
+
 import InfoCarousel from "./layout/InfoCarousel";
 import FindProject from "./Home/FindProject";
-import { useEffect } from "react";
-import { useFetchHomeData } from "state/home/hooks";
 
 const VideoSection = () => {
   useFetchHomeData();
+
   return (
     <section className="bg-gradient-to-b from-zinc-800 to-zinc-900 pb-16 pt-20">
       <Container>

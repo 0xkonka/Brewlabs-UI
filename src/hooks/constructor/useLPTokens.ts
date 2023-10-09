@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { getAddress } from "ethers/lib/utils.js";
+import { getAddress } from "viem";
 import { useAccount } from "wagmi";
 
 import { ERC20_ABI } from "config/abi/erc20";
@@ -13,7 +13,6 @@ import { useAppDispatch } from "state";
 import { useTokenMarketChart } from "state/prices/hooks";
 import { fetchTokenBalancesAsync } from "state/wallet";
 import { useUserLpTokenData } from "state/wallet/hooks";
-import { useEthersSigner } from "utils/ethersAdapter";
 import multicall from "utils/multicall";
 
 const DEX_GURU_CHAINIDS = {
@@ -29,7 +28,6 @@ export const useLPTokens = () => {
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const signer  = useEthersSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
   const tokenMarketData = useTokenMarketChart(chainId);
@@ -144,7 +142,7 @@ export const useLPTokens = () => {
   }
 
   async function fetchLPTokens(chainId) {
-    dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData, signer));
+    dispatch(fetchTokenBalancesAsync(account, chainId, tokenMarketData));
     // if (chainId === 1) {
     //   try {
     //     const result1 = await axios.get(`https://api.blockchain.info/v2/eth/data/account/${account}/tokens`);

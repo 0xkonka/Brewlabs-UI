@@ -12,7 +12,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
 import { SWRConfig } from "swr";
-import { useAccount, WagmiConfig } from "wagmi";
+import { WagmiConfig } from "wagmi";
 
 import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -39,7 +39,6 @@ import { LanguageProvider } from "contexts/localization";
 import { SwapContextProvider } from "contexts/SwapContext";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
@@ -50,7 +49,6 @@ import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
 import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
 import { useFetchMarketData } from "state/prices/hooks";
 import { useFetchTokenBalance } from "state/wallet/hooks";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { wagmiConfig } from "utils/wagmi";
 
 import { Updaters } from "../index";
@@ -58,10 +56,6 @@ import { Updaters } from "../index";
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
-  const { address: account } = useAccount();
-  const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
-
   usePollBlockNumber();
   useAccountEventListener();
 
@@ -84,7 +78,7 @@ function GlobalHooks() {
 
   useFetchMarketData();
 
-  useFetchTokenBalance(account, chainId, signer);
+  useFetchTokenBalance();
   return null;
 }
 

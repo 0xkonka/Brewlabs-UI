@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
 
-import { HomeState, State } from "../types";
+import { State } from "../types";
 import { SerializedTransactionData } from "./type";
 import {
   fetchFeeCollectedDataAsync,

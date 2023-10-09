@@ -1,14 +1,15 @@
 import { ChainId } from "@brewlabs/sdk";
-import { fetchOETHMontlyAPY } from "@hooks/useOETHAPY";
-import { getBalances } from "@hooks/useTokenMultiChainBalance";
-import { fetchDexGuruPrice } from "@hooks/useTokenPrice";
 import axios from "axios";
+
 import { DEX_GURU_CHAIN_NAME } from "config";
 import contracts from "config/constants/contracts";
 import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { NFT_RARE_COUNT } from "config/constants/nft";
 import { tokens } from "config/constants/tokens";
-import { simpleRpcProvider } from "utils/providers";
+import { fetchOETHMontlyAPY } from "@hooks/useOETHAPY";
+import { getBalances } from "@hooks/useTokenMultiChainBalance";
+import { fetchDexGuruPrice } from "@hooks/useTokenPrice";
+import { getViemClients } from "utils/viem";
 
 export async function getTransactions() {
   try {
@@ -94,9 +95,10 @@ const getFeeCollected = async () => {
       { chainId: 56, address: "0x408c4aDa67aE1244dfeC7D609dea3c232843189A" },
       { chainId: 56, address: "0x5Ac58191F3BBDF6D037C6C6201aDC9F99c93C53A" },
     ].map(async (data) => {
-      const provider = await simpleRpcProvider(data.chainId);
-      const balance: any = await provider.getBalance(data.address);
-      balances[data.chainId] += balance / Math.pow(10, 18);
+      const publicClient = getViemClients({ chainId: data.chainId });
+
+      const balance: any = await publicClient.getBalance({ address: data.address as `0x${string}` });
+      balances[data.chainId] += +balance.toString() / Math.pow(10, 18);
     })
   );
   return balances;

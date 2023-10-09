@@ -1,11 +1,9 @@
 import React from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import PhoneFrame from "@components/PhoneFrame";
 import { ArrowPathRoundedSquareIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import Container from "./Container";
-import { NFTSVG } from "@components/dashboard/assets/svgs";
-import Soon from "@components/Soon";
 
 const PageHero = () => {
   return (

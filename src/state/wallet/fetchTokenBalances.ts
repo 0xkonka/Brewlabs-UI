@@ -4,8 +4,8 @@ import axios from "axios";
 import { erc20ABI } from "wagmi";
 
 import { ERC20_ABI } from "config/abi/erc20";
-import claimableTokenAbi from "config/abi/claimableToken.json";
-import dividendTrackerAbi from "config/abi/dividendTracker.json";
+import claimableTokenAbi from "config/abi/claimableToken";
+import dividendTrackerAbi from "config/abi/dividendTracker";
 
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME } from "config";
 import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
@@ -13,8 +13,8 @@ import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrice
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
-import { getContract, getDividendTrackerContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 async function getTokenBaseBalances(account: string, chainId: number) {
   if (!isAddress(account) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString())) return [];
@@ -100,14 +100,20 @@ async function getTokenBaseBalances(account: string, chainId: number) {
   return data;
 }
 
-const isScamToken = async (token: any, signer: any, chainId: number) => {
+const isScamToken = async (token: any, account: string, chainId: number) => {
   let isScam = false;
 
   if (!token.name?.includes("_Tracker")) {
     try {
-      if (signer && token.address !== DEX_GURU_WETH_ADDR) {
-        const tokenContract = getContract(chainId, token.address, erc20ABI, signer);
-        await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
+      if (account && token.address !== DEX_GURU_WETH_ADDR) {
+        const publicClient = getViemClients({ chainId });
+        await publicClient.simulateContract({
+          address: token.address,
+          abi: erc20ABI,
+          functionName: "transfer",
+          args: ["0x2170Ed0880ac9A755fd29B2688956BD959F933F8", BigInt(1)],
+          account,
+        });
       }
     } catch (error) {
       isScam = true;
@@ -116,8 +122,9 @@ const isScamToken = async (token: any, signer: any, chainId: number) => {
   return isScam;
 };
 
-const fetchTokenInfo = async (token: any, chainId: number, address: string, signer: any) => {
+const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
   try {
+    const publicClient = getViemClients({ chainId });
     let reward = {
         pendingRewards: 0,
         totalRewards: 0,
@@ -126,21 +133,26 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string, sign
       isReward = false;
 
     try {
-      let calls = [
-        {
-          address: token.address,
-          name: "dividendTracker",
-          params: [],
-        },
-      ];
-      const claimableResult = await multicall(claimableTokenAbi, calls, chainId);
-      const dividendTracker = claimableResult[0][0];
+      const claimableResult = await publicClient.multicall({
+        contracts: [
+          {
+            address: token.address as `0x${string}`,
+            abi: claimableTokenAbi,
+            functionName: "dividendTracker",
+          },
+        ],
+      });
+      const dividendTracker: any = claimableResult[0]?.result;
+
       let rewardToken: any,
-        pendingRewards = 0,
-        totalRewards = 0;
+        pendingRewards: any = BigInt(0),
+        totalRewards: any = BigInt(0);
       try {
-        const dividendTrackerContract = getDividendTrackerContract(chainId, dividendTracker);
-        const rewardTokenAddress = await dividendTrackerContract.rewardToken();
+        const rewardTokenAddress = await publicClient.readContract({
+          address: dividendTracker as `0x${string}`,
+          abi: dividendTrackerAbi,
+          functionName: "rewardToken",
+        });
         const rewardTokenBaseinfo = await fetchTokenBaseInfo(rewardTokenAddress, chainId);
         rewardToken = {
           address: rewardTokenAddress,
@@ -156,30 +168,34 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string, sign
           decimals: 18,
         };
       }
-      calls = [
+
+      let calls = [
         {
           address: dividendTracker,
-          name: "withdrawableDividendOf",
-          params: [address],
+          abi: dividendTrackerAbi,
+          functionName: "withdrawableDividendOf",
+          args: [address],
         },
         {
           address: dividendTracker,
-          name: "withdrawnDividendOf",
-          params: [address],
+          abi: dividendTrackerAbi,
+          functionName: "withdrawnDividendOf",
+          args: [address],
         },
       ];
-      const rewardResult = await multicall(dividendTrackerAbi, calls, chainId);
-      pendingRewards = rewardResult[0][0];
-      totalRewards = rewardResult[1][0];
+      const rewardResult = await publicClient.multicall({ contracts: calls });
+      pendingRewards = rewardResult[0].result;
+      totalRewards = rewardResult[1].result;
+
       reward.pendingRewards =
-        pendingRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
+        +pendingRewards.toString() / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
       reward.totalRewards =
-        totalRewards / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
+        +totalRewards.toString() / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
       reward.symbol = rewardToken.symbol;
       isReward = true;
     } catch (e) {}
 
-    let scamResult: any = await isScamToken(token, signer, chainId);
+    let scamResult: any = await isScamToken(token, address, chainId);
 
     return {
       reward,
@@ -192,14 +208,14 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string, sign
   }
 };
 
-export const getTokenDetails = async (tokens: any, chainId: ChainId, address: string, signer: any) => {
+export const getTokenDetails = async (tokens: any, chainId: ChainId, address: string) => {
   if (!isAddress(address) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString()) || !tokens.length)
     return [];
   let data: any;
 
   data = await Promise.all(
     tokens.map(async (data: any) => {
-      const tokenInfo = await fetchTokenInfo(data, chainId, address, signer);
+      const tokenInfo = await fetchTokenInfo(data, chainId, address);
       const serializedToken = { ...data, ...tokenInfo };
       return serializedToken;
     })

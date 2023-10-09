@@ -17,10 +17,10 @@ export const fetchNFTBalancesAsync = (account: string, chainId: ChainId) => asyn
 };
 
 export const fetchTokenBalancesAsync =
-  (account: string, chainId: ChainId, tokenMarketData: any, signer: any) => async (dispatch) => {
+  (account: string, chainId: ChainId, tokenMarketData: any) => async (dispatch) => {
     const tokens = await getTokenBalances(account, chainId, tokenMarketData);
     dispatch(setTokenBalance({ account, chainId, tokens }));
-    const tokensWithDetails = await getTokenDetails(tokens, chainId, account, signer);
+    const tokensWithDetails = await getTokenDetails(tokens, chainId, account);
     dispatch(setTokenBalance({ account, chainId, tokens: tokensWithDetails }));
   };
 
