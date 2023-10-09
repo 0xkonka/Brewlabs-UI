@@ -104,7 +104,7 @@ export const useMediatorInfo = () => {
 
         setCurrentDay(day.toString());
 
-        const version = versionArray.map((v: any) => v.toNumber()).join(".");
+        const version = versionArray.map((v: any) => v.toString()).join(".");
         let homeManagerAddress = homeMediatorAddress;
         if (version >= "2.1.0") {
           homeManagerAddress = await homeClient.readContract({

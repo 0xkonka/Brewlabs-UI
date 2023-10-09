@@ -82,7 +82,7 @@ async function getTokenBaseBalances(account: string, chainId: number) {
     const ethBalance = await fetchBalance({ address: account as `0x${string}`, chainId, formatUnits: "ether" });
     data.push({
       address: DEX_GURU_WETH_ADDR,
-      balance: ethBalance.value,
+      balance: +ethBalance.value.toString() / Math.pow(10, 18),
       decimals: 18,
       name: "Binance",
       symbol: "BNB",
