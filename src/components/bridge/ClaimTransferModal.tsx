@@ -6,10 +6,10 @@ import Modal from "components/Modal";
 import { useBridgeContext } from "contexts/BridgeContext";
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useClaim } from "hooks/bridge/useClaim";
-import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { isRevertedError, TOKENS_CLAIMED } from "lib/bridge/amb";
 import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { messageCallStatus } from "lib/bridge/message";
+import { getViemClients } from "utils/viem";
 
 import LoadingModal from "./LoadingModal";
 
@@ -19,7 +19,6 @@ type ClaimTransferModalProps = {
 };
 
 const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) => {
-  const { library: ethersProvider } = useActiveWeb3React();
   const { homeChainId, foreignChainId, foreignAmbAddress } = useBridgeDirection();
   const { txHash, setTxHash } = useBridgeContext();
 
@@ -40,13 +39,14 @@ const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) =>
   useEffect(() => {
     if (message && message.messageId) {
       const { messageId } = message;
-      messageCallStatus(foreignAmbAddress, ethersProvider, messageId).then((status) => {
+      const publicClient = getViemClients({ chainId: foreignChainId });
+      messageCallStatus(foreignAmbAddress, publicClient, messageId).then((status) => {
         if (status) {
           setExecuted(true);
         }
       });
     }
-  }, [message, foreignAmbAddress, ethersProvider]);
+  }, [message, foreignAmbAddress, foreignChainId]);
 
   const { claim, executing, executionTx } = useClaim();
 

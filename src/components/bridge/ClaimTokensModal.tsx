@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
+import Button from "components/Button";
 import Modal from "components/Modal";
 import { useClaimableTransfers } from "hooks/bridge/useClaimableTransfers";
 import LoadingModal from "./LoadingModal";
-import Button from "components/Button";
 
 const DONT_SHOW_CLAIMS = "dont-show-claims";
 

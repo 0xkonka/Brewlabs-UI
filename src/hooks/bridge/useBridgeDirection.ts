@@ -7,6 +7,7 @@ import { bridgeConfigs } from "config/constants/bridge";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { setGlobalState, useGlobalState } from "state";
+
 import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";

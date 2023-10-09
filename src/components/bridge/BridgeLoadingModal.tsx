@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
-import { CheckIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence } from "framer-motion";
 import { useNetwork } from "wagmi";
 

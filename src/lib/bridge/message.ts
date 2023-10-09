@@ -1,16 +1,24 @@
-import { Contract, utils } from "ethers";
+import {
+  PublicClient,
+  decodeEventLog,
+  encodeEventTopics,
+  encodePacked,
+  keccak256,
+  parseAbi,
+  recoverMessageAddress,
+} from "viem";
 
 export const NOT_ENOUGH_COLLECTED_SIGNATURES =
   "Transaction to the bridge is found but oracles’ confirmations are not collected yet. Wait for a minute and try again.";
 
-export const getMessageData = async (isHome: boolean, ethersProvider: any, txHash: string, txReceipt?: any) => {
+export const getMessageData = async (isHome: boolean, client: PublicClient, txHash: `0x${string}`, txReceipt?: any) => {
   const abi = isHome
-    ? new utils.Interface(["event UserRequestForSignature(bytes32 indexed messageId, bytes encodedData)"])
-    : new utils.Interface(["event UserRequestForAffirmation(bytes32 indexed messageId, bytes encodedData)"]);
+    ? parseAbi(["event UserRequestForSignature(bytes32 indexed messageId, bytes encodedData)"])
+    : parseAbi(["event UserRequestForAffirmation(bytes32 indexed messageId, bytes encodedData)"]);
   let receipt = txReceipt;
   if (!receipt) {
     try {
-      receipt = await ethersProvider.getTransactionReceipt(txHash);
+      receipt = await client.getTransactionReceipt({ hash: txHash });
     } catch (error) {
       throw Error("Invalid hash.");
     }
@@ -18,44 +26,64 @@ export const getMessageData = async (isHome: boolean, ethersProvider: any, txHas
   if (!receipt || !receipt.logs) {
     throw Error("No transaction found.");
   }
-  const eventFragment = abi.events[Object.keys(abi.events)[0]];
-  const eventTopic = abi.getEventTopic(eventFragment);
+
+  const eventTopic = encodeEventTopics({ abi, eventName: abi[0].name });
   const event = receipt.logs.find((e: any) => e.topics[0] === eventTopic);
   if (!event) {
     throw Error("It is not a bridge transaction. Specify hash of a transaction sending tokens to the bridge.");
   }
-  const decodedLog = abi.decodeEventLog(eventFragment, event.data, event.topics);
+  const decodedLog = decodeEventLog({ abi, eventName: abi[0].name, topics: event.topics });
 
   return {
-    messageId: decodedLog.messageId,
-    messageData: decodedLog.encodedData,
+    messageId: decodedLog.args.messageId,
+    messageData: decodedLog.args.encodedData,
   };
 };
 
-export const getMessage = async (isHome: boolean, provider: any, ambAddress: string, txHash: string) => {
-  const { messageId, messageData } = await getMessageData(isHome, provider, txHash);
-  const messageHash = utils.solidityKeccak256(["bytes"], [messageData]);
+export const getMessage = async (isHome: boolean, client: PublicClient, ambAddress: string, txHash: string) => {
+  const { messageId, messageData } = await getMessageData(isHome, client, txHash as `0x${string}`);
+  const messageHash = keccak256(encodePacked(["bytes"], [messageData]));
 
-  const abi = [
+  const abi = parseAbi([
     "function isAlreadyProcessed(uint256 _number) public pure returns (bool)",
     "function requiredSignatures() public view returns (uint256)",
     "function numMessagesSigned(bytes32 _message) public view returns (uint256)",
     "function signature(bytes32 _hash, uint256 _index) public view returns (bytes)",
-  ];
-  const ambContract = new Contract(ambAddress, abi, provider);
-  const [requiredSignatures, numMessagesSigned] = await Promise.all([
-    ambContract.requiredSignatures(),
-    ambContract.numMessagesSigned(messageHash),
   ]);
 
-  const isAlreadyProcessed = await ambContract.isAlreadyProcessed(numMessagesSigned);
+  const [requiredSignatures, numMessagesSigned] = await client.multicall({
+    contracts: [
+      { address: ambAddress as `0x${string}`, abi, functionName: "requiredSignatures" },
+      {
+        address: ambAddress as `0x${string}`,
+        abi,
+        functionName: "numMessagesSigned",
+        args: [messageHash as `0x${string}`],
+      },
+    ],
+  });
+
+  const isAlreadyProcessed = await client.readContract({
+    address: ambAddress as `0x${string}`,
+    abi,
+    functionName: "isAlreadyProcessed",
+    args: [numMessagesSigned?.result],
+  });
+
   if (!isAlreadyProcessed) {
     throw Error(NOT_ENOUGH_COLLECTED_SIGNATURES);
   }
   const signatures = await Promise.all(
-    Array(requiredSignatures.toNumber())
+    Array(requiredSignatures.result)
       .fill(null)
-      .map((_item, index) => ambContract.signature(messageHash, index))
+      .map((_item, index) =>
+        client.readContract({
+          address: ambAddress as `0x${string}`,
+          abi,
+          functionName: "signature",
+          args: [messageHash as `0x${string}`, BigInt(index)],
+        })
+      )
   );
 
   const collectedSignatures = signatures.filter((s) => s !== "0x");
@@ -66,37 +94,45 @@ export const getMessage = async (isHome: boolean, provider: any, ambAddress: str
   };
 };
 
-export const messageCallStatus = async (ambAddress: string, ethersProvider: any, messageId: string) => {
-  const abi = ["function messageCallStatus(bytes32 _messageId) public view returns (bool)"];
-  const ambContract = new Contract(ambAddress, abi, ethersProvider);
-  const claimed = await ambContract.messageCallStatus(messageId);
+export const messageCallStatus = async (ambAddress: string, client: PublicClient, messageId: string) => {
+  const abi = parseAbi(["function messageCallStatus(bytes32 _messageId) public view returns (bool)"]);
+  const claimed = await client.readContract({
+    address: ambAddress as `0x${string}`,
+    abi,
+    functionName: "messageCallStatus",
+    args: [messageId as `0x${string}`],
+  });
   return claimed;
 };
 
-export const fetchRequiredSignatures = async (homeAmbAddress: string, homeProvider: any) => {
-  const abi = ["function requiredSignatures() public view returns (uint256)"];
-  const ambContract = new Contract(homeAmbAddress, abi, homeProvider);
-  const numRequired = await ambContract.requiredSignatures();
+export const fetchRequiredSignatures = async (homeAmbAddress: string, client: PublicClient) => {
+  const abi = parseAbi(["function requiredSignatures() public view returns (uint256)"]);
+  const numRequired = await client.readContract({
+    address: homeAmbAddress as `0x${string}`,
+    abi,
+    functionName: "requiredSignatures",
+  });
   return numRequired;
 };
 
-export const fetchValidatorList = async (homeAmbAddress: string, homeProvider: any) => {
-  const ambContract = new Contract(
-    homeAmbAddress,
-    ["function validatorContract() public view returns (address)"],
-    homeProvider
-  );
-  const validatorContractAddress = await ambContract.validatorContract();
-  const validatorContract = new Contract(
-    validatorContractAddress,
-    ["function validatorList() public view returns (address[])"],
-    homeProvider
-  );
-  const validatorList = await validatorContract.validatorList();
+export const fetchValidatorList = async (homeAmbAddress: string, client: PublicClient) => {
+  let abi = parseAbi(["function validatorContract() public view returns (address)"]);
+  const validatorContractAddress = await client.readContract({
+    address: homeAmbAddress as `0x${string}`,
+    abi,
+    functionName: "validatorContract",
+  });
+
+  let abi_2 = parseAbi(["function validatorList() public view returns (address[])"]);
+  const validatorList = await client.readContract({
+    address: validatorContractAddress as `0x${string}`,
+    abi: abi_2,
+    functionName: "validatorList",
+  });
   return validatorList;
 };
 
-export const getRemainingSignatures = (
+export const getRemainingSignatures = async (
   messageData: any,
   signaturesCollected: any,
   requiredSignatures: number,
@@ -105,7 +141,7 @@ export const getRemainingSignatures = (
   const signatures = [];
   const remainingValidators = Object.fromEntries(validatorList.map((validator) => [validator, true]));
   for (let i = 0; i < signaturesCollected.length && signatures.length < requiredSignatures; i += 1) {
-    const signer = utils.verifyMessage(utils.arrayify(messageData), signaturesCollected[i]);
+    const signer = await recoverMessageAddress({ message: messageData, signature: signaturesCollected[i] });
     if (validatorList.includes(signer)) {
       delete remainingValidators[signer];
       signatures.push(signaturesCollected[i]);
@@ -114,7 +150,7 @@ export const getRemainingSignatures = (
   if (signatures.length < requiredSignatures) {
     console.debug("On-chain collected signatures are not enough for message execution");
     const manualValidators = Object.keys(remainingValidators);
-    const msgHash = utils.keccak256(messageData);
+    const msgHash = keccak256(messageData);
     for (let i = 0; i < manualValidators.length && signatures.length < requiredSignatures; i += 1) {
       try {
         const overrideSignatures: any = {};

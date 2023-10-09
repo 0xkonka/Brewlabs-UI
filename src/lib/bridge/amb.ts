@@ -1,27 +1,30 @@
-import { Contract, Signer, utils } from "ethers";
+import { PublicClient, WalletClient, parseAbi, toHex } from "viem";
 import { NOT_ENOUGH_COLLECTED_SIGNATURES } from "./message";
 
 export const TOKENS_CLAIMED = "Tokens already claimed";
 
-export const fetchConfirmations = async (address: string, ethersProvider: any) => {
-  const abi = ["function requiredBlockConfirmations() view returns (uint256)"];
-  const ambContract = new Contract(address, abi, ethersProvider);
-  const requiredConfirmations = await ambContract
-    .requiredBlockConfirmations()
-    .catch((blockConfirmationsError: any) => console.error({ blockConfirmationsError }));
-  return parseInt(requiredConfirmations, 10);
+export const fetchConfirmations = async (address: string, client: PublicClient) => {
+  const abi = parseAbi(["function requiredBlockConfirmations() view returns (uint256)"]);
+  const requiredConfirmations = await client.readContract({
+    address: address as `0x${string}`,
+    abi,
+    functionName: "requiredBlockConfirmations",
+  });
+  return parseInt(requiredConfirmations.toString(), 10);
 };
 
-export const fetchAmbVersion = async (address: string, ethersProvider: any) => {
-  if (!ethersProvider) {
-    return { major: 0, minor: 0, patch: 0 };
+export const fetchAmbVersion = async (address: string, client: PublicClient) => {
+  if (!client) {
+    return "0.0.0";
   }
-  const abi = ["function getBridgeInterfacesVersion() external pure returns (uint64, uint64, uint64)"];
-  const ambContract = new Contract(address, abi, ethersProvider);
-  const ambVersion = await ambContract
-    .getBridgeInterfacesVersion()
-    .catch((versionError: any) => console.error({ versionError }));
-  return ambVersion.map((v: any) => v.toNumber()).join(".");
+
+  const abi = parseAbi(["function getBridgeInterfacesVersion() external pure returns (uint64, uint64, uint64)"]);
+  const ambVersion = await client.readContract({
+    address: address as `0x${string}`,
+    abi,
+    functionName: "getBridgeInterfacesVersion",
+  });
+  return ambVersion.map((v: any) => v.toString()).join(".");
 };
 
 function strip0x(input: string) {
@@ -36,8 +39,8 @@ function signatureToVRS(rawSignature: string) {
   return { v, r, s };
 }
 
-function packSignatures(array: any[]) {
-  const length = strip0x(utils.hexValue(array.length));
+function packSignatures(array: any[]): `0x${string}` {
+  const length = strip0x(toHex(array.length));
   const msgLength = length.length === 1 ? `0${length}` : length;
   let v = "";
   let r = "";
@@ -57,30 +60,32 @@ export const isRevertedError = (error: any) =>
   REVERT_ERROR_CODES.includes(error?.error?.code && error?.error?.code.toString());
 
 export const executeSignatures = async (
-  signer: Signer,
+  walletClient: WalletClient,
   address: string,
   version: string,
   { messageData, signatures }: any
 ) => {
-  const abi = [
-    "function executeSignatures(bytes messageData, bytes signatures) external",
-    "function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external",
-  ];
-  const ambContract = new Contract(address, abi, signer);
-
-  let executeSignaturesFunc = ambContract.executeSignatures;
-  if (version > "5.6.0") {
-    executeSignaturesFunc = ambContract.safeExecuteSignaturesWithAutoGasLimit;
-  }
-
   if (!signatures || signatures.length === 0) {
     throw new Error(NOT_ENOUGH_COLLECTED_SIGNATURES);
   }
 
+  const abi = parseAbi([
+    "function executeSignatures(bytes messageData, bytes signatures) external",
+    "function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external",
+  ]);
+  
   try {
     const signs = packSignatures(signatures.map((s: any) => signatureToVRS(s)));
     console.log("signs", signs, messageData);
-    const tx = await executeSignaturesFunc(messageData, signs);
+
+    const tx = await walletClient.writeContract({
+      address: address as `0x${string}`,
+      abi,
+      functionName: version > "5.6.0" ? "safeExecuteSignaturesWithAutoGasLimit" : "executeSignatures",
+      args: [messageData, signs],
+      account: walletClient.account,
+      chain: walletClient.chain,
+    });
     return tx;
   } catch (error) {
     if (isRevertedError(error)) {

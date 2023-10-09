@@ -1,95 +1,123 @@
 import { ChainId } from "@brewlabs/sdk";
-import { BigNumber, Contract, ethers, Signer, utils } from "ethers";
+import { hexToString, parseAbi, PublicClient, WalletClient, zeroAddress } from "viem";
 
 import { BridgeToken } from "config/constants/types";
+import { getViemClients } from "utils/viem";
 import { getMediatorAddress } from "./helpers";
-import { simpleRpcProvider } from "utils/providers";
 
-export const fetchAllowance = async ({ mediator, address }: BridgeToken, account: string, ethersProvider: Signer) => {
-  if (
-    !account ||
-    !address ||
-    address === ethers.constants.AddressZero ||
-    !mediator ||
-    mediator === ethers.constants.AddressZero ||
-    !ethersProvider
-  ) {
-    return BigNumber.from(0);
+export const fetchAllowance = async ({ mediator, address }: BridgeToken, account: string, client: PublicClient) => {
+  if (!account || !address || address === zeroAddress || !mediator || mediator === zeroAddress || !client) {
+    return BigInt(0);
   }
 
   try {
-    const abi = ["function allowance(address, address) view returns (uint256)"];
-    const tokenContract = new Contract(address, abi, ethersProvider);
-    return tokenContract.allowance(account, mediator);
+    const abi = parseAbi(["function allowance(address, address) view returns (uint256)"]);
+    return await client.readContract({
+      address: address as `0x${string}`,
+      abi,
+      functionName: "allowance",
+      args: [account as `0x${string}`, mediator as `0x${string}`],
+    });
   } catch (allowanceError) {
     console.error({ allowanceError });
   }
-  return BigNumber.from(0);
+  return BigInt(0);
 };
 
 const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
-  const ethersProvider = simpleRpcProvider(token.chainId);
+  const publicClient = getViemClients({ chainId: token.chainId });
+
   const mediatorAddress = getMediatorAddress(bridgeDirectionId, token.chainId);
-  const abi = ["function nativeTokenAddress(address) view returns (address)"];
-  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(token.address);
-  if (nativeTokenAddress === ethers.constants.AddressZero) return "erc20";
+  const abi = parseAbi(["function nativeTokenAddress(address) view returns (address)"]);
+  const nativeTokenAddress = await publicClient.readContract({
+    address: mediatorAddress as `0x${string}`,
+    abi,
+    functionName: "nativeTokenAddress",
+    args: [token.address as `0x${string}`],
+  });
+  if (nativeTokenAddress === zeroAddress) return "erc20";
   return "erc677";
 };
 
 export const fetchTokenName = async (token: { chainId: ChainId; name?: string; address: string } | BridgeToken) => {
-  const ethersProvider = simpleRpcProvider(token.chainId);
+  const publicClient = getViemClients({ chainId: token.chainId });
 
   let tokenName = token.name || "";
   try {
-    const stringAbi = ["function name() view returns (string)"];
-    const tokenContractString = new Contract(token.address ?? ethers.constants.AddressZero, stringAbi, ethersProvider);
-    tokenName = await tokenContractString.name();
+    const stringAbi = parseAbi(["function name() view returns (string)"]);
+    tokenName = await publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi: stringAbi,
+      functionName: "name",
+    });
   } catch {
-    const bytes32Abi = ["function name() view returns (bytes32)"];
-    const tokenContractBytes32 = new Contract(
-      token.address ?? ethers.constants.AddressZero,
-      bytes32Abi,
-      ethersProvider
+    const bytes32Abi = parseAbi(["function name() view returns (bytes32)"]);
+    tokenName = hexToString(
+      await publicClient.readContract({
+        address: (token.address ?? zeroAddress) as `0x${string}`,
+        abi: bytes32Abi,
+        functionName: "name",
+      })
     );
-    tokenName = utils.parseBytes32String(await tokenContractBytes32.name());
   }
   return tokenName;
 };
 
 const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
-  const ethersProvider = simpleRpcProvider(token.chainId);
-  const abi = [
+  const publicClient = getViemClients({ chainId: token.chainId });
+  const abi = parseAbi([
     "function decimals() view returns (uint8)",
     "function symbol() view returns (bytes32)",
     "function name() view returns (bytes32)",
-  ];
-  const tokenContract = new Contract(token.address ?? ethers.constants.AddressZero, abi, ethersProvider);
+  ]);
   const [name, symbol, decimals] = await Promise.all([
-    tokenContract.name(),
-    tokenContract.symbol(),
-    tokenContract.decimals(),
+    publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi,
+      functionName: "name",
+    }),
+    publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi,
+      functionName: "symbol",
+    }),
+    publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi,
+      functionName: "decimals",
+    }),
   ]);
   return {
-    name: utils.parseBytes32String(name),
-    symbol: utils.parseBytes32String(symbol),
+    name: hexToString(name),
+    symbol: hexToString(symbol),
     decimals,
   };
 };
 
 const fetchTokenDetailsString = async (token: BridgeToken) => {
-  const ethersProvider = simpleRpcProvider(token.chainId);
-  const abi = [
+  const publicClient = getViemClients({ chainId: token.chainId });
+  const abi = parseAbi([
     "function decimals() view returns (uint8)",
     "function symbol() view returns (string)",
     "function name() view returns (string)",
-  ];
-  const tokenContract = new Contract(token.address ?? ethers.constants.AddressZero, abi, ethersProvider);
+  ]);
 
   const [name, symbol, decimals] = await Promise.all([
-    tokenContract.name(),
-    tokenContract.symbol(),
-    tokenContract.decimals(),
+    publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi,
+      functionName: "name",
+    }),
+    publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi,
+      functionName: "symbol",
+    }),
+    publicClient.readContract({
+      address: (token.address ?? zeroAddress) as `0x${string}`,
+      abi,
+      functionName: "decimals",
+    }),
   ]);
 
   return { name, symbol, decimals };
@@ -124,36 +152,48 @@ export const fetchTokenDetails = async (bridgeDirectionId: number, token: Bridge
   };
 };
 
-export const approveToken = async (signer: Signer, { address, mediator }: BridgeToken, amount: BigNumber) => {
-  const abi = ["function approve(address, uint256)"];
-  const tokenContract = new Contract(address ?? ethers.constants.AddressZero, abi, signer);
-  return tokenContract.approve(mediator, amount);
+export const approveToken = async (walletClient: WalletClient, { address, mediator }: BridgeToken, amount: bigint) => {
+  const abi = parseAbi(["function approve(address, uint256)"]);
+
+  return await walletClient.writeContract({
+    address: address as `0x${string}`,
+    abi,
+    functionName: "approve",
+    args: [mediator as `0x${string}`, amount],
+    account: walletClient.account,
+    chain: walletClient.chain,
+  });
 };
 
 export const fetchTokenBalance = async (token: BridgeToken, account: string) => {
-  const ethersProvider = simpleRpcProvider(token.chainId);
-  return fetchTokenBalanceWithProvider(ethersProvider, token, account);
+  const publicClient = getViemClients({ chainId: token.chainId });
+  return fetchTokenBalanceWithProvider(publicClient, token, account);
 };
 
 export const fetchTokenBalanceWithProvider = async (
-  ethersProvider: any,
+  client: PublicClient,
   { address, mode, symbol }: BridgeToken,
   account: string
 ) => {
-  if (address === ethers.constants.AddressZero && mode === "NATIVE") {
-    return ethersProvider.getBalance(account);
+  if (address === zeroAddress && mode === "NATIVE") {
+    return client.getBalance({ address: account as `0x${string}` });
   }
-  if (!account || !address || address === ethers.constants.AddressZero || !ethersProvider) {
-    return BigNumber.from(0);
+  if (!account || !address || address === zeroAddress || !client) {
+    return BigInt(0);
   }
   try {
-    const abi = ["function balanceOf(address) view returns (uint256)"];
-    const tokenContract = new Contract(address, abi, ethersProvider);
-    const balance = await tokenContract.balanceOf(account);
+    const abi = parseAbi(["function balanceOf(address) view returns (uint256)"]);
+    const balance = await client.readContract({
+      address: address as `0x${string}`,
+      abi,
+      functionName: "balanceOf",
+      args: [account as `0x${string}`],
+    });
+
     return balance;
   } catch (error) {
     console.error(`Error fetching balance for ${address}-${symbol}`, error);
   }
 
-  return BigNumber.from(0);
+  return BigInt(0);
 };

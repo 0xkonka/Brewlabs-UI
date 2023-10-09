@@ -3,19 +3,19 @@ import { ChainId } from "@brewlabs/sdk";
 
 import { getNetworkLabel } from "lib/bridge/helpers";
 import { fetchRequiredSignatures, fetchValidatorList } from "lib/bridge/message";
-import { useEthersProvider } from "utils/ethersAdapter";
+import { getViemClients } from "utils/viem";
 
 export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress: string) => {
   const [requiredSignatures, setRequiredSignatures] = useState(0);
-  const [validatorList, setValidatorList] = useState([]);
-  const provider = useEthersProvider({ chainId: foreignChainId });
+  const [validatorList, setValidatorList] = useState<string[]>([]);
 
   useEffect(() => {
     const label = getNetworkLabel(foreignChainId).toUpperCase();
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
     const fetchValue = async () => {
       try {
-        const res = await fetchRequiredSignatures(foreignAmbAddress, provider);
+        const publicClient = getViemClients({chainId: foreignChainId})
+        const res = await fetchRequiredSignatures(foreignAmbAddress, publicClient);
         const signatures = Number.parseInt(res.toString(), 10);
         setRequiredSignatures(signatures);
         sessionStorage.setItem(key, signatures.toString());
@@ -36,8 +36,9 @@ export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-VALIDATOR-LIST`;
     const fetchValue = async () => {
       try {
-        const res = await fetchValidatorList(foreignAmbAddress, provider);
-        setValidatorList(res);
+        const publicClient = getViemClients({chainId: foreignChainId})
+        const res = await fetchValidatorList(foreignAmbAddress, publicClient);
+        setValidatorList(res as string[]);
         sessionStorage.setItem(key, JSON.stringify(res));
       } catch (versionError) {
         console.error({ versionError });

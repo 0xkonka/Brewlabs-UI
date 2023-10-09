@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
 import { ChainId } from "@brewlabs/sdk";
-import { BigNumber, ethers } from "ethers";
 import Skeleton from "react-loading-skeleton";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
@@ -167,14 +167,14 @@ const Bridge: NextPage = () => {
           const b = await fetchTokenBalance(fromToken, account);
           setFromBalance(b);
         } catch (fromBalanceError) {
-          setFromBalance(BigNumber.from(0));
+          setFromBalance(BigInt(0));
           console.error({ fromBalanceError });
         } finally {
           setBalanceLoading(false);
         }
       })();
     } else {
-      setFromBalance(BigNumber.from(0));
+      setFromBalance(BigInt(0));
     }
   }, [txHash, fromToken, account, setFromBalance, setBalanceLoading]);
 
@@ -186,14 +186,14 @@ const Bridge: NextPage = () => {
           const b = await fetchTokenBalance(toToken, account);
           setToBalance(b);
         } catch (toBalanceError) {
-          setToBalance(BigNumber.from(0));
+          setToBalance(BigInt(0));
           console.error({ toBalanceError });
         } finally {
           setToBalanceLoading(false);
         }
       })();
     } else {
-      setToBalance(BigNumber.from(0));
+      setToBalance(BigInt(0));
     }
   }, [txHash, toToken, account, setToBalance, setToBalanceLoading]);
 
@@ -209,10 +209,10 @@ const Bridge: NextPage = () => {
     const realPercentages = [100, 10, 25, 50, 75];
     if (fromBalance && fromToken) {
       setAmountInput(
-        ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString()
+        formatUnits((fromBalance * BigInt(realPercentages[index])) / BigInt(100), fromToken.decimals).toString()
       );
       setAmount(
-        ethers.utils.formatUnits(fromBalance.mul(realPercentages[index]).div(100), fromToken.decimals).toString()
+        formatUnits((fromBalance * BigInt(realPercentages[index])) / BigInt(100), fromToken.decimals).toString()
       );
     }
     setPercent(index);

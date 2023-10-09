@@ -8,10 +8,10 @@ import { useApproval } from "hooks/bridge/useApproval";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { isRevertedError } from "lib/bridge/amb";
 import { formatValue, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { useGlobalState } from "state";
 
-import { useGlobalState } from "../../state";
-import Button from "../Button";
 import CrossChainIcons from "../CrossChainIcons";
+import Button from "../Button";
 
 const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElement => {
   const { chain } = useNetwork();
@@ -42,11 +42,11 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
       showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
       return false;
     }
-    if (fromAmount.lte(0)) {
+    if (fromAmount <= 0) {
       showError("Please specify amount");
       return false;
     }
-    if (fromBalance.lt(fromAmount)) {
+    if (fromBalance < fromAmount) {
       showError("Not enough balance");
       return false;
     }
@@ -88,14 +88,14 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
       showError(`Please switch to ${getNetworkLabel(fromToken?.chainId!)}`);
     } else if (
       tokenLimits &&
-      (fromAmount.gt(tokenLimits.remainingLimit) || tokenLimits.remainingLimit.lt(tokenLimits.minPerTx))
+      (fromAmount > tokenLimits.remainingLimit || tokenLimits.remainingLimit < tokenLimits.minPerTx)
     ) {
       showError("Daily limit reached. Please try again tomorrow or with a lower amount");
-    } else if (tokenLimits && fromAmount.lt(tokenLimits.minPerTx)) {
+    } else if (tokenLimits && fromAmount < tokenLimits.minPerTx) {
       showError(`Please specify amount more than ${formatValue(tokenLimits.minPerTx, fromToken.decimals)}`);
-    } else if (tokenLimits && fromAmount.gt(tokenLimits.maxPerTx)) {
+    } else if (tokenLimits && fromAmount > tokenLimits.maxPerTx) {
       showError(`Please specify amount less than ${formatValue(tokenLimits.maxPerTx, fromToken.decimals)}`);
-    } else if (fromBalance.lt(fromAmount)) {
+    } else if (fromBalance < fromAmount) {
       showError("Not enough balance");
     } else if (receiver && !ethers.utils.isAddress(receiver)) {
       showError(`Please specify a valid recipient address`);
@@ -125,7 +125,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
             {unlockLoading && (
               <div role="status">
                 <svg
-                  className="mr-2 inline h-5 w-5 animate-spin fill-yellow-500 text-gray-200 dark:text-gray-600"
+                  className="fill-yellow-500 mr-2 inline h-5 w-5 animate-spin text-gray-200 dark:text-gray-600"
                   viewBox="0 0 100 101"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +153,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
           {loading && (
             <div role="status">
               <svg
-                className="mr-2 inline h-5 w-5 animate-spin fill-yellow-500 text-gray-200 dark:text-gray-600"
+                className="fill-yellow-500 mr-2 inline h-5 w-5 animate-spin text-gray-200 dark:text-gray-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

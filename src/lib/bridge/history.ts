@@ -1,6 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
-import { ethers } from "ethers";
 import { gql, request } from "graphql-request";
+import { zeroAddress } from "viem";
 
 const pageSize = 1000;
 
@@ -216,7 +216,7 @@ export const combineRequestsWithExecutions = (
         chainId,
       },
       toToken: {
-        address: execution ? execution.token : ethers.constants.AddressZero,
+        address: execution ? execution.token : zeroAddress,
         decimals: req.decimals,
         symbol: req.symbol,
         chainId: bridgeChainId,

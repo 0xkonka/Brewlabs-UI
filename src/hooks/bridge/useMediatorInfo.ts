@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
-import { Contract } from "ethers";
+import { parseAbi } from "viem";
 import { useAccount } from "wagmi";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { getViemClients } from "utils/viem";
 
 import { useBridgeDirection } from "./useBridgeDirection";
-import { simpleRpcProvider } from "utils/providers";
 
 export const useMediatorInfo = () => {
   const { address: account } = useAccount();
@@ -34,16 +34,23 @@ export const useMediatorInfo = () => {
   );
 
   const calculateFees = useCallback(async (managerAddress: string, chainId: ChainId) => {
-    const ethersProvider = simpleRpcProvider(chainId);
-    const abi = [
+    const publicClient = getViemClients({ chainId });
+    const abi = parseAbi([
       "function FOREIGN_TO_HOME_FEE() view returns (bytes32)",
       "function HOME_TO_FOREIGN_FEE() view returns (bytes32)",
-    ];
-    const feeManagerContract = new Contract(managerAddress, abi, ethersProvider);
+    ]);
 
     const [home, foreign] = await Promise.all([
-      feeManagerContract.FOREIGN_TO_HOME_FEE(),
-      feeManagerContract.HOME_TO_FOREIGN_FEE(),
+      publicClient.readContract({
+        address: managerAddress as `0x${string}`,
+        abi,
+        functionName: "FOREIGN_TO_HOME_FEE",
+      }),
+      publicClient.readContract({
+        address: managerAddress as `0x${string}`,
+        abi,
+        functionName: "HOME_TO_FOREIGN_FEE",
+      }),
     ]);
     setForeignToHomeFeeType(home);
     setHomeToForeignFeeType(foreign);
@@ -55,10 +62,15 @@ export const useMediatorInfo = () => {
         setRewardAddress(false);
         return;
       }
-      const ethersProvider = simpleRpcProvider(chainId);
-      const abi = ["function isRewardAddress(address) view returns (bool)"];
-      const feeManagerContract = new Contract(managerAddress, abi, ethersProvider);
-      const is = await feeManagerContract.isRewardAddress(account);
+
+      const publicClient = getViemClients({ chainId });
+      const abi = parseAbi(["function isRewardAddress(address) view returns (bool)"]);
+      const is = await publicClient.readContract({
+        address: managerAddress as `0x${string}`,
+        abi,
+        functionName: "isRewardAddress",
+        args: [account],
+      });
 
       setRewardAddress(is);
     },
@@ -69,35 +81,49 @@ export const useMediatorInfo = () => {
     const processMediatorData = async () => {
       try {
         setFetching(true);
-        const abi = [
+        const abi = parseAbi([
           "function getCurrentDay() view returns (uint256)",
           "function feeManager() public view returns (address)",
           "function getBridgeInterfacesVersion() external pure returns (uint64, uint64, uint64)",
-        ];
-
-        const homeEthersProvider = simpleRpcProvider(homeChainId);
-        const foreignEthersProvider = simpleRpcProvider(foreignChainId);
-        const mediatorContract = new Contract(homeMediatorAddress, abi, homeEthersProvider);
-
-        const [versionArray, day] = await Promise.all([
-          mediatorContract.getBridgeInterfacesVersion(),
-          mediatorContract.getCurrentDay(),
         ]);
 
-        setCurrentDay(day);
+        const homeClient = getViemClients({ chainId: homeChainId });
+        const foreignClient = getViemClients({ chainId: foreignChainId });
+        const [versionArray, day] = await Promise.all([
+          homeClient.readContract({
+            address: homeMediatorAddress as `0x${string}`,
+            abi,
+            functionName: "getBridgeInterfacesVersion",
+          }),
+          homeClient.readContract({
+            address: homeMediatorAddress as `0x${string}`,
+            abi,
+            functionName: "getCurrentDay",
+          }),
+        ]);
+
+        setCurrentDay(day.toString());
 
         const version = versionArray.map((v: any) => v.toNumber()).join(".");
         let homeManagerAddress = homeMediatorAddress;
         if (version >= "2.1.0") {
-          homeManagerAddress = await mediatorContract.feeManager();
+          homeManagerAddress = await homeClient.readContract({
+            address: homeMediatorAddress as `0x${string}`,
+            abi,
+            functionName: "feeManager",
+          });
         }
 
         setHomeFeeManagerAddress(homeManagerAddress);
 
         let foreignManagerAddress;
         if (bridgeVersion) {
-          const foreignMediatorContract = new Contract(foreignMediatorAddress, abi, foreignEthersProvider);
-          foreignManagerAddress = await foreignMediatorContract.feeManager();
+          foreignManagerAddress = await foreignClient.readContract({
+            address: foreignMediatorAddress as `0x${string}`,
+            abi,
+            functionName: "feeManager",
+          });
+
           setForeignFeeManagerAddress(foreignManagerAddress);
         } else {
           foreignManagerAddress = homeFeeManagerAddress;

@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { BigNumber, ethers, utils } from "ethers";
 import { ChainId } from "@brewlabs/sdk";
-import { useAccount } from "wagmi";
+import { parseUnits, zeroAddress } from "viem";
+import { useAccount, useWalletClient } from "wagmi";
 
 import { BridgeToken } from "config/constants/types";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -10,19 +10,18 @@ import { useMediatorInfo } from "hooks/bridge/useMediatorInfo";
 import { fetchToAmount, fetchToToken, relayTokens } from "lib/bridge/bridge";
 import { fetchTokenDetails } from "lib/bridge/token";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 
 export interface BridgeContextState {
   amountInput: string;
   setAmountInput: React.Dispatch<React.SetStateAction<string>>;
-  fromAmount: BigNumber;
-  toAmount: BigNumber;
+  fromAmount: bigint;
+  toAmount: bigint;
   toAmountLoading: boolean;
   setAmount: (inputAmount: string) => Promise<void>;
-  fromBalance: BigNumber;
-  setFromBalance: React.Dispatch<React.SetStateAction<BigNumber>>;
-  toBalance: BigNumber;
-  setToBalance: React.Dispatch<React.SetStateAction<BigNumber>>;
+  fromBalance: bigint;
+  setFromBalance: React.Dispatch<React.SetStateAction<bigint>>;
+  toBalance: bigint;
+  setToBalance: React.Dispatch<React.SetStateAction<bigint>>;
   // tokens
   fromToken: BridgeToken | null;
   toToken: BridgeToken | null;
@@ -47,14 +46,14 @@ const emptyHandler = async () => {};
 export const BridgeContext = React.createContext<BridgeContextState>({
   amountInput: "",
   setAmountInput: () => "",
-  fromAmount: BigNumber.from(0),
-  toAmount: BigNumber.from(0),
+  fromAmount: BigInt(0),
+  toAmount: BigInt(0),
   toAmountLoading: false,
   setAmount: emptyHandler,
-  fromBalance: BigNumber.from(0),
-  setFromBalance: () => BigNumber.from(0),
-  toBalance: BigNumber.from(0),
-  setToBalance: () => BigNumber.from(0),
+  fromBalance: BigInt(0),
+  setFromBalance: () => BigInt(0),
+  toBalance: BigInt(0),
+  setToBalance: () => BigInt(0),
   // tokens
   fromToken: null,
   toToken: null,
@@ -79,7 +78,7 @@ export const useBridgeContext = () => useContext(BridgeContext);
 export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const { address: account, isConnected } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
-  const signer = useEthersSigner();
+  const { data: walletClient } = useWalletClient();
 
   const {
     bridgeDirectionId,
@@ -100,14 +99,14 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
     toToken: null,
   });
   const [{ fromAmount, toAmount }, setAmounts] = useState({
-    fromAmount: BigNumber.from(0),
-    toAmount: BigNumber.from(0),
+    fromAmount: BigInt(0),
+    toAmount: BigInt(0),
   });
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [shouldReceiveNativeCur, setShouldReceiveNativeCur] = useState(false);
-  const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
-  const [toBalance, setToBalance] = useState(BigNumber.from(0));
+  const [fromBalance, setFromBalance] = useState(BigInt(0));
+  const [toBalance, setToBalance] = useState(BigInt(0));
   const [txHash, setTxHash] = useState<string>();
 
   const {
@@ -123,7 +122,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
   const feeType = isHome ? homeToForeignFeeType : foreignToHomeFeeType;
 
   const getToAmount = useCallback(
-    async (amount: BigNumber) =>
+    async (amount: bigint) =>
       isRewardAddress
         ? amount
         : fetchToAmount(
@@ -141,8 +140,8 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
   const cleanAmounts = useCallback(() => {
     setAmountInput("");
     setAmounts({
-      fromAmount: BigNumber.from(0),
-      toAmount: BigNumber.from(0),
+      fromAmount: BigInt(0),
+      toAmount: BigInt(0),
     });
   }, []);
 
@@ -150,14 +149,12 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
     async (inputAmount: string) => {
       if (!fromToken || !toToken) return;
       setToAmountLoading(true);
-      const amount = utils.parseUnits(inputAmount === "" ? "0" : inputAmount, fromToken.decimals);
+      const amount = parseUnits(inputAmount === "" ? "0" : inputAmount, fromToken.decimals);
       const gotToAmount = await getToAmount(amount);
       const toTokenDecimals = fromToken.chainId === homeChainId ? foreignToken.decimals : homeToken.decimals;
       setAmounts({
         fromAmount: amount,
-        toAmount: gotToAmount
-          .mul(BigNumber.from(10).pow(36 - fromToken.decimals))
-          .div(BigNumber.from(10).pow(36 - toTokenDecimals)),
+        toAmount: (gotToAmount * BigInt(10 ** (36 - fromToken.decimals))) / BigInt(10 ** (36 - toTokenDecimals)),
       });
       setToAmountLoading(false);
     },
@@ -183,7 +180,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
       toToken.chainId &&
       [homeChainId, foreignChainId].includes(fromToken.chainId) &&
       [homeChainId, foreignChainId].includes(toToken.chainId) &&
-      (fromToken.address !== ethers.constants.AddressZero || fromToken.mode === "NATIVE")
+      (fromToken.address !== zeroAddress || fromToken.mode === "NATIVE")
     ) {
       const label = getNetworkLabel(fromToken.chainId).toUpperCase();
       const storageKey = `${label}-FROM-TOKEN`;
@@ -226,21 +223,21 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
     if (!receiver && !account) {
       throw new Error("Must set receiver");
     }
-    if (!signer || !fromToken) return;
+    if (!walletClient || !fromToken) return;
 
     try {
       setLoading(true);
       setTxHash(undefined);
 
       const tx = await relayTokens(
-        signer,
+        walletClient,
         fromToken,
         (receiver ?? account)!,
         fromAmount,
         version,
         fromToken.chainId === foreignChainId ? foreignPerformanceFee : homePerformanceFee
       );
-      setTxHash(tx.hash);
+      setTxHash(tx);
       setAmountInput("0");
       setAmount("0");
     } catch (transferError) {
@@ -255,7 +252,17 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
       throw transferError;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromToken, toToken, account, receiver, signer, fromAmount, setAmount, shouldReceiveNativeCur, foreignChainId]);
+  }, [
+    fromToken,
+    toToken,
+    account,
+    receiver,
+    walletClient,
+    fromAmount,
+    setAmount,
+    shouldReceiveNativeCur,
+    foreignChainId,
+  ]);
 
   const switchTokens = useCallback(() => {
     setTokens(({ fromToken: from, toToken: to }) => ({
@@ -324,11 +331,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
   ]);
 
   useEffect(() => {
-    if (
-      toToken?.chainId === foreignChainId &&
-      toToken?.address === ethers.constants.AddressZero &&
-      toToken?.mode === "NATIVE"
-    ) {
+    if (toToken?.chainId === foreignChainId && toToken?.address === zeroAddress && toToken?.mode === "NATIVE") {
       setShouldReceiveNativeCur(true);
     } else {
       setShouldReceiveNativeCur(false);

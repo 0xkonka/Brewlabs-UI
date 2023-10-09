@@ -1,13 +1,13 @@
+import { useState, useCallback, useEffect } from "react";
+
 import { useBridgeContext } from "contexts/BridgeContext";
 import { fetchTokenLimits } from "lib/bridge/bridge";
 import { useBridgeDirection } from "./useBridgeDirection";
 
-const { useState, useCallback, useEffect } = require("react");
-
 export const useTokenLimits = () => {
   const { fromToken, toToken, currentDay }: any = useBridgeContext();
   const { bridgeDirectionId, homeChainId, foreignChainId } = useBridgeDirection();
-  const [tokenLimits, setTokenLimits] = useState();
+  const [tokenLimits, setTokenLimits] = useState<any>();
   const [fetching, setFetching] = useState(false);
 
   const updateTokenLimits = useCallback(async () => {

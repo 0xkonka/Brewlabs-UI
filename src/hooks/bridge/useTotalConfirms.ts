@@ -3,7 +3,7 @@ import { ChainId } from "@brewlabs/sdk";
 
 import { fetchConfirmations } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { useEthersProvider } from "utils/ethersAdapter";
+import { getViemClients } from "utils/viem";
 
 export const useTotalConfirms = (
   homeChainId: ChainId,
@@ -11,9 +11,6 @@ export const useTotalConfirms = (
   homeAmbAddress: string,
   foreignAmbAddress: string
 ) => {
-  const homeProvider = useEthersProvider({ chainId: homeChainId })
-  const foreignProvider = useEthersProvider({ chainId: foreignChainId })
-
   const [homeTotalConfirms, setHomeTotalConfirms] = useState(8);
   const [foreignTotalConfirms, setForeignTotalConfirms] = useState(8);
 
@@ -26,9 +23,11 @@ export const useTotalConfirms = (
 
     const fetchConfirms = async () => {
       try {
+        const homePublicClient = getViemClients({ chainId: homeChainId });
+        const foreignPublicClient = getViemClients({ chainId: foreignChainId });
         const [home, foreign] = await Promise.all([
-          fetchConfirmations(homeAmbAddress, homeProvider),
-          fetchConfirmations(foreignAmbAddress, foreignProvider),
+          fetchConfirmations(homeAmbAddress, homePublicClient),
+          fetchConfirmations(foreignAmbAddress, foreignPublicClient),
         ]);
         setHomeTotalConfirms(home);
         setForeignTotalConfirms(foreign);

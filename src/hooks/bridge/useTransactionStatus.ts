@@ -1,23 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { usePublicClient } from "wagmi";
 
 import { POLLING_INTERVAL } from "config/constants/bridge";
 import { useBridgeContext } from "contexts/BridgeContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { timeout, withTimeout } from "lib/bridge/helpers";
 import { getMessage, getMessageData, messageCallStatus, NOT_ENOUGH_COLLECTED_SIGNATURES } from "lib/bridge/message";
+import { getViemClients } from "utils/viem";
 
 import { useBridgeDirection } from "./useBridgeDirection";
 import { useNeedsClaiming } from "./useNeedsClaiming";
-import { useEthersProvider } from "utils/ethersAdapter";
-import { simpleRpcProvider } from "utils/providers";
 
 export const useTransactionStatus = (setMessage: any) => {
-  const needsClaiming = useNeedsClaiming();
-  const { homeChainId, getBridgeChainId, getAMBAddress, getTotalConfirms } = useBridgeDirection();
   const { chainId } = useActiveChainId();
-  const ethersProvider = useEthersProvider();
+  const publicClient = usePublicClient();
+
+  const needsClaiming = useNeedsClaiming();
   const { loading, setLoading, txHash, setTxHash }: any = useBridgeContext();
+  const { homeChainId, getBridgeChainId, getAMBAddress, getTotalConfirms } = useBridgeDirection();
 
   const isHome = chainId === homeChainId;
   const totalConfirms = getTotalConfirms(chainId);
@@ -51,10 +52,14 @@ export const useTransactionStatus = (setMessage: any) => {
 
   const getStatus = useCallback(async () => {
     try {
-      const bridgeProvider = simpleRpcProvider(bridgeChainId);
-      const tx = await ethersProvider.getTransaction(txHash);
-      const txReceipt: any = tx ? await withTimeout(5 * POLLING_INTERVAL, tx.wait()) : null;
-      const numConfirmations = txReceipt ? txReceipt.confirmations : 0;
+      const bridgeClient = getViemClients({ chainId: bridgeChainId });
+      const tx = await bridgeClient.getTransactionReceipt(txHash);
+      const txReceipt: any = tx
+        ? await withTimeout(5 * POLLING_INTERVAL, bridgeClient.waitForTransactionReceipt({ hash: txHash }))
+        : null;
+      const numConfirmations = txReceipt
+        ? +(await bridgeClient.getTransactionConfirmations({ hash: txHash })).toString()
+        : 0;
       const enoughConfirmations = numConfirmations >= totalConfirms;
 
       if (txReceipt) {
@@ -63,13 +68,13 @@ export const useTransactionStatus = (setMessage: any) => {
           const bridgeAmbAddress = getAMBAddress(bridgeChainId);
           if (needsClaiming) {
             setLoadingText("Collecting Signatures");
-            const message = await getMessage(isHome, ethersProvider, getAMBAddress(chainId), txHash);
+            const message = await getMessage(isHome, publicClient, getAMBAddress(chainId), txHash);
 
             setLoadingText("Waiting for Execution");
             if (message && message.signatures) {
               const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
               await sleep(10 * POLLING_INTERVAL);
-              const status = await messageCallStatus(bridgeAmbAddress, bridgeProvider, message.messageId);
+              const status = await messageCallStatus(bridgeAmbAddress, bridgeClient, message.messageId);
               if (status) {
                 completeReceipt();
                 return true;
@@ -83,8 +88,8 @@ export const useTransactionStatus = (setMessage: any) => {
           } else {
             setLoadingText("Waiting for Execution");
 
-            const { messageId } = await getMessageData(isHome, ethersProvider, txHash, txReceipt);
-            const status = await messageCallStatus(bridgeAmbAddress, bridgeProvider, messageId);
+            const { messageId } = await getMessageData(isHome, publicClient, txHash, txReceipt);
+            const status = await messageCallStatus(bridgeAmbAddress, bridgeClient, messageId);
             if (status) {
               completeReceipt();
               return true;
@@ -117,7 +122,6 @@ export const useTransactionStatus = (setMessage: any) => {
     completeReceipt,
     incompleteReceipt,
     chainId,
-    ethersProvider,
     bridgeChainId,
     getAMBAddress,
     setMessage,
@@ -133,7 +137,7 @@ export const useTransactionStatus = (setMessage: any) => {
 
     const updateStatus = async () => {
       const status = !isSubscribed || (await getStatus());
-      if (!status && loading && txHash && ethersProvider) {
+      if (!status && loading && txHash && publicClient) {
         await timeout(POLLING_INTERVAL);
         updateStatus();
       }
@@ -144,7 +148,7 @@ export const useTransactionStatus = (setMessage: any) => {
     return () => {
       isSubscribed = false;
     };
-  }, [loading, txHash, ethersProvider, getStatus]);
+  }, [loading, txHash, publicClient, getStatus]);
 
   useEffect(() => {
     setNeedsConfirmation((needs) => chainId === homeChainId && needs);

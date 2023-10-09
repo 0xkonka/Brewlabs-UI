@@ -9,6 +9,7 @@ export const useClaimableTransfers = () => {
   const { address: account } = useAccount();
   const { homeChainId, foreignChainId, getGraphEndpoint } = useBridgeDirection();
   const { txHash }: any = useBridgeContext();
+
   const [transfers, setTransfers] = useState<any[]>();
   const [loading, setLoading] = useState(false);
 

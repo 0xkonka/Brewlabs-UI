@@ -1,46 +1,49 @@
-import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 
 import { BridgeToken } from "config/constants/types";
-import { approveToken, fetchAllowance } from "lib/bridge/token";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useEthersSigner } from "utils/ethersAdapter";
+import { approveToken, fetchAllowance } from "lib/bridge/token";
+import { getViemClients } from "utils/viem";
 
-export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHash?: string) => {
+export const useApproval = (fromToken: BridgeToken, fromAmount: bigint, txHash?: string) => {
   const { chainId: providerChainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const signer  = useEthersSigner();
-  const [allowance, setAllowance] = useState(BigNumber.from(0));
+  const { data: walletClient } = useWalletClient();
+
+  const [allowance, setAllowance] = useState(BigInt(0));
   const [allowed, setAllowed] = useState(true);
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const [approvalTxHash, setApprovalTxHash] = useState<string | undefined>();
 
   useEffect(() => {
     if (fromToken && account && providerChainId === fromToken.chainId) {
-      if (signer) fetchAllowance(fromToken, account, signer).then(setAllowance);
+      const publicClient = getViemClients({ chainId: fromToken.chainId });
+      if (account) fetchAllowance(fromToken, account, publicClient).then(setAllowance);
     } else {
-      setAllowance(BigNumber.from(0));
+      setAllowance(BigInt(0));
     }
-  }, [signer, account, fromToken, providerChainId, txHash]);
+  }, [account, fromToken, providerChainId, txHash]);
 
   useEffect(() => {
     if (!fromToken || !fromAmount) {
       setAllowed(false);
       return;
     }
-    setAllowed(allowance.gte(fromAmount));
+    setAllowed(allowance >= fromAmount);
   }, [fromAmount, allowance, fromToken]);
-
-  const [unlockLoading, setUnlockLoading] = useState(false);
-  const [approvalTxHash, setApprovalTxHash] = useState<string | undefined>();
 
   const approve = useCallback(async () => {
     setUnlockLoading(true);
+    const publicClient = getViemClients({ chainId: fromToken.chainId });
     const approvalAmount = fromAmount;
+
     try {
-      if (!signer) return;
-      const tx = await approveToken(signer, fromToken, approvalAmount);
-      setApprovalTxHash(tx.hash);
-      await tx.wait();
+      if (!walletClient) return;
+      const tx = await approveToken(walletClient, fromToken, approvalAmount);
+      setApprovalTxHash(tx);
+
+      await publicClient.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
       setAllowance(approvalAmount);
     } catch (approveError: any) {
       if (approveError?.code === "TRANSACTION_REPLACED") {
@@ -75,7 +78,7 @@ export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHas
       setApprovalTxHash(undefined);
       setUnlockLoading(false);
     }
-  }, [fromAmount, fromToken, signer, account]);
+  }, [fromAmount, fromToken, walletClient, account]);
 
   return { allowed, unlockLoading, approvalTxHash, approve };
 };

@@ -1,5 +1,5 @@
 import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
-import { utils } from "ethers";
+import { formatUnits } from "viem";
 import { Connector } from "wagmi";
 
 import { bridgeConfigs } from "config/constants/bridge";
@@ -91,7 +91,7 @@ export const withTimeout = (ms: number, promise: any) =>
   });
 
 export const formatValue = (num: any, dec: any) => {
-  const str = utils.formatUnits(num, dec);
+  const str = formatUnits(num, dec);
   const splitStr = str.split(".");
   const beforeDecimal = splitStr[0];
   const afterDecimal = `${(splitStr[1] ?? "").slice(0, 4)}0000`;
