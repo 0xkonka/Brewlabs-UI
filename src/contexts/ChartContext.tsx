@@ -28,20 +28,20 @@ const ChartContextProvider = ({ children }: any) => {
     }
   };
 
-  const onFavourites = (currency: any, type: number) => {
+  const onFavourites = (pair: any, type: number) => {
     if (type === 1) {
       const index = favourites.findIndex(
-        (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
+        (favourite) => favourite.address === pair.address && favourite.chainId === pair.chainId
       );
       if (index !== -1) return;
-      localStorage.setItem(`chart-favorites`, JSON.stringify([...favourites, currency]));
+      localStorage.setItem(`chart-favorites`, JSON.stringify([...favourites, pair]));
       getFavourites();
     }
     if (type === 2) {
       let temp = [...favourites];
 
       const index = favourites.findIndex(
-        (favourite) => favourite.address === currency.address && favourite.chainId === currency.chainId
+        (favourite) => favourite.address === pair.address && favourite.chainId === pair.chainId
       );
       temp.splice(index, 1);
       localStorage.setItem(`chart-favorites`, JSON.stringify(temp));

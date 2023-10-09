@@ -11,7 +11,7 @@ import BalanceInfo from "./BalanceInfo";
 import Socials from "./Socials";
 import MomentumInfo from "./MomentumInfo";
 
-export default function SwapOption({ currency, marketInfos, volumeDatas, balances, lpPrice, price }) {
+export default function SwapOption({ selectedPair, marketInfos, volumeDatas, balances, lpPrice, price }) {
   const { setOpenSettingModal }: any = useContext(SwapContext);
 
   return (
@@ -26,16 +26,20 @@ export default function SwapOption({ currency, marketInfos, volumeDatas, balance
             </div>
           </div>
         </div>
-        <SwapPanel showHistory={false} size="sm" toChainId={currency?.chainId} />
+        <SwapPanel showHistory={false} size="sm" toChainId={selectedPair?.chainId} />
       </div>
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
-        {currency ? <SlippageInfo currency={currency} /> : ""}
+        {selectedPair ? <SlippageInfo selectedPair={selectedPair} /> : ""}
         <div className="mt-2" />
         <VolumeInfo volumeDatas={volumeDatas} />
         <MomentumInfo volumeDatas={volumeDatas} />
-        {currency ? <BalanceInfo currency={currency} price={price} lpPrice={lpPrice} balances={balances} /> : ""}
-        {currency ? <Socials currency={currency} marketInfos={marketInfos} /> : ""}
-        {currency ? <VotePanel currency={currency} /> : ""}
+        {selectedPair ? (
+          <BalanceInfo selectedPair={selectedPair} price={price} lpPrice={lpPrice} balances={balances} />
+        ) : (
+          ""
+        )}
+        {selectedPair ? <Socials selectedPair={selectedPair} marketInfos={marketInfos} /> : ""}
+        {selectedPair ? <VotePanel selectedPair={selectedPair} /> : ""}
       </div>
 
       <div className={`mb-4 mt-4 hidden h-[120px] rounded-lg bg-[url('/images/directory/truenft.png')] 2xl:block`} />

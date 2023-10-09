@@ -4,7 +4,7 @@ import StyledPrice from "@components/StyledPrice";
 import { useRef } from "react";
 import { ChevronDownSVG } from "@components/dashboard/assets/svgs";
 
-export default function HistoryCard({ list, i, setCriteria, setShowType, currency, isAccount }) {
+export default function HistoryCard({ list, i, setCriteria, setShowType, selectedPair, isAccount }) {
   // const { ENSName } = useENSName(isAddress(list.wallet));
   const ENSName = null;
   const makerRef1: any = useRef();
@@ -121,11 +121,11 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
           </div>
           <div className="flex flex-wrap justify-between">
             <div className="flex  items-center ">
-              <div>{currency.symbols[0]}:</div>&nbsp;
+              <div>{selectedPair.baseToken.symbol}:</div>&nbsp;
               <div className="">{list.amount}</div>
             </div>
             <div className="flex items-center">
-              <div>{getNativeSybmol(currency.chainId)}:</div>&nbsp;
+              <div>{getNativeSybmol(selectedPair.chainId)}:</div>&nbsp;
               <div className="">{list.nativeAmount}</div>
             </div>
           </div>

@@ -2,9 +2,9 @@ import { ChartSquareSVG, NFTSVG, SwitchSVG } from "@components/dashboard/assets/
 import { SearchInput } from "./SearchInput";
 import { useGlobalState } from "state";
 import CurrencySelector from "@components/CurrencySelector";
-import { DEX_GURU_CHAIN_NAME } from "config";
 import { useRouter } from "next/router";
 import UserDashboard from "@components/dashboard/UserDashboard";
+import { DEXSCREENER_CHAINNAME } from "config";
 
 export default function Header({ showReverse, setShowReverse }) {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
@@ -14,7 +14,7 @@ export default function Header({ showReverse, setShowReverse }) {
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {
-    router.push(`/chart/${DEX_GURU_CHAIN_NAME[currency.chainId]}/${currency.address}`);
+    router.push(`/chart/${DEXSCREENER_CHAINNAME[currency.chainId]}/${currency.address}`);
   }
 
   return (
@@ -32,12 +32,13 @@ export default function Header({ showReverse, setShowReverse }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div
-          className={`ml-4 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
-            showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
-          }`}
-        >
+      <div
+        className={`ml-4 mt-4 hidden w-fit items-center justify-between text-tailwind xsm:mt-0 xsm:flex ${
+          showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
+        }`}
+      >
+        <div>asdfasdfas</div>
+        <div className="flex">
           <div
             className="mr-4 cursor-pointer  transition hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
             onClick={() => {

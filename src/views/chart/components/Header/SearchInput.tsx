@@ -1,27 +1,51 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { DrawSVG } from "@components/dashboard/assets/svgs";
 import StyledInput from "@components/StyledInput";
-import { useTokenAllPairs } from "@hooks/useTokenAllPairs";
-import CurrencySelector from "@components/CurrencySelector";
 import { useGlobalState } from "state";
 import { Oval } from "react-loader-spinner";
 import { ChartContext } from "contexts/ChartContext";
 import { useRouter } from "next/router";
-import { DEX_GURU_CHAIN_NAME } from "config";
 import { PairItem } from "./PairItem";
+import { addPairs } from "state/chart";
+import { useDispatch } from "react-redux";
+import { fetchAllPairs } from "state/chart/fetchPairInfo";
+import { useAllPairInfo, usePairsByCriteria } from "state/chart/hooks";
+import { DEXSCREENER_CHAINNAME } from "config";
+import CurrencySelector from "./CurrencySelector";
+
+let searchTimeout;
+let wrappedCriteria = "";
 
 export const SearchInput = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { criteria, setCriteria }: any = useContext(ChartContext);
+  const [loading, setLoading] = useState(false);
+  const [cri, setCri] = useState("");
+  const pairs = usePairsByCriteria(criteria, null, 10);
+  const dispatch = useDispatch();
 
-  const { pairs, loading } = useTokenAllPairs(criteria);
+  useEffect(() => {
+    if (searchTimeout != undefined) clearTimeout(searchTimeout);
+    wrappedCriteria = criteria;
+
+    searchTimeout = setTimeout(async () => {
+      setCriteria(cri);
+      if (cri === "") return;
+      setLoading(true);
+      console.log(cri);
+      const searchedPairs = await fetchAllPairs(cri, null, "simple");
+      setLoading(false);
+      dispatch(addPairs(searchedPairs));
+    }, 500);
+  }, [cri]);
+
   const router = useRouter();
 
   function onUserInput(input, currency) {}
   async function onCurrencySelect(input, currency) {
-    router.push(`/chart/${DEX_GURU_CHAIN_NAME[currency.chainId]}/${currency.address}`);
+    router.push(`/chart/${DEXSCREENER_CHAINNAME[currency.chainId]}/${currency.address}`);
   }
 
   return (
@@ -29,24 +53,14 @@ export const SearchInput = () => {
       <div className="primary-shadow flex h-[44px] flex-1">
         <div className="relative flex-1">
           <div className=" relative flex h-full items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A]">
-            <StyledInput
-              value={criteria}
-              setValue={setCriteria}
-              className="!h-full flex-1 bg-transparent  font-brand !text-base !shadow-none focus:!shadow-none focus:!ring-0"
+            <div
+              className="!h-full flex-1 cursor-pointer  bg-transparent font-brand !text-base !shadow-none focus:!shadow-none focus:!ring-0 z-10"
               onClick={() => {
-                setIsOpen(isOpen === 1 ? 1 : 2);
-                setSidebarContent(
-                  <CurrencySelector
-                    inputType={"input"}
-                    selectedCurrency={null}
-                    onUserInput={onUserInput}
-                    type={""}
-                    onCurrencySelect={onCurrencySelect}
-                  />
-                );
+                setIsOpen(3);
+                setSidebarContent(<CurrencySelector />);
               }}
             />
-            {!criteria ? (
+            {!cri ? (
               <div
                 className={`absolute left-0 top-0 flex h-full w-full items-center overflow-hidden text-ellipsis whitespace-nowrap p-[0px_14px] font-brand !text-base text-white`}
               >
@@ -70,7 +84,7 @@ export const SearchInput = () => {
               </div>
             ) : (
               pairs.map((pair, i) => {
-                return <PairItem key={i} pair={pair} isLast={i === pairs.length - 1} setCriteria={setCriteria} />;
+                return <PairItem key={i} pair={pair} isLast={i === pairs.length - 1} setCriteria={setCri} />;
               })
             )}
           </div>
@@ -78,16 +92,8 @@ export const SearchInput = () => {
         <div
           className="flex h-full w-[44px] cursor-pointer items-center justify-center rounded-r bg-[#B9B8B80D] text-primary"
           onClick={() => {
-            setIsOpen(isOpen === 1 ? 1 : 2);
-            setSidebarContent(
-              <CurrencySelector
-                inputType={"input"}
-                selectedCurrency={null}
-                onUserInput={onUserInput}
-                type={""}
-                onCurrencySelect={onCurrencySelect}
-              />
-            );
+            setIsOpen(3);
+            setSidebarContent(<CurrencySelector />);
           }}
         >
           {DrawSVG}
