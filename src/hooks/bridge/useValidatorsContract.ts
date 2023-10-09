@@ -14,7 +14,7 @@ export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
     const fetchValue = async () => {
       try {
-        const publicClient = getViemClients({chainId: foreignChainId})
+        const publicClient = getViemClients({ chainId: foreignChainId });
         const res = await fetchRequiredSignatures(foreignAmbAddress, publicClient);
         const signatures = Number.parseInt(res.toString(), 10);
         setRequiredSignatures(signatures);
@@ -36,7 +36,7 @@ export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-VALIDATOR-LIST`;
     const fetchValue = async () => {
       try {
-        const publicClient = getViemClients({chainId: foreignChainId})
+        const publicClient = getViemClients({ chainId: foreignChainId });
         const res = await fetchValidatorList(foreignAmbAddress, publicClient);
         setValidatorList(res as string[]);
         sessionStorage.setItem(key, JSON.stringify(res));

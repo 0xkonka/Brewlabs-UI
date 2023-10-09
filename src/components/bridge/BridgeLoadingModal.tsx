@@ -69,7 +69,7 @@ export const BridgeLoader = ({
                               progress={totalConfirms}
                               totalProgress={totalConfirms}
                             />
-                            <CheckIcon className="absolute ml-4 text-green-500" width={35} />
+                            <CheckIcon className="text-green-500 absolute ml-4" width={35} />
                           </>
                         )}
                         <div className="ml-3 text-left">

@@ -37,7 +37,7 @@ const BridgeDragTrack = ({ setLockingFn }: { setLockingFn: Dispatch<SetStateActi
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 4, duration: 2 }}
-        className="absolute left-16 -top-16 hidden w-36 -rotate-12 font-script text-xl sm:visible"
+        className="font-script absolute -top-16 left-16 hidden w-36 -rotate-12 text-xl sm:visible"
       >
         <p>Drag to complete the transaction.</p>
       </motion.div>

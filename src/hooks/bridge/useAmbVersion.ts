@@ -14,7 +14,7 @@ export const useAmbVersion = (foreignChainId: ChainId, foreignAmbAddress: string
     const label = getNetworkLabel(foreignChainId).toUpperCase();
     const key = `${label}-AMB-VERSION`;
     const fetchVersion = async () => {
-      const publicClient = getViemClients({chainId: foreignChainId});
+      const publicClient = getViemClients({ chainId: foreignChainId });
       await fetchAmbVersion(foreignAmbAddress, publicClient)
         .then((versionString) => {
           setForeignAmbVersion(versionString);
