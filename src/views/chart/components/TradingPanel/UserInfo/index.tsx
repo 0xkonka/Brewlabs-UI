@@ -19,7 +19,7 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 let wrappedQuery;
 
-export default function UserInfo({ currency, active, account, setShowType, setCriteria }) {
+export default function UserInfo({ selectedPair, active, account, setShowType, setCriteria }) {
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
@@ -36,39 +36,44 @@ export default function UserInfo({ currency, active, account, setShowType, setCr
 
   const getQuery = () => {
     const query: any = {
-      pair: currency.address,
-      quote: currency.tokenAddresses[1],
+      pair: selectedPair.address,
+      quote: selectedPair.quoteToken.address,
       tb: 0,
       account,
       type: "buyOrSell",
+      a: selectedPair.a,
     };
     return query;
   };
 
-  const stringifiedCurrency = JSON.stringify(currency);
+  const stringifiedCurrency = JSON.stringify(selectedPair);
   useEffect(() => {
-    if (!currency.decimals || !account || !active) return;
+    if (!account || !active) return;
     getBalances(
-      { [currency.chainId]: [{ address: currency.tokenAddresses[0], decimals: currency.decimals[0] }] },
       {
-        [currency.chainId]: [account],
+        [selectedPair.chainId]: [
+          { address: selectedPair.baseToken.address, decimals: selectedPair.baseToken.decimals },
+        ],
+      },
+      {
+        [selectedPair.chainId]: [account],
       }
     )
       .then((result) => {
-        setBalance(result.balances[currency.chainId][0].balance);
+        setBalance(result.balances[selectedPair.chainId][0].balance);
       })
       .catch((e) => console.log(e));
   }, [stringifiedCurrency, account, active]);
 
   useEffect(() => {
     const query: any = getQuery();
-    if (!isAddress(account) || !isAddress(currency.address)) {
+    if (!isAddress(account) || !isAddress(selectedPair.address)) {
       return;
     }
     setHistories([]);
     setTotalHistories([]);
     wrappedQuery = JSON.stringify(query);
-    fetchTradingHistoriesByDexScreener(query, currency.chainId, "all")
+    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all")
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
           setHistories(result);
@@ -77,22 +82,22 @@ export default function UserInfo({ currency, active, account, setShowType, setCr
       .catch((e) => {
         console.log(e);
       });
-  }, [currency.address, account]);
+  }, [selectedPair.address, account]);
 
   useFastRefreshEffect(() => {
     let query = getQuery();
     query.tb = 0;
-    if (!isAddress(account) || !isAddress(currency.address)) {
+    if (!isAddress(account) || !isAddress(selectedPair.address)) {
       return;
     }
-    fetchTradingHistoriesByDexScreener(query, currency.chainId, "all")
+    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all")
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) setRecentHistories(result);
       })
       .catch((e) => {
         console.log(e);
       });
-  }, [currency.address, account]);
+  }, [selectedPair.address, account]);
 
   const strigifiedHistories = JSON.stringify(histories);
   const strigifiedRecentHistories = JSON.stringify(recentHistories);
@@ -169,18 +174,22 @@ export default function UserInfo({ currency, active, account, setShowType, setCr
     >
       <div className="primary-shadow relative flex flex-1 flex-col justify-between rounded bg-[#B9B8B81A] p-[16px_24px_12px_44px] text-sm lg:flex-row">
         <a
-          href={getExplorerLink(currency.chainId, "address", account)}
+          href={getExplorerLink(selectedPair.chainId, "address", account)}
           target="_blank"
           className="absolute left-3 top-3.5"
         >
           <img
-            src={getExplorerLogo(currency.chainId)}
+            src={getExplorerLogo(selectedPair.chainId)}
             alt={""}
             className="h-6 w-6 rounded-full border border-white bg-white"
           />
         </a>
         <div>
-          <a href={getExplorerLink(currency.chainId, "address", account)} target="_blank" className="flex items-center">
+          <a
+            href={getExplorerLink(selectedPair.chainId, "address", account)}
+            target="_blank"
+            className="flex items-center"
+          >
             <div className="flex-1 !text-white">
               {account ? (isXs ? getEllipsis(account, 20, 0) : account) : "No wallet connected"}
             </div>
@@ -202,13 +211,13 @@ export default function UserInfo({ currency, active, account, setShowType, setCr
           <div className="text-[11px] text-[#FFFFFF80]">
             <span className="text-[#FFFFFFBF]">SWAPPED</span>{" "}
             <span className="text-[#32FFB5]">${numberWithCommas((buyInfo.usd + sellInfo.usd).toFixed(2))} USD</span>{" "}
-            {currency.symbols[0]} VOLUME
+            {selectedPair.baseToken.symbol} VOLUME
           </div>
           <div className="text-[11px] text-[#FFFFFF80]">
             <span className="text-[#FFFFFFBF]">BALANCE</span>{" "}
             <span className="text-[#FFFFFF80]">
-              {numberWithCommas(balance.toFixed(2))} {currency.symbols[0]} ~$
-              {numberWithCommas((currency.price * balance).toFixed(2))} USD
+              {numberWithCommas(balance.toFixed(2))} {selectedPair.baseToken.symbol} ~$
+              {numberWithCommas((selectedPair.priceUsd * balance).toFixed(2))} USD
             </span>
           </div>
         </div>
@@ -217,7 +226,7 @@ export default function UserInfo({ currency, active, account, setShowType, setCr
             <div className="text-sm font-normal text-white">Bought</div>
             <div className="text-sm font-bold text-[#32FFB5]">${numberWithCommas(buyInfo.usd.toFixed(2))}</div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
-              {numberWithCommas(buyInfo.amount.toFixed(2))} {currency.symbols[0]}
+              {numberWithCommas(buyInfo.amount.toFixed(2))} {selectedPair.baseToken.symbol}
             </div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
               {numberWithCommas((buyInfo.txns ? buyInfo.price / buyInfo.txns : 0).toFixed(3))} Avg. Entry
@@ -228,7 +237,7 @@ export default function UserInfo({ currency, active, account, setShowType, setCr
             <div className="text-sm font-normal text-white">Sold</div>
             <div className="text-sm font-bold text-[#DC4545]">-${numberWithCommas(sellInfo.usd.toFixed(2))}</div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
-              {numberWithCommas(sellInfo.amount.toFixed(2))} {currency.symbols[0]}
+              {numberWithCommas(sellInfo.amount.toFixed(2))} {selectedPair.baseToken.symbol}
             </div>
             <div className="whitespace-nowrap text-[#FFFFFFBF]">
               {numberWithCommas((sellInfo.txns ? sellInfo.price / sellInfo.txns : 0).toFixed(3))} Avg. Exit

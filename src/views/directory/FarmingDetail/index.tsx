@@ -37,7 +37,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
 import useFarm from "./hooks/useFarm";
-import { BASE_URL, DEX_GURU_CHAIN_NAME } from "config";
+import { BASE_URL, DEXSCREENER_CHAINNAME } from "config";
 import useFarmImpl from "./hooks/useFarmImpl";
 import { useRouter } from "next/router";
 
@@ -329,7 +329,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <Link
                         className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
                         target="_blank"
-                        href={`/chart/${DEX_GURU_CHAIN_NAME[token.chainId]}/${data.lpAddress}`}
+                        href={`/chart/${DEXSCREENER_CHAINNAME[token.chainId]}/${data.lpAddress}`}
                         rel="noreferrer"
                       >
                         <StyledButton>

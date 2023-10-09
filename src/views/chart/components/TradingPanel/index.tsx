@@ -14,16 +14,16 @@ import { useMediaQuery } from "react-responsive";
 
 let wrappedQuery;
 
-export default function TradingPanel({ currency, marketInfos, showReverse, }) {
+export default function TradingPanel({ selectedPair, showReverse, marketInfos }) {
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
 
   const getQuery = () => {
     const query: any = {
-      address: currency.tokenAddresses[0],
-      current_token_id: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}`,
-      chainId: currency.chainId,
-      pool_address: currency.address,
-      amm: currency.swap,
+      address: selectedPair.baseToken.address,
+      current_token_id: `${selectedPair.baseToken.address}-${DEX_GURU_CHAIN_NAME[selectedPair.chainId]}`,
+      chainId: selectedPair.chainId,
+      pool_address: selectedPair.address,
+      amm: selectedPair.dexId,
       date: { start_date: Date.now() - 3600 * 24 * 7 * 1000, end_date: Date.now() },
       limit: 0,
       offset: 0,
@@ -36,19 +36,21 @@ export default function TradingPanel({ currency, marketInfos, showReverse, }) {
     return query;
   };
 
-  const stringifiedCurrency = JSON.stringify(currency && Object.keys(currency).filter((key) => key !== "params"));
+  const stringifiedCurrency = JSON.stringify(
+    selectedPair && Object.keys(selectedPair).filter((key) => key !== "params")
+  );
 
   useEffect(() => {
-    if (!currency) return;
+    if (!selectedPair) return;
     const query: any = getQuery();
     if (!isAddress(query.address)) {
       return;
     }
     wrappedQuery = JSON.stringify(query);
-    fetchTradingHistories(query, currency.chainId)
+    fetchTradingHistories(query, selectedPair.chainId)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
-          const volumeDatas = getVolumeDatas(currency.tokenAddresses[0], result);
+          const volumeDatas = getVolumeDatas(selectedPair.baseToken.address, result);
           setVolumeDatas(volumeDatas);
         }
       })
@@ -62,11 +64,11 @@ export default function TradingPanel({ currency, marketInfos, showReverse, }) {
   const [lpPrice, setLPPrice] = useState(0);
 
   useEffect(() => {
-    if (!currency) return;
+    if (!selectedPair) return;
 
     Promise.all([
-      fetchDexGuruPrice(currency.chainId, currency.tokenAddresses[0]),
-      fetchDexGuruPrice[(currency.chainId, currency.address)],
+      fetchDexGuruPrice(selectedPair.chainId, selectedPair.baseToken.address),
+      fetchDexGuruPrice[(selectedPair.chainId, selectedPair.address)],
     ])
       .then((result) => {
         setPrice(result[0]);
@@ -78,28 +80,27 @@ export default function TradingPanel({ currency, marketInfos, showReverse, }) {
   const { address: account } = useAccount();
 
   useEffect(() => {
-    if (!currency || !currency.decimals) return;
+    if (!selectedPair) return;
     getBalances(
       {
-        [currency.chainId]: [
-          { address: currency.tokenAddresses[0], decimals: currency.decimals[0] },
-          { address: currency.address, decimals: 18 },
+        [selectedPair.chainId]: [
+          { address: selectedPair.baseToken.address, decimals: selectedPair.baseToken.decimals },
+          { address: selectedPair.address, decimals: 18 },
         ],
       },
-      { [currency.chainId]: [account, account] }
+      { [selectedPair.chainId]: [account, account] }
     )
       .then((result) => setBalances(result.balances))
       .catch((e) => console.log(e));
   }, [stringifiedCurrency, account]);
 
   const w2xl = useMediaQuery({ query: "(min-width: 1536px)" });
-
   return (
     <div className="mt-6">
       <div className={`flex ${showReverse ? "flex-row-reverse" : ""}`}>
         <div className="hidden w-[320px] 2xl:block">
           <SwapOption
-            currency={currency}
+            selectedPair={selectedPair}
             marketInfos={marketInfos}
             volumeDatas={volumeDatas}
             balances={balances}
@@ -109,9 +110,9 @@ export default function TradingPanel({ currency, marketInfos, showReverse, }) {
         </div>
         <div className="mx-0 flex-1 2xl:mx-4">
           <div className="h-[660px]">
-            <TradingViewChart currency={currency} />
+            <TradingViewChart selectedPair={selectedPair} />
           </div>
-          {currency ? <SwapHistory currency={currency} /> : ""}
+          {selectedPair ? <SwapHistory selectedPair={selectedPair} /> : ""}
         </div>
         {w2xl ? (
           <div className="w-[280px]">
@@ -124,7 +125,7 @@ export default function TradingPanel({ currency, marketInfos, showReverse, }) {
       <div className="mt-10 flex flex-col items-center justify-between sm:items-start xl:flex-row 2xl:hidden">
         <div className="mr-0 flex-1 xl:mr-4">
           <SwapOption
-            currency={currency}
+            selectedPair={selectedPair}
             marketInfos={marketInfos}
             volumeDatas={volumeDatas}
             balances={balances}

@@ -56,10 +56,9 @@ export function useCGListings() {
 
   async function getGainersOrLosers() {
     try {
-      const { data: response } = await axios.post(`${API_URL}/html/getHTML`, {
-        url: "https://www.coingecko.com/en/crypto-gainers-losers",
-      });
-      console.log(response);
+      const { data: response } = await axios.post(`${API_URL}/chart/getCGGainersOrLosers`);
+      setGainers(response.result.top_gainers.map((gainer) => gainer.name).slice(0, 10));
+      setLosers(response.result.top_losers.map((loser) => loser.name).slice(0, 10));
     } catch (e) {
       console.log(e);
     }

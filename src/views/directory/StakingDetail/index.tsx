@@ -12,7 +12,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
-import { BASE_URL, DEX_GURU_CHAIN_NAME } from "config";
+import { BASE_URL, DEXSCREENER_CHAINNAME } from "config";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -355,7 +355,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       <Link
                         className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
                         target="_blank"
-                        href={`/chart/${DEX_GURU_CHAIN_NAME[stakingToken.chainId]}/${stakingToken.address}`}
+                        href={`/chart/${DEXSCREENER_CHAINNAME[stakingToken.chainId]}/${stakingToken.address}`}
                         rel="noreferrer"
                       >
                         <StyledButton>

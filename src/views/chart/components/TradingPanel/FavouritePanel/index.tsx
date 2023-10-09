@@ -25,14 +25,22 @@ export default function FavouritePanel() {
       icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
       name: <div className="text-white">CG Trending</div>,
     },
+    {
+      icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
+      name: <div className="text-white">CG Top Gainers</div>,
+    },
+    {
+      icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
+      name: <div className="text-white">CG Top Losers</div>,
+    },
   ];
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [selectedNetwork, setSelectedNetwork] = useState(0);
 
   const { trendings, newListings }: any = useCMCListings();
-  const { trendings: cgTrendings }: any = useCGListings();
+  const { trendings: cgTrendings, gainers: cgGainers, losers: cgLosers }: any = useCGListings();
 
-  const arrays = [favourites, trendings, newListings, cgTrendings];
+  const arrays = [favourites, trendings, newListings, cgTrendings, cgGainers, cgLosers];
   const networks: any = [
     "All",
     NETWORKS[ChainId.ETHEREUM],

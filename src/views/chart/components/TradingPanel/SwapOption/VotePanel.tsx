@@ -5,10 +5,10 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import NFTComponent from "@components/NFTComponent";
 import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
 
-export default function VotePanel({ currency }) {
+export default function VotePanel({ selectedPair }) {
   const voteColors = ["#DC4545", "#E96E6E", "#FFDE00", "#32FFB5", "#2FD35D"];
 
-  const { voteOrAgainst, info } = usePairVoteInfo(currency.address, currency.chainId);
+  const { voteOrAgainst, info } = usePairVoteInfo(selectedPair.address, selectedPair.chainId);
   const { address: account } = useAccount();
 
   const isVoted = info?.votedList.find((voted) => voted.account === account?.toLowerCase());
@@ -53,7 +53,9 @@ export default function VotePanel({ currency }) {
                   bestVoted === i ? "h-4 w-10" : "h-2 flex-1"
                 }  primary-shadow cursor-pointer transition-all hover:scale-[1.2]`}
                 style={{ background: color }}
-                onClick={() => activeRarity >= 1 && voteOrAgainst(currency.address, account, currency.chainId, i)}
+                onClick={() =>
+                  activeRarity >= 1 && voteOrAgainst(selectedPair.address, account, selectedPair.chainId, i)
+                }
               />
             );
           })}
