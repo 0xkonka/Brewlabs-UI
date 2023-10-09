@@ -52,11 +52,9 @@ export const useTransactionStatus = (setMessage: any) => {
 
   const getStatus = useCallback(async () => {
     try {
-      const bridgeClient = getViemClients({ chainId: bridgeChainId });
-      const tx = await bridgeClient.getTransactionReceipt(txHash);
-      const txReceipt: any = tx
-        ? await withTimeout(5 * POLLING_INTERVAL, bridgeClient.waitForTransactionReceipt({ hash: txHash }))
-        : null;
+      const bridgeClient = getViemClients({ chainId: 56 });
+
+      const txReceipt = await bridgeClient.getTransactionReceipt({ hash: txHash });
       const numConfirmations = txReceipt
         ? +(await bridgeClient.getTransactionConfirmations({ hash: txHash })).toString()
         : 0;
@@ -107,7 +105,6 @@ export const useTransactionStatus = (setMessage: any) => {
       ) {
         return false;
       }
-
       completeReceipt();
       console.error({ txError });
       return true;
