@@ -4,14 +4,14 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { useState } from "react";
 import PairList from "./PairList";
-import StyledButton from "views/directory/StyledButton";
-import { chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import { useRouter } from "next/router";
 import ChartPanel from "./ChartPanel";
 
 export default function Info() {
   const [criteria, setCriteria] = useState("");
+  const [selectedPair, setSelectedPair] = useState({});
   const router = useRouter();
+
   return (
     <PageWrapper>
       <PageHeader
@@ -31,7 +31,7 @@ export default function Info() {
             liquidity instantly.
           </div>
         </div>
-        <ChartPanel />
+        <ChartPanel pair={selectedPair} />
         <input
           type={"text"}
           placeholder="Search pair, token, symbol..."
@@ -40,7 +40,7 @@ export default function Info() {
           onChange={(e) => setCriteria(e.target.value)}
         />
         <div className="mb-10 mt-5">
-          <PairList />
+          <PairList setSelectedPair={setSelectedPair} />
         </div>
       </Container>
     </PageWrapper>

@@ -1,15 +1,26 @@
 import { ChainId } from "@brewlabs/sdk";
 import { NETWORKS } from "config/constants/networks";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getVolumeHistory } from "state/pair/fetchTradingPairs";
+import { isAddress } from "utils";
 import { BigNumberFormat, getChainLogo } from "utils/functions";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function ChartPanel() {
-  const [selectedPeriod, setSelectedPeriod] = useState(1);
+export default function ChartPanel({ pair }) {
+  const [selectedPeriod, setSelectedPeriod] = useState(0);
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedDisplayType, setSelectedDisplayType] = useState(0);
+  const [histories, setHistories] = useState([]);
+
+  const periodTypes = ["24h", "7d", "30d"];
+  useEffect(() => {
+    if (!isAddress(pair.address)) return;
+    getVolumeHistory(pair.address, pair.chainId, periodTypes[selectedPeriod])
+      .then((result) => setHistories(result))
+      .catch((e) => console.log(e));
+  }, [selectedPeriod, pair.address, pair.chainId]);
 
   const networks: any = [
     "All",
@@ -20,11 +31,12 @@ export default function ChartPanel() {
     NETWORKS[8453],
   ];
 
+
   const chartData: any = {
     series: [
       {
         name: "Price",
-        data: [6, 10, 5, 3, 2, 7, 4, 15],
+        data: histories,
       },
     ],
     options: {

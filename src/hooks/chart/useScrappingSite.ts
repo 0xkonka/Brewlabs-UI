@@ -70,3 +70,23 @@ export function useCGListings() {
   }, []);
   return { trendings, gainers, losers };
 }
+
+export function useWatcherGuruTrending() {
+  const [trendings, setTrendings] = useState([]);
+
+  async function getTrendings() {
+    try {
+      const { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, {
+        url: "https://api.watcher.guru/coin/trending",
+      });
+      setTrendings(response.result.map((coin) => coin.name));
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useSlowRefreshEffect(() => {
+    getTrendings();
+  }, []);
+  return { trendings };
+}

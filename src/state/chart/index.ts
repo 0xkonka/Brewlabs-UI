@@ -10,7 +10,6 @@ const initialState: ChartState = {
 export const fetchPairsAsync =
   (criteria, chain = null, type) =>
   async (dispatch) => {
-    console.log(criteria);
     const pairs = await fetchAllPairs(criteria, chain, type);
     dispatch(addPairs(pairs));
   };

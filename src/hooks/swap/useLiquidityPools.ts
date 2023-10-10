@@ -65,7 +65,7 @@ export const useLiquidityPools = () => {
     tokenOwner: data.result?.tokenOwner,
     referrer: data.result?.referer,
     feeDistribution: data.result?.feeDistribution,
-    timeToOpen: data.result?.timeToOpen
+    timeToOpen: data.result?.timeToOpen,
   }));
 
   return pools
@@ -76,6 +76,7 @@ export const useLiquidityPools = () => {
 
 export const useOwnedLiquidityPools = () => {
   const { address: account } = useAccount();
+  // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
 
   const { chainId } = useActiveChainId();
   const pairs = useLiquidityPools();
