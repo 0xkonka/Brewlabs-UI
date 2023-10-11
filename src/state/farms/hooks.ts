@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import useSWRImmutable from "swr/immutable";
@@ -82,17 +81,17 @@ export const usePollFarmsWithUserData = () => {
 const deserializedDeposit = (deposit: SerializedDeposit): DeserializedDeposit => {
   return {
     ...deposit,
-    amount: new BigNumber(deposit.amount),
+    amount: BigInt(deposit.amount),
   };
 };
 
 const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData => {
   return {
-    allowance: farm.userData ? new BigNumber(farm.userData.allowance) : BIG_ZERO,
-    tokenBalance: farm.userData ? new BigNumber(farm.userData.tokenBalance) : BIG_ZERO,
-    stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : BIG_ZERO,
-    earnings: farm.userData ? new BigNumber(farm.userData.earnings) : BIG_ZERO,
-    reflections: farm.userData ? new BigNumber(farm.userData.reflections) : BIG_ZERO,
+    allowance: farm.userData ? BigInt(farm.userData.allowance) : BIG_ZERO,
+    tokenBalance: farm.userData ? BigInt(farm.userData.tokenBalance) : BIG_ZERO,
+    stakedBalance: farm.userData ? BigInt(farm.userData.stakedBalance) : BIG_ZERO,
+    earnings: farm.userData ? BigInt(farm.userData.earnings) : BIG_ZERO,
+    reflections: farm.userData ? BigInt(farm.userData.reflections) : BIG_ZERO,
     deposits: farm.userData.deposits.map(deserializedDeposit),
   };
 };
@@ -107,9 +106,9 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     earningToken: earningToken ? deserializeToken(earningToken) : undefined,
     reflectionToken: reflectionToken ? deserializeToken(reflectionToken) : undefined,
     userData: deserializeFarmUserData(farm),
-    totalStaked: totalStaked ? new BigNumber(totalStaked) : BIG_ZERO,
-    poolWeight: poolWeight ? new BigNumber(poolWeight) : BIG_ZERO,
-    rewardPerBlock: rewardPerBlock ? new BigNumber(rewardPerBlock) : BIG_ZERO,
+    totalStaked: totalStaked ? BigInt(totalStaked) : BIG_ZERO,
+    poolWeight: poolWeight ? BigInt(poolWeight) : BIG_ZERO,
+    rewardPerBlock: rewardPerBlock ? BigInt(rewardPerBlock) : BIG_ZERO,
   };
 };
 

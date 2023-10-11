@@ -22,6 +22,7 @@ import {
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
 import { SerializedPool } from "./types";
+import { BigNumber } from "bignumber.js";
 
 const initialState: PoolsState = {
   data: [],
@@ -118,7 +119,7 @@ export const fetchPoolsStakingLimitsAsync = (chainId: ChainId) => async (dispatc
   const stakingLimits = await fetchPoolsStakingLimits(poolsWithStakingLimit);
 
   const stakingLimitData = poolsWithStakingLimit.map((pool) => {
-    const stakingLimit = stakingLimits[pool.sousId] || BIG_ZERO;
+    const stakingLimit = stakingLimits[pool.sousId] || new BigNumber(0);
     return {
       sousId: pool.sousId,
       stakingLimit: stakingLimit.toJSON(),
@@ -159,7 +160,7 @@ export const fetchPoolsUserDataAsync = (account: string, chainId: ChainId) => as
         pools.map((pool) => ({
           sousId: pool.sousId,
           stakedBalance: stakedBalances[pool.sousId],
-          lockedBalance: lockedBalances[pool.sousId] ?? BIG_ZERO.toJSON(),
+          lockedBalance: lockedBalances[pool.sousId] ?? "0",
         }))
       )
     );
@@ -212,7 +213,7 @@ export const updateUserStakedBalance =
 
     const { stakedBalance, lockedBalance } = await fetchUserStakeBalance(pool, account, chainId);
     dispatch(updatePoolsUserData({ sousId, field: "stakedBalance", value: stakedBalance }));
-    dispatch(updatePoolsUserData({ sousId, field: "lockedBalance", value: lockedBalance ?? BIG_ZERO }));
+    dispatch(updatePoolsUserData({ sousId, field: "lockedBalance", value: lockedBalance ?? "0" }));
   };
 
 export const updateUserPendingReward =
@@ -267,7 +268,7 @@ export const PoolsSlice = createSlice({
       const index = state.data.findIndex((p) => p.sousId === sousId);
 
       if (index >= 0) {
-        state.data[index].userData.reflections = state.data[index].userData.reflections.map(() => BIG_ZERO.toJSON());
+        state.data[index].userData.reflections = state.data[index].userData.reflections.map(() => "0");
       }
     },
     setPoolTVLData: (state, action) => {

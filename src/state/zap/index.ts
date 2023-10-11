@@ -10,7 +10,6 @@ import masterchefABI from "config/abi/pancakeMasterchef.json";
 import { getPancakeMasterChefAddress as getMasterChefAddress, getBananaAddress } from "utils/addressHelpers";
 import { getBalanceAmount } from "utils/formatBalance";
 import { getLpAprsFromLocalStorage } from "utils/farmHelpers";
-import { ethersToBigNumber } from "utils/bigNumber";
 import { getTokenUsdPrice } from "utils/getTokenUsdPrice";
 import type { AppState } from "state";
 import fetchFarms from "./pancakeswap/fetchFarms";
@@ -25,6 +24,7 @@ import fetchFarmConfig from "./apeswap/api";
 import getApeFarmLpAprs from "./apeswap/getFarmLpAprs";
 import fetchSushiFarms from "./sushiswap/fetchFarms";
 import { fetchSushiFarmUserEarnings, fetchSushiFarmUserStakedBalances } from "./sushiswap/fetchFarmUser";
+import { formatEther, formatUnits } from "viem";
 
 const noAccountFarmConfig = pancakeFarms.map((farm) => ({
   ...farm,
@@ -74,14 +74,14 @@ export const fetchFarmsPublicDataAsync = createAsyncThunk<
       },
     ];
     const [[poolLength], [cakePerBlockRaw]] = await multicall(masterchefABI, calls, ChainId.BSC_MAINNET);
-    const regularCakePerBlock = getBalanceAmount(ethersToBigNumber(cakePerBlockRaw));
+    const regularCakePerBlock = formatEther(BigInt(cakePerBlockRaw.toString()));
     const farmsToFetch = pancakeFarms.filter((farmConfig) => pids.includes(farmConfig.pid));
     const farmsCanFetch = farmsToFetch.filter((f) => poolLength.gt(f.pid));
 
     const farms = await fetchFarms(farmsCanFetch);
     const farmsWithPrices = getFarmsPrices(farms);
 
-    return [farmsWithPrices, poolLength.toNumber(), regularCakePerBlock.toNumber()];
+    return [farmsWithPrices, poolLength.toNumber(), +regularCakePerBlock.toString()];
   },
   {
     condition: (args, { getState }) => {

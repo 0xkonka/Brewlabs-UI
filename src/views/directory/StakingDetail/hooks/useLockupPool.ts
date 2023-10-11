@@ -99,7 +99,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
       const receipt = await stake(stakingContract, type, amount, decimals, performanceFee, gasPrice);
 
       dispatch(resetPendingReflection(sousId));
-      dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
+      dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
       dispatch(updateUserPendingReward(sousId, account, chainId));
       dispatch(updateUserBalance(sousId, account, chainId));
       dispatch(updateUserStakedBalance(sousId, account, chainId));
@@ -119,7 +119,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
       }
 
       dispatch(resetPendingReflection(sousId));
-      dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
+      dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
       dispatch(updateUserPendingReward(sousId, account, chainId));
       dispatch(updateUserBalance(sousId, account, chainId));
       dispatch(updateUserStakedBalance(sousId, account, chainId));
@@ -132,7 +132,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await harvestPool(stakingContract, type, performanceFee, gasPrice);
 
-    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
+    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserBalance(sousId, account, chainId));
     return receipt;
@@ -152,7 +152,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
     const gasPrice = await getNetworkGasPrice(library, chainId);
     const receipt = await compoundPool(stakingContract, type, performanceFee, gasPrice);
 
-    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: BIG_ZERO.toJSON() }));
+    dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserStakedBalance(sousId, account, chainId));
     return receipt;

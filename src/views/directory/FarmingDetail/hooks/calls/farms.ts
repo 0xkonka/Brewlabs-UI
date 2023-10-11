@@ -1,42 +1,42 @@
-import { ethers } from 'ethers';
-import { calculateGasMargin } from 'utils'
+import { calculateGasMargin } from "utils";
+import { PublicClient, WalletClient, parseEther } from "viem";
 
-export const stakeFarm = async (masterChefContract, pid, amount, performanceFee, gasPrice) => {
-  const value = ethers.utils.parseEther(amount).toString()
+export const stakeFarm = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "deposit" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  let gasLimit = await masterChefContract.estimateGas.deposit(pid, value, {value: performanceFee});
-  gasLimit = calculateGasMargin(gasLimit)
+  const txHash = await walletClient.writeContract({ ...masterChefContract, functionName: "deposit", gas: gasLimit });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+};
 
-  const tx = await masterChefContract.deposit(pid, value, { gasPrice, gasLimit, value: performanceFee })
-  const receipt = await tx.wait()
-  return receipt
-}
+export const unstakeFarm = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "withdraw" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-export const unstakeFarm = async (masterChefContract, pid, amount, performanceFee, gasPrice) => {
-  const value = ethers.utils.parseEther(amount).toString()
-  
-  let gasLimit = await masterChefContract.estimateGas.withdraw(pid, value, {value: performanceFee});
-  gasLimit = calculateGasMargin(gasLimit)
+  const txHash = await walletClient.writeContract({ ...masterChefContract, functionName: "withdraw", gas: gasLimit });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+};
 
-  const tx = await masterChefContract.withdraw(pid, value, {gasPrice, gasLimit, value: performanceFee })
-  const receipt = await tx.wait()
-  return receipt
-}
+export const emergencyUnstakeFarm = async (
+  masterChefContract,
+  walletClient: WalletClient,
+  publicClient: PublicClient
+) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "emergencyWithdraw" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-export const emergencyUnstakeFarm = async (masterChefContract, pid, gasPrice) => {
-  let gasLimit = await masterChefContract.estimateGas.emergencyWithdraw(pid);
-  gasLimit = calculateGasMargin(gasLimit)
+  const txHash = await walletClient.writeContract({
+    ...masterChefContract,
+    functionName: "emergencyWithdraw",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+};
 
-  const tx = await masterChefContract.emergencyWithdraw(pid, {gasPrice, gasLimit })
-  const receipt = await tx.wait()
-  return receipt
-}
+export const harvestFarm = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "deposit" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-export const harvestFarm = async (masterChefContract, pid, performanceFee, gasPrice) => {
-  let gasLimit = await masterChefContract.estimateGas.deposit(pid, '0', {value: performanceFee});
-  gasLimit = calculateGasMargin(gasLimit)
-
-  const tx = await masterChefContract.deposit(pid, '0', {gasPrice, gasLimit, value: performanceFee })
-  const receipt = await tx.wait()
-  return receipt
-}
+  const txHash = await walletClient.writeContract({ ...masterChefContract, functionName: "deposit", gas: gasLimit });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+};

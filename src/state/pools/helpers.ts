@@ -1,7 +1,6 @@
 import BigNumber from "bignumber.js";
 import { SerializedDeposit } from "state/types";
 import { deserializeToken } from "state/user/hooks/helpers";
-import { BIG_ZERO } from "utils/bigNumber";
 import { DeserializedPool, SerializedPool } from "./types";
 
 type UserData =
@@ -19,22 +18,22 @@ type UserData =
 export const transformUserData = (userData: UserData) => {
   const reflections = [];
   for (let i = 0; i < userData?.reflections?.length; i++) {
-    reflections.push(userData?.reflections?.[i] ? new BigNumber(userData.reflections[i]) : BIG_ZERO);
+    reflections.push(userData?.reflections?.[i] ? new BigNumber(userData.reflections[i]) : new BigNumber(0));
   }
   const deposits = [];
   for (let i = 0; i < userData?.deposits?.length; i++) {
     deposits.push({
       ...userData.deposits[i],
-      amount: new BigNumber(userData.deposits[i].amount),
+      amount: new BigNumber(userData.deposits[i].amount.toString()),
     });
   }
 
   return {
-    allowance: userData?.allowance ? new BigNumber(userData.allowance) : BIG_ZERO,
-    stakingTokenBalance: userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO,
-    stakedBalance: userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO,
-    lockedBalance: userData?.lockedBalance ? new BigNumber(userData.lockedBalance) : BIG_ZERO,
-    earnings: userData?.earnings ? new BigNumber(userData.earnings) : BIG_ZERO,
+    allowance: userData?.allowance ? new BigNumber(userData.allowance) :  new BigNumber(0),
+    stakingTokenBalance: userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) :  new BigNumber(0),
+    stakedBalance: userData?.stakedBalance ? new BigNumber(userData.stakedBalance) :  new BigNumber(0),
+    lockedBalance: userData?.lockedBalance ? new BigNumber(userData.lockedBalance) :  new BigNumber(0),
+    earnings: userData?.earnings ? new BigNumber(userData.earnings) :  new BigNumber(0),
     reflections,
     deposits,
   };

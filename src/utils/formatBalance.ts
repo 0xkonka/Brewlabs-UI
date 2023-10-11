@@ -2,17 +2,16 @@ import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils'
 import { getLanguageCodeFromLS } from 'contexts/localization/helpers'
-import { BIG_TEN, BIG_ZERO } from './bigNumber'
 
 /**
  * Take a formatted amount, e.g. 15 BNB and convert it to full decimal value, e.g. 15000000000000000
  */
 export const getDecimalAmount = (amount: BigNumber, decimals = 18) => {
-  return new BigNumber(amount).times(BIG_TEN.pow(decimals))
+  return new BigNumber(amount).times(new BigNumber(10).pow(decimals))
 }
 
 export const getBalanceAmount = (amount: BigNumber, decimals = 18) => {
-  return new BigNumber(amount).dividedBy(BIG_TEN.pow(decimals))
+  return new BigNumber(amount).dividedBy(new BigNumber(10).pow(decimals))
 }
 
 /**

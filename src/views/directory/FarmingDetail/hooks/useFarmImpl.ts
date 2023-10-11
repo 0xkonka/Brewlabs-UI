@@ -1,79 +1,97 @@
 import { useCallback } from "react";
 import { ChainId } from "@brewlabs/sdk";
-import { ethers } from "ethers";
+import { PublicClient, WalletClient, parseEther } from "viem";
+import { useWalletClient } from "wagmi";
 
-import useActiveWeb3React from "hooks/useActiveWeb3React";
+import FarmImpleAbi from "config/abi/farm/farmImpl";
 import { useFarmContract } from "hooks/useContract";
 import { useAppDispatch } from "state";
 import { updateFarmsUserData } from "state/farms";
-import { calculateGasMargin } from "utils";
-import { BIG_ZERO } from "utils/bigNumber";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
 
-const stakeFarm = async (farmContract, amount, performanceFee, gasPrice) => {
-  const _amount = ethers.utils.parseEther(amount).toString();
-  let gasLimit = await farmContract.estimateGas.deposit(_amount, {value: performanceFee});
-  gasLimit = calculateGasMargin(gasLimit);
+const stakeFarm = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "deposit" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await farmContract.deposit(_amount, { gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "deposit",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const unstakeFarm = async (farmContract, amount, performanceFee, gasPrice) => {
-  const _amount = ethers.utils.parseEther(amount).toString();
+const unstakeFarm = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "withdraw" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  let gasLimit = await farmContract.estimateGas.withdraw(_amount, { value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await farmContract.withdraw(_amount, { gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "withdraw",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const emergencyUnstakeFarm = async (farmContract, gasPrice) => {
-  let gasLimit = await farmContract.estimateGas.emergencyWithdraw();
-  gasLimit = calculateGasMargin(gasLimit);
+const emergencyUnstakeFarm = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "emergencyWithdraw" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await farmContract.emergencyWithdraw({ gasPrice, gasLimit });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "emergencyWithdraw",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const harvestReward = async (farmContract, performanceFee, gasPrice) => {
-  let gasLimit = await farmContract.estimateGas.claimReward({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
+const harvestReward = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "claimReward" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await farmContract.claimReward({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "claimReward",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const harvestDividend = async (farmContract, performanceFee, gasPrice) => {
-  let gasLimit = await farmContract.estimateGas.claimDividend({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
+const harvestDividend = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "claimDividend" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await farmContract.claimDividend({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "claimDividend",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const compoundReward = async (farmContract, performanceFee, gasPrice) => {
-  let gasLimit = await farmContract.estimateGas.compoundReward({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
+const compoundReward = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "compoundReward" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await farmContract.compoundReward({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "compoundReward",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const compoundDividend = async (farmContract, performanceFee, gasPrice) => {
-  let gasLimit = await farmContract.estimateGas.compoundDividend({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
+const compoundDividend = async (farmContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas({ ...farmContract, functionName: "compoundDividend" });
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await farmContract.compoundDividend({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({
+    ...farmContract,
+    functionName: "compoundDividend",
+    gas: gasLimit,
+  });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useFarmImpl = (
@@ -85,65 +103,136 @@ const useFarmImpl = (
   enableEmergencyWithdraw = false
 ) => {
   const dispatch = useAppDispatch();
-  const { library } = useActiveWeb3React();
+  const { data: walletClient } = useWalletClient();
   const farmContract = useFarmContract(contractAddress);
 
   const handleStake = useCallback(
     async (amount: string) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await stakeFarm(farmContract, amount, performanceFee, gasPrice);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-      dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: BIG_ZERO.toJSON() }));
-      dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: BIG_ZERO.toJSON() }));
+      let farmContract = {
+        address: contractAddress,
+        abi: FarmImpleAbi,
+        args: [parseEther(amount)],
+        value: performanceFee,
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+
+      const receipt = await stakeFarm(farmContract, walletClient, publicClient);
+
+      dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
+      dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
       return receipt;
     },
-    [farmContract, pid, farmId, dispatch, chainId, library, performanceFee]
+    [farmContract, pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]
   );
 
   const handleUnstake = useCallback(
     async (amount: string) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+      let farmContract = {
+        address: contractAddress,
+        abi: FarmImpleAbi,
+        args: enableEmergencyWithdraw ? [] : [parseEther(amount)],
+        value: enableEmergencyWithdraw ? undefined : performanceFee,
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+
       let receipt;
       if (enableEmergencyWithdraw) {
-        receipt = await emergencyUnstakeFarm(farmContract, gasPrice);
+        receipt = await emergencyUnstakeFarm(farmContract, walletClient, publicClient);
       } else {
-        receipt = await unstakeFarm(farmContract, amount, performanceFee, gasPrice);
+        receipt = await unstakeFarm(farmContract, walletClient, publicClient);
       }
 
-      dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: BIG_ZERO.toJSON() }));
-      dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: BIG_ZERO.toJSON() }));
+      dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
+      dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
       return receipt;
     },
-    [farmContract, pid, farmId, enableEmergencyWithdraw, dispatch, chainId, library, performanceFee]
+    [farmContract, pid, farmId, chainId, contractAddress, enableEmergencyWithdraw, performanceFee, dispatch, walletClient]
   );
 
   const handleHarvestReward = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    await harvestReward(farmContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-    dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: BIG_ZERO.toJSON() }));
-  }, [pid, farmId, performanceFee, farmContract, dispatch, chainId, library]);
+    let farmContract = {
+      address: contractAddress,
+      abi: FarmImpleAbi,
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+
+    await harvestReward(farmContract, walletClient, publicClient);
+
+    dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
+  }, [pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleHarvestDividend = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    await harvestDividend(farmContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-    dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: BIG_ZERO.toJSON() }));
-  }, [pid, farmId, performanceFee, farmContract, dispatch, chainId, library]);
+    let farmContract = {
+      address: contractAddress,
+      abi: FarmImpleAbi,
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+
+    await harvestDividend(farmContract, walletClient, publicClient);
+
+    dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
+  }, [pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleCompoundReward = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    await compoundReward(farmContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-    dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: BIG_ZERO.toJSON() }));
-  }, [pid, farmId, performanceFee, farmContract, dispatch, chainId, library]);
+    let farmContract = {
+      address: contractAddress,
+      abi: FarmImpleAbi,
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+
+    await compoundReward(farmContract, walletClient, publicClient);
+
+    dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
+  }, [pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleCompoundDividend = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    await compoundDividend(farmContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-    dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: BIG_ZERO.toJSON() }));
-  }, [pid, farmId, performanceFee, farmContract, dispatch, chainId, library]);
+    let farmContract = {
+      address: contractAddress,
+      abi: FarmImpleAbi,
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    await compoundDividend(farmContract, walletClient, publicClient);
+
+    dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
+  }, [pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]);
 
   return {
     onStake: handleStake,

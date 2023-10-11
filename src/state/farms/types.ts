@@ -1,5 +1,3 @@
-import BigNumber from "bignumber.js";
-
 import { DeserializedFarmConfig, SerializedFarmConfig } from "config/constants/types";
 import { DeserializedDeposit, SerializedDeposit } from "state/types";
 
@@ -15,11 +13,11 @@ interface SerializedFarmUserData {
 }
 
 export interface DeserializedFarmUserData {
-  allowance: BigNumber;
-  tokenBalance: BigNumber;
-  stakedBalance: BigNumber;
-  earnings: BigNumber;
-  reflections: BigNumber;
+  allowance: BigInt;
+  tokenBalance: BigInt;
+  stakedBalance: BigInt;
+  earnings: BigInt;
+  reflections: BigInt;
   deposits: DeserializedDeposit[];
 }
 
@@ -38,9 +36,9 @@ export interface SerializedFarm extends SerializedFarmConfig {
   stakedAddresses?: number[];
 }
 export interface DeserializedFarm extends DeserializedFarmConfig {
-  totalStaked?: BigNumber;
-  rewardPerBlock?: BigNumber;
-  poolWeight?: BigNumber;
+  totalStaked?: BigInt;
+  rewardPerBlock?: BigInt;
+  poolWeight?: BigInt;
   depositFee?: string;
   withdrawFee?: string;
   performanceFee?: string;

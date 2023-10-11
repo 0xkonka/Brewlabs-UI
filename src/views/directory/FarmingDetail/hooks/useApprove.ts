@@ -1,26 +1,37 @@
 import { useCallback } from "react";
-import { ethers } from "ethers";
+import { parseEther } from "viem";
+import { erc20ABI, useWalletClient } from "wagmi";
+
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useTokenContract } from "hooks/useContract";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
 
 const useApproveFarm = (tokenAddress, pid, contractAddress) => {
   const dispatch = useAppDispatch();
-  const { account, chainId, library } = useActiveWeb3React();
-
-  const tokenContract = useTokenContract(tokenAddress);
+  const { account, chainId } = useActiveWeb3React();
+  const { data: walletClient } = useWalletClient();
 
   const handleApprove = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-    const tx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256, { gasPrice });
-    const receipt = await tx.wait();
+    const txHash = await walletClient.writeContract({
+      address: tokenAddress,
+      abi: erc20ABI,
+      functionName: "approve",
+      args: [contractAddress as `0x${string}`, parseEther("10000000000000")],
+      account,
+      chain: walletClient.chain,
+      gasPrice,
+    });
+
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 
     dispatch(fetchFarmUserDataAsync({ account, chainId, pids: [pid] }));
     return receipt;
-  }, [account, chainId, library, dispatch, contractAddress, pid, tokenContract]);
+  }, [account, chainId, tokenAddress, contractAddress, pid, dispatch, walletClient]);
 
   return { onApprove: handleApprove };
 };

@@ -1,15 +1,14 @@
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
-import BigNumber from "bignumber.js";
+import { erc20ABI } from "wagmi";
 
-import erc20ABI from "config/abi/erc20.json";
-import masterchefABI from "config/abi/farm/masterchef.json";
+import masterchefABI from "config/abi/farm/masterchef";
 import farmImplAbi from "config/abi/farm/farmImpl";
 
 import { API_URL } from "config/constants";
 import { SerializedFarmConfig } from "config/constants/types";
 import { getMasterChefAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchFarmUserAllowances = async (
   account: string,
@@ -17,18 +16,20 @@ export const fetchFarmUserAllowances = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId);
+  const publicClient = getViemClients({ chainId });
 
   const calls = farmsToFetch.map((farm) => {
     return {
-      address: farm.lpAddress,
-      name: "allowance",
-      params: [account, farm.contractAddress ?? masterChefAddress],
+      address: farm.lpAddress as `0x${string}`,
+      abi: erc20ABI,
+      functionName: "allowance",
+      args: [account, (farm.contractAddress ?? masterChefAddress) as `0x${string}`],
     };
   });
 
-  const rawLpAllowances = await multicall(erc20ABI, calls, chainId);
+  const rawLpAllowances = await publicClient.multicall({ contracts: calls });
   const parsedLpAllowances = rawLpAllowances.map((lpBalance) => {
-    return new BigNumber(lpBalance).toJSON();
+    return lpBalance.result.toString();
   });
   return parsedLpAllowances;
 };
@@ -39,17 +40,19 @@ export const fetchFarmUserTokenBalances = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   try {
+    const publicClient = getViemClients({ chainId });
     const calls = farmsToFetch.map((farm) => {
       return {
-        address: farm.lpAddress,
-        name: "balanceOf",
-        params: [account],
+        address: farm.lpAddress as `0x${string}`,
+        abi: erc20ABI,
+        functionName: "balanceOf",
+        args: [account],
       };
     });
 
-    const rawTokenBalances = await multicall(erc20ABI, calls, chainId);
+    const rawTokenBalances = await publicClient.multicall({ contracts: calls });
     const parsedTokenBalances = rawTokenBalances.map((tokenBalance) => {
-      return new BigNumber(tokenBalance).toJSON();
+      return tokenBalance.result.toString();
     });
     return parsedTokenBalances;
   } catch (e) {
@@ -63,21 +66,20 @@ export const fetchFarmUserStakedBalances = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId);
+  const publicClient = getViemClients({ chainId });
 
   let data = [];
 
   // fetch normal farms
-  let rawStakedBalances = await multicall(
-    masterchefABI,
-    farmsToFetch
-      .filter((f) => !f.category)
-      .map((farm) => ({
-        address: farm.contractAddress ?? masterChefAddress,
-        name: "userInfo",
-        params: [farm.poolId, account],
-      })),
-    chainId
-  );
+  const calls = farmsToFetch
+    .filter((f) => !f.category)
+    .map((farm) => ({
+      address: (farm.contractAddress ?? masterChefAddress) as `0x${string}`,
+      abi: masterchefABI,
+      functionName: "userInfo",
+      args: [BigInt(farm.poolId), account],
+    }));
+  let rawStakedBalances = await publicClient.multicall({ contracts: calls });
 
   farmsToFetch
     .filter((f) => !f.category)
@@ -87,22 +89,21 @@ export const fetchFarmUserStakedBalances = async (
         farmId: farm.farmId,
         poolId: farm.poolId,
         chainId: farm.chainId,
-        stakedBalance: rawStakedBalances[index][0].toString(),
+        stakedBalance: rawStakedBalances[index].result.toString(),
       });
     });
 
   // fetch factroy-created farms
-  rawStakedBalances = await multicall(
-    farmImplAbi as any,
-    farmsToFetch
+  rawStakedBalances = await publicClient.multicall({
+    contracts: farmsToFetch
       .filter((f) => f.category)
       .map((farm) => ({
-        address: farm.contractAddress,
-        name: "userInfo",
-        params: [account],
+        address: farm.contractAddress as `0x${string}`,
+        abi: farmImplAbi,
+        functionName: "userInfo",
+        args: [account],
       })),
-    chainId
-  );
+  });
 
   farmsToFetch
     .filter((f) => f.category)
@@ -112,7 +113,7 @@ export const fetchFarmUserStakedBalances = async (
         farmId: farm.farmId,
         poolId: farm.poolId,
         chainId: farm.chainId,
-        stakedBalance: rawStakedBalances[index][0].toString(),
+        stakedBalance: rawStakedBalances[index].result.toString(),
       });
     });
 
@@ -126,22 +127,22 @@ export const fetchFarmUserEarnings = async (
 ) => {
   try {
     const masterChefAddress = getMasterChefAddress(chainId);
+    const publicClient = getViemClients({ chainId });
 
     let data = [];
 
     // fetch normal farms
-    let rawEarnings = await multicall(
-      masterchefABI,
-      farmsToFetch
+    let rawEarnings = await publicClient.multicall({
+      contracts: farmsToFetch
         .filter((f) => !f.enableEmergencyWithdraw)
         .filter((f) => !f.category)
         .map((farm) => ({
-          address: farm.contractAddress ?? masterChefAddress,
-          name: "pendingRewards",
-          params: [farm.poolId, account],
+          address: (farm.contractAddress ?? masterChefAddress) as `0x${string}`,
+          abi: masterchefABI,
+          functionName: "pendingRewards",
+          args: [BigInt(farm.poolId), account],
         })),
-      chainId
-    );
+    });
 
     farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
@@ -152,23 +153,22 @@ export const fetchFarmUserEarnings = async (
           farmId: farm.farmId,
           poolId: farm.poolId,
           chainId: farm.chainId,
-          earnings: rawEarnings[index][0].toString(),
+          earnings: rawEarnings[index].result.toString(),
         });
       });
 
     // fetch factroy-created farms
-    rawEarnings = await multicall(
-      farmImplAbi as any,
-      farmsToFetch
+    rawEarnings = await publicClient.multicall({
+      contracts: farmsToFetch
         .filter((f) => !f.enableEmergencyWithdraw)
         .filter((f) => f.category)
         .map((farm) => ({
-          address: farm.contractAddress,
-          name: "pendingRewards",
-          params: [account],
+          address: farm.contractAddress as `0x${string}`,
+          abi: farmImplAbi,
+          functionName: "pendingRewards",
+          args: [account],
         })),
-      chainId
-    );
+    });
 
     farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
@@ -179,7 +179,7 @@ export const fetchFarmUserEarnings = async (
           farmId: farm.farmId,
           poolId: farm.poolId,
           chainId: farm.chainId,
-          earnings: rawEarnings[index][0].toString(),
+          earnings: rawEarnings[index].result.toString(),
         });
       });
 
@@ -195,22 +195,22 @@ export const fetchFarmUserReflections = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId);
+  const publicClient = getViemClients({ chainId });
 
   let data = [];
 
   // fetch normal farms
-  let rawReflections = await multicall(
-    masterchefABI,
-    farmsToFetch
+  let rawReflections = await publicClient.multicall({
+    contracts: farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
       .filter((f) => !f.category)
       .map((farm) => ({
-        address: farm.contractAddress ?? masterChefAddress,
-        name: "pendingReflections",
-        params: [farm.poolId, account],
+        address: (farm.contractAddress ?? masterChefAddress) as `0x${string}`,
+        abi: masterchefABI,
+        functionName: "pendingReflections",
+        args: [BigInt(farm.poolId), account],
       })),
-    chainId
-  );
+  });
 
   farmsToFetch
     .filter((f) => !f.enableEmergencyWithdraw)
@@ -221,23 +221,22 @@ export const fetchFarmUserReflections = async (
         farmId: farm.farmId,
         poolId: farm.poolId,
         chainId: farm.chainId,
-        reflections: rawReflections[index][0].toString(),
+        reflections: rawReflections[index].result.toString(),
       });
     });
 
   // fetch factroy-created farms
-  rawReflections = await multicall(
-    farmImplAbi as any,
-    farmsToFetch
+  rawReflections = await publicClient.multicall({
+    contracts: farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
       .filter((f) => f.category)
       .map((farm) => ({
-        address: farm.contractAddress,
-        name: "pendingReflections",
-        params: [account],
+        address: farm.contractAddress as `0x${string}`,
+        abi: farmImplAbi,
+        functionName: "pendingReflections",
+        args: [account],
       })),
-    chainId
-  );
+  });
 
   farmsToFetch
     .filter((f) => !f.enableEmergencyWithdraw)
@@ -248,7 +247,7 @@ export const fetchFarmUserReflections = async (
         farmId: farm.farmId,
         poolId: farm.poolId,
         chainId: farm.chainId,
-        reflections: rawReflections[index][0].toString(),
+        reflections: rawReflections[index].result.toString(),
       });
     });
 

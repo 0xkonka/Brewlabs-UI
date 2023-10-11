@@ -1,19 +1,16 @@
 import axios from "axios";
-import BigNumber from "bignumber.js";
-import { ethers } from "ethers";
+import { formatEther, formatUnits } from "viem";
+import { erc20ABI } from "wagmi";
 
-import erc20 from "config/abi/erc20.json";
-import masterchefABI from "config/abi/farm/masterchef.json";
-import masterchefV2ABI from "config/abi/farm/masterchefV2.json";
+import masterchefABI from "config/abi/farm/masterchef";
+import masterchefV2ABI from "config/abi/farm/masterchefV2";
 import farmImplAbi from "config/abi/farm/farmImpl";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { SerializedFarmConfig, Version } from "config/constants/types";
 import { BIG_ZERO } from "utils/bigNumber";
-import { getBalanceNumber } from "utils/formatBalance";
 import { sumOfArray } from "utils/functions";
-import { simpleRpcProvider } from "utils/providers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 import { SerializedBigNumber, SerializedFarm } from "./types";
 
@@ -30,92 +27,79 @@ type PublicFarmData = {
 
 export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const { poolId, chainId } = farm;
+  const publicClient = getViemClients({ chainId });
 
   // Only make masterchef calls if farm has poolId
   let info;
   if (farm.version) {
-    [info] =
+    info =
       farm.poolId || farm.poolId === 0
-        ? await multicall(
-            masterchefV2ABI,
-            [
-              {
-                address: farm.contractAddress,
-                name: "poolInfo",
-                params: [poolId],
-              },
-            ],
-            chainId
-          )
-        : [null];
+        ? await publicClient.readContract({
+            address: farm.contractAddress as `0x${string}`,
+            abi: masterchefV2ABI,
+            functionName: "poolInfo",
+            args: [BigInt(poolId)],
+          })
+        : null;
   } else {
-    [info] =
+    info =
       farm.poolId || farm.poolId === 0
-        ? await multicall(
-            masterchefABI,
-            [
-              {
-                address: farm.contractAddress,
-                name: "poolInfo",
-                params: [poolId],
-              },
-            ],
-            chainId
-          )
-        : [null, null, null];
+        ? await publicClient.readContract({
+            address: farm.contractAddress as `0x${string}`,
+            abi: masterchefABI,
+            functionName: "poolInfo",
+            args: [BigInt(poolId)],
+          })
+        : null;
   }
 
   const [totalAllocPoint, rewardPerBlock, startBlock] =
     farm.poolId || farm.poolId === 0
-      ? await multicall(
-          masterchefABI,
-          [
+      ? await publicClient.multicall({
+          contracts: [
             {
-              address: farm.contractAddress,
-              name: "totalAllocPoint",
+              address: farm.contractAddress as `0x${string}`,
+              abi: masterchefABI,
+              functionName: "totalAllocPoint",
             },
             {
-              address: farm.contractAddress,
-              name: "rewardPerBlock",
+              address: farm.contractAddress as `0x${string}`,
+              abi: masterchefABI,
+              functionName: "rewardPerBlock",
             },
             {
-              address: farm.contractAddress,
-              name: "startBlock",
+              address: farm.contractAddress as `0x${string}`,
+              abi: masterchefABI,
+              functionName: "startBlock",
             },
           ],
-          chainId
-        )
-      : [null];
+        })
+      : [null, null, null];
 
-  const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO;
-  const depositFee = info ? new BigNumber(info.depositFee) : BIG_ZERO;
-  const withdrawFee = info ? new BigNumber(info.withdrawFee) : BIG_ZERO;
-  const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO;
+  const allocPoint = info ? info.result.allocPoint : BIG_ZERO;
+  const depositFee = info ? info.depositFee : BIG_ZERO;
+  const withdrawFee = info ? info.withdrawFee : BIG_ZERO;
+  const poolWeight = totalAllocPoint ? allocPoint / totalAllocPoint.result : BIG_ZERO;
 
   let performanceFee = BIG_ZERO;
   if (farm.isServiceFee) {
-    const [feeInfo] = await multicall(
-      masterchefABI,
-      [
-        {
-          address: farm.contractAddress,
-          name: "performanceFee",
-        },
-      ],
-      chainId
-    );
-    performanceFee = new BigNumber(feeInfo);
+    const feeInfo = await publicClient.readContract({
+      address: farm.contractAddress as `0x${string}`,
+      abi: masterchefABI,
+      functionName: "performanceFee",
+    });
+    performanceFee = feeInfo;
   }
 
   return {
-    poolWeight: poolWeight.toJSON(),
-    rewardPerBlock: rewardPerBlock ? new BigNumber(rewardPerBlock).toJSON() : BIG_ZERO.toJSON(),
-    multiplier: `${allocPoint.div(100).toString()}X`,
-    depositFee: `${depositFee.dividedBy(100).toFixed(2)}`,
-    withdrawFee: `${withdrawFee.dividedBy(100).toFixed(2)}`,
+    poolWeight: poolWeight.toString(),
+    rewardPerBlock: rewardPerBlock ? rewardPerBlock.result.toString() : "0",
+    multiplier: `${(allocPoint / BigInt(100)).toString()}X`,
+    depositFee: `${(+(depositFee / BigInt(100)).toString()).toFixed(2)}`,
+    withdrawFee: `${(+(withdrawFee / BigInt(100)).toString()).toFixed(2)}`,
     performanceFee: performanceFee.toString(),
-    startBlock: new BigNumber(info.startBlock ?? startBlock).toNumber(),
-    endBlock: info.bonusEndBlock ? new BigNumber(info.bonusEndBlock).toNumber() : undefined,
+    startBlock: +(info.startBlock ? info.startBlock : startBlock).toString(),
+    endBlock: info.bonusEndBlock ? +info.bonusEndBlock.toString() : undefined,
   };
 };
 
@@ -131,6 +115,8 @@ export const fetchFarms = async (farmsToFetch: SerializedFarmConfig[]) => {
 };
 
 export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: SerializedFarm[]) => {
+  const publicClient = getViemClients({ chainId });
+
   const filters = [];
   for (let i = 0; i < farmsToFetch.length; i += MULTICALL_FETCH_LIMIT) {
     const batch = farmsToFetch.slice(i, i + MULTICALL_FETCH_LIMIT);
@@ -144,33 +130,31 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
         const commonFarms = batch.filter((farm) => !farm.version || farm.version <= Version.V2);
         const compoundFarms = batch.filter((farm) => farm.version > Version.V2);
 
-        const totalStakes = await multicall(
-          erc20,
-          commonFarms.map((farm) => ({
+        const totalStakes: any = await publicClient.multicall({
+          contracts: commonFarms.map((farm) => ({
             address: farm.lpAddress,
-            name: "balanceOf",
-            params: [farm.contractAddress],
+            abi: erc20ABI,
+            functionName: "balanceOf",
+            args: [farm.contractAddress],
           })),
-          chainId
-        );
+        });
 
         if (totalStakes) {
           commonFarms.forEach((farm, index) => {
-            data.push({ pid: farm.pid, totalStaked: ethers.utils.formatUnits(totalStakes[index][0], 18) });
+            data.push({ pid: farm.pid, totalStaked: formatEther(totalStakes[index].result) });
           });
         }
 
-        const v3TotalStakes = await multicall(
-          masterchefV2ABI,
-          compoundFarms
+        const v3TotalStakes: any = await publicClient.multicall({
+          contracts: compoundFarms
             .filter((f) => !f.category)
             .map((farm) => ({
               address: farm.contractAddress,
-              name: "totalStaked",
-              params: farm.category ? [] : [farm.poolId],
+              abi: masterchefV2ABI,
+              functionName: "totalStaked",
+              args: farm.category ? [] : [BigInt(farm.poolId)],
             })),
-          chainId
-        );
+        });
 
         if (v3TotalStakes) {
           compoundFarms
@@ -178,22 +162,21 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
             .forEach((farm, index) => {
               data.push({
                 pid: farm.pid,
-                totalStaked: ethers.utils.formatUnits(v3TotalStakes[index][0], 18),
+                totalStaked: formatEther(v3TotalStakes[index].result),
               });
             });
         }
 
-        const v3ImplTotalStakes = await multicall(
-          farmImplAbi as any,
-          compoundFarms
+        const v3ImplTotalStakes: any = await publicClient.multicall({
+          contracts: compoundFarms
             .filter((f) => f.category)
             .map((farm) => ({
               address: farm.contractAddress,
-              name: "totalStaked",
-              params: farm.category ? [] : [farm.poolId],
+              abi: farmImplAbi,
+              functionName: "totalStaked",
+              args: farm.category ? [] : [BigInt(farm.poolId)],
             })),
-          chainId
-        );
+        });
 
         if (v3ImplTotalStakes) {
           compoundFarms
@@ -201,7 +184,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
             .forEach((farm, index) => {
               data.push({
                 pid: farm.pid,
-                totalStaked: ethers.utils.formatUnits(v3ImplTotalStakes[index][0], 18),
+                totalStaked: formatEther(v3ImplTotalStakes[index].result),
               });
             });
         }
@@ -216,50 +199,52 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
 };
 
 export const fetchFarmTotalRewards = async (farm) => {
+  const publicClient = getViemClients({ chainId: farm.chainId });
   let availableRewards, availableReflections;
   if (farm.pid > 10) {
     let calls = [
       {
         address: farm.contractAddress,
-        name: "availableRewardTokens",
-        params: [],
+        abi: masterchefV2ABI,
+        functionName: "availableRewardTokens",
       },
       {
         address: farm.contractAddress,
-        name: "availableDividendTokens",
-        params: [],
+        abi: masterchefV2ABI,
+        functionName: "availableDividendTokens",
       },
     ];
-    [availableRewards, availableReflections] = await multicall(masterchefV2ABI, calls, farm.chainId);
+    [availableRewards, availableReflections] = await publicClient.multicall({ contracts: calls });
   } else {
     let calls = [
       {
         address: farm.earningToken.address,
-        name: "balanceOf",
-        params: [farm.contractAddress],
+        abi: erc20ABI,
+        functionName: "balanceOf",
+        args: [farm.contractAddress],
       },
       {
         address:
           !farm.reflectionToken || farm.reflectionToken?.isNative
             ? farm.earningToken.address
             : farm.reflectionToken.address,
-        name: "balanceOf",
-        params: [farm.contractAddress],
+        abi: erc20ABI,
+        functionName: "balanceOf",
+        args: [farm.contractAddress],
       },
     ];
-    [availableRewards, availableReflections] = await multicall(erc20, calls, farm.chainId);
+    [availableRewards, availableReflections] = await publicClient.multicall({ contracts: calls });
 
     if (farm.reflectionToken?.isNative) {
-      availableReflections = await simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
-      availableReflections = new BigNumber(availableReflections._hex);
+      availableReflections = { result: await publicClient.getBalance(farm.contractAddress) };
     }
   }
 
   return {
-    availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
+    availableRewards: formatUnits(availableRewards.result, farm.earningToken.decimals),
     availableReflections: farm.reflectionToken
-      ? getBalanceNumber(availableReflections, farm.reflectionToken.decimals)
-      : 0,
+      ? formatUnits(availableReflections.result, farm.reflectionToken.decimals)
+      : "0",
   };
 };
 

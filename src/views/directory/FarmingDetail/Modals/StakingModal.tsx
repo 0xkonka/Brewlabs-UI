@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
-import { WNATIVE } from "@brewlabs/sdk";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { formatEther } from "ethers/lib/utils.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
@@ -17,12 +16,12 @@ import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import useTokenPrice from "hooks/useTokenPrice";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
+import { getBalanceAmount } from "utils/formatBalance";
 import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
 import useApproveFarm from "../hooks/useApprove";
 import useFarm from "../hooks/useFarm";
-import { getBalanceAmount } from "utils/formatBalance";
 import useFarmImpl from "../hooks/useFarmImpl";
 
 const StakingModal = ({

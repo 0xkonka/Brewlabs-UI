@@ -28,7 +28,7 @@ export const BLOCK_TIMES = {
 export const SECONDS_PER_YEAR = 365 * 86400; // 10512000
 export const BASE_URL = "https://earn.brewlabs.info";
 
-export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
+export const DEFAULT_TOKEN_DECIMAL = new BigNumber(10 ** 18);
 export const DEFAULT_GAS_LIMIT = 200000;
 
 export const BANANA_PER_BLOCK = new BigNumber(10);

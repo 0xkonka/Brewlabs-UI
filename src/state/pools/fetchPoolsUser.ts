@@ -131,7 +131,7 @@ export const fetchUserStakeBalances = async (account, chainId, pools) => {
           data.stakedBalances[pool.sousId] = new BigNumber(nonLockupPoolsUserInfo[index].amount._hex).toJSON();
           data.lockedBalances[pool.sousId] = nonLockupPoolsUserInfo[index].locked
             ? new BigNumber(nonLockupPoolsUserInfo[index].locked._hex).toJSON()
-            : BIG_ZERO.toJSON();
+            : "0";
         });
         lockupPools.forEach((pool, index) => {
           data.stakedBalances[pool.sousId] = new BigNumber(lockupPoolsUserInfo[index].amount._hex).toJSON();
@@ -331,7 +331,7 @@ export const fetchUserStakeBalance = async (pool, account, chainId) => {
 
   return {
     stakedBalance: new BigNumber(userInfo[0].amount._hex).toJSON(),
-    lockedBalance: userInfo[0].locked ? new BigNumber(userInfo[0].locked._hex).toJSON() : BIG_ZERO.toJSON(),
+    lockedBalance: userInfo[0].locked ? new BigNumber(userInfo[0].locked._hex).toJSON() : "0",
   };
 };
 

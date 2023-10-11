@@ -23,7 +23,7 @@ const stakeFarm = async (
   performanceFee,
   gasPrice
 ) => {
-  const _amount = new BigNumber(amount).times(BIG_TEN.pow(currency?.decimals ?? 18));
+  const _amount = new BigNumber(amount).times(10**(currency?.decimals ?? 18));
   const value = currency.isNative ? _amount.plus(performanceFee).toString() : performanceFee.toString();
 
   let gasLimit = await masterChefContract.estimateGas.zapIn(
@@ -87,7 +87,7 @@ export const usePerformanceFee = (chainId) => {
     const performanceFee = await masterChefContract.feeAmount();
     return performanceFee;
   });
-  return data ? new BigNumber(data._hex) : BIG_ZERO;
+  return data ? new BigNumber(data._hex) : new BigNumber(0);
 };
 
 export default useStakeFarms;

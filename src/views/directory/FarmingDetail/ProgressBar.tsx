@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { SkeletonComponent } from "components/SkeletonComponent";
 
 const ProgressBar = ({ endBlock, remaining }: { endBlock: number; remaining: number }) => {
   const [percent, setPercent] = useState(0);

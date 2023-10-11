@@ -11,9 +11,9 @@ import { isAddress } from "utils";
 
 const deserializeFarmUserData = (farm) => {
   return {
-    stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : BIG_ZERO,
-    earnings: farm.userData ? new BigNumber(farm.userData.earnings) : BIG_ZERO,
-    totalRewards: farm.userData ? new BigNumber(farm.userData.totalRewards) : BIG_ZERO,
+    stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : new BigNumber(0),
+    earnings: farm.userData ? new BigNumber(farm.userData.earnings) : new BigNumber(0),
+    totalRewards: farm.userData ? new BigNumber(farm.userData.totalRewards) : new BigNumber(0),
   };
 };
 
@@ -33,13 +33,13 @@ const deserializePancakeFarm = (farm: SerializedPancakeFarm): DeserializedPancak
     quoteToken: deserializeToken(farm.quoteToken),
     earningToken: tokens[ChainId.BSC_MAINNET].cake,
     userData: deserializeFarmUserData(farm),
-    tokenAmountTotal: farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : BIG_ZERO,
-    quoteTokenAmountTotal: farm.quoteTokenAmountTotal ? new BigNumber(farm.quoteTokenAmountTotal) : BIG_ZERO,
-    lpTotalInQuoteToken: farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : BIG_ZERO,
-    lpTotalSupply: farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : BIG_ZERO,
-    tokenPriceVsQuote: farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : BIG_ZERO,
-    poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
-    totalRewards: farm.totalRewards ? new BigNumber(farm.totalRewards) : BIG_ZERO,
+    tokenAmountTotal: farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : new BigNumber(0),
+    quoteTokenAmountTotal: farm.quoteTokenAmountTotal ? new BigNumber(farm.quoteTokenAmountTotal) : new BigNumber(0),
+    lpTotalInQuoteToken: farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : new BigNumber(0),
+    lpTotalSupply: farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : new BigNumber(0),
+    tokenPriceVsQuote: farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : new BigNumber(0),
+    poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : new BigNumber(0),
+    totalRewards: farm.totalRewards ? new BigNumber(farm.totalRewards) : new BigNumber(0),
     totalSupply: farm.totalSupply,
   };
 };
@@ -110,15 +110,15 @@ export const priceCakeFromPidSelector = createSelector([selectCakeFarm], (cakeBn
 
 export const makeLpTokenPriceFromLpSymbolSelector = (lpSymbol: string, appId: AppId) =>
   createSelector([selectFarmByKey("lpSymbol", lpSymbol, appId)], (farm) => {
-    let lpTokenPrice = BIG_ZERO;
+    let lpTokenPrice = new BigNumber(0);
 
     if (appId === AppId.PANCAKESWAP) {
-      const lpTotalInQuoteToken = farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : BIG_ZERO;
-      const lpTotalSupply = farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : BIG_ZERO;
+      const lpTotalInQuoteToken = farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : new BigNumber(0);
+      const lpTotalSupply = farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : new BigNumber(0);
 
       if (lpTotalSupply.gt(0) && lpTotalInQuoteToken.gt(0)) {
         const farmTokenPriceInUsd = new BigNumber(farm.tokenPriceBusd);
-        const tokenAmountTotal = farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : BIG_ZERO;
+        const tokenAmountTotal = farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : new BigNumber(0);
         const valueOfBaseTokenInFarm = farmTokenPriceInUsd.times(tokenAmountTotal);
         const overallValueOfAllTokensInFarm = valueOfBaseTokenInFarm.times(2);
         const totalLpTokens = getBalanceAmount(lpTotalSupply);

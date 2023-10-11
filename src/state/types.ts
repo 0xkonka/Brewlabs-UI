@@ -32,7 +32,7 @@ export interface SerializedDeposit {
 }
 
 export interface DeserializedDeposit {
-  amount: BigNumber;
+  amount: BigInt;
   txHash: string;
   blockNumber: number;
   timestamp: number;

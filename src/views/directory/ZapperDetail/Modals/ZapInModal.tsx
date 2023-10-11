@@ -67,14 +67,14 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
 
   const tokensToStake = new BigNumber(amount !== "" ? amount : 0);
   const usdToStake = currency.isNative
-    ? tokensToStake.multipliedBy(ethPrice?.toSignificant() ?? BIG_ONE)
+    ? tokensToStake.multipliedBy(ethPrice?.toSignificant() ?? new BigNumber(0))
     : tokensToStake;
 
-  const lpTokensToStake = usdToStake.dividedBy(lpPrice ?? BIG_ONE);
+  const lpTokensToStake = usdToStake.dividedBy(lpPrice ?? new BigNumber(0));
 
   const currencyBalance = useCurrencyBalance(account, currency);
   const max = useMemo(
-    () => (currencyBalance ? new BigNumber(currencyBalance.raw.toString()) : BIG_ZERO),
+    () => (currencyBalance ? new BigNumber(currencyBalance.raw.toString()) : new BigNumber(0)),
     [currencyBalance]
   );
   const fullBalance = useMemo(() => {

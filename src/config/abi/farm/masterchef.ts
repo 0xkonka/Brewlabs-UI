@@ -1,4 +1,4 @@
-[
+const abi = [
   {
     "inputs": [
       {
@@ -7,7 +7,7 @@
         "type": "address"
       },
       {
-        "internalType": "address",
+        "internalType": "contract IERC20",
         "name": "_reflectionToken",
         "type": "address"
       },
@@ -15,11 +15,6 @@
         "internalType": "uint256",
         "name": "_rewardPerBlock",
         "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "_hasDividend",
-        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable",
@@ -92,25 +87,6 @@
       }
     ],
     "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newAddress",
-        "type": "address"
-      }
-    ],
-    "name": "SetBuyBackWallet",
     "type": "event"
   },
   {
@@ -238,11 +214,6 @@
         "type": "uint16"
       },
       {
-        "internalType": "uint256",
-        "name": "_duration",
-        "type": "uint256"
-      },
-      {
         "internalType": "bool",
         "name": "_withUpdate",
         "type": "bool"
@@ -251,32 +222,6 @@
     "name": "add",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "availableDividendTokens",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "availableRewardTokens",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -290,71 +235,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "buyBackWallet",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimDividend",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimReward",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "compoundDividend",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "compoundReward",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -373,19 +253,6 @@
     "name": "deposit",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositRewards",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -445,11 +312,6 @@
         "internalType": "uint256",
         "name": "_to",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_endBlock",
-        "type": "uint256"
       }
     ],
     "name": "getMultiplier",
@@ -461,19 +323,6 @@
       }
     ],
     "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "hasDividend",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -598,21 +447,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "duration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "bonusEndBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "lastRewardBlock",
         "type": "uint256"
       },
@@ -676,7 +510,7 @@
     "name": "reflectionToken",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IERC20",
         "name": "",
         "type": "address"
       }
@@ -727,30 +561,12 @@
         "type": "uint16"
       },
       {
-        "internalType": "uint256",
-        "name": "_duration",
-        "type": "uint256"
-      },
-      {
         "internalType": "bool",
         "name": "_withUpdate",
         "type": "bool"
       }
     ],
     "name": "set",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_addr",
-        "type": "address"
-      }
-    ],
-    "name": "setBuyBackWallet",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -782,49 +598,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_uniRouter",
-        "type": "address"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_earnedToToken0",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_earnedToToken1",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_reflectionToToken0",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_reflectionToToken1",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_enabled",
-        "type": "bool"
-      }
-    ],
-    "name": "setSwapSetting",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "startBlock",
     "outputs": [
@@ -838,56 +611,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "swapSettings",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "lpToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "swapRouter",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "enabled",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "totalAllocPoint",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "totalStaked",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1006,4 +731,6 @@
     "stateMutability": "payable",
     "type": "receive"
   }
-]
+] as const
+
+export default abi

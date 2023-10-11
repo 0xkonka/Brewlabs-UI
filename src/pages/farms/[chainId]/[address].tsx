@@ -1,8 +1,10 @@
-import PageWrapper from "components/layout/PageWrapper";
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext } from "react";
+
+import PageWrapper from "components/layout/PageWrapper";
+
+import { TokenPriceContext } from "contexts/TokenPriceContext";
 import getCurrencyId from "utils/getCurrencyId";
 import { useFarms } from "state/farms/hooks";
 import FarmingDetail from "views/directory/FarmingDetail";

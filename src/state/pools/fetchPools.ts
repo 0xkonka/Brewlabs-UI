@@ -286,7 +286,7 @@ export const fetchPoolStakingLimit = async (chainId: ChainId, address: string): 
     const stakingLimit = await sousContract.poolLimitPerUser();
     return new BigNumber(stakingLimit.toString());
   } catch (error) {
-    return BIG_ZERO;
+    return new BigNumber(0);
   }
 };
 

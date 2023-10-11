@@ -16,8 +16,8 @@ const fetchFarms = async (chainId: number, farmsConfig) => {
   const masterChefMultiCallResult = await multicall(masterchefABI, masterChefCalls, chainId);
   return farmsConfig.map((farm, index) => {
     const info = masterChefMultiCallResult[index];
-    const totalRewards = info ? new BigNumber(info.totalBoostedShare?._hex) : BIG_ZERO;
-    const totalSupply = info ? new BigNumber(info.totalRewards?._hex) : BIG_ZERO;
+    const totalRewards = info ? new BigNumber(info.totalBoostedShare?._hex) : new BigNumber(0);
+    const totalSupply = info ? new BigNumber(info.totalRewards?._hex) : new BigNumber(0);
     return {
       ...farm,
       totalSupply: totalSupply.toJSON(),
