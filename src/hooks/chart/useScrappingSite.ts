@@ -57,6 +57,7 @@ export function useCGListings() {
   async function getGainersOrLosers() {
     try {
       const { data: response } = await axios.post(`${API_URL}/chart/getCGGainersOrLosers`);
+      console.log(response);
       setGainers(response.result.top_gainers.map((gainer) => gainer.name).slice(0, 10));
       setLosers(response.result.top_losers.map((loser) => loser.name).slice(0, 10));
     } catch (e) {

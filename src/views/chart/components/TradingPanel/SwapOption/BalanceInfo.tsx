@@ -37,8 +37,11 @@ export default function BalanceInfo({ selectedPair, balances, price, lpPrice }) 
 
   return (
     <div className="primary-shadow mt-2 flex w-[320px] items-center justify-between rounded-[6px] bg-[#B9B8B80D] p-3">
-      <div className="flex cursor-pointer items-center" onClick={() => setSwitchBalance(!switchBalance)}>
-        <div className={`mr-2 text-white ${switchBalance ? "-scale-y-100" : ""}`}>{ChevronDownSVG}</div>
+      <div
+        className="flex cursor-pointer items-center"
+        //  onClick={() => setSwitchBalance(!switchBalance)}
+      >
+        {/* <div className={`mr-2 text-white ${switchBalance ? "-scale-y-100" : ""}`}>{ChevronDownSVG}</div> */}
         <TokenLogo
           src={getTokenLogoURL(isAddress(selectedPair.baseToken.address), selectedPair.chainId)}
           classNames="primary-shadow h-8 w-8 rounded-full"
