@@ -47,11 +47,13 @@ export const useFlaskNft = () => {
       const publicClient = getViemClients({ chainId });
       const gasPrice = await getNetworkGasPrice(chainId, publicClient);
 
+      const _tokenIds: any = [BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])];
+
       let gasLimit = await publicClient.estimateContractGas({
         address: getFlaskNftAddress(chainId) as `0x${string}`,
         abi: FlaskNftAbi,
         functionName: "upgradeNFT",
-        args: [[BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])], payingToken as `0x${string}`],
+        args: [_tokenIds, payingToken as `0x${string}`],
         account: walletClient.account,
         gasPrice,
       });
@@ -61,7 +63,7 @@ export const useFlaskNft = () => {
         address: getFlaskNftAddress(chainId) as `0x${string}`,
         abi: FlaskNftAbi,
         functionName: "upgradeNFT",
-        args: [[BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])], payingToken as `0x${string}`],
+        args: [_tokenIds, payingToken as `0x${string}`],
         account: walletClient.account,
         chain: walletClient.chain,
         gasPrice,

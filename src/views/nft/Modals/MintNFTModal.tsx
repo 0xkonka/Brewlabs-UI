@@ -73,7 +73,7 @@ const MintNFTModal = ({ open, setOpen }) => {
   const isApproved = userData
     ? +userData.allowances[index + 1] >=
       +parseUnits(
-        formatUnits(BigInt(mintFee?.stable ?? "0"), stableTokens[0].decimals),
+        formatUnits(BigInt(mintFee?.stable ?? "0"), selectedCurrency.decimals),
         selectedCurrency.decimals
       ).toString()
     : false;
@@ -81,11 +81,11 @@ const MintNFTModal = ({ open, setOpen }) => {
     isApproved &&
     (userData
       ? +tokenBalances[selectedCurrency.address]?.toExact() >=
-        +formatUnits(BigInt(mintFee?.stable ?? "0"), stableTokens[0].decimals) * quantity
+        +formatUnits(BigInt(mintFee?.stable ?? "0"), selectedCurrency.decimals) * quantity
       : false);
 
   const brewsFee = +formatUnits(BigInt(mintFee?.brews ?? "0"), brewsToken.decimals);
-  const stableFee = +formatUnits(BigInt(mintFee?.stable ?? "0"), stableTokens[0].decimals);
+  const stableFee = +formatUnits(BigInt(mintFee?.stable ?? "0"), selectedCurrency.decimals);
 
   useEffect(() => {
     setIsMinted(false);

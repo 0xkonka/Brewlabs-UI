@@ -71,7 +71,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
   const isStableApproved = userData
     ? +userData.allowances[index + 1] >=
       +parseUnits(
-        formatUnits(BigInt(upgradeFee?.stable ?? "0"), stableTokens[0].decimals),
+        formatUnits(BigInt(upgradeFee?.stable ?? "0"), selectedCurrency.decimals),
         selectedCurrency.decimals
       ).toString()
     : false;
@@ -79,12 +79,12 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
     isStableApproved &&
     (userData
       ? +tokenBalances[selectedCurrency.address]?.toExact() >=
-        +formatUnits(BigInt(upgradeFee?.stable ?? "0"), stableTokens[0].decimals)
+        +formatUnits(BigInt(upgradeFee?.stable ?? "0"), selectedCurrency.decimals)
       : false);
   const isValid = nftCounts[rarity] === 3;
 
   const brewsFee = +formatUnits(BigInt(upgradeFee?.brews ?? "0"), brewsToken.decimals);
-  const stableFee = +formatUnits(BigInt(upgradeFee?.stable ?? "0"), stableTokens[0].decimals);
+  const stableFee = +formatUnits(BigInt(upgradeFee?.stable ?? "0"), selectedCurrency.decimals);
 
   useEffect(() => {
     setIsMinted(false);
