@@ -295,12 +295,7 @@ export interface DeserializedPancakeFarm extends DeserializedFarmConfig {
 
 export interface SerializedTradingPair {
   address?: string;
-  price?: number;
-  price24h?: number;
-  price24hHigh?: number;
-  price24hLow?: number;
-  voluem24h?: number;
-  price24hChange?: number;
+
   chainId?: ChainId;
   token0?: {
     address: string;
@@ -310,6 +305,25 @@ export interface SerializedTradingPair {
     address: string;
     symbol: string;
   };
+  baseToken?: {
+    address: string;
+    symbol: string;
+    price?: number;
+    price24h?: number;
+    price24hHigh?: number;
+    price24hLow?: number;
+    price24hChange?: number;
+  };
+  quoteToken?: {
+    address: string;
+    symbol: string;
+    price?: number;
+    price24h?: number;
+    price24hHigh?: number;
+    price24hLow?: number;
+    price24hChange?: number;
+  };
+  volume24h?: number;
 }
 
 export interface PairState {

@@ -1,35 +1,16 @@
-import React, { KeyboardEvent, useCallback, useState, useMemo, useContext, useEffect } from "react";
-import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
+import React, { useState, useMemo, useContext, useEffect } from "react";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
-import BigNumber from "bignumber.js";
 import clsx from "clsx";
 
-import { MORALIS_CHAIN_NAME } from "config/constants/networks";
-import { factoryTokens, popularTokens } from "config/constants/tokens";
-import { DashboardContext } from "contexts/DashboardContext";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import useDebounce from "hooks/useDebounce";
-import { useAllTokens, useToken, useFoundOnInactiveList, useCurrency } from "hooks/Tokens";
-import useTokenComparator from "hooks/useTokenComparator";
-import useWalletTokens from "hooks/useWalletTokens";
 import { useGlobalState } from "state";
-import { Field } from "state/swap/actions";
-import { Field as LiquidityField } from "state/mint/actions";
-import { useSwapActionHandlers } from "state/swap/hooks";
-import { isVerified, useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
 
-import { CurrencyLogo } from "components/logo";
 import { PrimaryOutlinedButton } from "components/button/index";
-import { filterTokens, useSortedTokensByQuery } from "components/searchModal/filtering";
-import UserDashboard from "components/dashboard/UserDashboard";
 
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
-import { defaultMarketData } from "state/prices/types";
 import DropDown from "@components/dashboard/TokenList/Dropdown";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { useDispatch } from "react-redux";
-import { useCGListings, useCMCListings } from "@hooks/chart/useScrappingSite";
+import { useCGListings, useCMCListings, useWatcherGuruTrending } from "@hooks/chart/useScrappingSite";
 import { ChartContext } from "contexts/ChartContext";
 import { addPairs, fetchPairsAsync } from "state/chart";
 import { usePairsByCriteria, usePairsByCriterias } from "state/chart/hooks";
@@ -45,6 +26,7 @@ import en from "javascript-time-ago/locale/en";
 import { fetchAllPairs } from "state/chart/fetchPairInfo";
 import { DEXSCREENER_CHAINNAME } from "config";
 import { useRouter } from "next/router";
+import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -52,6 +34,10 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 const tabs = [
+  {
+    icon: <div className="-scale-x-100 [&>svg]:!h-4 [&>svg]:!w-4">{SearchCircleSVG}</div>,
+    name: "Search...",
+  },
   { icon: <StarIcon className="h-4 w-4" />, name: "Favourites" },
   {
     icon: <img src={"/images/chart/trending/cmc.png"} alt={""} className="h-4 w-4 rounded-full" />,
@@ -72,6 +58,10 @@ const tabs = [
   {
     icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
     name: "CG Top Losers",
+  },
+  {
+    icon: <img src={"/images/chart/trending/watcherguru.png"} alt={""} className="h-4 w-4 rounded-full" />,
+    name: "WG Trendings",
   },
 ];
 
@@ -138,7 +128,7 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
 let searchTimeout;
 
 const CurrencySelector = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(-1);
   const [criteria, setCriteria] = useState("");
   const [cri, setCri] = useState("");
   const [loading, setLoading] = useState(false);
@@ -148,15 +138,24 @@ const CurrencySelector = () => {
   const dispatch: any = useDispatch();
   const { trendings, newListings }: any = useCMCListings();
   const { trendings: cgTrendings, gainers: cgGainers, losers: cgLosers }: any = useCGListings();
+  const { trendings: watcherGuruTrendings } = useWatcherGuruTrending();
   const { favourites }: any = useContext(ChartContext);
 
-  const arrays = [favourites.map((pair) => pair.address), trendings, newListings, cgTrendings, cgGainers, cgLosers];
+  const arrays = [
+    favourites.map((pair) => pair.address),
+    trendings,
+    newListings,
+    cgTrendings,
+    cgGainers,
+    cgLosers,
+    watcherGuruTrendings,
+  ];
 
   const selectedPairs = usePairsByCriterias(activeTab === -1 ? [] : arrays[activeTab]);
   const searchedPairs = usePairsByCriteria(activeTab === -1 ? criteria : "", null, 10);
 
   useEffect(() => {
-    setActiveTab(0);
+    setActiveTab(-1);
     setCri("");
     setCriteria("");
     if (window) setRowsPerPage(Math.floor((window.innerHeight - 300) / 96));
@@ -201,19 +200,19 @@ const CurrencySelector = () => {
         </div>
       </div>
 
-      <nav className="mb-2 hidden flex-wrap justify-between space-x-4 sm:flex" aria-label="Tabs">
+      <nav className="-ml-2 mb-2 hidden w-[calc(100%+16px)] flex-wrap space-x-4 sm:flex" aria-label="Tabs">
         {tabs.map((tab, index) => (
           <button
             key={index}
             onClick={() => {
-              setActiveTab(index);
+              setActiveTab(index - 1);
               setPage(0);
               setCriteria("");
               setCri("");
             }}
             className={clsx(
-              index === activeTab ? "bg-gray-700 text-brand" : "bg-gray-800 text-gray-500 hover:text-gray-400",
-              "!ml-0 mb-2 flex w-[calc((100%-32px)/3)] items-center whitespace-nowrap rounded-2xl px-4 py-2 text-sm"
+              index === activeTab + 1 ? "bg-gray-700 text-brand" : "bg-gray-800 text-gray-500 hover:text-gray-400",
+              "!mx-2  mb-2 flex w-[calc((100%-48px)/3)] items-center whitespace-nowrap rounded-2xl px-4 py-2 text-sm"
             )}
           >
             <div className="-mt-0.5 mr-1.5">{tab.icon}</div>
@@ -225,25 +224,29 @@ const CurrencySelector = () => {
       <nav className="mb-4 block sm:hidden" aria-label="Tabs">
         <DropDown
           width="w-full"
-          value={activeTab}
+          value={activeTab + 1}
           setValue={(i) => {
-            setActiveTab(i);
+            setActiveTab(i - 1);
           }}
           type="secondary"
           values={tabs.map((data) => data.name)}
         />
       </nav>
 
-      <input
-        value={cri}
-        onChange={(e) => {
-          setCri(e.target.value);
-          setActiveTab(-1);
-        }}
-        type="text"
-        placeholder="Search by contract address or by name"
-        className="input-bordered input w-full"
-      />
+      {activeTab === -1 ? (
+        <input
+          value={cri}
+          onChange={(e) => {
+            setCri(e.target.value);
+            setActiveTab(-1);
+          }}
+          type="text"
+          placeholder="Search by contract address or by name"
+          className="input-bordered input w-full"
+        />
+      ) : (
+        ""
+      )}
 
       <div className="mt-3 px-2">
         <div>

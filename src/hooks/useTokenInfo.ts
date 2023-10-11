@@ -128,7 +128,6 @@ export function useTokenMarketInfos(pair: any) {
     }
     fetchDexInfos(pair.baseToken.address, pair.chainId)
       .then((result) => {
-        console.log(result);
         setDexInfos(result);
       })
       .catch((e) => console.log(e));
@@ -140,7 +139,6 @@ export function useTokenMarketInfos(pair: any) {
     axios
       .post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url })
       .then((result) => {
-        console.log(result);
         const bars = result.data.result.bars;
         const v1 =
           Number(bars[0].volumeUsd) + Number(bars[1].volumeUsd) + Number(bars[2].volumeUsd) + Number(bars[3].volumeUsd);

@@ -1,21 +1,18 @@
 import { ChartSquareSVG, NFTSVG, SwitchSVG } from "@components/dashboard/assets/svgs";
 import { SearchInput } from "./SearchInput";
 import { useGlobalState } from "state";
-import CurrencySelector from "@components/CurrencySelector";
-import { useRouter } from "next/router";
 import UserDashboard from "@components/dashboard/UserDashboard";
-import { DEXSCREENER_CHAINNAME } from "config";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { getChainLogo } from "utils/functions";
+import { NATIVE_CURRENCIES } from "@brewlabs/sdk";
+import { useDexPrice } from "@hooks/useTokenPrice";
+import { getNativeWrappedAddress } from "utils/addressHelpers";
 
 export default function Header({ showReverse, setShowReverse }) {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
-
-  const router = useRouter();
-
-  function onUserInput(input, currency) {}
-  async function onCurrencySelect(input, currency) {
-    router.push(`/chart/${DEXSCREENER_CHAINNAME[currency.chainId]}/${currency.address}`);
-  }
+  const { chainId } = useActiveChainId();
+  const { price } = useDexPrice(chainId, getNativeWrappedAddress(chainId));
 
   return (
     <div className="relative z-[101] mt-10 flex">
@@ -37,7 +34,15 @@ export default function Header({ showReverse, setShowReverse }) {
           showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
         }`}
       >
-        <div>asdfasdfas</div>
+        <div className="primary-shadow flex h-[44px] items-center rounded-md bg-[#202023] p-2.5 font-roboto text-xs font-medium text-white mr-4">
+          <img src={getChainLogo(chainId)} alt={""} className="h-4 w-4 rounded-full" />
+          <div className="ml-1.5 leading-[1.2]">
+            <div>{NATIVE_CURRENCIES[chainId].symbol}</div>
+            <div>
+              {(price ?? 0).toFixed(2)} <span className="text-[10px] text-[#FFFFFF80]">USD</span>
+            </div>
+          </div>
+        </div>
         <div className="flex">
           <div
             className="mr-4 cursor-pointer  transition hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"

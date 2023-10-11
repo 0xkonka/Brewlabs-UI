@@ -1,22 +1,42 @@
 import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
 import { isAddress } from "utils";
-import { fetchTradingPairAsync } from ".";
+import { fetchTradingAllPairAsync, fetchTradingPairAsync } from ".";
 import { ChainId } from "@brewlabs/sdk";
 import { SerializedTradingPair, State } from "state/types";
 import { useSelector } from "react-redux";
+import { useState } from "react";
 
-export const useTradingPair = (chainId, pair) => {
+export const useTradingPair = (chainId, address) => {
   const dispatch = useAppDispatch();
-  const data = useTradingPairData(chainId, pair);
+  const data = useTradingPairData(chainId, address);
 
   useFastRefreshEffect(() => {
-    if (!isAddress(pair)) return;
-    dispatch(fetchTradingPairAsync(chainId, pair));
-  }, [dispatch, chainId, pair]);
+    if (!isAddress(address)) return;
+    dispatch(fetchTradingPairAsync(chainId, address));
+  }, [dispatch, chainId, address]);
   return { data };
+};
+
+export const useTradingAllPairs = (chainId: ChainId) => {
+  const pairs = useTradingAllPairDatas(chainId);
+  const dispatch = useAppDispatch();
+  useFastRefreshEffect(() => {
+    dispatch(fetchTradingAllPairAsync(chainId));
+  }, [dispatch, chainId]);
+  return pairs;
 };
 
 export const useTradingPairData = (chainId: ChainId, pair: string): SerializedTradingPair => {
   return useSelector((state: State) => state.pair.tradingPairs[chainId]?.[pair] ?? {});
+};
+
+export const useTradingAllPairDatas = (chainId: ChainId): SerializedTradingPair[] => {
+  return useSelector((state: State) =>
+    state.pair.tradingPairs[chainId]
+      ? Object.keys(state.pair.tradingPairs[chainId])
+          .filter((address) => state.pair.tradingPairs[chainId][address])
+          .map((address) => state.pair.tradingPairs[chainId][address])
+      : []
+  );
 };
