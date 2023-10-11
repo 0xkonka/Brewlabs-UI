@@ -7,10 +7,11 @@ import Link from "next/link";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useAccount } from "wagmi";
+import { erc721ABI, useAccount } from "wagmi";
 
 import { chevronLeftSVG, downloadSVG, LinkSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
+
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
@@ -18,11 +19,8 @@ import { useAppDispatch } from "state";
 import { setIndexesPublicData, updateUserBalance, updateUserDeployerNftInfo } from "state/indexes";
 import { useIndexes } from "state/indexes/hooks";
 import { DeserializedIndex } from "state/indexes/types";
-import { getErc721Contract, getIndexContract } from "utils/contractHelpers";
-import { calculateGasMargin } from "utils";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { getChainLogo, getIndexName } from "utils/functions";
-import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
 
 import useNftApprove from "../hooks/useNftApprove";
 import useIndexImpl from "../hooks/useIndexImpl";
@@ -35,7 +33,6 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const signer  = useEthersSigner();
   const { indexes } = useIndexes();
   const { pending, setPending }: any = useContext(DashboardContext);
 
@@ -52,29 +49,6 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
     if (errorMsg) toast.error(errorMsg);
   };
 
-  const handleStakeDeployerNft = async () => {
-    if (pending) return;
-
-    setPending(true);
-    try {
-      // check allowance & approve
-      const deployerNft = getErc721Contract(data.chainId, data.deployerNft);
-      let allowance = await deployerNft.isApprovedForAll(account, data.address);
-      if (!allowance) {
-        await onApprove(data.address);
-      }
-
-      await onStakeDeployerNft();
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: account }]));
-
-      toast.success("Deployer NFT was unstaked");
-    } catch (e) {
-      console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
-    }
-    setPending(false);
-  };
-
   const handleStakeDeployerNftForIndex = async (indexId) => {
     if (pending) return;
 
@@ -85,24 +59,19 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
     setPending(true);
     try {
       // check allowance & approve
-      const deployerNft = getErc721Contract(selectedIndex.chainId, selectedIndex.deployerNft);
-      let allowance = await deployerNft.isApprovedForAll(account, selectedIndex.address);
+      const publicClient = getViemClients({ chainId: selectedIndex.chainId });
+
+      let allowance = publicClient.readContract({
+        address: selectedIndex.deployerNft as `0x${string}`,
+        abi: erc721ABI,
+        functionName: "isApprovedForAll",
+        args: [account, selectedIndex.address as `0x${string}`],
+      });
       if (!allowance) {
         await onApprove(selectedIndex.address);
       }
 
-      const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, selectedIndex.version, signer);
-      const gasPrice = await getNetworkGasPrice(signer, chainId);
-
-      let gasLimit = await indexContract.estimateGas.stakeDeployerNft({ value: selectedIndex.performanceFee ?? "0" });
-      gasLimit = calculateGasMargin(gasLimit);
-
-      const tx = await indexContract.stakeDeployerNft({
-        gasPrice,
-        gasLimit,
-        value: selectedIndex.performanceFee ?? "0",
-      });
-      await tx.wait();
+      await onStakeDeployerNft();
 
       dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: account }]));
       dispatch(updateUserBalance(account, chainId));

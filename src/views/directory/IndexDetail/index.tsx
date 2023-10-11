@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
-import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { formatEther, formatUnits, getAddress } from "viem";
 import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, NFTSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
@@ -155,8 +155,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
     let profit = 0;
     for (let k = 0; k < data.numTokens; k++) {
       profit +=
-        +ethers.utils.formatUnits(userData.stakedBalances[k], tokens[k].decimals) *
-        priceHistories[k][priceHistories[k].length - 1];
+        +formatUnits(userData.stakedBalances[k], tokens[k].decimals) * priceHistories[k][priceHistories[k].length - 1];
     }
     profit -= +userData.stakedUsdAmount;
     return profit;
@@ -345,10 +344,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       <StyledButton
                         className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand  text-primary hover:text-white xl:flex"
                         type={"default"}
-                        onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
+                        onClick={() => router.push(`/indexes/profile/${getAddress(data.deployer)}`)}
                       >
                         <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                          View {ethers.utils.getAddress(data.deployer)}
+                          View {getAddress(data.deployer)}
                         </div>
                         <div className="ml-2">{LinkSVG}</div>
                       </StyledButton>
@@ -363,10 +362,10 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         <StyledButton
                           className="!h-8 !w-[140px] flex-1 bg-[#B9B8B81A] px-2 font-brand  text-primary hover:border-white hover:text-white xl:flex"
                           type={"default"}
-                          onClick={() => router.push(`/indexes/profile/${ethers.utils.getAddress(data.deployer)}`)}
+                          onClick={() => router.push(`/indexes/profile/${getAddress(data.deployer)}`)}
                         >
                           <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                            View {ethers.utils.getAddress(data.deployer)}
+                            View {getAddress(data.deployer)}
                           </div>
                           <div className="ml-2">{LinkSVG}</div>
                         </StyledButton>
@@ -486,7 +485,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                               data={aprTexts}
                               height={"20px"}
                               rounded={"12px"}
-                              className="!bg-[#2e343e] !text-[#ffffffbf] !text-xs"
+                              className="!bg-[#2e343e] !text-xs !text-[#ffffffbf]"
                               bodyClassName="!bg-none !bg-[#2e343e]"
                               itemClassName="hover:!bg-[#424444bf]"
                             />
@@ -531,8 +530,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           </div>
                         </div>
                         <div className="relative mt-1 flex">
-                          Performance Fee {ethers.utils.formatEther(data.performanceFee ?? "0")}{" "}
-                          {getNativeSybmol(data.chainId)}
+                          Performance Fee {formatEther(data.performanceFee ?? "0")} {getNativeSybmol(data.chainId)}
                           <ReactTooltip
                             anchorId={"Performancefee"}
                             place="right"
@@ -564,10 +562,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                             <TokenLogo src={getTokenLogoURL(token.address, token.chainId)} classNames="mr-1 w-3" />
                             <div className="flex text-[#FFFFFFBF]">
                               {userData?.stakedBalances.length ? (
-                                `${formatAmount(
-                                  ethers.utils.formatUnits(userData.stakedBalances[index], token.decimals),
-                                  4
-                                )}`
+                                `${formatAmount(formatUnits(userData.stakedBalances[index], token.decimals), 4)}`
                               ) : account ? (
                                 <SkeletonComponent />
                               ) : (

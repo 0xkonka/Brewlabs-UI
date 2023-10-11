@@ -4,6 +4,7 @@ import { hexToString, parseAbi, PublicClient, WalletClient, zeroAddress } from "
 import { BridgeToken } from "config/constants/types";
 import { getViemClients } from "utils/viem";
 import { getMediatorAddress } from "./helpers";
+import { BIG_ZERO } from "utils/bigNumber";
 
 export const fetchAllowance = async ({ mediator, address }: BridgeToken, account: string, client: PublicClient) => {
   if (!account || !address || address === zeroAddress || !mediator || mediator === zeroAddress || !client) {
@@ -175,11 +176,12 @@ export const fetchTokenBalanceWithProvider = async (
   { address, mode, symbol }: BridgeToken,
   account: string
 ) => {
+  if (!account || !address || address === zeroAddress || !client) {
+    return BIG_ZERO;
+  }
+
   if (address === zeroAddress && mode === "NATIVE") {
     return client.getBalance({ address: account as `0x${string}` });
-  }
-  if (!account || !address || address === zeroAddress || !client) {
-    return BigInt(0);
   }
   try {
     const abi = parseAbi(["function balanceOf(address) view returns (uint256)"]);

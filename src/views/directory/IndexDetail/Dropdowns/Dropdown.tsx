@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ChevronDownSVG } from "@components/dashboard/assets/svgs";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect, useRef } from "react";
 
 const DropDown = ({

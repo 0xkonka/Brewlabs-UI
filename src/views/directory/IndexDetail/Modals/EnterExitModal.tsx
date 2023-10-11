@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
-import { ethers } from "ethers";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { formatEther, formatUnits, zeroAddress } from "viem";
 
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "components/logo/IndexLogo";
@@ -52,9 +52,9 @@ const EnterExitModal = ({
   const { onZapOut: onZapOutOld, onClaim: onClaimOld } = useIndex(data.pid, data.address, data.performanceFee);
   const { onZapIn, onZapOut, onClaim } = useIndexImpl(data.pid, data.address, data.version, data.performanceFee);
 
-  const ethbalance = ethers.utils.formatEther(userData.ethBalance);
+  const ethbalance = formatEther(userData.ethBalance);
   const stakedBalances = userData.stakedBalances?.length
-    ? userData.stakedBalances.map((a, index) => ethers.utils.formatUnits(a, tokens[index].decimals))
+    ? userData.stakedBalances.map((a, index) => formatUnits(a, tokens[index].decimals))
     : new Array(data.numTokens).fill("0");
 
   const nativeTokenPrice = useTokenPrice(data.chainId, WNATIVE[data.chainId].address);
@@ -164,7 +164,7 @@ const EnterExitModal = ({
 
     setPending(true);
     try {
-      await onZapIn(ethers.constants.AddressZero, amount, [percent, ...percents]);
+      await onZapIn(zeroAddress, amount, [percent, ...percents]);
 
       toast.success(`Zapped in successfully`);
       setOpen(false);
@@ -180,7 +180,7 @@ const EnterExitModal = ({
     setZapout(true);
     try {
       if (data.category >= 0) {
-        await onZapOut(ethers.constants.AddressZero);
+        await onZapOut(zeroAddress);
       } else {
         await onZapOutOld();
       }

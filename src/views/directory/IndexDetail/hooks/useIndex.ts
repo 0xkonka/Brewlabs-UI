@@ -1,126 +1,141 @@
-import { parseEther } from "ethers/lib/utils";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useOldIndexContract } from "hooks/useContract";
 import { useCallback } from "react";
+import { PublicClient, WalletClient, parseEther } from "viem";
+import { useWalletClient } from "wagmi";
+
+import IndexAbi from "config/abi/indexes/index";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAppDispatch } from "state";
 import { fetchIndexPublicDataAsync, updateUserBalance, updateUserStakings } from "state/indexes";
-import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
 
-const zapIn = async (indexContract, amount, percents, gasPrice) => {
-  const value = parseEther(amount);
-  let gasLimit = await indexContract.estimateGas.zapIn(
-    percents.map((p) => Math.floor(p * 100)),
-    { value }
-  );
-  gasLimit = calculateGasMargin(gasLimit);
+const call_normalMethod = async (indexContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas(indexContract);
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const tx = await indexContract.zapIn(
-    percents.map((p) => p * 100),
-    { gasPrice, gasLimit, value }
-  );
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const claimTokens = async (indexContract, percent, gasPrice) => {
-  let gasLimit = await indexContract.estimateGas.claimTokens(Math.floor(percent * 100));
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await indexContract.claimTokens(Math.floor(percent * 100), { gasPrice, gasLimit });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const zapOut = async (indexContract, gasPrice) => {
-  let gasLimit = await indexContract.estimateGas.zapOut();
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await indexContract.zapOut({ gasPrice, gasLimit });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const mintNft = async (indexContract, gasPrice, performanceFee = "0") => {
-  let gasLimit = await indexContract.estimateGas.mintNft({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await indexContract.mintNft({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const stakeNft = async (indexContract, tokenId, gasPrice, performanceFee = "0") => {
-  let gasLimit = await indexContract.estimateGas.stakeNft(tokenId, { value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await indexContract.stakeNft(tokenId, { gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useIndex = (pid, contractAddress, performanceFee) => {
   const dispatch = useAppDispatch();
-  const { account, chainId, library } = useActiveWeb3React();
-  const indexContract = useOldIndexContract(chainId, contractAddress);
+  const { account, chainId } = useActiveWeb3React();
+  const { data: walletClient } = useWalletClient();
 
   const handleZapIn = useCallback(
     async (amount, percents) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await zapIn(indexContract, amount, percents, gasPrice);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+      let indexContract = {
+        address: contractAddress as `0x${string}`,
+        abi: IndexAbi,
+        functionName: "zapIn",
+        args: [parseEther(amount), percents.map((p) => BigInt(Math.floor(p * 100)))],
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+      const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid]
+    [account, pid, chainId, dispatch, walletClient]
   );
 
   const handleZapOut = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const receipt = await zapOut(indexContract, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+    let indexContract = {
+      address: contractAddress as `0x${string}`,
+      abi: IndexAbi,
+      functionName: "zapOut",
+      args: [],
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
 
     dispatch(fetchIndexPublicDataAsync(pid));
     dispatch(updateUserStakings(pid, account, chainId));
     dispatch(updateUserBalance(account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, indexContract, pid]);
+  }, [account, pid, chainId, dispatch, walletClient]);
 
   const handleClaim = useCallback(
     async (percent) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await claimTokens(indexContract, percent, gasPrice);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+      let indexContract = {
+        address: contractAddress as `0x${string}`,
+        abi: IndexAbi,
+        functionName: "claimTokens",
+        args: [BigInt(Math.floor(percent * 100))],
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+      const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid]
+    [account, pid, chainId, dispatch, walletClient]
   );
 
   const handleMintNft = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const receipt = await mintNft(indexContract, gasPrice, performanceFee);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+    let indexContract = {
+      address: contractAddress as `0x${string}`,
+      abi: IndexAbi,
+      functionName: "mintNft",
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
 
     dispatch(fetchIndexPublicDataAsync(pid));
     dispatch(updateUserStakings(pid, account, chainId));
     dispatch(updateUserBalance(account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, indexContract, pid, performanceFee]);
+  }, [account, pid, chainId, performanceFee, dispatch, walletClient]);
 
   const handleStakeNft = useCallback(
     async (tokenId) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await stakeNft(indexContract, tokenId, gasPrice, performanceFee);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+      let indexContract = {
+        address: contractAddress as `0x${string}`,
+        abi: IndexAbi,
+        functionName: "stakeNft",
+        args: [BigInt(tokenId)],
+        value: performanceFee,
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+      const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, indexContract, pid, performanceFee]
+    [account, pid, chainId, performanceFee, dispatch, walletClient]
   );
 
   return {

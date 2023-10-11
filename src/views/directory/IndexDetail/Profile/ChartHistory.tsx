@@ -8,6 +8,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const DrawChart = ({ data, type }: { data: any; type: string }) => {
   if (!data || data[data.length - 1] === undefined) return <div className="h-[130px]" />;
+
   let pricechange = data[data.length - 1] - data[0];
   const chartData: any = {
     series: [
@@ -102,6 +103,7 @@ const DrawChart = ({ data, type }: { data: any; type: string }) => {
     </StyledContainer>
   );
 };
+
 const ChartHistory = ({ data, type }: { data: any; type: string }) => {
   const [period, setPeriod] = useState(0);
 

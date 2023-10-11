@@ -1,4 +1,4 @@
-[
+const abi = [
   {
     "inputs": [],
     "name": "NUM_TOKENS",
@@ -410,4 +410,6 @@
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+] as const
+
+export default abi

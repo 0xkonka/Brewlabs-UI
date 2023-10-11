@@ -1,13 +1,14 @@
 import axios from "axios";
-import { ethers } from "ethers";
+import { formatUnits } from "viem";
 
-import IndexAbi from "config/abi/indexes/indexImpl.json";
-
+import IndexAbi from "config/abi/indexes/indexImpl";
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
-import multicall from "utils/multicall";
 import { sumOfArray } from "utils/functions";
+import { getViemClients } from "utils/viem";
 
 export const fetchIndexesTotalStaking = async (chainId, indexes) => {
+  const publicClient = getViemClients({ chainId });
+
   const selectedIndexs = indexes.filter((p) => p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedIndexs.length; i += MULTICALL_FETCH_LIMIT) {
@@ -25,21 +26,22 @@ export const fetchIndexesTotalStaking = async (chainId, indexes) => {
         for (let pool of batch) {
           for (let k = 0; k < pool.numTokens; k++) {
             calls.push({
-              address: pool.address,
-              name: "totalStaked",
-              params: [k],
+              address: pool.address as `0x${string}`,
+              abi: IndexAbi,
+              functionName: "totalStaked",
+              args: [BigInt(k)],
             });
           }
         }
 
-        const totalStakes = await multicall(IndexAbi, calls, chainId);
+        const totalStakes: any = await publicClient.multicall({ contracts: calls });
 
         if (totalStakes) {
           let idx = 0;
           for (let pool of batch) {
             let totalStaked = [];
             for (let k = 0; k < pool.numTokens; k++) {
-              totalStaked.push(ethers.utils.formatUnits(totalStakes[idx][0], pool.tokens[k].decimals));
+              totalStaked.push(formatUnits(totalStakes[idx].result, pool.tokens[k].decimals));
               idx++;
             }
 

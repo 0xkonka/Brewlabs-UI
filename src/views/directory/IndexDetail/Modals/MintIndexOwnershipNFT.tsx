@@ -2,13 +2,13 @@
 import { useContext } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { decodeEventLog } from "viem";
 
-import IndexImplAbi from "config/abi/indexes/indexImpl.json";
+import IndexImplAbi from "config/abi/indexes/indexImpl";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -37,11 +37,10 @@ const MintIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpen
     try {
       const tx = await onMintDeployerNft();
 
-      const iface = new ethers.utils.Interface(IndexImplAbi);
       for (let i = 0; i < tx.logs.length; i++) {
         try {
-          const log = iface.parseLog(tx.logs[i]);
-          if (log.name === "DeployerNftMinted") {
+          const log: any = decodeEventLog({ abi: IndexImplAbi, ...tx.logs[i] });
+          if (log.eventName === "DeployerNftMinted") {
             // console.log("deployerNftId", log.args.tokenId, log);
             dispatch(setIndexesPublicData([{ pid: data.pid, deployerNftId: log.args.tokenId }]));
             break;

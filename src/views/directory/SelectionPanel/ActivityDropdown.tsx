@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useRef } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import styled from "styled-components";
-import { useState, useEffect, useRef } from "react";
 
-const ActivityDropdown = ({ value, setValue, counts }: { setValue?: any; value: string, counts: any }) => {
+const ActivityDropdown = ({ value, setValue, counts }: { setValue?: any; value: string; counts: any }) => {
   const [open, setOpen] = useState(false);
   const dropRef: any = useRef();
 
@@ -40,7 +40,9 @@ const ActivityDropdown = ({ value, setValue, counts }: { setValue?: any; value: 
       <div className="flex w-full items-center justify-between px-3">
         <div className="flex items-center">
           <StyledCircle color={data[value].color} />
-          <div>{data[value].text} <span className="text-[11px]">({counts[value] ?? 0})</span></div>
+          <div>
+            {data[value].text} <span className="text-[11px]">({counts[value] ?? 0})</span>
+          </div>
         </div>
         <div className={""}>
           {!open ? <ChevronDownIcon className={"h-[14px]"} /> : <ChevronUpIcon className={"h-[14px]"} />}
@@ -57,7 +59,9 @@ const ActivityDropdown = ({ value, setValue, counts }: { setValue?: any; value: 
             >
               <div className="flex items-center">
                 <StyledCircle color={data[key].color} />
-                <div>{data[key].text} <span className="text-[10px]">({counts[key] ?? 0})</span></div>
+                <div>
+                  {data[key].text} <span className="text-[10px]">({counts[key] ?? 0})</span>
+                </div>
               </div>
               <div className="w-3" />
             </div>

@@ -2,12 +2,12 @@
 import { useContext, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { zeroAddress } from "viem";
 import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, UploadSVG } from "components/dashboard/assets/svgs";
@@ -19,11 +19,7 @@ import { useAppDispatch } from "state";
 import { setIndexesPublicData, updateUserBalance, updateUserDeployerNftInfo } from "state/indexes";
 import { useIndexes } from "state/indexes/hooks";
 import { DeserializedIndex } from "state/indexes/types";
-import { calculateGasMargin } from "utils";
-import { getIndexContract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { getChainLogo, getIndexName } from "utils/functions";
-import { getNetworkGasPrice } from "utils/getGasPrice";
 
 import useIndexImpl from "../hooks/useIndexImpl";
 
@@ -43,7 +39,6 @@ const UnstakeIndexOwnershipNFT = ({
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const signer  = useEthersSigner();
   const { indexes } = useIndexes();
   const { pending, setPending }: any = useContext(DashboardContext);
 
@@ -59,21 +54,6 @@ const UnstakeIndexOwnershipNFT = ({
     if (errorMsg) toast.error(errorMsg);
   };
 
-  const handleUnstakeDeployerNft = async () => {
-    if (pending) return;
-
-    setPending(true);
-    try {
-      await onUnstakeDeployerNft();
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: ethers.constants.AddressZero }]));
-      toast.success("Deployer NFT was unstaked");
-    } catch (e) {
-      console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
-    }
-    setPending(false);
-  };
-
   const handleUnstakeDeployerNftForIndex = async (indexId) => {
     if (pending) return;
 
@@ -83,20 +63,9 @@ const UnstakeIndexOwnershipNFT = ({
     setSelectedIndexId(indexId);
     setPending(true);
     try {
-      const indexContract = getIndexContract(selectedIndex.chainId, selectedIndex.address, selectedIndex.version, signer);
-      const gasPrice = await getNetworkGasPrice(signer, chainId);
+      await onUnstakeDeployerNft();
 
-      let gasLimit = await indexContract.estimateGas.unstakeDeployerNft({ value: selectedIndex.performanceFee ?? "0" });
-      gasLimit = calculateGasMargin(gasLimit);
-
-      const tx = await indexContract.unstakeDeployerNft({
-        gasPrice,
-        gasLimit,
-        value: selectedIndex.performanceFee ?? "0",
-      });
-      await tx.wait();
-
-      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: ethers.constants.AddressZero }]));
+      dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: zeroAddress }]));
       dispatch(updateUserBalance(account, chainId));
       dispatch(updateUserDeployerNftInfo(account, chainId));
 

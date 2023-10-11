@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 import { useContext, useState } from "react";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { isAddress, zeroAddress } from "viem";
 
 import { chevronLeftSVG, warningCircleSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
@@ -34,13 +34,13 @@ const UpdateFeeModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
 
   const handleUpdateFeeAddress = async () => {
     if (pending) return;
-    if (!ethers.utils.isAddress(feeAddress) || feeAddress === ethers.constants.AddressZero) {
+    if (!isAddress(feeAddress) || feeAddress === zeroAddress) {
       toast.error("Invalid fee address");
     }
 
     setPending(true);
     try {
-      const tx = await onUpdateFeeAddress(feeAddress);
+      await onUpdateFeeAddress(feeAddress);
 
       dispatch(setIndexesPublicData([{ pid: data.pid, feeWallet: feeAddress }]));
       toast.success("Fee wallet was updated");
@@ -132,9 +132,7 @@ const UpdateFeeModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                   <StyledButton
                     type="quaternary"
                     onClick={handleUpdateFeeAddress}
-                    disabled={
-                      pending || !ethers.utils.isAddress(feeAddress) || feeAddress === ethers.constants.AddressZero
-                    }
+                    disabled={pending || !isAddress(feeAddress) || feeAddress === zeroAddress}
                   >
                     Update fee address
                     {pending && (

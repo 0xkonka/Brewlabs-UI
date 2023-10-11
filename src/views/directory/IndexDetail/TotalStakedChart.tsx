@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import dynamic from "next/dynamic";
+
+import { SkeletonComponent } from "components/SkeletonComponent";
 import { getAverageHistory } from "state/indexes/fetchIndexes";
 import { formatAmount } from "utils/formatApy";
-import Skeleton from "react-loading-skeleton";
-import { SkeletonComponent } from "components/SkeletonComponent";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 

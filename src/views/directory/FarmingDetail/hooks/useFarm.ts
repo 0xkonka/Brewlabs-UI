@@ -9,53 +9,11 @@ import { updateFarmsUserData } from "state/farms";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
-import { emergencyUnstakeFarm, harvestFarm, stakeFarm, unstakeFarm } from "./calls/farms";
-
-const harvestReward = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "claimReward" });
+const call_normalMethod = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
+  let gasLimit = await publicClient.estimateContractGas(masterChefContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  const txHash = await walletClient.writeContract({
-    ...masterChefContract,
-    functionName: "claimReward",
-    gas: gasLimit,
-  });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
-};
-
-const harvestDividend = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "claimDividend" });
-  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
-
-  const txHash = await walletClient.writeContract({
-    ...masterChefContract,
-    functionName: "claimDividend",
-    gas: gasLimit,
-  });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
-};
-
-const compoundReward = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "compoundReward" });
-  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
-
-  const txHash = await walletClient.writeContract({
-    ...masterChefContract,
-    functionName: "compoundReward",
-    gas: gasLimit,
-  });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
-};
-
-const compoundDividend = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas({ ...masterChefContract, functionName: "compoundDividend" });
-  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
-
-  const txHash = await walletClient.writeContract({
-    ...masterChefContract,
-    functionName: "compoundDividend",
-    gas: gasLimit,
-  });
+  const txHash = await walletClient.writeContract({ ...masterChefContract, gas: gasLimit });
   return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
@@ -78,6 +36,7 @@ const useFarm = (
       let masterChefContract = {
         address: masterchef as `0x${string}`,
         abi: masterChefV2Abi,
+        functionName: "deposit",
         args: [BigInt(pid), parseEther(amount)],
         value: performanceFee,
         account: walletClient.account,
@@ -85,7 +44,7 @@ const useFarm = (
         gasPrice,
       };
 
-      const receipt = await stakeFarm(masterChefContract, walletClient, publicClient);
+      const receipt = await call_normalMethod(masterChefContract, walletClient, publicClient);
 
       dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
       dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
@@ -102,6 +61,7 @@ const useFarm = (
       let masterChefContract = {
         address: masterchef as `0x${string}`,
         abi: masterChefV2Abi,
+        functionName: enableEmergencyWithdraw ? "emergencyWithdraw" : "withdraw",
         args: enableEmergencyWithdraw ? [BigInt(pid)] : [BigInt(pid), parseEther(amount)],
         value: enableEmergencyWithdraw ? undefined : performanceFee,
         account: walletClient.account,
@@ -109,12 +69,7 @@ const useFarm = (
         gasPrice,
       };
 
-      let receipt;
-      if (enableEmergencyWithdraw) {
-        receipt = await emergencyUnstakeFarm(masterChefContract, walletClient, publicClient);
-      } else {
-        receipt = await unstakeFarm(masterChefContract, walletClient, publicClient);
-      }
+      let receipt = await call_normalMethod(masterChefContract, walletClient, publicClient);
 
       dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
       dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
@@ -130,13 +85,14 @@ const useFarm = (
     let masterChefContract = {
       address: masterchef as `0x${string}`,
       abi: masterChefV2Abi,
-      args: [BigInt(pid)],
+      functionName: "deposit",
+      args: [BigInt(pid), BigInt(0)],
       value: performanceFee,
       account: walletClient.account,
       chain: walletClient.chain,
       gasPrice,
     };
-    await harvestFarm(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, publicClient);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
     dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
@@ -149,6 +105,7 @@ const useFarm = (
     let masterChefContract = {
       address: masterchef as `0x${string}`,
       abi: masterChefV2Abi,
+      functionName: "claimReward",
       args: [BigInt(pid)],
       value: performanceFee,
       account: walletClient.account,
@@ -156,7 +113,7 @@ const useFarm = (
       gasPrice,
     };
 
-    await harvestReward(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, publicClient);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
@@ -168,6 +125,7 @@ const useFarm = (
     let masterChefContract = {
       address: masterchef as `0x${string}`,
       abi: masterChefV2Abi,
+      functionName: "claimDividend",
       args: [BigInt(pid)],
       value: performanceFee,
       account: walletClient.account,
@@ -175,7 +133,7 @@ const useFarm = (
       gasPrice,
     };
 
-    await harvestDividend(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, publicClient);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
@@ -187,6 +145,7 @@ const useFarm = (
     let masterChefContract = {
       address: masterchef as `0x${string}`,
       abi: masterChefV2Abi,
+      functionName: "compoundReward",
       args: [BigInt(pid)],
       value: performanceFee,
       account: walletClient.account,
@@ -194,7 +153,7 @@ const useFarm = (
       gasPrice,
     };
 
-    await compoundReward(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, publicClient);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
@@ -206,6 +165,7 @@ const useFarm = (
     let masterChefContract = {
       address: masterchef as `0x${string}`,
       abi: masterChefV2Abi,
+      functionName: "compoundDividend",
       args: [BigInt(pid)],
       value: performanceFee,
       account: walletClient.account,
@@ -213,7 +173,7 @@ const useFarm = (
       gasPrice,
     };
 
-    await compoundDividend(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, publicClient);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);

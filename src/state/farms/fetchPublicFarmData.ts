@@ -75,7 +75,7 @@ export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> =
           ],
         })
       : [null, null, null];
-
+console.log(info)
   const allocPoint = info ? info.result.allocPoint : BIG_ZERO;
   const depositFee = info ? info.depositFee : BIG_ZERO;
   const withdrawFee = info ? info.withdrawFee : BIG_ZERO;
@@ -236,7 +236,7 @@ export const fetchFarmTotalRewards = async (farm) => {
     [availableRewards, availableReflections] = await publicClient.multicall({ contracts: calls });
 
     if (farm.reflectionToken?.isNative) {
-      availableReflections = { result: await publicClient.getBalance(farm.contractAddress) };
+      availableReflections = { result: await publicClient.getBalance({address: farm.contractAddress}) };
     }
   }
 

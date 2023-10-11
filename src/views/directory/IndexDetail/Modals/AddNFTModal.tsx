@@ -2,11 +2,11 @@
 import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { checkSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
@@ -161,14 +161,14 @@ const AddNFTModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                           <div className="ml-3 leading-none">
                             <div className="text-xl text-[#FFFFFFBF]">
                               {selectedNft
-                                ? formatAmount(ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals), 6)
+                                ? formatAmount(formatUnits(BigInt(selectedNft.amounts[index]), token.decimals), 6)
                                 : "0.00"}
                             </div>
                             <div className="text-xs text-[#FFFFFF80]">
                               $
                               {selectedNft && tokenPrices?.[index]
                                 ? formatAmount(
-                                    +ethers.utils.formatUnits(selectedNft.amounts[index], token.decimals) *
+                                    +formatUnits(BigInt(selectedNft.amounts[index]), token.decimals).toString() *
                                       tokenPrices[index]
                                   )
                                 : "0.00"}

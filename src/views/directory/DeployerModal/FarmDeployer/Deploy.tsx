@@ -77,8 +77,6 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     setFarmAddr("");
 
     try {
-      const publicClient = getViemClients({ chainId });
-
       let rewardPerBlock = parseUnits(
         ((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(rewardCurrency.decimals),
         rewardCurrency.decimals

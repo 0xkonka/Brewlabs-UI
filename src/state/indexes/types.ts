@@ -1,6 +1,5 @@
 import { ChainId, Currency } from "@brewlabs/sdk";
 import { SerializedToken, Version } from "config/constants/types";
-import { BigNumber } from "ethers";
 
 interface IndexConfigBaseProps {
   pid: number;
@@ -58,11 +57,11 @@ export interface DeserializedIndex extends DeserializedIndexConfig {
   performanceFee?: string;
   userData?: {
     allowance: boolean; // nft allowance
-    ethBalance: BigNumber;
+    ethBalance: bigint;
     indexNftItems: NFTInfo[];
     deployerNftItem?: NFTInfo;
     stakedUsdAmount: string;
-    stakedBalances: BigNumber[];
+    stakedBalances: bigint[];
     histories: IndexHistory[];
   };
   tvl?: number;

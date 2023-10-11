@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import { motion, AnimatePresence } from "framer-motion";
+import { orderBy } from "lodash";
 import { useRouter } from "next/router";
-import styled from "styled-components";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 import {
   BarChartSVG,
@@ -10,6 +12,7 @@ import {
   chevronLeftSVG,
   DetailSVG,
   KYCSVG,
+  LinkSVG,
   NoneKYCSVG,
   UserAddSVG,
   UserSVG,
@@ -18,29 +21,24 @@ import Container from "components/layout/Container";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BASE_URL } from "config";
+import { Category } from "config/constants/types";
+import { DashboardContext } from "contexts/DashboardContext";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
-import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
+import { UserContext } from "contexts/UserContext";
+import { useGlobalState } from "state";
+import { fetchIndexFeeHistories, getAverageHistory } from "state/indexes/fetchIndexes";
+import { useIndexes } from "state/indexes/hooks";
+import { useFetchNFTBalance, useUserNFTData } from "state/wallet/hooks";
 import { getIndexName } from "utils/functions";
 import getCurrencyId from "utils/getCurrencyId";
 
-import StyledButton from "../../StyledButton";
-import IndexLogo from "../IndexLogo";
-import { LinkSVG } from "components/dashboard/assets/svgs";
-import { useIndexes } from "state/indexes/hooks";
-import { orderBy } from "lodash";
-import ChartHistory from "./ChartHistory";
-import { getAverageHistory } from "state/indexes/fetchIndexes";
-import SelectionPanel from "./SelectionPanel";
 import PoolList from "views/directory/PoolList";
-import { Category } from "config/constants/types";
-import { useGlobalState } from "state";
-import { DashboardContext } from "contexts/DashboardContext";
-import { UserContext } from "contexts/UserContext";
 
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
-import { BASE_URL } from "config";
-import { useFetchNFTBalance, useUserNFTData } from "state/wallet/hooks";
+import StyledButton from "../../StyledButton";
+import ChartHistory from "./ChartHistory";
+import IndexLogo from "../IndexLogo";
+import SelectionPanel from "./SelectionPanel";
 
 const Profile = ({ deployer }: { deployer: string }) => {
   const [performanceFees, setPerformanceFees] = useState([[0], [0], [0]]);
@@ -61,7 +59,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
   const { tokenPrices } = useContext(TokenPriceContext);
   const { setSelectedDeployer, setViewType }: any = useContext(DashboardContext);
   const { userData }: any = useContext(UserContext);
-  const { indexes, userDataLoaded } = useIndexes();
+  const { indexes } = useIndexes();
 
   useFetchNFTBalance(deployer, [ChainId.ETHEREUM, ChainId.BSC_MAINNET]);
 

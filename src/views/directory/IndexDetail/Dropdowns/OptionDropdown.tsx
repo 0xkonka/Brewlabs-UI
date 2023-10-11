@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
+import styled from "styled-components";
 
 const OptionDropdown = ({ values, setValue, status }: { values: string[]; setValue: any; status?: any[] }) => {
   const [open, setOpen] = useState(false);
