@@ -4,15 +4,15 @@ import { useGlobalState } from "state";
 import UserDashboard from "@components/dashboard/UserDashboard";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { getChainLogo } from "utils/functions";
-import { NATIVE_CURRENCIES } from "@brewlabs/sdk";
+import { NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import { useDexPrice } from "@hooks/useTokenPrice";
-import { getNativeWrappedAddress } from "utils/addressHelpers";
+import NFTComponent from "@components/NFTComponent";
 
 export default function Header({ showReverse, setShowReverse }) {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const { chainId } = useActiveChainId();
-  const { price } = useDexPrice(chainId, getNativeWrappedAddress(chainId));
+  const { price } = useDexPrice(chainId, WNATIVE[chainId].address.toLowerCase());
 
   return (
     <div className="relative z-[101] mt-10 flex">
@@ -34,7 +34,7 @@ export default function Header({ showReverse, setShowReverse }) {
           showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
         }`}
       >
-        <div className="primary-shadow flex h-[44px] items-center rounded-md bg-[#202023] p-2.5 font-roboto text-xs font-medium text-white mr-4">
+        <div className="primary-shadow mr-4 flex h-[44px] items-center rounded-md bg-[#202023] p-2.5 font-roboto text-xs font-medium text-white">
           <img src={getChainLogo(chainId)} alt={""} className="h-4 w-4 rounded-full" />
           <div className="ml-1.5 leading-[1.2]">
             <div>{NATIVE_CURRENCIES[chainId].symbol}</div>
@@ -59,12 +59,7 @@ export default function Header({ showReverse, setShowReverse }) {
           >
             {SwitchSVG}
           </div>
-          <div
-            className="tooltip cursor-pointer transition  hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
-            data-tip="No Brewlabs NFT found."
-          >
-            {NFTSVG}
-          </div>
+          <NFTComponent />
         </div>
       </div>
     </div>
