@@ -15,7 +15,7 @@ import { tokens } from "config/constants/tokens";
 import { NFT_RARE_COUNT } from "config/constants/nft";
 import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
-import { useTokenMarketChart } from "state/prices/hooks";
+import { useDexPrice } from "@hooks/useTokenPrice";
 import { getChainLogo, numberWithCommas } from "utils/functions";
 
 import MintNFTModal from "../Modals/MintNFTModal";
@@ -30,11 +30,8 @@ const NFTStakingInfo = () => {
       1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
     }
   );
-  const tokenMarketData = useTokenMarketChart(1);
 
-  const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
-    ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
-    : null;
+  const { price: OETHPrice } = useDexPrice(1, tokens[1].oeth.address);
 
   const NFT_MontlyApr = {
     1:

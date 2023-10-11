@@ -1,80 +1,68 @@
 import PageWrapper from "components/layout/PageWrapper";
 import Header from "./components/Header";
-import TokenInfo from "./components/TokenInfo";
 import { useContext, useEffect, useState } from "react";
-import TradingPanel from "./components/TradingPanel";
-import { getBaseInfos, useTokenMarketInfos } from "@hooks/useTokenInfo";
 import { useSwapActionHandlers } from "state/swap/hooks";
-import { Field } from "state/swap/actions";
-import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { ChartContext } from "contexts/ChartContext";
 import Modal from "@components/Modal";
 import SettingModal from "views/swap/components/modal/SettingModal";
 import { SwapContext } from "contexts/SwapContext";
 import { useUserSlippageTolerance } from "state/user/hooks";
-import { Bars, Oval } from "react-loader-spinner";
-import { fetchPairsAsync } from "state/chart";
+import { Oval } from "react-loader-spinner";
+import { addPairs } from "state/chart";
 import { useDispatch } from "react-redux";
-import { usePairInfoByParams } from "state/chart/hooks";
+import { usePairsByCriteria } from "state/chart/hooks";
 import { isAddress } from "utils";
+import { fetchAllPairs } from "state/chart/fetchPairInfo";
+import { DEXSCREENER_CHAINNAME } from "config";
+import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
+import { Field } from "state/swap/actions";
+import TokenInfo from "./components/TokenInfo";
+import { useTokenMarketInfos } from "@hooks/useTokenInfo";
+import TradingPanel from "./components/TradingPanel";
 
 export default function Chart({ chain, address }) {
-  const pairs: any = usePairInfoByParams({
-    criteria: address,
-    limit: 1,
-    sort: "volume24h_stable",
-    chain,
-  });
-
+  const chainId = Number(Object.keys(DEXSCREENER_CHAINNAME).find((key, i) => chain === DEXSCREENER_CHAINNAME[key]));
+  const pair: any = usePairsByCriteria(address, chainId, 1);
   const [showReverse, setShowReverse] = useState(true);
-  const [selectedCurrency, setSelectedCurrency] = useState(null);
+  const [selectedPair, setSelectedPair] = useState(null);
 
   const { onCurrencySelection } = useSwapActionHandlers();
   const dispatch: any = useDispatch();
 
-  const stringifiedCurrency = JSON.stringify(selectedCurrency);
-
-  const stringifiedPairs = JSON.stringify(pairs);
+  const stringifiedPair = JSON.stringify(pair);
 
   useEffect(() => {
-    if (!pairs[0]) return;
-    setSelectedCurrency(pairs[0]);
-    const currency = pairs[0];
-    Promise.all([
-      getBaseInfos(currency.tokenAddresses[0], currency.chainId),
-      getBaseInfos(currency.tokenAddresses[1], currency.chainId),
-    ])
-      .then((result) => setSelectedCurrency({ ...pairs[0], decimals: [result[0].decimals, result[1].decimals] }))
-      .catch((e) => console.log(e));
-  }, [stringifiedPairs]);
+    if (!pair || !pair.length) return;
+    setSelectedPair(pair[0]);
+    setTokens();
+  }, [stringifiedPair]);
 
   function setTokens() {
+    if (!pair || !pair.length) return;
+    const selectedPair = pair[0];
     let token0: any;
-    if (!selectedCurrency) return;
-    if (selectedCurrency.tokenAddresses[0] === WNATIVE[selectedCurrency.chainId].address.toLowerCase())
-      token0 = NATIVE_CURRENCIES[selectedCurrency.chainId];
-    else
-      token0 = new Token(selectedCurrency.chainId, selectedCurrency.tokenAddresses[0], 18, selectedCurrency.symbols[0]);
+    if (selectedPair.baseToken.address === WNATIVE[selectedPair.chainId].address.toLowerCase())
+      token0 = NATIVE_CURRENCIES[selectedPair.chainId];
+    else token0 = new Token(selectedPair.chainId, selectedPair.baseToken.address, 18, selectedPair.baseToken.symbol);
     onCurrencySelection(Field.OUTPUT, token0);
 
     let token1: any;
-    if (selectedCurrency.tokenAddresses[1] === WNATIVE[selectedCurrency.chainId].address.toLowerCase())
-      token1 = NATIVE_CURRENCIES[selectedCurrency.chainId];
-    else
-      token1 = new Token(selectedCurrency.chainId, selectedCurrency.tokenAddresses[1], 18, selectedCurrency.symbols[1]);
+    if (selectedPair.quoteToken.address === WNATIVE[selectedPair.chainId].address.toLowerCase())
+      token1 = NATIVE_CURRENCIES[selectedPair.chainId];
+    else token1 = new Token(selectedPair.chainId, selectedPair.quoteToken.address, 18, selectedPair.quoteToken.symbol);
     onCurrencySelection(Field.INPUT, token1);
   }
 
   useEffect(() => {
-    setTokens();
-  }, [stringifiedCurrency]);
-
-  useEffect(() => {
-    if (!isAddress(address)) return;
-    dispatch(fetchPairsAsync(address, 1, "volume24h_stable", chain));
+    if (!isAddress(address) || !chain) return;
+    fetchAllPairs(address, chain)
+      .then((pairs) => {
+        dispatch(addPairs(pairs));
+      })
+      .catch((e) => console.log(e));
   }, [chain, address]);
 
-  const { infos: marketInfos }: any = useTokenMarketInfos(selectedCurrency);
+  const { infos: marketInfos }: any = useTokenMarketInfos(selectedPair);
 
   const { pending }: any = useContext(ChartContext);
 
@@ -119,12 +107,26 @@ export default function Chart({ chain, address }) {
           />
         </Modal>
       )}
-      <div className={`px-3 pb-10 font-roboto md:px-6 ${pending ? "opacity-50" : ""}`}>
-        {selectedCurrency ? (
-          <div className="relative mx-auto mt-24 w-full max-w-[1720px] lg:mt-0">
+      <div className={`px-3 pb-10 font-roboto md:px-6 3xl:md:px-16 ${pending ? "opacity-50" : ""}`}>
+        {selectedPair ? (
+          <div className="relative mx-auto mt-24 w-full lg:mt-0">
             <Header setShowReverse={setShowReverse} showReverse={showReverse} />
-            <TokenInfo currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />
-            <TradingPanel currency={selectedCurrency} marketInfos={marketInfos} showReverse={showReverse} />
+            <TokenInfo
+              selectedPair={{
+                ...selectedPair,
+                baseToken: { ...selectedPair.baseToken, decimals: marketInfos?.decimals ?? 18 },
+              }}
+              showReverse={showReverse}
+              marketInfos={marketInfos}
+            />
+            <TradingPanel
+              selectedPair={{
+                ...selectedPair,
+                baseToken: { ...selectedPair.baseToken, decimals: marketInfos?.decimals ?? 18 },
+              }}
+              showReverse={showReverse}
+              marketInfos={marketInfos}
+            />
           </div>
         ) : (
           <div className="flex h-screen w-full items-center justify-center">

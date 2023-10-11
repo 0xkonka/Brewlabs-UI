@@ -1,42 +1,6 @@
 import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
-import { Adapters } from "config/constants/aggregator";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { addPairs, fetchPairPriceInfoAsync } from "state/chart";
-import { fetchAllPairs } from "state/chart/fetchPairInfo";
-import { usePairInfoByParams } from "state/chart/hooks";
 import { isAddress } from "utils";
-let searchTimeout;
-let wrappedCriteria = "";
-
-export const useTokenAllPairs = (criteria) => {
-  const pairs: any = usePairInfoByParams({
-    criteria,
-    limit: 10,
-    sort: "volume24h_stable",
-    chain: null,
-  });
-  const [loading, setLoading] = useState(false);
-
-  const dispatch: any = useDispatch();
-
-  useEffect(() => {
-    if (searchTimeout != undefined) clearTimeout(searchTimeout);
-    wrappedCriteria = criteria;
-
-    searchTimeout = setTimeout(async () => {
-      if (criteria === "") return;
-      setLoading(true);
-      const pairs = await fetchAllPairs(criteria, 10, "volume24h_stable", null);
-      setLoading(false);
-      dispatch(addPairs(pairs));
-      dispatch(fetchPairPriceInfoAsync(pairs));
-    }, 500);
-  }, [criteria]);
-
-  return { pairs, loading };
-};
 
 export async function fetchTradingHistories(query, chainId) {
   let histories = [];
@@ -117,9 +81,9 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
   let tb = query.tb;
   try {
     do {
-      const url = `https://io.dexscreener.com/dex/log/amm/uniswap/all/${DEXSCREENER_CHAINNAME[chainId]}/${query.pair}?${
-        query.type ? `ft=${query.type}` : ""
-      }&${query.account ? `m=${query.account.toLowerCase()}` : ""}&${
+      const url = `https://io.dexscreener.com/dex/log/amm/${query.a}/all/${DEXSCREENER_CHAINNAME[chainId]}/${
+        query.pair
+      }?${query.type ? `ft=${query.type}` : ""}&${query.account ? `m=${query.account.toLowerCase()}` : ""}&${
         query.quote ? `q=${query.quote.toLowerCase()}` : ""
       }&${tb ? `tb=${tb}` : ""}`;
 

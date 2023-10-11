@@ -11,15 +11,14 @@ import StyledPrice from "@components/StyledPrice";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import { usePairInfo } from "state/chart/hooks";
 
-export default function TokenInfo({ currency, marketInfos, showReverse }) {
+export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
   const { favourites, onFavourites }: any = useContext(ChartContext);
-  const pair: any = usePairInfo(currency.chainId, currency.address);
-  const price = pair.price;
+  const price = selectedPair.priceUsd;
 
   const infos = [
     {
       icon: LiquiditySVG,
-      value: `$${numberWithCommas((marketInfos.liquidity ?? 0).toFixed(2))} Liquidity`,
+      value: `$${numberWithCommas((selectedPair.liquidity.usd ?? 0).toFixed(2))} Liquidity`,
     },
     {
       icon: FilledFixedSVG,
@@ -29,7 +28,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
       icon: VolumeSVG,
       value: (
         <span>
-          {`$${numberWithCommas((marketInfos.volume24h ?? 0)?.toFixed(2))} Volume`}&nbsp;&nbsp;&nbsp;
+          {`$${numberWithCommas((selectedPair.volume.h24 ?? 0)?.toFixed(2))} Volume`}&nbsp;&nbsp;&nbsp;
           <span className={marketInfos.volume24hChange >= 0 ? "text-[#32FFB5]" : "text-[#DC4545]"}>{`${
             marketInfos.volume24hChange >= 0 ? "+" : ""
           }${(marketInfos.volume24hChange ?? 0).toFixed(2)}% (24H)`}</span>
@@ -45,12 +44,12 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
   const makePricePanel = () => {
     return (
       <div className="flex items-center">
-        <div className={`flex items-center ${pair.priceChange24h >= 0 ? "text-green" : "text-danger"}`}>
+        <div className={`flex items-center ${selectedPair.priceChange.h24 >= 0 ? "text-green" : "text-danger"}`}>
           <div className="mr-1 whitespace-nowrap text-sm">
-            {pair.priceChange24h >= 0 ? "+" : ""}
-            {(pair.priceChange24h ?? 0).toFixed(2)}% (24h)
+            {selectedPair.priceChange.h24 >= 0 ? "+" : ""}
+            {(selectedPair.priceChange.h24 ?? 0).toFixed(2)}% (24h)
           </div>
-          <div className="scale-[80%]">{pair.priceChange24h >= 0 ? upSVG : downSVG}</div>
+          <div className="scale-[80%]">{selectedPair.priceChange.h24 >= 0 ? upSVG : downSVG}</div>
         </div>
         <div className="ml-2 text-lg font-bold text-white">
           <StyledPrice price={price} />
@@ -59,7 +58,7 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
     );
   };
 
-  return currency ? (
+  return (
     <div
       className={`relative z-0 mr-0 mt-8 flex flex-col items-start justify-between lg:flex-row lg:items-center ${
         showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
@@ -69,31 +68,31 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
         <div className="flex w-full flex-col items-start justify-between sm:flex-row sm:items-center xl:w-fit">
           <div className="flex flex-col items-center lg:flex-row ">
             <div className={`flex w-fit items-center ${showReverse ? "2xl:w-[280px]" : "2xl:w-[320px]"}`}>
-              <div className="cursor-pointer" onClick={() => onFavourites(currency, 1)}>
+              <div className="cursor-pointer" onClick={() => onFavourites(selectedPair, 1)}>
                 <StarIcon
                   className={`h-5 w-5 ${
                     favourites.find(
                       (favourite) =>
-                        favourite.address === currency.address.toLowerCase() && favourite.chainId === currency.chainId
+                        favourite.address === selectedPair.address && favourite.chainId === selectedPair.chainId
                     )
                       ? "text-primary"
                       : "text-tailwind"
                   }`}
                 />
               </div>
-              <img src={DEX_LOGOS[currency.amm]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
+              <img src={DEX_LOGOS[selectedPair.dexId]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
               <div className="flex">
                 <TokenLogo
-                  src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
+                  src={getTokenLogoURL(isAddress(selectedPair.baseToken.address), selectedPair.chainId)}
                   classNames="primary-shadow z-10 -mr-2 h-6 w-6 rounded-full"
                 />
                 <TokenLogo
-                  src={getTokenLogoURL(isAddress(currency.tokenAddresses[1]), currency.chainId)}
+                  src={getTokenLogoURL(isAddress(selectedPair.quoteToken.address), selectedPair.chainId)}
                   classNames="primary-shadow h-6 w-6 rounded-full"
                 />
               </div>
               <div className="ml-2 text-lg font-bold text-white">
-                {currency.symbols[0]}-{currency.symbols[1]}
+                {selectedPair.baseToken.symbol}-{selectedPair.quoteToken.symbol}
               </div>
             </div>
           </div>
@@ -112,11 +111,5 @@ export default function TokenInfo({ currency, marketInfos, showReverse }) {
       </div>
       <div className="hidden xl:block">{makePricePanel()}</div>
     </div>
-  ) : (
-    <SkeletonComponent
-      className={`!max-w-full ${
-        showReverse ? "2xl:!max-w-[calc(100%-332px)]" : "2xl:!max-w-[calc(100%-292px)]"
-      } mt-6 h-8`}
-    />
   );
 }

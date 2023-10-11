@@ -1,40 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { ChartState, HomeState } from "state/types";
-import { fetchAllPairs, fetchPairPriceInfos } from "./fetchPairInfo";
+import { fetchAllPairs } from "./fetchPairInfo";
 
 const initialState: ChartState = {
   pairs: {},
 };
 
 export const fetchPairsAsync =
-  (criteria, limit = 10, sort = "volume24h_stable", chain = null) =>
+  (criteria, chain = null, type) =>
   async (dispatch) => {
-    const pairs = await fetchAllPairs(criteria, limit, sort, chain);
+    const pairs = await fetchAllPairs(criteria, chain, type);
     dispatch(addPairs(pairs));
-    dispatch(fetchPairPriceInfoAsync(pairs));
   };
-
-export const fetchPairPriceInfoAsync = (pairs) => async (dispatch) => {
-  const priceInfos = await fetchPairPriceInfos(pairs);
-  dispatch(setPairPrices(priceInfos));
-};
 
 export const ChartSlice = createSlice({
   name: "chart",
   initialState,
   reducers: {
-    setPairPrices: (state, action) => {
-      const prices = action.payload;
-      prices.map((price) => {
-        if (!state.pairs[price.chainId]) state.pairs[price.chainId] = {};
-        state.pairs[price.chainId][price.address] = {
-          ...state.pairs[price.chainId][price.address],
-          ...price,
-          params: state.pairs[price.chainId][price.address]?.params,
-        };
-      });
-    },
     addPairs: (state, action) => {
       const pairs = action.payload;
       pairs.map((pair) => {
@@ -42,9 +25,6 @@ export const ChartSlice = createSlice({
         state.pairs[pair.chainId][pair.address] = {
           ...state.pairs[pair.chainId][pair.address],
           ...pair,
-          params: !state.pairs[pair.chainId][pair.address]?.params.includes(pair.params)
-            ? [...(state.pairs[pair.chainId][pair.address]?.params ?? []), pair.params]
-            : state.pairs[pair.chainId][pair.address]?.params,
         };
       });
     },
@@ -52,6 +32,6 @@ export const ChartSlice = createSlice({
 });
 
 // Actions
-export const { setPairPrices, addPairs } = ChartSlice.actions;
+export const { addPairs } = ChartSlice.actions;
 
 export default ChartSlice.reducer;

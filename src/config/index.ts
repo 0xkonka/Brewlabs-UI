@@ -87,4 +87,10 @@ export const DEXTOOLS_CHAINNAME = {
 export const DEXSCREENER_CHAINNAME = {
   1: "ethereum",
   56: "bsc",
+  42161: "arbitrum",
+  137: "polygon",
+  300: "optimism",
+  8453: "base",
+  324: "zksync",
+  43114: "avalanche",
 };

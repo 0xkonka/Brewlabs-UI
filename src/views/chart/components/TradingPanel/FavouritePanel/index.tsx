@@ -3,7 +3,7 @@ import { ChartContext } from "contexts/ChartContext";
 import { useContext, useState } from "react";
 import FavouriteCard from "./FavouriteCard";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
-import { useCGListings, useCMCListings } from "@hooks/chart/useScrappingSite";
+import { useCGListings, useCMCListings, useWatcherGuruTrending } from "@hooks/chart/useScrappingSite";
 import { NETWORKS } from "config/constants/networks";
 import { ChainId } from "@brewlabs/sdk";
 import { getChainLogo } from "utils/functions";
@@ -25,14 +25,27 @@ export default function FavouritePanel() {
       icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
       name: <div className="text-white">CG Trending</div>,
     },
+    {
+      icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
+      name: <div className="text-white">CG Top Gainers</div>,
+    },
+    {
+      icon: <img src={"/images/chart/trending/cg.png"} alt={""} className="h-4 w-4 rounded-full" />,
+      name: <div className="text-white">CG Top Losers</div>,
+    },
+    {
+      icon: <img src={"/images/chart/trending/watcherguru.png"} alt={""} className="h-4 w-4 rounded-full" />,
+      name: <div className="text-white">WG Trending</div>,
+    },
   ];
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [selectedNetwork, setSelectedNetwork] = useState(0);
 
   const { trendings, newListings }: any = useCMCListings();
-  const { trendings: cgTrendings }: any = useCGListings();
+  const { trendings: cgTrendings, gainers: cgGainers, losers: cgLosers }: any = useCGListings();
+  const { trendings: watcherGuruTrendings } = useWatcherGuruTrending();
 
-  const arrays = [favourites, trendings, newListings, cgTrendings];
+  const arrays = [favourites, trendings, newListings, cgTrendings, cgGainers, cgLosers, watcherGuruTrendings];
   const networks: any = [
     "All",
     NETWORKS[ChainId.ETHEREUM],

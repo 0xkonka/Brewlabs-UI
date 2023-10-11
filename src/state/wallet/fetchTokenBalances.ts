@@ -25,14 +25,13 @@ async function getTokenBaseBalances(account: string, chainId: number) {
     data = data.data;
   } else {
     const { data: response } = await axios.get(
-      `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/balances_v2/?`,
+      `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?block-height=18278289`,
       { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
     );
     if (response.error) return [];
     const items = response.data.items;
-
     data = items
-      .filter((i) => i.balance !== "0")
+      .filter((i) => i.balance !== "0" || i.contract_address === DEX_GURU_WETH_ADDR)
       .map((item) => {
         return {
           address: item.contract_address,
@@ -129,6 +128,7 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
         pendingRewards: 0,
         totalRewards: 0,
         symbol: "",
+        isETH: false,
       },
       isReward = false;
 
@@ -192,6 +192,7 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
       reward.totalRewards =
         +totalRewards.toString() / Math.pow(10, token.name.toLowerCase() === "brewlabs" ? 18 : rewardToken.decimals);
       reward.symbol = rewardToken.symbol;
+      reward.isETH = token.name.toLowerCase() === "brewlabs";
       isReward = true;
     } catch (e) {}
 

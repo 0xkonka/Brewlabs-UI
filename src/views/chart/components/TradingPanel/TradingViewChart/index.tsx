@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Datafeed from "./datafeed/datafeed";
 import { widget } from "charting_library/charting_library.min";
 import liquidity from "./datafeed/indicators/liquidity";
-import { DEX_GURU_CHAIN_NAME } from "config";
+import { DEXSCREENER_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
 import { Oval } from "react-loader-spinner";
 
 export const defaultOverrides = {
@@ -36,12 +36,14 @@ function getLanguageFromURL() {
   return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-const TradingViewChart = ({ currency }) => {
+const TradingViewChart = ({ selectedPair }) => {
   useEffect(() => {
-    if (!currency) return;
+    if (!selectedPair) return;
     window.tvWidget = new widget({
       locale: getLanguageFromURL() || ("en" as any),
-      symbol: `${currency.tokenAddresses[0]}-${DEX_GURU_CHAIN_NAME[currency.chainId]}_USD`, // default symbol
+      symbol: `${selectedPair.a}/bars/${DEXSCREENER_CHAINNAME[selectedPair.chainId]}/${selectedPair.address}?q=${
+        selectedPair.quoteToken.address
+      }`, // default symbol
       interval: "1D", // default interval
       fullscreen: false, // displays the chart in the fullscreen mode
       container_id: "tv_chart_container",
@@ -96,9 +98,9 @@ const TradingViewChart = ({ currency }) => {
       },
     });
     //Do not forget to remove the script on unmounting the component!
-  }, [currency.tokenAddresses[0], currency.chainId]); //eslint-disable-line
+  }, [selectedPair.baseToken.address, selectedPair.chainId]); //eslint-disable-line
 
-  return currency ? (
+  return selectedPair ? (
     <div id="tv_chart_container" className="h-full overflow-hidden rounded-lg"></div>
   ) : (
     <div className="flex h-full w-full items-center justify-center">

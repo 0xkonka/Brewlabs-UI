@@ -42,6 +42,9 @@ export function useCMCListings() {
 
 export function useCGListings() {
   const [trendings, setTrendings] = useState([]);
+  const [gainers, setGainers] = useState([]);
+  const [losers, setLosers] = useState([]);
+
   async function getTrendings() {
     try {
       const { data: response } = await axios.get(`https://api.coingecko.com/api/v3/search/trending`);
@@ -50,6 +53,38 @@ export function useCGListings() {
       console.log(e);
     }
   }
+
+  async function getGainersOrLosers() {
+    try {
+      const { data: response } = await axios.post(`${API_URL}/chart/getCGGainersOrLosers`);
+      setGainers(response.result.top_gainers.map((gainer) => gainer.name).slice(0, 10));
+      setLosers(response.result.top_losers.map((loser) => loser.name).slice(0, 10));
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useSlowRefreshEffect(() => {
+    getTrendings();
+    getGainersOrLosers();
+  }, []);
+  return { trendings, gainers, losers };
+}
+
+export function useWatcherGuruTrending() {
+  const [trendings, setTrendings] = useState([]);
+
+  async function getTrendings() {
+    try {
+      const { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, {
+        url: "https://api.watcher.guru/coin/trending",
+      });
+      setTrendings(response.result.map((coin) => coin.name));
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useSlowRefreshEffect(() => {
     getTrendings();
   }, []);

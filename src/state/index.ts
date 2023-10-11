@@ -26,6 +26,7 @@ import zap from "./zap";
 import home from "./home";
 import chart from "./chart";
 import wallet from "./wallet";
+import pair from "./pair";
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -57,6 +58,7 @@ const persistedReducer = persistReducer(
     home,
     chart,
     wallet,
+    pair,
   })
 );
 

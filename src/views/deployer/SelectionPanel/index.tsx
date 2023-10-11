@@ -120,21 +120,4 @@ const SelectionPanel = ({
   );
 };
 
-const FilterButton = styled.div<{ active: boolean }>`
-  cursor: pointer;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 14px;
-  color: #ffffff59;
-  transition: all 0.15s;
-  background: ${({ active }) => (active ? "#FFFFFF40" : "#d9d9d91a")};
-  :hover {
-    color: ${({ active }) => (active ? "#FFDE0D" : "white")};
-  }
-  margin-right: 10px;
-  line-height: 100%;
-  height: fit-content;
-  color: ${({ active }) => (active ? "#FFDE0D" : "#FFFFFF59")};
-  white-space: nowrap;
-`;
 export default SelectionPanel;
