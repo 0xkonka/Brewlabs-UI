@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState } from "react";
-import { ethers } from "ethers";
 import { toast } from "react-toastify";
+import { decodeEventLog, formatUnits, parseUnits, zeroAddress } from "viem";
+import { useWalletClient } from "wagmi";
 
-import FarmFactoryAbi from "config/abi/farm/factory.json";
-import FarmImplAbi from "config/abi/farm/farmImpl.json";
+import FarmFactoryAbi from "config/abi/farm/factory";
+import FarmImplAbi from "config/abi/farm/farmImpl";
 
 import { BLOCKS_PER_DAY } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -16,11 +17,10 @@ import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/
 import { useAppDispatch } from "state";
 import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
-import { calculateGasMargin, isAddress } from "utils";
-import { getContract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
+import { isAddress } from "utils";
 import { getDexLogo, getEmptyTokenLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import { getViemClients } from "utils/viem";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import DropDown from "components/dashboard/TokenList/Dropdown";
@@ -35,7 +35,7 @@ const DURATIONS = [365, 180, 90, 60];
 const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const dispatch = useAppDispatch();
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const { data: walletClient } = useWalletClient();
 
   const { pending, setPending, tokens }: any = useContext(DashboardContext);
 
@@ -51,7 +51,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const [farmAddr, setFarmAddr] = useState("");
 
   const rewardCurrency: any = useCurrency(rewardToken?.address);
-  const rewardTokenBalance = tokens.find((t) => t.address === rewardCurrency?.address.toLowerCase())?.balance ?? 0;
+  const rewardTokenBalance = tokens?.find((t) => t.address === rewardCurrency?.address.toLowerCase())?.balance ?? 0;
 
   let totalSupply: any = useTotalSupply(rewardCurrency);
   totalSupply = totalSupply ?? 0;
@@ -77,16 +77,16 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     setFarmAddr("");
 
     try {
-      let rewardPerBlock = ethers.utils.parseUnits(
+      const publicClient = getViemClients({ chainId });
+
+      let rewardPerBlock = parseUnits(
         ((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(rewardCurrency.decimals),
         rewardCurrency.decimals
       );
-      rewardPerBlock = rewardPerBlock
-        .div(ethers.BigNumber.from(DURATIONS[duration]))
-        .div(ethers.BigNumber.from(BLOCKS_PER_DAY[chainId]));
+      rewardPerBlock = rewardPerBlock / BigInt(DURATIONS[duration]) / BigInt(BLOCKS_PER_DAY[chainId]);
 
       const hasDividend = false;
-      const dividendToken = ethers.constants.AddressZero;
+      const dividendToken = zeroAddress;
 
       // approve paying token for deployment
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
@@ -106,11 +106,10 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       );
 
       let farm = "";
-      const iface = new ethers.utils.Interface(FarmFactoryAbi);
       for (let i = 0; i < tx.logs.length; i++) {
         try {
-          const log = iface.parseLog(tx.logs[i]);
-          if (log.name === "FarmCreated") {
+          const log: any = decodeEventLog({ abi: FarmFactoryAbi, ...tx.logs[i] });
+          if (log.eventName === "FarmCreated") {
             farm = log.args.farm;
             setFarmAddr(log.args.farm);
             break;
@@ -132,18 +131,30 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     setPending(true);
 
     try {
-      const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
-
       // approve reward token
       await onApprove(rewardCurrency.address, farm);
 
+      const publicClient = getViemClients({ chainId });
       // calls depositRewards method
-      let amount = await farmContract.insufficientRewards();
-      let gasLimit = await farmContract.estimateGas.depositRewards(amount);
-      gasLimit = calculateGasMargin(gasLimit);
+      let amount = await publicClient.readContract({
+        address: farm as `0x${string}`,
+        abi: FarmImplAbi,
+        functionName: "insufficientRewards",
+      });
 
-      const tx = await farmContract.depositRewards(amount, { gasLimit });
-      await tx.wait();
+      const txData: any = {
+        address: farm as `0x${string}`,
+        abi: FarmImplAbi,
+        functionName: "depositRewards",
+        args: [amount],
+        account: walletClient.account,
+      };
+      let gasLimit = await publicClient.estimateContractGas(txData);
+      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+
+      const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
+
+      await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 
       handleStartFarming(farm);
     } catch (e) {
@@ -158,14 +169,19 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     setPending(true);
 
     try {
-      const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
-
+      const publicClient = getViemClients({ chainId });
       // calls startRewards
-      let gasLimit = await farmContract.estimateGas.startReward();
-      gasLimit = calculateGasMargin(gasLimit);
+      const txData: any = {
+        address: farm as `0x${string}`,
+        abi: FarmImplAbi,
+        functionName: "startReward",
+        account: walletClient.account,
+      };
+      let gasLimit = await publicClient.estimateContractGas(txData);
+      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-      const tx = await farmContract.startReward({ gasLimit });
-      await tx.wait();
+      const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
+      await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 
       setStep(6);
       dispatch(fetchFarmsPublicDataFromApiAsync());
@@ -320,7 +336,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         <div className="ml-0 mt-4 flex flex-col items-center justify-between text-[#FFFFFFBF] xs:ml-4 xs:mt-1 xs:flex-row xs:items-start">
           <div>Deployment fee</div>
           <div>
-            {ethers.utils.formatUnits(factory.serviceFee, factory.payingToken.decimals).toString()}{" "}
+            {formatUnits(BigInt(factory.serviceFee), factory.payingToken.decimals).toString()}{" "}
             {factory.payingToken.symbol}
           </div>
         </div>

@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import PoolCard from "./PoolCard";
 import { PlusSVG } from "@components/dashboard/assets/svgs";
 import DeployerModal from "views/directory/DeployerModal";
-import { useState } from "react";
+
+import PoolCard from "./PoolCard";
 
 const PoolList = ({
   pools,

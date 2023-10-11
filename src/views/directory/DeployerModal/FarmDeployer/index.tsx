@@ -5,7 +5,6 @@ import useLPTokenInfo from "@hooks/useLPTokenInfo";
 import SelectToken from "./SelectToken";
 import Deploy from "./Deploy";
 
-
 const FarmDeployer = ({ setOpen, step, setStep }) => {
   const { chainId } = useActiveChainId();
 
@@ -26,13 +25,7 @@ const FarmDeployer = ({ setOpen, step, setStep }) => {
           lpInfo={lpInfo}
         />
       ) : step > 1 ? (
-        <Deploy
-          setOpen={setOpen}
-          step={step}
-          setStep={setStep}
-          router={router}
-          lpInfo={lpInfo?.pair}
-        />
+        <Deploy setOpen={setOpen} step={step} setStep={setStep} router={router} lpInfo={lpInfo?.pair} />
       ) : (
         ""
       )}

@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
-import StyledButton from "../../StyledButton";
 import { useEffect, useState } from "react";
+
+import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
-import RouterSelect from "../RouterSelect";
-import { useActiveChainId } from "hooks/useActiveChainId";
 
 const SelectToken = ({ step, setStep }) => {
   const [contractAddress, setContractAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState(null);
-  const [routerAddress, setRouterAddress] = useState(null);
-  const { chainId } = useActiveChainId();
 
   useEffect(() => {
     if (contractAddress.length) setTokenAddress("0x330518cc95c92881bCaC1526185a514283A5584D");

@@ -1,27 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState } from "react";
-import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import styled from "styled-components";
-import { useAccount } from "wagmi";
+import { decodeEventLog, isAddress } from "viem";
+import { erc20ABI, useAccount } from "wagmi";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import IndexLogo from "@components/logo/IndexLogo";
 import LoadingText from "@components/LoadingText";
+import StyledInput from "@components/StyledInput";
 
-import IndexFactoryAbi from "config/abi/indexes/factory.json";
+import IndexFactoryAbi from "config/abi/indexes/factory";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenApprove } from "@hooks/useApprove";
 import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useIndexFactory } from "state/deploy/hooks";
-import { getBep20Contract } from "utils/contractHelpers";
 import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
+import { getViemClients } from "utils/viem";
 
 import StyledButton from "../../StyledButton";
-
 import { useFactory } from "./hooks";
-import StyledInput from "@components/StyledInput";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { chainId } = useActiveChainId();
@@ -49,7 +47,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       return;
     }
 
-    if (!ethers.utils.isAddress(commissionWallet) && commissionWallet) {
+    if (!isAddress(commissionWallet) && commissionWallet) {
       toast.error("Invalid commission wallet");
       return;
     }
@@ -63,16 +61,17 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     setPending(true);
 
     try {
+      const publicClient = getViemClients({ chainId });
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
-        const payingToken = getBep20Contract(chainId, factory.payingToken.address);
-        const allowance = await payingToken.allowance(account, factory.address);
+        const allowance = await publicClient.readContract({
+          address: factory.payingToken.address as `0x${string}`,
+          abi: erc20ABI,
+          functionName: "allowance",
+          args: [account, factory.address as `0x${string}`],
+        });
 
         // approve paying token for deployment
-        if (
-          factory.payingToken.isToken &&
-          +factory.serviceFee > 0 &&
-          allowance.lt(ethers.BigNumber.from(factory.serviceFee))
-        ) {
+        if (factory.payingToken.isToken && +factory.serviceFee > 0 && allowance < BigInt(factory.serviceFee)) {
           await onApprove(factory.payingToken.address, factory.address);
         }
       }
@@ -86,11 +85,10 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
         !visibleType
       );
 
-      const iface = new ethers.utils.Interface(IndexFactoryAbi);
       for (let i = 0; i < tx.logs.length; i++) {
         try {
-          const log = iface.parseLog(tx.logs[i]);
-          if (log.name === "IndexCreated") {
+          const log: any = decodeEventLog({ abi: IndexFactoryAbi, ...tx.logs[i] });
+          if (log.eventName === "IndexCreated") {
             setIndexAddr(log.args.index);
             break;
           }

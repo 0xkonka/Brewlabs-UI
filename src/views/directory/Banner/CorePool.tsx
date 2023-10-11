@@ -1,12 +1,14 @@
 import styled from "styled-components";
-import { CHAIN_ICONS } from "config/constants/networks";
-import { PoolCategory } from "config/constants/types";
+
 import { upSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import { getNativeSybmol } from "lib/bridge/helpers";
-import StyledButton from "../StyledButton";
 import { BASE_URL } from "config";
+import { CHAIN_ICONS } from "config/constants/networks";
+import { PoolCategory } from "config/constants/types";
+import { getNativeSybmol } from "lib/bridge/helpers";
+
+import StyledButton from "../StyledButton";
 
 const CorePool = ({
   setSelectPoolDetail,

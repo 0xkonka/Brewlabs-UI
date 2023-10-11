@@ -9,8 +9,8 @@ import { getDexLogo, getEmptyTokenLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "../../StyledButton";
-import ChainSelect from "../ChainSelect";
 import RouterSelect from "../RouterSelect";
+import ChainSelect from "../ChainSelect";
 
 const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpInfo }) => {
   const { chainId } = useActiveChainId();

@@ -1,5 +1,3 @@
-import styled from "styled-components";
-
 import { Category } from "config/constants/types";
 import { useChainCurrentBlocks } from "state/block/hooks";
 import { filterPoolsByStatus } from "utils";

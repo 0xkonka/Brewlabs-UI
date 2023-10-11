@@ -1,16 +1,16 @@
 import styled from "styled-components";
+import { useRouter } from "next/router";
 
 import { CHAIN_ICONS } from "config/constants/networks";
 import { Category, PoolCategory } from "config/constants/types";
+import { isAddress } from "utils";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { getIndexName, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import IndexLogo from "components/logo/IndexLogo";
-import TokenLogo from "@components/logo/TokenLogo";
+import TokenLogo from "components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
-import { useRouter } from "next/router";
-import { isAddress } from "utils";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",

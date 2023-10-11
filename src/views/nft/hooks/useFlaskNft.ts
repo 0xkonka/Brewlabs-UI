@@ -16,29 +16,20 @@ export const useFlaskNft = () => {
       const publicClient = getViemClients({ chainId });
       const gasPrice = await getNetworkGasPrice(chainId, publicClient);
 
-      let gasLimit = await publicClient.estimateContractGas({
+      const txData: any = {
         address: getFlaskNftAddress(chainId) as `0x${string}`,
         abi: FlaskNftAbi,
         functionName: "mint",
         args: [BigInt(count), payingToken as `0x${string}`],
         account: walletClient.account,
         gasPrice,
-      });
+      };
+      let gasLimit = await publicClient.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-      const txHash = await walletClient.writeContract({
-        address: getFlaskNftAddress(chainId) as `0x${string}`,
-        abi: FlaskNftAbi,
-        functionName: "mint",
-        args: [BigInt(count), payingToken as `0x${string}`],
-        account: walletClient.account,
-        chain: walletClient.chain,
-        gasPrice,
-        gas: gasLimit,
-      });
+      const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
-      await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
-      return publicClient.getTransactionReceipt({ hash: txHash });
+      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [walletClient, chainId]
   );
@@ -49,29 +40,20 @@ export const useFlaskNft = () => {
 
       const _tokenIds: any = [BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])];
 
-      let gasLimit = await publicClient.estimateContractGas({
+      const txData: any = {
         address: getFlaskNftAddress(chainId) as `0x${string}`,
         abi: FlaskNftAbi,
         functionName: "upgradeNFT",
         args: [_tokenIds, payingToken as `0x${string}`],
         account: walletClient.account,
         gasPrice,
-      });
+      };
+      let gasLimit = await publicClient.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-      const txHash = await walletClient.writeContract({
-        address: getFlaskNftAddress(chainId) as `0x${string}`,
-        abi: FlaskNftAbi,
-        functionName: "upgradeNFT",
-        args: [_tokenIds, payingToken as `0x${string}`],
-        account: walletClient.account,
-        chain: walletClient.chain,
-        gasPrice,
-        gas: gasLimit,
-      });
+      const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
-      await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
-      return publicClient.getTransactionReceipt({ hash: txHash });
+      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [walletClient, chainId]
   );

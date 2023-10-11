@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { NFTSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
 import StyledButton from "../StyledButton";
-import Link from "next/link";
 
 const BrewNFT = ({}: {}) => {
   return (

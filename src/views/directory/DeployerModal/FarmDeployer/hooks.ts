@@ -1,12 +1,13 @@
 import { useCallback } from "react";
-import useActiveWeb3React from "@hooks/useActiveWeb3React";
-import { useFarmFactoryContract } from "@hooks/useContract";
-import { calculateGasMargin } from "utils";
+import { useWalletClient } from "wagmi";
+
+import FarmFactoryAbi from "config/abi/farm/factory";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getFarmFactoryAddress } from "utils/addressHelpers";
+import { getViemClients } from "utils/viem";
 
 export const useFactory = (chainId, performanceFee) => {
-  const { library } = useActiveWeb3React();
-  const factoryContract = useFarmFactoryContract(chainId);
+  const { data: walletClient } = useWalletClient();
 
   const handleCreate = useCallback(
     async (
@@ -19,36 +20,34 @@ export const useFactory = (chainId, performanceFee) => {
       duration: number,
       hasDividend: boolean
     ) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      let gasLimit = await factoryContract.estimateGas.createBrewlabsFarm(
-        lpToken,
-        rewardToken,
-        dividendToken,
-        rewardPerBlock,
-        depositFee,
-        withdrawFee,
-        duration,
-        hasDividend,
-        { value: performanceFee, gasPrice }
-      );
-      gasLimit = calculateGasMargin(gasLimit);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
-      const tx = await factoryContract.createBrewlabsFarm(
-        lpToken,
-        rewardToken,
-        dividendToken,
-        rewardPerBlock,
-        depositFee,
-        withdrawFee,
-        duration,
-        hasDividend,
-        { value: performanceFee, gasPrice, gasLimit }
-      );
-      const receipt = await tx.wait();
+      const txData: any = {
+        address: getFarmFactoryAddress(chainId) as `0x${string}`,
+        abi: FarmFactoryAbi,
+        functionName: "createBrewlabsFarm",
+        args: [
+          lpToken as `0x${string}`,
+          rewardToken as `0x${string}`,
+          dividendToken as `0x${string}`,
+          BigInt(rewardPerBlock),
+          BigInt(depositFee),
+          BigInt(withdrawFee),
+          BigInt(duration),
+          hasDividend,
+        ],
+        value: performanceFee,
+        gasPrice,
+        account: walletClient.account,
+      };
+      let gasLimit = await publicClient.estimateContractGas(txData);
+      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-      return receipt;
+      const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
+      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
-    [factoryContract, chainId, library, performanceFee]
+    [walletClient, chainId, performanceFee]
   );
 
   return {

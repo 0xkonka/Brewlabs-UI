@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useMemo, useRef } from "react";
 import { Token } from "@brewlabs/sdk";
-import { getAddress } from "@ethersproject/address";
+import { getAddress } from "viem";
 
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -10,7 +10,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import CurrencySelector from "components/CurrencySelector";
 import { DrawSVG } from "components/dashboard/assets/svgs";
-import TokenLogo from "@components/logo/TokenLogo";
+import TokenLogo from "components/logo/TokenLogo";
 
 const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const { chainId } = useActiveChainId();

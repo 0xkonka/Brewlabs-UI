@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import StyledButton from "../StyledButton";
 import { warningFarmerSVG } from "components/dashboard/assets/svgs";
+import StyledButton from "../StyledButton";
 
 const AutoFarmer = ({}: {}) => {
   const createPoolPanel = (type: string) => {
@@ -35,11 +35,11 @@ const AutoFarmer = ({}: {}) => {
     );
   };
   return (
-    <div className="flex h-full flex-col justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B80D] py-[10px] px-3 sm:px-5">
+    <div className="flex h-full flex-col justify-center rounded border border-[#FFFFFF40] bg-[#B9B8B80D] px-3 py-[10px] sm:px-5">
       <div className="mb-4 flex w-full max-w-[1080px] items-center justify-between md:mb-0">
         <img src={"/images/directory/autofarmer.png"} alt={""} />
         {createPoolPanel("pc")}
-        <div className="w-full max-w-[340px] flex-1 xsm:min-w-[220px] xsm:min-w-[160px]">
+        <div className="w-full max-w-[340px] flex-1 xsm:min-w-[160px] xsm:min-w-[220px]">
           <div className="flex w-full justify-between">
             <div className="mr-[4%] h-[50px] flex-1">
               <StyledButton type={"quinary"}>

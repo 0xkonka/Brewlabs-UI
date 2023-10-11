@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useMemo, useState } from "react";
+import { Dialog } from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import { Dialog } from "@headlessui/react";
 import styled from "styled-components";
-import { useMemo, useState } from "react";
 
 import ChainSelector from "components/ChainSelector";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";

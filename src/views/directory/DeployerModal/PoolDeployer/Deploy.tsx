@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
-import StyledButton from "../../StyledButton";
-import ChainSelect from "views/swap/components/ChainSelect";
 import { useEffect, useState } from "react";
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
-import SwitchButton from "./SwitchButton";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
+
+import StyledButton from "../../StyledButton";
+import SwitchButton from "./SwitchButton";
 
 const Deploy = ({ step, setStep, setOpen }) => {
   const [contractAddress, setContractAddress] = useState("");

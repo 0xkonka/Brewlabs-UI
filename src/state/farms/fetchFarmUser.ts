@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 
 import erc20ABI from "config/abi/erc20.json";
 import masterchefABI from "config/abi/farm/masterchef.json";
-import farmImplAbi from "config/abi/farm/farmImpl.json";
+import farmImplAbi from "config/abi/farm/farmImpl";
 
 import { API_URL } from "config/constants";
 import { SerializedFarmConfig } from "config/constants/types";
@@ -93,7 +93,7 @@ export const fetchFarmUserStakedBalances = async (
 
   // fetch factroy-created farms
   rawStakedBalances = await multicall(
-    farmImplAbi,
+    farmImplAbi as any,
     farmsToFetch
       .filter((f) => f.category)
       .map((farm) => ({
@@ -158,7 +158,7 @@ export const fetchFarmUserEarnings = async (
 
     // fetch factroy-created farms
     rawEarnings = await multicall(
-      farmImplAbi,
+      farmImplAbi as any,
       farmsToFetch
         .filter((f) => !f.enableEmergencyWithdraw)
         .filter((f) => f.category)
@@ -227,7 +227,7 @@ export const fetchFarmUserReflections = async (
 
   // fetch factroy-created farms
   rawReflections = await multicall(
-    farmImplAbi,
+    farmImplAbi as any,
     farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
       .filter((f) => f.category)

@@ -1,11 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import CorePool from "./CorePool";
-import Carousel from "react-multi-carousel";
-
-import styled from "styled-components";
-import AutoFarmer from "./AutoFarmer";
-import TrueNFT from "./TrueNFT";
 import { useRef, useState } from "react";
+import Carousel from "react-multi-carousel";
+import styled from "styled-components";
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import AutoFarmer from "./AutoFarmer";
+import CorePool from "./CorePool";
+import TrueNFT from "./TrueNFT";
 import BrewNFT from "./BrewNFT";
 
 const responsive = {

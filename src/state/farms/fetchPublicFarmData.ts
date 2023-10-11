@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import erc20 from "config/abi/erc20.json";
 import masterchefABI from "config/abi/farm/masterchef.json";
 import masterchefV2ABI from "config/abi/farm/masterchefV2.json";
-import farmImplAbi from "config/abi/farm/farmImpl.json";
+import farmImplAbi from "config/abi/farm/farmImpl";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { SerializedFarmConfig, Version } from "config/constants/types";
@@ -184,7 +184,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
         }
 
         const v3ImplTotalStakes = await multicall(
-          farmImplAbi,
+          farmImplAbi as any,
           compoundFarms
             .filter((f) => f.category)
             .map((farm) => ({

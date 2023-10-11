@@ -363,140 +363,94 @@ export const relayTokens = async (
     case "dedicated-erc20": {
       if (version) {
         const abi = parseAbi(["function relayTokens(address, uint256) public payable"]);
-        let gasLimit = await publicClient.estimateContractGas({
+        const txData: any = {
           address: mediatorAddress,
           abi,
           functionName: "relayTokens",
           args: [receiver as `0x${string}`, amount],
           value: performanceFee,
           account: walletClient.account,
-        });
+        };
+        let gasLimit = await publicClient.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
-        return walletClient.writeContract({
-          address: mediatorAddress,
-          abi,
-          functionName: "relayTokens",
-          args: [receiver as `0x${string}`, amount],
-          value: performanceFee,
-          account: walletClient.account,
-          chain: walletClient.chain,
-          gas: gasLimit,
-        });
+        return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       }
 
       if (performanceFee) {
         const abi = parseAbi([`function relayTokensWithFee(address, address, uint256) public payable`]);
-        let gasLimit = await publicClient.estimateContractGas({
+        const txData: any = {
           address: mediatorAddress,
           abi,
           functionName: "relayTokensWithFee",
           args: [address as `0x${string}`, receiver as `0x${string}`, amount],
           value: performanceFee,
           account: walletClient.account,
-        });
+        };
+        let gasLimit = await publicClient.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
-        return walletClient.writeContract({
-          address: mediatorAddress,
-          abi,
-          functionName: "relayTokensWithFee",
-          args: [address as `0x${string}`, receiver as `0x${string}`, amount],
-          value: performanceFee,
-          account: walletClient.account,
-          chain: walletClient.chain,
-          gas: gasLimit,
-        });
+        return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       }
 
       const abi = parseAbi(["function relayTokens(address, uint256) external"]);
-      let gasLimit = await publicClient.estimateContractGas({
+      const txData: any = {
         address: mediatorAddress,
         abi,
         functionName: "relayTokens",
         args: [receiver as `0x${string}`, amount],
         account: walletClient.account,
-      });
+      };
+      let gasLimit = await publicClient.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
-      return walletClient.writeContract({
-        address: mediatorAddress,
-        abi,
-        functionName: "relayTokens",
-        args: [receiver as `0x${string}`, amount],
-        account: walletClient.account,
-        chain: walletClient.chain,
-        gas: gasLimit,
-      });
+      return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
     }
     case "erc20":
     default: {
       if (version) {
         const abi = parseAbi(["function relayTokens(address, address, uint256) public payable"]);
-        let gasLimit = await publicClient.estimateContractGas({
+        const txData: any = {
           address: mediatorAddress,
           abi,
           functionName: "relayTokens",
           args: [address as `0x${string}`, receiver as `0x${string}`, amount],
           account: walletClient.account,
           value: performanceFee,
-        });
+        };
+        let gasLimit = await publicClient.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
-        return walletClient.writeContract({
-          address: mediatorAddress,
-          abi,
-          functionName: "relayTokens",
-          args: [address as `0x${string}`, receiver as `0x${string}`, amount],
-          value: performanceFee,
-          account: walletClient.account,
-          chain: walletClient.chain,
-          gas: gasLimit,
-        });
+        return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       }
 
       if (performanceFee) {
         const abi = parseAbi(["function relayTokensWithFee(address, address, uint256) public payable"]);
-        let gasLimit = await publicClient.estimateContractGas({
+        const txData: any = {
           address: mediatorAddress,
           abi,
           functionName: "relayTokensWithFee",
           args: [address as `0x${string}`, receiver as `0x${string}`, amount],
           value: performanceFee,
           account: walletClient.account,
-        });
+        };
+        let gasLimit = await publicClient.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
-        return walletClient.writeContract({
-          address: mediatorAddress,
-          abi,
-          functionName: "relayTokensWithFee",
-          args: [address as `0x${string}`, receiver as `0x${string}`, amount],
-          value: performanceFee,
-          account: walletClient.account,
-          chain: walletClient.chain,
-          gas: gasLimit,
-        });
+        return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       }
 
       const abi = parseAbi(["function relayTokens(address, address, uint256)"]);
-      let gas = await publicClient.estimateContractGas({
+      const txData: any = {
         address: mediatorAddress,
         abi,
         functionName: "relayTokens",
         args: [address as `0x${string}`, receiver as `0x${string}`, amount],
         account: walletClient.account,
-      });
+      };
+      let gas = await publicClient.estimateContractGas(txData);
       gas = (gas * BigInt(1200)) / BigInt(1000);
 
-      return walletClient.writeContract({
-        address: mediatorAddress,
-        abi,
-        functionName: "relayTokens",
-        args: [address as `0x${string}`, receiver as `0x${string}`, amount],
-        account: walletClient.account,
-        chain: walletClient.chain,
-        gas: gas,
-      });
+      return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas });
     }
   }
 };
