@@ -43,7 +43,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, pid, chainId, dispatch, walletClient]
+    [account, pid, chainId, contractAddress, dispatch, walletClient]
   );
 
   const handleZapOut = useCallback(async () => {
@@ -65,7 +65,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
     dispatch(updateUserStakings(pid, account, chainId));
     dispatch(updateUserBalance(account, chainId));
     return receipt;
-  }, [account, pid, chainId, dispatch, walletClient]);
+  }, [account, pid, chainId, contractAddress, dispatch, walletClient]);
 
   const handleClaim = useCallback(
     async (percent) => {
@@ -88,7 +88,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, pid, chainId, dispatch, walletClient]
+    [account, pid, chainId, contractAddress, dispatch, walletClient]
   );
 
   const handleMintNft = useCallback(async () => {
@@ -111,7 +111,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
     dispatch(updateUserStakings(pid, account, chainId));
     dispatch(updateUserBalance(account, chainId));
     return receipt;
-  }, [account, pid, chainId, performanceFee, dispatch, walletClient]);
+  }, [account, pid, chainId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleStakeNft = useCallback(
     async (tokenId) => {
@@ -135,7 +135,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
       dispatch(updateUserBalance(account, chainId));
       return receipt;
     },
-    [account, pid, chainId, performanceFee, dispatch, walletClient]
+    [account, pid, chainId, contractAddress, performanceFee, dispatch, walletClient]
   );
 
   return {

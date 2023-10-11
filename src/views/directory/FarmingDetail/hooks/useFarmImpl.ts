@@ -4,7 +4,6 @@ import { PublicClient, WalletClient, parseEther } from "viem";
 import { useWalletClient } from "wagmi";
 
 import FarmImpleAbi from "config/abi/farm/farmImpl";
-import { useFarmContract } from "hooks/useContract";
 import { useAppDispatch } from "state";
 import { updateFarmsUserData } from "state/farms";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -104,7 +103,6 @@ const useFarmImpl = (
 ) => {
   const dispatch = useAppDispatch();
   const { data: walletClient } = useWalletClient();
-  const farmContract = useFarmContract(contractAddress);
 
   const handleStake = useCallback(
     async (amount: string) => {
@@ -127,7 +125,7 @@ const useFarmImpl = (
       dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
       return receipt;
     },
-    [farmContract, pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]
+    [pid, farmId, chainId, contractAddress, performanceFee, dispatch, walletClient]
   );
 
   const handleUnstake = useCallback(
@@ -156,7 +154,7 @@ const useFarmImpl = (
       dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
       return receipt;
     },
-    [farmContract, pid, farmId, chainId, contractAddress, enableEmergencyWithdraw, performanceFee, dispatch, walletClient]
+    [pid, farmId, chainId, contractAddress, enableEmergencyWithdraw, performanceFee, dispatch, walletClient]
   );
 
   const handleHarvestReward = useCallback(async () => {

@@ -34,7 +34,7 @@ export const useTokenApprove = (tokenAddress, to) => {
     const receipt = await tx.wait();
 
     return receipt;
-  }, [account, chainId, library, to, tokenContract]);
+  }, [chainId, library, to, tokenContract]);
 
   return { onApprove: handleApprove, allowance };
 };
