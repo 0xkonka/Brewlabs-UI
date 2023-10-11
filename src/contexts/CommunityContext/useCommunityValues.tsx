@@ -1,5 +1,7 @@
-import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useContext } from "react";
+import { formatEther } from "viem";
+
+import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useFarms } from "state/farms/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { usePools } from "state/pools/hooks";
@@ -28,7 +30,7 @@ const useTotalStakedValues = () => {
       .filter((p) => p.visible)
       .map((farm) => {
         let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-        return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
+        return { ...farm, tvl: farm.totalStaked && price ? +formatEther(farm.totalStaked).toString() * price : 0 };
       }),
     ...indexes
       .filter((p) => p.visible)

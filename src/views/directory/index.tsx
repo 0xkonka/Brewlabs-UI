@@ -4,6 +4,8 @@ import { ChainId } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
 import orderBy from "lodash/orderBy";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 import Container from "components/layout/Container";
@@ -41,7 +43,6 @@ import FarmingDetail from "./FarmingDetail";
 import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
 import StyledButton from "./StyledButton";
-import Link from "next/link";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -109,7 +110,7 @@ const Directory = ({ page }: { page: number }) => {
       .filter((p) => p.visible)
       .map((farm) => {
         let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-        return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
+        return { ...farm, tvl: farm.totalStaked && price ? +formatEther(farm.totalStaked).toString() * price : 0 };
       }),
     ...indexes
       .filter((p) => p.visible)

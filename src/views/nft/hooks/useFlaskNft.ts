@@ -14,7 +14,7 @@ export const useFlaskNft = () => {
   const handleMint = useCallback(
     async (count: number, payingToken: string) => {
       const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(chainId, publicClient);
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
       const txData: any = {
         address: getFlaskNftAddress(chainId) as `0x${string}`,
@@ -36,7 +36,7 @@ export const useFlaskNft = () => {
   const handleUpgradeNft = useCallback(
     async (tokenIds: number[], payingToken: string) => {
       const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(chainId, publicClient);
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
 
       const _tokenIds: any = [BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])];
 

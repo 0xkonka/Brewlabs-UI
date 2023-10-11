@@ -17,6 +17,7 @@ import {
 } from ".";
 import { DeserializedFarm, DeserializedFarmUserData, SerializedFarm } from "./types";
 import { DeserializedDeposit, DeserializedFarmsState, SerializedDeposit, State } from "../types";
+import { parseEther } from "viem";
 
 export const usePollFarmsPublicDataFromApi = () => {
   const dispatch = useAppDispatch();
@@ -81,7 +82,7 @@ export const usePollFarmsWithUserData = () => {
 const deserializedDeposit = (deposit: SerializedDeposit): DeserializedDeposit => {
   return {
     ...deposit,
-    amount: BigInt(deposit.amount),
+    amount: parseEther(deposit.amount),
   };
 };
 
@@ -98,7 +99,6 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 
 export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
   const { token, quoteToken, earningToken, reflectionToken, totalStaked, poolWeight, rewardPerBlock, ...rest } = farm;
-
   return {
     ...rest,
     token: deserializeToken(token),
@@ -107,7 +107,7 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     reflectionToken: reflectionToken ? deserializeToken(reflectionToken) : undefined,
     userData: deserializeFarmUserData(farm),
     totalStaked: totalStaked ? BigInt(totalStaked) : BIG_ZERO,
-    poolWeight: poolWeight ? BigInt(poolWeight) : BIG_ZERO,
+    poolWeight: poolWeight && poolWeight !== "NaN" ? BigInt(poolWeight) : BIG_ZERO,
     rewardPerBlock: rewardPerBlock ? BigInt(rewardPerBlock) : BIG_ZERO,
   };
 };

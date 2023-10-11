@@ -2,6 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
+import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 import Container from "components/layout/Container";
@@ -63,7 +64,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
     }),
     ...farms.map((farm) => {
       let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-      return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
+      return { ...farm, tvl: farm.totalStaked && price ? +formatEther(farm.totalStaked).toString() * price : 0 };
     }),
     ...indexes.map((_index) => {
       let tvl = 0;

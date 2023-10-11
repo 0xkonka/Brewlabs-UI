@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext } from "react";
+import { formatEther } from "viem";
 
 import PageWrapper from "components/layout/PageWrapper";
 
@@ -19,7 +20,7 @@ const Farms: NextPage = () => {
       .filter((p) => p.visible)
       .map((farm) => {
         let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];
-        return { ...farm, tvl: farm.totalStaked && price ? +farm.totalStaked * price : 0 };
+        return { ...farm, tvl: farm.totalStaked && price ? +formatEther(farm.totalStaked).toString() * price : 0 };
       }),
   ];
 

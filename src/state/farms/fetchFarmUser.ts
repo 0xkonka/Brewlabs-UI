@@ -89,7 +89,7 @@ export const fetchFarmUserStakedBalances = async (
         farmId: farm.farmId,
         poolId: farm.poolId,
         chainId: farm.chainId,
-        stakedBalance: rawStakedBalances[index].result.toString(),
+        stakedBalance: rawStakedBalances[index].result[0].toString(),
       });
     });
 
@@ -113,7 +113,7 @@ export const fetchFarmUserStakedBalances = async (
         farmId: farm.farmId,
         poolId: farm.poolId,
         chainId: farm.chainId,
-        stakedBalance: rawStakedBalances[index].result.toString(),
+        stakedBalance: rawStakedBalances[index].result[0].toString(),
       });
     });
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createSlice } from "@reduxjs/toolkit";
+import { parseEther, parseUnits } from "viem";
 
 import { API_URL } from "config/constants";
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
@@ -36,7 +37,12 @@ export const fetchFarmsPublicDataFromApiAsync = () => async (dispatch) => {
     if (res.data) {
       farms = res.data
         .filter((f) => PAGE_SUPPORTED_CHAINS["farms"].includes(f.chainId))
-        .map((farm) => ({ type: Category.FARM, ...farm }));
+        .map((farm) => ({
+          type: Category.FARM,
+          ...farm,
+          totalStaked: parseEther(farm.totalStaked).toString(),
+          rewardPerBlock: parseUnits(farm.rewardPerBlock, farm.earningToken.decimals).toString(),
+        }));
     }
     dispatch(setFarmsPublicData(farms));
 
@@ -137,19 +143,7 @@ export const fetchFarmUserDataAsync =
       account,
       chainId,
       farmsToFetch.filter((f) => ![15, 16, 17].includes(f.farmId))
-    ).then((userFarmReflections) => {
-      const data = farmsToFetch
-        .filter((f) => ![15, 16, 17].includes(f.farmId))
-        .filter((f) => !f.enableEmergencyWithdraw)
-        .map((farm, index) => {
-          return {
-            pid: farm.pid,
-            farmId: farm.farmId,
-            poolId: farm.poolId,
-            chainId: farm.chainId,
-            reflections: userFarmReflections[index] ?? "0",
-          };
-        });
+    ).then((data) => {
       dispatch(setFarmUserData(data));
     });
   };

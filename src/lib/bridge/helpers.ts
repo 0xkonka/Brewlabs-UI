@@ -25,7 +25,7 @@ export const handleWalletError = (error: any, showError: (msg: string) => void, 
     showError(error?.data?.message);
   } else if (error?.message && error?.message.length > 120) {
     showError(
-      (error.reason.split(":").splice(-1)[0] ?? error.message.split("(")[0]).replace(
+      (error.reason?.split(":").splice(-1)[0] ?? error.message.split("(")[0]).replace(
         "sending a transaction requires a signer",
         "No wallet connected"
       )

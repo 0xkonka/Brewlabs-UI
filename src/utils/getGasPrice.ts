@@ -5,7 +5,7 @@ import { GAS_PRICE_GWEI } from "state/user/hooks/helpers";
 /**
  * Function to return gasPrice outwith a react component
  */
-export const getNetworkGasPrice = async (chainId, client) => {
+export const getNetworkGasPrice = async (client, chainId) => {
   let gasPrice = await client.getGasPrice();
   if (!gasPrice) return undefined;
 

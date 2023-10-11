@@ -13,11 +13,11 @@ interface SerializedFarmUserData {
 }
 
 export interface DeserializedFarmUserData {
-  allowance: BigInt;
-  tokenBalance: BigInt;
-  stakedBalance: BigInt;
-  earnings: BigInt;
-  reflections: BigInt;
+  allowance: bigint;
+  tokenBalance: bigint;
+  stakedBalance: bigint;
+  earnings: bigint;
+  reflections: bigint;
   deposits: DeserializedDeposit[];
 }
 
@@ -36,9 +36,9 @@ export interface SerializedFarm extends SerializedFarmConfig {
   stakedAddresses?: number[];
 }
 export interface DeserializedFarm extends DeserializedFarmConfig {
-  totalStaked?: BigInt;
-  rewardPerBlock?: BigInt;
-  poolWeight?: BigInt;
+  totalStaked?: bigint;
+  rewardPerBlock?: bigint;
+  poolWeight?: bigint;
   depositFee?: string;
   withdrawFee?: string;
   performanceFee?: string;

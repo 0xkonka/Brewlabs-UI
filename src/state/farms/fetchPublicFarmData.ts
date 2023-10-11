@@ -1,5 +1,5 @@
 import axios from "axios";
-import { formatEther, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import { erc20ABI } from "wagmi";
 
 import masterchefABI from "config/abi/farm/masterchef";
@@ -141,7 +141,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
 
         if (totalStakes) {
           commonFarms.forEach((farm, index) => {
-            data.push({ pid: farm.pid, totalStaked: formatEther(totalStakes[index].result) });
+            data.push({ pid: farm.pid, totalStaked: totalStakes[index].result.toString() });
           });
         }
 
@@ -162,7 +162,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
             .forEach((farm, index) => {
               data.push({
                 pid: farm.pid,
-                totalStaked: formatEther(v3TotalStakes[index].result),
+                totalStaked: v3TotalStakes[index].result.toString(),
               });
             });
         }
@@ -184,7 +184,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
             .forEach((farm, index) => {
               data.push({
                 pid: farm.pid,
-                totalStaked: formatEther(v3ImplTotalStakes[index].result),
+                totalStaked: v3ImplTotalStakes[index].result.toString(),
               });
             });
         }

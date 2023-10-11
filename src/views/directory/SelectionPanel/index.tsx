@@ -32,7 +32,7 @@ const SelectionPanel = ({
     counts[i] = filter.length;
   }
   counts[5] = pools.filter((data) =>
-    data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance.gt(0)
+    data.type === Category.INDEXES ? +data.userData?.stakedUsdAmount > 0 : data.userData?.stakedBalance > 0
   ).length;
 
   const filters = [

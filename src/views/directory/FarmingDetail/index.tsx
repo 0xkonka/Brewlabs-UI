@@ -3,7 +3,9 @@ import { useContext, useEffect, useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, lockSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
@@ -12,6 +14,7 @@ import PageHeader from "components/layout/PageHeader";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import WordHighlight from "components/text/WordHighlight";
 
+import { BASE_URL, DEXSCREENER_CHAINNAME } from "config";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { Version } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -36,9 +39,7 @@ import TotalStakedChart from "./TotalStakedChart";
 import StakingHistory from "./FarmingHistory";
 import StakingModal from "./Modals/StakingModal";
 import useFarm from "./hooks/useFarm";
-import { BASE_URL, DEXSCREENER_CHAINNAME } from "config";
 import useFarmImpl from "./hooks/useFarmImpl";
-import { useRouter } from "next/router";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -130,7 +131,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
-        if (data.tvl) _graphData.push(data.totalStaked.toNumber());
+        if (data.tvl) _graphData.push(+formatEther(data.totalStaked).toString());
         return _graphData;
     }
   };
@@ -459,7 +460,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           {!address ? (
                             "0.00"
                           ) : data.availableRewards !== undefined ? (
-                            formatAmount(data.availableRewards.toFixed(2))
+                            formatAmount((+data.availableRewards).toFixed(2))
                           ) : (
                             <SkeletonComponent />
                           )}
