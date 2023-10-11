@@ -1,20 +1,24 @@
-import { AppId } from "config/constants/types";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { ChainId } from "@brewlabs/sdk";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+
+import { AppId } from "config/constants/types";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
 import { LpTokenPricesState, State } from "state/types";
+
 import { fetchLpTokenPrices, fetchMarketDataAsync } from ".";
-import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
-import { ChainId } from "@brewlabs/sdk";
 
 export const useFetchLpTokenPrices = () => {
   const dispatch = useAppDispatch();
-  const { chainId } = useActiveWeb3React();
+  const { chainId } = useActiveChainId();
+
   const farms = useSelector((state: State) => state.zap.data[AppId.APESWAP]);
+
   useEffect(() => {
     dispatch(fetchLpTokenPrices(chainId, farms));
-  }, [dispatch, farms, chainId]);
+  }, [dispatch, JSON.stringify(farms), chainId]);
 };
 
 export const useFetchMarketData = () => {

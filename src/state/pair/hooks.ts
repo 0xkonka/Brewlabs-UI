@@ -1,11 +1,12 @@
+import { ChainId } from "@brewlabs/sdk";
+import { useSelector } from "react-redux";
+
 import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
-import { isAddress } from "utils";
-import { fetchTradingAllPairAsync, fetchTradingPairAsync } from ".";
-import { ChainId } from "@brewlabs/sdk";
 import { SerializedTradingPair, State } from "state/types";
-import { useSelector } from "react-redux";
-import { useState } from "react";
+import { isAddress } from "utils";
+
+import { fetchTradingAllPairAsync, fetchTradingPairAsync } from ".";
 
 export const useTradingPair = (chainId, address) => {
   const dispatch = useAppDispatch();

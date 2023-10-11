@@ -12,17 +12,18 @@ import {
 } from "@brewlabs/sdk";
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { PairState, usePair } from "hooks/usePairs";
-import useTotalSupply from "hooks/useTotalSupply";
 
 import { useTranslation } from "contexts/localization";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useCurrency } from "hooks/Tokens";
+import { PairState, usePair } from "hooks/usePairs";
+import useTotalSupply from "hooks/useTotalSupply";
 import { wrappedCurrency, wrappedCurrencyAmount } from "utils/wrappedCurrency";
-import { AppDispatch, AppState } from "../index";
+
 import { tryParseAmount } from "../swap/hooks";
 import { useCurrencyBalances } from "../wallet/hooks";
+import { AppDispatch, AppState } from "../index";
 import { Field, selectCurrency, typeInput } from "./actions";
-import { useCurrency } from "hooks/Tokens";
 
 const ZERO = JSBI.BigInt(0);
 

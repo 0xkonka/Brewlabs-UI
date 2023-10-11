@@ -1,10 +1,10 @@
+import { ChainId } from "@brewlabs/sdk";
 import { createSlice } from "@reduxjs/toolkit";
 
-import { PairState, WalletState } from "state/types";
-
-import { ChainId } from "@brewlabs/sdk";
-import { getTradingAllPairs, getTradingPair } from "./fetchTradingPairs";
 import { BASES_TO_TRACK_LIQUIDITY_FOR } from "config/constants";
+import { PairState } from "state/types";
+
+import { getTradingAllPairs, getTradingPair } from "./fetchTradingPairs";
 
 const initialState: PairState = {
   tradingPairs: {},

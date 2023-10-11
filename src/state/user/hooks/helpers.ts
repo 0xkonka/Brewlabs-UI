@@ -1,6 +1,6 @@
 import { Currency, NATIVE_CURRENCIES, Token } from "@brewlabs/sdk";
 import { SerializedToken } from "config/constants/types";
-import { parseUnits } from "ethers/lib/utils";
+import { parseUnits } from "viem";
 
 export function serializeToken(token: Currency | any): SerializedToken {
   return {
@@ -12,7 +12,7 @@ export function serializeToken(token: Currency | any): SerializedToken {
     symbol: token.symbol,
     name: token.name,
     projectLink: token.projectLink,
-    logo: token.logo
+    logo: token.logo,
   };
 }
 
@@ -33,15 +33,15 @@ export function deserializeToken(serializedToken: SerializedToken): Currency {
 }
 
 export enum GAS_PRICE {
-  default = "5",
-  fast = "6",
+  default = "3",
+  fast = "5",
   instant = "7",
   testnet = "10",
 }
 
 export const GAS_PRICE_GWEI = {
-  default: parseUnits(GAS_PRICE.default, "gwei").toString(),
-  fast: parseUnits(GAS_PRICE.fast, "gwei").toString(),
-  instant: parseUnits(GAS_PRICE.instant, "gwei").toString(),
-  testnet: parseUnits(GAS_PRICE.testnet, "gwei").toString(),
+  default: parseUnits(GAS_PRICE.default, 9).toString(),
+  fast: parseUnits(GAS_PRICE.fast, 9).toString(),
+  instant: parseUnits(GAS_PRICE.instant, 9).toString(),
+  testnet: parseUnits(GAS_PRICE.testnet, 9).toString(),
 };

@@ -5,19 +5,19 @@ import useSWRImmutable from "swr/immutable";
 
 import { FAST_INTERVAL, SECOND_INTERVAL, SLOW_INTERVAL } from "config/constants";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useEthersProvider } from "utils/ethersAdapter";
+import { getViemClients } from "utils/viem";
 
 const REFRESH_BLOCK_INTERVAL = 6000;
 
 export const usePollBlockNumber = () => {
   const { cache, mutate } = useSWRConfig();
   const { chainId } = useActiveChainId();
-  const provider = useEthersProvider({ chainId })
 
   const { data } = useSWR(
     ["blockNumberFetcher", chainId],
     async () => {
-      const blockNumber = await provider.getBlockNumber();
+      const publicClient = getViemClients({ chainId });
+      const blockNumber = +(await publicClient.getBlockNumber()).toString();
       mutate(["blockNumber", chainId], blockNumber);
       if (!cache.get(unstable_serialize(["initialBlockNumber", chainId]))) {
         mutate(["initialBlockNumber", chainId], blockNumber);
@@ -68,13 +68,13 @@ export const useCurrentBlock = (): number => {
 
 export const useChainCurrentBlock = (chainId: number): number => {
   const { chainId: activeChainId } = useActiveChainId();
-  const provider = useEthersProvider({ chainId })
 
   const { data: currentBlock = 0 } = useSWR(
     activeChainId === chainId ? ["blockNumber", chainId] : ["chainBlockNumber", chainId],
     activeChainId !== chainId
       ? async () => {
-          const blockNumber = await provider.getBlockNumber();
+          const publicClient = getViemClients({ chainId });
+          const blockNumber = +(await publicClient.getBlockNumber()).toString();
           return blockNumber;
         }
       : () => {},
