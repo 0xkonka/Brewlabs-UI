@@ -1,18 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import Link from "next/link";
 
+import { InfoSVG, chevronLeftSVG } from "components/dashboard/assets/svgs";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
+import DropDown from "components/dashboard/TokenList/Dropdown";
 import WordHighlight from "components/text/WordHighlight";
 import StyledButton from "views/directory/StyledButton";
-import RarityCard from "./RarityCard";
-import { InfoSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
-import { useState } from "react";
-import DropDown from "@components/dashboard/TokenList/Dropdown";
-import MintNFTModal from "../Modals/MintNFTModal";
-import Link from "next/link";
-import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
+
+import { rarities } from "config/constants/nft";
 import { useAllNftData } from "state/nfts/hooks";
+
+import RarityCard from "./RarityCard";
+import MintNFTModal from "../Modals/MintNFTModal";
 
 const FindOutMore = () => {
   const [curRarity, setCurRarity] = useState(0);

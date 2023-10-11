@@ -1,35 +1,44 @@
-import MirrorNftAbi from "config/abi/nfts/mirrorNft.json";
+import MirrorNftAbi from "config/abi/nfts/mirrorNft";
 import { getFlaskNftAddress, getMirrorNftAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchMirrorNftUserData = async (chainId, account) => {
   if (!account) return { chainId, userData: undefined };
 
-  let result = await multicall(
-    MirrorNftAbi,
-    [{ address: getMirrorNftAddress(chainId), name: "balanceOf", params: [account] }],
-    chainId
-  );
-  const balance = result[0][0].toNumber();
+  const publicClient = getViemClients({ chainId });
+
+  const res = await publicClient.readContract({
+    address: getMirrorNftAddress(chainId) as `0x${string}`,
+    abi: MirrorNftAbi,
+    functionName: "balanceOf",
+    args: [account],
+  });
+  const balance = +res.toString();
   if (balance == 0) return { chainId, userData: { balances: [] } };
 
   let calls = [];
   for (let i = 0; i < balance; i++) {
     calls.push({
-      address: getMirrorNftAddress(chainId),
-      name: "tokenOfOwnerByIndex",
-      params: [account, i],
+      address: getMirrorNftAddress(chainId) as `0x${string}`,
+      abi: MirrorNftAbi,
+      functionName: "tokenOfOwnerByIndex",
+      args: [account, BigInt(i)],
     });
   }
-  result = await multicall(MirrorNftAbi, calls, chainId);
-  const tokenIds = result.map((tokenId) => tokenId[0].toNumber());
+  let result = await publicClient.multicall({ contracts: calls });
+  const tokenIds = result.map((tokenId) => tokenId.result);
 
-  calls = tokenIds.map((tokenId) => ({ address: getFlaskNftAddress(chainId), name: "rarityOf", params: [tokenId] }));
-  result = await multicall(MirrorNftAbi, calls, chainId);
+  calls = tokenIds.map((tokenId) => ({
+    address: getFlaskNftAddress(chainId) as `0x${string}`,
+    abi: MirrorNftAbi,
+    functionName: "rarityOf",
+    args: [tokenId],
+  }));
+  result = await publicClient.multicall({ contracts: calls });
 
   const balances = tokenIds.map((tokenId, index) => ({
-    tokenId,
-    rarity: result[index][0].toNumber(),
+    tokenId: +tokenId.toString(),
+    rarity: +result[index].result.toString(),
   }));
 
   return { chainId, userData: { balances } };

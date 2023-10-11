@@ -1,41 +1,43 @@
 import { useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
-import { formatEther, formatUnits } from "ethers/lib/utils.js";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { formatEther, formatUnits } from "viem";
+import { useWalletClient } from "wagmi";
 
 import CountDown from "@components/CountDown";
 import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG } from "@components/dashboard/assets/svgs";
+import NFTRarityText from "@components/NFTRarityText";
 import StyledButton from "views/directory/StyledButton";
 
+import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
+import FlaskNftAbi from "config/abi/nfts/flaskNft";
 import { NFT_RARE_COUNT, NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
+import { NETWORKS } from "config/constants/networks";
+import { tokens } from "config/constants/tokens";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
-import { useFlaskNftContract } from "@hooks/useContract";
 import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import useTokenPrice from "@hooks/useTokenPrice";
+import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
 import { fetchNftUserDataAsync } from "state/nfts";
 import { useAllNftData } from "state/nfts/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import { getChainLogo } from "utils/functions";
+import { getViemClients } from "utils/viem";
 
 import { useNftStaking } from "../hooks/useNftStaking";
-import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
-import useTokenBalances from "@hooks/useTokenMultiChainBalance";
-import { tokens } from "config/constants/tokens";
-import { NETWORKS } from "config/constants/networks";
-import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
-import NFTRarityText from "@components/NFTRarityText";
-import { useTokenMarketChart } from "state/prices/hooks";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
   const { account, chainId } = useActiveWeb3React();
+  const { data: walletClient } = useWalletClient();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
 
   const { flaskNft: flaskNfts, data } = useAllNftData();
-  const flaskNftContract = useFlaskNftContract(chainId);
   const currentBlock = useChainCurrentBlock(nft.chainId);
 
   const pool = data.find((p) => p.chainId === nft.chainId);
@@ -49,12 +51,15 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
 
   const isPending = !pool || pool.startBlock < currentBlock;
-  const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
+  const earnings = pool?.userData?.stakedAmount
+    ? +formatEther(BigInt(pool.userData.earnings)) / pool.userData.stakedAmount
+    : 0;
 
   const apr = flaskNft.mintFee
-    ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
-      ((+formatEther(flaskNft.mintFee.stable) +
-        +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+    ? (((+formatEther(BigInt(pool?.rewardPerBlock ?? "0")) * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) *
+        100) /
+      ((+formatUnits(BigInt(flaskNft.mintFee.stable), flaskNft.stableTokens[0].decimals) +
+        +formatUnits(BigInt(flaskNft.mintFee.brews), flaskNft.brewsToken.decimals) * brewsPrice) *
         (pool?.totalStaked ?? 0))
     : 0;
   const tokenMarketData = useTokenMarketChart(1);
@@ -99,10 +104,24 @@ const NFTCard = ({ nft }: { nft: any }) => {
 
     setPending(true);
     try {
-      const isApprovedForAll = await flaskNftContract.isApprovedForAll(account, pool.address);
+      const publicClient = getViemClients({ chainId: flaskNft.chainId });
+      const isApprovedForAll = await publicClient.readContract({
+        address: flaskNft.address as `0x${string}`,
+        abi: FlaskNftAbi,
+        functionName: "isApprovedForAll",
+        args: [account, flaskNft.address as `0x${string}`],
+      });
+
       if (!isApprovedForAll) {
-        const tx = await flaskNftContract.setApprovalForAll(pool.address, true);
-        await tx.wait();
+        const txHash = await walletClient.writeContract({
+          address: flaskNft.address as `0x${string}`,
+          abi: FlaskNftAbi,
+          functionName: "setApprovalForAll",
+          args: [flaskNft.address as `0x${string}`, true],
+          account,
+          chain: walletClient.chain,
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
       }
 
       await onStake([nft.tokenId]);

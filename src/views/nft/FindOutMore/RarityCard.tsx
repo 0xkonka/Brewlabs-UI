@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
-import { LighteningSVG, QuestionSVG } from "@components/dashboard/assets/svgs";
 import ReactPlayer from "react-player";
-import { getChainLogo } from "utils/functions";
+
+import { LighteningSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
+import { getChainLogo } from "utils/functions";
 
 const RarityCard = ({ rarity }) => {
   return (

@@ -3,11 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import { Token } from "@brewlabs/sdk";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { motion } from "framer-motion";
 import ReactPlayer from "react-player";
 import { toast } from "react-toastify";
 import { Oval } from "react-loader-spinner";
+import { formatUnits, parseUnits } from "viem";
+import { useWalletClient } from "wagmi";
 
 import { LighteningSVG, QuestionSVG, checkCircleSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
 import LogoIcon from "@components/LogoIcon";
@@ -15,26 +16,27 @@ import CurrencyDropdown from "@components/CurrencyDropdown";
 import DropDown from "@components/dashboard/TokenList/Dropdown";
 import StyledButton from "views/directory/StyledButton";
 
-import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
+import FlaskNftAbi from "config/abi/nfts/flaskNft";
+import { NFT_RARITY_NAME } from "config/constants/nft";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useTokenApprove } from "@hooks/useApprove";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
-import { useFlaskNftContract } from "@hooks/useContract";
 import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
 import { useTokenBalances } from "state/wallet/hooks";
 import { deserializeToken } from "state/user/hooks/helpers";
+import { getViemClients } from "utils/viem";
 
 import { useFlaskNft } from "../hooks/useFlaskNft";
 
 const UpgradeNFTModal = ({ open, setOpen }) => {
   const dispatch = useAppDispatch();
   const { chainId, account } = useActiveWeb3React();
+  const { data: walletClient } = useWalletClient();
 
   const flaskNft = useFlaskNftData(chainId);
-  const flaskNftContract = useFlaskNftContract(chainId);
   const tokenBalances = useTokenBalances(
     account,
     [flaskNft.brewsToken, ...flaskNft.stableTokens].map((t) => deserializeToken(t) as Token)
@@ -62,21 +64,27 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
   const isBrewsValid =
     isBrewsApproved &&
     (userData
-      ? +tokenBalances[brewsToken.address]?.toExact() >= +formatUnits(upgradeFee.brews, brewsToken.decimals)
+      ? +tokenBalances[brewsToken.address]?.toExact() >= +formatUnits(BigInt(upgradeFee.brews), brewsToken.decimals)
       : false);
 
   const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
   const isStableApproved = userData
     ? +userData.allowances[index + 1] >=
-      +parseUnits(formatUnits(upgradeFee?.stable ?? "0"), selectedCurrency.decimals).toString()
+      +parseUnits(
+        formatUnits(BigInt(upgradeFee?.stable ?? "0"), stableTokens[0].decimals),
+        selectedCurrency.decimals
+      ).toString()
     : false;
   const isStableValid =
     isStableApproved &&
-    (userData ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(upgradeFee?.stable ?? "0") : false);
+    (userData
+      ? +tokenBalances[selectedCurrency.address]?.toExact() >=
+        +formatUnits(BigInt(upgradeFee?.stable ?? "0"), stableTokens[0].decimals)
+      : false);
   const isValid = nftCounts[rarity] === 3;
 
-  const brewsFee = +formatUnits(upgradeFee?.brews ?? "0", brewsToken.decimals);
-  const stableFee = +formatEther(upgradeFee?.stable ?? "0");
+  const brewsFee = +formatUnits(BigInt(upgradeFee?.brews ?? "0"), brewsToken.decimals);
+  const stableFee = +formatUnits(BigInt(upgradeFee?.stable ?? "0"), stableTokens[0].decimals);
 
   useEffect(() => {
     setIsMinted(false);
@@ -131,10 +139,24 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
   const handleUpgrade = async () => {
     setPending(true);
     try {
-      const isApprovedForAll = await flaskNftContract.isApprovedForAll(account, flaskNft.address);
+      const publicClient = getViemClients({ chainId: flaskNft.chainId });
+      const isApprovedForAll = await publicClient.readContract({
+        address: flaskNft.address as `0x${string}`,
+        abi: FlaskNftAbi,
+        functionName: "isApprovedForAll",
+        args: [account, flaskNft.address as `0x${string}`],
+      });
+
       if (!isApprovedForAll) {
-        const tx = await flaskNftContract.setApprovalForAll(flaskNft.address, true);
-        await tx.wait();
+        const txHash = await walletClient.writeContract({
+          address: flaskNft.address as `0x${string}`,
+          abi: FlaskNftAbi,
+          functionName: "setApprovalForAll",
+          args: [flaskNft.address as `0x${string}`, true],
+          account,
+          chain: walletClient.chain,
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
       }
 
       const tokenIds = flaskNft.userData.balances.filter((t) => t.rarity === rarity + 1).map((t) => t.tokenId);

@@ -5,7 +5,7 @@ import { AppId, Chef } from "config/constants/types";
 
 // ABI
 import bep20Abi from "config/abi/erc20.json";
-import erc721Abi from "config/abi/erc721.json";
+import erc721Abi from "config/abi/erc721";
 import aggregatorAbi from "config/abi/swap/brewlabsAggregator.json";
 import brewlabsRouterAbi from "config/abi/swap/brewlabsRouter.json";
 import brewlabsFeeManagerAbi from "config/abi/swap/brewlabsFeeManager.json";
@@ -30,9 +30,9 @@ import IndexImplV2Abi from "config/abi/indexes/indexImpl_v2.json";
 import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
 import FarmFactoryAbi from "config/abi/farm/factory.json";
-import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
-import MirrorNftAbi from "config/abi/nfts/mirrorNft.json";
-import NftStakingAbi from "config/abi/nfts/nftStaking.json";
+import FlaskNftAbi from "config/abi/nfts/flaskNft";
+import MirrorNftAbi from "config/abi/nfts/mirrorNft";
+import NftStakingAbi from "config/abi/nfts/nftStaking";
 
 // Addresses
 import {

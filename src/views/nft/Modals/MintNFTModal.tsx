@@ -3,11 +3,11 @@ import { useContext, useEffect, useState } from "react";
 import { Token } from "@brewlabs/sdk";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
-import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { motion } from "framer-motion";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import ReactPlayer from "react-player";
+import { formatUnits, parseUnits } from "viem";
 
 import {
   MinusSVG,
@@ -19,7 +19,7 @@ import {
 } from "@components/dashboard/assets/svgs";
 import CurrencyDropdown from "@components/CurrencyDropdown";
 import LogoIcon from "@components/LogoIcon";
-import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
+import FlaskNftAbi from "config/abi/nfts/flaskNft";
 
 import StyledButton from "views/directory/StyledButton";
 
@@ -34,7 +34,7 @@ import { useFlaskNftData } from "state/nfts/hooks";
 import { useTokenBalances } from "state/wallet/hooks";
 import { deserializeToken } from "state/user/hooks/helpers";
 import { getFlaskNftAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 import { useFlaskNft } from "../hooks/useFlaskNft";
 
@@ -66,22 +66,26 @@ const MintNFTModal = ({ open, setOpen }) => {
     isBrewsApproved &&
     (userData
       ? +tokenBalances[brewsToken.address]?.toExact() >=
-        +formatUnits(mintFee?.brews ?? "0", brewsToken.decimals) * quantity
+        +formatUnits(BigInt(mintFee?.brews ?? "0"), brewsToken.decimals) * quantity
       : false);
 
   const index = currencies.findIndex((c) => c.address === selectedCurrency.address);
   const isApproved = userData
     ? +userData.allowances[index + 1] >=
-      +parseUnits(formatUnits(mintFee?.stable ?? "0"), selectedCurrency.decimals).toString()
+      +parseUnits(
+        formatUnits(BigInt(mintFee?.stable ?? "0"), stableTokens[0].decimals),
+        selectedCurrency.decimals
+      ).toString()
     : false;
   const isValid =
     isApproved &&
     (userData
-      ? +tokenBalances[selectedCurrency.address]?.toExact() >= +formatUnits(mintFee?.stable ?? "0") * quantity
+      ? +tokenBalances[selectedCurrency.address]?.toExact() >=
+        +formatUnits(BigInt(mintFee?.stable ?? "0"), stableTokens[0].decimals) * quantity
       : false);
 
-  const brewsFee = +formatUnits(mintFee?.brews ?? "0", brewsToken.decimals);
-  const stableFee = +formatEther(mintFee?.stable ?? "0");
+  const brewsFee = +formatUnits(BigInt(mintFee?.brews ?? "0"), brewsToken.decimals);
+  const stableFee = +formatUnits(BigInt(mintFee?.stable ?? "0"), stableTokens[0].decimals);
 
   useEffect(() => {
     setIsMinted(false);
@@ -144,14 +148,19 @@ const MintNFTModal = ({ open, setOpen }) => {
 
       const calls = tokenIds.map((data) => {
         return {
-          name: "rarityOf",
           address: getFlaskNftAddress(chainId),
-          params: [data],
+          abi: FlaskNftAbi,
+          functionName: "rarityOf",
+          args: [data],
         };
       });
 
-      let _rarities = await multicall(FlaskNftAbi, calls, chainId);
-      _rarities = _rarities.map((data) => data[0] / 1);
+      const publicClient = getViemClients({ chainId });
+
+      let res = await publicClient.multicall({
+        contracts: calls,
+      });
+      let _rarities = res.map((data) => +data.result.toString() / 1);
 
       setMintedTokenIds(_rarities);
       setCurAnimation(0);

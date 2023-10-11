@@ -1,45 +1,57 @@
-import NftStakingAbi from "config/abi/nfts/nftStaking.json";
+import NftStakingAbi from "config/abi/nfts/nftStaking";
 import { getNftStakingAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchNftStakingPublicData = async (chainId) => {
+  const publicClient = getViemClients({ chainId });
+
   const calls = ["performanceFee", "totalStaked", "oneTimeLimit", "startBlock", "bonusEndBlock", "rewardPerBlock"].map(
     (method) => ({
-      address: getNftStakingAddress(chainId),
-      name: method,
+      address: getNftStakingAddress(chainId) as `0x${string}`,
+      abi: NftStakingAbi,
+      functionName: method,
     })
   );
 
-  const result = await multicall(NftStakingAbi, calls, chainId);
+  const result = await publicClient.multicall({ contracts: calls });
   return {
     chainId,
-    performanceFee: result[0][0].toString(),
-    totalStaked: result[1][0].toNumber(),
-    oneTimeLimit: result[2][0].toNumber(),
-    startBlock: result[3][0].toNumber(),
-    bonusEndBlock: result[4][0].toNumber(),
-    rewardPerBlock: result[5][0].toString(),
+    performanceFee: result[0].result.toString(),
+    totalStaked: +result[1].result.toString(),
+    oneTimeLimit: +result[2].result.toString(),
+    startBlock: +result[3].result.toString(),
+    bonusEndBlock: +result[4].result.toString(),
+    rewardPerBlock: result[5].result.toString(),
   };
 };
 
 export const fetchNftStakingUserData = async (chainId, account) => {
   if (!account) return { chainId, stakedInfo: { amount: 0, tokenIds: [] } };
 
-  let result = await multicall(
-    NftStakingAbi,
-    [
-      { address: getNftStakingAddress(chainId), name: "stakedInfo", params: [account] },
-      { address: getNftStakingAddress(chainId), name: "pendingReward", params: [account] },
+  const publicClient = getViemClients({ chainId });
+  let result = await publicClient.multicall({
+    contracts: [
+      {
+        address: getNftStakingAddress(chainId) as `0x${string}`,
+        abi: NftStakingAbi,
+        functionName: "stakedInfo",
+        args: [account],
+      },
+      {
+        address: getNftStakingAddress(chainId) as `0x${string}`,
+        abi: NftStakingAbi,
+        functionName: "pendingReward",
+        args: [account],
+      },
     ],
-    chainId
-  );
+  });
 
   return {
     chainId,
     userData: {
-      stakedAmount: result[0][0].toNumber(),
-      stakedTokenIds: result[0][1].map((t) => t.toNumber()),
-      earnings: result[1][0].toString(),
+      stakedAmount: +result[0].result[0].toString(),
+      stakedTokenIds: result[0].result[1].map((t) => +t.toString()),
+      earnings: result[1].result.toString(),
     },
   };
 };

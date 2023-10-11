@@ -1,5 +1,4 @@
 import { ChainId } from "@brewlabs/sdk";
-import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useFlaskNftData } from "state/nfts/hooks";
 
 export const useActiveNFT = () => {

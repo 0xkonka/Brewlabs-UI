@@ -1,25 +1,30 @@
 import { useCallback } from "react";
-import { ethers } from "ethers";
+import { parseEther } from "viem";
+import { erc721ABI, useWalletClient } from "wagmi";
 
-import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { getErc721Contract } from "utils/contractHelpers";
-import { getNetworkGasPrice } from "utils/getGasPrice";
-import { useEthersSigner } from "utils/ethersAdapter";
+import { getViemClients } from "utils/viem";
+import { useActiveChainId } from "./useActiveChainId";
 
 export const useTokenApprove = () => {
-  const { chainId, library } = useActiveWeb3React();
-  const signer = useEthersSigner()
+  const { chainId } = useActiveChainId();
+  const { data: walletClient } = useWalletClient();
 
   const handleApprove = useCallback(
     async (tokenAddress, spender) => {
-      const tokenContract = getErc721Contract(chainId, tokenAddress, signer);
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-
-      const tx = await tokenContract.approve(spender, ethers.constants.MaxUint256, { gasPrice });
-      const receipt = await tx.wait();
-      return receipt;
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await publicClient.getGasPrice();
+      const txHash = await walletClient.writeContract({
+        address: tokenAddress as `0x${string}`,
+        abi: erc721ABI,
+        functionName: "approve",
+        args: [spender as `0x${string}`, parseEther("10000000000000000000")],
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      });
+      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
-    [chainId, signer, library]
+    [chainId, walletClient]
   );
 
   return { onApprove: handleApprove };

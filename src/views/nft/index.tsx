@@ -5,6 +5,7 @@ import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
+
 import NFTActions from "./NFTActions";
 import NFTList from "./NFTList";
 

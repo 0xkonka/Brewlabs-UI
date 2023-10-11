@@ -1,10 +1,10 @@
 import { useState } from "react";
 
+import { NFT_RARITY_NAME } from "config/constants/nft";
 import { useAllNftData } from "state/nfts/hooks";
 
-import SelectionPanel from "./SelectionPanel";
 import NFTPanel from "./NFTPanel";
-import { NFT_RARITY_NAME } from "config/constants/nft";
+import SelectionPanel from "./SelectionPanel";
 
 const NFTList = () => {
   const [criteria, setCriteria] = useState("");

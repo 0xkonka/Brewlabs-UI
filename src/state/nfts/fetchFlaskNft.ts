@@ -1,9 +1,11 @@
-import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
-import Erc20Abi from "config/abi/erc20.json";
+import { erc20ABI } from "wagmi";
+import FlaskNftAbi from "config/abi/nfts/flaskNft";
 import { getFlaskNftAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchFlaskNftPublicData = async (chainId) => {
+  const publicClient = getViemClients({ chainId });
+
   const calls = [
     "mintFee",
     "brewsMintFee",
@@ -13,55 +15,67 @@ export const fetchFlaskNftPublicData = async (chainId) => {
     "maxSupply",
     "totalSupply",
   ].map((method) => ({
-    address: getFlaskNftAddress(chainId),
-    name: method,
+    address: getFlaskNftAddress(chainId) as `0x${string}`,
+    abi: FlaskNftAbi,
+    functionName: method,
   }));
 
-  const result = await multicall(FlaskNftAbi, calls, chainId);
+  const result = await publicClient.multicall({ contracts: calls });
   return {
     chainId,
-    mintFee: { brews: result[1][0].toString(), stable: result[0][0].toString() },
-    upgradeFee: { brews: result[3][0].toString(), stable: result[2][0].toString() },
-    oneTimeLimit: result[4][0].toNumber(),
-    maxSupply: result[5][0].toNumber(),
-    totalSupply: result[6][0].toNumber(),
+    mintFee: { brews: result[1].result.toString(), stable: result[0].result.toString() },
+    upgradeFee: { brews: result[3].result.toString(), stable: result[2].result.toString() },
+    oneTimeLimit: +result[4].result.toString(),
+    maxSupply: +result[5].result.toString(),
+    totalSupply: +result[6].result.toString(),
   };
 };
 
 export const fetchFlaskNftUserData = async (chainId, account, tokens) => {
   if (!account) return { chainId, userData: undefined };
 
-  let result = await multicall(
-    FlaskNftAbi,
-    [{ address: getFlaskNftAddress(chainId), name: "balanceOf", params: [account] }],
-    chainId
-  );
-  const balance = result[0][0].toNumber();
+  const publicClient = getViemClients({ chainId });
+  const res = await publicClient.readContract({
+    address: getFlaskNftAddress(chainId) as `0x${string}`,
+    abi: FlaskNftAbi,
+    functionName: "balanceOf",
+    args: [account],
+  });
+  const balance = +res.toString();
 
   let calls = [];
   for (let i = 0; i < balance; i++) {
     calls.push({
-      address: getFlaskNftAddress(chainId),
-      name: "tokenOfOwnerByIndex",
-      params: [account, i],
+      address: getFlaskNftAddress(chainId) as `0x${string}`,
+      abi: FlaskNftAbi,
+      functionName: "tokenOfOwnerByIndex",
+      args: [account, BigInt(i)],
     });
   }
-  result = await multicall(FlaskNftAbi, calls, chainId);
-  const tokenIds = result.map((tokenId) => tokenId[0].toNumber());
+  let result = await publicClient.multicall({ contracts: calls });
+  const tokenIds = result.map((tokenId) => tokenId.result);
 
-  calls = tokenIds.map((tokenId) => ({ address: getFlaskNftAddress(chainId), name: "rarityOf", params: [tokenId] }));
-  result = await multicall(FlaskNftAbi, calls, chainId);
+  calls = tokenIds.map((tokenId) => ({
+    address: getFlaskNftAddress(chainId) as `0x${string}`,
+    abi: FlaskNftAbi,
+    functionName: "rarityOf",
+    args: [tokenId],
+  }));
+  result = await publicClient.multicall({ contracts: calls });
 
   const balances = tokenIds.map((tokenId, index) => ({
-    tokenId,
-    rarity: result[index][0].toNumber(),
+    tokenId: +tokenId.toString(),
+    rarity: +result[index].result.toString(),
   }));
 
-  const allowances = await multicall(
-    Erc20Abi,
-    tokens.map((token) => ({ address: token, name: "allowance", params: [account, getFlaskNftAddress(chainId)] })),
-    chainId
-  );
+  const allowances = await publicClient.multicall({
+    contracts: tokens.map((token) => ({
+      address: token,
+      abi: erc20ABI,
+      functionName: "allowance",
+      args: [account, getFlaskNftAddress(chainId) as `0x${string}`],
+    })),
+  });
 
-  return { chainId, userData: { balances, allowances: allowances.map((allowance) => allowance[0].toString()) } };
+  return { chainId, userData: { balances, allowances: allowances.map((allowance) => allowance.result.toString()) } };
 };

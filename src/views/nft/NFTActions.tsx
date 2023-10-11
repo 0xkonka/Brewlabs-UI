@@ -13,6 +13,7 @@ import {
   checkCircleSVG,
   chevronLeftSVG,
 } from "@components/dashboard/assets/svgs";
+import NFTRarityText from "@components/NFTRarityText";
 
 import { BASE_URL } from "config";
 import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
@@ -27,7 +28,6 @@ import StyledButton from "views/directory/StyledButton";
 
 import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
-import NFTRarityText from "@components/NFTRarityText";
 import { useActiveNFT } from "./hooks/useActiveNFT";
 
 const NFTActions = () => {

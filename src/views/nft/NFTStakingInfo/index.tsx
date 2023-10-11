@@ -1,22 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
-import StyledButton from "views/directory/StyledButton";
 import { InfoSVG, chevronLeftSVG } from "@components/dashboard/assets/svgs";
-import { useState } from "react";
-import MintNFTModal from "../Modals/MintNFTModal";
-import Link from "next/link";
-import { getChainLogo, numberWithCommas } from "utils/functions";
-import { useOETHMonthlyAPY, useOETHWeeklyAPY } from "@hooks/useOETHAPY";
-import useTokenBalances from "@hooks/useTokenMultiChainBalance";
+import { SkeletonComponent } from "@components/SkeletonComponent";
+import StyledButton from "views/directory/StyledButton";
+
 import { tokens } from "config/constants/tokens";
 import { NFT_RARE_COUNT } from "config/constants/nft";
-import { SkeletonComponent } from "@components/SkeletonComponent";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
+import useTokenBalances from "@hooks/useTokenMultiChainBalance";
+import { useTokenMarketChart } from "state/prices/hooks";
+import { getChainLogo, numberWithCommas } from "utils/functions";
+
+import MintNFTModal from "../Modals/MintNFTModal";
 
 const NFTStakingInfo = () => {
   const [mintOpen, setMintOpen] = useState(false);
