@@ -12,7 +12,7 @@ import { WNATIVE } from "@brewlabs/sdk";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 import HistoryCard from "./HistoryCard";
 
-TimeAgo.addDefaultLocale(en);
+// TimeAgo.addDefaultLocale(en);
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");

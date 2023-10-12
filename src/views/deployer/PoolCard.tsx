@@ -11,6 +11,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import IndexLogo from "components/logo/IndexLogo";
 import TokenLogo from "components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
+import { formatEther, formatUnits } from "viem";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",
@@ -150,7 +151,11 @@ const PoolCard = ({
               </div>
             ) : (
               <>
-                {formatAmount(data.totalStaked)}{" "}
+                {formatAmount(
+                  data.type == Category.FARM
+                    ? formatEther(data.totalStaked)
+                    : formatUnits(data.totalStaked, data.stakingToken.decimals)
+                )}{" "}
                 {[Category.FARM, Category.ZAPPER].includes(data.type)
                   ? data.lpSymbol.split(" ")[0]
                   : data.stakingToken.symbol}
@@ -246,7 +251,11 @@ const PoolCard = ({
                   </div>
                 ) : (
                   <>
-                    {formatAmount(data.totalStaked)}{" "}
+                    {formatAmount(
+                      data.type == Category.FARM
+                        ? formatEther(data.totalStaked)
+                        : formatUnits(data.totalStaked, data.stakingToken.decimals)
+                    )}{" "}
                     {[Category.FARM, Category.ZAPPER].includes(data.type)
                       ? data.lpSymbol.split(" ")[0]
                       : data.stakingToken.symbol}

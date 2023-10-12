@@ -48,6 +48,7 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
+import { formatUnits } from "viem";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -147,7 +148,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       case 1:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
-        if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
+        if (data.TVLData && data.tvl)
+          _graphData.push(+formatUnits(data.totalStaked, data.stakingToken.decimals).toString());
         return _graphData;
       case 2:
         return data.tokenFees ?? [];
@@ -158,7 +160,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       default:
         _graphData = data.TVLData ?? [];
         _graphData = _graphData.map((v) => +v);
-        if (data.TVLData && data.tvl) _graphData.push(data.totalStaked.toNumber());
+        if (data.TVLData && data.tvl)
+          _graphData.push(+formatUnits(data.totalStaked, data.stakingToken.decimals).toString());
         return _graphData;
     }
   };
@@ -568,7 +571,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       deposit:
                         data.depositBalance -
                         (data.earningToken.address?.toLowerCase() === data.stakingToken.address.toLowerCase()
-                          ? data.totalStaked
+                          ? +formatUnits(data.totalStaked, data.stakingToken.decimals).toString()
                           : 0),
                       available: data.availableRewards,
                     }}

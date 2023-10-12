@@ -8,6 +8,9 @@ import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
@@ -53,6 +56,7 @@ import { wagmiConfig } from "utils/wagmi";
 
 import { Updaters } from "../index";
 
+TimeAgo.addDefaultLocale(en);
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {

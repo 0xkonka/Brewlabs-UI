@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 
 import { CHAIN_ICONS } from "config/constants/networks";
 import { Category, PoolCategory } from "config/constants/types";
@@ -148,7 +148,11 @@ const PoolCard = ({
               </div>
             ) : (
               <>
-                {formatAmount(data.type == Category.FARM ? formatEther(data.totalStaked) : data.totalStaked)}{" "}
+                {formatAmount(
+                  data.type == Category.FARM
+                    ? formatEther(data.totalStaked)
+                    : formatUnits(data.totalStaked, data.stakingToken.decimals)
+                )}{" "}
                 {[Category.FARM, Category.ZAPPER].includes(data.type)
                   ? data.lpSymbol.split(" ")[0]
                   : data.stakingToken.symbol}
@@ -254,7 +258,11 @@ const PoolCard = ({
                   </div>
                 ) : (
                   <>
-                    {formatAmount(data.type == Category.FARM ? formatEther(data.totalStaked) : data.totalStaked)}{" "}
+                    {formatAmount(
+                      data.type == Category.FARM
+                        ? formatEther(data.totalStaked)
+                        : formatUnits(data.totalStaked, data.stakingToken.decimals)
+                    )}{" "}
                     {[Category.FARM, Category.ZAPPER].includes(data.type)
                       ? data.lpSymbol.split(" ")[0]
                       : data.stakingToken.symbol}

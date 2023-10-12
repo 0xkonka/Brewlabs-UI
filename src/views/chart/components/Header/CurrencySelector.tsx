@@ -28,7 +28,7 @@ import { DEXSCREENER_CHAINNAME } from "config";
 import { useRouter } from "next/router";
 import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
 
-TimeAgo.addDefaultLocale(en);
+// TimeAgo.addDefaultLocale(en);
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");

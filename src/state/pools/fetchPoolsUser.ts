@@ -135,18 +135,18 @@ export const fetchUserStakeBalances = async (account, chainId, pools) => {
         const lockupV2PoolsUserInfo: any = await client.multicall({ contracts: lockupV2Calls });
 
         nonLockupPools.forEach((pool, index) => {
-          data.stakedBalances[pool.sousId] = nonLockupPoolsUserInfo[index].result.amount.toString();
-          data.lockedBalances[pool.sousId] = nonLockupPoolsUserInfo[index].result.locked
-            ? nonLockupPoolsUserInfo[index].result.locked.toString()
+          data.stakedBalances[pool.sousId] = nonLockupPoolsUserInfo[index].result[0].toString();
+          data.lockedBalances[pool.sousId] = nonLockupPoolsUserInfo[index].result[2]
+            ? nonLockupPoolsUserInfo[index].result[2].toString()
             : "0";
         });
         lockupPools.forEach((pool, index) => {
-          data.stakedBalances[pool.sousId] = lockupPoolsUserInfo[index].result.amount.toString();
-          data.lockedBalances[pool.sousId] = lockupPoolsUserInfo[index].result.locked.toString();
+          data.stakedBalances[pool.sousId] = lockupPoolsUserInfo[index].result[0].toString();
+          data.lockedBalances[pool.sousId] = lockupPoolsUserInfo[index].result[2].toString();
         });
         lockupV2Pools.forEach((pool, index) => {
-          data.stakedBalances[pool.sousId] = lockupV2PoolsUserInfo[index].result.amount.toString();
-          data.lockedBalances[pool.sousId] = lockupV2PoolsUserInfo[index].result.locked.toString();
+          data.stakedBalances[pool.sousId] = lockupV2PoolsUserInfo[index].result[0].toString();
+          data.lockedBalances[pool.sousId] = lockupV2PoolsUserInfo[index].result[1].toString();
         });
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -338,22 +338,20 @@ export const fetchUserStakeBalance = async (pool, account, chainId) => {
   const userInfo: any = await client.readContract(txData);
 
   return {
-    stakedBalance: userInfo.result.amount.toString(),
-    lockedBalance: userInfo.result.locked ? userInfo.result.locked.toString() : "0",
+    stakedBalance: userInfo[0].toString(),
+    lockedBalance: userInfo[2] ? userInfo[2].toString() : "0",
   };
 };
 
 export const fetchUserPendingReward = async (pool, account, chainId) => {
   const client = getViemClients({ chainId });
 
-  const txData: any = [
-    {
-      address: pool.contractAddress,
-      abi: pool.poolCategory === PoolCategory.LOCKUP ? lockupStakingABI : singleStakingABI,
-      functionName: "pendingReward",
-      args: pool.poolCategory === PoolCategory.LOCKUP ? [account, pool.lockup] : [account],
-    },
-  ];
+  const txData: any = {
+    address: pool.contractAddress,
+    abi: pool.poolCategory === PoolCategory.LOCKUP ? lockupStakingABI : singleStakingABI,
+    functionName: "pendingReward",
+    args: pool.poolCategory === PoolCategory.LOCKUP ? [account, pool.lockup] : [account],
+  };
   const rewards = await client.readContract(txData);
   return rewards.toString();
 };

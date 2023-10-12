@@ -72,11 +72,11 @@ const StakingModal = ({
       if (data.enableEmergencyWithdraw || data.penaltyFee) {
         balance = accountData.stakedBalance;
       } else {
-        balance = accountData.stakedBalance.minus(accountData.lockedBalance);
+        balance = accountData.stakedBalance - accountData.lockedBalance;
       }
     } else {
       balance =
-        data.stakingLimit.gt(0) && accountData.stakingTokenBalance.gt(data.stakingLimit)
+        data.stakingLimit > 0 && accountData.stakingTokenBalance > data.stakingLimit
           ? accountData.stakingLimit
           : accountData.stakingTokenBalance;
     }

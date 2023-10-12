@@ -231,7 +231,7 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
         lockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            totalStaked: lockupPoolsTotalStaked[index].result.toString(),
+            totalStaked: lockupPoolsTotalStaked[index].result[7].toString(),
           });
         });
       } catch (e) {
@@ -362,11 +362,11 @@ export const fetchPoolTotalRewards = async (pool) => {
   let availableReflections = [];
   if (pool.reflection) {
     for (let i = 0; i < pool.reflectionTokens.length; i++) {
-      availableReflections.push(formatUnits(res[i + 1].result, pool.reflectionTokens[i].decimals));
+      availableReflections.push(+formatUnits(res[i + 1].result, pool.reflectionTokens[i].decimals));
     }
   }
 
-  return { availableRewards: formatUnits(res[0].result, pool.earningToken.decimals), availableReflections };
+  return { availableRewards: +formatUnits(res[0].result, pool.earningToken.decimals), availableReflections };
 };
 
 export const fetchPoolDepositBalance = async (pool) => {

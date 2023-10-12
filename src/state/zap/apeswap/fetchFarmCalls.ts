@@ -1,4 +1,6 @@
 import { erc20ABI } from "wagmi";
+
+import masterchefABI from "config/abi/masterape";
 import externalMasterChefAbi from "config/abi/externalMasterchef";
 import { AppId } from "config/constants/types";
 import { FarmConfig } from "state/types";
@@ -42,13 +44,13 @@ const fetchFarmCalls = (farm: FarmConfig, chainId: number) => {
       functionName: "decimals",
     },
     {
-      abi: erc20ABI,
+      abi: masterchefABI,
       address: masterChefAddress,
       functionName: "poolInfo",
       args: [farm.pid],
     },
     {
-      abi: erc20ABI,
+      abi: masterchefABI,
       address: masterChefAddress,
       functionName: "totalAllocPoint",
     },

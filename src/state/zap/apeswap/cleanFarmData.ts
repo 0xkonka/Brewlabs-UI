@@ -42,7 +42,7 @@ const cleanFarmData = (
 
     let alloc = null;
     let multiplier = "unset";
-    const allocPoint = new BigNumber(info.allocPoint._hex);
+    const allocPoint = new BigNumber(info[1].toString());
     const poolWeight = allocPoint.div(new BigNumber(totalAllocPoint));
     alloc = poolWeight.toJSON();
     multiplier = `${allocPoint.div(100).toString()}X`;
@@ -58,7 +58,7 @@ const cleanFarmData = (
     const apy = getRoi({ amountEarned, amountInvested: 1000 / bananaPrice?.toNumber() });
 
     const externalInfo = externalVals[index];
-    const totalRewards = new BigNumber(externalInfo.totalRewards._hex);
+    const totalRewards = new BigNumber(externalInfo.result[3].toString());
 
     return {
       ...farmConfig,
@@ -78,7 +78,7 @@ const cleanFarmData = (
       tokenDecimals: new BigNumber(tokenDecimals).toNumber(),
       quoteTokenDecimals: new BigNumber(quoteTokenDecimals).toNumber(),
       totalRewards: totalRewards.toJSON(),
-      totalSupply: externalInfo.totalBoostedShare.toString(),
+      totalSupply: externalInfo.result[2].toString(),
     };
   });
   return data;

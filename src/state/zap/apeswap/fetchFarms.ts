@@ -16,7 +16,7 @@ const fetchFarms = async (
   const client = getViemClients({ chainId });
 
   const farmIds = [];
-  const farmCalls = farmsConfig.flatMap((farm) => {
+  const farmCalls: any = farmsConfig.flatMap((farm) => {
     farmIds.push(farm.pid);
     return fetchFarmCalls(farm, chainId);
   });

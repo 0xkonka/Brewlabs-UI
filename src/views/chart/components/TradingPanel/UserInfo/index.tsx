@@ -13,7 +13,7 @@ import { DEX_GURU_CHAIN_NAME } from "config";
 import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 import { getBalances } from "@hooks/useTokenMultiChainBalance";
 
-TimeAgo.addDefaultLocale(en);
+// TimeAgo.addDefaultLocale(en);
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
