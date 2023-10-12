@@ -1,6 +1,5 @@
 import { ChainId, Currency } from "@brewlabs/sdk";
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import BigNumber from "bignumber.js";
 
 import { Category, PoolCategory, SerializedToken, Version } from "config/constants/types";
 import { SerializedBigNumber } from "state/farms/types";
@@ -66,16 +65,16 @@ export interface DeserializedPoolConfig extends PoolConfigBaseProps {
 }
 
 export interface DeserializedPool extends DeserializedPoolConfig, CorePoolProps {
-  totalStaked?: BigNumber;
-  stakingLimit?: BigNumber;
+  totalStaked?: bigint;
+  stakingLimit?: bigint;
   performanceFee?: string;
   userData?: {
-    allowance: BigNumber;
-    stakingTokenBalance: BigNumber;
-    stakedBalance: BigNumber;
-    lockedBalance: BigNumber;
-    earnings: BigNumber;
-    reflections: BigNumber[];
+    allowance: bigint;
+    stakingTokenBalance: bigint;
+    stakedBalance: bigint;
+    lockedBalance: bigint;
+    earnings: bigint;
+    reflections: bigint[];
     deposits: DeserializedDeposit[];
   };
   TVLData?: number[];

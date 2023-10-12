@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
-import { simpleRpcProvider } from "utils/providers";
+import { getViemClients } from "utils/viem";
 
 import { State } from "../types";
 import {
@@ -24,8 +24,9 @@ export const useFetchPublicPoolsData = () => {
 
   useSlowRefreshEffect(() => {
     const fetchPoolsPublicData = async () => {
-      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber();
-      dispatch(fetchPoolsPublicDataAsync(blockNumber, chainId));
+      const publicClient = getViemClients({ chainId });
+      const blockNumber = await publicClient.getBlockNumber();
+      dispatch(fetchPoolsPublicDataAsync(+blockNumber.toString(), chainId));
     };
 
     fetchPoolsPublicData();

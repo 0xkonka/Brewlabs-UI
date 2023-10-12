@@ -1,24 +1,21 @@
 import axios from "axios";
-import BigNumber from "bignumber.js";
-import { ethers } from "ethers";
 import { ChainId } from "@brewlabs/sdk";
+import { formatUnits } from "viem";
 
-import singleStakingABI from "config/abi/staking/singlestaking.json";
-import lockupStakingABI from "config/abi/staking/brewlabsLockup.json";
-import lockupV2StakingABI from "config/abi/staking/brewlabsLockupV2.json";
-import lockupMultiStakingABI from "config/abi/staking/brewlabsStakingMulti.json";
+import singleStakingABI from "config/abi/staking/singlestaking";
+import lockupStakingABI from "config/abi/staking/brewlabsLockup";
+import lockupV2StakingABI from "config/abi/staking/brewlabsLockupV2";
+import lockupMultiStakingABI from "config/abi/staking/brewlabsStakingMulti";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { PoolCategory } from "config/constants/types";
 import { getAddress } from "utils/addressHelpers";
-import { BIG_ZERO } from "utils/bigNumber";
-import { getSingleStakingContract } from "utils/contractHelpers";
-import { getBalanceNumber } from "utils/formatBalance";
 import { sumOfArray } from "utils/functions";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
+  const publicClient = getViemClients({ chainId });
   const poolsWithEnd = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
 
   const filters = [];
@@ -34,24 +31,26 @@ export const fetchPoolsBlockLimits = async (chainId, pools) => {
         const callsStartBlock = batch.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "startBlock",
+            abi: singleStakingABI,
+            functionName: "startBlock",
           };
         });
         const callsEndBlock = batch.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "bonusEndBlock",
+            abi: singleStakingABI,
+            functionName: "bonusEndBlock",
           };
         });
 
-        const starts = await multicall(singleStakingABI, callsStartBlock, chainId);
-        const ends = await multicall(singleStakingABI, callsEndBlock, chainId);
+        const starts = await publicClient.multicall({ contracts: callsStartBlock });
+        const ends = await publicClient.multicall({ contracts: callsEndBlock });
 
         batch.forEach((pool, index) => {
           data.push({
             sousId: pool.sousId,
-            startBlock: starts[index][0].toNumber(),
-            endBlock: pool.forceEndblock ? pool.forceEndblock : ends[index][0].toNumber(),
+            startBlock: +starts[index].result.toString(),
+            endBlock: pool.forceEndblock ? pool.forceEndblock : +ends[index].result.toString(),
           });
         });
       } catch (e) {
@@ -65,6 +64,7 @@ export const fetchPoolsBlockLimits = async (chainId, pools) => {
 };
 
 export const fetchRewardPerBlocks = async (chainId, pools) => {
+  const publicClient = getViemClients({ chainId });
   const selectedPools = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedPools.length; i += MULTICALL_FETCH_LIMIT) {
@@ -85,90 +85,93 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
         const callsNonLockupPools = nonLockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "rewardPerBlock",
+            abi: singleStakingABI,
+            functionName: "rewardPerBlock",
           };
         });
 
         const callsLockupPools = lockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "rewardPerBlock",
-            params: [poolConfig.lockup],
+            abi: lockupStakingABI,
+            functionName: "rewardPerBlock",
+            args: [poolConfig.lockup],
           };
         });
 
         const callsLockupV2Pools = lockupV2Pools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "rewardPerBlock",
-            params: [],
+            abi: lockupV2StakingABI,
+            functionName: "rewardPerBlock",
           };
         });
 
-        const nonLockupPoolsRewards = await multicall(singleStakingABI, callsNonLockupPools, chainId);
-        const lockupPoolsRewards = await multicall(lockupStakingABI, callsLockupPools, chainId);
-        const lockupV2PoolsRewards = await multicall(lockupV2StakingABI, callsLockupV2Pools, chainId);
+        const nonLockupPoolsRewards = await publicClient.multicall({ contracts: callsNonLockupPools });
+        const lockupPoolsRewards = await publicClient.multicall({ contracts: callsLockupPools });
+        const lockupV2PoolsRewards = await publicClient.multicall({ contracts: callsLockupV2Pools });
 
         const callsForDepositFeesNonLockupPools = nonLockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "depositFee",
-            params: [],
+            abi: singleStakingABI,
+            functionName: "depositFee",
           };
         });
         const callsForWithdrawFeesNonLockupPools = nonLockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "withdrawFee",
-            params: [],
+            abi: singleStakingABI,
+            functionName: "withdrawFee",
           };
         });
         const callsFeesLockupPools = lockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "lockups",
-            params: [poolConfig.lockup],
+            abi: lockupStakingABI,
+            functionName: "lockups",
+            args: [poolConfig.lockup],
           };
         });
 
         const callsFeesLockupV2Pools = lockupV2Pools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "lockupInfo",
-            params: [],
+            abi: lockupV2StakingABI,
+            functionName: "lockupInfo",
           };
         });
 
-        const nonLockupPoolsDFee = await multicall(singleStakingABI, callsForDepositFeesNonLockupPools, chainId);
-        const nonLockupPoolsWFee = await multicall(singleStakingABI, callsForWithdrawFeesNonLockupPools, chainId);
-        const lockupPoolsFees = await multicall(lockupStakingABI, callsFeesLockupPools, chainId);
-        const lockupV2PoolsFees = await multicall(lockupV2StakingABI, callsFeesLockupV2Pools, chainId);
+        const nonLockupPoolsDFee: any = await publicClient.multicall({ contracts: callsForDepositFeesNonLockupPools });
+        const nonLockupPoolsWFee: any = await publicClient.multicall({ contracts: callsForWithdrawFeesNonLockupPools });
+        const lockupPoolsFees: any = await publicClient.multicall({ contracts: callsFeesLockupPools });
+        const lockupV2PoolsFees: any = await publicClient.multicall({ contracts: callsFeesLockupV2Pools });
 
         nonLockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: nonLockupPoolsRewards[index][0].toString(),
-            depositFee: nonLockupPoolsDFee[index][0].div(100).toNumber(),
-            withdrawFee: nonLockupPoolsWFee[index][0].div(100).toNumber(),
+            tokenPerBlock: nonLockupPoolsRewards[index].result.toString(),
+            depositFee: +(nonLockupPoolsDFee[index].result / BigInt(100)).toString(),
+            withdrawFee: +(nonLockupPoolsWFee[index].result / BigInt(100)).toString(),
             duration: 0,
           });
         });
         lockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: lockupPoolsRewards[index][0].toString(),
-            depositFee: lockupPoolsFees[index].depositFee.div(100).toNumber(),
-            withdrawFee: lockupPoolsFees[index].withdrawFee.div(100).toNumber(),
-            duration: lockupPoolsFees[index].duration.toNumber(),
+            tokenPerBlock: lockupPoolsRewards[index].result.toString(),
+            depositFee: +(lockupPoolsFees[index].result.depositFee / BigInt(100)).toString(),
+            withdrawFee: +(lockupPoolsFees[index].result.withdrawFee / BigInt(100)).toString(),
+            duration: +lockupPoolsFees[index].result.duration.toString(),
           });
         });
         lockupV2Pools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            tokenPerBlock: lockupV2PoolsRewards[index][0].toString(),
-            depositFee: lockupV2PoolsFees[index].depositFee.div(100).toNumber(),
-            withdrawFee: lockupV2PoolsFees[index].withdrawFee.div(100).toNumber(),
-            duration: lockupV2PoolsFees[index].duration.toNumber(),
+            tokenPerBlock: lockupV2PoolsRewards[index].result.toString(),
+            depositFee: +(lockupV2PoolsFees[index].depositFee / BigInt(100)).toString(),
+            withdrawFee: +(lockupV2PoolsFees[index].withdrawFee / BigInt(100)).toString(),
+            duration: +lockupV2PoolsFees[index].duration.toString(),
           });
         });
       } catch (e) {
@@ -182,6 +185,8 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
 };
 
 export const fetchPoolsTotalStaking = async (chainId, pools) => {
+  const publicClient = getViemClients({ chainId });
+
   const selectedPools = pools.filter((p) => p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedPools.length; i += MULTICALL_FETCH_LIMIT) {
@@ -199,37 +204,34 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
         const callsNonLockupPools = nonLockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "totalStaked",
-            params: [],
+            abi: singleStakingABI,
+            functionName: "totalStaked",
           };
         });
 
         const callsLockupPools = lockupPools.map((poolConfig) => {
           return {
             address: poolConfig.contractAddress,
-            name: "lockups",
-            params: [poolConfig.lockup],
+            abi: lockupStakingABI,
+            functionName: "lockups",
+            args: [poolConfig.lockup],
           };
         });
 
-        const nonLockupPoolsTotalStaked = await multicall(singleStakingABI, callsNonLockupPools, chainId);
-        const lockupPoolsTotalStaked = await multicall(lockupStakingABI, callsLockupPools, chainId);
+        const nonLockupPoolsTotalStaked: any = await publicClient.multicall({ contracts: callsNonLockupPools });
+        const lockupPoolsTotalStaked: any = await publicClient.multicall({ contracts: callsLockupPools });
 
         nonLockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            totalStaked: ethers.utils
-              .formatUnits(nonLockupPoolsTotalStaked[index][0], p.stakingToken.decimals)
-              .toString(),
+            totalStaked: nonLockupPoolsTotalStaked[index].result.toString(),
           });
         });
 
         lockupPools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            totalStaked: ethers.utils
-              .formatUnits(lockupPoolsTotalStaked[index].totalStaked._hex, p.stakingToken.decimals)
-              .toString(),
+            totalStaked: lockupPoolsTotalStaked[index].result.toString(),
           });
         });
       } catch (e) {
@@ -243,6 +245,7 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
 };
 
 export const fetchPerformanceFees = async (chainId, pools) => {
+  const publicClient = getViemClients({ chainId });
   const selectedPools = pools.filter((p) => p.isServiceFee && p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedPools.length; i += MULTICALL_FETCH_LIMIT) {
@@ -257,16 +260,17 @@ export const fetchPerformanceFees = async (chainId, pools) => {
         const callsPools = batch.map((pool) => {
           return {
             address: pool.contractAddress,
-            name: "performanceFee",
+            abi: singleStakingABI,
+            functionName: "performanceFee",
           };
         });
 
-        const performanceFees = await multicall(singleStakingABI, callsPools, chainId);
+        const performanceFees = await publicClient.multicall({ contracts: callsPools });
 
         pools.forEach((p, index) => {
           data.push({
             sousId: p.sousId,
-            performanceFee: new BigNumber(performanceFees[index]).toJSON(),
+            performanceFee: performanceFees[index].result.toString(),
             duration: 0,
           });
         });
@@ -280,17 +284,22 @@ export const fetchPerformanceFees = async (chainId, pools) => {
   return data;
 };
 
-export const fetchPoolStakingLimit = async (chainId: ChainId, address: string): Promise<BigNumber> => {
+export const fetchPoolStakingLimit = async (chainId: ChainId, address: string): Promise<string> => {
   try {
-    const sousContract = getSingleStakingContract(chainId, address);
-    const stakingLimit = await sousContract.poolLimitPerUser();
-    return new BigNumber(stakingLimit.toString());
+    const publicClient = getViemClients({ chainId });
+
+    const stakingLimit = await publicClient.readContract({
+      address: address as `0x${string}`,
+      abi: singleStakingABI,
+      functionName: "poolLimitPerUser",
+    });
+    return stakingLimit.toString();
   } catch (error) {
-    return new BigNumber(0);
+    return "0";
   }
 };
 
-export const fetchPoolsStakingLimits = async (pools: any[]): Promise<{ [key: string]: BigNumber }> => {
+export const fetchPoolsStakingLimits = async (pools: any[]): Promise<{ [key: string]: string }> => {
   const validPools = pools.filter((p) => !p.stakingToken.isNative && !p.isFinished);
 
   // Get the staking limit for each valid pool
@@ -309,24 +318,26 @@ export const fetchPoolsStakingLimits = async (pools: any[]): Promise<{ [key: str
 };
 
 export const fetchPoolTotalRewards = async (pool) => {
-  let calls = [
+  const publicClient = getViemClients({ chainId: pool.chainId });
+
+  let calls: any = [
     {
       address: pool.contractAddress,
-      name: "availableRewardTokens",
-      params: [],
+      abi: lockupStakingABI,
+      functionName: "availableRewardTokens",
+      args: [],
     },
   ];
 
-  let abi = lockupStakingABI;
   if (pool.poolCategory === PoolCategory.MULTI_LOCKUP) {
     for (let i = 0; i < pool.reflectionTokens.length; i++) {
       calls.push({
         address: pool.contractAddress,
-        name: "availableDividendTokens",
-        params: [i],
+        abi: lockupMultiStakingABI,
+        functionName: "availableDividendTokens",
+        args: [BigInt(i)],
       });
     }
-    abi = lockupMultiStakingABI;
   } else {
     if (
       (pool.poolCategory === PoolCategory.CORE && pool.sousId <= 20) ||
@@ -335,28 +346,27 @@ export const fetchPoolTotalRewards = async (pool) => {
     ) {
       calls.push({
         address: pool.contractAddress,
-        name: "availabledividendTokens",
-        params: [],
+        abi: singleStakingABI,
+        functionName: "availabledividendTokens",
       });
-      abi = singleStakingABI;
     } else {
       calls.push({
         address: pool.contractAddress,
-        name: "availableDividendTokens",
-        params: [],
+        abi: lockupStakingABI,
+        functionName: "availableDividendTokens",
       });
     }
   }
 
-  const res = await multicall(abi, calls, pool.chainId);
+  const res: any = await publicClient.multicall({ contracts: calls });
   let availableReflections = [];
   if (pool.reflection) {
     for (let i = 0; i < pool.reflectionTokens.length; i++) {
-      availableReflections.push(getBalanceNumber(res[i + 1], pool.reflectionTokens[i].decimals));
+      availableReflections.push(formatUnits(res[i + 1].result, pool.reflectionTokens[i].decimals));
     }
   }
 
-  return { availableRewards: getBalanceNumber(res[0], pool.earningToken.decimals), availableReflections };
+  return { availableRewards: formatUnits(res[0].result, pool.earningToken.decimals), availableReflections };
 };
 
 export const fetchPoolDepositBalance = async (pool) => {
@@ -369,7 +379,11 @@ export const fetchPoolDepositBalance = async (pool) => {
 
   let depositBalance = 0;
 
-  if (sHistoryResult && sHistoryResult !== "Max rate limit reached"  && sHistoryResult !== "Error! Invalid contract address format") {
+  if (
+    sHistoryResult &&
+    sHistoryResult !== "Max rate limit reached" &&
+    sHistoryResult !== "Error! Invalid contract address format"
+  ) {
     sHistoryResult.map((history: any) => {
       if (history.to.toLowerCase() === pool.contractAddress.toLowerCase()) {
         depositBalance += history.value / Math.pow(10, pool.earningToken.decimals);

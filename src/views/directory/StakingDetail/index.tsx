@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { motion, AnimatePresence } from "framer-motion";
-import styled from "styled-components";
 import { WNATIVE } from "@brewlabs/sdk";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -47,8 +48,6 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
-import { useRouter } from "next/router";
-import Link from "next/link";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;

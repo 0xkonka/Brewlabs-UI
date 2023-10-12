@@ -1,6 +1,7 @@
-import BigNumber from "bignumber.js";
 import { SerializedDeposit } from "state/types";
 import { deserializeToken } from "state/user/hooks/helpers";
+import { BIG_ZERO } from "utils/bigNumber";
+
 import { DeserializedPool, SerializedPool } from "./types";
 
 type UserData =
@@ -18,22 +19,22 @@ type UserData =
 export const transformUserData = (userData: UserData) => {
   const reflections = [];
   for (let i = 0; i < userData?.reflections?.length; i++) {
-    reflections.push(userData?.reflections?.[i] ? new BigNumber(userData.reflections[i]) : new BigNumber(0));
+    reflections.push(userData?.reflections?.[i] ? BigInt(userData.reflections[i]) : BIG_ZERO);
   }
   const deposits = [];
   for (let i = 0; i < userData?.deposits?.length; i++) {
     deposits.push({
       ...userData.deposits[i],
-      amount: new BigNumber(userData.deposits[i].amount.toString()),
+      amount: BigInt(userData.deposits[i].amount.toString()),
     });
   }
 
   return {
-    allowance: userData?.allowance ? new BigNumber(userData.allowance) :  new BigNumber(0),
-    stakingTokenBalance: userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) :  new BigNumber(0),
-    stakedBalance: userData?.stakedBalance ? new BigNumber(userData.stakedBalance) :  new BigNumber(0),
-    lockedBalance: userData?.lockedBalance ? new BigNumber(userData.lockedBalance) :  new BigNumber(0),
-    earnings: userData?.earnings ? new BigNumber(userData.earnings) :  new BigNumber(0),
+    allowance: userData?.allowance ? BigInt(userData.allowance) :  BIG_ZERO,
+    stakingTokenBalance: userData?.stakingTokenBalance ? BigInt(userData.stakingTokenBalance) :  BIG_ZERO,
+    stakedBalance: userData?.stakedBalance ? BigInt(userData.stakedBalance) :  BIG_ZERO,
+    lockedBalance: userData?.lockedBalance ? BigInt(userData.lockedBalance) :  BIG_ZERO,
+    earnings: userData?.earnings ? BigInt(userData.earnings) :  BIG_ZERO,
     reflections,
     deposits,
   };
@@ -55,8 +56,8 @@ export const transformPool = (pool: SerializedPool): DeserializedPool => {
     earningToken: deserializeToken(earningToken),
     reflectionTokens: _reflectionTokens,
     userData: transformUserData(userData),
-    totalStaked: new BigNumber(totalStaked),
-    stakingLimit: new BigNumber(stakingLimit),
+    totalStaked: BigInt(totalStaked),
+    stakingLimit: BigInt(stakingLimit),
     performanceFee: pool.performanceFee,
   };
 };

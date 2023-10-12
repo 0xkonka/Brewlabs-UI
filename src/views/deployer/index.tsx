@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import Container from "components/layout/Container";
@@ -60,7 +60,11 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
     ...pools.map((pool) => {
       let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
       if (price > 500000) price = 0;
-      return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
+      return {
+        ...pool,
+        tvl:
+          pool.totalStaked && price ? +formatUnits(pool.totalStaked, pool.stakingToken.decimals).toString() * price : 0,
+      };
     }),
     ...farms.map((farm) => {
       let price = lpPrices[getCurrencyId(farm.chainId, farm.lpAddress, true)];

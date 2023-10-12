@@ -2,10 +2,10 @@
 import { useCallback, useContext, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
-import orderBy from "lodash/orderBy";
 import { motion, AnimatePresence } from "framer-motion";
+import orderBy from "lodash/orderBy";
 import Link from "next/link";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import Container from "components/layout/Container";
@@ -104,7 +104,13 @@ const Directory = ({ page }: { page: number }) => {
       .map((pool) => {
         let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
         if (price > 500000) price = 0;
-        return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
+        return {
+          ...pool,
+          tvl:
+            pool.totalStaked && price
+              ? +formatUnits(pool.totalStaked, pool.stakingToken.decimals).toString() * price
+              : 0,
+        };
       }),
     ...farms
       .filter((p) => p.visible)
@@ -304,7 +310,7 @@ const Directory = ({ page }: { page: number }) => {
                     </Link>
                   </div>
                 ) : curFilter === Category.POOL ? (
-                  <div className="flex w-full justify-end -mt-[44px]">
+                  <div className="-mt-[44px] flex w-full justify-end">
                     <a
                       href={"https://t.me/MaverickBL"}
                       target="_blank"

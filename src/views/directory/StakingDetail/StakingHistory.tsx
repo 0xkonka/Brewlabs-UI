@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import styled from "styled-components";
 
 import { PoolCategory } from "config/constants/types";
-import styled from "styled-components";
 import { formatAmount } from "utils/formatApy";
 import CountDown from "./CountDown";
 

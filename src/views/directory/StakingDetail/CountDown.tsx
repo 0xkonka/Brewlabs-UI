@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
-import { useCountdown } from "hooks/useCountdown";
 import { useEffect, useState } from "react";
+import { useCountdown } from "hooks/useCountdown";
 
 const CountDown = ({ time, onWithdraw }: { time: number; onWithdraw: any }) => {
   const [timeText, setTimeText] = useState("");

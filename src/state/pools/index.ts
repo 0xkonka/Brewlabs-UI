@@ -5,7 +5,6 @@ import axios from "axios";
 import { API_URL } from "config/constants";
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { Category } from "config/constants/types";
-import { BIG_ZERO } from "utils/bigNumber";
 import { PoolsState } from "state/types";
 
 import { fetchPoolsBlockLimits, fetchPoolsStakingLimits, fetchPoolsTotalStaking } from "./fetchPools";
@@ -22,7 +21,7 @@ import {
   fetchUserPendingReflection,
 } from "./fetchPoolsUser";
 import { SerializedPool } from "./types";
-import { BigNumber } from "bignumber.js";
+import { parseUnits } from "viem";
 
 const initialState: PoolsState = {
   data: [],
@@ -62,7 +61,11 @@ export const fetchPoolsPublicDataFromApiAsync = () => async (dispatch) => {
     if (res.data) {
       pools = res.data
         .filter((p) => PAGE_SUPPORTED_CHAINS["staking"].includes(p.chainId))
-        .map((pool) => ({ type: Category.POOL, ...pool }));
+        .map((pool) => ({
+          type: Category.POOL,
+          ...pool,
+          totalStaked: parseUnits(pool.totalStaked, pool.stakingToken.decimals).toString(),
+        }));
     }
     dispatch(setPoolsPublicData(pools));
 
@@ -119,10 +122,10 @@ export const fetchPoolsStakingLimitsAsync = (chainId: ChainId) => async (dispatc
   const stakingLimits = await fetchPoolsStakingLimits(poolsWithStakingLimit);
 
   const stakingLimitData = poolsWithStakingLimit.map((pool) => {
-    const stakingLimit = stakingLimits[pool.sousId] || new BigNumber(0);
+    const stakingLimit = stakingLimits[pool.sousId] || "0";
     return {
       sousId: pool.sousId,
-      stakingLimit: stakingLimit.toJSON(),
+      stakingLimit: stakingLimit,
     };
   });
 

@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
 import { toast } from "react-toastify";
@@ -19,6 +18,8 @@ import StyledButton from "../../StyledButton";
 import useApprovePool from "../hooks/useApprove";
 import useLockupPool from "../hooks/useLockupPool";
 import useUnlockupPool from "../hooks/useUnlockupPool";
+import { formatUnits } from "viem";
+import { BIG_ZERO } from "utils/bigNumber";
 
 const StakingModal = ({
   open,
@@ -223,7 +224,11 @@ const StakingModal = ({
                   </StyledButton>
                 </div>
                 <div className="mt-3 h-12">
-                  {+amount <= +formatUnits(accountData?.allowance ? accountData.allowance.toString() : "0", data.stakingToken.decimals) ? (
+                  {+amount <=
+                  +formatUnits(
+                    accountData?.allowance ? accountData.allowance : BIG_ZERO,
+                    data.stakingToken.decimals
+                  ) ? (
                     <StyledButton
                       type="primary"
                       disabled={!amount || insufficient || pending}
@@ -242,7 +247,7 @@ const StakingModal = ({
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

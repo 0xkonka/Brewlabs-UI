@@ -1,8 +1,9 @@
 import { useCallback } from "react";
-import { ethers } from "ethers";
+import { PublicClient, WalletClient, parseUnits } from "viem";
+import { useWalletClient } from "wagmi";
 
+import singleStakingAbi from "config/abi/staking/singlestaking";
 import { forceGasLimits } from "config/constants/pools";
-import { useSingleStaking } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAppDispatch } from "state";
 import {
@@ -12,94 +13,43 @@ import {
   updateUserPendingReward,
 } from "state/pools";
 import { updatePoolsUserData } from "state/pools";
-import { calculateGasMargin } from "utils";
-import { BIG_ZERO } from "utils/bigNumber";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
 
-const stake = async (stakingContract, amount, decimals, performanceFee, gasPrice) => {
-  const _amount = ethers.utils.parseUnits(amount, decimals);
-  let gasLimit = await stakingContract.estimateGas.deposit(_amount, { value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await stakingContract.deposit(_amount, { gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const unstake = async (
-  stakingContract: any,
-  amount: string,
-  decimals: number,
-  performanceFee,
-  gasPrice,
-  forceGasLimit = "0"
+const call_normalMethod = async (
+  stakingContract,
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  forceGasLimit = undefined
 ) => {
-  const _amount = ethers.utils.parseUnits(amount, decimals);
+  let gasLimit = await publicClient.estimateContractGas(stakingContract);
+  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
-  let gasLimit = await stakingContract.estimateGas.withdraw(_amount, { value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-  if (forceGasLimit !== "0") gasLimit = forceGasLimit;
-
-  const tx = await stakingContract.withdraw(_amount, { gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const emergencyUnstake = async (stakingContract: any, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.emergencyWithdraw();
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await stakingContract.emergencyWithdraw({ gasPrice, gasLimit });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const harvestPool = async (stakingContract, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.claimReward({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await stakingContract.claimReward({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const harvestDividend = async (stakingContract, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.claimDividend({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await stakingContract.claimDividend({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const compoundPool = async (stakingContract, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.compoundReward({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await stakingContract.compoundReward({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
-};
-
-const compoundDividend = async (stakingContract, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.compoundDividend({ value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit);
-
-  const tx = await stakingContract.compoundDividend({ gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt;
+  const txHash = await walletClient.writeContract({ ...stakingContract, gas: forceGasLimit ?? gasLimit });
+  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", enableEmergencyWithdraw = false) => {
   const dispatch = useAppDispatch();
-  const { account, chainId, library } = useActiveWeb3React();
-
-  const stakingContract = useSingleStaking(chainId, contractAddress);
+  const { account, chainId } = useActiveWeb3React();
+  const { data: walletClient } = useWalletClient();
 
   const handleStake = useCallback(
     async (amount: string, decimals: number) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      const receipt = await stake(stakingContract, amount, decimals, performanceFee, gasPrice);
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+      const stakingContract = {
+        address: contractAddress,
+        abi: singleStakingAbi,
+        functionName: "deposit",
+        args: [parseUnits(amount, decimals)],
+        value: performanceFee,
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+      const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
 
       dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
       dispatch(resetPendingReflection(sousId));
@@ -107,18 +57,31 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
       dispatch(updateUserBalance(sousId, account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]
+    [account, chainId, sousId, contractAddress, performanceFee, dispatch, walletClient]
   );
 
   const handleUnstake = useCallback(
     async (amount: string, decimals: number) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      let receipt;
-      if (enableEmergencyWithdraw) {
-        receipt = await emergencyUnstake(stakingContract, gasPrice);
-      } else {
-        receipt = await unstake(stakingContract, amount, decimals, performanceFee, gasPrice, forceGasLimits[sousId]);
-      }
+      const publicClient = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+      const stakingContract = {
+        address: contractAddress,
+        abi: singleStakingAbi,
+        functionName: enableEmergencyWithdraw ? "withdraw" : "emergencyWithdraw",
+        args: enableEmergencyWithdraw ? [] : [parseUnits(amount, decimals)],
+        value: enableEmergencyWithdraw ? "0" : performanceFee,
+        account: walletClient.account,
+        chain: walletClient.chain,
+        gasPrice,
+      };
+
+      const receipt = await call_normalMethod(
+        stakingContract,
+        walletClient,
+        publicClient,
+        !enableEmergencyWithdraw ? forceGasLimits[sousId] : undefined
+      );
 
       dispatch(resetPendingReflection(sousId));
       dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
@@ -127,48 +90,96 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
       dispatch(updateUserPendingReward(sousId, account, chainId));
       return receipt;
     },
-    [account, chainId, library, dispatch, enableEmergencyWithdraw, stakingContract, sousId, performanceFee]
+    [account, chainId, sousId, contractAddress, enableEmergencyWithdraw, performanceFee, dispatch, walletClient]
   );
 
   const handleHarvest = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const receipt = await harvestPool(stakingContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+    const stakingContract = {
+      address: contractAddress,
+      abi: singleStakingAbi,
+      functionName: "claimReward",
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
 
     dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserBalance(sousId, account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
+  }, [account, chainId, sousId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleHarvestDividend = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const receipt = await harvestDividend(stakingContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+    const stakingContract = {
+      address: contractAddress,
+      abi: singleStakingAbi,
+      functionName: "claimDividend",
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
 
     dispatch(resetPendingReflection(sousId));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserBalance(sousId, account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
+  }, [account, chainId, sousId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleCompound = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const receipt = await compoundPool(stakingContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+    const stakingContract = {
+      address: contractAddress,
+      abi: singleStakingAbi,
+      functionName: "compoundReward",
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
 
     dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserStakedBalance(sousId, account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
+  }, [account, chainId, sousId, contractAddress, performanceFee, dispatch, walletClient]);
 
   const handleCompoundDividend = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-    const receipt = await compoundDividend(stakingContract, performanceFee, gasPrice);
+    const publicClient = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+
+    const stakingContract = {
+      address: contractAddress,
+      abi: singleStakingAbi,
+      functionName: "compoundDividend",
+      args: [],
+      value: performanceFee,
+      account: walletClient.account,
+      chain: walletClient.chain,
+      gasPrice,
+    };
+    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
 
     dispatch(resetPendingReflection(sousId));
     dispatch(updateUserPendingReward(sousId, account, chainId));
     dispatch(updateUserStakedBalance(sousId, account, chainId));
     return receipt;
-  }, [account, chainId, library, dispatch, stakingContract, sousId, performanceFee]);
+  }, [account, chainId, sousId, contractAddress, performanceFee, dispatch, walletClient]);
 
   return {
     onStake: handleStake,

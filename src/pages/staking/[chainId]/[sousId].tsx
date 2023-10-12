@@ -3,6 +3,8 @@ import { TokenPriceContext } from "contexts/TokenPriceContext";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext } from "react";
+import { formatUnits } from "viem";
+
 import { usePools } from "state/pools/hooks";
 import getCurrencyId from "utils/getCurrencyId";
 import StakingDetail from "views/directory/StakingDetail";
@@ -18,7 +20,13 @@ const Staking: NextPage = () => {
       .map((pool) => {
         let price = tokenPrices[getCurrencyId(pool.chainId, pool.stakingToken.address)];
         if (price > 500000) price = 0;
-        return { ...pool, tvl: pool.totalStaked && price ? +pool.totalStaked * price : 0 };
+        return {
+          ...pool,
+          tvl:
+            pool.totalStaked && price
+              ? +formatUnits(pool.totalStaked, pool.stakingToken.decimals).toString() * price
+              : 0,
+        };
       }),
   ];
 
