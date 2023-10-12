@@ -7,7 +7,7 @@ import { getFarmFactoryAddress } from "utils/addressHelpers";
 import { getViemClients } from "utils/viem";
 
 export const fetchFarmFactoryData = async (chainId: ChainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const factoryContract = { address: getFarmFactoryAddress(chainId) as `0x${string}`, abi: FarmFactoryAbi };
   const calls = [
@@ -15,7 +15,7 @@ export const fetchFarmFactoryData = async (chainId: ChainId) => {
     { ...factoryContract, functionName: "serviceFee" },
   ];
 
-  const result = await publicClient.multicall({ contracts: calls });
+  const result = await client.multicall({ contracts: calls });
   return {
     chainId,
     payingToken: serializeToken(Object.values(tokens[chainId]).find((t: any) => t.address === result[0].result)),

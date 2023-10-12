@@ -11,8 +11,8 @@ export const useFactory = (chainId, performanceFee) => {
 
   const handleCreate = useCallback(
     async (indexName: string, tokens: string[], fees: number[], commissionWallet: string, isPrivate = true) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       const txData: any = {
         address: getIndexFactoryAddress(chainId) as `0x${string}`,
@@ -28,11 +28,11 @@ export const useFactory = (chainId, performanceFee) => {
         value: performanceFee,
         gasPrice,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [walletClient, chainId, performanceFee]
   );

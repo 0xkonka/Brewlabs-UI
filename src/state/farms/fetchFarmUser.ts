@@ -16,7 +16,7 @@ export const fetchFarmUserAllowances = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId);
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const calls = farmsToFetch.map((farm) => {
     return {
@@ -27,7 +27,7 @@ export const fetchFarmUserAllowances = async (
     };
   });
 
-  const rawLpAllowances = await publicClient.multicall({ contracts: calls });
+  const rawLpAllowances = await client.multicall({ contracts: calls });
   const parsedLpAllowances = rawLpAllowances.map((lpBalance) => {
     return lpBalance.result.toString();
   });
@@ -40,7 +40,7 @@ export const fetchFarmUserTokenBalances = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   try {
-    const publicClient = getViemClients({ chainId });
+    const client = getViemClients({ chainId });
     const calls = farmsToFetch.map((farm) => {
       return {
         address: farm.lpAddress as `0x${string}`,
@@ -50,7 +50,7 @@ export const fetchFarmUserTokenBalances = async (
       };
     });
 
-    const rawTokenBalances = await publicClient.multicall({ contracts: calls });
+    const rawTokenBalances = await client.multicall({ contracts: calls });
     const parsedTokenBalances = rawTokenBalances.map((tokenBalance) => {
       return tokenBalance.result.toString();
     });
@@ -66,7 +66,7 @@ export const fetchFarmUserStakedBalances = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId);
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   let data = [];
 
@@ -79,7 +79,7 @@ export const fetchFarmUserStakedBalances = async (
       functionName: "userInfo",
       args: [BigInt(farm.poolId), account],
     }));
-  let rawStakedBalances = await publicClient.multicall({ contracts: calls });
+  let rawStakedBalances = await client.multicall({ contracts: calls });
 
   farmsToFetch
     .filter((f) => !f.category)
@@ -94,7 +94,7 @@ export const fetchFarmUserStakedBalances = async (
     });
 
   // fetch factroy-created farms
-  rawStakedBalances = await publicClient.multicall({
+  rawStakedBalances = await client.multicall({
     contracts: farmsToFetch
       .filter((f) => f.category)
       .map((farm) => ({
@@ -127,12 +127,12 @@ export const fetchFarmUserEarnings = async (
 ) => {
   try {
     const masterChefAddress = getMasterChefAddress(chainId);
-    const publicClient = getViemClients({ chainId });
+    const client = getViemClients({ chainId });
 
     let data = [];
 
     // fetch normal farms
-    let rawEarnings = await publicClient.multicall({
+    let rawEarnings = await client.multicall({
       contracts: farmsToFetch
         .filter((f) => !f.enableEmergencyWithdraw)
         .filter((f) => !f.category)
@@ -158,7 +158,7 @@ export const fetchFarmUserEarnings = async (
       });
 
     // fetch factroy-created farms
-    rawEarnings = await publicClient.multicall({
+    rawEarnings = await client.multicall({
       contracts: farmsToFetch
         .filter((f) => !f.enableEmergencyWithdraw)
         .filter((f) => f.category)
@@ -195,12 +195,12 @@ export const fetchFarmUserReflections = async (
   farmsToFetch: SerializedFarmConfig[]
 ) => {
   const masterChefAddress = getMasterChefAddress(chainId);
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   let data = [];
 
   // fetch normal farms
-  let rawReflections = await publicClient.multicall({
+  let rawReflections = await client.multicall({
     contracts: farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
       .filter((f) => !f.category)
@@ -226,7 +226,7 @@ export const fetchFarmUserReflections = async (
     });
 
   // fetch factroy-created farms
-  rawReflections = await publicClient.multicall({
+  rawReflections = await client.multicall({
     contracts: farmsToFetch
       .filter((f) => !f.enableEmergencyWithdraw)
       .filter((f) => f.category)

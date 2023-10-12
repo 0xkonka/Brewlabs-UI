@@ -9,7 +9,7 @@ import { getViemClients } from "utils/viem";
 import { BIG_ZERO } from "utils/bigNumber";
 
 export const fetchUserStakings = async (account, chainId, indexes) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedIndexs = indexes.filter((p) => p.chainId === chainId);
   const filters = [];
@@ -34,7 +34,7 @@ export const fetchUserStakings = async (account, chainId, indexes) => {
           });
         }
 
-        const userStakes: any = await publicClient.multicall({ contracts: calls });
+        const userStakes: any = await client.multicall({ contracts: calls });
         batch.forEach((pool, index) => {
           data.push({
             pid: pool.pid,
@@ -52,7 +52,7 @@ export const fetchUserStakings = async (account, chainId, indexes) => {
 };
 
 export const fetchUserNftAllowance = async (account, chainId, indexes) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedIndexs = indexes.filter((p) => p.chainId === chainId);
   const filters = [];
@@ -77,7 +77,7 @@ export const fetchUserNftAllowance = async (account, chainId, indexes) => {
           });
         }
 
-        const allowances = await publicClient.multicall({ contracts: calls });
+        const allowances = await client.multicall({ contracts: calls });
 
         batch.forEach((pool, index) => {
           data.push({
@@ -95,18 +95,18 @@ export const fetchUserNftAllowance = async (account, chainId, indexes) => {
 };
 
 export const fetchUserBalance = async (account, chainId) => {
-  const publicClient = getViemClients({ chainId });
-  if (!account || !publicClient) return BIG_ZERO;
-// return BIG_ZERO
-  const ethBalance = await publicClient.getBalance({address: account});
+  const client = getViemClients({ chainId });
+  if (!account || !client) return BIG_ZERO;
+  // return BIG_ZERO
+  const ethBalance = await client.getBalance({ address: account });
   return ethBalance;
 };
 
 export const fetchUserIndexNftData = async (account, chainId, nftAddr) => {
   if (!nftAddr) return [];
 
-  const publicClient = getViemClients({ chainId });
-  const balance = await publicClient.readContract({
+  const client = getViemClients({ chainId });
+  const balance = await client.readContract({
     address: nftAddr,
     abi: IndexNftAbi,
     functionName: "balanceOf",
@@ -127,7 +127,7 @@ export const fetchUserIndexNftData = async (account, chainId, nftAddr) => {
     }
 
     let tokenIds = [];
-    const result = await publicClient.multicall({ contracts: calls });
+    const result = await client.multicall({ contracts: calls });
     for (let i = 0; i < +balance.toString(); i++) {
       tokenIds.push(+result[i].result.toString());
     }
@@ -138,7 +138,7 @@ export const fetchUserIndexNftData = async (account, chainId, nftAddr) => {
       functionName: "getNftInfo",
       args: [BigInt(tokenId)],
     }));
-    const nftInfo = await publicClient.multicall({ contracts: calls });
+    const nftInfo = await client.multicall({ contracts: calls });
 
     return tokenIds.map((tokenId, index) => {
       let level = +nftInfo[index].result[0].toString();
@@ -158,8 +158,8 @@ export const fetchUserIndexNftData = async (account, chainId, nftAddr) => {
 export const fetchUserDeployerNftData = async (account, chainId, nftAddr) => {
   if (!nftAddr) return [];
 
-  const publicClient = getViemClients({ chainId });
-  const balance = await publicClient.readContract({
+  const client = getViemClients({ chainId });
+  const balance = await client.readContract({
     address: nftAddr,
     abi: DeployerNftAbi,
     functionName: "balanceOf",
@@ -179,7 +179,7 @@ export const fetchUserDeployerNftData = async (account, chainId, nftAddr) => {
     }
 
     let tokenIds = [];
-    const result = await publicClient.multicall({ contracts: calls });
+    const result = await client.multicall({ contracts: calls });
     for (let i = 0; i < +balance.toString(); i++) {
       tokenIds.push(+result[i].result.toString());
     }
@@ -190,7 +190,7 @@ export const fetchUserDeployerNftData = async (account, chainId, nftAddr) => {
       functionName: "getIndexInfo",
       params: [BigInt(tokenId)],
     }));
-    const indexInfo = await publicClient.multicall({ contracts: calls });
+    const indexInfo = await client.multicall({ contracts: calls });
 
     return tokenIds.map((tokenId, index) => {
       let usdAmount = formatEther(indexInfo[index].result[2]);

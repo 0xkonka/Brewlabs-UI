@@ -59,9 +59,9 @@ const StakeIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpe
     setPending(true);
     try {
       // check allowance & approve
-      const publicClient = getViemClients({ chainId: selectedIndex.chainId });
+      const client = getViemClients({ chainId: selectedIndex.chainId });
 
-      let allowance = publicClient.readContract({
+      let allowance = client.readContract({
         address: selectedIndex.deployerNft as `0x${string}`,
         abi: erc721ABI,
         functionName: "isApprovedForAll",

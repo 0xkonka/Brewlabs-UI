@@ -1,16 +1,16 @@
-const apiBaseUrl = 'https://ape-swap-api.herokuapp.com'
+const apiBaseUrl = "https://ape-swap-api.herokuapp.com";
 
 const getFarmLpAprs = async (chainId: number) => {
   try {
-    const response = await fetch(`${apiBaseUrl}/stats/network/lpAprs/${chainId}`)
-    const farmLpAprs = await response.json()
+    const response = await fetch(`${apiBaseUrl}/stats/network/lpAprs/${chainId}`);
+    const farmLpAprs = await response.json();
     if (farmLpAprs.statusCode === 500) {
-      return null
+      return null;
     }
-    return farmLpAprs
+    return farmLpAprs;
   } catch (error) {
-    return null
+    return null;
   }
-}
+};
 
-export default getFarmLpAprs
+export default getFarmLpAprs;

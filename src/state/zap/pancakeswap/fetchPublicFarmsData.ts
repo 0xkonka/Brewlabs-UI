@@ -1,46 +1,55 @@
-import { ChainId } from "@brewlabs/sdk"
-import erc20 from 'config/abi/erc20.json'
-import { chunk } from "lodash"
-import { getPancakeMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers"
-import { multicallv2 } from "utils/multicall"
+import { ChainId } from "@brewlabs/sdk";
+import { chunk } from "lodash";
+import { erc20ABI } from "wagmi";
+
+import { getPancakeMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers";
+import { getViemClients } from "utils/viem";
 
 const fetchFarmCalls = (farm) => {
-  const { lpAddress, token, quoteToken } = farm
+  const { lpAddress, token, quoteToken } = farm;
 
   return [
     {
       address: token.address,
-      name: 'balanceOf',
-      params: [lpAddress],
+      abi: erc20ABI,
+      functionName: "balanceOf",
+      args: [lpAddress],
     },
     {
       address: quoteToken.address,
-      name: 'balanceOf',
-      params: [lpAddress],
+      abi: erc20ABI,
+      functionName: "balanceOf",
+      args: [lpAddress],
     },
     {
       address: lpAddress,
-      name: 'balanceOf',
-      params: [getMasterChefAddress()],
+      abi: erc20ABI,
+      functionName: "balanceOf",
+      args: [getMasterChefAddress()],
     },
     {
       address: lpAddress,
-      name: 'totalSupply'
+      abi: erc20ABI,
+      functionName: "totalSupply",
     },
     {
       address: token.address,
-      name: 'decimals',
+      abi: erc20ABI,
+      functionName: "decimals",
     },
     {
       address: quoteToken.address,
-      name: 'decimals',
+      abi: erc20ABI,
+      functionName: "decimals",
     },
-  ]
-}
+  ];
+};
 
 export const fetchPublicFarmsData = async (farms): Promise<any[]> => {
-  const farmCalls = farms.flatMap((farm) => fetchFarmCalls(farm))
-  const chunkSize = farmCalls.length / farms.length
-  const farmMultiCallResult = await multicallv2(ChainId.BSC_MAINNET, erc20, farmCalls)
-  return chunk(farmMultiCallResult, chunkSize)
-}
+  const client = getViemClients({ chainId: ChainId.BSC_MAINNET });
+
+  const farmCalls = farms.flatMap((farm) => fetchFarmCalls(farm));
+  const chunkSize = farmCalls.length / farms.length;
+  const farmMultiCallResult = await client.multicall({ contracts: farmCalls });
+  return chunk(farmMultiCallResult, chunkSize);
+};

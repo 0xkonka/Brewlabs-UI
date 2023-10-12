@@ -15,12 +15,12 @@ import {
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
-const call_normalMethod = async (indexContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas(indexContract);
+const call_normalMethod = async (indexContract, walletClient: WalletClient, client: PublicClient) => {
+  let gasLimit = await client.estimateContractGas(indexContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
   const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enableEmergencyWithdraw = false) => {
@@ -30,8 +30,8 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
 
   const handleStake = useCallback(
     async (amount, decimals) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       const stakingContract = {
         address: contractAddress,
@@ -44,7 +44,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
         gasPrice,
       };
 
-      const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
+      const receipt = await call_normalMethod(stakingContract, walletClient, client);
 
       dispatch(resetPendingReflection(sousId));
       dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
@@ -58,8 +58,8 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
 
   const handleUnStake = useCallback(
     async (amount, decimals) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       const stakingContract = {
         address: contractAddress,
@@ -72,7 +72,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
         gasPrice,
       };
 
-      const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
+      const receipt = await call_normalMethod(stakingContract, walletClient, client);
 
       dispatch(resetPendingReflection(sousId));
       dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
@@ -85,8 +85,8 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
   );
 
   const handleHarvest = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -98,7 +98,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(stakingContract, walletClient, client);
 
     dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
@@ -107,8 +107,8 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
   }, [account, chainId, sousId, contractAddress, type, performanceFee, dispatch, walletClient]);
 
   const handleHarvestDividend = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -120,7 +120,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(stakingContract, walletClient, client);
 
     dispatch(resetPendingReflection(sousId));
     dispatch(updateUserPendingReward(sousId, account, chainId));
@@ -129,8 +129,8 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
   }, [account, chainId, sousId, contractAddress, type, performanceFee, dispatch, walletClient]);
 
   const handleCompound = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -142,7 +142,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(stakingContract, walletClient, client);
 
     dispatch(updatePoolsUserData({ sousId, field: "earnings", value: "0" }));
     dispatch(updateUserPendingReward(sousId, account, chainId));
@@ -151,8 +151,8 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
   }, [account, chainId, sousId, contractAddress, type, performanceFee, dispatch, walletClient]);
 
   const handleCompoundDividend = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -164,7 +164,7 @@ const useLockupPool = (sousId, contractAddress, type, performanceFee = "0", enab
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(stakingContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(stakingContract, walletClient, client);
 
     dispatch(resetPendingReflection(sousId));
     dispatch(updateUserPendingReward(sousId, account, chainId));

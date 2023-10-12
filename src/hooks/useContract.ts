@@ -12,16 +12,12 @@ import WETH_ABI from "config/abi/weth.json";
 import LpTokenAbi from "config/abi/lpToken.json";
 import multiCallAbi from "config/abi/Multicall.json";
 import ConstructorABI from "config/abi/tokenTransfer.json";
-import ExternalMasterChefABI from "config/abi/externalMasterchef.json";
+import ExternalMasterChefABI from "config/abi/externalMasterchef";
 
 import { Chef } from "config/constants/types";
 import { useAppId } from "state/zap/hooks";
 
-import {
-  getExternalMasterChefAddress,
-  getMulticallAddress,
-  getTokenTransferAddress,
-} from "utils/addressHelpers";
+import { getExternalMasterChefAddress, getMulticallAddress, getTokenTransferAddress } from "utils/addressHelpers";
 import {
   getBep20Contract,
   getMasterchefContract,
@@ -49,7 +45,7 @@ import { useActiveChainId } from "./useActiveChainId";
 
 export const useERC20 = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getBep20Contract(chainId, address, signer ?? undefined), [address, signer, chainId]);
 };
 
@@ -58,31 +54,31 @@ export const useERC20 = (address: string) => {
  */
 export const useERC721 = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();;
+  const signer = useEthersSigner();
   return useMemo(() => getErc721Contract(chainId, address, signer ?? undefined), [address, signer, chainId]);
 };
 
 export const useMasterchef = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getMasterchefContract(chainId, address, signer ?? undefined), [address, signer, chainId]);
 };
 
 export const useFarmContract = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getFarmImplContract(chainId, address, signer ?? undefined), [address, signer, chainId]);
 };
 
 export const useSingleStaking = (chainId: ChainId, contractAddress: string) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(
     () => getSingleStakingContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
   );
 };
 export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(
     () => getLockupStakingContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
@@ -90,7 +86,7 @@ export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
 };
 
 export const useIndexContract = (chainId: ChainId, contractAddress: string, version: string = "V1") => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(
     () => getIndexContract(chainId, contractAddress, version, signer ?? undefined),
     [chainId, contractAddress, version, signer]
@@ -98,7 +94,7 @@ export const useIndexContract = (chainId: ChainId, contractAddress: string, vers
 };
 
 export const useOldIndexContract = (chainId: ChainId, contractAddress: string) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(
     () => getOldIndexContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
@@ -106,27 +102,27 @@ export const useOldIndexContract = (chainId: ChainId, contractAddress: string) =
 };
 
 export const useFarmFactoryContract = (chainId: ChainId) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getFarmFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 export const useIndexFactoryContract = (chainId: ChainId) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getIndexFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 export const useFlaskNftContract = (chainId: ChainId) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getFlaskNftContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 export const useMirrorNftContract = (chainId: ChainId) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getMirrorNftContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 export const useNftStakingContract = (chainId: ChainId) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getNftStakingContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
@@ -136,7 +132,7 @@ export const useNftStakingContract = (chainId: ChainId) => {
 export function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { address: account } = useAccount();
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
 
   return useMemo(() => {
     if (!address || !ABI || (withSignerIfPossible && !signer)) return null;
@@ -198,7 +194,7 @@ export function useTokenTransferContract(withSignerIfPossible?: boolean): Contra
 }
 
 export const useBrewlabsFeeManager = (chainId: ChainId) => {
-  const signer  = useEthersSigner();
+  const signer = useEthersSigner();
   return useMemo(() => getBrewlabsFeeManagerContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 export function useExternalMasterchef(withSignerIfPossible?: boolean, chef = Chef.MASTERCHEF): Contract | null {

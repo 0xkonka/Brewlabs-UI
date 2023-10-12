@@ -15,7 +15,7 @@ import { sumOfArray } from "utils/functions";
 import { getViemClients } from "utils/viem";
 
 export const fetchPoolsBlockLimits = async (chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
   const poolsWithEnd = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
 
   const filters = [];
@@ -43,8 +43,8 @@ export const fetchPoolsBlockLimits = async (chainId, pools) => {
           };
         });
 
-        const starts = await publicClient.multicall({ contracts: callsStartBlock });
-        const ends = await publicClient.multicall({ contracts: callsEndBlock });
+        const starts = await client.multicall({ contracts: callsStartBlock });
+        const ends = await client.multicall({ contracts: callsEndBlock });
 
         batch.forEach((pool, index) => {
           data.push({
@@ -64,7 +64,7 @@ export const fetchPoolsBlockLimits = async (chainId, pools) => {
 };
 
 export const fetchRewardPerBlocks = async (chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
   const selectedPools = pools.filter((p) => p.sousId !== 0 && p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedPools.length; i += MULTICALL_FETCH_LIMIT) {
@@ -107,9 +107,9 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
           };
         });
 
-        const nonLockupPoolsRewards = await publicClient.multicall({ contracts: callsNonLockupPools });
-        const lockupPoolsRewards = await publicClient.multicall({ contracts: callsLockupPools });
-        const lockupV2PoolsRewards = await publicClient.multicall({ contracts: callsLockupV2Pools });
+        const nonLockupPoolsRewards = await client.multicall({ contracts: callsNonLockupPools });
+        const lockupPoolsRewards = await client.multicall({ contracts: callsLockupPools });
+        const lockupV2PoolsRewards = await client.multicall({ contracts: callsLockupV2Pools });
 
         const callsForDepositFeesNonLockupPools = nonLockupPools.map((poolConfig) => {
           return {
@@ -142,10 +142,10 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
           };
         });
 
-        const nonLockupPoolsDFee: any = await publicClient.multicall({ contracts: callsForDepositFeesNonLockupPools });
-        const nonLockupPoolsWFee: any = await publicClient.multicall({ contracts: callsForWithdrawFeesNonLockupPools });
-        const lockupPoolsFees: any = await publicClient.multicall({ contracts: callsFeesLockupPools });
-        const lockupV2PoolsFees: any = await publicClient.multicall({ contracts: callsFeesLockupV2Pools });
+        const nonLockupPoolsDFee: any = await client.multicall({ contracts: callsForDepositFeesNonLockupPools });
+        const nonLockupPoolsWFee: any = await client.multicall({ contracts: callsForWithdrawFeesNonLockupPools });
+        const lockupPoolsFees: any = await client.multicall({ contracts: callsFeesLockupPools });
+        const lockupV2PoolsFees: any = await client.multicall({ contracts: callsFeesLockupV2Pools });
 
         nonLockupPools.forEach((p, index) => {
           data.push({
@@ -185,7 +185,7 @@ export const fetchRewardPerBlocks = async (chainId, pools) => {
 };
 
 export const fetchPoolsTotalStaking = async (chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedPools = pools.filter((p) => p.chainId === chainId);
   const filters = [];
@@ -218,8 +218,8 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
           };
         });
 
-        const nonLockupPoolsTotalStaked: any = await publicClient.multicall({ contracts: callsNonLockupPools });
-        const lockupPoolsTotalStaked: any = await publicClient.multicall({ contracts: callsLockupPools });
+        const nonLockupPoolsTotalStaked: any = await client.multicall({ contracts: callsNonLockupPools });
+        const lockupPoolsTotalStaked: any = await client.multicall({ contracts: callsLockupPools });
 
         nonLockupPools.forEach((p, index) => {
           data.push({
@@ -245,7 +245,7 @@ export const fetchPoolsTotalStaking = async (chainId, pools) => {
 };
 
 export const fetchPerformanceFees = async (chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
   const selectedPools = pools.filter((p) => p.isServiceFee && p.chainId === chainId);
   const filters = [];
   for (let i = 0; i < selectedPools.length; i += MULTICALL_FETCH_LIMIT) {
@@ -265,7 +265,7 @@ export const fetchPerformanceFees = async (chainId, pools) => {
           };
         });
 
-        const performanceFees = await publicClient.multicall({ contracts: callsPools });
+        const performanceFees = await client.multicall({ contracts: callsPools });
 
         pools.forEach((p, index) => {
           data.push({
@@ -286,9 +286,9 @@ export const fetchPerformanceFees = async (chainId, pools) => {
 
 export const fetchPoolStakingLimit = async (chainId: ChainId, address: string): Promise<string> => {
   try {
-    const publicClient = getViemClients({ chainId });
+    const client = getViemClients({ chainId });
 
-    const stakingLimit = await publicClient.readContract({
+    const stakingLimit = await client.readContract({
       address: address as `0x${string}`,
       abi: singleStakingABI,
       functionName: "poolLimitPerUser",
@@ -318,7 +318,7 @@ export const fetchPoolsStakingLimits = async (pools: any[]): Promise<{ [key: str
 };
 
 export const fetchPoolTotalRewards = async (pool) => {
-  const publicClient = getViemClients({ chainId: pool.chainId });
+  const client = getViemClients({ chainId: pool.chainId });
 
   let calls: any = [
     {
@@ -358,7 +358,7 @@ export const fetchPoolTotalRewards = async (pool) => {
     }
   }
 
-  const res: any = await publicClient.multicall({ contracts: calls });
+  const res: any = await client.multicall({ contracts: calls });
   let availableReflections = [];
   if (pool.reflection) {
     for (let i = 0; i < pool.reflectionTokens.length; i++) {

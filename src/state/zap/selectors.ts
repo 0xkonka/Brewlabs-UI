@@ -1,19 +1,21 @@
 import { ChainId, Token } from "@brewlabs/sdk";
-import BigNumber from "bignumber.js";
-import { BIG_ZERO } from "utils/bigNumber";
-import { getBalanceAmount } from "utils/formatBalance";
 import { createSelector } from "@reduxjs/toolkit";
+import BigNumber from "bignumber.js";
+
 import { tokens } from "config/constants/tokens";
 import { AppId } from "config/constants/types";
 import { State, DeserializedPancakeFarm, Farm, SerializedPancakeFarm } from "state/types";
 import { deserializeToken } from "state/user/hooks/helpers";
 import { isAddress } from "utils";
+import { getBalanceAmount } from "utils/formatBalance";
+
+import { BIG_ZERO } from ".";
 
 const deserializeFarmUserData = (farm) => {
   return {
-    stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : new BigNumber(0),
-    earnings: farm.userData ? new BigNumber(farm.userData.earnings) : new BigNumber(0),
-    totalRewards: farm.userData ? new BigNumber(farm.userData.totalRewards) : new BigNumber(0),
+    stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : BIG_ZERO,
+    earnings: farm.userData ? new BigNumber(farm.userData.earnings) : BIG_ZERO,
+    totalRewards: farm.userData ? new BigNumber(farm.userData.totalRewards) : BIG_ZERO,
   };
 };
 
@@ -33,13 +35,13 @@ const deserializePancakeFarm = (farm: SerializedPancakeFarm): DeserializedPancak
     quoteToken: deserializeToken(farm.quoteToken),
     earningToken: tokens[ChainId.BSC_MAINNET].cake,
     userData: deserializeFarmUserData(farm),
-    tokenAmountTotal: farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : new BigNumber(0),
-    quoteTokenAmountTotal: farm.quoteTokenAmountTotal ? new BigNumber(farm.quoteTokenAmountTotal) : new BigNumber(0),
-    lpTotalInQuoteToken: farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : new BigNumber(0),
-    lpTotalSupply: farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : new BigNumber(0),
-    tokenPriceVsQuote: farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : new BigNumber(0),
-    poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : new BigNumber(0),
-    totalRewards: farm.totalRewards ? new BigNumber(farm.totalRewards) : new BigNumber(0),
+    tokenAmountTotal: farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : BIG_ZERO,
+    quoteTokenAmountTotal: farm.quoteTokenAmountTotal ? new BigNumber(farm.quoteTokenAmountTotal) : BIG_ZERO,
+    lpTotalInQuoteToken: farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : BIG_ZERO,
+    lpTotalSupply: farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : BIG_ZERO,
+    tokenPriceVsQuote: farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : BIG_ZERO,
+    poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
+    totalRewards: farm.totalRewards ? new BigNumber(farm.totalRewards) : BIG_ZERO,
     totalSupply: farm.totalSupply,
   };
 };
@@ -110,15 +112,15 @@ export const priceCakeFromPidSelector = createSelector([selectCakeFarm], (cakeBn
 
 export const makeLpTokenPriceFromLpSymbolSelector = (lpSymbol: string, appId: AppId) =>
   createSelector([selectFarmByKey("lpSymbol", lpSymbol, appId)], (farm) => {
-    let lpTokenPrice = new BigNumber(0);
+    let lpTokenPrice = BIG_ZERO;
 
     if (appId === AppId.PANCAKESWAP) {
-      const lpTotalInQuoteToken = farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : new BigNumber(0);
-      const lpTotalSupply = farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : new BigNumber(0);
+      const lpTotalInQuoteToken = farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : BIG_ZERO;
+      const lpTotalSupply = farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : BIG_ZERO;
 
       if (lpTotalSupply.gt(0) && lpTotalInQuoteToken.gt(0)) {
         const farmTokenPriceInUsd = new BigNumber(farm.tokenPriceBusd);
-        const tokenAmountTotal = farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : new BigNumber(0);
+        const tokenAmountTotal = farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : BIG_ZERO;
         const valueOfBaseTokenInFarm = farmTokenPriceInUsd.times(tokenAmountTotal);
         const overallValueOfAllTokensInFarm = valueOfBaseTokenInFarm.times(2);
         const totalLpTokens = getBalanceAmount(lpTotalSupply);

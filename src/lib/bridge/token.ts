@@ -26,11 +26,11 @@ export const fetchAllowance = async ({ mediator, address }: BridgeToken, account
 };
 
 const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
-  const publicClient = getViemClients({ chainId: token.chainId });
+  const client = getViemClients({ chainId: token.chainId });
 
   const mediatorAddress = getMediatorAddress(bridgeDirectionId, token.chainId);
   const abi = parseAbi(["function nativeTokenAddress(address) view returns (address)"]);
-  const nativeTokenAddress = await publicClient.readContract({
+  const nativeTokenAddress = await client.readContract({
     address: mediatorAddress as `0x${string}`,
     abi,
     functionName: "nativeTokenAddress",
@@ -41,12 +41,12 @@ const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
 };
 
 export const fetchTokenName = async (token: { chainId: ChainId; name?: string; address: string } | BridgeToken) => {
-  const publicClient = getViemClients({ chainId: token.chainId });
+  const client = getViemClients({ chainId: token.chainId });
 
   let tokenName = token.name || "";
   try {
     const stringAbi = parseAbi(["function name() view returns (string)"]);
-    tokenName = await publicClient.readContract({
+    tokenName = await client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi: stringAbi,
       functionName: "name",
@@ -54,7 +54,7 @@ export const fetchTokenName = async (token: { chainId: ChainId; name?: string; a
   } catch {
     const bytes32Abi = parseAbi(["function name() view returns (bytes32)"]);
     tokenName = hexToString(
-      await publicClient.readContract({
+      await client.readContract({
         address: (token.address ?? zeroAddress) as `0x${string}`,
         abi: bytes32Abi,
         functionName: "name",
@@ -65,24 +65,24 @@ export const fetchTokenName = async (token: { chainId: ChainId; name?: string; a
 };
 
 const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
-  const publicClient = getViemClients({ chainId: token.chainId });
+  const client = getViemClients({ chainId: token.chainId });
   const abi = parseAbi([
     "function decimals() view returns (uint8)",
     "function symbol() view returns (bytes32)",
     "function name() view returns (bytes32)",
   ]);
   const [name, symbol, decimals] = await Promise.all([
-    publicClient.readContract({
+    client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi,
       functionName: "name",
     }),
-    publicClient.readContract({
+    client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi,
       functionName: "symbol",
     }),
-    publicClient.readContract({
+    client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi,
       functionName: "decimals",
@@ -96,7 +96,7 @@ const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
 };
 
 const fetchTokenDetailsString = async (token: BridgeToken) => {
-  const publicClient = getViemClients({ chainId: token.chainId });
+  const client = getViemClients({ chainId: token.chainId });
   const abi = parseAbi([
     "function decimals() view returns (uint8)",
     "function symbol() view returns (string)",
@@ -104,17 +104,17 @@ const fetchTokenDetailsString = async (token: BridgeToken) => {
   ]);
 
   const [name, symbol, decimals] = await Promise.all([
-    publicClient.readContract({
+    client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi,
       functionName: "name",
     }),
-    publicClient.readContract({
+    client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi,
       functionName: "symbol",
     }),
-    publicClient.readContract({
+    client.readContract({
       address: (token.address ?? zeroAddress) as `0x${string}`,
       abi,
       functionName: "decimals",
@@ -167,8 +167,8 @@ export const approveToken = async (walletClient: WalletClient, { address, mediat
 };
 
 export const fetchTokenBalance = async (token: BridgeToken, account: string) => {
-  const publicClient = getViemClients({ chainId: token.chainId });
-  return fetchTokenBalanceWithProvider(publicClient, token, account);
+  const client = getViemClients({ chainId: token.chainId });
+  return fetchTokenBalanceWithProvider(client, token, account);
 };
 
 export const fetchTokenBalanceWithProvider = async (

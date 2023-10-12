@@ -139,8 +139,8 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
   const handleUpgrade = async () => {
     setPending(true);
     try {
-      const publicClient = getViemClients({ chainId: flaskNft.chainId });
-      const isApprovedForAll = await publicClient.readContract({
+      const client = getViemClients({ chainId: flaskNft.chainId });
+      const isApprovedForAll = await client.readContract({
         address: flaskNft.address as `0x${string}`,
         abi: FlaskNftAbi,
         functionName: "isApprovedForAll",
@@ -156,7 +156,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
           account,
           chain: walletClient.chain,
         });
-        await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+        await client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
       }
 
       const tokenIds = flaskNft.userData.balances.filter((t) => t.rarity === rarity + 1).map((t) => t.tokenId);

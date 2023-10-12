@@ -155,9 +155,9 @@ const MintNFTModal = ({ open, setOpen }) => {
         };
       });
 
-      const publicClient = getViemClients({ chainId });
+      const client = getViemClients({ chainId });
 
-      let res = await publicClient.multicall({
+      let res = await client.multicall({
         contracts: calls,
       });
       let _rarities = res.map((data) => +data.result.toString() / 1);

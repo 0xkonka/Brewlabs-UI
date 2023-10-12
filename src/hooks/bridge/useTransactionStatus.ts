@@ -14,7 +14,7 @@ import { useNeedsClaiming } from "./useNeedsClaiming";
 
 export const useTransactionStatus = (setMessage: any) => {
   const { chainId } = useActiveChainId();
-  const publicClient = usePublicClient();
+  const client = usePublicClient();
 
   const needsClaiming = useNeedsClaiming();
   const { loading, setLoading, txHash, setTxHash }: any = useBridgeContext();
@@ -66,7 +66,7 @@ export const useTransactionStatus = (setMessage: any) => {
           const bridgeAmbAddress = getAMBAddress(bridgeChainId);
           if (needsClaiming) {
             setLoadingText("Collecting Signatures");
-            const message = await getMessage(isHome, publicClient, getAMBAddress(chainId), txHash);
+            const message = await getMessage(isHome, client, getAMBAddress(chainId), txHash);
 
             setLoadingText("Waiting for Execution");
             if (message && message.signatures) {
@@ -86,7 +86,7 @@ export const useTransactionStatus = (setMessage: any) => {
           } else {
             setLoadingText("Waiting for Execution");
 
-            const { messageId } = await getMessageData(isHome, publicClient, txHash, txReceipt);
+            const { messageId } = await getMessageData(isHome, client, txHash, txReceipt);
             const status = await messageCallStatus(bridgeAmbAddress, bridgeClient, messageId);
             if (status) {
               completeReceipt();
@@ -134,7 +134,7 @@ export const useTransactionStatus = (setMessage: any) => {
 
     const updateStatus = async () => {
       const status = !isSubscribed || (await getStatus());
-      if (!status && loading && txHash && publicClient) {
+      if (!status && loading && txHash && client) {
         await timeout(POLLING_INTERVAL);
         updateStatus();
       }
@@ -145,7 +145,7 @@ export const useTransactionStatus = (setMessage: any) => {
     return () => {
       isSubscribed = false;
     };
-  }, [loading, txHash, publicClient, getStatus]);
+  }, [loading, txHash, client, getStatus]);
 
   useEffect(() => {
     setNeedsConfirmation((needs) => chainId === homeChainId && needs);

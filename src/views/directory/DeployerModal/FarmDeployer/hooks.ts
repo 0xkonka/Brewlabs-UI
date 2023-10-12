@@ -20,8 +20,8 @@ export const useFactory = (chainId, performanceFee) => {
       duration: number,
       hasDividend: boolean
     ) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       const txData: any = {
         address: getFarmFactoryAddress(chainId) as `0x${string}`,
@@ -41,11 +41,11 @@ export const useFactory = (chainId, performanceFee) => {
         gasPrice,
         account: walletClient.account,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [walletClient, chainId, performanceFee]
   );

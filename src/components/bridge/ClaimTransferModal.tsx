@@ -39,8 +39,8 @@ const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) =>
   useEffect(() => {
     if (message && message.messageId) {
       const { messageId } = message;
-      const publicClient = getViemClients({ chainId: foreignChainId });
-      messageCallStatus(foreignAmbAddress, publicClient, messageId).then((status) => {
+      const client = getViemClients({ chainId: foreignChainId });
+      messageCallStatus(foreignAmbAddress, client, messageId).then((status) => {
         if (status) {
           setExecuted(true);
         }

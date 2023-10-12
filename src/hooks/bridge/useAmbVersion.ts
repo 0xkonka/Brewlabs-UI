@@ -13,8 +13,8 @@ export const useAmbVersion = (foreignChainId: ChainId, foreignAmbAddress: string
     const label = getNetworkLabel(foreignChainId).toUpperCase();
     const key = `${label}-AMB-VERSION`;
     const fetchVersion = async () => {
-      const publicClient = getViemClients({ chainId: foreignChainId });
-      await fetchAmbVersion(foreignAmbAddress, publicClient)
+      const client = getViemClients({ chainId: foreignChainId });
+      await fetchAmbVersion(foreignAmbAddress, client)
         .then((versionString) => {
           setForeignAmbVersion(versionString);
           sessionStorage.setItem(key, versionString);

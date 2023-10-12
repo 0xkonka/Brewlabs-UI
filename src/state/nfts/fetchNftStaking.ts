@@ -3,7 +3,7 @@ import { getNftStakingAddress } from "utils/addressHelpers";
 import { getViemClients } from "utils/viem";
 
 export const fetchNftStakingPublicData = async (chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const calls = ["performanceFee", "totalStaked", "oneTimeLimit", "startBlock", "bonusEndBlock", "rewardPerBlock"].map(
     (method) => ({
@@ -13,7 +13,7 @@ export const fetchNftStakingPublicData = async (chainId) => {
     })
   );
 
-  const result = await publicClient.multicall({ contracts: calls });
+  const result = await client.multicall({ contracts: calls });
   return {
     chainId,
     performanceFee: result[0].result.toString(),
@@ -28,8 +28,8 @@ export const fetchNftStakingPublicData = async (chainId) => {
 export const fetchNftStakingUserData = async (chainId, account) => {
   if (!account) return { chainId, stakedInfo: { amount: 0, tokenIds: [] } };
 
-  const publicClient = getViemClients({ chainId });
-  let result = await publicClient.multicall({
+  const client = getViemClients({ chainId });
+  let result = await client.multicall({
     contracts: [
       {
         address: getNftStakingAddress(chainId) as `0x${string}`,

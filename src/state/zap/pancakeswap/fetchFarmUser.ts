@@ -1,45 +1,51 @@
 import { ChainId } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
-import masterchefABI from "config/abi/externalMasterchef.json";
+import masterchefABI from "config/abi/externalMasterchef";
 import multicall from "utils/multicall";
 import { getExternalMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers";
 import { AppId } from "config/constants/types";
+import { getViemClients } from "utils/viem";
 
 export const fetchFarmUserStakedBalances = async (account: string, farmsToFetch) => {
+  const client = getViemClients({ chainId: ChainId.BSC_MAINNET });
   const masterChefAddress = getMasterChefAddress(AppId.PANCAKESWAP);
 
   const calls = farmsToFetch.map((farm) => {
     return {
       address: masterChefAddress,
-      name: "userInfo",
-      params: [farm.pid, account],
+      abi: masterchefABI,
+      functionName: "userInfo",
+      args: [farm.pid, account],
     };
   });
 
-  const rawStakedBalances = await multicall(masterchefABI, calls, ChainId.BSC_MAINNET);
+  const rawStakedBalances = await client.multicall({ contracts: calls });
   const parsedStakedBalances = rawStakedBalances.map((stakedBalance) => {
-    return new BigNumber(stakedBalance[0]._hex).toJSON();
+    return stakedBalance.result[0].toString();
   });
   const parsedTotalRewards = rawStakedBalances.map((stakedBalance) => {
-    return new BigNumber(stakedBalance[2]._hex).toJSON();
+    return stakedBalance.result[2].toString();
   });
   return [parsedStakedBalances, parsedTotalRewards];
 };
 
 export const fetchFarmUserEarnings = async (account: string, farmsToFetch) => {
+  const client = getViemClients({ chainId: ChainId.BSC_MAINNET });
+
   const masterChefAddress = getMasterChefAddress(AppId.PANCAKESWAP);
 
   const calls = farmsToFetch.map((farm) => {
     return {
       address: masterChefAddress,
-      name: "pendingCake",
-      params: [farm.pid, account],
+      abi: masterchefABI,
+      functionName: "pendingCake",
+      args: [farm.pid, account],
     };
   });
 
-  const rawEarnings = await multicall(masterchefABI, calls, ChainId.BSC_MAINNET);
+  const rawEarnings = await client.multicall({ contracts: calls });
   const parsedEarnings = rawEarnings.map((earnings) => {
-    return new BigNumber(earnings).toJSON();
+    return earnings.result.toString();
   });
   return parsedEarnings;
 };

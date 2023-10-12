@@ -132,9 +132,9 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       // approve reward token
       await onApprove(rewardCurrency.address, farm);
 
-      const publicClient = getViemClients({ chainId });
+      const client = getViemClients({ chainId });
       // calls depositRewards method
-      let amount = await publicClient.readContract({
+      let amount = await client.readContract({
         address: farm as `0x${string}`,
         abi: FarmImplAbi,
         functionName: "insufficientRewards",
@@ -147,12 +147,12 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         args: [amount],
         account: walletClient.account,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
-      await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      await client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 
       handleStartFarming(farm);
     } catch (e) {
@@ -167,7 +167,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
     setPending(true);
 
     try {
-      const publicClient = getViemClients({ chainId });
+      const client = getViemClients({ chainId });
       // calls startRewards
       const txData: any = {
         address: farm as `0x${string}`,
@@ -175,11 +175,11 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         functionName: "startReward",
         account: walletClient.account,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-      await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      await client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 
       setStep(6);
       dispatch(fetchFarmsPublicDataFromApiAsync());

@@ -7,7 +7,7 @@ import { getIndexFactoryAddress } from "utils/addressHelpers";
 import { getViemClients } from "utils/viem";
 
 export const fetchIndexFactoryData = async (chainId: ChainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
   const factoryContract = { address: getIndexFactoryAddress(chainId) as `0x${string}`, abi: IndexFactoryAbi };
   const calls = [
     { ...factoryContract, functionName: "payingToken" },
@@ -17,7 +17,7 @@ export const fetchIndexFactoryData = async (chainId: ChainId) => {
     { ...factoryContract, functionName: "brewlabsFee" },
   ];
 
-  const result = await publicClient.multicall({ contracts: calls });
+  const result = await client.multicall({ contracts: calls });
   return {
     chainId,
     payingToken: serializeToken(Object.values(tokens[chainId]).find((t: any) => t.address === result[0].result)),

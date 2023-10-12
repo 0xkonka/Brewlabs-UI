@@ -13,8 +13,8 @@ export const useFlaskNft = () => {
 
   const handleMint = useCallback(
     async (count: number, payingToken: string) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       const txData: any = {
         address: getFlaskNftAddress(chainId) as `0x${string}`,
@@ -24,19 +24,19 @@ export const useFlaskNft = () => {
         account: walletClient.account,
         gasPrice,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [walletClient, chainId]
   );
   const handleUpgradeNft = useCallback(
     async (tokenIds: number[], payingToken: string) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       const _tokenIds: any = [BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])];
 
@@ -48,12 +48,12 @@ export const useFlaskNft = () => {
         account: walletClient.account,
         gasPrice,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [walletClient, chainId]
   );

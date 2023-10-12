@@ -1,10 +1,8 @@
-import erc20 from "config/abi/erc20.json";
-import masterchefABI from "config/abi/masterape.json";
-import externalMasterchefABI from "config/abi/externalMasterchef.json";
 import BigNumber from "bignumber.js";
 import { chunk } from "lodash";
-import multicall from "utils/multicall";
 import { Farm, FarmLpAprsType, LpTokenPrices } from "state/types";
+import { getViemClients } from "utils/viem";
+
 import fetchFarmCalls, { fetchExternalCall } from "./fetchFarmCalls";
 import cleanFarmData from "./cleanFarmData";
 
@@ -15,14 +13,16 @@ const fetchFarms = async (
   farmsLpAprs: FarmLpAprsType,
   farmsConfig: Farm[]
 ) => {
+  const client = getViemClients({ chainId });
+
   const farmIds = [];
   const farmCalls = farmsConfig.flatMap((farm) => {
     farmIds.push(farm.pid);
     return fetchFarmCalls(farm, chainId);
   });
-  const externalCalls = farmsConfig.flatMap((farm) => fetchExternalCall(farm));
-  const vals = await multicall([...masterchefABI, ...erc20], farmCalls, chainId);
-  const externalVals = await multicall(externalMasterchefABI, externalCalls, chainId);
+  const externalCalls: any = farmsConfig.flatMap((farm) => fetchExternalCall(farm));
+  const vals = await client.multicall({ contracts: farmCalls, allowFailure: false });
+  const externalVals = await client.multicall({ contracts: externalCalls });
   const chunkSize = farmCalls.length / farmsConfig.length;
   const chunkedFarms = chunk(vals, chunkSize);
   return cleanFarmData(farmIds, chunkedFarms, externalVals, lpPrices, bananaPrice, farmsLpAprs, farmsConfig);

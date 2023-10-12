@@ -105,8 +105,8 @@ const isScamToken = async (token: any, account: string, chainId: number) => {
   if (!token.name?.includes("_Tracker")) {
     try {
       if (account && token.address !== DEX_GURU_WETH_ADDR) {
-        const publicClient = getViemClients({ chainId });
-        await publicClient.simulateContract({
+        const client = getViemClients({ chainId });
+        await client.simulateContract({
           address: token.address,
           abi: erc20ABI,
           functionName: "transfer",
@@ -123,7 +123,7 @@ const isScamToken = async (token: any, account: string, chainId: number) => {
 
 const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
   try {
-    const publicClient = getViemClients({ chainId });
+    const client = getViemClients({ chainId });
     let reward = {
         pendingRewards: 0,
         totalRewards: 0,
@@ -133,7 +133,7 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
       isReward = false;
 
     try {
-      const claimableResult = await publicClient.multicall({
+      const claimableResult = await client.multicall({
         contracts: [
           {
             address: token.address as `0x${string}`,
@@ -148,7 +148,7 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
         pendingRewards: any = BigInt(0),
         totalRewards: any = BigInt(0);
       try {
-        const rewardTokenAddress = await publicClient.readContract({
+        const rewardTokenAddress = await client.readContract({
           address: dividendTracker as `0x${string}`,
           abi: dividendTrackerAbi,
           functionName: "rewardToken",
@@ -183,7 +183,7 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
           args: [address],
         },
       ];
-      const rewardResult = await publicClient.multicall({ contracts: calls });
+      const rewardResult = await client.multicall({ contracts: calls });
       pendingRewards = rewardResult[0].result;
       totalRewards = rewardResult[1].result;
 

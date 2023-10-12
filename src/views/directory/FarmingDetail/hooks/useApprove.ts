@@ -14,8 +14,8 @@ const useApproveFarm = (tokenAddress, pid, contractAddress) => {
   const { data: walletClient } = useWalletClient();
 
   const handleApprove = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     const txHash = await walletClient.writeContract({
       address: tokenAddress,
@@ -27,7 +27,7 @@ const useApproveFarm = (tokenAddress, pid, contractAddress) => {
       gasPrice,
     });
 
-    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+    const receipt = await client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 
     dispatch(fetchFarmUserDataAsync({ account, chainId, pids: [pid] }));
     return receipt;

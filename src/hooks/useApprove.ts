@@ -11,8 +11,8 @@ export const useTokenApprove = () => {
 
   const handleApprove = useCallback(
     async (tokenAddress, spender) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await publicClient.getGasPrice();
+      const client = getViemClients({ chainId });
+      const gasPrice = await client.getGasPrice();
       const txHash = await walletClient.writeContract({
         address: tokenAddress as `0x${string}`,
         abi: erc721ABI,
@@ -22,7 +22,7 @@ export const useTokenApprove = () => {
         chain: walletClient.chain,
         gasPrice,
       });
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [chainId, walletClient]
   );

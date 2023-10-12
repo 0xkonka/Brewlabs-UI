@@ -3,8 +3,8 @@ import { providers } from "ethers";
 import { type HttpTransport } from "viem";
 import { type PublicClient, type WalletClient, usePublicClient, useWalletClient } from "wagmi";
 
-export function publicClientToProvider(publicClient: PublicClient) {
-  const { chain, transport } = publicClient;
+export function clientToProvider(client: PublicClient) {
+  const { chain, transport } = client;
   const network = {
     chainId: chain.id,
     name: chain.name,
@@ -21,8 +21,8 @@ export function publicClientToProvider(publicClient: PublicClient) {
 
 /** Hook to convert a viem Public Client to an ethers.js Provider. */
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
-  const publicClient = usePublicClient({ chainId });
-  return React.useMemo(() => publicClientToProvider(publicClient), [publicClient]);
+  const client = usePublicClient({ chainId });
+  return React.useMemo(() => clientToProvider(client), [client]);
 }
 
 export function walletClientToSigner(walletClient: WalletClient) {

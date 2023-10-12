@@ -15,7 +15,7 @@ import lockupStaking from "config/abi/staking/brewlabsLockup";
 import lpManagerAbi from "config/abi/brewlabsLiquidityManager.json";
 import lpManagerV2Abi from "config/abi/brewlabsLiquidityManagerV2.json";
 import zapperAbi from "config/abi/brewlabsZapInConstructor.json";
-import externalMasterChefAbi from "config/abi/externalMasterchef.json";
+import externalMasterChefAbi from "config/abi/externalMasterchef";
 import lpTokenAbi from "config/abi/lpToken.json";
 import masterChef from "config/abi/farm/masterchef";
 import masterChefV2 from "config/abi/farm/masterchefV2";

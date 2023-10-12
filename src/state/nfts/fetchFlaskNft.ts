@@ -4,7 +4,7 @@ import { getFlaskNftAddress } from "utils/addressHelpers";
 import { getViemClients } from "utils/viem";
 
 export const fetchFlaskNftPublicData = async (chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const calls = [
     "mintFee",
@@ -20,7 +20,7 @@ export const fetchFlaskNftPublicData = async (chainId) => {
     functionName: method,
   }));
 
-  const result = await publicClient.multicall({ contracts: calls });
+  const result = await client.multicall({ contracts: calls });
   return {
     chainId,
     mintFee: { brews: result[1].result.toString(), stable: result[0].result.toString() },
@@ -34,8 +34,8 @@ export const fetchFlaskNftPublicData = async (chainId) => {
 export const fetchFlaskNftUserData = async (chainId, account, tokens) => {
   if (!account) return { chainId, userData: undefined };
 
-  const publicClient = getViemClients({ chainId });
-  const res = await publicClient.readContract({
+  const client = getViemClients({ chainId });
+  const res = await client.readContract({
     address: getFlaskNftAddress(chainId) as `0x${string}`,
     abi: FlaskNftAbi,
     functionName: "balanceOf",
@@ -52,7 +52,7 @@ export const fetchFlaskNftUserData = async (chainId, account, tokens) => {
       args: [account, BigInt(i)],
     });
   }
-  let result = await publicClient.multicall({ contracts: calls });
+  let result = await client.multicall({ contracts: calls });
   const tokenIds = result.map((tokenId) => tokenId.result);
 
   calls = tokenIds.map((tokenId) => ({
@@ -61,14 +61,14 @@ export const fetchFlaskNftUserData = async (chainId, account, tokens) => {
     functionName: "rarityOf",
     args: [tokenId],
   }));
-  result = await publicClient.multicall({ contracts: calls });
+  result = await client.multicall({ contracts: calls });
 
   const balances = tokenIds.map((tokenId, index) => ({
     tokenId: +tokenId.toString(),
     rarity: +result[index].result.toString(),
   }));
 
-  const allowances = await publicClient.multicall({
+  const allowances = await client.multicall({
     contracts: tokens.map((token) => ({
       address: token,
       abi: erc20ABI,

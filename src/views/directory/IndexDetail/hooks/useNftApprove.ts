@@ -10,7 +10,7 @@ const useNftApprove = (nftAddr) => {
 
   const handleApprove = useCallback(
     async (spender) => {
-      const publicClient = getViemClients({ chainId });
+      const client = getViemClients({ chainId });
 
       const txData: any = {
         address: nftAddr as `0x${string}`,
@@ -19,7 +19,7 @@ const useNftApprove = (nftAddr) => {
         args: [spender as `0x${string}`, true],
         account: walletClient.account,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
       const txHash = await walletClient.writeContract({
@@ -28,7 +28,7 @@ const useNftApprove = (nftAddr) => {
         gas: gasLimit,
       });
 
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [nftAddr, chainId, walletClient]
   );

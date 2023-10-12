@@ -345,7 +345,7 @@ export const relayTokens = async (
 ) => {
   const { mode, mediator, address, helperContractAddress } = token;
   const mediatorAddress = (mediator ?? zeroAddress) as `0x${string}`;
-  const publicClient = getViemClients({ chainId: token.chainId });
+  const client = getViemClients({ chainId: token.chainId });
 
   switch (mode) {
     case "NATIVE": {
@@ -371,7 +371,7 @@ export const relayTokens = async (
           value: performanceFee,
           account: walletClient.account,
         };
-        let gasLimit = await publicClient.estimateContractGas(txData);
+        let gasLimit = await client.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
         return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
@@ -387,7 +387,7 @@ export const relayTokens = async (
           value: performanceFee,
           account: walletClient.account,
         };
-        let gasLimit = await publicClient.estimateContractGas(txData);
+        let gasLimit = await client.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
         return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
@@ -401,7 +401,7 @@ export const relayTokens = async (
         args: [receiver as `0x${string}`, amount],
         account: walletClient.account,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
       return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
     }
@@ -417,7 +417,7 @@ export const relayTokens = async (
           account: walletClient.account,
           value: performanceFee,
         };
-        let gasLimit = await publicClient.estimateContractGas(txData);
+        let gasLimit = await client.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
         return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
@@ -433,7 +433,7 @@ export const relayTokens = async (
           value: performanceFee,
           account: walletClient.account,
         };
-        let gasLimit = await publicClient.estimateContractGas(txData);
+        let gasLimit = await client.estimateContractGas(txData);
         gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
         return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
@@ -447,7 +447,7 @@ export const relayTokens = async (
         args: [address as `0x${string}`, receiver as `0x${string}`, amount],
         account: walletClient.account,
       };
-      let gas = await publicClient.estimateContractGas(txData);
+      let gas = await client.estimateContractGas(txData);
       gas = (gas * BigInt(1200)) / BigInt(1000);
 
       return walletClient.writeContract({ ...txData, chain: walletClient.chain, gas });

@@ -18,8 +18,8 @@ export const useApproval = (fromToken: BridgeToken, fromAmount: bigint, txHash?:
 
   useEffect(() => {
     if (fromToken && account && providerChainId === fromToken.chainId) {
-      const publicClient = getViemClients({ chainId: fromToken.chainId });
-      if (account) fetchAllowance(fromToken, account, publicClient).then(setAllowance);
+      const client = getViemClients({ chainId: fromToken.chainId });
+      if (account) fetchAllowance(fromToken, account, client).then(setAllowance);
     } else {
       setAllowance(BigInt(0));
     }
@@ -35,7 +35,7 @@ export const useApproval = (fromToken: BridgeToken, fromAmount: bigint, txHash?:
 
   const approve = useCallback(async () => {
     setUnlockLoading(true);
-    const publicClient = getViemClients({ chainId: fromToken.chainId });
+    const client = getViemClients({ chainId: fromToken.chainId });
     const approvalAmount = fromAmount;
 
     try {
@@ -43,7 +43,7 @@ export const useApproval = (fromToken: BridgeToken, fromAmount: bigint, txHash?:
       const tx = await approveToken(walletClient, fromToken, approvalAmount);
       setApprovalTxHash(tx);
 
-      await publicClient.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
+      await client.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
       setAllowance(approvalAmount);
     } catch (approveError: any) {
       if (approveError?.code === "TRANSACTION_REPLACED") {

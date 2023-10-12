@@ -1,60 +1,70 @@
-import { AppId } from "config/constants/types"
-import { FarmConfig } from "state/types"
-import { getExternalMasterChefAddress, getMasterApeAddress } from "utils/addressHelpers"
-import { Call } from "utils/multicall"
+import { erc20ABI } from "wagmi";
+import externalMasterChefAbi from "config/abi/externalMasterchef";
+import { AppId } from "config/constants/types";
+import { FarmConfig } from "state/types";
+import { getExternalMasterChefAddress, getMasterApeAddress } from "utils/addressHelpers";
 
-const fetchFarmCalls = (farm: FarmConfig, chainId: number): Call[] => {
-  const masterChefAddress = getMasterApeAddress(chainId)
-  const lpAddress = farm.lpAddresses[chainId]
+const fetchFarmCalls = (farm: FarmConfig, chainId: number) => {
+  const masterChefAddress = getMasterApeAddress(chainId);
+  const lpAddress = farm.lpAddresses[chainId];
   const calls = [
     {
+      abi: erc20ABI,
       address: farm.tokenAddresses[chainId],
-      name: 'balanceOf',
-      params: [lpAddress]
+      functionName: "balanceOf",
+      args: [lpAddress],
     },
     {
+      abi: erc20ABI,
       address: farm.quoteTokenAdresses[chainId],
-      name: 'balanceOf',
-      params: [lpAddress],
+      functionName: "balanceOf",
+      args: [lpAddress],
     },
     {
+      abi: erc20ABI,
       address: lpAddress,
-      name: 'balanceOf',
-      params: [masterChefAddress]
+      functionName: "balanceOf",
+      args: [masterChefAddress],
     },
     {
+      abi: erc20ABI,
       address: lpAddress,
-      name: 'totalSupply',
+      functionName: "totalSupply",
     },
     {
+      abi: erc20ABI,
       address: farm.tokenAddresses[chainId],
-      name: 'decimals',
+      functionName: "decimals",
     },
     {
+      abi: erc20ABI,
       address: farm.quoteTokenAdresses[chainId],
-      name: 'decimals',
+      functionName: "decimals",
     },
     {
+      abi: erc20ABI,
       address: masterChefAddress,
-      name: 'poolInfo',
-      params: [farm.pid]
+      functionName: "poolInfo",
+      args: [farm.pid],
     },
     {
+      abi: erc20ABI,
       address: masterChefAddress,
-      name: 'totalAllocPoint',
+      functionName: "totalAllocPoint",
     },
-  ]
-  return calls
-}
+  ];
+  return calls;
+};
 
-export const fetchExternalCall = (farm: FarmConfig): Call => {
-  const masterChefAddress = getExternalMasterChefAddress(AppId.APESWAP)
+export const fetchExternalCall = (farm: FarmConfig) => {
+  const masterChefAddress = getExternalMasterChefAddress(AppId.APESWAP);
   const call = {
+    abi: externalMasterChefAbi,
     address: masterChefAddress,
-    name: 'poolInfo',
-    params: [farm.pid]
-  }
-  return call
-}
+    functionName: "poolInfo",
+    args: [farm.pid],
+  };
+  return call;
+};
 
-export default fetchFarmCalls
+export default fetchFarmCalls;

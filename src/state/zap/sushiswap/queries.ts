@@ -1,4 +1,4 @@
-import { gql } from "graphql-request"
+import { gql } from "graphql-request";
 
 export const poolsQuery = gql`
   query poolsQuery(
@@ -23,7 +23,7 @@ export const poolsQuery = gql`
       }
     }
   }
-`
+`;
 
 export const masterChefV1TotalAllocPointQuery = gql`
   query masterChefV1TotalAllocPoint($id: String! = "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd") {
@@ -32,7 +32,7 @@ export const masterChefV1TotalAllocPointQuery = gql`
       totalAllocPoint
     }
   }
-`
+`;
 
 export const masterChefV1SushiPerBlockQuery = gql`
   query masterChefV1SushiPerBlock($id: String! = "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd") {
@@ -41,7 +41,7 @@ export const masterChefV1SushiPerBlockQuery = gql`
       sushiPerBlock
     }
   }
-`
+`;
 
 export const poolsV2Query = gql`
   query poolsV2Query(
@@ -66,7 +66,7 @@ export const poolsV2Query = gql`
       }
     }
   }
-`
+`;
 
 const blockFieldsQuery = gql`
   fragment blockFields on Block {
@@ -74,7 +74,7 @@ const blockFieldsQuery = gql`
     number
     timestamp
   }
-`
+`;
 
 export const blocksQuery = gql`
   query blocksQuery(
@@ -89,14 +89,14 @@ export const blocksQuery = gql`
     }
   }
   ${blockFieldsQuery}
-`
+`;
 
 export const bundleFields = gql`
   fragment bundleFields on Bundle {
     id
     ethPrice
   }
-`
+`;
 
 export const ethPriceQuery = gql`
   query ethPriceQuery($id: Int! = 1, $block: Block_height) {
@@ -105,7 +105,7 @@ export const ethPriceQuery = gql`
     }
   }
   ${bundleFields}
-`
+`;
 
 export const tokenPriceQuery = gql`
   query tokenPriceQuery($id: String!) {
@@ -114,7 +114,7 @@ export const tokenPriceQuery = gql`
       derivedETH
     }
   }
-`
+`;
 
 export const pairFieldsQuery = gql`
   fragment pairFields on Pair {
@@ -146,7 +146,7 @@ export const pairFieldsQuery = gql`
     totalSupply
     derivedETH
   }
-`
+`;
 
 export const pairsQuery = gql`
   query pair(
@@ -169,7 +169,7 @@ export const pairsQuery = gql`
     }
   }
   ${pairFieldsQuery}
-`
+`;
 
 export const tokenFieldsQuery = gql`
   fragment tokenFields on Token {
@@ -185,7 +185,7 @@ export const tokenFieldsQuery = gql`
     liquidity
     derivedETH
   }
-`
+`;
 
 export const tokenSubsetQuery = gql`
   query tokenSubsetQuery(
@@ -208,4 +208,4 @@ export const tokenSubsetQuery = gql`
     }
   }
   ${tokenFieldsQuery}
-`
+`;

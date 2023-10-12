@@ -104,8 +104,8 @@ const NFTCard = ({ nft }: { nft: any }) => {
 
     setPending(true);
     try {
-      const publicClient = getViemClients({ chainId: flaskNft.chainId });
-      const isApprovedForAll = await publicClient.readContract({
+      const client = getViemClients({ chainId: flaskNft.chainId });
+      const isApprovedForAll = await client.readContract({
         address: flaskNft.address as `0x${string}`,
         abi: FlaskNftAbi,
         functionName: "isApprovedForAll",
@@ -121,7 +121,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
           account,
           chain: walletClient.chain,
         });
-        await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+        await client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
       }
 
       await onStake([nft.tokenId]);

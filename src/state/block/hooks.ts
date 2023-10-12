@@ -16,8 +16,8 @@ export const usePollBlockNumber = () => {
   const { data } = useSWR(
     ["blockNumberFetcher", chainId],
     async () => {
-      const publicClient = getViemClients({ chainId });
-      const blockNumber = +(await publicClient.getBlockNumber()).toString();
+      const client = getViemClients({ chainId });
+      const blockNumber = +(await client.getBlockNumber()).toString();
       mutate(["blockNumber", chainId], blockNumber);
       if (!cache.get(unstable_serialize(["initialBlockNumber", chainId]))) {
         mutate(["initialBlockNumber", chainId], blockNumber);
@@ -73,8 +73,8 @@ export const useChainCurrentBlock = (chainId: number): number => {
     activeChainId === chainId ? ["blockNumber", chainId] : ["chainBlockNumber", chainId],
     activeChainId !== chainId
       ? async () => {
-          const publicClient = getViemClients({ chainId });
-          const blockNumber = +(await publicClient.getBlockNumber()).toString();
+          const client = getViemClients({ chainId });
+          const blockNumber = +(await client.getBlockNumber()).toString();
           return blockNumber;
         }
       : () => {},

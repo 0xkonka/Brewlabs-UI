@@ -34,19 +34,19 @@ export const useMediatorInfo = () => {
   );
 
   const calculateFees = useCallback(async (managerAddress: string, chainId: ChainId) => {
-    const publicClient = getViemClients({ chainId });
+    const client = getViemClients({ chainId });
     const abi = parseAbi([
       "function FOREIGN_TO_HOME_FEE() view returns (bytes32)",
       "function HOME_TO_FOREIGN_FEE() view returns (bytes32)",
     ]);
 
     const [home, foreign] = await Promise.all([
-      publicClient.readContract({
+      client.readContract({
         address: managerAddress as `0x${string}`,
         abi,
         functionName: "FOREIGN_TO_HOME_FEE",
       }),
-      publicClient.readContract({
+      client.readContract({
         address: managerAddress as `0x${string}`,
         abi,
         functionName: "HOME_TO_FOREIGN_FEE",
@@ -63,9 +63,9 @@ export const useMediatorInfo = () => {
         return;
       }
 
-      const publicClient = getViemClients({ chainId });
+      const client = getViemClients({ chainId });
       const abi = parseAbi(["function isRewardAddress(address) view returns (bool)"]);
-      const is = await publicClient.readContract({
+      const is = await client.readContract({
         address: managerAddress as `0x${string}`,
         abi,
         functionName: "isRewardAddress",

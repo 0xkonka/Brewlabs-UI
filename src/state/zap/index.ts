@@ -1,31 +1,33 @@
+import { ChainId } from "@brewlabs/sdk";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { stringify } from "querystring";
 import BigNumber from "bignumber.js";
-import { ChainId } from "@brewlabs/sdk";
+import { formatEther } from "viem";
+
 import { AppId } from "config/constants/types";
 import { pancakeFarms } from "config/constants/farms";
 import lpAprs from "config/constants/lpAprs.json";
-import multicall from "utils/multicall";
-import masterchefABI from "config/abi/pancakeMasterchef.json";
+import masterchefABI from "config/abi/pancakeMasterchef";
+import type { AppState } from "state";
 import { getPancakeMasterChefAddress as getMasterChefAddress, getBananaAddress } from "utils/addressHelpers";
-import { getBalanceAmount } from "utils/formatBalance";
 import { getLpAprsFromLocalStorage } from "utils/farmHelpers";
 import { getTokenUsdPrice } from "utils/getTokenUsdPrice";
-import type { AppState } from "state";
-import fetchFarms from "./pancakeswap/fetchFarms";
-import getPancakeFarmLpAprs from "./pancakeswap/getFarmLpAprs";
-import getFarmsPrices from "./pancakeswap/getFarmsPrices";
-import { fetchFarmUserEarnings, fetchFarmUserStakedBalances } from "./pancakeswap/fetchFarmUser";
-import { AppThunk, Farm, FarmLpAprsType, LpTokenPrices, SerializedPancakeFarm, SerializedZapState } from "../types";
-import { fetchMasterChefFarmPoolLength } from "./pancakeswap/fetchMasterChefData";
-import { fetchApeFarmUserEarnings, fetchApeFarmUserStakedBalances } from "./apeswap/fetchFarmUser";
-import fetchApeFarms from "./apeswap/fetchFarms";
+
 import fetchFarmConfig from "./apeswap/api";
+import fetchApeFarms from "./apeswap/fetchFarms";
 import getApeFarmLpAprs from "./apeswap/getFarmLpAprs";
+import { fetchApeFarmUserEarnings, fetchApeFarmUserStakedBalances } from "./apeswap/fetchFarmUser";
+import fetchFarms from "./pancakeswap/fetchFarms";
+import getFarmsPrices from "./pancakeswap/getFarmsPrices";
+import getPancakeFarmLpAprs from "./pancakeswap/getFarmLpAprs";
+import { fetchFarmUserEarnings, fetchFarmUserStakedBalances } from "./pancakeswap/fetchFarmUser";
+import { fetchMasterChefFarmPoolLength } from "./pancakeswap/fetchMasterChefData";
 import fetchSushiFarms from "./sushiswap/fetchFarms";
 import { fetchSushiFarmUserEarnings, fetchSushiFarmUserStakedBalances } from "./sushiswap/fetchFarmUser";
-import { formatEther, formatUnits } from "viem";
+import { AppThunk, Farm, FarmLpAprsType, LpTokenPrices, SerializedPancakeFarm, SerializedZapState } from "../types";
+import { getViemClients } from "utils/viem";
 
+export const BIG_ZERO = new BigNumber(0)
 const noAccountFarmConfig = pancakeFarms.map((farm) => ({
   ...farm,
   userData: {
@@ -61,22 +63,27 @@ export const fetchFarmsPublicDataAsync = createAsyncThunk<
 >(
   "zap/fetchFarmsPublicDataAsync",
   async (pids) => {
+    const client = getViemClients({ chainId: ChainId.BSC_MAINNET });
     const masterChefAddress = getMasterChefAddress();
-    const calls = [
+
+    const calls: any = [
       {
         address: masterChefAddress,
+        abi: masterchefABI,
         name: "poolLength",
       },
       {
         address: masterChefAddress,
-        name: "cakePerBlock",
-        params: [true],
+        abi: masterchefABI,
+        functionName: "cakePerBlock",
+        args: [true],
       },
     ];
-    const [[poolLength], [cakePerBlockRaw]] = await multicall(masterchefABI, calls, ChainId.BSC_MAINNET);
+    const [{ result: poolLength }, { result: cakePerBlockRaw }]: any = await client.multicall({ contracts: calls });
+
     const regularCakePerBlock = formatEther(BigInt(cakePerBlockRaw.toString()));
     const farmsToFetch = pancakeFarms.filter((farmConfig) => pids.includes(farmConfig.pid));
-    const farmsCanFetch = farmsToFetch.filter((f) => poolLength.gt(f.pid));
+    const farmsCanFetch = farmsToFetch.filter((f) => poolLength > BigInt(f.pid));
 
     const farms = await fetchFarms(farmsCanFetch);
     const farmsWithPrices = getFarmsPrices(farms);

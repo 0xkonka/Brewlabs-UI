@@ -1,50 +1,55 @@
-import { ChainId } from '@brewlabs/sdk'
-import masterchefABI from 'config/abi/pancakeMasterchef.json'
-import { chunk } from 'lodash'
-import { multicallv2 } from "utils/multicall"
-import { getPancakeMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers"
-import { getPancakeMasterChefContract as getMasterchefContract } from "utils/contractHelpers"
+import { ChainId } from "@brewlabs/sdk";
+import { chunk } from "lodash";
 
-const masterChefAddress = getMasterChefAddress()
-const masterChefContract = getMasterchefContract()
+import masterchefABI from "config/abi/pancakeMasterchef";
+import { getPancakeMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers";
+import { getPancakeMasterChefContract as getMasterchefContract } from "utils/contractHelpers";
+import { getViemClients } from "utils/viem";
+
+const masterChefAddress = getMasterChefAddress();
+const masterChefContract = getMasterchefContract();
 
 export const fetchMasterChefFarmPoolLength = async () => {
-  const poolLength = await masterChefContract.poolLength()
-  return poolLength
-}
+  const poolLength = await masterChefContract.poolLength();
+  return poolLength;
+};
 
 const masterChefFarmCalls = (farm) => {
-  const { pid } = farm
+  const { pid } = farm;
   return pid || pid === 0
     ? [
-      {
-        address: masterChefAddress,
-        name: 'poolInfo',
-        params: [pid],
-      },
-      {
-        address: masterChefAddress,
-        name: 'totalRegularAllocPoint'
-      }
-    ]
-    : [null, null]
-}
+        {
+          address: masterChefAddress,
+          abi: masterchefABI,
+          functionName: "poolInfo",
+          args: [pid],
+        },
+        {
+          address: masterChefAddress,
+          abi: masterchefABI,
+          functionName: "totalRegularAllocPoint",
+        },
+      ]
+    : [null, null];
+};
 
 export const fetchMasterChefData = async (farms) => {
-  const masterChefCalls = farms.map((farm) => masterChefFarmCalls(farm))
-  const chunkSize = masterChefCalls.flat().length / farms.length
+  const client = getViemClients({ chainId: ChainId.BSC_MAINNET });
+
+  const masterChefCalls = farms.map((farm) => masterChefFarmCalls(farm));
+  const chunkSize = masterChefCalls.flat().length / farms.length;
   const masterChefAggregatedCalls = masterChefCalls
     .filter((masterChefCall) => masterChefCall[0] !== null && masterChefCall[1] !== null)
-    .flat()
-  const masterChefMultiCallResult = await multicallv2(ChainId.BSC_MAINNET, masterchefABI, masterChefAggregatedCalls)
-  const masterChefChunkedResultRaw = chunk(masterChefMultiCallResult, chunkSize)
-  let masterChefChunkedResultCounter = 0
+    .flat();
+  const masterChefMultiCallResult = await client.multicall({ contracts: masterChefAggregatedCalls });
+  const masterChefChunkedResultRaw: any = chunk(masterChefMultiCallResult, chunkSize);
+  let masterChefChunkedResultCounter = 0;
   return masterChefCalls.map((masterChefCall) => {
     if (masterChefCall[0] === null && masterChefCall[1] === null) {
-      return [null, null]
+      return [null, null];
     }
-    const data = masterChefChunkedResultRaw[masterChefChunkedResultCounter]
-    masterChefChunkedResultCounter++
-    return data
-  })
-}
+    const data = masterChefChunkedResultRaw[masterChefChunkedResultCounter].result;
+    masterChefChunkedResultCounter++;
+    return data;
+  });
+};

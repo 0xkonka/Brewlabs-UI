@@ -24,8 +24,8 @@ export const useFetchPublicPoolsData = () => {
 
   useSlowRefreshEffect(() => {
     const fetchPoolsPublicData = async () => {
-      const publicClient = getViemClients({ chainId });
-      const blockNumber = await publicClient.getBlockNumber();
+      const client = getViemClients({ chainId });
+      const blockNumber = await client.getBlockNumber();
       dispatch(fetchPoolsPublicDataAsync(+blockNumber.toString(), chainId));
     };
 

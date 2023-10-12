@@ -1,43 +1,46 @@
-import BigNumber from "bignumber.js";
-import masterchefABI from "config/abi/externalMasterchef.json";
+import masterchefABI from "config/abi/externalMasterchef";
 import { AppId } from "config/constants/types";
 import { Farm } from "state/types";
 import { getExternalMasterChefAddress } from "utils/addressHelpers";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 export const fetchApeFarmUserStakedBalances = async (chainId: number, account: string, farmsConfig: Farm[]) => {
+  const client = getViemClients({ chainId });
   const masterChefAddress = getExternalMasterChefAddress(AppId.APESWAP);
-  const calls = farmsConfig.map((farm) => {
+  const calls: any = farmsConfig.map((farm) => {
     return {
       address: masterChefAddress,
-      name: "userInfo",
-      params: [farm.pid, account],
+      abi: masterchefABI,
+      functionName: "userInfo",
+      args: [farm.pid, account],
     };
   });
 
-  const rawStakedBalances = await multicall(masterchefABI, calls, chainId);
+  const rawStakedBalances = await client.multicall({ contracts: calls });
   const parsedStatedBalances = rawStakedBalances.map((stakedBalance) => {
-    return new BigNumber(stakedBalance[0]._hex).toJSON();
+    return stakedBalance.result[0].toString();
   });
   const parsedTotalRewards = rawStakedBalances.map((stakedBalance) => {
-    return new BigNumber(stakedBalance[2]._hex).toJSON();
+    return stakedBalance.result[2].toString();
   });
   return [parsedStatedBalances, parsedTotalRewards];
 };
 
 export const fetchApeFarmUserEarnings = async (chainId: number, account: string, farmsConfig: Farm[]) => {
+  const client = getViemClients({ chainId });
   const masterChefAddress = getExternalMasterChefAddress(AppId.APESWAP);
-  const calls = farmsConfig.map((farm) => {
+  const calls: any = farmsConfig.map((farm) => {
     return {
       address: masterChefAddress,
-      name: "pendingCake",
-      params: [farm.pid, account],
+      abi: masterchefABI,
+      functionName: "pendingCake",
+      args: [farm.pid, account],
     };
   });
 
-  const rawEarnings = await multicall(masterchefABI, calls, chainId);
+  const rawEarnings = await client.multicall({ contracts: calls });
   const parsedEarnings = rawEarnings.map((earnings) => {
-    return new BigNumber(earnings).toJSON();
+    return earnings.result.toString();
   });
   return parsedEarnings;
 };

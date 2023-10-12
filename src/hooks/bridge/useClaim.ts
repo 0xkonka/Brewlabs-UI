@@ -59,8 +59,8 @@ const useExecution = () => {
           console.log("executeSignatures", msgData);
           const tx = await executeSignatures(walletClient, foreignAmbAddress, foreignAmbVersion ?? "", msgData);
 
-          const publicClient = getViemClients({ chainId: foreignChainId });
-          await publicClient.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
+          const client = getViemClients({ chainId: foreignChainId });
+          await client.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
           setTxHash(tx);
         }
       } catch (claimError: any) {

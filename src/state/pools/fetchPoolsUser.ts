@@ -13,7 +13,7 @@ import { getViemClients } from "utils/viem";
 // Pool 0, Cake / Cake is a different kind of contract (master chef)
 // BNB pools use the native BNB token (wrapping ? unwrapping is done at the contract level)
 export const fetchPoolsAllowance = async (account, chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const nonBnbPools = pools.filter((pool) => !pool.stakingToken.isNative && pool.chainId === chainId);
   const filters = [];
@@ -33,7 +33,7 @@ export const fetchPoolsAllowance = async (account, chainId, pools) => {
           args: [account, pool.contractAddress],
         }));
 
-        const allowances = await publicClient.multicall({ contracts: calls });
+        const allowances = await client.multicall({ contracts: calls });
         nonBnbPools.forEach((pool, index) => {
           data[pool.sousId] = allowances[index].result.toString();
         });
@@ -48,7 +48,7 @@ export const fetchPoolsAllowance = async (account, chainId, pools) => {
 };
 
 export const fetchUserBalances = async (account, chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
   // Non BNB pools
   const nonBnbPools = pools.filter((pool) => !pool.stakingToken.isNative && pool.chainId === chainId);
   const filters = [];
@@ -67,7 +67,7 @@ export const fetchUserBalances = async (account, chainId, pools) => {
           functionName: "balanceOf",
           args: [account],
         }));
-        const tokenBalancesRaw = await publicClient.multicall({ contracts: calls });
+        const tokenBalancesRaw = await client.multicall({ contracts: calls });
 
         nonBnbPools.forEach((pool, index) => {
           data[pool.sousId] = tokenBalancesRaw[index].result.toString();
@@ -80,7 +80,7 @@ export const fetchUserBalances = async (account, chainId, pools) => {
   );
 
   // BNB pools
-  const bnbBalance = await publicClient.getBalance({ address: account });
+  const bnbBalance = await client.getBalance({ address: account });
   const bnbPools = pools.filter((pool) => pool.stakingToken.isNative);
   const bnbBalances = bnbPools
     .filter((p) => p.chainId === chainId)
@@ -90,7 +90,7 @@ export const fetchUserBalances = async (account, chainId, pools) => {
 };
 
 export const fetchUserStakeBalances = async (account, chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedPools = pools.filter((p) => p.chainId === chainId);
   const filters = [];
@@ -130,9 +130,9 @@ export const fetchUserStakeBalances = async (account, chainId, pools) => {
           args: [account],
         }));
 
-        const nonLockupPoolsUserInfo: any = await publicClient.multicall({ contracts: calls });
-        const lockupPoolsUserInfo: any = await publicClient.multicall({ contracts: lockupCalls });
-        const lockupV2PoolsUserInfo: any = await publicClient.multicall({ contracts: lockupV2Calls });
+        const nonLockupPoolsUserInfo: any = await client.multicall({ contracts: calls });
+        const lockupPoolsUserInfo: any = await client.multicall({ contracts: lockupCalls });
+        const lockupV2PoolsUserInfo: any = await client.multicall({ contracts: lockupV2Calls });
 
         nonLockupPools.forEach((pool, index) => {
           data.stakedBalances[pool.sousId] = nonLockupPoolsUserInfo[index].result.amount.toString();
@@ -159,7 +159,7 @@ export const fetchUserStakeBalances = async (account, chainId, pools) => {
 };
 
 export const fetchUserPendingRewards = async (account, chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedPools = pools.filter((p) => p.chainId === chainId);
   const filters = [];
@@ -196,8 +196,8 @@ export const fetchUserPendingRewards = async (account, chainId, pools) => {
             args: [account, BigInt(p.lockup)],
           }));
 
-        const nonLockupsRes = await publicClient.multicall({ contracts: calls });
-        const lockupsRes = await publicClient.multicall({ contracts: lockupCalls });
+        const nonLockupsRes = await client.multicall({ contracts: calls });
+        const lockupsRes = await client.multicall({ contracts: lockupCalls });
 
         nonLockupPools.forEach((pool, index) => {
           data[pool.sousId] = nonLockupsRes[index].result.toString();
@@ -216,7 +216,7 @@ export const fetchUserPendingRewards = async (account, chainId, pools) => {
 };
 
 export const fetchUserPendingReflections = async (account, chainId, pools) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedPools = pools.filter(
     (p) => p.sousId > 1 && (p.sousId < 10 || p.sousId > 12) && p.reflection && p.chainId === chainId
@@ -252,8 +252,8 @@ export const fetchUserPendingReflections = async (account, chainId, pools) => {
           args: [account, BigInt(p.lockup)],
         }));
 
-        const nonLockupRes = await publicClient.multicall({ contracts: calls });
-        const lockupRes = await publicClient.multicall({ contracts: lockupCalls });
+        const nonLockupRes = await client.multicall({ contracts: calls });
+        const lockupRes = await client.multicall({ contracts: lockupCalls });
 
         nonLockupReflectionPools.forEach((pool, index) => {
           data[pool.sousId] = [nonLockupRes[index].result.toString()];
@@ -265,7 +265,7 @@ export const fetchUserPendingReflections = async (account, chainId, pools) => {
         await Promise.all(
           multiReflectionPools.map(async (p) => {
             try {
-              const multiRes = await publicClient.readContract({
+              const multiRes = await client.readContract({
                 address: p.contractAddress,
                 abi: brewlabsStakingMultiABI,
                 functionName: "pendingDividends",
@@ -293,9 +293,9 @@ export const fetchUserPendingReflections = async (account, chainId, pools) => {
 };
 
 export const fetchPoolAllowance = async (pool, account, chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
-  const allowance = await publicClient.readContract({
+  const allowance = await client.readContract({
     address: pool.stakingToken.address,
     abi: erc20ABI,
     functionName: "allowance",
@@ -305,14 +305,14 @@ export const fetchPoolAllowance = async (pool, account, chainId) => {
 };
 
 export const fetchUserBalance = async (pool, account, chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   if (pool.stakingToken.isNative) {
-    const bnbBalance = await publicClient.getBalance({ address: account });
+    const bnbBalance = await client.getBalance({ address: account });
     return bnbBalance;
   }
 
-  const tokenBalance = await publicClient.readContract({
+  const tokenBalance = await client.readContract({
     address: pool.stakingToken.address,
     abi: erc20ABI,
     functionName: "balanceOf",
@@ -322,7 +322,7 @@ export const fetchUserBalance = async (pool, account, chainId) => {
 };
 
 export const fetchUserStakeBalance = async (pool, account, chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const txData: any = {
     address: pool.contractAddress,
@@ -335,7 +335,7 @@ export const fetchUserStakeBalance = async (pool, account, chainId) => {
     functionName: "userInfo",
     args: pool.poolCategory === PoolCategory.LOCKUP ? [BigInt(pool.lockup), account] : [account],
   };
-  const userInfo: any = await publicClient.readContract(txData);
+  const userInfo: any = await client.readContract(txData);
 
   return {
     stakedBalance: userInfo.result.amount.toString(),
@@ -344,7 +344,7 @@ export const fetchUserStakeBalance = async (pool, account, chainId) => {
 };
 
 export const fetchUserPendingReward = async (pool, account, chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const txData: any = [
     {
@@ -354,12 +354,12 @@ export const fetchUserPendingReward = async (pool, account, chainId) => {
       args: pool.poolCategory === PoolCategory.LOCKUP ? [account, pool.lockup] : [account],
     },
   ];
-  const rewards = await publicClient.readContract(txData);
+  const rewards = await client.readContract(txData);
   return rewards.toString();
 };
 
 export const fetchUserPendingReflection = async (pool, account, chainId) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   if (pool.poolCategory === PoolCategory.LOCKUP) {
     const txData: any = {
@@ -368,7 +368,7 @@ export const fetchUserPendingReflection = async (pool, account, chainId) => {
       functionName: "pendingDividends",
       args: pool.poolCategory === PoolCategory.LOCKUP ? [account, pool.lockup] : [account],
     };
-    const lockupRes = await publicClient.readContract(txData);
+    const lockupRes = await client.readContract(txData);
     return [lockupRes.toString()];
   }
 
@@ -379,7 +379,7 @@ export const fetchUserPendingReflection = async (pool, account, chainId) => {
       functionName: "pendingDividends",
       args: pool.poolCategory === PoolCategory.LOCKUP ? [account, pool.lockup] : [account],
     };
-    const multiRes = await publicClient.readContract(txData);
+    const multiRes = await client.readContract(txData);
     const pendings = [];
     for (let i = 0; i < pool.reflectionTokens.length; i++) {
       pendings.push(multiRes[i].toString());
@@ -394,7 +394,7 @@ export const fetchUserPendingReflection = async (pool, account, chainId) => {
     functionName: "pendingDividends",
     args: pool.poolCategory === PoolCategory.LOCKUP ? [account, pool.lockup] : [account],
   };
-  const nonLockupRes = await publicClient.readContract(txData);
+  const nonLockupRes = await client.readContract(txData);
   return [nonLockupRes.toString()];
 };
 

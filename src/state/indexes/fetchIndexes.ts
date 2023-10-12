@@ -7,7 +7,7 @@ import { sumOfArray } from "utils/functions";
 import { getViemClients } from "utils/viem";
 
 export const fetchIndexesTotalStaking = async (chainId, indexes) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const selectedIndexs = indexes.filter((p) => p.chainId === chainId);
   const filters = [];
@@ -34,7 +34,7 @@ export const fetchIndexesTotalStaking = async (chainId, indexes) => {
           }
         }
 
-        const totalStakes: any = await publicClient.multicall({ contracts: calls });
+        const totalStakes: any = await client.multicall({ contracts: calls });
 
         if (totalStakes) {
           let idx = 0;

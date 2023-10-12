@@ -9,12 +9,12 @@ import { updateFarmsUserData } from "state/farms";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
-const call_normalMethod = async (masterChefContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas(masterChefContract);
+const call_normalMethod = async (masterChefContract, walletClient: WalletClient, client: PublicClient) => {
+  let gasLimit = await client.estimateContractGas(masterChefContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
   const txHash = await walletClient.writeContract({ ...masterChefContract, gas: gasLimit });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useFarm = (
@@ -30,8 +30,8 @@ const useFarm = (
 
   const handleStake = useCallback(
     async (amount: string) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let masterChefContract = {
         address: masterchef as `0x${string}`,
@@ -44,7 +44,7 @@ const useFarm = (
         gasPrice,
       };
 
-      const receipt = await call_normalMethod(masterChefContract, walletClient, publicClient);
+      const receipt = await call_normalMethod(masterChefContract, walletClient, client);
 
       dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
       dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
@@ -55,8 +55,8 @@ const useFarm = (
 
   const handleUnstake = useCallback(
     async (amount: string) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let masterChefContract = {
         address: masterchef as `0x${string}`,
@@ -69,7 +69,7 @@ const useFarm = (
         gasPrice,
       };
 
-      let receipt = await call_normalMethod(masterChefContract, walletClient, publicClient);
+      let receipt = await call_normalMethod(masterChefContract, walletClient, client);
 
       dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
       dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
@@ -79,8 +79,8 @@ const useFarm = (
   );
 
   const handleHarvest = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -92,15 +92,15 @@ const useFarm = (
       chain: walletClient.chain,
       gasPrice,
     };
-    await call_normalMethod(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, client);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
     dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
 
   const handleHarvestReward = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -113,14 +113,14 @@ const useFarm = (
       gasPrice,
     };
 
-    await call_normalMethod(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, client);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
 
   const handleHarvestDividend = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -133,14 +133,14 @@ const useFarm = (
       gasPrice,
     };
 
-    await call_normalMethod(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, client);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
 
   const handleCompoundReward = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -153,14 +153,14 @@ const useFarm = (
       gasPrice,
     };
 
-    await call_normalMethod(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, client);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "earnings", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);
 
   const handleCompoundDividend = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -173,7 +173,7 @@ const useFarm = (
       gasPrice,
     };
 
-    await call_normalMethod(masterChefContract, walletClient, publicClient);
+    await call_normalMethod(masterChefContract, walletClient, client);
 
     dispatch(updateFarmsUserData({ pid, farmId, field: "reflections", value: "0" }));
   }, [pid, farmId, chainId, masterchef, performanceFee, dispatch, walletClient]);

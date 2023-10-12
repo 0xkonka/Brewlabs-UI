@@ -12,8 +12,8 @@ export const useNftStaking = (performanceFee) => {
 
   const handleStake = useCallback(
     async (tokenIds: number[]) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await publicClient.getGasPrice();
+      const client = getViemClients({ chainId });
+      const gasPrice = await client.getGasPrice();
 
       const txData: any = {
         address: getNftStakingAddress(chainId) as `0x${string}`,
@@ -24,18 +24,18 @@ export const useNftStaking = (performanceFee) => {
         account: walletClient.account,
         gasPrice,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
       gasLimit = (gasLimit * BigInt(1200)) / BigInt(1000);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [chainId, walletClient, performanceFee]
   );
 
   const handleClaim = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await publicClient.getGasPrice();
+    const client = getViemClients({ chainId });
+    const gasPrice = await client.getGasPrice();
 
     const txData: any = {
       address: getNftStakingAddress(chainId) as `0x${string}`,
@@ -45,16 +45,16 @@ export const useNftStaking = (performanceFee) => {
       account: walletClient.account,
       gasPrice,
     };
-    let gasLimit = await publicClient.estimateContractGas(txData);
+    let gasLimit = await client.estimateContractGas(txData);
 
     const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-    return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+    return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
   }, [chainId, walletClient, performanceFee]);
 
   const handleUnstake = useCallback(
     async (amount: number) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await publicClient.getGasPrice();
+      const client = getViemClients({ chainId });
+      const gasPrice = await client.getGasPrice();
 
       const txData: any = {
         address: getNftStakingAddress(chainId) as `0x${string}`,
@@ -65,18 +65,18 @@ export const useNftStaking = (performanceFee) => {
         account: walletClient.account,
         gasPrice,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [chainId, walletClient, performanceFee]
   );
 
   const handleUnstakeNft = useCallback(
     async (tokenId: number) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await publicClient.getGasPrice();
+      const client = getViemClients({ chainId });
+      const gasPrice = await client.getGasPrice();
 
       const txData: any = {
         address: getNftStakingAddress(chainId) as `0x${string}`,
@@ -87,10 +87,10 @@ export const useNftStaking = (performanceFee) => {
         account: walletClient.account,
         gasPrice,
       };
-      let gasLimit = await publicClient.estimateContractGas(txData);
+      let gasLimit = await client.estimateContractGas(txData);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
-      return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+      return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
     },
     [chainId, walletClient, performanceFee]
   );

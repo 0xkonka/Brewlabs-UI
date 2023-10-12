@@ -17,8 +17,8 @@ import {
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
-const zapIn = async (indexContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  const queries = await publicClient.readContract({
+const zapIn = async (indexContract, walletClient: WalletClient, client: PublicClient) => {
+  const queries = await client.readContract({
     address: indexContract.address,
     abi: indexContract.abi,
     functionName: "precomputeZapIn",
@@ -37,16 +37,16 @@ const zapIn = async (indexContract, walletClient: WalletClient, publicClient: Pu
 
   indexContract.args = [...indexContract.args, trades];
 
-  let gasLimit = await publicClient.estimateContractGas(indexContract);
+  let gasLimit = await client.estimateContractGas(indexContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
   const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const claimTokens = async (indexContract, category, walletClient: WalletClient, publicClient: PublicClient) => {
+const claimTokens = async (indexContract, category, walletClient: WalletClient, client: PublicClient) => {
   if (category > 0) {
-    const queries = await publicClient.readContract({
+    const queries = await client.readContract({
       address: indexContract.address,
       abi: indexContract.abi,
       functionName: "precomputeZapOut",
@@ -60,15 +60,15 @@ const claimTokens = async (indexContract, category, walletClient: WalletClient, 
     indexContract.args = [...indexContract.args, trades];
   }
 
-  let gasLimit = await publicClient.estimateContractGas(indexContract);
+  let gasLimit = await client.estimateContractGas(indexContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
   const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const zapOut = async (indexContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  const queries = await publicClient.readContract({
+const zapOut = async (indexContract, walletClient: WalletClient, client: PublicClient) => {
+  const queries = await client.readContract({
     address: indexContract.address,
     abi: indexContract.abi,
     functionName: "precomputeZapOut",
@@ -88,19 +88,19 @@ const zapOut = async (indexContract, walletClient: WalletClient, publicClient: P
   }
   indexContract.args = [...indexContract.args, trades];
 
-  let gasLimit = await publicClient.estimateContractGas(indexContract);
+  let gasLimit = await client.estimateContractGas(indexContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
   const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
-const call_normalMethod = async (indexContract, walletClient: WalletClient, publicClient: PublicClient) => {
-  let gasLimit = await publicClient.estimateContractGas(indexContract);
+const call_normalMethod = async (indexContract, walletClient: WalletClient, client: PublicClient) => {
+  let gasLimit = await client.estimateContractGas(indexContract);
   gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
 
   const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
-  return publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
@@ -110,8 +110,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
 
   const handleZapIn = useCallback(
     async (token, amount, percents) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -123,7 +123,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
         chain: walletClient.chain,
         gasPrice,
       };
-      const receipt = await zapIn(indexContract, walletClient, publicClient);
+      const receipt = await zapIn(indexContract, walletClient, client);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
@@ -135,8 +135,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
 
   const handleZapOut = useCallback(
     async (token) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -147,7 +147,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
         chain: walletClient.chain,
         gasPrice,
       };
-      const receipt = await zapOut(indexContract, walletClient, publicClient);
+      const receipt = await zapOut(indexContract, walletClient, client);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
@@ -159,8 +159,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
 
   const handleClaim = useCallback(
     async (percent) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -171,7 +171,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
         chain: walletClient.chain,
         gasPrice,
       };
-      const receipt = await claimTokens(indexContract, version, walletClient, publicClient);
+      const receipt = await claimTokens(indexContract, version, walletClient, client);
 
       dispatch(fetchIndexPublicDataAsync(pid));
       dispatch(updateUserStakings(pid, account, chainId));
@@ -182,8 +182,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
   );
 
   const handleMintNft = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let indexContract = {
       address: contractAddress as `0x${string}`,
@@ -195,7 +195,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(indexContract, walletClient, client);
 
     dispatch(updateUserStakings(pid, account, chainId));
     dispatch(updateUserBalance(account, chainId));
@@ -205,8 +205,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
 
   const handleStakeNft = useCallback(
     async (tokenId) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -218,7 +218,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
         chain: walletClient.chain,
         gasPrice,
       };
-      const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
+      const receipt = await call_normalMethod(indexContract, walletClient, client);
 
       dispatch(updateUserStakings(pid, account, chainId));
       dispatch(updateUserBalance(account, chainId));
@@ -229,8 +229,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
   );
 
   const handleMintDeployerNft = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let indexContract = {
       address: contractAddress as `0x${string}`,
@@ -242,7 +242,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(indexContract, walletClient, client);
 
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
@@ -250,8 +250,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
   }, [account, chainId, contractAddress, version, performanceFee, dispatch, walletClient]);
 
   const handleStaketDeployerNft = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let indexContract = {
       address: contractAddress as `0x${string}`,
@@ -263,7 +263,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(indexContract, walletClient, client);
 
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
@@ -271,8 +271,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
   }, [account, chainId, contractAddress, version, performanceFee, dispatch, walletClient]);
 
   const handleUnstaketDeployerNft = useCallback(async () => {
-    const publicClient = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+    const client = getViemClients({ chainId });
+    const gasPrice = await getNetworkGasPrice(client, chainId);
 
     let indexContract = {
       address: contractAddress as `0x${string}`,
@@ -284,7 +284,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
       chain: walletClient.chain,
       gasPrice,
     };
-    const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
+    const receipt = await call_normalMethod(indexContract, walletClient, client);
 
     dispatch(updateUserBalance(account, chainId));
     dispatch(updateUserDeployerNftInfo(account, chainId));
@@ -293,8 +293,8 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
 
   const handleUpdateFeeAddresss = useCallback(
     async (wallet) => {
-      const publicClient = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(publicClient, chainId);
+      const client = getViemClients({ chainId });
+      const gasPrice = await getNetworkGasPrice(client, chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -306,7 +306,7 @@ const useIndexImpl = (pid, contractAddress, version, performanceFee) => {
         chain: walletClient.chain,
         gasPrice,
       };
-      const receipt = await call_normalMethod(indexContract, walletClient, publicClient);
+      const receipt = await call_normalMethod(indexContract, walletClient, client);
 
       dispatch(updateUserBalance(account, chainId));
       dispatch(updateUserDeployerNftInfo(account, chainId));

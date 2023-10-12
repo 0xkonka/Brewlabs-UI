@@ -95,9 +95,9 @@ const getFeeCollected = async () => {
       { chainId: 56, address: "0x408c4aDa67aE1244dfeC7D609dea3c232843189A" },
       { chainId: 56, address: "0x5Ac58191F3BBDF6D037C6C6201aDC9F99c93C53A" },
     ].map(async (data) => {
-      const publicClient = getViemClients({ chainId: data.chainId });
+      const client = getViemClients({ chainId: data.chainId });
 
-      const balance: any = await publicClient.getBalance({ address: data.address as `0x${string}` });
+      const balance: any = await client.getBalance({ address: data.address as `0x${string}` });
       balances[data.chainId] += +balance.toString() / Math.pow(10, 18);
     })
   );

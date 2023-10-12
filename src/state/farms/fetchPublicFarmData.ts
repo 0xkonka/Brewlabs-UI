@@ -27,14 +27,14 @@ type PublicFarmData = {
 
 export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const { poolId, chainId } = farm;
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   // Only make masterchef calls if farm has poolId
   let info;
   if (farm.version) {
     info =
       farm.poolId || farm.poolId === 0
-        ? await publicClient.readContract({
+        ? await client.readContract({
             address: farm.contractAddress as `0x${string}`,
             abi: masterchefV2ABI,
             functionName: "poolInfo",
@@ -44,7 +44,7 @@ export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> =
   } else {
     info =
       farm.poolId || farm.poolId === 0
-        ? await publicClient.readContract({
+        ? await client.readContract({
             address: farm.contractAddress as `0x${string}`,
             abi: masterchefABI,
             functionName: "poolInfo",
@@ -55,7 +55,7 @@ export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> =
 
   const [totalAllocPoint, rewardPerBlock, startBlock] =
     farm.poolId || farm.poolId === 0
-      ? await publicClient.multicall({
+      ? await client.multicall({
           contracts: [
             {
               address: farm.contractAddress as `0x${string}`,
@@ -75,7 +75,7 @@ export const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> =
           ],
         })
       : [null, null, null];
-console.log(info)
+  console.log(info);
   const allocPoint = info ? info.result.allocPoint : BIG_ZERO;
   const depositFee = info ? info.depositFee : BIG_ZERO;
   const withdrawFee = info ? info.withdrawFee : BIG_ZERO;
@@ -83,7 +83,7 @@ console.log(info)
 
   let performanceFee = BIG_ZERO;
   if (farm.isServiceFee) {
-    const feeInfo = await publicClient.readContract({
+    const feeInfo = await client.readContract({
       address: farm.contractAddress as `0x${string}`,
       abi: masterchefABI,
       functionName: "performanceFee",
@@ -115,7 +115,7 @@ export const fetchFarms = async (farmsToFetch: SerializedFarmConfig[]) => {
 };
 
 export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: SerializedFarm[]) => {
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
   const filters = [];
   for (let i = 0; i < farmsToFetch.length; i += MULTICALL_FETCH_LIMIT) {
@@ -130,7 +130,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
         const commonFarms = batch.filter((farm) => !farm.version || farm.version <= Version.V2);
         const compoundFarms = batch.filter((farm) => farm.version > Version.V2);
 
-        const totalStakes: any = await publicClient.multicall({
+        const totalStakes: any = await client.multicall({
           contracts: commonFarms.map((farm) => ({
             address: farm.lpAddress,
             abi: erc20ABI,
@@ -145,7 +145,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
           });
         }
 
-        const v3TotalStakes: any = await publicClient.multicall({
+        const v3TotalStakes: any = await client.multicall({
           contracts: compoundFarms
             .filter((f) => !f.category)
             .map((farm) => ({
@@ -167,7 +167,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
             });
         }
 
-        const v3ImplTotalStakes: any = await publicClient.multicall({
+        const v3ImplTotalStakes: any = await client.multicall({
           contracts: compoundFarms
             .filter((f) => f.category)
             .map((farm) => ({
@@ -199,7 +199,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
 };
 
 export const fetchFarmTotalRewards = async (farm) => {
-  const publicClient = getViemClients({ chainId: farm.chainId });
+  const client = getViemClients({ chainId: farm.chainId });
   let availableRewards, availableReflections;
   if (farm.pid > 10) {
     let calls = [
@@ -214,7 +214,7 @@ export const fetchFarmTotalRewards = async (farm) => {
         functionName: "availableDividendTokens",
       },
     ];
-    [availableRewards, availableReflections] = await publicClient.multicall({ contracts: calls });
+    [availableRewards, availableReflections] = await client.multicall({ contracts: calls });
   } else {
     let calls = [
       {
@@ -233,10 +233,10 @@ export const fetchFarmTotalRewards = async (farm) => {
         args: [farm.contractAddress],
       },
     ];
-    [availableRewards, availableReflections] = await publicClient.multicall({ contracts: calls });
+    [availableRewards, availableReflections] = await client.multicall({ contracts: calls });
 
     if (farm.reflectionToken?.isNative) {
-      availableReflections = { result: await publicClient.getBalance({address: farm.contractAddress}) };
+      availableReflections = { result: await client.getBalance({ address: farm.contractAddress }) };
     }
   }
 

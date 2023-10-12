@@ -61,9 +61,9 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
     setPending(true);
 
     try {
-      const publicClient = getViemClients({ chainId });
+      const client = getViemClients({ chainId });
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
-        const allowance = await publicClient.readContract({
+        const allowance = await client.readContract({
           address: factory.payingToken.address as `0x${string}`,
           abi: erc20ABI,
           functionName: "allowance",

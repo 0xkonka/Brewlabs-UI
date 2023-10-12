@@ -5,9 +5,9 @@ import { getViemClients } from "utils/viem";
 export const fetchMirrorNftUserData = async (chainId, account) => {
   if (!account) return { chainId, userData: undefined };
 
-  const publicClient = getViemClients({ chainId });
+  const client = getViemClients({ chainId });
 
-  const res = await publicClient.readContract({
+  const res = await client.readContract({
     address: getMirrorNftAddress(chainId) as `0x${string}`,
     abi: MirrorNftAbi,
     functionName: "balanceOf",
@@ -25,7 +25,7 @@ export const fetchMirrorNftUserData = async (chainId, account) => {
       args: [account, BigInt(i)],
     });
   }
-  let result = await publicClient.multicall({ contracts: calls });
+  let result = await client.multicall({ contracts: calls });
   const tokenIds = result.map((tokenId) => tokenId.result);
 
   calls = tokenIds.map((tokenId) => ({
@@ -34,7 +34,7 @@ export const fetchMirrorNftUserData = async (chainId, account) => {
     functionName: "rarityOf",
     args: [tokenId],
   }));
-  result = await publicClient.multicall({ contracts: calls });
+  result = await client.multicall({ contracts: calls });
 
   const balances = tokenIds.map((tokenId, index) => ({
     tokenId: +tokenId.toString(),

@@ -1,23 +1,27 @@
-import { AppId, Chef } from "config/constants/types";
 import BigNumber from "bignumber.js";
-import masterchefABI from "config/abi/externalMasterchef.json";
-import multicall from "utils/multicall";
-import { BIG_ZERO } from "utils/bigNumber";
+
+import masterchefABI from "config/abi/externalMasterchef";
+import { AppId, Chef } from "config/constants/types";
 import { getExternalMasterChefAddress } from "utils/addressHelpers";
+import { getViemClients } from "utils/viem";
 
 const fetchFarms = async (chainId: number, farmsConfig) => {
+  const client = getViemClients({ chainId });
+
   const masterChefAddress = getExternalMasterChefAddress(AppId.SUSHISWAP, Chef.MASTERCHEF);
   const masterChefV2Address = getExternalMasterChefAddress(AppId.SUSHISWAP, Chef.MASTERCHEF_V2);
+
   const masterChefCalls = farmsConfig.map((farm) => ({
     address: farm.chef === Chef.MASTERCHEF ? masterChefAddress : masterChefV2Address,
-    name: "poolInfo",
-    params: [farm.id],
+    abi: masterchefABI,
+    functionName: "poolInfo",
+    args: [farm.id],
   }));
-  const masterChefMultiCallResult = await multicall(masterchefABI, masterChefCalls, chainId);
+  const masterChefMultiCallResult = await client.multicall({ contracts: masterChefCalls });
   return farmsConfig.map((farm, index) => {
-    const info = masterChefMultiCallResult[index];
-    const totalRewards = info ? new BigNumber(info.totalBoostedShare?._hex) : new BigNumber(0);
-    const totalSupply = info ? new BigNumber(info.totalRewards?._hex) : new BigNumber(0);
+    const info: any = masterChefMultiCallResult[index].result;
+    const totalRewards = info ? new BigNumber(info.totalBoostedShare.toString()) : new BigNumber(0);
+    const totalSupply = info ? new BigNumber(info.totalRewards.toString()) : new BigNumber(0);
     return {
       ...farm,
       totalSupply: totalSupply.toJSON(),
