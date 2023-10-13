@@ -194,36 +194,59 @@ const FindProject = () => {
           <div className="mt-10 flex h-fit w-[450px] flex-col flex-wrap text-sm xsm:h-[300px]">
             {items.map((item: any, i) => {
               return (
-                <div
-                  key={i}
-                  className={`${
-                    selectedItem === i
-                      ? "text-primary"
-                      : item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
-                      ? "text-white hover:opacity-70"
-                      : "text-tailwind"
-                  } my-1.5 mr-8 flex cursor-pointer items-center font-roboto font-bold`}
-                  onClick={() =>
-                    item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
-                  }
-                >
-                  <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
-                    {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
-                      ? checkCircleSVG
-                      : XMarkSVG}
+                <>
+                  <div
+                    key={i}
+                    className={`${
+                      selectedItem === i
+                        ? "text-primary"
+                        : item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
+                        ? "text-white hover:opacity-70"
+                        : "text-tailwind"
+                    } my-1.5 mr-8 flex cursor-pointer items-center font-roboto font-bold`}
+                    onClick={() =>
+                      item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
+                    }
+                  >
+                    <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
+                      {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
+                        ? checkCircleSVG
+                        : XMarkSVG}
+                    </div>
+                    <div>{item.name}</div>
+                    {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                      <Soon className="!relative !top-0 !text-[10px]" />
+                    ) : (
+                      ""
+                    )}
                   </div>
-                  <div>{item.name}</div>
-                  {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
-                    <Soon className="!relative !top-0 !text-[10px]" />
+
+                  {selectedItem === i ? (
+                    <div className="primary-shadow my-4 xsm:hidden flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
+                      <div className="text-2xl text-primary">{items[selectedItem].name}</div>
+                      <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
+                      <div className="flex w-full flex-1 items-end justify-end">
+                        <a
+                          target="_blank"
+                          href={
+                            selectedItem === 14
+                              ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
+                              : items[selectedItem].link
+                          }
+                        >
+                          <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
+                        </a>
+                      </div>
+                    </div>
                   ) : (
                     ""
                   )}
-                </div>
+                </>
               );
             })}
           </div>
           {selectedItem !== -1 ? (
-            <div className="primary-shadow mt-10 flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
+            <div className="primary-shadow mt-10 xsm:flex hidden h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
               <div className="text-2xl text-primary">{items[selectedItem].name}</div>
               <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
               <div className="flex w-full flex-1 items-end justify-end">
