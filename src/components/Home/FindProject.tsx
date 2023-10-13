@@ -194,9 +194,8 @@ const FindProject = () => {
           <div className="mt-10 flex h-fit w-[450px] flex-col flex-wrap text-sm xsm:h-[300px]">
             {items.map((item: any, i) => {
               return (
-                <>
+                <div key={i}>
                   <div
-                    key={i}
                     className={`${
                       selectedItem === i
                         ? "text-primary"
@@ -222,7 +221,7 @@ const FindProject = () => {
                   </div>
 
                   {selectedItem === i ? (
-                    <div className="primary-shadow my-4 xsm:hidden flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
+                    <div className="primary-shadow my-4 flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold xsm:hidden">
                       <div className="text-2xl text-primary">{items[selectedItem].name}</div>
                       <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
                       <div className="flex w-full flex-1 items-end justify-end">
@@ -241,12 +240,12 @@ const FindProject = () => {
                   ) : (
                     ""
                   )}
-                </>
+                </div>
               );
             })}
           </div>
           {selectedItem !== -1 ? (
-            <div className="primary-shadow mt-10 xsm:flex hidden h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold">
+            <div className="primary-shadow mt-10 hidden h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold xsm:flex">
               <div className="text-2xl text-primary">{items[selectedItem].name}</div>
               <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
               <div className="flex w-full flex-1 items-end justify-end">
