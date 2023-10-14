@@ -7,24 +7,24 @@ import { isAddress } from "utils";
 import { BigNumberFormat } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-export default function BalanceInfo({ currency, balances, price, lpPrice }) {
+export default function BalanceInfo({ selectedPair, balances, price, lpPrice }) {
   const [switchBalance, setSwitchBalance] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const balance = currency
+  const balance = selectedPair
     ? switchBalance
-      ? balances && balances[currency.chainId]
-        ? balances[currency.chainId][1].balance
+      ? balances && balances[selectedPair.chainId]
+        ? balances[selectedPair.chainId][1].balance
         : 0
-      : balances && balances[currency.chainId]
-      ? balances[currency.chainId][0].balance
+      : balances && balances[selectedPair.chainId]
+      ? balances[selectedPair.chainId][0].balance
       : 0
     : 0;
 
-  const symbol = currency
+  const symbol = selectedPair
     ? switchBalance
-      ? `${currency.symbols[0]}-${currency.symbols[1]}`
-      : currency.symbols[0]
+      ? `${selectedPair.baseToken.symbol}-${selectedPair.quoteToken.symbol}`
+      : selectedPair.baseToken.symbol
     : "";
 
   const onCopyAddress = () => {
@@ -32,15 +32,18 @@ export default function BalanceInfo({ currency, balances, price, lpPrice }) {
     setTimeout(() => {
       setIsCopied(false);
     }, 1000);
-    navigator.clipboard.writeText(switchBalance ? currency.address : currency.tokenAddresses[0]);
+    navigator.clipboard.writeText(switchBalance ? selectedPair.address : selectedPair.baseToken.address);
   };
 
   return (
     <div className="primary-shadow mt-2 flex w-[320px] items-center justify-between rounded-[6px] bg-[#B9B8B80D] p-3">
-      <div className="flex cursor-pointer items-center" onClick={() => setSwitchBalance(!switchBalance)}>
-        <div className={`mr-2 text-white ${switchBalance ? "-scale-y-100" : ""}`}>{ChevronDownSVG}</div>
+      <div
+        className="flex cursor-pointer items-center"
+        //  onClick={() => setSwitchBalance(!switchBalance)}
+      >
+        {/* <div className={`mr-2 text-white ${switchBalance ? "-scale-y-100" : ""}`}>{ChevronDownSVG}</div> */}
         <TokenLogo
-          src={getTokenLogoURL(isAddress(currency.tokenAddresses[0]), currency.chainId)}
+          src={getTokenLogoURL(isAddress(selectedPair.baseToken.address), selectedPair.chainId)}
           classNames="primary-shadow h-8 w-8 rounded-full"
         />
 

@@ -195,7 +195,7 @@ const InfoCarousel = () => {
         ) : (
           `${apr.toFixed(2)}%`
         ),
-      tooltip: "Best performing NFT staking pool.",
+      tooltip: "NFT minting fees (stablecoin) are designated to the following categories: 50% of mint fee to NFT staking protocol, 25% of mint fees to Brewlabs Treasury, 25% of mint fees to Brewlabs development fund. 100% of all BREWLABS tokens used in mint fees are sent to Brewlabs Treasury.",
       subItem: {
         value:
           homeDatas.nftStakings.stakedCount === null ? (

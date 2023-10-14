@@ -1,21 +1,18 @@
 import { ChartSquareSVG, NFTSVG, SwitchSVG } from "@components/dashboard/assets/svgs";
 import { SearchInput } from "./SearchInput";
 import { useGlobalState } from "state";
-import CurrencySelector from "@components/CurrencySelector";
-import { DEX_GURU_CHAIN_NAME } from "config";
-import { useRouter } from "next/router";
 import UserDashboard from "@components/dashboard/UserDashboard";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { getChainLogo } from "utils/functions";
+import { NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
+import { useDexPrice } from "@hooks/useTokenPrice";
+import NFTComponent from "@components/NFTComponent";
 
 export default function Header({ showReverse, setShowReverse }) {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
-
-  const router = useRouter();
-
-  function onUserInput(input, currency) {}
-  async function onCurrencySelect(input, currency) {
-    router.push(`/chart/${DEX_GURU_CHAIN_NAME[currency.chainId]}/${currency.address}`);
-  }
+  const { chainId } = useActiveChainId();
+  const { price } = useDexPrice(chainId, WNATIVE[chainId].address.toLowerCase());
 
   return (
     <div className="relative z-[101] mt-10 flex">
@@ -32,12 +29,21 @@ export default function Header({ showReverse, setShowReverse }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div
-          className={`ml-4 mt-4 hidden w-fit items-center justify-end text-tailwind xsm:mt-0 xsm:flex ${
-            showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
-          }`}
-        >
+      <div
+        className={`ml-4 mt-4 hidden w-fit items-center justify-between text-tailwind xsm:mt-0 xsm:flex ${
+          showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
+        }`}
+      >
+        <div className="primary-shadow mr-4 flex h-[44px] items-center rounded-md bg-[#202023] p-2.5 font-roboto text-xs font-medium text-white">
+          <img src={getChainLogo(chainId)} alt={""} className="h-4 w-4 rounded-full" />
+          <div className="ml-1.5 leading-[1.2]">
+            <div>{NATIVE_CURRENCIES[chainId].symbol}</div>
+            <div>
+              {(price ?? 0).toFixed(2)} <span className="text-[10px] text-[#FFFFFF80]">USD</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex">
           <div
             className="mr-4 cursor-pointer  transition hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
             onClick={() => {
@@ -53,12 +59,7 @@ export default function Header({ showReverse, setShowReverse }) {
           >
             {SwitchSVG}
           </div>
-          <div
-            className="tooltip cursor-pointer transition  hover:text-white [&>svg]:!h-5 [&>svg]:!w-5"
-            data-tip="No Brewlabs NFT found."
-          >
-            {NFTSVG}
-          </div>
+          <NFTComponent />
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { fetchTradingHistoriesByDexScreener } from "@hooks/useTokenAllPairs";
 import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshEffect";
 
 let wrappedQuery;
-export default function SwapHistory({ currency }) {
+export default function SwapHistory({ selectedPair }) {
   const { address: account } = useAccount();
   const [showType, setShowType] = useState(0);
   const [criteria, setCriteria] = useState("");
@@ -21,9 +21,10 @@ export default function SwapHistory({ currency }) {
 
   const getQuery = () => {
     let query: any = {
-      pair: currency.address,
-      quote: currency.tokenAddresses[1],
+      pair: selectedPair.address,
+      quote: selectedPair.quoteToken.address,
       tb,
+      a: selectedPair.a,
     };
     switch (showType) {
       case 0:
@@ -55,12 +56,12 @@ export default function SwapHistory({ currency }) {
           ...query,
           account: criteria ? criteria.toLowerCase() : "0x0",
           type: "buyOrSell",
-          pool: currency.address,
+          pool: selectedPair.address,
         };
     }
   };
 
-  const stringifiedValue = JSON.stringify({ showType, address: currency.address, tb, criteria });
+  const stringifiedValue = JSON.stringify({ showType, address: selectedPair.address, tb, criteria });
 
   useEffect(() => {
     const query: any = getQuery();
@@ -70,7 +71,7 @@ export default function SwapHistory({ currency }) {
     setLoading(true);
     setHistories([]);
     wrappedQuery = JSON.stringify(query);
-    fetchTradingHistoriesByDexScreener(query, currency.chainId)
+    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
           setHistories(result);
@@ -86,13 +87,13 @@ export default function SwapHistory({ currency }) {
   useEffect(() => {
     setTotalHistories([]);
     setTB(0);
-  }, [showType, currency.address, criteria]);
+  }, [showType, selectedPair.address, criteria]);
 
   useFastRefreshEffect(() => {
     let query = getQuery();
     query.tb = 0;
 
-    fetchTradingHistoriesByDexScreener(query, currency.chainId)
+    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) setRecentHistories(result);
       })
@@ -131,15 +132,22 @@ export default function SwapHistory({ currency }) {
   return (
     <div className="duraton-300 transition-all">
       <HistoryToolBar showType={showType} setShowType={setShowType} criteria={criteria} setCriteria={setCriteria} />
-      <UserInfo currency={currency} active={showType >= 3} account={showType === 6 ? criteria : account} />
+      <UserInfo
+        selectedPair={selectedPair}
+        active={showType >= 3}
+        account={showType === 6 ? criteria : account}
+        setShowType={setShowType}
+        setCriteria={setCriteria}
+      />
       <HistoryList
         histories={totalHistories}
-        currency={currency}
+        selectedPair={selectedPair}
         loading={loading}
         tb={tb}
         setTB={setTB}
         setCriteria={setCriteria}
         setShowType={setShowType}
+        isAccount={showType === 6}
       />
     </div>
   );

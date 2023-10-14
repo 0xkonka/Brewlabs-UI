@@ -4,7 +4,7 @@ import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
 
 export default function MomentumInfo({ volumeDatas }) {
   const activeRarity = useActiveNFT();
-  const isActive = activeRarity >= 1;
+  const isActive = activeRarity >= 0;
 
   const buyAmount = volumeDatas["txn (usd)"]["7d"].Buys;
   const sellAmount = volumeDatas["txn (usd)"]["7d"].Sells;

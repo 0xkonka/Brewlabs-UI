@@ -1,5 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import axios from "axios";
+import { DEXSCREENER_CHAINNAME } from "config";
 
 const lastBarsCache = new Map();
 
@@ -11,9 +12,9 @@ const config = {
 
 const resolutionToSeconds = (r) => {
   if (r === "D") {
-    return "1D";
+    return 1440;
   }
-  return r;
+  return Number(r);
 };
 
 export default {
@@ -32,15 +33,13 @@ export default {
       onResolveErrorCallback("No Symbol Name");
       return;
     }
-    const { data: symbolItem } = await axios.get(`https://api.dex.guru/v1/tradingview/symbols?symbol=${symbolName}`);
-
     const symbolInfo = {
-      id: symbolItem.full_name,
-      name: symbolItem.symbol,
-      description: symbolItem.description,
+      id: "",
+      name: "",
+      description: "",
       exchange: "Brewlabs",
-      ticker: symbolItem.full_name,
-      full_name: symbolItem.full_name,
+      ticker: symbolName,
+      full_name: "",
       type: "crypto",
       session: "24x7",
       data_status: "pulsed",
@@ -63,41 +62,26 @@ export default {
 
   getBars: async (symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) => {
     try {
-      console.log("Resolution", resolution);
-      const { data } = await axios.get(
-        `https://api.dex.guru/v1/tradingview/history?symbol=${symbolInfo.ticker}&resolution=${resolutionToSeconds(
-          resolution
-        )}&from=${from}&to=${to}`
-      );
-      if (!data || data.s !== "ok") {
-        // "noData" should be set if there is no data in the requested period.
-        onHistoryCallback([], {
-          noData: true,
-        });
-        return;
-      }
+      console.log("Resolution", resolution, from, to);
+      const resSec = resolutionToSeconds(resolution);
+      const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
+        to * 1000
+      }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
+      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+        url,
+      });
+      const data = response.result.bars;
       let bars = [];
-      const volumePresent = data.v !== undefined;
-      const ohlPresent = data.o !== undefined;
-
-      for (let i = 0; i < data.t.length; ++i) {
+      if (!data || !data.length) return;
+      for (let i = 0; i < data.length; ++i) {
         const barValue: any = {
-          time: data.t[i] * 1000,
-          close: parseFloat(data.c[i]),
-          open: parseFloat(data.c[i]),
-          high: parseFloat(data.c[i]),
-          low: parseFloat(data.c[i]),
+          time: data[i].timestamp,
+          close: parseFloat(data[i].closeUsd),
+          open: parseFloat(data[i].openUsd),
+          high: parseFloat(data[i].highUsd),
+          low: parseFloat(data[i].lowUsd),
+          volume: parseFloat(data[i].volumeUsd),
         };
-
-        if (ohlPresent) {
-          barValue.open = parseFloat(data.o[i]);
-          barValue.high = parseFloat(data.h[i]);
-          barValue.low = parseFloat(data.l[i]);
-        }
-
-        if (volumePresent) {
-          barValue.volume = parseFloat(data.v[i]);
-        }
 
         bars.push(barValue);
       }

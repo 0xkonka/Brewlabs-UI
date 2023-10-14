@@ -65,7 +65,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
       <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
       <div className="flex items-center justify-between">
-        <Security size="lg" />
+        {swapTab !== 1 ? <Security size="lg" /> : <div />}
         <SlippageText className="!text-xs" />
       </div>
 
@@ -87,13 +87,13 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
         )}
       </div>
 
-      {swapType === 1 && currencies[Field.INPUT] && currencies[Field.OUTPUT] ? (
+      {/* {swapType === 1 && currencies[Field.INPUT] && currencies[Field.OUTPUT] ? (
         <TradingViewChart
           currency={{ tokenAddresses: [currencies[Field.INPUT].address, currencies[Field.OUTPUT].address], chainId }}
         />
       ) : (
         ""
-      )}
+      )} */}
 
       {openSettingModal && (
         <Modal

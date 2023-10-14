@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getExplorerLogo } from "utils/functions";
 import { useAccount } from "wagmi";
 
-export default function Socials({ currency, marketInfos }) {
+export default function Socials({ selectedPair, marketInfos }) {
   const { connector, address: account } = useAccount();
   // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
 
@@ -13,12 +13,12 @@ export default function Socials({ currency, marketInfos }) {
     {
       icon: (
         <img
-          src={currency && getExplorerLogo(currency.chainId)}
+          src={selectedPair && getExplorerLogo(selectedPair.chainId)}
           alt={""}
           className="h-[18px] w-[18px] rounded-full border border-white bg-white"
         />
       ),
-      href: currency && getExplorerLink(currency.chainId, "token", currency.tokenAddresses[0]),
+      href: selectedPair && getExplorerLink(selectedPair.chainId, "token", selectedPair.baseToken.address),
     },
     { icon: LockSVG, isActive: false },
     { icon: checkCircleSVG, isActive: marketInfos?.audit?.codeVerified },
@@ -52,7 +52,7 @@ export default function Socials({ currency, marketInfos }) {
               <a
                 key={i}
                 className={`mr-1.5 cursor-pointer ${
-                  social.href ? "!text-tailwind hover:!text-white" : social.isActive ? "!text-green" : "!text-tailwind"
+                  social.href ? "!text-white hover:scale-[1.1]" : social.isActive ? "!text-green" : "!text-tailwind"
                 } primary-shadow transition [&>svg]:!h-[18px] [&>svg]:!w-[18px]`}
                 target="_blank"
                 href={social.href}

@@ -1,24 +1,30 @@
 import { ContractSVG, NonSellerSVG, WalletSVG } from "@components/dashboard/assets/svgs";
-import { BigNumberFormat, getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
+import { BigNumberFormat, numberWithCommas } from "utils/functions";
 import TimeAgo from "javascript-time-ago";
 
 // English.
 import en from "javascript-time-ago/locale/en";
-import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
-import StyledPrice from "@components/StyledPrice";
+import { getNativeSybmol } from "lib/bridge/helpers";
 import { Oval } from "react-loader-spinner";
 import { useCallback, useEffect, useRef } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import HistoryCard from "./HistoryCard";
-
-TimeAgo.addDefaultLocale(en);
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
 
-export default function HistoryList({ histories, currency, loading, tb, setTB, setCriteria, setShowType }) {
-  const tokenMarketData = useTokenMarketChart(currency.chainId);
+export default function HistoryList({
+  histories,
+  selectedPair,
+  loading,
+  tb,
+  setTB,
+  setCriteria,
+  setShowType,
+  isAccount,
+}) {
+  const tokenMarketData = useTokenMarketChart(selectedPair.chainId);
   const wrappedHistories = histories.map((history) => {
     const date = new Date(history.timestamp);
     return {
@@ -29,7 +35,7 @@ export default function HistoryList({ histories, currency, loading, tb, setTB, s
       amount: BigNumberFormat(history.amount),
       nativeAmount: BigNumberFormat(
         history.nativeAmount ??
-          history.amountStable / tokenMarketData[WNATIVE[currency.chainId].address.toLowerCase()]?.usd
+          history.amountStable / tokenMarketData[WNATIVE[selectedPair.chainId].address.toLowerCase()]?.usd
       ),
       type:
         history.action === "buy"
@@ -77,8 +83,8 @@ export default function HistoryList({ histories, currency, loading, tb, setTB, s
           <div className="w-[90px] ">Maker</div>
         </div>
         <div className="flex">
-          <div className="w-20 overflow-hidden text-ellipsis">{currency.symbols[0]}</div>
-          <div className="w-14 ">{getNativeSybmol(currency.chainId)}</div>
+          <div className="w-20 overflow-hidden text-ellipsis">{selectedPair.baseToken.symbol}</div>
+          <div className="w-14 ">{getNativeSybmol(selectedPair.chainId)}</div>
           <div className="w-20">USD</div>
         </div>
       </div>
@@ -94,7 +100,8 @@ export default function HistoryList({ histories, currency, loading, tb, setTB, s
               i={i}
               setCriteria={setCriteria}
               setShowType={setShowType}
-              currency={currency}
+              selectedPair={selectedPair}
+              isAccount={isAccount}
             />
           );
         })}

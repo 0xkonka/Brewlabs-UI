@@ -1,12 +1,10 @@
 import { getEllipsis, getExplorerLogo } from "utils/functions";
 import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import StyledPrice from "@components/StyledPrice";
-import useENSName from "@hooks/ENS/useENSName";
-import { isAddress } from "utils";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { ChevronDownSVG } from "@components/dashboard/assets/svgs";
 
-export default function HistoryCard({ list, i, setCriteria, setShowType, currency }) {
+export default function HistoryCard({ list, i, setCriteria, setShowType, selectedPair, isAccount }) {
   // const { ENSName } = useENSName(isAddress(list.wallet));
   const ENSName = null;
   const makerRef1: any = useRef();
@@ -54,7 +52,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
               ref={makerRef1}
             >
               {ENSName ?? getEllipsis(list.wallet, 5, 4)}
-              <div className="ml-2 text-[#ffffff80]">{ChevronDownSVG}</div>
+              {!isAccount ? <div className="ml-2 text-[#ffffff80]">{ChevronDownSVG}</div> : ""}
             </div>
           </div>
           <div className="flex">
@@ -107,7 +105,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
             ref={makerRef2}
           >
             <div>Maker: {ENSName ?? getEllipsis(list.wallet, 5, 4)}</div>
-            <div className="ml-2 text-[#ffffff80]">{ChevronDownSVG}</div>
+            {!isAccount ? <div className="ml-2 text-[#ffffff80]">{ChevronDownSVG}</div> : ""}
           </div>
           <div className="flex flex-wrap justify-between">
             <div className="flex items-center text-white">
@@ -123,11 +121,11 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, currenc
           </div>
           <div className="flex flex-wrap justify-between">
             <div className="flex  items-center ">
-              <div>{currency.symbols[0]}:</div>&nbsp;
+              <div>{selectedPair.baseToken.symbol}:</div>&nbsp;
               <div className="">{list.amount}</div>
             </div>
             <div className="flex items-center">
-              <div>{getNativeSybmol(currency.chainId)}:</div>&nbsp;
+              <div>{getNativeSybmol(selectedPair.chainId)}:</div>&nbsp;
               <div className="">{list.nativeAmount}</div>
             </div>
           </div>

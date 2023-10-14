@@ -8,10 +8,6 @@ export async function fetchOETHMontlyAPY() {
 
 export const useOETHMonthlyAPY = () => {
   const [apy, setAPY] = useState(null);
-  async function fetchOETHMontlyAPY() {
-    const { data: response } = await axios.get("https://analytics.ousd.com/api/v2/oeth/apr/trailing_history/30");
-    return response.trailing_history[0].trailing_apy / 100;
-  }
   useEffect(() => {
     fetchOETHMontlyAPY()
       .then((apy) => {

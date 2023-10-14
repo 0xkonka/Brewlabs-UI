@@ -14,7 +14,7 @@ export const useGraphEndPoint = () => {
           ? `https://api.thegraph.com/subgraphs/name/devscninja/${AGGREGATOR_SUBGRAPH_NAMES[chainId]}`
           : undefined,
         router: ROUTER_SUBGRAPH_NAMES[chainId]
-          ? `https://api.thegraph.com/subgraphs/name/devscninja/${ROUTER_SUBGRAPH_NAMES[chainId]}`
+          ? `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`
           : undefined,
       });
     }

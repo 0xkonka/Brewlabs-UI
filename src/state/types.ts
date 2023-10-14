@@ -21,6 +21,7 @@ import {
 } from "./home/type";
 import { SerializedWalletNFT, SerializedWalletToken } from "./wallet/type";
 import { SerializedPairData } from "./chart/type";
+import { ChainId } from "@brewlabs/sdk";
 
 export interface SerializedDeposit {
   amount: string;
@@ -147,6 +148,7 @@ export interface State {
   chart: ChartState;
   wallet: WalletState;
   prices: TokenPricesState;
+  pair: PairState;
 }
 
 //zap
@@ -289,4 +291,41 @@ export interface DeserializedPancakeFarm extends DeserializedFarmConfig {
   totalRewards?: BigNumber;
   userData?: DeserializedZapFarmUserData;
   totalSupply?: string;
+}
+
+export interface SerializedTradingPair {
+  address?: string;
+
+  chainId?: ChainId;
+  token0?: {
+    address: string;
+    symbol: string;
+  };
+  token1?: {
+    address: string;
+    symbol: string;
+  };
+  baseToken?: {
+    address: string;
+    symbol: string;
+    price?: number;
+    price24h?: number;
+    price24hHigh?: number;
+    price24hLow?: number;
+    price24hChange?: number;
+  };
+  quoteToken?: {
+    address: string;
+    symbol: string;
+    price?: number;
+    price24h?: number;
+    price24hHigh?: number;
+    price24hLow?: number;
+    price24hChange?: number;
+  };
+  volume24h?: number;
+}
+
+export interface PairState {
+  tradingPairs: Record<number, Record<string, SerializedTradingPair>>;
 }
