@@ -3,7 +3,7 @@ export interface SerializedTransactionData {
   count24h: number;
 }
 export interface SerializedNFTStakingData {
-  mintCount: number;
+  stakedCount: number;
   apy: number;
 }
 

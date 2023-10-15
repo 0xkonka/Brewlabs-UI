@@ -12,7 +12,7 @@ const initialState: HomeState = {
   },
   nftStakings: {
     apy: null,
-    mintCount: null,
+    stakedCount: null,
   },
   feeCollected: {
     fee: null,
