@@ -44,8 +44,7 @@ import { getPairOwner } from "@hooks/usePairs";
 import { handleWalletError } from "lib/bridge/helpers";
 
 export default function BasicLiquidity() {
-  const { chainId, library } = useActiveWeb3React();
-  const account = "0xd46f68700387959e0b287b8cf815ec67a7f3e378";
+  const { account, chainId, library } = useActiveWeb3React();
   const { data: signer } = useSigner();
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
 
