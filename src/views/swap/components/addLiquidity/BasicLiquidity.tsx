@@ -24,7 +24,7 @@ import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpe
 import { useTransactionAdder } from "state/transactions/hooks";
 import { CurrencyLogo } from "@components/logo";
 import useTotalSupply from "@hooks/useTotalSupply";
-import { getChainLogo } from "utils/functions";
+import { getChainLogo, showError } from "utils/functions";
 import {
   BurnSVG,
   EditSVG,
@@ -41,9 +41,11 @@ import { defaultMarketData } from "state/prices/types";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 import SetWalletModal from "./SetWalletModal";
 import { getPairOwner } from "@hooks/usePairs";
+import { handleWalletError } from "lib/bridge/helpers";
 
 export default function BasicLiquidity() {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
+  const account = "0xd46f68700387959e0b287b8cf815ec67a7f3e378";
   const { data: signer } = useSigner();
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
 
@@ -171,6 +173,7 @@ export default function BasicLiquidity() {
         // we only care if the error is something _other_ than the user rejected the tx
         if (e?.code !== 4001) {
           console.error(e);
+          handleWalletError(e, showError);
         }
       });
   };
@@ -188,6 +191,7 @@ export default function BasicLiquidity() {
       await tx.wait();
     } catch (e) {
       console.log(e);
+      handleWalletError(e, showError);
     }
     setAttemptingTxn(false);
   };
@@ -575,7 +579,12 @@ export default function BasicLiquidity() {
             ) : (
               <SolidButton
                 onClick={onNext}
-                disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+                disabled={
+                  !isValid ||
+                  approvalA !== ApprovalState.APPROVED ||
+                  approvalB !== ApprovalState.APPROVED ||
+                  attemptingTxn
+                }
                 pending={attemptingTxn}
               >
                 {error
