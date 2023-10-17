@@ -13,7 +13,7 @@ export const useTradingPair = (chainId, address) => {
   useFastRefreshEffect(() => {
     if (!isAddress(address)) return;
     dispatch(fetchTradingPairAsync(chainId, address.toLowerCase()));
-    dispatch(fetchTradingPairFeesAsync(chainId, address.toLowerCase()));
+    // dispatch(fetchTradingPairFeesAsync(chainId, address.toLowerCase()));
   }, [dispatch, chainId, address]);
   return { data };
 };
