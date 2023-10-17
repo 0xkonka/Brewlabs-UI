@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CHART_PERIOD_RESOLUTION, LIVECOIN_APIS, TOKENLIST_URI } from "config/constants";
+import { TOKENLIST_URI } from "config/constants";
 import { customTokensForDeploy } from "config/constants/tokens";
 
 export async function fetchTokenList(chainId: number) {

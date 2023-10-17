@@ -1731,6 +1731,14 @@
       "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x6982508145454Ce325dDbE47a25d4ec3d2311933/logo.png"
     },
     {
+      "name": "AirTor Protocol",
+      "symbol": "ATOR",
+      "address": "0x0F7B3F5a8FeD821c5eb60049538a548dB2D479ce",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/brewlabs-code/assets/master/blockchains/ethereum/assets/0x0F7B3F5a8FeD821c5eb60049538a548dB2D479ce/logo.png"
+    },
+    {
       "name": "Pomeranian",
       "symbol": "POM",
       "address": "0x24ffe459F51ea20C5d8ad49843529fc33654e7E4",
