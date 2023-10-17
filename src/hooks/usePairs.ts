@@ -6,8 +6,9 @@ import { Address, zeroAddress } from "viem";
 import BrewlabsPairABI from "config/abi/brewlabsPair";
 import BrewlabsABI from "config/abi/brewlabs";
 import { useMultipleContractSingleData } from "state/multicall/hooks";
-import { getBrewlabsFeeManagerContract, getContract } from "utils/contractHelpers";
+import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
 import { wrappedCurrency } from "utils/wrappedCurrency";
+import { getAddress } from "ethers/lib/utils.js";
 
 import { useActiveChainId } from "./useActiveChainId";
 
@@ -88,29 +89,27 @@ export async function getPairOwner(address: string, chainId: ChainId, token0: Cu
   try {
     const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
     const feeMangerOwner: any = await feeManagerContract.read.owner([]);
+
+    let tokenOwner: any = undefined;
+    let stakingPool: any = undefined;
+    let isOwner = getAddress(address) === getAddress(feeMangerOwner);
     if (pair) {
-      const tokenOwner: any = await feeManagerContract.read.getTokenOwner([pair.liquidityToken.address]);
-      if (tokenOwner !== zeroAddress && tokenOwner.toLowerCase() === address.toLowerCase()) return true;
+      tokenOwner = await feeManagerContract.read.getTokenOwner([pair.liquidityToken.address]);
+ 
+      const pairContract = getBrewlabsPairContract(chainId, pair.liquidityToken.address);
+      stakingPool = await pairContract.read.stakingPool([]);
+
+      isOwner = getAddress(address) === getAddress(feeMangerOwner) || getAddress(address) === getAddress(tokenOwner);
     }
-    if (address.toLowerCase() === feeMangerOwner.toLowerCase()) return true;
 
-    if (!token0.isNative)
-      try {
-        const tokenContract = getContract(chainId, token0.address, BrewlabsABI);
-        const owner: any = await tokenContract.read.owner([]);
-        if (owner.toLowerCase() === address.toLowerCase()) return true;
-      } catch (e) {}
-
-    if (!token1.isNative)
-      try {
-        const tokenContract = getContract(chainId, token1.address, BrewlabsABI);
-        const owner: any = await tokenContract.read.owner([]);
-        if (owner.toLowerCase() === address.toLowerCase()) return true;
-      } catch (e) {}
-
-    return false;
+    return {
+      owner: feeMangerOwner,
+      tokenOwner,
+      stakingPool,
+      isOwner,
+    };
   } catch (e) {
     console.log(e);
-    return false;
+    return {};
   }
 }

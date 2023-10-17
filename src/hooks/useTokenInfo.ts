@@ -128,7 +128,6 @@ export function useTokenMarketInfos(pair: any) {
     const url = `https://io.dexscreener.com/dex/chart/amm/${pair.a}/bars/${DEXSCREENER_CHAINNAME[pair.chainId]}/${
       pair.address
     }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
-    console.log(pair);
     axios
       .post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url })
       .then((result) => {

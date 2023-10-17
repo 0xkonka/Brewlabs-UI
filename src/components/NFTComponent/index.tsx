@@ -1,21 +1,19 @@
-import { NFTSVG } from "@components/dashboard/assets/svgs";
-import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import NFTRarityText from "@components/NFTRarityText";
 import { BREWNFT_RARITIES } from "config/constants/nft";
+import { NFTSVG } from "@components/dashboard/assets/svgs";
+import NFTRarityText from "@components/NFTRarityText";
+import { useActiveNFT } from "views/nft/hooks/useActiveNFT";
 
 const NFTComponent = ({ className = "" }: { className?: string }) => {
   const activeRarity = useActiveNFT();
   return (
-    <div className={`cursor-pointer hover:text-white`} id={"ActiveNFT"}>
+    <div
+      className={`tooltip cursor-pointer hover:text-white`}
+      id={"ActiveNFT"}
+      data-tip={`${BREWNFT_RARITIES[activeRarity] ?? "No"} Brewlabs NFT found!`}
+    >
       <NFTRarityText rarity={activeRarity} className="[&>svg]:!h-5 [&>svg]:!w-5">
         {NFTSVG}
       </NFTRarityText>
-      <ReactTooltip
-        anchorId={"ActiveNFT"}
-        place="top"
-        content={`${BREWNFT_RARITIES[activeRarity] ?? "No"} Brewlabs NFT found!`}
-      />
     </div>
   );
 };

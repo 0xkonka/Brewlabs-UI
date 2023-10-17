@@ -306,6 +306,14 @@ const tokens = {
     "xBBPP",
     "https://www.babypepetoken.com/"
   ),
+  ator: new Token(
+    ETHEREUM,
+    "0x0F7B3F5a8FeD821c5eb60049538a548dB2D479ce",
+    18,
+    "ATOR",
+    "AirTor Protocol",
+    "https://ator.io/"
+  ),
   pepe: new Token(ETHEREUM, "0x6982508145454Ce325dDbE47a25d4ec3d2311933", 18, "PEPE", "Pepe", "https://www.pepe.vip/"),
   dai: new Token(ETHEREUM, "0x6B175474E89094C44Da98b954EedeAC495271d0F", 18, "DAI", "Dai Stablecoin"),
   wbtc: new Token(ETHEREUM, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", 8, "WBTC", "Wrapped BTC"),

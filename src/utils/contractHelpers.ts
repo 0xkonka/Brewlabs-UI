@@ -5,6 +5,7 @@ import { AppId, Chef } from "config/constants/types";
 // ABI
 import erc721Abi from "config/abi/erc721";
 import aggregatorAbi from "config/abi/swap/brewlabsAggregator";
+import brewlabsPairAbi from "config/abi/brewlabsPair";
 import brewlabsRouterAbi from "config/abi/swap/brewlabsRouter";
 import brewlabsFeeManagerAbi from "config/abi/swap/brewlabsFeeManager";
 import brewlabsAggregationRouterAbi from "config/abi/swap/BrewlabsAggregationRouter";
@@ -158,7 +159,9 @@ export const getMirrorNftContract = (chainId: ChainId, signer?: WalletClient) =>
 export const getNftStakingContract = (chainId: ChainId, signer?: WalletClient) => {
   return getContract(chainId, getNftStakingAddress(chainId), NftStakingAbi, signer);
 };
-
+export const getBrewlabsPairContract = (chainId: ChainId, address: string, signer?: WalletClient) => {
+  return getContract(chainId, address, brewlabsPairAbi, signer);
+};
 export const getBrewlabsRouterContract = (chainId: ChainId, address: string, signer?: WalletClient) => {
   return getContract(chainId, address, brewlabsRouterAbi, signer);
 };

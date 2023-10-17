@@ -1,15 +1,14 @@
 import { ContractSVG, NonSellerSVG, WalletSVG } from "@components/dashboard/assets/svgs";
-import { BigNumberFormat, getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
+import { BigNumberFormat, numberWithCommas } from "utils/functions";
 import TimeAgo from "javascript-time-ago";
 
 // English.
 import en from "javascript-time-ago/locale/en";
-import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
-import StyledPrice from "@components/StyledPrice";
+import { getNativeSybmol } from "lib/bridge/helpers";
 import { Oval } from "react-loader-spinner";
 import { useCallback, useEffect, useRef } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import HistoryCard from "./HistoryCard";
 
 // TimeAgo.addDefaultLocale(en);

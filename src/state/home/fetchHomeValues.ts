@@ -63,11 +63,11 @@ export async function getNFTStakingValues() {
         ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
         : null;
 
-    let mintCount = 0;
+    let stakedCount = 0;
     await Promise.all(
       [
-        { chainId: 1, address: contracts.flaskNft[1] },
-        { chainId: 56, address: contracts.flaskNft[56] },
+        { chainId: 1, address: contracts.nftStaking[1] },
+        { chainId: 56, address: contracts.nftStaking[56] },
       ].map(async (data, i) => {
         const result = await axios.get(
           `${EXPLORER_API_URLS[data.chainId]}?module=account&action=txlist&address=${
@@ -77,13 +77,13 @@ export async function getNFTStakingValues() {
         const txs = result.data.result?.filter(
           (tx) => tx.functionName.includes("mint") && tx.timeStamp > Date.now() / 1000 - 3600 * 24
         );
-        mintCount += txs.length;
+        stakedCount += txs.length;
       })
     );
-    return { apy, mintCount };
+    return { apy, stakedCount };
   } catch (e) {
     console.log(e);
-    return { apy: 0, mintCount: 0 };
+    return { apy: 0, stakedCount: 0 };
   }
 }
 

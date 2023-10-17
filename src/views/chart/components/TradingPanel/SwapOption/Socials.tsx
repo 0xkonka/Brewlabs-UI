@@ -52,7 +52,7 @@ export default function Socials({ selectedPair, marketInfos }) {
               <a
                 key={i}
                 className={`mr-1.5 cursor-pointer ${
-                  social.href ? "!text-tailwind hover:!text-white" : social.isActive ? "!text-green" : "!text-tailwind"
+                  social.href ? "!text-white hover:scale-[1.1]" : social.isActive ? "!text-green" : "!text-tailwind"
                 } primary-shadow transition [&>svg]:!h-[18px] [&>svg]:!w-[18px]`}
                 target="_blank"
                 href={social.href}

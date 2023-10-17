@@ -184,13 +184,15 @@ export function useTokens(tokenAddresses?: string[]): { [address: string]: Token
   useEffect(() => {
     (async () => {
       const tokenEntries = await Promise.all(
-        tokenAddresses.map(async (address) => {
-          const tokenContract = getBep20Contract(chainId, address);
-          const name: any = await tokenContract.read.name([]);
-          const symbol: any = await tokenContract.read.symbol([]);
-          const decimals = await tokenContract.read.decimals([]);
-          return [address, new Token(chainId, address, Number(decimals), symbol, name)];
-        })
+        tokenAddresses
+          .filter((addr) => addr)
+          .map(async (address) => {
+            const tokenContract = getBep20Contract(chainId, address);
+            const name: any = await tokenContract.read.name([]);
+            const symbol: any = await tokenContract.read.symbol([]);
+            const decimals = await tokenContract.read.decimals([]);
+            return [address, new Token(chainId, address, Number(decimals), symbol, name)];
+          })
       );
       setTokensInfo(Object.fromEntries(tokenEntries));
     })();
