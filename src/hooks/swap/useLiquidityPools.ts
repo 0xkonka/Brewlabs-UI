@@ -27,13 +27,14 @@ type PoolFeeInfoOutput = {
   tokenOwner: Address;
   referrer: Address;
   feeDistribution: FeeDistribution;
-  timeToOpen: number;
 };
 
 export const useLiquidityPools = () => {
   const { chainId } = useActiveWeb3React();
   const contract = useBrewlabsFeeManager(chainId);
+
   const [pairsLength, setPairsLength] = useState<number>(0);
+  const [pools, setPools] = useState<any>([]);
 
   useEffect(() => {
     if (contract.address) {
@@ -45,7 +46,6 @@ export const useLiquidityPools = () => {
       })();
     }
   }, [contract.address, chainId]);
-
   const outputOfPairs = useSingleContractMultipleData(
     contract,
     "pairs",
@@ -59,19 +59,51 @@ export const useLiquidityPools = () => {
     pairs.map((pair) => [pair])
   );
 
-  const pools: PoolFeeInfoOutput[] = outputOfPools.map((data) => ({
+  const _pools: PoolFeeInfoOutput[] = outputOfPools.map((data) => ({
     token0: data.result?.token0,
     token1: data.result?.token1,
     tokenOwner: data.result?.tokenOwner,
     referrer: data.result?.referer,
     feeDistribution: data.result?.feeDistribution,
-    timeToOpen: data.result?.timeToOpen,
   }));
 
-  return pools
-    .map((pool, index) => ({ value: pool, key: index }))
-    .filter(({ value, key }) => value)
-    .map(({ value, key }) => ({ ...value, id: pairs[key] }));
+  const fetchData = async (pair) => {
+    try {
+      const data = await contract.getPoolFeeInfo(pair);
+      const index = pools.findIndex((pool) => pool.id === pair);
+      if (index < 0) return;
+
+      let _pools = pools;
+      _pools[index] = {
+        token0: data.token0,
+        token1: data.token1,
+        tokenOwner: data.tokenOwner,
+        referrer: data.referer,
+        feeDistribution: data.feeDistribution,
+      };
+      console.log(pools, _pools, "$$$$$$$$$$$$$$$$$$$ 1111");
+      setPools(_pools);
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    const setData = (data) => {
+      setPools(data);
+    };
+
+    if (pairsLength && _pools.length > 0) {
+      setData(
+        _pools
+          .map((pool, index) => ({ value: pool, key: index }))
+          .filter(({ value, key }) => value)
+          .map(({ value, key }) => ({ ...value, id: pairs[key] }))
+      );
+    } else {
+      setData([]);
+    }
+  }, [pairsLength, _pools.length]);
+
+  return { pools, fetchData };
 };
 
 export const useOwnedLiquidityPools = () => {
@@ -79,7 +111,7 @@ export const useOwnedLiquidityPools = () => {
   // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
 
   const { chainId } = useActiveChainId();
-  const pairs = useLiquidityPools();
+  const { pools: pairs } = useLiquidityPools();
 
   const lpTokens = useMemo(() => pairs.map((pair) => new Token(chainId, pair.id, 18)), [chainId, pairs]);
   const [lpBalances] = useTokenBalancesWithLoadingIndicator(account, lpTokens);

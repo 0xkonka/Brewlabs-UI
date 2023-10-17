@@ -7,6 +7,7 @@ import { AppId, Chef } from "config/constants/types";
 import bep20Abi from "config/abi/erc20.json";
 import erc721Abi from "config/abi/erc721.json";
 import aggregatorAbi from "config/abi/swap/brewlabsAggregator.json";
+import brewlabsPairAbi from "config/abi/brewlabsPair.json";
 import brewlabsRouterAbi from "config/abi/swap/brewlabsRouter.json";
 import brewlabsFeeManagerAbi from "config/abi/swap/brewlabsFeeManager.json";
 import brewlabsAggregationRouterAbi from "config/abi/swap/BrewlabsAggregationRouter.json";
@@ -212,6 +213,13 @@ export const getNftStakingContract = (chainId: ChainId, signer?: ethers.Signer |
   return getContract(chainId, getNftStakingAddress(chainId), NftStakingAbi, signer);
 };
 
+export const getBrewlabsPairContract = (
+  chainId: ChainId,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider
+) => {
+  return getContract(chainId, address, brewlabsPairAbi, signer);
+};
 export const getBrewlabsRouterContract = (
   chainId: ChainId,
   address: string,
