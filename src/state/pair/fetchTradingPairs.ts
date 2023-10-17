@@ -1,5 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
+import { getBrewlabsFeeManagerContract } from "utils/contractHelpers";
 
 function getPriceByTx(tx) {
   const amount0 = Math.max(tx.amount0In, tx.amount0Out);
@@ -7,7 +8,43 @@ function getPriceByTx(tx) {
   return { price0: tx.amountUSD / amount0, price1: tx.amountUSD / amount1 };
 }
 export async function getTradingPair(chainId, pair) {
+  let query = `{
+    pair(
+      id: "${pair.toLowerCase()}"
+    ) {
+      id
+      token0 {
+        decimals
+        id
+        name
+        symbol
+      }
+      token1 {
+        decimals
+        id
+        name
+        symbol
+      }
+      reserveETH
+    }
+  }`;
+
+  const { data: response } = await axios.post("https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon", {
+    query,
+  });
+
+  const pairData = response.data.pair;
+  if (!pairData) return {};
+
+  const wrappedPairData = {
+    ...pairData,
+    address: pairData.id,
+    token0: { ...pairData.token0, address: pairData.token0.id },
+    token1: { ...pairData.token1, address: pairData.token1.id },
+    chainId,
+  };
   const default_value = {
+    pair: wrappedPairData,
     price: { price0: 0, price1: 0 },
     price24h: { price24h0: 0, price24h1: 0 },
     price24hHigh: { price24hHigh0: 0, price24hHigh1: 0 },
@@ -17,9 +54,9 @@ export async function getTradingPair(chainId, pair) {
   };
   if (chainId !== ChainId.POLYGON) return default_value;
   try {
-    let query = `{
+    query = `{
       swaps(
-        where: {pair_: {id: "${pair}"}}
+        where: {pair_: {id: "${pair.toLowerCase()}"}}
         first: 1
         orderBy: timestamp
         orderDirection: desc
@@ -40,7 +77,7 @@ export async function getTradingPair(chainId, pair) {
     );
     let swaps = response.data.swaps;
     if (!swaps.length) return default_value;
-    const timestamp = Number(swaps[0].timestamp) - 86400;
+    const timestamp = Math.min(Number(swaps[0].timestamp), Math.floor(Date.now() / 1000 - 86400));
 
     let totalSwaps = [],
       index = 0;
@@ -48,7 +85,7 @@ export async function getTradingPair(chainId, pair) {
     do {
       query = `{
         swaps(
-          where: {pair_: {id: "${pair}"}, timestamp_gte: "${timestamp}"}
+          where: {pair_: {id: "${pair.toLowerCase()}"}, timestamp_gte: "${timestamp}"}
           first: 1000
           skip:${1000 * index}
           orderBy: timestamp
@@ -94,7 +131,7 @@ export async function getTradingPair(chainId, pair) {
         price24hLow.price24hLow1 = getPriceByTx(totalSwaps[i]).price1;
     }
 
-    return { price, price24h, price24hHigh, price24hLow, price24hChange, volume24h };
+    return { price, price24h, price24hHigh, price24hLow, price24hChange, volume24h, pair: wrappedPairData };
   } catch (e) {
     console.log(e);
     return default_value;
@@ -183,7 +220,7 @@ export async function getVolumeHistory(address, chainId, type) {
       {
         query: `{
           pairDayDatas(
-            where: {pairAddress: "${address}", date_gte: ${Math.floor(Date.now() / 1000 - deltaTime)}}
+            where: {pairAddress: "${address.toLowerCase()}", date_gte: ${Math.floor(Date.now() / 1000 - deltaTime)}}
             orderBy: date
           ) {
             dailyVolumeUSD
@@ -196,5 +233,23 @@ export async function getVolumeHistory(address, chainId, type) {
   } catch (e) {
     console.log(e);
     return [];
+  }
+}
+
+export async function getBrewlabsSwapFee(chainId: ChainId, pair: string) {
+  try {
+    const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
+    const fees = await feeManagerContract.getFeeDistribution(pair);
+    return {
+      totalFee: Number(fees[0]),
+      lpFee: Number(fees[1]),
+      brewlabsFee: Number(fees[2]),
+      tokenOwnerFee: Number(fees[3]),
+      stakingFee: Number(fees[4]),
+      referralFee: Number(fees[5]),
+    };
+  } catch (e) {
+    console.log(e);
+    return { totalFee: 0, lpFee: 0, brewlabsFee: 0, tokenOwnerFee: 0, stakingFee: 0, referralFee: 0 };
   }
 }

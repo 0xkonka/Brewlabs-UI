@@ -50,7 +50,10 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       );
       searchResult.map((data) => (searchedPairs = [...searchedPairs, ...data]));
     }
-    searchedPairs = searchedPairs.filter((pair) => pair.liquidity?.usd).sort((a, b) => b.volume.h24 - a.volume.h24);
+    console.log(searchedPairs);
+    searchedPairs = searchedPairs
+      .filter((pair) => pair.liquidity?.usd && Object.keys(DEXSCREENER_CHAINNAME).includes(pair.chainId.toString()))
+      .sort((a, b) => b.volume.h24 - a.volume.h24);
     return searchedPairs;
   } catch (e) {
     console.log(e);

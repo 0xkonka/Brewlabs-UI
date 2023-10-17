@@ -42,6 +42,7 @@ import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 import SetWalletModal from "./SetWalletModal";
 import { getPairOwner } from "@hooks/usePairs";
 import { handleWalletError } from "lib/bridge/helpers";
+import { useTradingPair } from "state/pair/hooks";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
@@ -230,6 +231,8 @@ export default function BasicLiquidity() {
     return [marketcap, marketcap / Number(quoteTotalSupply.toExact())];
   }, [baseTokenPrice, quoteTotalSupply, parsedAmounts]);
 
+  const { data: pairData } = useTradingPair(chainId, pair?.liquidityToken?.address);
+
   const data = [
     {
       key: "Estimated token price",
@@ -264,7 +267,7 @@ export default function BasicLiquidity() {
       key: "Liquidity performance",
       value: (
         <p className="whitespace-nowrap !text-white">
-          12.35% <span className="text-[#FFFFFF80]">vAPR</span>
+          0.00% <span className="text-[#FFFFFF80]">vAPR</span>
         </p>
       ),
     },
@@ -272,7 +275,7 @@ export default function BasicLiquidity() {
       key: "Volume (24HR)",
       value: (
         <p className="whitespace-nowrap !text-white">
-          $523,281.00 <span className="text-[#FFFFFF80]">USD</span>
+          ${(pairData?.volume24h ?? 0).toFixed(2)} <span className="text-[#FFFFFF80]">USD</span>
         </p>
       ),
     },
@@ -293,6 +296,16 @@ export default function BasicLiquidity() {
   const [dynamicFees, setDynamicFees] = useState([0, 0, 0]);
   const [walletAddresses, setWalletAddresses] = useState(["", "", ""]);
   const [selectedDynamicFee, setSelectedDynamicFee] = useState(0);
+
+  const stringifiedPairData = JSON.stringify(pairData);
+  useEffect(() => {
+    if (!pairData.fees) return;
+    setDynamicFees([
+      pairData.fees.referralFee / 10000,
+      pairData.fees.stakingFee / 10000,
+      pairData.fees.tokenOwnerFee / 10000,
+    ]);
+  }, [stringifiedPairData]);
 
   const dynamicData = [
     {
@@ -335,6 +348,7 @@ export default function BasicLiquidity() {
     getPairOwner(account, chainId, currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], pair)
       .then((result) => setIsOwner(result))
       .catch((e) => console.log(e));
+    // setIsOwner(true);
   }, [stringifiedPair]);
 
   return (
@@ -472,9 +486,7 @@ export default function BasicLiquidity() {
                   className={`flex justify-between ${i === 3 ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"}`}
                 >
                   <div className="ml-5 flex">
-                    {!txHash && !pair ? (
-                      ""
-                    ) : (
+                    {(txHash || (pair && !txHash)) && isOwner ? (
                       <div
                         className={`${!dynamicFees[i] ? "text-tailwind" : "text-[#32FFB5]"} ${
                           i === 3 ? "opacity-0" : ""
@@ -482,15 +494,14 @@ export default function BasicLiquidity() {
                       >
                         {checkCircleSVG}
                       </div>
+                    ) : (
+                      ""
                     )}
                     <div className={!dynamicFees[i] ? "" : "text-white"}>{item.key}</div>
                   </div>
-                  {!txHash && !pair ? (
-                    <div className="ml-2 flex min-w-[60px] justify-center">
-                      <div>{item.value}</div>
-                    </div>
-                  ) : i !== 3 && isOwner ? (
-                    <div className="ml-2 flex items-center text-tailwind">
+
+                  <div className="ml-2 flex items-center text-tailwind">
+                    {i !== 3 && isOwner && (txHash || (pair && !txHash)) ? (
                       <div
                         className="mr-2 cursor-pointer hover:text-white"
                         onClick={() => {
@@ -501,32 +512,40 @@ export default function BasicLiquidity() {
                       >
                         {MinusSVG}
                       </div>
-                      <div className="mr-1.5 text-[#FFFFFFBF]">{item.value}</div>
-                      <div
-                        className={`mr-2 cursor-pointer hover:text-white`}
-                        onClick={() => {
-                          let temp = [...dynamicFees];
-                          temp[i] = temp[i] + 1;
-                          setDynamicFees(temp);
-                        }}
-                      >
-                        {PlusSVG}
-                      </div>
-                      <div
-                        className={`cursor-pointer ${
-                          !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
-                        } [&>svg]:h-3.5 [&>svg]:w-3.5`}
-                        onClick={() => {
-                          setWalletOpen(true);
-                          setSelectedDynamicFee(i);
-                        }}
-                      >
-                        {EditSVG}
-                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <div className={`min-w-[60px] text-center ${i === 3 ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"}`}>
+                      {item.value}
                     </div>
-                  ) : (
-                    ""
-                  )}
+                    {i !== 3 && isOwner && (txHash || (pair && !txHash)) ? (
+                      <div className="ml-1.5 flex">
+                        <div
+                          className={`mr-2 cursor-pointer hover:text-white`}
+                          onClick={() => {
+                            let temp = [...dynamicFees];
+                            temp[i] = temp[i] + 1;
+                            setDynamicFees(temp);
+                          }}
+                        >
+                          {PlusSVG}
+                        </div>
+                        <div
+                          className={`cursor-pointer ${
+                            !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
+                          } [&>svg]:h-3.5 [&>svg]:w-3.5`}
+                          onClick={() => {
+                            setWalletOpen(true);
+                            setSelectedDynamicFee(i);
+                          }}
+                        >
+                          {EditSVG}
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -577,7 +596,7 @@ export default function BasicLiquidity() {
               </div>
             ) : (
               <SolidButton
-                onClick={onNext}
+                onClick={() => onNext()}
                 disabled={
                   !isValid ||
                   approvalA !== ApprovalState.APPROVED ||
@@ -599,13 +618,17 @@ export default function BasicLiquidity() {
                   : "Next: Select yield farm metrics"}
               </SolidButton>
             )
-          ) : isOwner ? (
+          ) : (
             <div className="mb-4">
-              <SolidButton className="w-full">
-                <div className="mx-auto flex w-fit items-center">
-                  Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
-                </div>
-              </SolidButton>
+              {isOwner ? (
+                <SolidButton className="w-full">
+                  <div className="mx-auto flex w-fit items-center">
+                    Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+                  </div>
+                </SolidButton>
+              ) : (
+                ""
+              )}
               <div className="mt-3 flex flex-col justify-between sm:flex-row">
                 <a
                   href={`https://freezer.brewlabs.info/${FREEZER_CHAINS[chainId]}/pair-lock/new?pairAddress=${
@@ -638,13 +661,14 @@ export default function BasicLiquidity() {
                 </SolidButton>
               </div>
             </div>
-          ) : (
-            ""
           )}
           <OutlinedButton
             className="mt-1 !rounded-xl font-bold"
             small
-            onClick={() => setAddLiquidityStep("CreateNewLiquidityPool")}
+            onClick={() => {
+              setAddLiquidityStep("CreateNewLiquidityPool");
+              setTxHash("");
+            }}
             // onClick={() => setTxHash("ASDFASD")}
           >
             Back

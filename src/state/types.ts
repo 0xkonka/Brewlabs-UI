@@ -324,6 +324,14 @@ export interface SerializedTradingPair {
     price24hChange?: number;
   };
   volume24h?: number;
+  fees?: {
+    totalFee?: number;
+    lpFee?: number;
+    brewlabsFee?: number;
+    tokenOwnerFee?: number;
+    stakingFee?: number;
+    referralFee?: number;
+  };
 }
 
 export interface PairState {
