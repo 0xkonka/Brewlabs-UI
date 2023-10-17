@@ -45,7 +45,7 @@ export default function FavouritePanel() {
   const { trendings: cgTrendings, gainers: cgGainers, losers: cgLosers }: any = useCGListings();
   const { trendings: watcherGuruTrendings } = useWatcherGuruTrending();
 
-  const arrays = [favourites, trendings, newListings, cgTrendings, cgGainers, cgLosers, watcherGuruTrending];
+  const arrays = [favourites, trendings, newListings, cgTrendings, cgGainers, cgLosers, watcherGuruTrendings];
   const networks: any = [
     "All",
     NETWORKS[ChainId.ETHEREUM],
