@@ -35,7 +35,7 @@ import {
   PoolFeeSVG,
   checkCircleSVG,
 } from "@components/dashboard/assets/svgs";
-import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import { DEAD_ADDRESS, FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import WarningModal from "@components/warningModal";
 import { defaultMarketData } from "state/prices/types";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
@@ -186,7 +186,7 @@ export default function BasicLiquidity() {
     try {
       const tokenContract = getBep20Contract(chainId, pair?.liquidityToken.address, signer);
       const balance = await tokenContract.balanceOf(account);
-      const tx = await tokenContract.transfer(ZERO_ADDRESS, balance);
+      const tx = await tokenContract.transfer(DEAD_ADDRESS, balance);
       await tx.wait();
     } catch (e) {
       console.log(e);
