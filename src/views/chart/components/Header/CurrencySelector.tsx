@@ -61,7 +61,7 @@ const tabs = [
   },
   {
     icon: <img src={"/images/chart/trending/watcherguru.png"} alt={""} className="h-4 w-4 rounded-full" />,
-    name: "WG Trendings",
+    name: "WG Trending",
   },
 ];
 

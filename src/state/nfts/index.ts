@@ -58,6 +58,7 @@ export const fetchNftPublicDataAsync = (chainId: ChainId) => async (dispatch) =>
 
 export const fetchNftUserDataAsync = (chainId: ChainId, account: string) => async (dispatch, getState) => {
   const config = getState().nfts.flaskNft.find((p) => p.chainId === chainId);
+  if(!config) return
 
   const flaskData = await fetchFlaskNftUserData(chainId, account, [
     config.brewsToken.address,

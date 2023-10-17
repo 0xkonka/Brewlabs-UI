@@ -24,12 +24,21 @@ export const handleWalletError = (error: any, showError: (msg: string) => void, 
   } else if (error?.data?.message) {
     showError(error?.data?.message);
   } else if (error?.message && error?.message.length > 120) {
-    showError(
-      (error.reason.split(":").splice(-1)[0] ?? error.message.split("(")[0]).replace(
-        "sending a transaction requires a signer",
-        "No wallet connected"
-      )
-    );
+    if (error.reason) {
+      showError(
+        error.reason.split(":").splice(-1)[0].replace("sending a transaction requires a signer", "No wallet connected")
+      );
+    } else {
+      if (error.message.indexOf("TransactionExecutionError")) {
+        showError(error.message.split(":")[1]);
+      } else if (error.message.indexOf("reverted with the following reason") > 0) {
+        showError(error.message.split("\n")[1]);
+      } else {
+        showError(
+          error.message.split("(")[0].replace("sending a transaction requires a signer", "No wallet connected")
+        );
+      }
+    }
   } else {
     showError(IMPOSSIBLE_ERROR);
   }

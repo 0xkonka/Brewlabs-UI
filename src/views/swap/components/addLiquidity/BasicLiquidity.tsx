@@ -20,11 +20,11 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/m
 import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
 import { maxAmountSpend } from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
-import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
+import { getBep20Contract, getBrewlabsFeeManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { CurrencyLogo } from "@components/logo";
 import useTotalSupply from "@hooks/useTotalSupply";
-import { getChainLogo } from "utils/functions";
+import { getChainLogo, showError } from "utils/functions";
 import {
   BurnSVG,
   EditSVG,
@@ -35,22 +35,26 @@ import {
   PoolFeeSVG,
   checkCircleSVG,
 } from "@components/dashboard/assets/svgs";
-import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import { DEAD_ADDRESS, FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import WarningModal from "@components/warningModal";
 import { defaultMarketData } from "state/prices/types";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 import SetWalletModal from "./SetWalletModal";
 import { getPairOwner } from "@hooks/usePairs";
+import { handleWalletError } from "lib/bridge/helpers";
+import { useLiquidityPools } from "@hooks/swap/useLiquidityPools";
+import { ethers } from "ethers";
+import { DashboardContext } from "contexts/DashboardContext";
+import { toast } from "react-toastify";
 
 export default function BasicLiquidity() {
   const { account, chainId, library } = useActiveWeb3React();
   const { data: signer } = useSigner();
-  const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
 
-  const liquidityProviderFee = 0.25;
-  const tokenHoldersFee = 0.0;
-  const brewlabsFee = 0.05;
-  const tokenOwnerFee = 0.0;
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
+  const { pools: pairInfos, fetchData: fetchPairInfo, fetchAllData } = useLiquidityPools();
+  const addTransaction = useTransactionAdder();
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState();
@@ -96,7 +100,214 @@ export default function BasicLiquidity() {
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], routerAddr);
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], routerAddr);
 
-  const addTransaction = useTransactionAdder();
+  const [baseToken, quoteToken] =
+    currencies[Field.CURRENCY_B] === NATIVE_CURRENCIES[chainId]
+      ? [currencies[Field.CURRENCY_B], currencies[Field.CURRENCY_A]]
+      : [currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]];
+
+  const tokenMarketData = useTokenMarketChart(chainId);
+  const { usd: baseTokenPrice } = tokenMarketData[baseToken?.wrapped.address.toLowerCase()] || defaultMarketData;
+
+  const quoteTotalSupply = useTotalSupply(quoteToken as Token);
+  const [marketcap, poolTokenPrice] = useMemo(() => {
+    if (
+      !baseTokenPrice ||
+      !quoteTotalSupply ||
+      !parsedAmounts ||
+      !parsedAmounts[Field.CURRENCY_A] ||
+      !parsedAmounts[Field.CURRENCY_B]
+    )
+      return [0, 0];
+    const [numerator, denominator] =
+      baseToken === currencies[Field.CURRENCY_A]
+        ? [Number(parsedAmounts[Field.CURRENCY_A].toExact()), Number(parsedAmounts[Field.CURRENCY_B].toExact())]
+        : [Number(parsedAmounts[Field.CURRENCY_B].toExact()), Number(parsedAmounts[Field.CURRENCY_A].toExact())];
+    const marketcap = (baseTokenPrice * numerator * Number(quoteTotalSupply.toExact())) / denominator;
+    // const price = marketcap / Number(quoteTotalSupply.toExact());
+    return [marketcap, marketcap / Number(quoteTotalSupply.toExact())];
+  }, [baseTokenPrice, quoteTotalSupply, parsedAmounts]);
+
+  const [isOwner, setIsOwner] = useState(false);
+  const [pairOwner, setPairOwner] = useState<any>({});
+  const [dynamicFees, setDynamicFees] = useState([0, 0, 0]);
+  const [selectedDynamicFee, setSelectedDynamicFee] = useState(0);
+
+  const pairInfo = pairInfos.find((p) => p.id === pair?.liquidityToken.address);
+
+  const liquidityProviderFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[0]._hex) / 10000 : 0.25;
+  const brewlabsFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[1]._hex) / 10000 : 0.05;
+  const tokenOwnerFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[2]._hex) / 10000 : 0.0;
+  const stakingFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[3]._hex) / 10000 : 0.0;
+  const referralFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[4]._hex) / 10000 : 0.0;
+
+  const data = [
+    {
+      key: "Estimated token price",
+      value: `$${poolTokenPrice.toFixed(2)}`,
+    },
+    {
+      key: "Estimated pool starting marketcap",
+      value: `$${marketcap.toFixed(2)}`,
+    },
+    {
+      key: "Pool fee for liquidity providers",
+      value: `${(Math.round(liquidityProviderFee * 100) / 100).toFixed(2)}%`,
+    },
+    {
+      key: "Pool fee for Brewlabs protocol",
+      value: "0.05%",
+    },
+    {
+      key: "Total pool fee",
+      value: `${(
+        Math.round((tokenOwnerFee + stakingFee + referralFee + liquidityProviderFee + brewlabsFee) * 100) / 100
+      ).toFixed(2)}%`,
+    },
+  ];
+
+  const existingData = [
+    {
+      key: "Token price",
+      value: `$${poolTokenPrice.toFixed(2)}`,
+    },
+    {
+      key: "Liquidity performance",
+      value: (
+        <p className="whitespace-nowrap !text-white">
+          0.00% <span className="text-[#FFFFFF80]">vAPR</span>
+        </p>
+      ),
+    },
+    {
+      key: "Volume (24HR)",
+      value: (
+        <p className="whitespace-nowrap !text-white">
+          $0.00 <span className="text-[#FFFFFF80]">USD</span>
+        </p>
+      ),
+    },
+    {
+      key: "Standard pool fees",
+      value: "0.30%",
+    },
+    {
+      key: "Pool fee for liquidity providers",
+      value: `${(Math.round(liquidityProviderFee * 100) / 100).toFixed(2)}%`,
+    },
+    {
+      key: "Pool fee for Brewlabs protocol",
+      value: "0.05%",
+    },
+  ];
+
+  const dynamicData = [
+    {
+      key: "Pool fee directed to referral/burn address ",
+      value: `${dynamicFees[0].toFixed(2)}%`,
+    },
+    {
+      key: "Pool fee directed to staking pool ",
+      value: `${dynamicFees[1].toFixed(2)}%`,
+    },
+    {
+      key: "Pool fee directed to project team",
+      value: `${dynamicFees[2].toFixed(2)}%`,
+    },
+    { key: "Total dynamic pool fee", value: `${(dynamicFees[0] + dynamicFees[1] + dynamicFees[2]).toFixed(2)}%` },
+  ];
+
+  const stringifiedPair = JSON.stringify({
+    account,
+    chainId,
+    token0: currencies[Field.CURRENCY_A],
+    token1: currencies[Field.CURRENCY_B],
+    pair,
+  });
+
+  useEffect(() => {
+    if (!currencies[Field.CURRENCY_A] || !currencies[Field.CURRENCY_B] || !isAddress(account)) return;
+    getPairOwner(account, chainId, currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], pair)
+      .then((result) => {
+        setPairOwner(result);
+        setIsOwner(result.isOwner);
+      })
+      .catch((e) => console.log(e));
+  }, [chainId, account, stringifiedPair]);
+
+  useEffect(() => {
+    setDynamicFees([referralFee, stakingFee, tokenOwnerFee]);
+  }, [JSON.stringify(pairInfo)]);
+
+  const getName = (currencyA, currencyB) => {
+    return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
+  };
+
+  const setWalletAddress = async (address: string) => {
+    if (!chainId || !account || !pair || !signer) return;
+
+    setPending(true);
+    try {
+      const feeManager = getBrewlabsFeeManagerContract(chainId, signer);
+
+      let tx;
+      switch (selectedDynamicFee) {
+        case 0:
+          tx = await feeManager.setReferrer(pair.liquidityToken.address, address);
+        case 1:
+          tx = await feeManager.setStakingPool(pair.liquidityToken.address, address);
+        default:
+          tx = await feeManager.setTokenOwner(pair.liquidityToken.address, address);
+      }
+      await tx.wait();
+
+      toast.success(`${dynamicData[selectedDynamicFee].key.split("to ")[1]} was updated successfully`);
+
+      fetchPairInfo(pair.liquidityToken.address);
+    } catch (e) {
+      handleWalletError(e, showError);
+    }
+
+    setWalletOpen(false);
+    setPending(false);
+  };
+
+  const setFeeDistribution = async () => {
+    if (!chainId || !account || !pair || !signer) return;
+
+    setPending(true);
+    try {
+      const feeManager = getBrewlabsFeeManagerContract(chainId, signer);
+
+      let tx;
+      if (account === pairOwner.owner) {
+        tx = await feeManager.setFeeDistribution(
+          pair.liquidityToken.address,
+          Math.ceil(liquidityProviderFee * 10000),
+          Math.ceil(brewlabsFee * 10000),
+          Math.ceil(dynamicFees[2] * 10000),
+          Math.ceil(dynamicFees[1] * 10000),
+          Math.ceil(dynamicFees[0] * 10000)
+        );
+      } else {
+        tx = await feeManager.setFeeDistributionFromTeam(
+          pair.liquidityToken.address,
+          Math.ceil(dynamicFees[2] * 10000),
+          Math.ceil(dynamicFees[1] * 10000),
+          Math.ceil(dynamicFees[0] * 10000)
+        );
+      }
+      await tx.wait();
+
+      toast.success(`Fee Distribution was updated successfully`);
+
+      fetchPairInfo(pair.liquidityToken.address);
+    } catch (e) {
+      handleWalletError(e, showError);
+    }
+
+    setWalletOpen(false);
+    setPending(false);
+  };
 
   const onAdd = async () => {
     if (!chainId || !library || !account) return;
@@ -156,6 +367,7 @@ export default function BasicLiquidity() {
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
           setAttemptingTxn(false);
+          fetchAllData();
 
           addTransaction(response, {
             summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
@@ -171,12 +383,9 @@ export default function BasicLiquidity() {
         // we only care if the error is something _other_ than the user rejected the tx
         if (e?.code !== 4001) {
           console.error(e);
+          handleWalletError(e, showError);
         }
       });
-  };
-
-  const onBurnLiquidity = () => {
-    setBurnWarningOpen(true);
   };
 
   const onBurn = async () => {
@@ -184,12 +393,17 @@ export default function BasicLiquidity() {
     try {
       const tokenContract = getBep20Contract(chainId, pair?.liquidityToken.address, signer);
       const balance = await tokenContract.balanceOf(account);
-      const tx = await tokenContract.transfer(ZERO_ADDRESS, balance);
+      const tx = await tokenContract.transfer(DEAD_ADDRESS, balance);
       await tx.wait();
     } catch (e) {
       console.log(e);
+      handleWalletError(e, showError);
     }
     setAttemptingTxn(false);
+  };
+
+  const onBurnLiquidity = () => {
+    setBurnWarningOpen(true);
   };
 
   const onNext = () => {
@@ -200,139 +414,11 @@ export default function BasicLiquidity() {
     }
   };
 
-  const [baseToken, quoteToken] =
-    currencies[Field.CURRENCY_B] === NATIVE_CURRENCIES[chainId]
-      ? [currencies[Field.CURRENCY_B], currencies[Field.CURRENCY_A]]
-      : [currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]];
-
-  const tokenMarketData = useTokenMarketChart(chainId);
-  const { usd: baseTokenPrice } = tokenMarketData[baseToken?.wrapped.address.toLowerCase()] || defaultMarketData;
-
-  const quoteTotalSupply = useTotalSupply(quoteToken as Token);
-  const [marketcap, poolTokenPrice] = useMemo(() => {
-    if (
-      !baseTokenPrice ||
-      !quoteTotalSupply ||
-      !parsedAmounts ||
-      !parsedAmounts[Field.CURRENCY_A] ||
-      !parsedAmounts[Field.CURRENCY_B]
-    )
-      return [0, 0];
-    const [numerator, denominator] =
-      baseToken === currencies[Field.CURRENCY_A]
-        ? [Number(parsedAmounts[Field.CURRENCY_A].toExact()), Number(parsedAmounts[Field.CURRENCY_B].toExact())]
-        : [Number(parsedAmounts[Field.CURRENCY_B].toExact()), Number(parsedAmounts[Field.CURRENCY_A].toExact())];
-    const marketcap = (baseTokenPrice * numerator * Number(quoteTotalSupply.toExact())) / denominator;
-    // const price = marketcap / Number(quoteTotalSupply.toExact());
-    return [marketcap, marketcap / Number(quoteTotalSupply.toExact())];
-  }, [baseTokenPrice, quoteTotalSupply, parsedAmounts]);
-
-  const data = [
-    {
-      key: "Estimated token price",
-      value: `$${poolTokenPrice.toFixed(2)}`,
-    },
-    {
-      key: "Estimated pool starting marketcap",
-      value: `$${marketcap.toFixed(2)}`,
-    },
-    {
-      key: "Pool fee for liquidity providers",
-      value: `${(Math.round(liquidityProviderFee * 100) / 100).toFixed(2)}%`,
-    },
-    {
-      key: "Pool fee for Brewlabs protocol",
-      value: "0.05%",
-    },
-    {
-      key: "Total fixed pool fee",
-      value: `${(
-        Math.round((tokenOwnerFee + tokenHoldersFee + liquidityProviderFee + brewlabsFee) * 100) / 100
-      ).toFixed(2)}%`,
-    },
-  ];
-
-  const existingData = [
-    {
-      key: "Token price",
-      value: `$${poolTokenPrice.toFixed(2)}`,
-    },
-    {
-      key: "Liquidity performance",
-      value: (
-        <p className="whitespace-nowrap !text-white">
-          12.35% <span className="text-[#FFFFFF80]">vAPR</span>
-        </p>
-      ),
-    },
-    {
-      key: "Volume (24HR)",
-      value: (
-        <p className="whitespace-nowrap !text-white">
-          $523,281.00 <span className="text-[#FFFFFF80]">USD</span>
-        </p>
-      ),
-    },
-    {
-      key: "Standard pool fees",
-      value: "",
-    },
-    {
-      key: "Pool fee for liquidity providers",
-      value: `${(Math.round(liquidityProviderFee * 100) / 100).toFixed(2)}%`,
-    },
-    {
-      key: "Pool fee for Brewlabs protocol",
-      value: "0.05%",
-    },
-  ];
-
-  const [dynamicFees, setDynamicFees] = useState([0, 0, 0]);
-  const [walletAddresses, setWalletAddresses] = useState(["", "", ""]);
-  const [selectedDynamicFee, setSelectedDynamicFee] = useState(0);
-
-  const dynamicData = [
-    {
-      key: "Pool fee directed to referral/burn address ",
-      value: `${dynamicFees[0].toFixed(2)}%`,
-    },
-    {
-      key: "Pool fee directed to staking pool ",
-      value: `${dynamicFees[1].toFixed(2)}%`,
-    },
-    {
-      key: "Pool fee directed to project team",
-      value: `${dynamicFees[2].toFixed(2)}%`,
-    },
-    { key: "Total fixed pool fee", value: `${(dynamicFees[0] + dynamicFees[1] + dynamicFees[2]).toFixed(2)}%` },
-  ];
-
-  function getName(currencyA, currencyB) {
-    return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
-  }
-
-  function setWalletAddress(address) {
-    let temp = [...walletAddresses];
-    temp[selectedDynamicFee] = address;
-    setWalletAddresses(temp);
-  }
-
-  const [isOwner, setIsOwner] = useState(false);
-
-  const stringifiedPair = JSON.stringify({
-    account,
-    chainId,
-    token0: currencies[Field.CURRENCY_A],
-    token1: currencies[Field.CURRENCY_B],
-    pair,
-  });
-
-  useEffect(() => {
-    if (!currencies[Field.CURRENCY_A] || !currencies[Field.CURRENCY_B] || !isAddress(account)) return;
-    getPairOwner(account, chainId, currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], pair)
-      .then((result) => setIsOwner(result))
-      .catch((e) => console.log(e));
-  }, [stringifiedPair]);
+  const isReferralFeeUpdatable = dynamicFees[0] === 0 || pairInfo?.referrer !== ethers.constants.AddressZero;
+  const isStakingFeeUpdatable = dynamicFees[1] === 0 || pairOwner?.stakingPool !== ethers.constants.AddressZero;
+  const isOwnerFeeUpdatable = dynamicFees[2] === 0 || pairInfo?.tokenOwner !== ethers.constants.AddressZero;
+  const isChanged = referralFee !== dynamicFees[0] || stakingFee !== dynamicFees[1] || tokenOwnerFee !== dynamicFees[2];
+  const isUpdatable = isChanged && isReferralFeeUpdatable && isStakingFeeUpdatable && isOwnerFeeUpdatable;
 
   return (
     <>
@@ -343,7 +429,13 @@ export default function BasicLiquidity() {
         data={{ pair: { name: getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B]) } }}
         onClick={onBurn}
       />
-      <SetWalletModal onClick={setWalletAddress} open={walletOpen} setOpen={setWalletOpen} />
+      <SetWalletModal
+        onClick={setWalletAddress}
+        open={walletOpen}
+        setOpen={setWalletOpen}
+        title={dynamicData[selectedDynamicFee].key.split("to")[1]}
+        prevWallet={[pairInfo?.referrer, pairOwner.stakingPool, pairInfo?.tokenOwner][selectedDynamicFee]}
+      />
       {addLiquidityStep === "CreateBasicLiquidityPool" || addLiquidityStep === "CreateBundleLiquidityPool" ? (
         <>
           <div className="font-brand text-xl text-white">
@@ -486,50 +578,61 @@ export default function BasicLiquidity() {
                     <div className="ml-2 flex min-w-[60px] justify-center">
                       <div>{item.value}</div>
                     </div>
-                  ) : i !== 3 && isOwner ? (
+                  ) : i !== 3 ? (
                     <div className="ml-2 flex items-center text-tailwind">
-                      <div
-                        className="mr-2 cursor-pointer hover:text-white"
-                        onClick={() => {
-                          let temp = [...dynamicFees];
-                          temp[i] = Math.max(temp[i] - 1, 0);
-                          setDynamicFees(temp);
-                        }}
-                      >
-                        {MinusSVG}
-                      </div>
+                      {isOwner && (
+                        <div
+                          className="mr-2 cursor-pointer hover:text-white"
+                          onClick={() => {
+                            let temp = [...dynamicFees];
+                            temp[i] = Math.max(temp[i] - 0.05, 0);
+                            setDynamicFees(temp);
+                          }}
+                        >
+                          {MinusSVG}
+                        </div>
+                      )}
                       <div className="mr-1.5 text-[#FFFFFFBF]">{item.value}</div>
-                      <div
-                        className={`mr-2 cursor-pointer hover:text-white`}
-                        onClick={() => {
-                          let temp = [...dynamicFees];
-                          temp[i] = temp[i] + 1;
-                          setDynamicFees(temp);
-                        }}
-                      >
-                        {PlusSVG}
-                      </div>
-                      <div
-                        className={`cursor-pointer ${
-                          !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
-                        } [&>svg]:h-3.5 [&>svg]:w-3.5`}
-                        onClick={() => {
-                          setWalletOpen(true);
-                          setSelectedDynamicFee(i);
-                        }}
-                      >
-                        {EditSVG}
-                      </div>
+                      {isOwner && (
+                        <>
+                          <div
+                            className={`mr-2 cursor-pointer hover:text-white`}
+                            onClick={() => {
+                              let temp = [...dynamicFees];
+                              temp[i] = temp[i] + 0.05;
+                              setDynamicFees(temp);
+                            }}
+                          >
+                            {PlusSVG}
+                          </div>
+                          <div
+                            className={`cursor-pointer ${
+                              !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
+                            } [&>svg]:h-3.5 [&>svg]:w-3.5`}
+                            onClick={() => {
+                              setWalletOpen(true);
+                              setSelectedDynamicFee(i);
+                            }}
+                          >
+                            {EditSVG}
+                          </div>
+                        </>
+                      )}
                     </div>
                   ) : (
-                    ""
+                    <div className="ml-2 flex items-center">{/* <div>{item.value}</div> */}</div>
                   )}
                 </div>
               ))}
             </div>
           </div>
           {pair && isOwner ? (
-            <SolidButton className="mb-3 w-full">
+            <SolidButton
+              className="mb-3 w-full"
+              disabled={!isUpdatable || pending}
+              pending={pending}
+              onClick={setFeeDistribution}
+            >
               <div className="mx-auto flex w-fit items-center">
                 Update dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
               </div>
@@ -575,7 +678,12 @@ export default function BasicLiquidity() {
             ) : (
               <SolidButton
                 onClick={onNext}
-                disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+                disabled={
+                  !isValid ||
+                  approvalA !== ApprovalState.APPROVED ||
+                  approvalB !== ApprovalState.APPROVED ||
+                  attemptingTxn
+                }
                 pending={attemptingTxn}
               >
                 {error
