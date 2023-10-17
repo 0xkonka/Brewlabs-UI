@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
-import { BigNumberFormat, numberWithCommas } from "utils/functions";
+import { BigNumberFormat } from "utils/functions";
 import { SkeletonComponent } from "components/SkeletonComponent";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -54,7 +53,7 @@ const TotalStakedChart = ({ data, symbol }: { data: any; symbol: string }) => {
       },
       stroke: {
         curve: "smooth",
-        width :1
+        width: 1,
       },
       xaxis: {
         labels: {

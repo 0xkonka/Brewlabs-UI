@@ -3,6 +3,7 @@ import { useWalletClient } from "wagmi";
 
 import FarmFactoryAbi from "config/abi/farm/factory";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { calculateGasMargin } from "utils";
 import { getFarmFactoryAddress } from "utils/addressHelpers";
 import { getViemClients } from "utils/viem";
 
@@ -21,7 +22,7 @@ export const useFactory = (chainId, performanceFee) => {
       hasDividend: boolean
     ) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const txData: any = {
         address: getFarmFactoryAddress(chainId) as `0x${string}`,
@@ -42,7 +43,7 @@ export const useFactory = (chainId, performanceFee) => {
         account: walletClient.account,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });

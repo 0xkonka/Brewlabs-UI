@@ -45,6 +45,16 @@ import ZapperDetail from "./ZapperDetail";
 import StyledButton from "./StyledButton";
 
 const Directory = ({ page }: { page: number }) => {
+  const { address: account } = useAccount();
+  const { data: farms } = useFarms();
+  const { indexes } = useIndexes();
+  const { pools, dataFetched } = usePools();
+  const { data: zaps, regularCakePerBlock } = useZaps(account);
+
+  const cakePrice = usePriceCakeBusd();
+  const bananaPrice = useBananaPrice();
+  const pancakeLpAprs = useFarmLpAprsFromAppId(AppId.PANCAKESWAP);
+
   const [curFilter, setCurFilter] = useState(page);
   const [criteria, setCriteria] = useState("");
   const [sortOrder, setSortOrder] = useState("tvl");
@@ -55,16 +65,6 @@ const Directory = ({ page }: { page: number }) => {
   });
   const [selectPoolDetail, setSelectPoolDetail] = useState(false);
   const [status, setStatus] = useState("active");
-
-  const { address: account } = useAccount();
-  const { pools, dataFetched } = usePools();
-  const { data: farms } = useFarms();
-  const { indexes } = useIndexes();
-  const { data: zaps, regularCakePerBlock } = useZaps(account);
-
-  const cakePrice = usePriceCakeBusd();
-  const bananaPrice = useBananaPrice();
-  const pancakeLpAprs = useFarmLpAprsFromAppId(AppId.PANCAKESWAP);
 
   useSetFarms();
   usePollFarms();

@@ -5,6 +5,7 @@ import IndexFactoryAbi from "config/abi/indexes/factory";
 import { getIndexFactoryAddress } from "utils/addressHelpers";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
+import { calculateGasMargin } from "utils";
 
 export const useFactory = (chainId, performanceFee) => {
   const { data: walletClient } = useWalletClient();
@@ -12,7 +13,7 @@ export const useFactory = (chainId, performanceFee) => {
   const handleCreate = useCallback(
     async (indexName: string, tokens: string[], fees: number[], commissionWallet: string, isPrivate = true) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const txData: any = {
         address: getIndexFactoryAddress(chainId) as `0x${string}`,
@@ -29,7 +30,7 @@ export const useFactory = (chainId, performanceFee) => {
         gasPrice,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });

@@ -1,18 +1,25 @@
 import { Currency, CurrencyAmount } from "@brewlabs/sdk";
 import { useCallback, useMemo } from "react";
+import { parseEther } from "viem";
+import { Address, erc20ABI } from "wagmi";
 
-import { useTokenContract } from "./useContract";
-import { useSingleCallResult } from "../state/multicall/hooks";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import { ethers } from "ethers";
-import useActiveWeb3React from "./useActiveWeb3React";
+import { getViemClients } from "utils/viem";
+
+import { useSingleCallResult } from "../state/multicall/hooks";
 import { useCurrency } from "./Tokens";
+import { useTokenContract } from "./useContract";
+import useActiveWeb3React from "./useActiveWeb3React";
 
 function useTokenAllowance(token?: Currency, owner?: string, spender?: string): CurrencyAmount | undefined {
-  const contract = useTokenContract(token?.address, false);
-
-  const inputs = useMemo(() => [owner, spender], [owner, spender]);
-  const allowance = useSingleCallResult(contract, "allowance", inputs).result;
+  const allowance = useSingleCallResult({
+    contract: {
+      address: token?.address as Address,
+      abi: erc20ABI,
+    },
+    functionName: "allowance",
+    args: [owner as Address, spender as Address],
+  })?.result;
 
   return useMemo(
     () => (token && allowance ? new CurrencyAmount(token, allowance.toString()) : undefined),
@@ -21,20 +28,20 @@ function useTokenAllowance(token?: Currency, owner?: string, spender?: string): 
 }
 
 export const useTokenApprove = (tokenAddress, to) => {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const currency = useCurrency(tokenAddress);
   const allowance = useTokenAllowance(currency, account, to);
 
   const tokenContract = useTokenContract(tokenAddress);
 
   const handleApprove = useCallback(async () => {
-    const gasPrice = await getNetworkGasPrice(library, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
-    const tx = await tokenContract.approve(to, ethers.constants.MaxUint256, { gasPrice });
-    const receipt = await tx.wait();
+    const tx = await tokenContract.write.approve([to, parseEther("1000000000000000000")], { gasPrice });
+    const client = getViemClients({ chainId });
 
-    return receipt;
-  }, [chainId, library, to, tokenContract]);
+    return client.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
+  }, [chainId, to, tokenContract]);
 
   return { onApprove: handleApprove, allowance };
 };

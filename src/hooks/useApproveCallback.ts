@@ -1,16 +1,17 @@
-import { MaxUint256 } from "@ethersproject/constants";
-import { TransactionResponse } from "@ethersproject/providers";
 import { Trade, CurrencyAmount, ROUTER_ADDRESS_MAP, EXCHANGE_MAP } from "@brewlabs/sdk";
 import { useCallback, useMemo } from "react";
+import { parseEther } from "viem";
+
 import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { calculateGasMargin } from "utils";
+import { getAggregatorAddress } from "utils/addressHelpers";
 import { getNetworkGasPrice } from "utils/getGasPrice";
-import useTokenAllowance from "./useTokenAllowance";
+import { computeSlippageAdjustedAmounts } from "utils/prices";
 import { Field } from "state/swap/actions";
 import { useTransactionAdder, useHasPendingApproval } from "state/transactions/hooks";
-import { computeSlippageAdjustedAmounts } from "utils/prices";
-import { calculateGasMargin } from "utils";
+
 import { useTokenContract } from "./useContract";
-import { getAggregatorAddress } from "utils/addressHelpers";
+import useTokenAllowance from "./useTokenAllowance";
 
 export enum ApprovalState {
   UNKNOWN,
@@ -20,11 +21,8 @@ export enum ApprovalState {
 }
 
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
-export function useApproveCallback(
-  amountToApprove?: CurrencyAmount,
-  spender?: string
-): [ApprovalState, () => Promise<TransactionResponse>] {
-  const { chainId, library, account } = useActiveWeb3React();
+export function useApproveCallback(amountToApprove?: CurrencyAmount, spender?: string): [ApprovalState, () => Promise<`0x${string}`>] {
+  const { chainId, account } = useActiveWeb3React();
 
   const token = amountToApprove && !amountToApprove?.currency.isNative ? amountToApprove.currency : undefined;
   const currentAllowance = useTokenAllowance(token, account ?? undefined, spender);
@@ -48,7 +46,7 @@ export function useApproveCallback(
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
 
-  const approve = useCallback(async (): Promise<TransactionResponse> => {
+  const approve = useCallback(async () => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error("approve was called unnecessarily");
       return;
@@ -76,32 +74,42 @@ export function useApproveCallback(
     let useExact = false;
 
     try {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
-      const estimatedGas = await tokenContract.estimateGas.approve(spender, MaxUint256).catch(() => {
-        // general fallback for tokens who restrict approval amounts
-        useExact = true;
-        return tokenContract.estimateGas.approve(spender, amountToApprove.raw.toString());
-      });
-      console.log(estimatedGas);
+      const gasPrice = await getNetworkGasPrice(chainId);
+      const estimatedGas = await tokenContract.estimateGas
+        .approve([spender, parseEther("1000000000000000")], {
+          account: tokenContract.account,
+          chain: tokenContract.chain,
+        })
+        .catch(() => {
+          // general fallback for tokens who restrict approval amounts
+          useExact = true;
+          return tokenContract.estimateGas.approve([spender, amountToApprove.raw.toString()], {
+            account: tokenContract.account,
+            chain: tokenContract.chain,
+          });
+        });
+
       // eslint-disable-next-line consistent-return
-      const response: TransactionResponse = await tokenContract.approve(
-        spender,
-        useExact ? amountToApprove.raw.toString() : MaxUint256,
+      const response = await tokenContract.write.approve(
+        [spender, useExact ? amountToApprove.raw.toString() : parseEther("1000000000000000")],
         {
           gasPrice,
           gasLimit: calculateGasMargin(estimatedGas),
         }
       );
       // add transaction detail to the global state store
-      addTransaction(response, {
-        summary: `Approve ${amountToApprove.currency.symbol}`,
-        approval: { tokenAddress: token.address, spender },
-      });
+      addTransaction(
+        { hash: response },
+        {
+          summary: `Approve ${amountToApprove.currency.symbol}`,
+          approval: { tokenAddress: token.address, spender },
+        }
+      );
       return response;
     } catch (e) {
       console.log(e);
     }
-  }, [approvalState, token, tokenContract, amountToApprove, spender, addTransaction, chainId, library]);
+  }, [approvalState, token, tokenContract, amountToApprove, spender, addTransaction, chainId]);
 
   return [approvalState, approve];
 }

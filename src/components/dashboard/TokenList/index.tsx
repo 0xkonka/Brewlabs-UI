@@ -6,7 +6,7 @@ import { StarIcon } from "@heroicons/react/24/solid";
 import { isArray } from "lodash";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import styled from "styled-components";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -15,9 +15,9 @@ import { Field } from "state/swap/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
 import { isAddress } from "utils";
 import { getClaimableTokenContract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { BigNumberFormat } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import { getViemClients } from "utils/viem";
 
 import { claimSVG, disabledClaimSVG, NoneSVG, warningSVG } from "../assets/svgs";
 import ToolBar from "./ToolBar";
@@ -45,20 +45,20 @@ const TokenList = ({
   listType: number;
   setListType: any;
 }) => {
+  const { chainId } = useActiveChainId();
+  const { address } = useAccount();
+  const { data: signer } = useWalletClient();
+  const { pending, setPending, tokenList, viewType, setViewType }: any = useContext(DashboardContext);
+  const valueRef: any = useRef();
+
+  const { onCurrencySelection } = useSwapActionHandlers();
+
   const [filterType, setFilterType] = useState(3);
   const [showData, setShowData] = useState([]);
   const [favourites, setFavourites] = useState<any>([]);
   const [showBoxShadow, setShowBoxShadow] = useState(false);
   const [curScroll, setCurScroll] = useState(0);
   const [isHover, setIsHover] = useState(new Array(tokens.length).fill(false));
-
-  const { chainId } = useActiveChainId();
-  const { address } = useAccount();
-  const signer  = useEthersSigner();
-  const { pending, setPending, tokenList, viewType, setViewType }: any = useContext(DashboardContext);
-  const valueRef: any = useRef();
-
-  const { onCurrencySelection } = useSwapActionHandlers();
 
   const sortData = (data: any) => {
     try {
@@ -138,7 +138,6 @@ const TokenList = ({
   });
 
   useEffect(() => {
-
     let _showData: any = [];
     let filteredTokens: any = [];
     if (listType === 0) {
@@ -181,9 +180,18 @@ const TokenList = ({
     const claimableTokenContract = getClaimableTokenContract(chainId, address, signer);
     setPending(true);
     try {
-      const estimateGas = await claimableTokenContract.estimateGas.claim();
-      const tx = await claimableTokenContract.claim({ gasLimit: Math.ceil(Number(estimateGas) * 1.2) });
-      await tx.wait();
+      const estimateGas = await claimableTokenContract.estimateGas.claim([], {
+        account: signer.account,
+        chain: signer.chain,
+      });
+      const hash = await claimableTokenContract.write.claim([], {
+        account: signer.account,
+        chain: signer.chain,
+        gasLimit: (estimateGas * BigInt(1200)) / BigInt(1000),
+      });
+
+      const client = getViemClients({ chainId });
+      await client.waitForTransactionReceipt({ hash, confirmations: 2 });
     } catch (e) {
       console.log(e);
     }

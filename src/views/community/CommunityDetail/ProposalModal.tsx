@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useContext, useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 
 import DropDown from "@components/dashboard/TokenList/Dropdown";
 import { InfoSVG } from "@components/dashboard/assets/svgs";
@@ -19,9 +19,18 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { handleWalletError } from "lib/bridge/helpers";
 import { getBep20Contract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
+import { getViemClients } from "utils/viem";
 
 const ProposalModal = ({ open, setOpen, community }) => {
+  const { chainId } = useActiveChainId();
+  const { address: account } = useAccount();
+  const { data: signer } = useWalletClient();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
+
+  const { addProposal }: any = useContext(CommunityContext);
+  const { pending, setPending }: { pending: boolean; setPending: (pending: boolean) => {} } =
+    useContext(DashboardContext);
+
   const coreCurrency = community.currencies[community.coreChainId];
 
   const [isFeeToVote, setIsFeeToVote] = useState(0);
@@ -29,14 +38,6 @@ const ProposalModal = ({ open, setOpen, community }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
-
-  const { addProposal }: any = useContext(CommunityContext);
-  const { chainId } = useActiveChainId();
-  const { address: account } = useAccount();
-  const signer  = useEthersSigner();
-  const { canSwitch, switchNetwork } = useSwitchNetwork();
-  const { pending, setPending }: { pending: boolean; setPending: (pending: boolean) => {} } =
-    useContext(DashboardContext);
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
@@ -48,8 +49,12 @@ const ProposalModal = ({ open, setOpen, community }) => {
     try {
       if (community.feeToProposal.type === "Yes") {
         const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-        const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount);
-        await tx.wait();
+        const tx = await tokenContract.write.transfer(
+          [community.feeToProposal.address, community.feeToProposal.amount],
+          {}
+        );
+        const client = getViemClients({ chainId });
+        await client.waitForTransactionReceipt({ hash: tx });
       }
       const durations = [3600 * 24 * 7, 3600 * 24 * 14, 3600 * 24 * 30];
       await addProposal(

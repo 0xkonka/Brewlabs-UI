@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
-import { BigNumber } from "@ethersproject/bignumber";
-import { TransactionResponse } from "@ethersproject/providers";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import React, { useContext, useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { useWalletClient } from "wagmi";
 
 import CurrencyInputPanel from "components/currencyInputPanel";
 import {
@@ -20,10 +19,11 @@ import {
 import { CurrencyLogo } from "components/logo";
 import WarningModal from "@components/warningModal";
 
-import { FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import { DEAD_ADDRESS, FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import { SwapContext } from "contexts/SwapContext";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
+import { useBrewlabsRouterContract } from "@hooks/useContract";
 import { getPairOwner } from "@hooks/usePairs";
 import useTotalSupply from "hooks/useTotalSupply";
 import { useUserSlippageTolerance } from "state/user/hooks";
@@ -33,10 +33,10 @@ import { defaultMarketData } from "state/prices/types";
 import { useTokenMarketChart } from "state/prices/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
-import { getBep20Contract, getBrewlabsRouterContract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
+import { getBep20Contract } from "utils/contractHelpers";
 import { getChainLogo } from "utils/functions";
 import { maxAmountSpend } from "utils/maxAmountSpend";
+import { getViemClients } from "utils/viem";
 import { wrappedCurrency } from "utils/wrappedCurrency";
 
 import OutlinedButton from "../button/OutlinedButton";
@@ -45,9 +45,9 @@ import DeployYieldFarm from "./DeployYieldFarm";
 import SetWalletModal from "./SetWalletModal";
 
 export default function BasicLiquidity() {
-  const { account, chainId, library } = useActiveWeb3React();
-  const signer  = useEthersSigner();
+  const { account, chainId } = useActiveWeb3React();
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
+  const { data: signer } = useWalletClient();
 
   const liquidityProviderFee = 0.25;
   const tokenHoldersFee = 0.0;
@@ -68,6 +68,8 @@ export default function BasicLiquidity() {
 
   const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId][0]?.key][chainId];
   const isValid = !error;
+
+  const router = useBrewlabsRouterContract(chainId, routerAddr);
 
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
@@ -101,8 +103,7 @@ export default function BasicLiquidity() {
   const addTransaction = useTransactionAdder();
 
   const onAdd = async () => {
-    if (!chainId || !library || !account) return;
-    const router = getBrewlabsRouterContract(chainId, routerAddr, signer);
+    if (!chainId || !account || !router) return;
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts;
 
@@ -118,13 +119,13 @@ export default function BasicLiquidity() {
     const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline;
 
     let estimate;
-    let method: (...args: any) => Promise<TransactionResponse>;
+    let method: any;
     let args: Array<string | string[] | number>;
-    let value: BigNumber | null;
+    let value: bigint | null;
     if (currencyA === NATIVE_CURRENCIES[chainId] || currencyB === NATIVE_CURRENCIES[chainId]) {
       const tokenBIsETH = currencyB === NATIVE_CURRENCIES[chainId];
       estimate = router.estimateGas.addLiquidityETH;
-      method = router.addLiquidityETH;
+      method = router.write.addLiquidityETH;
       args = [
         wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
         (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
@@ -133,10 +134,10 @@ export default function BasicLiquidity() {
         account,
         deadlineFromNow,
       ];
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
+      value = BigInt((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
     } else {
       estimate = router.estimateGas.addLiquidity;
-      method = router.addLiquidity;
+      method = router.write.addLiquidity;
       args = [
         wrappedCurrency(currencyA, chainId)?.address ?? "",
         wrappedCurrency(currencyB, chainId)?.address ?? "",
@@ -151,21 +152,27 @@ export default function BasicLiquidity() {
     }
 
     setAttemptingTxn(true);
-    await estimate(...args, value ? { value } : {})
+    await estimate(
+      args,
+      value ? { value, account: signer.account, chain: signer.chain } : { account: signer.account, chain: signer.chain }
+    )
       .then((estimatedGasLimit) =>
-        method(...args, {
+        method(args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
           setAttemptingTxn(false);
 
-          addTransaction(response, {
-            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencies[Field.CURRENCY_A]?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
-          });
+          addTransaction(
+            { hash: response },
+            {
+              summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+                currencies[Field.CURRENCY_A]?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
+            }
+          );
 
-          setTxHash(response.hash);
+          setTxHash(response);
         })
       )
       .catch((e) => {
@@ -185,9 +192,14 @@ export default function BasicLiquidity() {
     setAttemptingTxn(true);
     try {
       const tokenContract = getBep20Contract(chainId, pair?.liquidityToken.address, signer);
-      const balance = await tokenContract.balanceOf(account);
-      const tx = await tokenContract.transfer(ZERO_ADDRESS, balance);
-      await tx.wait();
+      const balance = await tokenContract.read.balanceOf([account]);
+      const response = await tokenContract.write.transfer([DEAD_ADDRESS, balance], {
+        account: signer.account,
+        chain: signer.chain,
+      });
+
+      const client = getViemClients({ chainId });
+      await client.waitForTransactionReceipt({ hash: response, confirmations: 2 });
     } catch (e) {
       console.log(e);
     }

@@ -6,12 +6,13 @@ import { useWalletClient } from "wagmi";
 import masterChefV2Abi from "config/abi/farm/masterchefV2";
 import { useAppDispatch } from "state";
 import { updateFarmsUserData } from "state/farms";
+import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
 const call_normalMethod = async (masterChefContract, walletClient: WalletClient, client: PublicClient) => {
   let gasLimit = await client.estimateContractGas(masterChefContract);
-  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+  gasLimit = calculateGasMargin(gasLimit);
 
   const txHash = await walletClient.writeContract({ ...masterChefContract, gas: gasLimit });
   return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
@@ -31,7 +32,7 @@ const useFarm = (
   const handleStake = useCallback(
     async (amount: string) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       let masterChefContract = {
         address: masterchef as `0x${string}`,
@@ -56,7 +57,7 @@ const useFarm = (
   const handleUnstake = useCallback(
     async (amount: string) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       let masterChefContract = {
         address: masterchef as `0x${string}`,
@@ -80,7 +81,7 @@ const useFarm = (
 
   const handleHarvest = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -100,7 +101,7 @@ const useFarm = (
 
   const handleHarvestReward = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -120,7 +121,7 @@ const useFarm = (
 
   const handleHarvestDividend = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -140,7 +141,7 @@ const useFarm = (
 
   const handleCompoundReward = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,
@@ -160,7 +161,7 @@ const useFarm = (
 
   const handleCompoundDividend = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let masterChefContract = {
       address: masterchef as `0x${string}`,

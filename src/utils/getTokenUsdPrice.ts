@@ -1,7 +1,7 @@
-import apePriceGetterABI from "config/abi/apePriceGetter.json";
+import { Address, formatUnits } from "viem";
+import apePriceGetterABI from "config/abi/apePriceGetter";
 import { getApePriceGetterAddress, getNativeWrappedAddress } from "./addressHelpers";
-import multicall from "./multicall";
-import { getBalanceNumber } from "./formatBalance";
+import { getViemClients } from "./viem";
 
 export const getTokenUsdPrice = async (
   chainId: number,
@@ -10,24 +10,28 @@ export const getTokenUsdPrice = async (
   lp?: boolean,
   isNative?: boolean
 ) => {
+  const client = getViemClients({ chainId });
+
   const priceGetterAddress = getApePriceGetterAddress(chainId);
   const nativeTokenAddress = getNativeWrappedAddress(chainId);
   if (!priceGetterAddress) return 0;
   if ((tokenAddress || isNative) && tokenDecimal) {
-    const call = lp
+    const call: any = lp
       ? {
-          address: priceGetterAddress,
-          name: "getLPPrice",
-          params: [tokenAddress, 18],
+          address: priceGetterAddress as Address,
+          abi: apePriceGetterABI,
+          functionName: "getLPPrice",
+          args: [tokenAddress, 18],
         }
       : {
-          address: priceGetterAddress,
-          name: "getPrice",
-          params: [isNative ? nativeTokenAddress : tokenAddress, tokenDecimal],
+          address: priceGetterAddress as Address,
+          abi: apePriceGetterABI,
+          functionName: "getPrice",
+          args: [isNative ? nativeTokenAddress : tokenAddress, tokenDecimal],
         };
 
-    const tokenPrice = await multicall(apePriceGetterABI, [call], chainId);
-    const filterPrice = getBalanceNumber(tokenPrice[0], tokenDecimal);
+    const tokenPrice = await client.readContract(call);
+    const filterPrice = +formatUnits(tokenPrice[0], tokenDecimal);
     return filterPrice;
   }
   return null;

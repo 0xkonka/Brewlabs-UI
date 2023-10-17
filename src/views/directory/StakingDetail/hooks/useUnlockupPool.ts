@@ -13,6 +13,7 @@ import {
   updateUserPendingReward,
 } from "state/pools";
 import { updatePoolsUserData } from "state/pools";
+import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
@@ -23,7 +24,7 @@ const call_normalMethod = async (
   forceGasLimit = undefined
 ) => {
   let gasLimit = await client.estimateContractGas(stakingContract);
-  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+  gasLimit = calculateGasMargin(gasLimit);
 
   const txHash = await walletClient.writeContract({ ...stakingContract, gas: forceGasLimit ?? gasLimit });
   return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
@@ -37,7 +38,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
   const handleStake = useCallback(
     async (amount: string, decimals: number) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const stakingContract = {
         address: contractAddress,
@@ -63,7 +64,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
   const handleUnstake = useCallback(
     async (amount: string, decimals: number) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const stakingContract = {
         address: contractAddress,
@@ -95,7 +96,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
 
   const handleHarvest = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -117,7 +118,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
 
   const handleHarvestDividend = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -139,7 +140,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
 
   const handleCompound = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const stakingContract = {
       address: contractAddress,
@@ -161,7 +162,7 @@ const useUnlockupPool = (sousId: number, contractAddress, performanceFee = "0", 
 
   const handleCompoundDividend = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const stakingContract = {
       address: contractAddress,

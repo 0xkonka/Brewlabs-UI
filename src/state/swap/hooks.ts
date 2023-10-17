@@ -1,21 +1,23 @@
-import { parseUnits } from "@ethersproject/units";
 import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, Trade } from "@brewlabs/sdk";
 import { ParsedQs } from "qs";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useENS from "hooks/ENS/useENS";
+
+import { useTranslation } from "contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useGetENSAddressByName } from "hooks/ENS/useGetENSAddressByName";
 import { useCurrency } from "hooks/Tokens";
 import { useTradeExactIn, useTradeExactOut } from "hooks/Trades";
 import useParsedQueryString from "hooks/useParsedQueryString";
-import { useTranslation } from "contexts/localization";
 import { isAddress } from "utils";
 import { computeSlippageAdjustedAmounts } from "utils/prices";
+
 import { AppDispatch, AppState } from "../index";
+import { useUserSlippageTolerance } from "../user/hooks";
 import { useCurrencyBalances } from "../wallet/hooks";
 import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from "./actions";
 import { SwapState } from "./reducer";
-import { useUserSlippageTolerance } from "../user/hooks";
+import { parseUnits } from "viem";
 
 export function useSwapState(): AppState["swap"] {
   return useSelector<AppState, AppState["swap"]>((state) => state.swap);
@@ -125,8 +127,8 @@ export function useDerivedSwapInfo(): {
 
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
-  const recipientLookup = useENS(recipient ?? undefined);
-  const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null;
+  const recipientLookupAddr = useGetENSAddressByName(recipient ?? undefined);
+  const to: string | null = (recipient === null ? account : recipientLookupAddr) ?? null;
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,

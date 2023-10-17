@@ -3,7 +3,6 @@ import { fetchBalance } from "@wagmi/core";
 import axios from "axios";
 import { erc20ABI } from "wagmi";
 
-import { ERC20_ABI } from "config/abi/erc20";
 import claimableTokenAbi from "config/abi/claimableToken";
 import dividendTrackerAbi from "config/abi/dividendTracker";
 
@@ -13,7 +12,6 @@ import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrice
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
-import multicall from "utils/multicall";
 import { getViemClients } from "utils/viem";
 
 async function getTokenBaseBalances(account: string, chainId: number) {
@@ -43,26 +41,18 @@ async function getTokenBaseBalances(account: string, chainId: number) {
       });
 
     // fetch missing symbol & decimals
+    const client = getViemClients({ chainId });
     const calls = [];
     data
       .filter((i) => !i.name)
       .forEach((element) => {
         calls.push(
-          {
-            name: "name",
-            address: element.address,
-          },
-          {
-            name: "symbol",
-            address: element.address,
-          },
-          {
-            name: "decimals",
-            address: element.address,
-          }
+          { abi: erc20ABI, address: element.address, functionName: "name" },
+          { abi: erc20ABI, address: element.address, functionName: "symbol" },
+          { abi: erc20ABI, address: element.address, functionName: "decimals" }
         );
       });
-    const result = await multicall(ERC20_ABI, calls, chainId);
+    const results = await client.multicall({ contracts: calls });
 
     data = [
       ...data.filter((i) => i.name),
@@ -70,10 +60,10 @@ async function getTokenBaseBalances(account: string, chainId: number) {
         .filter((i) => !i.name)
         .map((item, index) => ({
           address: item.address,
-          balance: item.balance / Math.pow(10, result[3 * index + 2][0]),
-          decimals: result[3 * index + 2][0],
-          name: result[3 * index][0],
-          symbol: result[3 * index + 1][0],
+          balance: item.balance / Math.pow(10, Number(results[3 * index + 2].result)),
+          decimals: Number(results[3 * index + 2].result),
+          name: results[3 * index].result,
+          symbol: results[3 * index + 1].result,
         })),
     ];
   }
@@ -156,9 +146,9 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string) => {
         const rewardTokenBaseinfo = await fetchTokenBaseInfo(rewardTokenAddress, chainId);
         rewardToken = {
           address: rewardTokenAddress,
-          name: rewardTokenBaseinfo[0][0],
-          symbol: rewardTokenBaseinfo[1][0],
-          decimals: rewardTokenBaseinfo[2][0],
+          name: rewardTokenBaseinfo[0],
+          symbol: rewardTokenBaseinfo[1],
+          decimals: Number(rewardTokenBaseinfo[2]),
         };
       } catch (e) {
         rewardToken = {

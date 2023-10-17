@@ -1,16 +1,15 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { ROUTER_ADDRESS_MAP, WNATIVE } from "@brewlabs/sdk";
 import { TransactionResponse } from "alchemy-sdk";
-import { BigNumber, Contract, ethers } from "ethers";
 import { splitSignature } from "ethers/lib/utils";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import { formatEther, toHex } from "viem";
+import { useAccount, useSignTypedData, useWalletClient } from "wagmi";
 
 import { NETWORKS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState } from "hooks/useApproveCallback";
 import { useApproveCallback } from "hooks/useApproveCallback";
 import useDebouncedChangeHandler from "hooks/useDebouncedChangeHandler";
@@ -25,7 +24,7 @@ import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
+import { isUserRejected } from "utils/error";
 import { formatAmount } from "utils/formatApy";
 import { getChainLogo, getEmptyTokenLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
@@ -46,11 +45,11 @@ export default function RemoveLiquidityPanel({
   currencyB,
   lpPrice = undefined,
 }) {
-  const { address: account } = useAccount();
-  const signer  = useEthersSigner();
-
   const { chainId } = useActiveChainId();
-  const { library }: any = useActiveWeb3React();
+  const { address: account } = useAccount();
+  const { data: signer } = useWalletClient();
+  const { signTypedDataAsync } = useSignTypedData();
+
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
 
@@ -87,7 +86,7 @@ export default function RemoveLiquidityPanel({
   );
 
   const { onUserInput: _onUserInput } = useBurnActionHandlers();
-  const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address);
+  const pairContract = usePairContract(pair?.liquidityToken?.address);
 
   const onUserInput = useCallback(
     (field: Field, value: string) => {
@@ -113,13 +112,13 @@ export default function RemoveLiquidityPanel({
   async function onRemove() {
     setPending(true);
     try {
-      if (!chainId || !library || !account || !deadline) throw new Error("missing dependencies");
+      if (!chainId || !account || !deadline) throw new Error("missing dependencies");
 
       if (!currencyAmountA || !currencyAmountB) {
         throw new Error("missing currency amounts");
       }
       const router = getBrewlabsRouterContract(chainId, routerAddr, signer);
-      const gasPrice = await getNetworkGasPrice(library, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const amountsMin = {
         [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -145,7 +144,7 @@ export default function RemoveLiquidityPanel({
             amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
             amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
             account,
-            deadline.toHexString(),
+            toHex(deadline),
           ];
         }
         // removeLiquidity
@@ -158,14 +157,14 @@ export default function RemoveLiquidityPanel({
             amountsMin[Field.CURRENCY_A].toString(),
             amountsMin[Field.CURRENCY_B].toString(),
             account,
-            deadline.toHexString(),
+            toHex(deadline),
           ];
         }
       }
 
-      const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      const safeGasEstimates: (bigint | undefined)[] = await Promise.all(
         methodNames.map((methodName) =>
-          router.estimateGas[methodName](...args)
+          router.estimateGas[methodName](args, { account: signer.account, chain: signer.chain })
             .then(calculateGasMargin)
             .catch((err) => {
               console.error(`estimateGas failed`, methodName, args, err);
@@ -174,9 +173,7 @@ export default function RemoveLiquidityPanel({
         )
       );
 
-      const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-        BigNumber.isBigNumber(safeGasEstimate)
-      );
+      const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) => safeGasEstimate);
 
       // all estimations failed...
       if (indexOfSuccessfulEstimation === -1) {
@@ -186,18 +183,21 @@ export default function RemoveLiquidityPanel({
         const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
 
         setPending(true);
-        await router[methodName](...args, {
+        await router[methodName](args, {
           gasLimit: safeGasEstimate,
           gasPrice,
         })
-          .then((response: TransactionResponse) => {
+          .then((response) => {
             setPending(false);
 
-            addTransaction(response, {
-              summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-                currencyA?.symbol
-              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
-            });
+            addTransaction(
+              { hash: response },
+              {
+                summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+                  currencyA?.symbol
+                } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+              }
+            );
             toast.success("Liquidity was removed");
 
             fetchLPTokens(chainId);
@@ -229,7 +229,7 @@ export default function RemoveLiquidityPanel({
     // }
 
     const lpManagerContract = getLpManagerV2Contract(chainId, signer);
-    const gasPrice = await getNetworkGasPrice(library, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -259,7 +259,7 @@ export default function RemoveLiquidityPanel({
           amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
           amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
           account,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       }
       // removeLiquidity
@@ -273,16 +273,16 @@ export default function RemoveLiquidityPanel({
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
           account,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       }
     } else {
       throw new Error("Attempting to confirm without approval. Please contact support.");
     }
 
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+    const safeGasEstimates: (bigint | undefined)[] = await Promise.all(
       methodNames.map((methodName) =>
-        lpManagerContract.estimateGas[methodName](...args)
+        lpManagerContract.estimateGas[methodName](args, { account: signer.account, chain: signer.chain })
           .then(calculateGasMargin)
           .catch((err) => {
             console.error(`estimateGas failed`, methodName, args, err);
@@ -291,9 +291,7 @@ export default function RemoveLiquidityPanel({
       )
     );
 
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate)
-    );
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) => safeGasEstimate);
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
@@ -337,7 +335,7 @@ export default function RemoveLiquidityPanel({
     }
 
     const lpManagerContract = getLpManagerContract(chainId, signer);
-    const gasPrice = await getNetworkGasPrice(library, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     if (!currencyA || !currencyB) throw new Error("missing tokens");
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
@@ -366,9 +364,9 @@ export default function RemoveLiquidityPanel({
       throw new Error("Attempting to confirm without approval. Please contact support.");
     }
 
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+    const safeGasEstimates: (bigint | undefined)[] = await Promise.all(
       methodNames.map((methodName) =>
-        lpManagerContract.estimateGas[methodName](...args)
+        lpManagerContract.estimateGas[methodName](args, { account: signer.account, chain: signer.chain })
           .then(calculateGasMargin)
           .catch((err) => {
             console.error(`estimateGas failed`, methodName, args, err);
@@ -377,9 +375,7 @@ export default function RemoveLiquidityPanel({
       )
     );
 
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate)
-    );
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) => safeGasEstimate);
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
@@ -389,7 +385,7 @@ export default function RemoveLiquidityPanel({
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
 
       setPending(true);
-      await lpManagerContract[methodName](...args, {
+      await lpManagerContract[methodName](args, {
         gasLimit: safeGasEstimate,
         gasPrice,
       })
@@ -417,13 +413,13 @@ export default function RemoveLiquidityPanel({
 
   async function onAttemptToApprove() {
     try {
-      if (!pairContract || !pair || !library || !deadline) throw new Error("missing dependencies");
+      if (!pairContract || !pair || !signTypedDataAsync || !deadline) throw new Error("missing dependencies");
       const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
       if (!liquidityAmount) throw new Error("missing liquidity amount");
 
       setPending(true);
       // try to gather a signature for permission
-      const nonce = await pairContract.nonces(account);
+      const nonce = await pairContract.read.nonces([account]);
 
       const EIP712Domain = [
         { name: "name", type: "string" },
@@ -448,34 +444,33 @@ export default function RemoveLiquidityPanel({
         owner: account,
         spender: isUsingRouter ? routerAddr : lpManager,
         value: liquidityAmount.raw.toString(),
-        nonce: nonce.toHexString(),
-        deadline: deadline.toNumber(),
+        nonce,
+        deadline: Number(deadline),
       };
-      const data = JSON.stringify({
-        types: {
-          EIP712Domain,
-          Permit,
-        },
-        domain,
-        primaryType: "Permit",
-        message,
-      });
 
       if (isUsingRouter) {
-        library
-          .send("eth_signTypedData_v4", [account, data])
+        signTypedDataAsync({
+          // @ts-ignore
+          domain,
+          primaryType: "Permit",
+          types: {
+            EIP712Domain,
+            Permit,
+          },
+          message,
+        })
           .then(splitSignature)
           .then((signature) => {
             setSignatureData({
               v: signature.v,
               r: signature.r,
               s: signature.s,
-              deadline: deadline.toNumber(),
+              deadline: Number(deadline),
             });
           })
           .catch((err) => {
             // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-            if (err?.code !== 4001) {
+            if (!isUserRejected(err)) {
               approveCallback();
             }
           });
@@ -527,14 +522,14 @@ export default function RemoveLiquidityPanel({
               <>
                 $
                 {(
-                  +formatAmount(+ethers.utils.formatEther(parsedAmounts[Field.LIQUIDITY]?.raw.toString() ?? "0"), 10) *
+                  +formatAmount(+formatEther(BigInt(parsedAmounts[Field.LIQUIDITY]?.raw.toString() ?? "0")), 10) *
                   lpPrice
                 ).toFixed(2)}
                 &nbsp; USD
               </>
             ) : (
               <>
-                {+formatAmount(ethers.utils.formatEther(parsedAmounts[Field.LIQUIDITY]?.raw.toString() ?? "0"), 6)}
+                {+formatAmount(formatEther(BigInt(parsedAmounts[Field.LIQUIDITY]?.raw.toString() ?? "0")), 6)}
                 &nbsp; {tokenA?.symbol}-{tokenB?.symbol}
               </>
             )}
@@ -670,7 +665,7 @@ export default function RemoveLiquidityPanel({
               <SolidButton
                 className="w-full"
                 onClick={isUsingRouter ? onRemove : onRemoveWithManager}
-                disabled={pending || !library || !account || !tokenA || !tokenB || !parsedAmounts[Field.LIQUIDITY]}
+                disabled={pending || !account || !tokenA || !tokenB || !parsedAmounts[Field.LIQUIDITY]}
               >
                 Remove Liquidity
                 {pending && (
@@ -690,7 +685,7 @@ export default function RemoveLiquidityPanel({
               <SolidButton
                 className="w-full"
                 onClick={() => onAttemptToApprove()}
-                disabled={pending || !library || !account || !parsedAmounts[Field.LIQUIDITY]}
+                disabled={pending || !account || !parsedAmounts[Field.LIQUIDITY]}
               >
                 Enable
               </SolidButton>

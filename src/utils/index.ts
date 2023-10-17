@@ -1,6 +1,5 @@
 import { CurrencyAmount, JSBI, Percent } from "@brewlabs/sdk";
-import { getAddress } from "@ethersproject/address";
-import { BigNumber } from "@ethersproject/bignumber";
+import { getAddress } from "viem";
 
 import { BLOCKS_PER_DAY } from "config/constants";
 import { Category } from "config/constants/types";
@@ -26,15 +25,14 @@ export const truncateHash = (hash: string) => {
   const len = hash.length;
   return `${hash.substr(0, 6)}...${hash.substr(len - 4, len - 1)}`;
 };
-
 // add 10%
-export function calculateGasMargin(value: BigNumber): BigNumber {
-  return value.mul(BigNumber.from(10000).add(BigNumber.from(2000))).div(BigNumber.from(10000));
+export function calculateGasMargin(value: bigint, margin = BigInt(2000)): bigint {
+  return (value * (BigInt(10000) + margin)) / BigInt(10000);
 }
 
 // add 50%
-export function calculateTotalGas(value: BigNumber): BigNumber {
-  return value.mul(BigNumber.from(10000).add(BigNumber.from(5000))).div(BigNumber.from(10000));
+export function calculateTotalGas(value: bigint): bigint {
+  return (value * BigInt(15000)) / BigInt(10000);
 }
 
 // converts a basis points value to a sdk percent

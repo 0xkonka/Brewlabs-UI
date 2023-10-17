@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
+import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
-import styled from "styled-components";
-import { InfoSVG, warningFillSVG } from "@components/dashboard/assets/svgs";
+
+import { InfoSVG } from "components/dashboard/assets/svgs";
+import StyledInput from "components/StyledInput";
 import StyledButton from "views/directory/StyledButton";
-import { useState } from "react";
-import StyledInput from "@components/StyledInput";
 
 const SetWalletModal = ({ open, setOpen, onClick }: { open: boolean; setOpen: any; onClick: any }) => {
   const [address, setAddress] = useState("");

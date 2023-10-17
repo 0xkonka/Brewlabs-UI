@@ -3,6 +3,7 @@ import { useWalletClient } from "wagmi";
 
 import FlaskNftAbi from "config/abi/nfts/flaskNft";
 import { useActiveChainId } from "@hooks/useActiveChainId";
+import { calculateGasMargin } from "utils";
 import { getFlaskNftAddress } from "utils/addressHelpers";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
@@ -14,7 +15,7 @@ export const useFlaskNft = () => {
   const handleMint = useCallback(
     async (count: number, payingToken: string) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const txData: any = {
         address: getFlaskNftAddress(chainId) as `0x${string}`,
@@ -25,7 +26,7 @@ export const useFlaskNft = () => {
         gasPrice,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
@@ -36,7 +37,7 @@ export const useFlaskNft = () => {
   const handleUpgradeNft = useCallback(
     async (tokenIds: number[], payingToken: string) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       const _tokenIds: any = [BigInt(tokenIds[0]), BigInt(tokenIds[1]), BigInt(tokenIds[2])];
 
@@ -49,7 +50,7 @@ export const useFlaskNft = () => {
         gasPrice,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 

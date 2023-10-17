@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { parseBytes32String } from "@ethersproject/strings";
-import { Currency, Token, currencyEquals, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
+import { Currency, Token, currencyEquals, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 import { useEffect, useMemo, useState } from "react";
 import { arrayify } from "ethers/lib/utils";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -12,13 +12,12 @@ import {
   useCombinedInactiveList,
 } from "state/lists/hooks";
 
-import { NEVER_RELOAD, useSingleCallResult } from "state/multicall/hooks";
 import useUserAddedTokens from "state/user/hooks/useUserAddedTokens";
 import { isAddress } from "utils";
 
-import { useBytes32TokenContract, useTokenContract } from "./useContract";
 import { filterTokens } from "components/searchModal/filtering";
 import { getBep20Contract } from "utils/contractHelpers";
+import { Address, useToken as useToken_ } from "wagmi";
 
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
@@ -147,53 +146,24 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
 
   const address = isAddress(tokenAddress);
 
-  const tokenContract = useTokenContract(address || undefined, false);
-  const tokenContractBytes32 = useBytes32TokenContract(address || undefined, false);
   const token: Token | undefined = address ? tokens[address] : undefined;
 
-  const tokenName = useSingleCallResult(token ? undefined : tokenContract, "name", undefined, NEVER_RELOAD);
-  const tokenNameBytes32 = useSingleCallResult(
-    token ? undefined : tokenContractBytes32,
-    "name",
-    undefined,
-    NEVER_RELOAD
-  );
-  const symbol = useSingleCallResult(token ? undefined : tokenContract, "symbol", undefined, NEVER_RELOAD);
-  const symbolBytes32 = useSingleCallResult(
-    token ? undefined : tokenContractBytes32,
-    "symbol",
-    undefined,
-    NEVER_RELOAD
-  );
-  const decimals = useSingleCallResult(token ? undefined : tokenContract, "decimals", undefined, NEVER_RELOAD);
+  const { data, isLoading } = useToken_({
+    address: (address as Address) || undefined,
+    chainId,
+    enabled: Boolean(!!address && !token),
+    // consider longer stale time
+  });
 
   return useMemo(() => {
     if (token) return token;
     if (!chainId || !address) return undefined;
-    if (decimals.loading || symbol.loading || tokenName.loading) return null;
-    if (decimals.result) {
-      return new Token(
-        chainId,
-        address,
-        decimals.result[0],
-        parseStringOrBytes32(symbol.result?.[0], symbolBytes32.result?.[0], "UNKNOWN"),
-        parseStringOrBytes32(tokenName.result?.[0], tokenNameBytes32.result?.[0], "Unknown Token")
-      );
+    if (isLoading) return null;
+    if (data) {
+      return new Token(chainId, data.address, data.decimals, data.symbol ?? "UNKNOWN", data.name ?? "Unknown Token");
     }
     return undefined;
-  }, [
-    address,
-    chainId,
-    decimals.loading,
-    decimals.result,
-    symbol.loading,
-    symbol.result,
-    symbolBytes32.result,
-    token,
-    tokenName.loading,
-    tokenName.result,
-    tokenNameBytes32.result,
-  ]);
+  }, [token, chainId, address, isLoading, data]);
 }
 
 export function useCurrency(currencyId: string | undefined): Currency | null | undefined {
@@ -216,10 +186,10 @@ export function useTokens(tokenAddresses?: string[]): { [address: string]: Token
       const tokenEntries = await Promise.all(
         tokenAddresses.map(async (address) => {
           const tokenContract = getBep20Contract(chainId, address);
-          const name = await tokenContract.name();
-          const symbol = await tokenContract.symbol();
-          const decimals = await tokenContract.decimals();
-          return [address, new Token(chainId, address, decimals, symbol, name)];
+          const name: any = await tokenContract.read.name([]);
+          const symbol: any = await tokenContract.read.symbol([]);
+          const decimals = await tokenContract.read.decimals([]);
+          return [address, new Token(chainId, address, Number(decimals), symbol, name)];
         })
       );
       setTokensInfo(Object.fromEntries(tokenEntries));

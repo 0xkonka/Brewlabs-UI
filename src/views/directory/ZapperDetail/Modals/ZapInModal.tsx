@@ -1,17 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useMemo, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
-import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
 import { Currency, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import useStakeFarms from "../hooks/useStakeFarms";
-import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
-import { usePerformanceFee } from "../hooks/useStakeFarms";
+import { Dialog } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import BigNumber from "bignumber.js";
+import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import styled from "styled-components";
 import { useAccount } from "wagmi";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useTranslation } from "contexts/localization";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { ApprovalState, useApproveCallback } from "@hooks/useApproveCallback";
+import { useNativeTokenPrice } from "@hooks/useUsdPrice";
+import { getNativeSybmol } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import {
   fetchApeFarmUserDataAsync,
@@ -21,33 +27,28 @@ import {
   fetchSushiFarmUserDataAsync,
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
-import BigNumber from "bignumber.js";
 import { useLpTokenPrices } from "state/prices/hooks";
 import { useBananaPrice, useFarmLpAprs, useLpTokenPrice } from "state/zap/hooks";
 import { tryParseAmount } from "state/swap/hooks";
-import { useTranslation } from "contexts/localization";
 import { getFullDisplayBalance } from "utils/formatBalance";
 import { useCurrencyBalance } from "state/wallet/hooks";
-import { BIG_ONE, BIG_ZERO } from "utils/bigNumber";
-import { toast } from "react-toastify";
-import { ApprovalState, useApproveCallback } from "@hooks/useApproveCallback";
-import { DashboardContext } from "contexts/DashboardContext";
 import { getExternalMasterChefAddress } from "utils/addressHelpers";
-import { useNativeTokenPrice } from "@hooks/useUsdPrice";
-import useUnstakeFarms from "../hooks/useUnstakeFarms";
-import Link from "next/link";
-import { getNativeSybmol } from "lib/bridge/helpers";
 import { getAddLiquidityUrl } from "utils/functions";
 
+import useStakeFarms, { usePerformanceFee } from "../hooks/useStakeFarms";
+
+import StyledButton from "../../StyledButton";
+
 const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
+  const dispatch = useAppDispatch();
   const { chainId } = useActiveChainId();
-  const [amount, setAmount] = useState("");
+  const { address: account } = useAccount();
+
   const { lpAddress, pid, earningToken, chef, appId, token, quoteToken } = data;
+  const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState<Currency>(NATIVE_CURRENCIES[chainId]);
 
-  const { address: account } = useAccount();
   const performanceFee = usePerformanceFee(data.chainId);
-  const dispatch = useAppDispatch();
   const { lpTokenPrices } = useLpTokenPrices();
   const bananaPrice = useBananaPrice();
   const farmLpAprs = useFarmLpAprs();
@@ -57,7 +58,6 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const { onStake } = useStakeFarms(chef ?? Chef.MASTERCHEF, lpAddress, pid, earningToken.address, performanceFee);
-  const { onUnstake } = useUnstakeFarms(chef ?? Chef.MASTERCHEF, pid, earningToken.address, performanceFee);
 
   const [approval, approveCallback] = useApproveCallback(parsedAmount, masterChefAddress);
 

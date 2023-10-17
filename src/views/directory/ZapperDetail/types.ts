@@ -1,65 +1,65 @@
 export type TableProps = {
-  data?: TableDataTypes[]
-  selectedFilters?: string
-  sortBy?: string
-  sortDir?: string
-  onSort?: (value: string) => void
-}
+  data?: TableDataTypes[];
+  selectedFilters?: string;
+  sortBy?: string;
+  sortDir?: string;
+  onSort?: (value: string) => void;
+};
 
 export type ColumnsDefTypes = {
-  id: number
-  label: string
-  name: string
-  sortable: boolean
-}
+  id: number;
+  label: string;
+  name: string;
+  sortable: boolean;
+};
 
 export type ScrollBarProps = {
-  ref: string
-  width: number
-}
+  ref: string;
+  width: number;
+};
 
 export type TableDataTypes = {
-  POOL: string
-  APR: string
-  EARNED: string
-  STAKED: string
-  DETAILS: string
-  LINKS: string
-}
+  POOL: string;
+  APR: string;
+  EARNED: string;
+  STAKED: string;
+  DETAILS: string;
+  LINKS: string;
+};
 
 export const MobileColumnSchema: ColumnsDefTypes[] = [
   {
     id: 1,
-    name: 'farm',
+    name: "farm",
     sortable: true,
-    label: '',
+    label: "",
   },
   {
     id: 2,
-    name: 'earned',
+    name: "earned",
     sortable: true,
-    label: 'Earned',
+    label: "Earned",
   },
   {
     id: 3,
-    name: 'apr',
+    name: "apr",
     sortable: true,
-    label: 'APR',
+    label: "APR",
   },
   {
     id: 6,
-    name: 'details',
+    name: "details",
     sortable: true,
-    label: '',
+    label: "",
   },
-]
+];
 
 export const DesktopColumnSchema: ColumnsDefTypes[] = [
   {
     id: 1,
-    name: 'farm',
+    name: "farm",
     sortable: true,
-    label: '',
+    label: "",
   },
   // {
   //   id: 2,
@@ -69,21 +69,21 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
   // },
   {
     id: 3,
-    name: 'earned',
+    name: "earned",
     sortable: true,
-    label: 'Earned',
+    label: "Earned",
   },
   {
     id: 4,
-    name: 'apr',
+    name: "apr",
     sortable: true,
-    label: 'APR',
+    label: "APR",
   },
   {
     id: 5,
-    name: 'liquidity',
+    name: "liquidity",
     sortable: true,
-    label: 'Liquidity',
+    label: "Liquidity",
   },
   // {
   //   id: 6,
@@ -93,14 +93,14 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
   // },
   {
     id: 7,
-    name: 'details',
+    name: "details",
     sortable: true,
-    label: '',
+    label: "",
   },
-]
+];
 
 export enum RewardType {
   EARNING_TOKEN,
   QUOTE_TOKEN,
-  LP_TOKEN
+  LP_TOKEN,
 }

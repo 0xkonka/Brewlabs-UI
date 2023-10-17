@@ -1,16 +1,15 @@
 import { useMemo } from "react";
 // Imports below migrated from Exchange useContract.ts
-import { Contract } from "@ethersproject/contracts";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
-import { useAccount, useWalletClient } from "wagmi";
+import { Address } from "viem";
+import { erc20ABI, useWalletClient } from "wagmi";
 
-import ERC20_ABI from "config/abi/erc20.json";
 import { ERC20_BYTES32_ABI } from "config/abi/erc20";
 import ENS_PUBLIC_RESOLVER_ABI from "config/abi/ens-public-resolver.json";
 import ENS_ABI from "config/abi/ens-registrar.json";
-import WETH_ABI from "config/abi/weth.json";
+import WETH_ABI from "config/abi/weth";
 import LpTokenAbi from "config/abi/lpToken.json";
-import multiCallAbi from "config/abi/Multicall.json";
+import multiCallAbi from "config/abi/Multicall";
 import ConstructorABI from "config/abi/tokenTransfer.json";
 import ExternalMasterChefABI from "config/abi/externalMasterchef";
 
@@ -34,8 +33,10 @@ import {
   getFlaskNftContract,
   getMirrorNftContract,
   getNftStakingContract,
+  getSidContract,
+  getUnsContract,
+  getBrewlabsRouterContract,
 } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 
 import { useActiveChainId } from "./useActiveChainId";
 
@@ -43,10 +44,10 @@ import { useActiveChainId } from "./useActiveChainId";
  * Helper hooks to get specific contracts (by ABI)
  */
 
-export const useERC20 = (address: string) => {
+export const useERC20 = (address: Address) => {
   const { chainId } = useActiveChainId();
-  const signer = useEthersSigner();
-  return useMemo(() => getBep20Contract(chainId, address, signer ?? undefined), [address, signer, chainId]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getBep20Contract(chainId, address, signer), [address, signer, chainId]);
 };
 
 /**
@@ -54,108 +55,103 @@ export const useERC20 = (address: string) => {
  */
 export const useERC721 = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer = useEthersSigner();
-  return useMemo(() => getErc721Contract(chainId, address, signer ?? undefined), [address, signer, chainId]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getErc721Contract(chainId, address, signer), [address, signer, chainId]);
 };
 
 export const useMasterchef = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer = useEthersSigner();
-  return useMemo(() => getMasterchefContract(chainId, address, signer ?? undefined), [address, signer, chainId]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getMasterchefContract(chainId, address, signer), [address, signer, chainId]);
 };
 
 export const useFarmContract = (address: string) => {
   const { chainId } = useActiveChainId();
-  const signer = useEthersSigner();
-  return useMemo(() => getFarmImplContract(chainId, address, signer ?? undefined), [address, signer, chainId]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getFarmImplContract(chainId, address, signer), [address, signer, chainId]);
 };
 
 export const useSingleStaking = (chainId: ChainId, contractAddress: string) => {
-  const signer = useEthersSigner();
-  return useMemo(
-    () => getSingleStakingContract(chainId, contractAddress, signer ?? undefined),
-    [chainId, contractAddress, signer]
-  );
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getSingleStakingContract(chainId, contractAddress, signer), [chainId, contractAddress, signer]);
 };
 export const useLockupStaking = (chainId: ChainId, contractAddress: string) => {
-  const signer = useEthersSigner();
-  return useMemo(
-    () => getLockupStakingContract(chainId, contractAddress, signer ?? undefined),
-    [chainId, contractAddress, signer]
-  );
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getLockupStakingContract(chainId, contractAddress, signer), [chainId, contractAddress, signer]);
 };
 
 export const useIndexContract = (chainId: ChainId, contractAddress: string, version: string = "V1") => {
-  const signer = useEthersSigner();
+  const { data: signer } = useWalletClient();
   return useMemo(
-    () => getIndexContract(chainId, contractAddress, version, signer ?? undefined),
+    () => getIndexContract(chainId, contractAddress, version, signer),
     [chainId, contractAddress, version, signer]
   );
 };
 
 export const useOldIndexContract = (chainId: ChainId, contractAddress: string) => {
-  const signer = useEthersSigner();
-  return useMemo(
-    () => getOldIndexContract(chainId, contractAddress, signer ?? undefined),
-    [chainId, contractAddress, signer]
-  );
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getOldIndexContract(chainId, contractAddress, signer), [chainId, contractAddress, signer]);
 };
 
 export const useFarmFactoryContract = (chainId: ChainId) => {
-  const signer = useEthersSigner();
-  return useMemo(() => getFarmFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getFarmFactoryContract(chainId, signer), [chainId, signer]);
 };
 
 export const useIndexFactoryContract = (chainId: ChainId) => {
-  const signer = useEthersSigner();
-  return useMemo(() => getIndexFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getIndexFactoryContract(chainId, signer), [chainId, signer]);
 };
 
 export const useFlaskNftContract = (chainId: ChainId) => {
-  const signer = useEthersSigner();
-  return useMemo(() => getFlaskNftContract(chainId, signer ?? undefined), [chainId, signer]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getFlaskNftContract(chainId, signer), [chainId, signer]);
 };
 
 export const useMirrorNftContract = (chainId: ChainId) => {
-  const signer = useEthersSigner();
-  return useMemo(() => getMirrorNftContract(chainId, signer ?? undefined), [chainId, signer]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getMirrorNftContract(chainId, signer), [chainId, signer]);
 };
 
 export const useNftStakingContract = (chainId: ChainId) => {
-  const signer = useEthersSigner();
-  return useMemo(() => getNftStakingContract(chainId, signer ?? undefined), [chainId, signer]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getNftStakingContract(chainId, signer), [chainId, signer]);
 };
 
 // Code below migrated from Exchange useContract.ts
 
 // returns null on errors
-export function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
-  const { address: account } = useAccount();
+export function useContract(address: string | undefined, abi: any) {
   const { chainId } = useActiveChainId();
-  const signer = useEthersSigner();
+  const { data: walletClient } = useWalletClient();
 
   return useMemo(() => {
-    if (!address || !ABI || (withSignerIfPossible && !signer)) return null;
+    if (!address || !abi || !chainId) return null;
     try {
-      return getContract(chainId, address, ABI, withSignerIfPossible ? signer : undefined);
+      return getContract(chainId, address, abi, walletClient);
     } catch (error) {
       console.error("Failed to get contract", error);
       return null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, ABI, signer, withSignerIfPossible, account]);
+  }, [address, abi, chainId, walletClient]);
 }
 
-export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible);
+export function useTokenContract(tokenAddress?: string) {
+  return useContract(tokenAddress, erc20ABI);
 }
 
-export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
+export function useWNativeContract() {
   const { chainId } = useActiveChainId();
-  return useContract(chainId ? WNATIVE[chainId]?.address : undefined, WETH_ABI, withSignerIfPossible);
+  return useContract(chainId ? WNATIVE[chainId]?.address : undefined, WETH_ABI);
 }
 
-export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contract | null {
+export function useBrewlabsRouterContract(chainId: ChainId, address: string) {
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getBrewlabsRouterContract(chainId, address, signer), [chainId, address, signer]);
+}
+
+export function useENSRegistrarContract() {
   const { chainId } = useActiveChainId();
   let address: string | undefined;
   if (chainId) {
@@ -168,36 +164,44 @@ export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contrac
         break;
     }
   }
-  return useContract(address, ENS_ABI, withSignerIfPossible);
+  return useContract(address, ENS_ABI);
 }
 
-export function useENSResolverContract(address: string | undefined, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(address, ENS_PUBLIC_RESOLVER_ABI, withSignerIfPossible);
+export function useENSResolverContract(address: string | undefined) {
+  return useContract(address, ENS_PUBLIC_RESOLVER_ABI);
 }
 
-export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(tokenAddress, ERC20_BYTES32_ABI, withSignerIfPossible);
+export const useSIDContract = (chainId, address) => {
+  return useMemo(() => getSidContract(chainId, address), [address, chainId]);
+};
+
+export const useUNSContract = (chainId, address) => {
+  return useMemo(() => getUnsContract(chainId, address), [chainId, address]);
+};
+
+export function useBytes32TokenContract(tokenAddress?: string) {
+  return useContract(tokenAddress, ERC20_BYTES32_ABI);
 }
 
-export function usePairContract(pairAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(pairAddress, LpTokenAbi, withSignerIfPossible);
+export function usePairContract(pairAddress?: string) {
+  return useContract(pairAddress, LpTokenAbi);
 }
 
-export function useMulticallContract(): Contract | null {
+export function useMulticallContract() {
   const { chainId } = useActiveChainId();
-  return useContract(getMulticallAddress(chainId), multiCallAbi, false);
+  return useContract(getMulticallAddress(chainId), multiCallAbi);
 }
 
-export function useTokenTransferContract(withSignerIfPossible?: boolean): Contract | null {
+export function useTokenTransferContract() {
   const { chainId } = useActiveChainId();
-  return useContract(getTokenTransferAddress(chainId), ConstructorABI, withSignerIfPossible);
+  return useContract(getTokenTransferAddress(chainId), ConstructorABI);
 }
 
 export const useBrewlabsFeeManager = (chainId: ChainId) => {
-  const signer = useEthersSigner();
-  return useMemo(() => getBrewlabsFeeManagerContract(chainId, signer ?? undefined), [chainId, signer]);
+  const { data: signer } = useWalletClient();
+  return useMemo(() => getBrewlabsFeeManagerContract(chainId, signer), [chainId, signer]);
 };
-export function useExternalMasterchef(withSignerIfPossible?: boolean, chef = Chef.MASTERCHEF): Contract | null {
+export function useExternalMasterchef(chef = Chef.MASTERCHEF) {
   const [appId] = useAppId();
-  return useContract(getExternalMasterChefAddress(appId, chef), ExternalMasterChefABI, withSignerIfPossible);
+  return useContract(getExternalMasterChefAddress(appId, chef), ExternalMasterChefABI);
 }

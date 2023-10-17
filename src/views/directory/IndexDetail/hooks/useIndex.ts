@@ -6,12 +6,13 @@ import IndexAbi from "config/abi/indexes/index";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useAppDispatch } from "state";
 import { fetchIndexPublicDataAsync, updateUserBalance, updateUserStakings } from "state/indexes";
+import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { getViemClients } from "utils/viem";
 
 const call_normalMethod = async (indexContract, walletClient: WalletClient, client: PublicClient) => {
   let gasLimit = await client.estimateContractGas(indexContract);
-  gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+  gasLimit = calculateGasMargin(gasLimit);
 
   const txHash = await walletClient.writeContract({ ...indexContract, gas: gasLimit });
   return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
@@ -25,7 +26,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
   const handleZapIn = useCallback(
     async (amount, percents) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -48,7 +49,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
 
   const handleZapOut = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let indexContract = {
       address: contractAddress as `0x${string}`,
@@ -70,7 +71,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
   const handleClaim = useCallback(
     async (percent) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,
@@ -93,7 +94,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
 
   const handleMintNft = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     let indexContract = {
       address: contractAddress as `0x${string}`,
@@ -116,7 +117,7 @@ const useIndex = (pid, contractAddress, performanceFee) => {
   const handleStakeNft = useCallback(
     async (tokenId) => {
       const client = getViemClients({ chainId });
-      const gasPrice = await getNetworkGasPrice(client, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
 
       let indexContract = {
         address: contractAddress as `0x${string}`,

@@ -1,53 +1,44 @@
 import { Currency } from "@brewlabs/sdk";
-import BigNumber from "bignumber.js";
 import { useCallback, useMemo } from "react";
+import { Address, parseUnits, zeroAddress } from "viem";
 import useSWR from "swr";
 
 import { Chef } from "config/constants/types";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useExternalMasterchef } from "hooks/useContract";
 import { calculateGasMargin } from "utils";
-import { BIG_TEN, BIG_ZERO } from "utils/bigNumber";
 import { getExternalMasterChefContract } from "utils/contractHelpers";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import { useAppId } from "state/zap/hooks";
-import { ethers } from "ethers";
+import { getViemClients } from "utils/viem";
+
+type MasterChefContract = ReturnType<typeof getExternalMasterChefContract>;
 
 const stakeFarm = async (
-  currency,
-  masterChefContract,
-  lpAddress,
-  pid,
-  tokenAddress,
-  amount,
-  performanceFee,
-  gasPrice
+  currency: Currency,
+  masterChefContract: MasterChefContract,
+  lpAddress: Address,
+  pid: number,
+  tokenAddress: Address,
+  amount: string,
+  performanceFee: bigint,
+  gasPrice: string
 ) => {
-  const _amount = new BigNumber(amount).times(10**(currency?.decimals ?? 18));
-  const value = currency.isNative ? _amount.plus(performanceFee).toString() : performanceFee.toString();
+  const _amount = parseUnits(amount, currency?.decimals ?? 18);
+  const value = currency.isNative ? _amount + performanceFee : performanceFee;
 
   let gasLimit = await masterChefContract.estimateGas.zapIn(
-    currency.isNative ? ethers.constants.AddressZero : currency.address,
-    lpAddress,
-    pid,
-    _amount.toString(),
-    0,
-    tokenAddress,
-    { value }
+    [currency.isNative ? zeroAddress : currency.address, lpAddress, pid, _amount.toString(), 0, tokenAddress],
+    { value, account: masterChefContract.account, chain: masterChefContract.chain }
   );
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await masterChefContract.zapIn(
-    currency.isNative ? ethers.constants.AddressZero : currency.address,
-    lpAddress,
-    pid,
-    _amount.toString(),
-    0,
-    tokenAddress,
+  const txHash = await masterChefContract.write.zapIn(
+    [currency.isNative ? zeroAddress : currency.address, lpAddress, pid, _amount.toString(), 0, tokenAddress],
     { gasPrice, gasLimit, value }
   );
-  const receipt = await tx.wait();
-  return receipt.status;
+  const client = getViemClients({ chainId: currency.chainId });
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
 };
 
 const useStakeFarms = (
@@ -55,26 +46,26 @@ const useStakeFarms = (
   lpAddress: string,
   pid: number,
   earningTokenAddress: string,
-  performanceFee: BigNumber
+  performanceFee: bigint
 ) => {
-  const { chainId, library } = useActiveWeb3React();
-  const masterChefContract = useExternalMasterchef(true, chef);
+  const { chainId } = useActiveChainId();
+  const masterChefContract = useExternalMasterchef(chef);
 
   const handleStake = useCallback(
     async (currency: Currency, amount: string) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId);
+      const gasPrice = await getNetworkGasPrice(chainId);
       await stakeFarm(
         currency,
         masterChefContract,
-        lpAddress,
+        lpAddress as Address,
         pid,
-        earningTokenAddress,
+        earningTokenAddress as Address,
         amount,
         performanceFee,
         gasPrice
       );
     },
-    [masterChefContract, lpAddress, pid, chainId, earningTokenAddress, library, performanceFee]
+    [masterChefContract, lpAddress, pid, chainId, earningTokenAddress, performanceFee]
   );
 
   return { onStake: handleStake };
@@ -82,12 +73,14 @@ const useStakeFarms = (
 
 export const usePerformanceFee = (chainId) => {
   const [appId] = useAppId();
+
   const masterChefContract = useMemo(() => getExternalMasterChefContract(chainId, appId), [chainId, appId]);
+
   const { data } = useSWR([appId, "farmsReward"], async () => {
-    const performanceFee = await masterChefContract.feeAmount();
+    const performanceFee = await masterChefContract.read.feeAmount([]);
     return performanceFee;
   });
-  return data ? new BigNumber(data._hex) : new BigNumber(0);
+  return (data ? data : BigInt(0)) as bigint;
 };
 
 export default useStakeFarms;

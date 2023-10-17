@@ -9,7 +9,6 @@ import { getExternalMasterChefAddress } from "utils/addressHelpers";
 
 const useTotalStakedHistory = (data) => {
   const [history, setHistory] = useState([]);
-  // const [feeHistory, setFeeHistory] = useState([]);
   const { appId, lpAddress, chainId, pid } = data;
 
   async function fetchPrice(address, chainId) {

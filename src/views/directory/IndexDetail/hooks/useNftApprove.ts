@@ -3,6 +3,7 @@ import { erc721ABI, useWalletClient } from "wagmi";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { getViemClients } from "utils/viem";
+import { calculateGasMargin } from "utils";
 
 const useNftApprove = (nftAddr) => {
   const { chainId } = useActiveChainId();
@@ -20,7 +21,7 @@ const useNftApprove = (nftAddr) => {
         account: walletClient.account,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({
         ...txData,

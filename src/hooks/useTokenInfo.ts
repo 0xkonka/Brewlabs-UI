@@ -1,41 +1,34 @@
-import { ethers } from "ethers";
-
-import { useSecondRefreshEffect, useSlowRefreshEffect } from "./useRefreshEffect";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
-import brewlabsABI from "config/abi/brewlabs.json";
-import multicall from "utils/multicall";
-import { getContract } from "utils/contractHelpers";
-import { isAddress } from "ethers/lib/utils.js";
+import { isAddress, zeroAddress } from "viem";
+import { erc20ABI } from "wagmi";
+
+import brewlabsABI from "config/abi/brewlabs";
+import { BASE_URL, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
 import { API_URL } from "config/constants";
+import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { CommunityContext } from "contexts/CommunityContext";
-import { BASE_URL, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
-import { fetchTradingHistories } from "./useTokenAllPairs";
+import { getContract } from "utils/contractHelpers";
+import { getViemClients } from "utils/viem";
+
+import { useSlowRefreshEffect } from "./useRefreshEffect";
 
 export async function getBaseInfos(address, chainId) {
+  const client = getViemClients({ chainId });
   try {
     const calls = [
-      {
-        name: "name",
-        address: address,
-      },
-      {
-        name: "symbol",
-        address: address,
-      },
-      {
-        name: "decimals",
-        address: address,
-      },
+      { abi: erc20ABI, functionName: "name", address: address },
+      { abi: erc20ABI, functionName: "symbol", address: address },
+      { abi: erc20ABI, functionName: "decimals", address: address },
     ];
-    const result = await multicall(brewlabsABI, calls, chainId);
-    return { name: result[0][0], symbol: result[1][0], decimals: result[2][0] / 1 };
+    const result = await client.multicall({ contracts: calls });
+    return { name: result[0].result as string, symbol: result[1].result as string, decimals: Number(result[2].result) };
   } catch (e) {
     console.log(e);
     return { name: "", symbol: "", decimals: 0 };
   }
 }
+
 function useTokenInfo(address: string, chainId: number) {
   const [owner, setOwner] = useState("");
   const [deployer, setDeployer] = useState("");
@@ -49,7 +42,7 @@ function useTokenInfo(address: string, chainId: number) {
       const tokenContract = getContract(chainId, address, brewlabsABI);
       axios
         .get(
-          `${EXPLORER_API_URLS[chainId]}?module=account&action=tokentx&contractaddress=${address}&address=${ethers.constants.AddressZero}&page=1&offset=1&apikey=${EXPLORER_API_KEYS[chainId]}`
+          `${EXPLORER_API_URLS[chainId]}?module=account&action=tokentx&contractaddress=${address}&address=${zeroAddress}&page=1&offset=1&apikey=${EXPLORER_API_KEYS[chainId]}`
         )
         .then((result) => {
           setDeployer(result.data.result[0]?.to);
@@ -64,14 +57,14 @@ function useTokenInfo(address: string, chainId: number) {
         })
         .catch((e) => console.log(e));
 
-      tokenContract
-        .totalSupply()
-        .then((data) => setTotalSupply(data))
+      tokenContract.read
+        .totalSupply([])
+        .then((data: any) => setTotalSupply(data))
         .catch((e) => console.log(e));
 
-      tokenContract
-        .owner()
-        .then((data) => setOwner(data))
+      tokenContract.read
+        .owner([])
+        .then((data: any) => setOwner(data))
         .catch((e) => console.log(e));
     } catch (e) {
       console.log(e);
@@ -79,7 +72,7 @@ function useTokenInfo(address: string, chainId: number) {
   }
 
   useSlowRefreshEffect(() => {
-    if (!ethers.utils.isAddress(address)) {
+    if (!isAddress(address)) {
       setOwner("");
       setDeployer("");
       return;

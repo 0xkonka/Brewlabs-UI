@@ -17,7 +17,7 @@ import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/
 import { useAppDispatch } from "state";
 import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
-import { isAddress } from "utils";
+import { calculateGasMargin, isAddress } from "utils";
 import { getDexLogo, getEmptyTokenLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { getViemClients } from "utils/viem";
@@ -148,7 +148,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         account: walletClient.account,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
 
@@ -176,7 +176,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
         account: walletClient.account,
       };
       let gasLimit = await client.estimateContractGas(txData);
-      gasLimit = (gasLimit * BigInt(12000)) / BigInt(10000);
+      gasLimit = calculateGasMargin(gasLimit);
 
       const txHash = await walletClient.writeContract({ ...txData, chain: walletClient.chain, gas: gasLimit });
       await client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });

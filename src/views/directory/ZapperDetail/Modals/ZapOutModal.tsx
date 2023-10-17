@@ -1,12 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useContext, useMemo, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import BigNumber from "bignumber.js";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+
 import { AppId } from "config/constants/types";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useTranslation } from "contexts/localization";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useAppDispatch } from "state";
+import { useLpTokenPrices } from "state/prices/hooks";
 import {
   fetchApeFarmUserDataAsync,
   fetchApeFarmsPublicDataAsync,
@@ -15,26 +24,34 @@ import {
   fetchSushiFarmUserDataAsync,
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
-import BigNumber from "bignumber.js";
-import { useTranslation } from "contexts/localization";
-import { formatBigNumber, getFullDisplayBalance } from "utils/formatBalance";
-import { toast } from "react-toastify";
 import { useBananaPrice, useFarmLpAprs, useFarmUser } from "state/zap/hooks";
+import { formatBigNumber, getFullDisplayBalance } from "utils/formatBalance";
+
 import useUnstakeFarms from "../hooks/useUnstakeFarms";
 import { usePerformanceFee } from "../hooks/useStakeFarms";
-import { useAccount } from "wagmi";
-import { useAppDispatch } from "state";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useLpTokenPrices } from "state/prices/hooks";
-import { DashboardContext } from "contexts/DashboardContext";
-import { parseUnits } from "ethers/lib/utils.js";
+
+import StyledButton from "../../StyledButton";
+import { parseUnits } from "viem";
 
 const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data: any }) => {
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+  const { chainId } = useActiveChainId();
+  const { address: account } = useAccount();
+
   const { lpAddress, pid, earningToken, chef, appId } = data;
+
+  const { pending, setPending }: any = useContext(DashboardContext);
+  const performanceFee = usePerformanceFee(data.chainId);
+  const { onUnstake } = useUnstakeFarms(chef, pid, earningToken.address, performanceFee);
+  const { stakedBalance } = useFarmUser(pid, appId);
+  const { lpTokenPrices } = useLpTokenPrices();
+  const bananaPrice = useBananaPrice();
+  const farmLpAprs = useFarmLpAprs();
+  const lpSymbol = data.lpSymbol.split(" ")[0];
+
   const [val, setVal] = useState("");
   const [pendingTx, setPendingTx] = useState(false);
-  const { t } = useTranslation();
-  const { stakedBalance } = useFarmUser(pid, appId);
 
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(stakedBalance);
@@ -42,17 +59,6 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
 
   const valNumber = new BigNumber(val);
   const fullBalanceNumber = new BigNumber(fullBalance);
-
-  const { pending, setPending }: any = useContext(DashboardContext);
-  const { chainId } = useActiveChainId();
-  const dispatch = useAppDispatch();
-  const { address: account } = useAccount();
-  const performanceFee = usePerformanceFee(data.chainId);
-  const { onUnstake } = useUnstakeFarms(chef, pid, earningToken.address, performanceFee);
-  const { lpTokenPrices } = useLpTokenPrices();
-  const bananaPrice = useBananaPrice();
-  const farmLpAprs = useFarmLpAprs();
-  const lpSymbol = data.lpSymbol.split(" ")[0];
 
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {

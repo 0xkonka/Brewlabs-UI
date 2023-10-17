@@ -1,11 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
-import { WNATIVE } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
-import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import styled from "styled-components";
+import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, lockSVG } from "components/dashboard/assets/svgs";
@@ -17,7 +15,7 @@ import WordHighlight from "components/text/WordHighlight";
 
 import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
 import { CHAIN_ICONS } from "config/constants/networks";
-import { earningTokens, quoteTokens, tokens } from "config/constants/tokens";
+import { earningTokens, quoteTokens } from "config/constants/tokens";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -35,6 +33,7 @@ import {
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
 import { useSushiPrice } from "state/zap/sushiswap/hooks";
+import { getBalanceNumber } from "utils/formatBalance";
 import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -50,37 +49,34 @@ import ProgressBar from "./ProgressBar";
 import StyledButton from "../StyledButton";
 import TotalStakedChart from "./TotalStakedChart";
 import { RewardType } from "./types";
-import { getBalanceNumber } from "utils/formatBalance";
 
 const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
-  const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
-  const { lpAddress, pid, chef, appId, lpSymbol, chainId, token, quoteToken } = data;
-
-  const { history } = useTotalStakedHistory(data);
-  const performanceFee = usePerformanceFee(data.chainId);
-  const [, setAppId] = useAppId();
-
-  const [zapInModalOpen, setZapInModalOpen] = useState(false);
-  const [zapOutModalOpen, setZapOutModalOpen] = useState(false);
-  const [curGraph, setCurGraph] = useState(0);
-
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { address: account } = useAccount();
   const { chainId: activeChainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
 
-  const dispatch = useAppDispatch();
+  const { open, setOpen, data, cakePrice, bananaPrice } = detailDatas;
+  const { lpAddress, pid, chef, appId, lpSymbol, chainId, token, quoteToken } = data;
 
+  const { history } = useTotalStakedHistory(data);
   const { data: sushiPrice } = useSushiPrice();
+  const performanceFee = usePerformanceFee(data.chainId);
+
+  const [, setAppId] = useAppId();
+
+  const [zapInModalOpen, setZapInModalOpen] = useState(false);
+  const [zapOutModalOpen, setZapOutModalOpen] = useState(false);
+  const [curGraph, setCurGraph] = useState(0);
+  const [tokenId, setTokenId] = useState<number>(0);
 
   const prices = {
     [AppId.PANCAKESWAP]: cakePrice.toNumber(),
     [AppId.APESWAP]: bananaPrice,
     [AppId.SUSHISWAP]: sushiPrice,
   };
-
-  const [tokenId, setTokenId] = useState<number>(0);
 
   useEffect(() => {
     setAppId(data.appId);
@@ -266,9 +262,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <br />
                           Withdraw Fee 0.00%
                           <br />
-                          Peformance Fee {performanceFee
-                            ? ethers.utils.formatEther(performanceFee.toString())
-                            : "0.00"}{" "}
+                          Peformance Fee {performanceFee ? formatEther(performanceFee) : "0.00"}{" "}
                           {getNativeSybmol(data.chainId)}
                         </div>
                         <div className="absolute bottom-2 right-2">

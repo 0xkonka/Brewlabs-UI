@@ -2,27 +2,28 @@
 import { useContext, useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 import styled from "styled-components";
-import { useAccount } from "wagmi";
+import { parseEther } from "viem";
+import { useAccount, useWalletClient } from "wagmi";
 
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useCurrency } from "hooks/Tokens";
 import { useCurrencyBalance } from "state/wallet/hooks";
+import { calculateGasMargin } from "utils";
 import { getBep20Contract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { numberWithCommas } from "utils/functions";
+import { getViemClients } from "utils/viem";
 
 import StyledButton from "../../StyledButton";
 
 const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: any; type: string; data: any }) => {
-  const { pending, setPending }: any = useContext(DashboardContext);
-  const signer = useEthersSigner();
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
+  const { data: signer } = useWalletClient();
+  const { pending, setPending }: any = useContext(DashboardContext);
 
   const [amount, setAmount] = useState("");
   const [insufficient, setInsufficient] = useState(false);
@@ -42,21 +43,21 @@ const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: a
     setPending(true);
     try {
       const tokenContract = getBep20Contract(chainId, data.stakingToken.address, signer);
-      const estimateGas = await tokenContract.estimateGas.approve(data.address, ethers.constants.MaxUint256);
+      const estimateGas = await tokenContract.estimateGas.approve(
+        [data.address, parseEther("100000000000000000000000000")],
+        { account: signer.account, chain: signer.chain }
+      );
       const tx = {
-        gasLimit: estimateGas.toString(),
+        gasLimit: calculateGasMargin(estimateGas),
       };
-      const approvetx = await tokenContract.approve(data.address, ethers.constants.MaxUint256, tx);
-      await approvetx.wait();
+      const approvetx = await tokenContract.write.approve([data.address, parseEther("100000000000000000000000000")], {
+        gasLimit: calculateGasMargin(estimateGas),
+      });
+      const client = getViemClients({ chainId });
+      await client.waitForTransactionReceipt({ hash: approvetx, confirmations: 2 });
     } catch (error) {
       console.log(error);
     }
-    setPending(false);
-  };
-
-  const onConfirm = async () => {
-    setPending(true);
-
     setPending(false);
   };
 
@@ -183,7 +184,7 @@ const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: a
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

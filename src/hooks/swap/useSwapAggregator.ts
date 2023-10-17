@@ -1,16 +1,17 @@
 import { Currency, CurrencyAmount, TokenAmount, Token } from "@brewlabs/sdk";
-import useENS from "@hooks/ENS/useENS";
-import { ethers } from "ethers";
 import { useEffect, useMemo, useState } from "react";
+import { formatUnits } from "viem";
+import { useWalletClient } from "wagmi";
 
 import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useGetENSAddressByName } from "hooks/ENS/useGetENSAddressByName";
 import { Field } from "state/swap/actions";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, isAddress, shortenAddress } from "utils";
 import { getAggregatorContract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { makeBigNumber } from "utils/functions";
+import { getViemClients } from "utils/viem";
 
 export const useSwapAggregator = (
   currencies: { [field in Field]?: Currency },
@@ -19,11 +20,10 @@ export const useSwapAggregator = (
   deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
   recipientAddressOrName: string | null
 ) => {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const { data: signer } = useWalletClient();
 
-  const signer  = useEthersSigner();
-
-  const { address: recipientAddress } = useENS(recipientAddressOrName);
+  const recipientAddress = useGetENSAddressByName(recipientAddressOrName);
   const recipient = recipientAddressOrName === null ? account : recipientAddress;
 
   const contract = useMemo(() => {
@@ -57,7 +57,7 @@ export const useSwapAggregator = (
   useEffect(() => {
     if (!contract || !callParams) return;
     const methodName = "findBestPath";
-    contract[methodName](...callParams.args)
+    contract.read[methodName](callParams.args)
       .then((response: any) => {
         const outputValue = response.amounts[response.amounts.length - 1];
         if (outputValue) {
@@ -88,41 +88,48 @@ export const useSwapAggregator = (
 
   const addTransaction = useTransactionAdder();
   return useMemo(() => {
-    if (!chainId || !library || !account || !signer || !contract || !callParams) {
+    if (!chainId || !account || !signer || !contract || !callParams) {
       return { callback: null, error: "Missing dependencies", query };
     }
     if (!query || !query.outputAmount) {
       return { callback: null, error: "No liquidity found", query };
     }
 
-    if (callParams.value && !callParams.value.eq(query.amounts[0])) {
+    if (callParams.value && !callParams.value === query.amounts[0]) {
       return { callback: null, error: "Querying swap path...", query };
     }
 
     return {
       callback: async function onSwap() {
-        const amountOutMin = query.amounts[query.amounts.length - 1].mul(10000 - allowedSlippage).div(10000);
+        const amountOutMin =
+          (query.amounts[query.amounts.length - 1] * BigInt(10000 - allowedSlippage)) / BigInt(10000);
         const args = [
           [query.amounts[0], amountOutMin, query.path, query.adapters],
           recipient,
           Math.floor(Date.now() / 1000 + deadline),
         ];
-        const options = callParams.value ? { value: callParams.value } : {};
+        const options = callParams.value
+          ? { value: callParams.value, account: signer.account, chain: signer.chain }
+          : { account: signer.account, chain: signer.chain };
         const methodName = currencies[Field.INPUT].isNative
           ? "swapNoSplitFromETH"
           : currencies[Field.OUTPUT].isNative
           ? "swapNoSplitToETH"
           : "swapNoSplit";
-        const gasEstimate = await contract.estimateGas[methodName](...args, options);
-        return contract[methodName](...args, {
+        const gasEstimate = await contract.estimateGas[methodName](args, options);
+        return contract.write[methodName](args, {
           gasLimit: calculateGasMargin(gasEstimate),
-          ...(options.value ? { value: options.value, from: account } : { from: account }),
+          ...(options.value ? { value: options.value } : {}),
         })
           .then(async (response: any) => {
             const inputSymbol = currencies[Field.INPUT].wrapped.symbol;
             const outputSymbol = currencies[Field.OUTPUT].wrapped.symbol;
             const inputAmount = amountIn.toSignificant(3);
-            const outputAmount = ethers.utils.formatUnits(response.data, currencies[Field.OUTPUT].decimals);
+
+            const client = getViemClients({ chainId });
+            // check output amount
+            const receipt = await client.waitForTransactionReceipt({ hash: response, confirmations: 2 });
+            const outputAmount = formatUnits(response.data, currencies[Field.OUTPUT].decimals);
 
             const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
             const withRecipient =
@@ -134,11 +141,9 @@ export const useSwapAggregator = (
                       : recipientAddressOrName
                   }`;
 
-            addTransaction(response, {
-              summary: withRecipient,
-            });
-            await response.wait();
-            return response.hash;
+            addTransaction({ hash: response }, { summary: withRecipient });
+
+            return response;
           })
           .catch((error: any) => {
             // if the user rejected the tx, pass this along
@@ -154,7 +159,6 @@ export const useSwapAggregator = (
       query,
     };
   }, [
-    library,
     account,
     chainId,
     recipient,

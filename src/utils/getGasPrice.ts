@@ -1,11 +1,13 @@
 import { ChainId } from "@brewlabs/sdk";
 import store from "state";
 import { GAS_PRICE_GWEI } from "state/user/hooks/helpers";
+import { getViemClients } from "./viem";
 
 /**
  * Function to return gasPrice outwith a react component
  */
-export const getNetworkGasPrice = async (client, chainId) => {
+export const getNetworkGasPrice = async (chainId) => {
+  const client = getViemClients({ chainId });
   let gasPrice = await client.getGasPrice();
   if (!gasPrice) return undefined;
 

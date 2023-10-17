@@ -2,11 +2,10 @@ import axios from "axios";
 import { ChainId, Currency, CurrencyAmount, JSBI, NATIVE_CURRENCIES, Token, TokenAmount } from "@brewlabs/sdk";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { useAccount } from "wagmi";
+import { Address, erc20ABI, useAccount } from "wagmi";
 
-import ERC20_INTERFACE from "config/abi/erc20";
-import { EXPLORER_API_KEYS } from "config/constants/networks";
-import { EXPLORER_API_URLS } from "config/constants/networks";
+import MulticallAbi from "config/abi/Multicall";
+import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { SUPPORTED_LPs } from "config/constants/swap";
 import { useAllTokens } from "hooks/Tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -14,9 +13,10 @@ import { useMulticallContract } from "hooks/useContract";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
-import { State } from "state/types";
 import { useTokenMarketChart } from "state/prices/hooks";
+import { State } from "state/types";
 import { isAddress } from "utils";
+import { getMulticallAddress } from "utils/addressHelpers";
 
 import { useSingleContractMultipleData, useMultipleContractSingleData } from "../multicall/hooks";
 import { SerializedWalletNFT, SerializedWalletToken } from "./type";
@@ -31,22 +31,27 @@ export function useNativeBalances(uncheckedAddresses?: (string | undefined)[]): 
   const { chainId } = useActiveWeb3React();
   const multicallContract = useMulticallContract();
 
-  const addresses: string[] = useMemo(
+  const addresses: Address[] = useMemo(
     () =>
       uncheckedAddresses
         ? uncheckedAddresses
             .map(isAddress)
-            .filter((a): a is string => a !== "")
+            .filter((a): a is Address => a !== "")
             .sort()
         : [],
     [uncheckedAddresses]
   );
-
-  const results = useSingleContractMultipleData(
-    multicallContract,
-    "getEthBalance",
-    addresses.map((address) => [address])
-  );
+  const results = useSingleContractMultipleData({
+    contract: useMemo(
+      () => ({
+        abi: MulticallAbi,
+        address: getMulticallAddress(chainId) as Address,
+      }),
+      [chainId]
+    ),
+    functionName: "getEthBalance",
+    args: useMemo(() => addresses.map((address) => [address] as const), [addresses]),
+  });
 
   return useMemo(
     () =>
@@ -72,11 +77,19 @@ export function useTokenBalancesWithLoadingIndicator(
   );
 
   const validatedTokenAddresses = useMemo(
-    () => validatedTokens.map((vt) => vt.address),
+    () => validatedTokens.map((vt) => vt.address as Address),
     [JSON.stringify(validatedTokens)]
   );
 
-  const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, "balanceOf", [address]);
+  const balances = useMultipleContractSingleData({
+    abi: erc20ABI,
+    addresses: validatedTokenAddresses,
+    functionName: "balanceOf",
+    args: useMemo(() => [address as Address] as const, [address]),
+    options: {
+      enabled: Boolean(address && validatedTokenAddresses.length > 0),
+    },
+  });
 
   const anyLoading: boolean = useMemo(
     () => balances.some((callState) => callState.loading),

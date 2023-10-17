@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { getAddress } from "viem";
-import { useAccount } from "wagmi";
+import { Address, getAddress } from "viem";
+import { erc20ABI, useAccount } from "wagmi";
 
-import { ERC20_ABI } from "config/abi/erc20";
-import LpTokenAbi from "config/abi/lpToken.json";
-
+import LpTokenAbi from "config/abi/brewlabsPair";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useTokenMarketChart } from "state/prices/hooks";
 import { fetchTokenBalancesAsync } from "state/wallet";
 import { useUserLpTokenData } from "state/wallet/hooks";
-import multicall from "utils/multicall";
+import { getViemClients } from "utils/viem";
 
 const DEX_GURU_CHAINIDS = {
   [ChainId.ETHEREUM]: "eth",
@@ -35,24 +33,25 @@ export const useLPTokens = () => {
   const [lpTokens, setLPTokens] = useState([]);
 
   async function fetchLPInfo(data: any, chainId: ChainId) {
+    const client = getViemClients({ chainId });
     const pairInfos = await Promise.all(
       data.map(async (data) => {
         if (!DEX_GURU_CHAINIDS[chainId]) {
-          let calls = [
-            { name: "token0", address: data.address },
-            { name: "token1", address: data.address },
+          let calls: any = [
+            { abi: LpTokenAbi, functionName: "token0", address: data.address as Address },
+            { abi: LpTokenAbi, functionName: "token1", address: data.address as Address },
           ];
-          const [token0, token1] = await multicall(LpTokenAbi, calls, chainId);
+          const [token0, token1] = await client.multicall({ contracts: calls });
 
           calls = [
-            { name: "name", address: token0[0] },
-            { name: "symbol", address: token0[0] },
-            { name: "decimals", address: token0[0] },
-            { name: "name", address: token1[0] },
-            { name: "symbol", address: token1[0] },
-            { name: "decimals", address: token1[0] },
+            { abi: erc20ABI, functionName: "name", address: token0.result as Address },
+            { abi: erc20ABI, functionName: "symbol", address: token0.result as Address },
+            { abi: erc20ABI, functionName: "decimals", address: token0.result as Address },
+            { abi: erc20ABI, functionName: "name", address: token1.result as Address },
+            { abi: erc20ABI, functionName: "symbol", address: token1.result as Address },
+            { abi: erc20ABI, functionName: "decimals", address: token1.result as Address },
           ];
-          const result = await multicall(ERC20_ABI, calls, chainId);
+          const result = await client.multicall({ contracts: calls });
 
           return {
             timeStamp: 0,
@@ -60,16 +59,16 @@ export const useLPTokens = () => {
             balance: data.balance,
             symbol: data.symbol,
             token0: {
-              address: getAddress(token0[0]),
-              name: result[0][0],
-              symbol: result[1][0],
-              decimals: result[2][0],
+              address: getAddress(token0.result.toString()),
+              name: result[0].result,
+              symbol: result[1].result,
+              decimals: result[2].result,
             },
             token1: {
-              address: getAddress(token1[0]),
-              name: result[3][0],
-              symbol: result[4][0],
-              decimals: result[5][0],
+              address: getAddress(token1.result.toString()),
+              name: result[3].result,
+              symbol: result[4].result,
+              decimals: result[5].result,
             },
             price: 0,
             volume: 0,

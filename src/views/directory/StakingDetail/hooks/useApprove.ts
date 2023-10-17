@@ -15,7 +15,7 @@ const useApprovePool = (tokenAddress, sousId, contractAddress) => {
 
   const handleApprove = useCallback(async () => {
     const client = getViemClients({ chainId });
-    const gasPrice = await getNetworkGasPrice(client, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const txHash = await walletClient.writeContract({
       address: tokenAddress as `0x${string}`,

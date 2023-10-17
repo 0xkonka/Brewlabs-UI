@@ -1,24 +1,28 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { JSBI, Token } from "@brewlabs/sdk";
+import { Address, useAccount } from "wagmi";
+
+import BrewlabsFeeManagerAbi from "config/abi/swap/brewlabsFeeManager";
+import { filterTokens } from "@components/searchModal/filtering";
+import { useTokens } from "@hooks/Tokens";
+import { useActiveChainId } from "@hooks/useActiveChainId";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useBrewlabsFeeManager } from "hooks/useContract";
-import { Address, useAccount } from "wagmi";
-import { useSingleContractMultipleData } from "state/multicall/hooks";
-import { JSBI, Token } from "@brewlabs/sdk";
-import { filterTokens } from "@components/searchModal/filtering";
-import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenBalancesWithLoadingIndicator } from "state/wallet/hooks";
-import { usePendingRewards } from "./usePendingRewards";
-import { rewardInUSD } from "views/swap/components/SwapRewards";
-import { useTokens } from "@hooks/Tokens";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useSingleContractMultipleData } from "state/multicall/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import { defaultMarketData } from "state/prices/types";
+import { getBrewlabsFeeManagerAddress } from "utils/addressHelpers";
+
+import { rewardInUSD } from "views/swap/components/SwapRewards";
+import { usePendingRewards } from "./usePendingRewards";
 
 type FeeDistribution = {
-  lpFee: number;
-  brewlabsFee: number;
-  tokenOwnerFee: number;
-  stakingFee: number;
-  referralFEe: number;
+  lpFee: bigint;
+  brewlabsFee: bigint;
+  tokenOwnerFee: bigint;
+  stakingFee: bigint;
+  referralFee: bigint;
 };
 
 type PoolFeeInfoOutput = {
@@ -33,39 +37,52 @@ type PoolFeeInfoOutput = {
 export const useLiquidityPools = () => {
   const { chainId } = useActiveWeb3React();
   const contract = useBrewlabsFeeManager(chainId);
+
   const [pairsLength, setPairsLength] = useState<number>(0);
 
   useEffect(() => {
     if (contract.address) {
       (async () => {
         try {
-          const value = await contract.pairsLength();
-          setPairsLength(value.toNumber());
+          const value = await contract.read.pairsLength([]);
+          setPairsLength(+value.toString());
         } catch (e) {}
       })();
     }
   }, [contract.address, chainId]);
 
-  const outputOfPairs = useSingleContractMultipleData(
-    contract,
-    "pairs",
-    [...Array(pairsLength).keys()].map((i) => [i])
-  );
+  const outputOfPairs = useSingleContractMultipleData({
+    contract: useMemo(
+      () => ({
+        abi: BrewlabsFeeManagerAbi,
+        address: getBrewlabsFeeManagerAddress(chainId) as Address,
+      }),
+      [chainId]
+    ),
+    functionName: "pairs",
+    args: useMemo(() => [...Array(pairsLength).keys()].map((i) => [BigInt(i)] as const), [pairsLength]),
+  });
 
   const pairs = outputOfPairs.filter((data) => data.result).map((data) => data.result[0]);
-  const outputOfPools = useSingleContractMultipleData(
-    contract,
-    "getPoolFeeInfo",
-    pairs.map((pair) => [pair])
-  );
+  const outputOfPools = useSingleContractMultipleData({
+    contract: useMemo(
+      () => ({
+        abi: BrewlabsFeeManagerAbi,
+        address: getBrewlabsFeeManagerAddress(chainId) as Address,
+      }),
+      [chainId]
+    ),
+    functionName: "getPoolFeeInfo",
+    args: useMemo(() => pairs.map((pair) => [pair as Address] as const), [pairs]),
+  });
 
   const pools: PoolFeeInfoOutput[] = outputOfPools.map((data) => ({
-    token0: data.result?.token0,
-    token1: data.result?.token1,
-    tokenOwner: data.result?.tokenOwner,
-    referrer: data.result?.referer,
-    feeDistribution: data.result?.feeDistribution,
-    timeToOpen: data.result?.timeToOpen,
+    token0: data.result[0],
+    token1: data.result[1],
+    tokenOwner: data.result[2],
+    referrer: data.result[3],
+    feeDistribution: data.result[4],
+    timeToOpen: 0,
   }));
 
   return pools

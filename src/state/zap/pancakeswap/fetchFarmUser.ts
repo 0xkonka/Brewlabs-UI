@@ -1,9 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
-import BigNumber from "bignumber.js";
 import masterchefABI from "config/abi/externalMasterchef";
-import multicall from "utils/multicall";
-import { getExternalMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers";
 import { AppId } from "config/constants/types";
+import { getExternalMasterChefAddress as getMasterChefAddress } from "utils/addressHelpers";
 import { getViemClients } from "utils/viem";
 
 export const fetchFarmUserStakedBalances = async (account: string, farmsToFetch) => {

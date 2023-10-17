@@ -1,7 +1,4 @@
 import { ChainId, Currency, JSBI, Percent, Token } from "@brewlabs/sdk";
-import BigNumber from "bignumber.js";
-
-import { BIG_TEN } from "utils/bigNumber";
 import { tokens } from "./tokens";
 
 export const FAST_INTERVAL = 10000;
@@ -20,6 +17,7 @@ export const ETH_ADDRESSES = [
   "0x0000000000000000000000000000000000000000",
 ];
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+export const DEAD_ADDRESS = "0x000000000000000000000000000000000000dead";
 
 // a list of tokens by chain
 type ChainTokenList = {

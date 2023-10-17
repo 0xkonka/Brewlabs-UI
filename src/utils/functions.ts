@@ -4,6 +4,7 @@ import { CHAIN_ICONS, EMPTY_TOKEN_LOGO, EXPLORER_LOGO, EXPLORER_NAMES, EXPLORER_
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { DEX_LOGOS } from "config/constants/swap";
 import { toast } from "react-toastify";
+import { parseUnits } from "viem";
 
 export function numberWithCommas(x: any) {
   const strList = x.toString().split(".");
@@ -57,7 +58,7 @@ export const makeBigNumber = (amount, decimals) => {
   const subDecimals = decimalCount - decimals;
   let _amount = amount;
   if (subDecimals > 0) _amount = _amount.slice(0, amount.length - subDecimals);
-  return ethers.utils.parseUnits(_amount, decimals);
+  return parseUnits(_amount, decimals);
 };
 
 export const formatDollar = (value, decimals = 2) => {

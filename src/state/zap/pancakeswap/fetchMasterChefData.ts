@@ -10,7 +10,7 @@ const masterChefAddress = getMasterChefAddress();
 const masterChefContract = getMasterchefContract();
 
 export const fetchMasterChefFarmPoolLength = async () => {
-  const poolLength = await masterChefContract.poolLength();
+  const poolLength = await masterChefContract.read.poolLength([]);
   return poolLength;
 };
 

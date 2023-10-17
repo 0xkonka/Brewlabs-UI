@@ -1,9 +1,8 @@
-import { SwapContext } from "contexts/SwapContext";
 import React, { useContext } from "react";
 
-import OutlinedButton from "../button/OutlinedButton";
+import { SwapContext } from "contexts/SwapContext";
 import Notification from "@components/Notification";
-import Link from "next/link";
+import OutlinedButton from "../button/OutlinedButton";
 
 export default function CreateLiquidityOption() {
   const { addLiquidityStep, setAddLiquidityStep, swapFeeData }: any = useContext(SwapContext);

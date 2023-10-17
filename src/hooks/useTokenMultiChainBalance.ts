@@ -1,26 +1,25 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { ChainId } from "@brewlabs/sdk";
-import { ERC20_ABI } from "config/abi/erc20";
-import { Contract } from "ethers";
 import { useEffect, useState } from "react";
-import multicall from "utils/multicall";
-import { simpleRpcProvider } from "utils/providers";
+import { formatUnits } from "viem";
+import { erc20ABI } from "wagmi";
+
+import { getBep20Contract } from "utils/contractHelpers";
+import { getViemClients } from "utils/viem";
 
 export async function getMultiChainTotalBalances(tokens: any, address: any) {
   let totalBalance = 0;
   const balances = await Promise.all(
     tokens.map(async (data) => {
       try {
-        const provider = simpleRpcProvider(data.chainId);
-        const tokenContract = new Contract(data.address, ERC20_ABI, provider);
-        const balance = await tokenContract.balanceOf(address);
+        const tokenContract = getBep20Contract(data.chainId, data.address);
+        const balance = await tokenContract.read.balanceOf([address]);
         return { ...data, balance };
       } catch (e) {
-        return { ...data, balance: 0 };
+        return { ...data, balance: BigInt(0) };
       }
     })
   );
-  for (let i = 0; i < balances.length; i++) totalBalance += balances[i].balance / Math.pow(10, balances[i].decimals);
+  for (let i = 0; i < balances.length; i++) totalBalance += +formatUnits(balances[i].balance, balances[i].decimals);
   return totalBalance;
 }
 
@@ -43,17 +42,19 @@ export async function getBalances(tokens: any, addresses: any) {
     Object.keys(tokens).map(async (key: any, i) => {
       try {
         if (!tokens[key][i].decimals) return null;
+        const client = getViemClients({ chainId: tokens[key][i].chainId });
         const calls = addresses[key].map((address, i) => {
           return {
-            name: "balanceOf",
-            params: [address],
+            abi: erc20ABI,
             address: tokens[key][i].address,
+            functionName: "balanceOf",
+            args: [address],
           };
         });
-        const result = await multicall(ERC20_ABI, calls, key);
+        const result = await client.multicall({ contracts: calls });
         const tokenDatas = result.map((data, i) => {
-          const balance = data / Math.pow(10, tokens[key][i].decimals);
-          totalBalance += balance;
+          const balance = formatUnits(data.result as bigint, tokens[key][i].decimals);
+          totalBalance += +balance;
           return { ...tokens[key][i], balance, account: addresses[key][i] };
         });
         balances[key] = tokenDatas;

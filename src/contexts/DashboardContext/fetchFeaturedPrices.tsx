@@ -6,6 +6,7 @@ import { ERC20_ABI } from "config/abi/erc20";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 import prices from "config/constants/prices";
 import { getViemClients } from "utils/viem";
+import { erc20ABI } from "wagmi";
 
 export const fetchTokenBaseInfo = async (
   address: any,
@@ -18,8 +19,8 @@ export const fetchTokenBaseInfo = async (
   let calls: any = [];
   const splitList = type === "" ? [] : type.split(" ");
 
-  for (let i = 0; i < splitList.length; i++) calls.push({ address, abi: ERC20_ABI, name: splitList[i] });
-  if (accountAddress) calls.push({ address, abi: ERC20_ABI, name: "balanceOf", params: [accountAddress] });
+  for (let i = 0; i < splitList.length; i++) calls.push({ address, abi: erc20ABI, functionName: splitList[i] });
+  if (accountAddress) calls.push({ address, abi: erc20ABI, functionName: "balanceOf", args: [accountAddress] });
 
   const result = await client.multicall({ contracts: calls });
   return result.map((r) => r?.result);

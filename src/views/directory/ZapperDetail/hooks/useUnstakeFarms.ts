@@ -1,36 +1,54 @@
-import BigNumber from 'bignumber.js'
-import { useCallback } from 'react'
-import { getNetworkGasPrice } from 'utils/getGasPrice'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useExternalMasterchef } from 'hooks/useContract'
-import { DEFAULT_TOKEN_DECIMAL } from 'config'
-import { calculateGasMargin } from 'utils'
-import { Chef } from 'config/constants/types'
+import { useCallback } from "react";
+import { Address, parseEther } from "viem";
 
-const unstakeFarm = async (masterChefContract, pid, amount, earningTokenAddress, performanceFee, gasPrice) => {
-  const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
+import { Chef } from "config/constants/types";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useExternalMasterchef } from "hooks/useContract";
+import { calculateGasMargin } from "utils";
+import { getExternalMasterChefContract } from "utils/contractHelpers";
+import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
 
-  let gasLimit = await masterChefContract.estimateGas.zapOut(pid, value, earningTokenAddress, { value: performanceFee });
-  gasLimit = calculateGasMargin(gasLimit)
+type MasterChefContract = ReturnType<typeof getExternalMasterChefContract>;
+const unstakeFarm = async (
+  masterChefContract: MasterChefContract,
+  pid: number,
+  amount: string,
+  earningTokenAddress: Address,
+  performanceFee: bigint,
+  gasPrice: string
+) => {
+  const value = parseEther(amount);
+  let gasLimit = await masterChefContract.estimateGas.zapOut([pid, value, earningTokenAddress], {
+    value: performanceFee,
+    account: masterChefContract.account,
+    chain: masterChefContract.chain,
+  });
+  gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await masterChefContract.zapOut(pid, value, earningTokenAddress, { gasPrice, gasLimit, value: performanceFee })
-  const receipt = await tx.wait()
-  return receipt.status
-}
+  const txHash = await masterChefContract.write.zapOut([pid, value, earningTokenAddress], {
+    gasPrice,
+    gasLimit,
+    value: performanceFee,
+  });
+  const client = getViemClients({ chainId: masterChefContract.chain.id });
 
-const useUnstakeFarms = (chef = Chef.MASTERCHEF, pid: number, earningTokenAddress: string, performanceFee: BigNumber) => {
-  const { chainId, library } = useActiveWeb3React()
-  const masterChefContract = useExternalMasterchef(true, chef)
+  return client.waitForTransactionReceipt({ hash: txHash, confirmations: 2 });
+};
+
+const useUnstakeFarms = (chef = Chef.MASTERCHEF, pid: number, earningTokenAddress: string, performanceFee: bigint) => {
+  const { chainId } = useActiveChainId();
+  const masterChefContract = useExternalMasterchef(chef);
 
   const handleUnstake = useCallback(
     async (amount: string) => {
-      const gasPrice = await getNetworkGasPrice(library, chainId)
-      await unstakeFarm(masterChefContract, pid, amount, earningTokenAddress, performanceFee.toString(), gasPrice)
+      const gasPrice = await getNetworkGasPrice(chainId);
+      await unstakeFarm(masterChefContract, pid, amount, earningTokenAddress as Address, performanceFee, gasPrice);
     },
-    [masterChefContract, pid, earningTokenAddress, chainId, library, performanceFee],
-  )
+    [masterChefContract, pid, earningTokenAddress, chainId, performanceFee]
+  );
 
-  return { onUnstake: handleUnstake }
-}
+  return { onUnstake: handleUnstake };
+};
 
-export default useUnstakeFarms
+export default useUnstakeFarms;

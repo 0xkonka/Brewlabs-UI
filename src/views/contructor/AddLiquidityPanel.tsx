@@ -1,16 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { TokenAmount } from "@brewlabs/sdk";
-import { BigNumber, TransactionResponse } from "alchemy-sdk";
 import router from "next/router";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount, useConnect } from "wagmi";
+import { toHex } from "viem";
+import { useAccount, useConnect, useWalletClient } from "wagmi";
 
 import { ONE_BIPS } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import useTransactionDeadline from "hooks/useTransactionDeadline";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
@@ -21,7 +20,6 @@ import { calculateGasMargin, calculateSlippageAmount } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { getExplorerLogo } from "utils/functions";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import maxAmountSpend from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
@@ -46,9 +44,8 @@ export default function AddLiquidityPanel({
   currencyB: currencyB_ = undefined,
 }) {
   const { chainId, isWrongNetwork } = useActiveChainId();
-  const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
-  const signer  = useEthersSigner();
+  const { data: signer } = useWalletClient();
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const deadline = useTransactionDeadline();
@@ -135,9 +132,9 @@ export default function AddLiquidityPanel({
 
   const isValid = !error;
   async function onAdd() {
-    if (!chainId || !library || !account) return;
+    if (!chainId || !account) return;
 
-    const gasPrice = await getNetworkGasPrice(library, chainId);
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const swapRouter = getBrewlabsRouterContract(chainId, dexrouter.address, signer);
     const lpManagerContract = getLpManagerV2Contract(chainId, signer);
@@ -154,38 +151,38 @@ export default function AddLiquidityPanel({
     };
 
     let estimate;
-    let method: (...args: any) => Promise<TransactionResponse>;
+    let method: any;
     let args: Array<string | string[] | number>;
-    let value: BigNumber | null;
+    let value: bigint | null;
     if (currencyA.isNative || currencyB.isNative) {
       const tokenBIsETH = currencyB.isNative;
       if (isUsingRouter) {
         estimate = swapRouter.estimateGas.addLiquidityETH;
-        method = swapRouter.addLiquidityETH;
+        method = swapRouter.write.addLiquidityETH;
         args = [
           wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
           amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
           account,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       } else {
         estimate = lpManagerContract.estimateGas.addLiquidityETH;
-        method = lpManagerContract.addLiquidityETH;
+        method = lpManagerContract.write.addLiquidityETH;
         args = [
           dexrouter.address,
           wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           noLiquidity ? 0 : allowedSlippage, // slippage,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       }
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
+      value = BigInt((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
     } else {
       if (isUsingRouter) {
         estimate = swapRouter.estimateGas.addLiquidity;
-        method = swapRouter.addLiquidity;
+        method = swapRouter.write.addLiquidity;
         args = [
           wrappedCurrency(currencyA, chainId)?.address ?? "",
           wrappedCurrency(currencyB, chainId)?.address ?? "",
@@ -194,11 +191,11 @@ export default function AddLiquidityPanel({
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
           account,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       } else {
         estimate = lpManagerContract.estimateGas.addLiquidity;
-        method = lpManagerContract.addLiquidity;
+        method = lpManagerContract.write.addLiquidity;
         args = [
           dexrouter.address,
           wrappedCurrency(currencyA, chainId)?.address ?? "",
@@ -206,16 +203,19 @@ export default function AddLiquidityPanel({
           parsedAmountA.raw.toString(),
           parsedAmountB.raw.toString(),
           noLiquidity ? 0 : allowedSlippage,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       }
       value = null;
     }
 
     setAttemptingTxn(true);
-    await estimate(...args, value ? { value } : {})
+    await estimate(
+      args,
+      value ? { value, account: signer.account, chain: signer.chain } : { account: signer.account, chain: signer.chain }
+    )
       .then((estimatedGasLimit) =>
-        method(...args, {
+        method(args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
           gasPrice,
@@ -248,8 +248,8 @@ export default function AddLiquidityPanel({
   }
 
   async function onAddV1() {
-    if (!chainId || !library || !account) return;
-    const gasPrice = await getNetworkGasPrice(library, chainId);
+    if (!chainId || !account) return;
+    const gasPrice = await getNetworkGasPrice(chainId);
 
     const swapRouter = getBrewlabsRouterContract(chainId, dexrouter.address, signer);
     const lpManagerContract = getLpManagerContract(chainId, signer);
@@ -265,36 +265,36 @@ export default function AddLiquidityPanel({
     };
 
     let estimate;
-    let method: (...args: any) => Promise<TransactionResponse>;
+    let method: any;
     let args: Array<string | string[] | number>;
-    let value: BigNumber | null;
+    let value: bigint | null;
     if (currencyA.isNative || currencyB.isNative) {
       const tokenBIsETH = currencyB.isNative;
       if (!lpManager) {
         estimate = swapRouter.estimateGas.addLiquidityETH;
-        method = swapRouter.addLiquidityETH;
+        method = swapRouter.write.addLiquidityETH;
         args = [
           wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
           amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
           account,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       } else {
         estimate = lpManagerContract.estimateGas.addLiquidityETH;
-        method = lpManagerContract.addLiquidityETH;
+        method = lpManagerContract.write.addLiquidityETH;
         args = [
           wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? "", // token
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           noLiquidity ? 0 : allowedSlippage, // slippage
         ];
       }
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
+      value = BigInt((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString());
     } else {
       if (!lpManager) {
         estimate = swapRouter.estimateGas.addLiquidity;
-        method = swapRouter.addLiquidity;
+        method = swapRouter.write.addLiquidity;
         args = [
           wrappedCurrency(currencyA, chainId)?.address ?? "",
           wrappedCurrency(currencyB, chainId)?.address ?? "",
@@ -303,11 +303,11 @@ export default function AddLiquidityPanel({
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
           account,
-          deadline.toHexString(),
+          toHex(deadline),
         ];
       } else {
         estimate = lpManagerContract.estimateGas.addLiquidity;
-        method = lpManagerContract.addLiquidity;
+        method = lpManagerContract.write.addLiquidity;
         args = [
           wrappedCurrency(currencyA, chainId)?.address ?? "",
           wrappedCurrency(currencyB, chainId)?.address ?? "",
@@ -329,13 +329,16 @@ export default function AddLiquidityPanel({
         }).then((response) => {
           setAttemptingTxn(false);
 
-          addTransaction(response, {
-            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencies[Field.CURRENCY_A]?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
-          });
+          addTransaction(
+            { hash: response },
+            {
+              summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+                currencies[Field.CURRENCY_A]?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
+            }
+          );
 
-          // setTxHash(response.hash);
+          // setTxHash(response);
           toast.success("Liquidity was added");
 
           fetchLPTokens(chainId);

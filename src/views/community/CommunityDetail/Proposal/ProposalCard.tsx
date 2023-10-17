@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import { useAccount, useEnsName, useWalletClient } from "wagmi";
 
 import CountDown from "@components/CountDown";
 import { BellSVG, InfoSVG, RequirementSVG } from "@components/dashboard/assets/svgs";
@@ -8,20 +8,19 @@ import StyledButton from "views/directory/StyledButton";
 
 import { CommunityContext } from "contexts/CommunityContext";
 import { DashboardContext } from "contexts/DashboardContext";
-import useENSName from "@hooks/ENS/useENSName";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { handleWalletError } from "lib/bridge/helpers";
 import { getBep20Contract } from "utils/contractHelpers";
-import { useEthersSigner } from "utils/ethersAdapter";
 import { showError } from "utils/functions";
+import { getViemClients } from "utils/viem";
 
 const ProposalCard = ({ proposal, community }: { proposal: any; community: any }) => {
-  const { address: account } = useAccount();
-  const name = useENSName(proposal.owner);
-  const { voteOrAgainst }: any = useContext(CommunityContext);
   const { chainId } = useActiveChainId();
-  const signer  = useEthersSigner();
+  const { address: account } = useAccount();
+  const { data: signer } = useWalletClient();
+  const name = useEnsName(proposal.owner);
+  const { voteOrAgainst }: any = useContext(CommunityContext);
 
   const [isVoted, setIsVoted] = useState("none");
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -34,10 +33,11 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
     }
     setPending(true);
     try {
+      const client = getViemClients({ chainId });
       if (community.feeToVote.type === "Yes" || (community.feeToVote.type === "Sometimes" && proposal.isFeeToVote)) {
         const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-        const tx = await tokenContract.transfer(community.feeToVote.address, community.feeToVote.amount);
-        await tx.wait();
+        const tx = await tokenContract.write.transfer([community.feeToVote.address, community.feeToVote.amount], {});
+        await client.waitForTransactionReceipt({ hash: tx });
       }
       await voteOrAgainst(account, pid, index, type);
       setIsVoted(type);
@@ -110,7 +110,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
               Proposal #{proposal.index + 1}
             </div>
             <div className="w-[110px] overflow-hidden text-ellipsis text-sm text-white">
-              {name.loading ? proposal.owner : name.ENSName ?? proposal.owner}
+              {name.isLoading ? proposal.owner : name.data ?? proposal.owner}
             </div>
             <div className="mt-3 flex items-center text-sm">
               <div
@@ -127,7 +127,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             <div className="mt-3 flex items-center text-sm">
               <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
               <div className="ml-2.5 text-[#FFFFFFBF]">
-                {proposal.createdTime + proposal.duration >= Date.now()? (
+                {proposal.createdTime + proposal.duration >= Date.now() ? (
                   <CountDown time={proposal.createdTime + proposal.duration} />
                 ) : (
                   "Time elapsed"

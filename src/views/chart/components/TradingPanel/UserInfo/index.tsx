@@ -1,17 +1,14 @@
-import { ChevronCircleDownSVG, LinkSVG } from "@components/dashboard/assets/svgs";
-import useENSName from "@hooks/ENS/useENSName";
-import { getExplorerLink } from "lib/bridge/helpers";
-import { getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
-import { useAccount } from "wagmi";
 import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { isAddress } from "utils";
+
+import { ChevronCircleDownSVG, LinkSVG } from "@components/dashboard/assets/svgs";
 import { fetchTradingHistoriesByDexScreener } from "@hooks/useTokenAllPairs";
-import { DEX_GURU_CHAIN_NAME } from "config";
-import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshEffect";
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { getBalances } from "@hooks/useTokenMultiChainBalance";
+import { getExplorerLink } from "lib/bridge/helpers";
+import { isAddress } from "utils";
+import { getEllipsis, getExplorerLogo, numberWithCommas } from "utils/functions";
 
 // TimeAgo.addDefaultLocale(en);
 

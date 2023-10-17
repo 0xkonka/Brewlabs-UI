@@ -35,6 +35,7 @@ import ConnectWallet from "@components/wallet/ConnectWallet";
 import Modal from "@components/Modal";
 import WalletSelector from "@components/wallet/WalletSelector";
 import { useConnect } from "wagmi";
+import { getViemClients } from "utils/viem";
 
 export default function SwapPanel({
   showHistory = true,
@@ -46,9 +47,10 @@ export default function SwapPanel({
   toChainId?: ChainId;
 }) {
   const { account, chainId } = useActiveWeb3React();
+  const { isLoading } = useConnect();
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
 
   const { t } = useTranslation();
-  const { isLoading } = useConnect();
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
@@ -102,8 +104,6 @@ export default function SwapPanel({
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade);
 
-  const { canSwitch, switchNetwork } = useSwitchNetwork();
-
   const confirmPriceImpactWithoutFee = (priceImpactWithoutFee: Percent) => {
     if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
       return (
@@ -127,7 +127,8 @@ export default function SwapPanel({
   const handleApproveUsingRouter = async () => {
     try {
       const response = await approveCallback();
-      await response.wait();
+      const client = getViemClients({chainId});
+      await client.waitForTransactionReceipt({hash: response})
     } catch (e) {}
   };
 

@@ -1,4 +1,3 @@
-import { Contract } from "@ethersproject/contracts";
 import { useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useCurrentBlock } from "state/block/hooks";
@@ -27,7 +26,7 @@ const CALL_CHUNK_SIZE = 500;
  * @param minBlockNumber minimum block number of the result set
  */
 async function fetchChunk(
-  multicallContract: Contract,
+  multicallContract: any,
   chunk: Call[],
   minBlockNumber: number
 ): Promise<{ results: string[]; blockNumber: number }> {
