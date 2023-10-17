@@ -3,7 +3,6 @@ import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token
 import { BigNumber } from "@ethersproject/bignumber";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { TransactionResponse } from "@ethersproject/providers";
-import DeployYieldFarm from "./DeployYieldFarm";
 import CurrencyInputPanel from "components/currencyInputPanel";
 import React, { useContext, useState } from "react";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
@@ -38,7 +37,7 @@ import {
 import { DEAD_ADDRESS, FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
 import WarningModal from "@components/warningModal";
 import { defaultMarketData } from "state/prices/types";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import SetWalletModal from "./SetWalletModal";
 import { getPairOwner } from "@hooks/usePairs";
 import { handleWalletError } from "lib/bridge/helpers";
