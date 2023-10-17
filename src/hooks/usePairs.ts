@@ -87,14 +87,14 @@ export async function getPairOwner(address: string, chainId: ChainId, token0: Cu
     const feeMangerOwner = await feeManagerContract.owner();
     let tokenOwner = undefined;
     let stakingPool = undefined;
+    let isOwner = getAddress(address) === getAddress(feeMangerOwner);
     if (pair) {
       tokenOwner = await feeManagerContract.getTokenOwner(pair.liquidityToken.address);
       const pairContract = getBrewlabsPairContract(chainId, pair.liquidityToken.address);
       stakingPool = await pairContract.stakingPool();
-    }
 
-    const isOwner =
-      getAddress(address) === getAddress(feeMangerOwner) || getAddress(address) === getAddress(tokenOwner);
+      isOwner = getAddress(address) === getAddress(feeMangerOwner) || getAddress(address) === getAddress(tokenOwner);
+    }
 
     return {
       owner: feeMangerOwner,

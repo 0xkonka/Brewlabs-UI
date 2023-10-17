@@ -33,6 +33,7 @@ export const useLiquidityPools = () => {
   const { chainId } = useActiveWeb3React();
   const contract = useBrewlabsFeeManager(chainId);
 
+  const [counter, setCounter] = useState(0);
   const [pairsLength, setPairsLength] = useState<number>(0);
   const [pools, setPools] = useState<any>([]);
 
@@ -45,7 +46,8 @@ export const useLiquidityPools = () => {
         } catch (e) {}
       })();
     }
-  }, [contract.address, chainId]);
+  }, [contract.address, chainId, counter]);
+
   const outputOfPairs = useSingleContractMultipleData(
     contract,
     "pairs",
@@ -75,13 +77,13 @@ export const useLiquidityPools = () => {
 
       let _pools = pools;
       _pools[index] = {
+        id: pair,
         token0: data.token0,
         token1: data.token1,
         tokenOwner: data.tokenOwner,
         referrer: data.referer,
         feeDistribution: data.feeDistribution,
       };
-      console.log(pools, _pools, "$$$$$$$$$$$$$$$$$$$ 1111");
       setPools(_pools);
     } catch (e) {}
   };
@@ -103,7 +105,13 @@ export const useLiquidityPools = () => {
     }
   }, [pairsLength, _pools.length]);
 
-  return { pools, fetchData };
+  return {
+    pools,
+    fetchData,
+    fetchAllData: () => {
+      setCounter(counter + 1);
+    },
+  };
 };
 
 export const useOwnedLiquidityPools = () => {
@@ -135,7 +143,7 @@ export const useOwnedLiquidityPools = () => {
   const pairTokens = useTokens(pairTokenAddresses);
 
   const inputFilter = (pair) =>
-    filterTokens([new Token(chainId, pair.token0, 18), new Token(chainId, pair.token1, 18)], "").length > 0;
+    pair.token0 && filterTokens([new Token(chainId, pair.token0, 18), new Token(chainId, pair.token1, 18)], "").length > 0;
 
   const eligiblePairs = useMemo(() => ownedPairs.filter(inputFilter), [ownedPairs]);
 

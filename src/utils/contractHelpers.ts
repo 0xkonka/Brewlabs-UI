@@ -61,6 +61,7 @@ export const getContract = (
   abi: any,
   signer?: ethers.Signer | ethers.providers.Provider
 ) => {
+  if (!address) return null;
   const signerOrProvider = signer ?? provider({ chainId });
   return new ethers.Contract(address, abi, signerOrProvider);
 };

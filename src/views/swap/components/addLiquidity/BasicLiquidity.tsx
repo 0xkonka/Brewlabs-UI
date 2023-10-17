@@ -53,7 +53,7 @@ export default function BasicLiquidity() {
 
   const { pending, setPending }: any = useContext(DashboardContext);
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
-  const { pools: pairInfos, fetchData: fetchPairInfo } = useLiquidityPools();
+  const { pools: pairInfos, fetchData: fetchPairInfo, fetchAllData } = useLiquidityPools();
   const addTransaction = useTransactionAdder();
 
   // mint state
@@ -133,11 +133,12 @@ export default function BasicLiquidity() {
   const [selectedDynamicFee, setSelectedDynamicFee] = useState(0);
 
   const pairInfo = pairInfos.find((p) => p.id === pair?.liquidityToken.address);
-  const liquidityProviderFee = pairInfo ? Number(pairInfo.feeDistribution[0]._hex) / 10000 : 0.25;
-  const brewlabsFee = pairInfo ? Number(pairInfo.feeDistribution[1]._hex) / 10000 : 0.05;
-  const tokenOwnerFee = pairInfo ? Number(pairInfo.feeDistribution[2]._hex) / 10000 : 0.0;
-  const stakingFee = pairInfo ? Number(pairInfo.feeDistribution[3]._hex) / 10000 : 0.0;
-  const referralFee = pairInfo ? Number(pairInfo.feeDistribution[4]._hex) / 10000 : 0.0;
+
+  const liquidityProviderFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[0]._hex) / 10000 : 0.25;
+  const brewlabsFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[1]._hex) / 10000 : 0.05;
+  const tokenOwnerFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[2]._hex) / 10000 : 0.0;
+  const stakingFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[3]._hex) / 10000 : 0.0;
+  const referralFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[4]._hex) / 10000 : 0.0;
 
   const data = [
     {
@@ -181,7 +182,7 @@ export default function BasicLiquidity() {
       key: "Volume (24HR)",
       value: (
         <p className="whitespace-nowrap !text-white">
-          $523,281.00 <span className="text-[#FFFFFF80]">USD</span>
+          $0.00 <span className="text-[#FFFFFF80]">USD</span>
         </p>
       ),
     },
@@ -231,7 +232,7 @@ export default function BasicLiquidity() {
         setIsOwner(result.isOwner);
       })
       .catch((e) => console.log(e));
-  }, [stringifiedPair]);
+  }, [chainId, account, stringifiedPair]);
 
   useEffect(() => {
     setDynamicFees([referralFee, stakingFee, tokenOwnerFee]);
@@ -277,10 +278,24 @@ export default function BasicLiquidity() {
     try {
       const feeManager = getBrewlabsFeeManagerContract(chainId, signer);
 
-      let tx = await feeManager.setFeeDistributionFromTeam(
-        pair.liquidityToken.address,
-        ...dynamicFees.map((fee) => Math.ceil(fee * 10000))
-      );
+      let tx;
+      if (account === pairOwner.owner) {
+        tx = await feeManager.setFeeDistribution(
+          pair.liquidityToken.address,
+          Math.ceil(liquidityProviderFee * 10000),
+          Math.ceil(brewlabsFee * 10000),
+          Math.ceil(dynamicFees[2] * 10000),
+          Math.ceil(dynamicFees[1] * 10000),
+          Math.ceil(dynamicFees[0] * 10000)
+        );
+      } else {
+        tx = await feeManager.setFeeDistributionFromTeam(
+          pair.liquidityToken.address,
+          Math.ceil(dynamicFees[2] * 10000),
+          Math.ceil(dynamicFees[1] * 10000),
+          Math.ceil(dynamicFees[0] * 10000)
+        );
+      }
       await tx.wait();
 
       toast.success(`Fee Distribution was updated successfully`);
@@ -352,6 +367,7 @@ export default function BasicLiquidity() {
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
           setAttemptingTxn(false);
+          fetchAllData();
 
           addTransaction(response, {
             summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
@@ -398,10 +414,11 @@ export default function BasicLiquidity() {
     }
   };
 
-  const isReferralFeeUpdatable = referralFee !== dynamicFees[0] && pairInfo?.referrer !== ethers.constants.AddressZero;
-  const isStakingFeeUpdatable =
-    stakingFee !== dynamicFees[1] && pairOwner?.stakingPool !== ethers.constants.AddressZero;
-  const isOwnerFeeUpdatable = tokenOwnerFee !== dynamicFees[2] && pairInfo?.tokenOwner !== ethers.constants.AddressZero;
+  const isReferralFeeUpdatable = dynamicFees[0] === 0 || pairInfo?.referrer !== ethers.constants.AddressZero;
+  const isStakingFeeUpdatable = dynamicFees[1] === 0 || pairOwner?.stakingPool !== ethers.constants.AddressZero;
+  const isOwnerFeeUpdatable = dynamicFees[2] === 0 || pairInfo?.tokenOwner !== ethers.constants.AddressZero;
+  const isChanged = referralFee !== dynamicFees[0] || stakingFee !== dynamicFees[1] || tokenOwnerFee !== dynamicFees[2];
+  const isUpdatable = isChanged && isReferralFeeUpdatable && isStakingFeeUpdatable && isOwnerFeeUpdatable;
 
   return (
     <>
@@ -612,7 +629,8 @@ export default function BasicLiquidity() {
           {pair && isOwner ? (
             <SolidButton
               className="mb-3 w-full"
-              disabled={isReferralFeeUpdatable || isStakingFeeUpdatable || isOwnerFeeUpdatable || pending}
+              disabled={!isUpdatable || pending}
+              pending={pending}
               onClick={setFeeDistribution}
             >
               <div className="mx-auto flex w-fit items-center">

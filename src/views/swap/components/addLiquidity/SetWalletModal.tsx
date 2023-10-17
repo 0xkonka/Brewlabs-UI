@@ -15,7 +15,7 @@ const SetWalletModal = ({
   setOpen,
   onClick,
   title,
-  prevWallet,
+  prevWallet = "",
 }: {
   open: boolean;
   setOpen: (arg0: boolean) => void;
