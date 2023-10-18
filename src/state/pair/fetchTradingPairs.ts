@@ -1,6 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
-import { getBrewlabsFeeManagerContract } from "utils/contractHelpers";
+import { ethers } from "ethers";
+import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
 
 function getPriceByTx(tx) {
   const amount0 = Math.max(tx.amount0In, tx.amount0Out);
@@ -238,18 +239,45 @@ export async function getVolumeHistory(address, chainId, type) {
 
 export async function getBrewlabsSwapFee(chainId: ChainId, pair: string) {
   try {
+    const pairContract = getBrewlabsPairContract(chainId, pair);
     const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
-    const fees = await feeManagerContract.getFeeDistribution(pair);
+    const data = await feeManagerContract.getPoolFeeInfo(pair);
+    // const owner = await feeManagerContract.owner();
+    const stakingPool = await pairContract.stakingPool();
+
+    const lpFee = Number(data.feeDistribution[0]) / 10000;
+    const brewlabsFee = Number(data.feeDistribution[1]) / 10000;
+    const tokenOwnerFee = Number(data.feeDistribution[2]) / 10000;
+    const stakingFee = Number(data.feeDistribution[3]) / 10000;
+    const referralFee = Number(data.feeDistribution[4]) / 10000;
     return {
-      totalFee: Number(fees[0]),
-      lpFee: Number(fees[1]),
-      brewlabsFee: Number(fees[2]),
-      tokenOwnerFee: Number(fees[3]),
-      stakingFee: Number(fees[4]),
-      referralFee: Number(fees[5]),
+      fees: {
+        totalFee: lpFee + brewlabsFee + tokenOwnerFee + stakingFee + referralFee,
+        lpFee,
+        brewlabsFee,
+        tokenOwnerFee,
+        stakingFee,
+        referralFee,
+      },
+      tokenOwner: data.tokenOwner,
+      referrer: data.referer,
+      stakingPool,
+      owner:
+        chainId === ChainId.BSC_TESTNET
+          ? "0x9543F59c1Fc00C37d6B239ED1988F7af9Aed780E"
+          : "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F",
     };
   } catch (e) {
     console.log(e);
-    return { totalFee: 0, lpFee: 0, brewlabsFee: 0, tokenOwnerFee: 0, stakingFee: 0, referralFee: 0 };
+    return {
+      tokenOwner: ethers.constants.AddressZero,
+      referrer: ethers.constants.AddressZero,
+      stakingPool: ethers.constants.AddressZero,
+      owner:
+        chainId === ChainId.BSC_TESTNET
+          ? "0x9543F59c1Fc00C37d6B239ED1988F7af9Aed780E"
+          : "0xE1f1dd010BBC2860F81c8F90Ea4E38dB949BB16F",
+      fees: { totalFee: 0.3, lpFee: 0.25, brewlabsFee: 0.05, tokenOwnerFee: 0, stakingFee: 0, referralFee: 0 },
+    };
   }
 }

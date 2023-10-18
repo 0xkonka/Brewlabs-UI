@@ -26,7 +26,7 @@ export const fetchTradingAllPairAsync = (chainId: ChainId) => async (dispatch) =
 };
 
 export const PairSlice = createSlice({
-  name: "home",
+  name: "pair",
   initialState,
   reducers: {
     setPairData: (state: any, action) => {
@@ -77,7 +77,7 @@ export const PairSlice = createSlice({
     setPairFeeData: (state, action) => {
       const { chainId, address, data } = action.payload;
       if (!state.tradingPairs[chainId]) state.tradingPairs[chainId] = {};
-      state.tradingPairs[chainId][address] = { ...state.tradingPairs[chainId][address], fees: data };
+      state.tradingPairs[chainId][address] = { ...state.tradingPairs[chainId][address], ...data };
     },
   },
 });

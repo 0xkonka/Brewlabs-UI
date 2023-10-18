@@ -7,8 +7,6 @@ import BrewlabsPairABI from "config/abi/brewlabsPair.json";
 import { useMultipleContractSingleData } from "../state/multicall/hooks";
 import { wrappedCurrency } from "../utils/wrappedCurrency";
 import { useActiveChainId } from "./useActiveChainId";
-import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
-import { getAddress } from "ethers/lib/utils.js";
 
 const PAIR_INTERFACE = new Interface(BrewlabsPairABI);
 
@@ -79,31 +77,4 @@ export function usePairs(
 
 export function usePair(tokenA?: Currency, tokenB?: Currency, isExternal?: boolean, dexId?: string) {
   return usePairs([[tokenA, tokenB]], isExternal, dexId)[0];
-}
-
-export async function getPairOwner(address: string, chainId: ChainId, token0: Currency, token1: Currency, pair: Pair) {
-  try {
-    const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
-    const feeMangerOwner = await feeManagerContract.owner();
-    let tokenOwner = undefined;
-    let stakingPool = undefined;
-    let isOwner = getAddress(address) === getAddress(feeMangerOwner);
-    if (pair) {
-      tokenOwner = await feeManagerContract.getTokenOwner(pair.liquidityToken.address);
-      const pairContract = getBrewlabsPairContract(chainId, pair.liquidityToken.address);
-      stakingPool = await pairContract.stakingPool();
-
-      isOwner = getAddress(address) === getAddress(feeMangerOwner) || getAddress(address) === getAddress(tokenOwner);
-    }
-
-    return {
-      owner: feeMangerOwner,
-      tokenOwner,
-      stakingPool,
-      isOwner,
-    };
-  } catch (e) {
-    console.log(e);
-    return {};
-  }
 }

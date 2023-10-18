@@ -332,6 +332,10 @@ export interface SerializedTradingPair {
     stakingFee?: number;
     referralFee?: number;
   };
+  tokenOwner?: string;
+  stakingPool?: string;
+  referrer?: string;
+  owner?: string;
 }
 
 export interface PairState {
