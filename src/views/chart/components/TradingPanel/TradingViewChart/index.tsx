@@ -43,7 +43,7 @@ const TradingViewChart = ({ selectedPair }) => {
       locale: getLanguageFromURL() || ("en" as any),
       symbol: `${selectedPair.a}/bars/${DEXSCREENER_CHAINNAME[selectedPair.chainId]}/${selectedPair.address}?q=${
         selectedPair.quoteToken.address
-      }`, // default symbol
+      }#${selectedPair.baseToken.symbol}-${selectedPair.quoteToken.symbol}`, // default symbol
       interval: "1D", // default interval
       fullscreen: false, // displays the chart in the fullscreen mode
       container_id: "tv_chart_container",

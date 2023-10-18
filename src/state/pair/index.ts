@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { BASES_TO_TRACK_LIQUIDITY_FOR } from "config/constants";
 import { PairState } from "state/types";
 
-import { getTradingAllPairs, getTradingPair } from "./fetchTradingPairs";
+import { getBrewlabsSwapFee, getTradingAllPairs, getTradingPair } from "./fetchTradingPairs";
 
 const initialState: PairState = {
   tradingPairs: {},
@@ -15,22 +15,27 @@ export const fetchTradingPairAsync = (chainId: ChainId, address: string) => asyn
   dispatch(setPairData({ chainId, address, data }));
 };
 
+export const fetchTradingPairFeesAsync = (chainId: ChainId, address: string) => async (dispatch) => {
+  const data = await getBrewlabsSwapFee(chainId, address);
+  dispatch(setPairFeeData({ chainId, address, data }));
+};
+
 export const fetchTradingAllPairAsync = (chainId: ChainId) => async (dispatch) => {
   const pairs = await getTradingAllPairs(chainId);
   dispatch(setPairs({ chainId, pairs }));
 };
 
 export const PairSlice = createSlice({
-  name: "home",
+  name: "pair",
   initialState,
   reducers: {
     setPairData: (state: any, action) => {
-      const { chainId, address, data } = action.payload;
+      const { chainId, data } = action.payload;
       if (!state.tradingPairs[chainId]) state.tradingPairs[chainId] = {};
-      const pair = state.tradingPairs[chainId][address];
+      const pair = data.pair;
       if (pair) {
         const isBaseToken0 = BASES_TO_TRACK_LIQUIDITY_FOR[chainId].find(
-          (token) => token.address.toLowerCase() === state.tradingPairs[chainId][address].token0.address
+          (token) => token.address.toLowerCase() === pair.token0.address
         );
         let baseToken: any = !isBaseToken0 ? pair.token0 : pair.token1,
           quoteToken: any = !isBaseToken0 ? pair.token1 : pair.token0;
@@ -69,10 +74,15 @@ export const PairSlice = createSlice({
           (state.tradingPairs[chainId][pair.address] = { ...state.tradingPairs[chainId][pair.address], ...pair })
       );
     },
+    setPairFeeData: (state, action) => {
+      const { chainId, address, data } = action.payload;
+      if (!state.tradingPairs[chainId]) state.tradingPairs[chainId] = {};
+      state.tradingPairs[chainId][address] = { ...state.tradingPairs[chainId][address], ...data };
+    },
   },
 });
 
 // Actions
-export const { setPairData, setPairs } = PairSlice.actions;
+export const { setPairData, setPairs, setPairFeeData } = PairSlice.actions;
 
 export default PairSlice.reducer;

@@ -6,15 +6,16 @@ import { useAppDispatch } from "state";
 import { SerializedTradingPair, State } from "state/types";
 import { isAddress } from "utils";
 
-import { fetchTradingAllPairAsync, fetchTradingPairAsync } from ".";
+import { fetchTradingAllPairAsync, fetchTradingPairAsync, fetchTradingPairFeesAsync } from ".";
 
 export const useTradingPair = (chainId, address) => {
   const dispatch = useAppDispatch();
-  const data = useTradingPairData(chainId, address);
-
+  const data = useTradingPairData(chainId, address?.toLowerCase());
   useFastRefreshEffect(() => {
     if (!isAddress(address)) return;
-    dispatch(fetchTradingPairAsync(chainId, address));
+
+    dispatch(fetchTradingPairAsync(chainId, address.toLowerCase()));
+    dispatch(fetchTradingPairFeesAsync(chainId, address.toLowerCase()));
   }, [dispatch, chainId, address]);
   return { data };
 };

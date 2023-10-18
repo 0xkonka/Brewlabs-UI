@@ -24,7 +24,6 @@ import { SwapContext } from "contexts/SwapContext";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
 import { useBrewlabsRouterContract } from "@hooks/useContract";
-import { getPairOwner } from "@hooks/usePairs";
 import useTotalSupply from "hooks/useTotalSupply";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { Field } from "state/mint/actions";
@@ -39,10 +38,12 @@ import { maxAmountSpend } from "utils/maxAmountSpend";
 import { getViemClients } from "utils/viem";
 import { wrappedCurrency } from "utils/wrappedCurrency";
 import { handleWalletError } from "lib/bridge/helpers";
-import { useLiquidityPools } from "@hooks/swap/useLiquidityPools";
 import { ethers } from "ethers";
 import { DashboardContext } from "contexts/DashboardContext";
 import { toast } from "react-toastify";
+import { useTradingPair } from "state/pair/hooks";
+import { useAppDispatch } from "state";
+import { fetchTradingPairFeesAsync } from "state/pair";
 
 import OutlinedButton from "../button/OutlinedButton";
 import SolidButton from "../button/SolidButton";
@@ -50,12 +51,12 @@ import DeployYieldFarm from "./DeployYieldFarm";
 import SetWalletModal from "./SetWalletModal";
 
 export default function BasicLiquidity() {
-  const { account, chainId } = useActiveWeb3React();
+  const dispatch = useAppDispatch();
+  const { account, chainId, library } = useActiveWeb3React();
   const { data: signer } = useWalletClient();
 
   const { pending, setPending }: any = useContext(DashboardContext);
   const { addLiquidityStep, setAddLiquidityStep }: any = useContext(SwapContext);
-  const { pools: pairInfos, fetchData: fetchPairInfo, fetchAllData } = useLiquidityPools();
   const addTransaction = useTransactionAdder();
 
   // mint state
@@ -64,6 +65,8 @@ export default function BasicLiquidity() {
     undefined,
     undefined
   );
+
+  const { data: pairData } = useTradingPair(chainId, pair?.liquidityToken?.address);
 
   const { onFieldAInput, onFieldBInput, onCurrencySelection } = useMintActionHandlers(noLiquidity);
 
@@ -132,17 +135,14 @@ export default function BasicLiquidity() {
   }, [baseTokenPrice, quoteTotalSupply, parsedAmounts]);
 
   const [isOwner, setIsOwner] = useState(false);
-  const [pairOwner, setPairOwner] = useState<any>({});
   const [dynamicFees, setDynamicFees] = useState([0, 0, 0]);
   const [selectedDynamicFee, setSelectedDynamicFee] = useState(0);
 
-  const pairInfo = pairInfos.find((p) => p.id === pair?.liquidityToken.address);
-
-  const liquidityProviderFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[0]._hex) / 10000 : 0.25;
-  const brewlabsFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[1]._hex) / 10000 : 0.05;
-  const tokenOwnerFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[2]._hex) / 10000 : 0.0;
-  const stakingFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[3]._hex) / 10000 : 0.0;
-  const referralFee = pairInfo?.feeDistribution ? Number(pairInfo.feeDistribution[4]._hex) / 10000 : 0.0;
+  const liquidityProviderFee = pairData?.fees?.lpFee ?? 0.25;
+  const brewlabsFee = pairData?.fees?.brewlabsFee ?? 0.05;
+  const tokenOwnerFee = pairData?.fees?.tokenOwnerFee ?? 0.0;
+  const stakingFee = pairData?.fees?.stakingFee ?? 0.0;
+  const referralFee = pairData?.fees?.referralFee ?? 0.0;
 
   const data = [
     {
@@ -186,7 +186,7 @@ export default function BasicLiquidity() {
       key: "Volume (24HR)",
       value: (
         <p className="whitespace-nowrap !text-white">
-          $0.00 <span className="text-[#FFFFFF80]">USD</span>
+          ${(pairData?.volume24h ?? 0).toFixed(2)} <span className="text-[#FFFFFF80]">USD</span>
         </p>
       ),
     },
@@ -220,27 +220,25 @@ export default function BasicLiquidity() {
     { key: "Total dynamic pool fee", value: `${(dynamicFees[0] + dynamicFees[1] + dynamicFees[2]).toFixed(2)}%` },
   ];
 
-  const stringifiedPair = JSON.stringify({
-    account,
-    chainId,
-    token0: currencies[Field.CURRENCY_A],
-    token1: currencies[Field.CURRENCY_B],
-    pair,
-  });
-
   useEffect(() => {
-    if (!currencies[Field.CURRENCY_A] || !currencies[Field.CURRENCY_B] || !isAddress(account)) return;
-    getPairOwner(account, chainId, currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], pair)
-      .then((result) => {
-        setPairOwner(result);
-        setIsOwner(result.isOwner);
-      })
-      .catch((e) => console.log(e));
-  }, [chainId, account, stringifiedPair]);
+    const setValue = (value) => {
+      setIsOwner(value);
+    };
+
+    if (!currencies[Field.CURRENCY_A] || !currencies[Field.CURRENCY_B] || !account || !isAddress(account)) {
+      setValue(false);
+      return;
+    }
+    if (!account || !pairData?.tokenOwner) {
+      setValue(false);
+    } else {
+      setValue(account.toLowerCase() === pairData.tokenOwner.toLowerCase() || account.toLowerCase() === pairData.owner.toLowerCase())
+    }
+  }, [chainId, account, pairData.tokenOwner]);
 
   useEffect(() => {
     setDynamicFees([referralFee, stakingFee, tokenOwnerFee]);
-  }, [JSON.stringify(pairInfo)]);
+  }, [JSON.stringify(pairData?.fees)]);
 
   const getName = (currencyA, currencyB) => {
     return (currencyA && currencyA.symbol) + "-" + (currencyB && currencyB.symbol);
@@ -264,9 +262,8 @@ export default function BasicLiquidity() {
       }
       await tx.wait();
 
+      dispatch(fetchTradingPairFeesAsync(chainId, pair.liquidityToken.address.toLowerCase()));
       toast.success(`${dynamicData[selectedDynamicFee].key.split("to ")[1]} was updated successfully`);
-
-      fetchPairInfo(pair.liquidityToken.address);
     } catch (e) {
       handleWalletError(e, showError);
     }
@@ -283,7 +280,7 @@ export default function BasicLiquidity() {
       const feeManager = getBrewlabsFeeManagerContract(chainId, signer);
 
       let tx;
-      if (account === pairOwner.owner) {
+      if (account === pairData.owner) {
         tx = await feeManager.write.setFeeDistribution([
           pair.liquidityToken.address,
           Math.ceil(liquidityProviderFee * 10000),
@@ -302,9 +299,8 @@ export default function BasicLiquidity() {
       }
       await tx.wait();
 
+      dispatch(fetchTradingPairFeesAsync(chainId, pair.liquidityToken.address.toLowerCase()));
       toast.success(`Fee Distribution was updated successfully`);
-
-      fetchPairInfo(pair.liquidityToken.address);
     } catch (e) {
       handleWalletError(e, showError);
     }
@@ -373,7 +369,7 @@ export default function BasicLiquidity() {
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
           setAttemptingTxn(false);
-          fetchAllData();
+          dispatch(fetchTradingPairFeesAsync(chainId, pair.liquidityToken.address.toLowerCase()));
 
           addTransaction(
             { hash: response },
@@ -428,9 +424,9 @@ export default function BasicLiquidity() {
     }
   };
 
-  const isReferralFeeUpdatable = dynamicFees[0] === 0 || pairInfo?.referrer !== ethers.constants.AddressZero;
-  const isStakingFeeUpdatable = dynamicFees[1] === 0 || pairOwner?.stakingPool !== ethers.constants.AddressZero;
-  const isOwnerFeeUpdatable = dynamicFees[2] === 0 || pairInfo?.tokenOwner !== ethers.constants.AddressZero;
+  const isReferralFeeUpdatable = dynamicFees[0] === 0 || pairData?.referrer !== ethers.constants.AddressZero;
+  const isStakingFeeUpdatable = dynamicFees[1] === 0 || pairData?.stakingPool !== ethers.constants.AddressZero;
+  const isOwnerFeeUpdatable = dynamicFees[2] === 0 || pairData?.tokenOwner !== ethers.constants.AddressZero;
   const isChanged = referralFee !== dynamicFees[0] || stakingFee !== dynamicFees[1] || tokenOwnerFee !== dynamicFees[2];
   const isUpdatable = isChanged && isReferralFeeUpdatable && isStakingFeeUpdatable && isOwnerFeeUpdatable;
 
@@ -448,7 +444,7 @@ export default function BasicLiquidity() {
         open={walletOpen}
         setOpen={setWalletOpen}
         title={dynamicData[selectedDynamicFee].key.split("to")[1]}
-        prevWallet={[pairInfo?.referrer, pairOwner.stakingPool, pairInfo?.tokenOwner][selectedDynamicFee]}
+        prevWallet={[pairData?.referrer, pairData?.stakingPool, pairData?.tokenOwner][selectedDynamicFee]}
       />
       {addLiquidityStep === "CreateBasicLiquidityPool" || addLiquidityStep === "CreateBundleLiquidityPool" ? (
         <>
@@ -575,9 +571,7 @@ export default function BasicLiquidity() {
                   className={`flex justify-between ${i === 3 ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"}`}
                 >
                   <div className="ml-5 flex">
-                    {!txHash && !pair ? (
-                      ""
-                    ) : (
+                    {(txHash || (pair && !txHash)) && isOwner ? (
                       <div
                         className={`${!dynamicFees[i] ? "text-tailwind" : "text-[#32FFB5]"} ${
                           i === 3 ? "opacity-0" : ""
@@ -585,57 +579,57 @@ export default function BasicLiquidity() {
                       >
                         {checkCircleSVG}
                       </div>
+                    ) : (
+                      ""
                     )}
                     <div className={!dynamicFees[i] ? "" : "text-white"}>{item.key}</div>
                   </div>
-                  {!txHash && !pair ? (
-                    <div className="ml-2 flex min-w-[60px] justify-center">
-                      <div>{item.value}</div>
+                  <div className="ml-2 flex items-center text-tailwind">
+                    {i !== 3 && isOwner && (txHash || (pair && !txHash)) ? (
+                      <div
+                        className="mr-2 cursor-pointer hover:text-white"
+                        onClick={() => {
+                          let temp = [...dynamicFees];
+                          temp[i] = Math.max(temp[i] - 0.05, 0);
+                          setDynamicFees(temp);
+                        }}
+                      >
+                        {MinusSVG}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <div className={`min-w-[60px] text-center ${i === 3 ? "text-[#FFFFFFBF]" : "text-[#FFFFFF80]"}`}>
+                      {item.value}
                     </div>
-                  ) : i !== 3 ? (
-                    <div className="ml-2 flex items-center text-tailwind">
-                      {isOwner && (
+                    {i !== 3 && isOwner && (txHash || (pair && !txHash)) ? (
+                      <div className="ml-1.5 flex">
                         <div
-                          className="mr-2 cursor-pointer hover:text-white"
+                          className={`mr-2 cursor-pointer hover:text-white`}
                           onClick={() => {
                             let temp = [...dynamicFees];
-                            temp[i] = Math.max(temp[i] - 0.05, 0);
+                            temp[i] = temp[i] + 0.05;
                             setDynamicFees(temp);
                           }}
                         >
-                          {MinusSVG}
+                          {PlusSVG}
                         </div>
-                      )}
-                      <div className="mr-1.5 text-[#FFFFFFBF]">{item.value}</div>
-                      {isOwner && (
-                        <>
-                          <div
-                            className={`mr-2 cursor-pointer hover:text-white`}
-                            onClick={() => {
-                              let temp = [...dynamicFees];
-                              temp[i] = temp[i] + 0.05;
-                              setDynamicFees(temp);
-                            }}
-                          >
-                            {PlusSVG}
-                          </div>
-                          <div
-                            className={`cursor-pointer ${
-                              !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
-                            } [&>svg]:h-3.5 [&>svg]:w-3.5`}
-                            onClick={() => {
-                              setWalletOpen(true);
-                              setSelectedDynamicFee(i);
-                            }}
-                          >
-                            {EditSVG}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="ml-2 flex items-center">{/* <div>{item.value}</div> */}</div>
-                  )}
+                        <div
+                          className={`cursor-pointer ${
+                            !dynamicFees[i] ? "hover:text-white" : "text-[#32FFB5]"
+                          } [&>svg]:h-3.5 [&>svg]:w-3.5`}
+                          onClick={() => {
+                            setWalletOpen(true);
+                            setSelectedDynamicFee(i);
+                          }}
+                        >
+                          {EditSVG}
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -715,7 +709,12 @@ export default function BasicLiquidity() {
             )
           ) : isOwner ? (
             <div className="mb-4">
-              <SolidButton className="w-full">
+              <SolidButton
+                className="w-full"
+                disabled={!isUpdatable || pending}
+                pending={pending}
+                onClick={setFeeDistribution}
+              >
                 <div className="mx-auto flex w-fit items-center">
                   Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
                 </div>
@@ -758,8 +757,10 @@ export default function BasicLiquidity() {
           <OutlinedButton
             className="mt-1 !rounded-xl font-bold"
             small
-            onClick={() => setAddLiquidityStep("CreateNewLiquidityPool")}
-            // onClick={() => setTxHash("ASDFASD")}
+            onClick={() => {
+              setAddLiquidityStep("CreateNewLiquidityPool");
+              setTxHash("");
+            }}
           >
             Back
           </OutlinedButton>

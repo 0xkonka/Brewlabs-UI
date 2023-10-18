@@ -1,14 +1,11 @@
 import { useMemo } from "react";
 import { TokenAmount, Pair, Currency, ChainId } from "@brewlabs/sdk";
 import { Pair as V2Pair, Token as V2Token, TokenAmount as V2TokenAmount } from "@sushiswap-core/sdk";
-import { Address, zeroAddress } from "viem";
+import { Address } from "viem";
 
 import BrewlabsPairABI from "config/abi/brewlabsPair";
-import BrewlabsABI from "config/abi/brewlabs";
 import { useMultipleContractSingleData } from "state/multicall/hooks";
-import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
 import { wrappedCurrency } from "utils/wrappedCurrency";
-import { getAddress } from "ethers/lib/utils.js";
 
 import { useActiveChainId } from "./useActiveChainId";
 
@@ -83,33 +80,4 @@ export function usePairs(
 
 export function usePair(tokenA?: Currency, tokenB?: Currency, isExternal?: boolean, dexId?: string) {
   return usePairs([[tokenA, tokenB]], isExternal, dexId)[0];
-}
-
-export async function getPairOwner(address: string, chainId: ChainId, token0: Currency, token1: Currency, pair: Pair) {
-  try {
-    const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
-    const feeMangerOwner: any = await feeManagerContract.read.owner([]);
-
-    let tokenOwner: any = undefined;
-    let stakingPool: any = undefined;
-    let isOwner = getAddress(address) === getAddress(feeMangerOwner);
-    if (pair) {
-      tokenOwner = await feeManagerContract.read.getTokenOwner([pair.liquidityToken.address]);
- 
-      const pairContract = getBrewlabsPairContract(chainId, pair.liquidityToken.address);
-      stakingPool = await pairContract.read.stakingPool([]);
-
-      isOwner = getAddress(address) === getAddress(feeMangerOwner) || getAddress(address) === getAddress(tokenOwner);
-    }
-
-    return {
-      owner: feeMangerOwner,
-      tokenOwner,
-      stakingPool,
-      isOwner,
-    };
-  } catch (e) {
-    console.log(e);
-    return {};
-  }
 }
