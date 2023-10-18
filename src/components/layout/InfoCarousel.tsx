@@ -20,7 +20,7 @@ import { formatEther, formatUnits } from "ethers/lib/utils.js";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { Tooltip } from "react-tooltip";
-import { useAllHomeData, useHomeTransaction } from "state/home/hooks";
+import { useAllHomeData } from "state/home/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { useAllNftData } from "state/nfts/hooks";
 import { numberWithCommas } from "utils/functions";
@@ -51,12 +51,13 @@ const responsive = {
 const InfoCarousel = () => {
   const { totalStakedValues, communities }: any = useContext(CommunityContext);
 
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const homeDatas = useAllHomeData();
   const { indexes } = useIndexes();
   const { flaskNft: flaskNfts, data } = useAllNftData();
 
-  const flaskNft = flaskNfts.find((p) => p.chainId === chainId);
+  let flaskNft = flaskNfts.find((p) => p.chainId === chainId);
+  flaskNft = flaskNft ?? flaskNfts[0];
   const pool = data.find((p) => p.chainId === chainId);
   const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
   const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
@@ -75,7 +76,6 @@ const InfoCarousel = () => {
   const recentCommunities = communities.filter(
     (community) => new Date(community.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
   );
-
 
   const items = [
     {
@@ -189,13 +189,9 @@ const InfoCarousel = () => {
       name: "Brewlabs NFT Staking",
       suffix: "APR",
       icon: NFTFillSVG,
-      value:
-        !apr ? (
-          <SkeletonComponent className="!min-w-[100px]" />
-        ) : (
-          `${apr.toFixed(2)}%`
-        ),
-      tooltip: "NFT minting fees (stablecoin) are designated to the following categories: 50% of mint fee to NFT staking protocol, 25% of mint fees to Brewlabs Treasury, 25% of mint fees to Brewlabs development fund. 100% of all BREWLABS tokens used in mint fees are sent to Brewlabs Treasury.",
+      value: !apr ? <SkeletonComponent className="!min-w-[100px]" /> : `${apr.toFixed(2)}%`,
+      tooltip:
+        "NFT minting fees (stablecoin) are designated to the following categories: 50% of mint fee to NFT staking protocol, 25% of mint fees to Brewlabs Treasury, 25% of mint fees to Brewlabs development fund. 100% of all BREWLABS tokens used in mint fees are sent to Brewlabs Treasury.",
       subItem: {
         value:
           homeDatas.nftStakings.stakedCount === null ? (

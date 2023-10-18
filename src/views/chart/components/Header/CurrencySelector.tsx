@@ -17,7 +17,6 @@ import { usePairsByCriteria, usePairsByCriterias } from "state/chart/hooks";
 import TokenLogo from "@components/logo/TokenLogo";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { BigNumberFormat, getChainLogo } from "utils/functions";
-import { DEX_LOGOS } from "config/constants/swap";
 
 import TimeAgo from "javascript-time-ago";
 
@@ -115,7 +114,11 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
           <div className="hidden w-[120px] flex-col items-center sm:flex">
             <div className="flex">
               <img src={getChainLogo(pair.chainId)} alt={""} className="primary-shadow h-6 w-6 rounded-full" />
-              <img src={DEX_LOGOS[pair.dexId]} alt={""} className="primary-shadow h-6 w-6 rounded-full" />
+              <img
+                src={`https://dd.dexscreener.com/ds-data/dexes/${pair.dexId}.png`}
+                alt={""}
+                className="primary-shadow h-6 w-6 rounded-full"
+              />
             </div>
             <div>{pair.pairCreatedAt ? timeAgo.format(pair.pairCreatedAt) : ""}</div>
           </div>

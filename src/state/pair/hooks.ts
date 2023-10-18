@@ -1,7 +1,7 @@
 import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
 import { useAppDispatch } from "state";
 import { isAddress } from "utils";
-import { fetchTradingAllPairAsync, fetchTradingPairAsync } from ".";
+import { fetchTradingAllPairAsync, fetchTradingPairAsync, fetchTradingPairFeesAsync } from ".";
 import { ChainId } from "@brewlabs/sdk";
 import { SerializedTradingPair, State } from "state/types";
 import { useSelector } from "react-redux";
@@ -9,11 +9,11 @@ import { useState } from "react";
 
 export const useTradingPair = (chainId, address) => {
   const dispatch = useAppDispatch();
-  const data = useTradingPairData(chainId, address);
-
+  const data = useTradingPairData(chainId, address?.toLowerCase());
   useFastRefreshEffect(() => {
     if (!isAddress(address)) return;
-    dispatch(fetchTradingPairAsync(chainId, address));
+    dispatch(fetchTradingPairAsync(chainId, address.toLowerCase()));
+    // dispatch(fetchTradingPairFeesAsync(chainId, address.toLowerCase()));
   }, [dispatch, chainId, address]);
   return { data };
 };

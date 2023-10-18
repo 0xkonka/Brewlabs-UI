@@ -1,15 +1,12 @@
 import { ChartSVG, FilledFixedSVG, LiquiditySVG, VolumeSVG, downSVG, upSVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { StarIcon } from "@heroicons/react/24/solid";
-import { DEX_LOGOS } from "config/constants/swap";
 import { isAddress } from "utils";
 import { numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useContext } from "react";
 import { ChartContext } from "contexts/ChartContext";
 import StyledPrice from "@components/StyledPrice";
-import { SkeletonComponent } from "@components/SkeletonComponent";
-import { usePairInfo } from "state/chart/hooks";
 
 export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
   const { favourites, onFavourites }: any = useContext(ChartContext);
@@ -80,7 +77,11 @@ export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
                   }`}
                 />
               </div>
-              <img src={DEX_LOGOS[selectedPair.dexId]} alt={""} className="primary-shadow mx-2 h-6 w-6 rounded-full" />
+              <img
+                src={`https://dd.dexscreener.com/ds-data/dexes/${selectedPair.dexId}.png`}
+                alt={""}
+                className="primary-shadow mx-2 h-6 w-6 rounded-full"
+              />
               <div className="flex">
                 <TokenLogo
                   src={getTokenLogoURL(isAddress(selectedPair.baseToken.address), selectedPair.chainId)}
