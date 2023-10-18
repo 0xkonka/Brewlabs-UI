@@ -6,7 +6,7 @@ import { serializeTokens } from "./tokens";
 export const GRAPH_HEALTH_ENDPOINT = "https://api.thegraph.com/index-node/graphql";
 export const POLLING_INTERVAL = 5000;
 
-export const bridgeConfigs: BridgeDirectionConfig[] = [
+export const bridgeConfigs = [
   {
     bridgeDirectionId: 1,
     version: Version.V1,
@@ -61,4 +61,4 @@ export const bridgeConfigs: BridgeDirectionConfig[] = [
   //   homePerformanceFee: ethers.utils.parseEther("0.04").toString(),
   //   foreignPerformanceFee: ethers.utils.parseEther("0.01").toString(),
   // },
-];
+] as BridgeDirectionConfig[];

@@ -1,9 +1,11 @@
 import { useCallback } from "react";
 import { Chef } from "config/constants/types";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useActiveChainId } from "hooks/useActiveChainId";
 import { useExternalMasterchef } from "hooks/useContract";
 import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { getViemClients } from "utils/viem";
+
 import { RewardType } from "../types";
 
 const harvestFarm = async (
@@ -21,12 +23,12 @@ const harvestFarm = async (
   gasLimit = calculateGasMargin(gasLimit);
 
   const tx = await masterChefContract.write.zapOut([pid, "0", reward], { gasPrice, gasLimit, value: performanceFee });
-  const receipt = await tx.wait();
-  return receipt.status;
+  const client = getViemClients({ chainId: masterChefContract.chain.id });
+  return client.waitForTransactionReceipt({ hash: tx, confirmations: 2 });
 };
 
 const useHarvestFarm = (chef = Chef.MASTERCHEF, pid: number, earningTokens: string[]) => {
-  const { library, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveChainId();
   const masterChefContract = useExternalMasterchef(chef);
 
   const handleHarvest = useCallback(
@@ -35,7 +37,7 @@ const useHarvestFarm = (chef = Chef.MASTERCHEF, pid: number, earningTokens: stri
       const performanceFee: any = await masterChefContract.read.feeAmount([]);
       await harvestFarm(masterChefContract, pid, earningTokens[rewardType], performanceFee, gasPrice);
     },
-    [pid, masterChefContract, chainId, library, earningTokens]
+    [pid, masterChefContract, chainId, earningTokens]
   );
 
   return {

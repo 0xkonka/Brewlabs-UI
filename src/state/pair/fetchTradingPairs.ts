@@ -241,9 +241,9 @@ export async function getBrewlabsSwapFee(chainId: ChainId, pair: string) {
   try {
     const pairContract = getBrewlabsPairContract(chainId, pair);
     const feeManagerContract = getBrewlabsFeeManagerContract(chainId);
-    const data = await feeManagerContract.getPoolFeeInfo(pair);
+    const data = await feeManagerContract.read.getPoolFeeInfo([pair]);
     // const owner = await feeManagerContract.owner();
-    const stakingPool = await pairContract.stakingPool();
+    const stakingPool = await pairContract.read.stakingPool([]);
 
     const lpFee = Number(data.feeDistribution[0]) / 10000;
     const brewlabsFee = Number(data.feeDistribution[1]) / 10000;

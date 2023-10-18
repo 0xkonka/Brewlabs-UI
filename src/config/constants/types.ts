@@ -1,6 +1,6 @@
 import { ChainId, Currency } from "@brewlabs/sdk";
 import { BigNumber } from "ethers";
-import { Address as ETHAddress } from "wagmi";
+import { Address } from "wagmi";
 
 export interface SerializedToken {
   chainId: ChainId;
@@ -115,10 +115,10 @@ export interface BridgeDirectionConfig {
   foreignChainId: ChainId;
   homeToken: BridgeToken;
   foreignToken: BridgeToken;
-  foreignMediatorAddress: string;
-  homeMediatorAddress: string;
-  foreignAmbAddress: string;
-  homeAmbAddress: string;
+  foreignMediatorAddress: Address;
+  homeMediatorAddress: Address;
+  foreignAmbAddress: Address;
+  homeAmbAddress: Address;
   foreignGraphName: string;
   homeGraphName: string;
   claimDisabled: false;
@@ -160,31 +160,31 @@ export type WalletConfig<T = unknown> = {
 };
 
 export interface BrewlabsToken {
-  id: ETHAddress;
+  id: Address;
   name?: string;
   symbol?: string;
   decimals?: number;
 }
 
 export interface BrewlabsPair {
-  id: ETHAddress;
+  id: Address;
   token0: BrewlabsToken;
   token1: BrewlabsToken;
-  tokenOwner?: ETHAddress;
-  referrer?: ETHAddress;
+  tokenOwner?: Address;
+  referrer?: Address;
   volumeToken0: BigNumber;
   volumeToken1: BigNumber;
   volumeUSD: BigNumber;
 }
-export interface Address {
-  1?: string;
-  56?: string;
-  97?: string;
-  137?: string;
-  250?: string;
-  43114?: string;
-  25?: string;
-}
+// export interface Address {
+//   1?: string;
+//   56?: string;
+//   97?: string;
+//   137?: string;
+//   250?: string;
+//   43114?: string;
+//   25?: string;
+// }
 
 export enum AppId {
   PANCAKESWAP = "pancakeswap",

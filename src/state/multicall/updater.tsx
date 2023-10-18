@@ -5,6 +5,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useMulticallContract } from "hooks/useContract";
 import useDebounce from "hooks/useDebounce";
 
+import MulticallAbi from "config/abi/Multicall";
 import { CancelledError, retry, RetryableError } from "./retry";
 import { AppDispatch, AppState } from "../index";
 import {
@@ -15,6 +16,9 @@ import {
   updateMulticallResults,
 } from "./actions";
 import chunkArray from "./chunkArray";
+import { getViemClients } from "utils/viem";
+import { Address } from "viem";
+import { getMulticallAddress } from "utils/addressHelpers";
 
 // chunk calls so we do not exceed the gas limit
 const CALL_CHUNK_SIZE = 500;
@@ -26,26 +30,31 @@ const CALL_CHUNK_SIZE = 500;
  * @param minBlockNumber minimum block number of the result set
  */
 async function fetchChunk(
-  multicallContract: any,
+  chainId: any,
   chunk: Call[],
   minBlockNumber: number
 ): Promise<{ results: string[]; blockNumber: number }> {
   let resultsBlockNumber;
   let returnData;
+  const client = getViemClients({ chainId });
   try {
     // prettier-ignore
-    [resultsBlockNumber, returnData] = await multicallContract.aggregate(
-      chunk.map((obj) => [obj.address, obj.callData])
-    )
+    [resultsBlockNumber, returnData] = await client.readContract({
+      abi: MulticallAbi,
+      address: getMulticallAddress(chainId) as Address,
+      functionName: 'tryBlockAndAggregate',
+      args: [false, chunk.map((obj) => ({ callData: obj.callData, target: obj.address }))],
+      blockNumber: BigInt(minBlockNumber),
+    })
   } catch (error) {
     console.debug("Failed to fetch chunk inside retry", error);
     throw error;
   }
-  if (resultsBlockNumber.toNumber() < minBlockNumber) {
+  if (Number(resultsBlockNumber) < minBlockNumber) {
     console.debug(`Fetched results for old block number: ${resultsBlockNumber.toString()} vs. ${minBlockNumber}`);
     throw new RetryableError("Fetched for old block number");
   }
-  return { results: returnData, blockNumber: resultsBlockNumber.toNumber() };
+  return { results: returnData, blockNumber: Number(resultsBlockNumber) };
 }
 
 /**
@@ -160,7 +169,7 @@ export default function Updater(): null {
     cancellations.current = {
       blockNumber: currentBlock,
       cancellations: chunkedCalls.map((chunk, index) => {
-        const { cancel, promise } = retry(() => fetchChunk(multicallContract, chunk, currentBlock), {
+        const { cancel, promise } = retry(() => fetchChunk(chainId, chunk, currentBlock), {
           n: Infinity,
           minWait: 2500,
           maxWait: 3500,

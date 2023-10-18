@@ -1,5 +1,5 @@
 import { ChainId } from "@brewlabs/sdk";
-import { WalletClient, parseAbi, zeroAddress } from "viem";
+import { Address, WalletClient, parseAbi, zeroAddress } from "viem";
 
 import { BridgeToken, Version } from "config/constants/types";
 import { bridgeConfigs } from "config/constants/bridge";
@@ -7,8 +7,9 @@ import { getViemClients } from "utils/viem";
 
 import { getMediatorAddress, getNetworkLabel } from "./helpers";
 import { fetchTokenName } from "./token";
+import { getContract } from "utils/contractHelpers";
 
-const getToName = async (fromToken: BridgeToken, toChainId: ChainId, toAddress: string) => {
+const getToName = async (fromToken: BridgeToken, toChainId: ChainId, toAddress: Address) => {
   const { name } = fromToken;
   if (toAddress === zeroAddress) {
     const fromName = name || (await fetchTokenName(fromToken));
@@ -24,28 +25,16 @@ const fetchToTokenDetails = async (bridgeDirectionId: number, fromToken: BridgeT
   const toMediatorAddress = getMediatorAddress(bridgeDirectionId, toChainId);
 
   const abi = parseAbi([
-    "function isRegisteredAsNativeToken(address) view returns (bool)",
-    "function bridgedTokenAddress(address) view returns (address)",
-    "function nativeTokenAddress(address) view returns (address)",
+    "function isRegisteredAsNativeToken(address) external view returns (bool)",
+    "function bridgedTokenAddress(address) external view returns (address)",
+    "function nativeTokenAddress(address) external view returns (address)",
   ]);
 
-  const fromPublicClient = getViemClients({ chainId: fromChainId });
-  const isNativeToken = await fromPublicClient.readContract({
-    address: fromMediatorAddress as `0x${string}`,
-    abi,
-    functionName: "isRegisteredAsNativeToken",
-    args: [fromAddress as `0x${string}`],
-  });
-
+  const fromMediatorContract = getContract(fromChainId, fromMediatorAddress, abi);
+  const isNativeToken = await fromMediatorContract.read.isRegisteredAsNativeToken([fromAddress]);
   if (isNativeToken) {
-    const toPublicClient = getViemClients({ chainId: toChainId });
-    const toAddress = await toPublicClient.readContract({
-      address: toMediatorAddress as `0x${string}`,
-      abi,
-      functionName: "bridgedTokenAddress",
-      args: [fromAddress as `0x${string}`],
-    });
-
+    const toMediatorContract = getContract(toChainId, toMediatorAddress, abi);
+    const toAddress: any = await toMediatorContract.read.bridgedTokenAddress([fromAddress]);
     const toName = await getToName(fromToken, toChainId, toAddress);
     return {
       name: toName,
@@ -56,13 +45,7 @@ const fetchToTokenDetails = async (bridgeDirectionId: number, fromToken: BridgeT
     };
   }
 
-  const toAddress = await fromPublicClient.readContract({
-    address: fromMediatorAddress as `0x${string}`,
-    abi,
-    functionName: "nativeTokenAddress",
-    args: [fromAddress as `0x${string}`],
-  });
-
+  const toAddress: any = await fromMediatorContract.read.nativeTokenAddress([fromAddress]);
   const toName = await getToName(fromToken, toChainId, toAddress);
   return {
     name: toName,

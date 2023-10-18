@@ -1,10 +1,11 @@
 import { ChainId } from "@brewlabs/sdk";
-import { hexToString, parseAbi, PublicClient, WalletClient, zeroAddress } from "viem";
+import { Address, Hex, hexToString, parseAbi, PublicClient, WalletClient, zeroAddress } from "viem";
 
 import { BridgeToken } from "config/constants/types";
 import { getViemClients } from "utils/viem";
 import { getMediatorAddress } from "./helpers";
 import { BIG_ZERO } from "utils/bigNumber";
+import { getContract } from "utils/contractHelpers";
 
 export const fetchAllowance = async ({ mediator, address }: BridgeToken, account: string, client: PublicClient) => {
   if (!account || !address || address === zeroAddress || !mediator || mediator === zeroAddress || !client) {
@@ -40,28 +41,20 @@ const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
   return "erc677";
 };
 
-export const fetchTokenName = async (token: { chainId: ChainId; name?: string; address: string } | BridgeToken) => {
+export const fetchTokenName = async (token: { chainId: ChainId; name?: string; address: Address } | BridgeToken) => {
   const client = getViemClients({ chainId: token.chainId });
 
-  let tokenName = token.name || "";
+  let tokenName: any = token.name || "";
   try {
-    const stringAbi = parseAbi(["function name() view returns (string)"]);
-    tokenName = await client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi: stringAbi,
-      functionName: "name",
-    });
+    const abi = parseAbi(["function name() view returns (string)"]);
+    const tokenContract = getContract(token.chainId, token.address ?? zeroAddress, abi);
+    tokenName = await tokenContract.read.name([]);
   } catch {
     const bytes32Abi = parseAbi(["function name() view returns (bytes32)"]);
-    tokenName = hexToString(
-      await client.readContract({
-        address: (token.address ?? zeroAddress) as `0x${string}`,
-        abi: bytes32Abi,
-        functionName: "name",
-      })
-    );
+    const tokenContract = getContract(token.chainId, token.address ?? zeroAddress, bytes32Abi);
+    tokenName = hexToString((await tokenContract.read.name([])).toString() as `0x${string}`);
   }
-  return tokenName;
+  return tokenName as string;
 };
 
 const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
@@ -71,27 +64,19 @@ const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
     "function symbol() view returns (bytes32)",
     "function name() view returns (bytes32)",
   ]);
-  const [name, symbol, decimals] = await Promise.all([
-    client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi,
-      functionName: "name",
-    }),
-    client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi,
-      functionName: "symbol",
-    }),
-    client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi,
-      functionName: "decimals",
-    }),
-  ]);
+
+  const [{ result: name }, { result: symbol }, { result: decimals }] = await client.multicall({
+    contracts: [
+      { abi, address: (token.address ?? zeroAddress) as `0x${string}`, functionName: "name" },
+      { abi, address: (token.address ?? zeroAddress) as `0x${string}`, functionName: "symbol" },
+      { abi, address: (token.address ?? zeroAddress) as `0x${string}`, functionName: "decimals" },
+    ],
+  });
+
   return {
     name: hexToString(name),
     symbol: hexToString(symbol),
-    decimals,
+    decimals: Number(decimals),
   };
 };
 
@@ -103,25 +88,15 @@ const fetchTokenDetailsString = async (token: BridgeToken) => {
     "function name() view returns (string)",
   ]);
 
-  const [name, symbol, decimals] = await Promise.all([
-    client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi,
-      functionName: "name",
-    }),
-    client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi,
-      functionName: "symbol",
-    }),
-    client.readContract({
-      address: (token.address ?? zeroAddress) as `0x${string}`,
-      abi,
-      functionName: "decimals",
-    }),
-  ]);
+  const [{ result: name }, { result: symbol }, { result: decimals }] = await client.multicall({
+    contracts: [
+      { abi, address: (token.address ?? zeroAddress) as `0x${string}`, functionName: "name" },
+      { abi, address: (token.address ?? zeroAddress) as `0x${string}`, functionName: "symbol" },
+      { abi, address: (token.address ?? zeroAddress) as `0x${string}`, functionName: "decimals" },
+    ],
+  });
 
-  return { name, symbol, decimals };
+  return { name, symbol, decimals: Number(decimals) };
 };
 
 const fetchTokenDetailsFromContract = async (token: BridgeToken) => {

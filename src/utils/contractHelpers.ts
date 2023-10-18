@@ -52,27 +52,27 @@ import {
   getMirrorNftAddress,
   getNftStakingAddress,
 } from "utils/addressHelpers";
-import { WalletClient, PublicClient, getContract as viemGetContract } from "viem";
+import { WalletClient, PublicClient, getContract as viemGetContract, Address } from "viem";
 import { getViemClients } from "./viem";
 import { erc20ABI } from "wagmi";
 
-export const getContract = (
+export const getContract=(
   chainId: ChainId,
   address: string,
   abi: any,
-  signer?: WalletClient,
+  walletClient?: WalletClient,
   publicClient?: PublicClient
 ) => {
   const c = viemGetContract({
     abi,
-    address: address as `0x${string}`,
+    address: address as Address,
     publicClient: publicClient ?? getViemClients({ chainId }),
-    walletClient: signer,
+    walletClient: walletClient,
   });
   return {
     ...c,
-    account: signer?.account,
-    chain: signer?.chain,
+    account: walletClient?.account,
+    chain: walletClient?.chain,
   };
 };
 export const getBrewsTokenContract = (chainId: ChainId, signer?: WalletClient) => {

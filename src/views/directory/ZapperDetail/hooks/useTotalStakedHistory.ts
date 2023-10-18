@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { ethers } from "ethers";
+import { decodeFunctionData, parseAbi, zeroAddress } from "viem";
 
 import { EXPLORER_API_URLS, EXPLORER_API_KEYS } from "config/constants/networks";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
@@ -15,7 +15,7 @@ const useTotalStakedHistory = (data) => {
     const to = Math.floor(Date.now() / 1000);
     const result = await axios.get(
       `https://api.dex.guru/v1/tradingview/history?symbol=${
-        address === ethers.constants.AddressZero ? WNATIVE[chainId].address : address
+        address === zeroAddress ? WNATIVE[chainId].address : address
       }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
     );
     return result.data.c[result.data.c.length - 1];
@@ -35,21 +35,22 @@ const useTotalStakedHistory = (data) => {
         fee = 0;
       for (let i = 0; i < result.length; i++) {
         if (result[i].functionName.includes("zapIn")) {
-          const iface = new ethers.utils.Interface([
+          const abi = parseAbi([
             "function zapIn(address _FromTokenContractAddress,address _pairAddress,uint256 _pid,uint256 _amount,uint256 _minPoolTokens,address _rewardAddress)",
           ]);
-          const decodeResult = iface.decodeFunctionData("zapIn", result[i].input);
-          if (decodeResult._pid / 1 === pid) {
+          const decodeResult = decodeFunctionData({ abi, data: result[i].input });
+          if (Number(decodeResult.args["._pid"]) === pid) {
             _deposits.push({
-              amount: decodeResult._amount / Math.pow(10, 18),
-              address: decodeResult._FromTokenContractAddress,
+              amount: Number(decodeResult.args["_amount"]) / Math.pow(10, 18),
+              address: decodeResult.args["_FromTokenContractAddress"],
             });
           }
         }
         if (result[i].functionName.includes("zapOut")) {
-          const iface = new ethers.utils.Interface(["function zapOut(uint256 _pid,uint256 _amount,address _reward)"]);
-          const decodeResult = iface.decodeFunctionData("zapOut", result[i].input);
-          if (decodeResult._pid / 1 === pid) _withdraws.push({ amount: decodeResult._amount / Math.pow(10, 18) });
+          const abi = parseAbi(["function zapOut(uint256 _pid,uint256 _amount,address _reward)"]);
+          const decodeResult = decodeFunctionData({ abi, data: result[i].input });
+          if (Number(decodeResult.args["._pid"]) === pid)
+            _withdraws.push({ amount: Number(decodeResult.args["_amount"]) / Math.pow(10, 18) });
         }
       }
       let depositCalls = [];

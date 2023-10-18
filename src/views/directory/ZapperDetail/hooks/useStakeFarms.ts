@@ -28,13 +28,13 @@ const stakeFarm = async (
   const value = currency.isNative ? _amount + performanceFee : performanceFee;
 
   let gasLimit = await masterChefContract.estimateGas.zapIn(
-    [currency.isNative ? zeroAddress : currency.address, lpAddress, pid, _amount.toString(), 0, tokenAddress],
+    [currency.isNative ? zeroAddress : currency.address, lpAddress, pid, _amount, 0, tokenAddress],
     { value, account: masterChefContract.account, chain: masterChefContract.chain }
   );
   gasLimit = calculateGasMargin(gasLimit);
 
   const txHash = await masterChefContract.write.zapIn(
-    [currency.isNative ? zeroAddress : currency.address, lpAddress, pid, _amount.toString(), 0, tokenAddress],
+    [currency.isNative ? zeroAddress : currency.address, lpAddress, pid, _amount, 0, tokenAddress],
     { gasPrice, gasLimit, value }
   );
   const client = getViemClients({ chainId: currency.chainId });
