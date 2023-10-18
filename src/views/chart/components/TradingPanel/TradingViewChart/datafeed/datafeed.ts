@@ -36,9 +36,9 @@ export default {
     const symbolInfo = {
       id: "",
       name: "",
-      description: "",
-      exchange: "Brewlabs",
-      ticker: symbolName,
+      description: symbolName.split("#")[1],
+      exchange: "BrewlabsSwap",
+      ticker: symbolName.split("#")[0],
       full_name: "",
       type: "crypto",
       session: "24x7",
