@@ -43,7 +43,7 @@ const SubNav = ({ openSettingModal }: Props) => {
             //  onClick={() => setSwapTab(2)}
           >
             Pools & analytics
-            <Soon />
+            <Soon text="Beta" className="!text-[10px]" />
           </button>
         </Link>
       </div>
