@@ -170,6 +170,12 @@ export const DEX_GURU_SWAP_AMM = {
 export const DEXTOOLS_CHAINNAME = {
   1: "ether",
   56: "bsc",
+  42161: "arbitrum",
+  137: "polygon",
+  300: "optimism",
+  8453: "base",
+  324: "zksync",
+  43114: "avalanche",
 };
 
 export const DEXSCREENER_CHAINNAME = {
