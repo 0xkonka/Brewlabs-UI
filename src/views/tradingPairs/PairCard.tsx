@@ -1,6 +1,7 @@
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import { ChevronRightVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
+import { DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
 import Link from "next/link";
 import { useTradingPair } from "state/pair/hooks";
 import { SerializedTradingPair } from "state/types";
@@ -24,7 +25,21 @@ export default function PairCard({ pair, setSelectedPair }) {
             <SkeletonComponent />
           ) : (
             <div className="flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
-              <TokenLogo src={getTokenLogoURL(data.baseToken.address, data.chainId)} alt={""} classNames="h-7 w-7" />
+              <TokenLogo
+                src={`https://assets-stage.dex.guru/icons/${data.baseToken.address}-${
+                  DEXTOOLS_CHAINNAME[data.chainId]
+                }.png`}
+                alt={""}
+                classNames="h-7 w-7"
+              />
+
+              <TokenLogo
+                src={`https://assets-stage.dex.guru/icons/${data.quoteToken.address}-${
+                  DEXTOOLS_CHAINNAME[data.chainId]
+                }.png`}
+                alt={""}
+                classNames="h-7 w-7 -ml-3 z-10"
+              />
 
               <div className="ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                 {data.baseToken.symbol}/{data.quoteToken.symbol}
@@ -63,8 +78,21 @@ export default function PairCard({ pair, setSelectedPair }) {
           <SkeletonComponent />
         ) : (
           <div className="flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
-            <TokenLogo src={getTokenLogoURL(data.baseToken.address, data.chainId)} alt={""} classNames="h-7 w-7" />
+            <TokenLogo
+              src={`https://assets-stage.dex.guru/icons/${data.baseToken.address}-${
+                DEXTOOLS_CHAINNAME[data.chainId]
+              }.png`}
+              alt={""}
+              classNames="h-7 w-7"
+            />
 
+            <TokenLogo
+              src={`https://assets-stage.dex.guru/icons/${data.quoteToken.address}-${
+                DEXTOOLS_CHAINNAME[data.chainId]
+              }.png`}
+              alt={""}
+              classNames="h-7 w-7 -ml-3 z-10"
+            />
             <div className="ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
               {data.baseToken.symbol}/{data.quoteToken.symbol}
             </div>
