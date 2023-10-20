@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { AnyAction } from "@reduxjs/toolkit";
 import { ThunkAction } from "redux-thunk";
 
-import { Address, AppId, DeserializedFarmConfig, SerializedFarmConfig } from "config/constants/types";
+import { AppId, DeserializedFarmConfig, SerializedFarmConfig } from "config/constants/types";
 import { DeployConfig } from "./deploy/types";
 import { DeserializedFarm, SerializedBigNumber } from "./farms/types";
 import { SerializedIndex } from "./indexes/types";
@@ -10,6 +10,7 @@ import { ListsState } from "./lists/reducer";
 import { MulticallState } from "./multicall/reducer";
 import { FlaskNftData, MirrorNftData, NftStakingData } from "./nfts/type";
 import { SerializedPool } from "./pools/types";
+import { BridgeState } from "./bridge/types";
 import { SwapState } from "./swap/reducer";
 import { TransactionState } from "./transactions/reducer";
 import { UserState } from "./user/reducer";
@@ -23,6 +24,15 @@ import { SerializedWalletNFT, SerializedWalletToken } from "./wallet/type";
 import { SerializedPairData } from "./chart/type";
 import { ChainId } from "@brewlabs/sdk";
 
+export interface Address {
+  1?: string;
+  56?: string;
+  97?: string;
+  137?: string;
+  250?: string;
+  43114?: string;
+  25?: string;
+}
 export interface SerializedDeposit {
   amount: string;
   txHash: string;
@@ -137,6 +147,7 @@ export interface State {
   pools: PoolsState;
   indexes: IndexesState;
   nfts: NftState;
+  bridge: BridgeState;
   deploy: DeployState;
   zap: SerializedZapState;
   lists: ListsState;

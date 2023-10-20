@@ -39,7 +39,7 @@ export interface BridgeContextState {
   setReceiver: React.Dispatch<React.SetStateAction<string | undefined>>;
   shouldReceiveNativeCur: boolean;
   setShouldReceiveNativeCur: React.Dispatch<React.SetStateAction<boolean>>;
-  currentDay: string | undefined;
+  currentDay: number | undefined;
 }
 
 const emptyHandler = async () => {};
@@ -90,6 +90,7 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
     foreignToken,
     foreignPerformanceFee,
     homePerformanceFee,
+    mediatorData,
   } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState<string>();
@@ -109,14 +110,25 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
   const [toBalance, setToBalance] = useState(BigInt(0));
   const [txHash, setTxHash] = useState<string>();
 
+  // const {
+  //   homeFeeManagerAddress,
+  //   foreignFeeManagerAddress,
+  //   isRewardAddress,
+  //   homeToForeignFeeType,
+  //   foreignToHomeFeeType,
+  //   currentDay,
+  // } = useMediatorInfo();
+
   const {
-    homeFeeManagerAddress,
-    foreignFeeManagerAddress,
-    isRewardAddress,
+    feeManager: homeFeeManagerAddress,
     homeToForeignFeeType,
     foreignToHomeFeeType,
     currentDay,
-  } = useMediatorInfo();
+    rewarderList,
+  } = mediatorData[homeChainId] ?? {};
+  const { feeManager: foreignFeeManagerAddress } = mediatorData[foreignChainId] ?? {};
+
+  const isRewardAddress = rewarderList?.includes(account);
 
   const isHome = providerChainId === homeChainId;
   const feeType = isHome ? homeToForeignFeeType : foreignToHomeFeeType;
@@ -192,10 +204,21 @@ export const BridgeProvider: FC<React.PropsWithChildren<unknown>> = ({ children 
     async (tokenWithoutMode: BridgeToken, isQueryToken = false) => {
       if (!tokenWithoutMode) return false;
       try {
-        const [token, gotToToken] = await Promise.all([
-          fetchTokenDetails(bridgeDirectionId, tokenWithoutMode),
-          fetchToToken(bridgeDirectionId, tokenWithoutMode, getBridgeChainId(tokenWithoutMode.chainId)),
-        ]);
+        // const [token, gotToToken] = await Promise.all([
+        //   fetchTokenDetails(bridgeDirectionId, tokenWithoutMode),
+        //   fetchToToken(bridgeDirectionId, tokenWithoutMode, getBridgeChainId(tokenWithoutMode.chainId)),
+        // ]);
+
+        let token = {...tokenWithoutMode, mode: undefined};
+        let gotToToken = {...mediatorData[tokenWithoutMode.chainId].bridgedToken, mode: undefined};
+        console
+        if (mediatorData[token.chainId].isNative) {
+          token.mode = "erc20";
+          gotToToken.mode = "erc677";
+        } else {
+          token.mode = "erc677";
+          gotToToken.mode = "erc20";
+        }
 
         setTokens({
           fromToken: token,

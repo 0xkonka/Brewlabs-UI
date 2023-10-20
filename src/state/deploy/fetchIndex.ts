@@ -18,6 +18,7 @@ export const fetchIndexFactoryData = async (chainId: ChainId) => {
   ];
 
   const result = await client.multicall({ contracts: calls });
+  if(result[0].error) return {}
   return {
     chainId,
     payingToken: serializeToken(Object.values(tokens[chainId]).find((t: any) => t.address === result[0].result)),

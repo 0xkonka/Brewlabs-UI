@@ -1,10 +1,11 @@
 import { ReactElement, useCallback } from "react";
-import { ethers } from "ethers";
 import { toast } from "react-toastify";
+import { isAddress } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
 import { useBridgeContext } from "contexts/BridgeContext";
 import { useApproval } from "hooks/bridge/useApproval";
+import { useBridgeDirection } from "@hooks/bridge/useBridgeDirection";
 import { useTokenLimits } from "hooks/bridge/useTokenLimits";
 import { isRevertedError } from "lib/bridge/amb";
 import { formatValue, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
@@ -16,10 +17,34 @@ import Button from "../Button";
 const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElement => {
   const { chain } = useNetwork();
   const { isConnected } = useAccount();
-  const { amountInput, fromAmount, fromToken, fromBalance, receiver, txHash, toAmountLoading, loading, transfer } =
-    useBridgeContext();
-  const { tokenLimits } = useTokenLimits();
+  const {
+    amountInput,
+    fromAmount,
+    fromToken,
+    toToken,
+    fromBalance,
+    receiver,
+    txHash,
+    toAmountLoading,
+    loading,
+    transfer,
+  } = useBridgeContext();
+  const { mediatorData } = useBridgeDirection();
+  // const { tokenLimits } = useTokenLimits();
   const { allowed, approve, unlockLoading } = useApproval(fromToken!, fromAmount, txHash);
+
+  const { minPerTx, dailyLimit: _dailyLimit, totalSpentPerDay } = mediatorData[fromToken?.chainId] ?? {};
+  const {
+    executionMaxPerTx: maxPerTx,
+    executionDailyLimit,
+    totalExecutedPerDay,
+  } = mediatorData[toToken?.chainId] ?? {};
+  const remainingExecutionLimit = BigInt(executionDailyLimit) - BigInt(totalExecutedPerDay);
+  const remainingRequestLimit = BigInt(_dailyLimit) - BigInt(totalSpentPerDay);
+  const remainingLimit =
+    remainingRequestLimit < remainingExecutionLimit ? remainingRequestLimit : remainingExecutionLimit;
+  const dailyLimit = _dailyLimit < executionDailyLimit ? _dailyLimit : executionDailyLimit;
+  const tokenLimits = { minPerTx: BigInt(minPerTx), maxPerTx: BigInt(maxPerTx), remainingLimit, dailyLimit };
 
   const unlockButtonDisabled =
     !fromToken || allowed || toAmountLoading || !(isConnected && chain?.id === fromToken?.chainId);
@@ -97,7 +122,7 @@ const ConfirmBridgeMessage = ({ onClose }: { onClose: () => void }): ReactElemen
       showError(`Please specify amount less than ${formatValue(tokenLimits.maxPerTx, fromToken.decimals)}`);
     } else if (fromBalance < fromAmount) {
       showError("Not enough balance");
-    } else if (receiver && !ethers.utils.isAddress(receiver)) {
+    } else if (receiver && !isAddress(receiver)) {
       showError(`Please specify a valid recipient address`);
     } else {
       return true;

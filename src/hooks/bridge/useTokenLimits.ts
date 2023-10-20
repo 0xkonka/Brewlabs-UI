@@ -6,9 +6,17 @@ import { useBridgeDirection } from "./useBridgeDirection";
 
 export const useTokenLimits = () => {
   const { fromToken, toToken, currentDay }: any = useBridgeContext();
-  const { bridgeDirectionId, homeChainId, foreignChainId } = useBridgeDirection();
+  const { bridgeDirectionId, homeChainId, foreignChainId, mediatorData } = useBridgeDirection();
   const [tokenLimits, setTokenLimits] = useState<any>();
   const [fetching, setFetching] = useState(false);
+
+  const { minPerTx, dailyLimit: _dailyLimit, totalSpentPerDay } = mediatorData[fromToken.chainId];
+  const { executionMaxPerTx: maxPerTx, executionDailyLimit, totalExecutedPerDay } = mediatorData[toToken.chainId];
+  const remainingExecutionLimit = BigInt(executionDailyLimit) - BigInt(totalExecutedPerDay);
+  const remainingRequestLimit = BigInt(_dailyLimit) - BigInt(totalSpentPerDay);
+  const remainingLimit =
+    remainingRequestLimit < remainingExecutionLimit ? remainingRequestLimit : remainingExecutionLimit;
+  const dailyLimit = _dailyLimit < executionDailyLimit ? _dailyLimit : executionDailyLimit;
 
   const updateTokenLimits = useCallback(async () => {
     if (

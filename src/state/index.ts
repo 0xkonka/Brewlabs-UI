@@ -12,6 +12,7 @@ import farms from "./farms";
 import pools from "./pools";
 import indexes from "./indexes";
 import nfts from "./nfts";
+import bridge from "./bridge";
 
 import burn from "./burn/reducer";
 import lists from "./lists/reducer";
@@ -45,6 +46,7 @@ const persistedReducer = persistReducer(
     pools,
     indexes,
     nfts,
+    bridge,
     deploy,
     zap,
     user,

@@ -10,7 +10,7 @@ import { bridgeConfigs } from "config/constants/bridge";
 import { NetworkOptions, SUPPORTED_CHAIN_IDS } from "config/constants/networks";
 import { BridgeToken } from "config/constants/types";
 import { BridgeContextState, useBridgeContext } from "contexts/BridgeContext";
-import { useFromChainId } from "hooks/bridge/useBridgeDirection";
+import { useBridgeDirection, useFromChainId } from "hooks/bridge/useBridgeDirection";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useTokenPrices } from "hooks/useTokenPrice";
 import { formatValue } from "lib/bridge/helpers";
@@ -23,13 +23,14 @@ import ChainSelector from "components/ChainSelector";
 import CryptoCard from "components/cards/CryptoCard";
 import InputNumber from "components/inputs/InputNumber";
 import WordHighlight from "components/text/WordHighlight";
-import { useGlobalState, setGlobalState } from "state";
+import { useGlobalState, setGlobalState, useAppDispatch } from "state";
 
 import BridgeDragButton from "components/bridge/BridgeDragButton";
 import BridgeDragTrack from "components/bridge/BridgeDragTrack";
 import BridgeLoadingModal from "components/bridge/BridgeLoadingModal";
 import ConfirmBridgeMessage from "components/bridge/ConfirmBridgeMessage";
 import History from "components/bridge/TransactionHistoryTable";
+import { fetchAmbDataAsync, fetchMeidatorDataAsync } from "state/bridge";
 
 const useDelay = (fn: any, ms: number) => {
   const timer: any = useRef(0);
@@ -48,10 +49,14 @@ const useDelay = (fn: any, ms: number) => {
 const percents = ["MAX", "10%", "25%", "50%", "75%"];
 
 const Bridge: NextPage = () => {
+  const dispatch = useAppDispatch();
+
   const { theme } = useTheme();
   const supportedNetworks = useSupportedNetworks();
   const fromChainId = useFromChainId();
   const { address: account } = useAccount();
+
+  const { bridgeDirectionId } = useBridgeDirection();
 
   const scrollRef = useRef(null);
   const [isStuck, setIsStuck] = useState(false);
@@ -158,6 +163,11 @@ const Bridge: NextPage = () => {
   useLayoutEffect(() => {
     watchScroll();
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchAmbDataAsync(bridgeDirectionId));
+    dispatch(fetchMeidatorDataAsync(bridgeDirectionId));
+  }, [bridgeDirectionId]);
 
   useEffect(() => {
     if (fromToken && account) {

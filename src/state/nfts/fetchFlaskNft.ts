@@ -21,6 +21,8 @@ export const fetchFlaskNftPublicData = async (chainId) => {
   }));
 
   const result = await client.multicall({ contracts: calls });
+  if (result[0].error) return {};
+
   return {
     chainId,
     mintFee: { brews: result[1].result.toString(), stable: result[0].result.toString() },

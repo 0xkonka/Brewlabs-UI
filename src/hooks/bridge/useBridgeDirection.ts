@@ -11,6 +11,7 @@ import { setGlobalState, useGlobalState } from "state";
 import { useAmbVersion } from "./useAmbVersion";
 import { useTotalConfirms } from "./useTotalConfirms";
 import { useValidatorsContract } from "./useValidatorsContract";
+import { useBridgeInfo } from "state/bridge/hooks";
 
 export const useBridgeDirection = () => {
   const [fromChain] = useGlobalState("userBridgeFrom");
@@ -35,16 +36,22 @@ export const useBridgeDirection = () => {
   const { homeChainId, foreignChainId, homeGraphName, foreignGraphName, homeAmbAddress, foreignAmbAddress } =
     bridgeConfig;
 
-  const foreignAmbVersion = useAmbVersion(foreignChainId, foreignAmbAddress);
+  const bridgeData = useBridgeInfo(bridgeConfig.bridgeDirectionId);
+  const { ambData } = bridgeData;
 
-  const { requiredSignatures, validatorList } = useValidatorsContract(foreignChainId, foreignAmbAddress);
+  // const foreignAmbVersion = useAmbVersion(foreignChainId, foreignAmbAddress);
+  // const {requiredSignatures, validatorList}= useValidatorsContract(foreignChainId, foreignAmbAddress);
 
-  const { homeTotalConfirms, foreignTotalConfirms } = useTotalConfirms(
-    homeChainId,
-    foreignChainId,
-    homeAmbAddress,
-    foreignAmbAddress
-  );
+  const { version: foreignAmbVersion, requiredSignatures, validatorList } = ambData[foreignChainId];
+
+  // const { homeTotalConfirms, foreignTotalConfirms } = useTotalConfirms(
+  //   homeChainId,
+  //   foreignChainId,
+  //   homeAmbAddress,
+  //   foreignAmbAddress
+  // );
+  const homeTotalConfirms = ambData[homeChainId].requiredBlockConfirmations;
+  const foreignTotalConfirms = ambData[foreignChainId].requiredBlockConfirmations;
 
   const getBridgeChainId = useCallback(
     (chainId: ChainId) => (chainId === homeChainId ? foreignChainId : homeChainId),
@@ -71,6 +78,7 @@ export const useBridgeDirection = () => {
 
   return {
     ...bridgeConfig,
+    ...bridgeData,
     getBridgeChainId,
     getGraphEndpoint,
     getAMBAddress,
@@ -84,8 +92,8 @@ export const useBridgeDirection = () => {
 };
 
 export const useFromChainId = () => {
-  const { chain } = useNetwork();
   const { chainId } = useActiveChainId();
+  const { chain } = useNetwork();
   const { query } = useRouter();
 
   const [networkFrom] = useGlobalState("userBridgeFrom");

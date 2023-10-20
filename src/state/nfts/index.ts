@@ -48,6 +48,7 @@ const initialState: NftState = {
 
 export const fetchNftPublicDataAsync = (chainId: ChainId) => async (dispatch) => {
   const flaskData = await fetchFlaskNftPublicData(chainId);
+  
   dispatch(setNftPublicData({ type: "flaskNft", data: flaskData }));
 
   if (contracts.nftStaking[chainId]) {

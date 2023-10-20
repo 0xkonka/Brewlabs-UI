@@ -8,9 +8,6 @@ import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
-
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
@@ -21,6 +18,10 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "react-multi-carousel/lib/styles.css";
 import "react-tooltip/dist/react-tooltip.css";
+
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+TimeAgo.addDefaultLocale(en);
 
 import "animate.css";
 import "../styles/globals.css";
@@ -45,6 +46,7 @@ import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
+import { useFetchBridgeData } from "state/bridge/hooks";
 import { usePollFarmFactoryData, usePollIndexFactoryData } from "state/deploy/hooks";
 import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
 import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
@@ -55,8 +57,6 @@ import { useFetchTokenBalance } from "state/wallet/hooks";
 import { wagmiConfig } from "utils/wagmi";
 
 import { Updaters } from "../index";
-
-TimeAgo.addDefaultLocale(en);
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
 function GlobalHooks() {
@@ -80,8 +80,9 @@ function GlobalHooks() {
   useFetchPublicNftData();
   useFetchNftUserData();
 
-  useFetchMarketData();
+  useFetchBridgeData();
 
+  useFetchMarketData();
   useFetchTokenBalance();
   return null;
 }

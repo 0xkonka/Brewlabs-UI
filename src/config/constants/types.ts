@@ -176,15 +176,6 @@ export interface BrewlabsPair {
   volumeToken1: BigNumber;
   volumeUSD: BigNumber;
 }
-// export interface Address {
-//   1?: string;
-//   56?: string;
-//   97?: string;
-//   137?: string;
-//   250?: string;
-//   43114?: string;
-//   25?: string;
-// }
 
 export enum AppId {
   PANCAKESWAP = "pancakeswap",
