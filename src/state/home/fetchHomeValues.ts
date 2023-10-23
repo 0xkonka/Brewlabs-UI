@@ -116,6 +116,8 @@ const getChangedFeeCollected = async () => {
         }&page=1&offset=50&sort=desc&apikey=${EXPLORER_API_KEYS[data.chainId]}}`
       );
       let _balance = 0;
+      if (!result.data.result) return {};
+      
       result.data.result
         .filter((tx) => tx.to === data.address.toLowerCase() && tx.timeStamp > Date.now() / 1000 - 3600 * 24)
         .map((tx) => (_balance += tx.value / Math.pow(10, 18)));
