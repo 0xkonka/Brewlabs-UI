@@ -35,7 +35,7 @@ export const useFetchNftUserData = () => {
   );
   useSlowRefreshEffect(() => {
     if (account) {
-      supportedChains.forEach((chainId) => dispatch(fetchNftUserDataAsync(chainId, "0xC7b36d58A4Da7D26E8c4889529D1fA8313a6E20D")));
+      supportedChains.forEach((chainId) => dispatch(fetchNftUserDataAsync(chainId, account)));
     } else {
       dispatch(resetNftUserData());
     }
