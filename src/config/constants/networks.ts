@@ -232,7 +232,7 @@ export const NETWORKS = {
       symbol: "MATIC",
       decimals: 18,
     },
-    rpcUrls: ["https://polygon.llamarpc.com", "https://polygon-rpc.com/"],
+    rpcUrls: ["https://polygon.llamarpc.com", "https://polygon.meowrpc.com"],
     blockExplorerUrls: ["https://polygonscan.com"],
   },
   [ChainId.FANTOM]: {
