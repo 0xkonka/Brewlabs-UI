@@ -5,9 +5,12 @@ import Hambuger from "../button/Hambuger";
 import { SwapContext } from "contexts/SwapContext";
 import Link from "next/link";
 import Soon from "@components/Soon";
+import Notification from "@components/Notification";
 
 export default function MobileNav() {
-  const { swapTab, setSwapTab, setAddLiquidityStep }: any = useContext(SwapContext);
+  const { swapTab, setSwapTab, setAddLiquidityStep, swapFeeData }: any = useContext(SwapContext);
+
+  const { collectiblePairs } = swapFeeData;
 
   return (
     <Menu as="div" className="relative mt-1 inline-block text-left sm:hidden">
@@ -56,7 +59,7 @@ export default function MobileNav() {
                     >
                       <div className="relative">
                         Liquidity tools
-                        {/* <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" /> */}
+                        <Notification count={collectiblePairs.length} />
                       </div>
                     </button>
                   )}
@@ -64,18 +67,18 @@ export default function MobileNav() {
                 <Menu.Item>
                   {({ active }) => (
                     // <Link href={"/tradingPairs"}>
-                      <button
-                        className={`${
-                          swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
-                        } group flex w-full cursor-pointer items-center rounded-md px-2 py-2 text-sm`}
-                        // onClick={() => setSwapTab(2)}
-                        // disabled
-                      >
-                        <div className="relative">
-                          Pools & analytics
-                          <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" />
-                        </div>
-                      </button>
+                    <button
+                      className={`${
+                        swapTab === 2 || active ? "bg-[#4B5563] text-white" : "text-gray-400/50"
+                      } group flex w-full cursor-pointer items-center rounded-md px-2 py-2 text-sm`}
+                      // onClick={() => setSwapTab(2)}
+                      // disabled
+                    >
+                      <div className="relative">
+                        Pools & analytics
+                        <Soon className="!-right-8 !-top-1 !h-3 !w-8 !text-[10px]" />
+                      </div>
+                    </button>
                     // </Link>
                   )}
                 </Menu.Item>

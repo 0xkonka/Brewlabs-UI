@@ -78,7 +78,20 @@ export async function getTradingPair(chainId, pair) {
     );
     let swaps = response.data.swaps;
     if (!swaps.length) return default_value;
-    const timestamp = Math.min(Number(swaps[0].timestamp), Math.floor(Date.now() / 1000 - 86400));
+    const timestamp = Math.floor(Date.now() / 1000 - 86400);
+
+    if (timestamp >= swaps[0].timestamp) {
+      const price = getPriceByTx(swaps[0]);
+      return {
+        pair: wrappedPairData,
+        price,
+        price24h: { price24h0: price.price0, price24h1: price.price1 },
+        price24hHigh: { price24hHigh0: price.price0, price24hHigh1: price.price1 },
+        price24hLow: { price24hLow0: price.price0, price24hLow1: price.price1 },
+        price24hChange: { price24hChange0: 0, price24hChange1: 0 },
+        volume24h: 0,
+      };
+    }
 
     let totalSwaps = [],
       index = 0;
@@ -212,7 +225,8 @@ export async function getVolumeHistory(address, chainId, type) {
           }`,
         }
       );
-      return response.data.pairHourDatas.map((data) => data.hourlyVolumeUSD);
+      const history = response.data.pairHourDatas.map((data) => data.hourlyVolumeUSD);
+      return !history.length ? [0, 0] : history.length === 1 ? [history[0], history[0]] : history;
     }
     const deltaTime = type === "7d" ? 86400 * 7 : 86400 * 30;
 
@@ -230,7 +244,8 @@ export async function getVolumeHistory(address, chainId, type) {
         }`,
       }
     );
-    return response.data.pairDayDatas.map((data) => data.dailyVolumeUSD);
+    const history = response.data.pairDayDatas.map((data) => data.dailyVolumeUSD);
+    return !history.length ? [0, 0] : history.length === 1 ? [history[0], history[0]] : history;
   } catch (e) {
     console.log(e);
     return [];

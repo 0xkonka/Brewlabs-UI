@@ -2,15 +2,40 @@ import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PairList from "./PairList";
 import { useRouter } from "next/router";
 import ChartPanel from "./ChartPanel";
+import { useTradingAllPairDatas, useTradingAllPairs } from "state/pair/hooks";
+import { ChainId } from "@brewlabs/sdk";
 
 export default function Info() {
   const [criteria, setCriteria] = useState("");
   const [selectedPair, setSelectedPair] = useState({});
-  const router = useRouter();
+  const [wrappedPairs, setWrappedPairs] = useState([]);
+
+  useTradingAllPairs(ChainId.POLYGON);
+  const pairs = useTradingAllPairDatas(ChainId.POLYGON);
+
+  const stringifiedPairs = JSON.stringify(pairs);
+
+  useEffect(() => {
+    if (!pairs.length) return;
+    setSelectedPair(Object.keys(selectedPair).length ? selectedPair : pairs[0]);
+  }, [pairs.length]);
+
+  useEffect(() => {
+    setWrappedPairs(
+      pairs.map(
+        (pair) =>
+          pair.address.toLowerCase().includes(criteria) ||
+          pair.baseToken.address.toLowerCase().includes(criteria) ||
+          pair.baseToken.symbol.toLowerCase().includes(criteria) ||
+          pair.quoteToken.address.toLowerCase().includes(criteria) ||
+          pair.quoteToken.symbol.toLowerCase().includes(criteria)
+      )
+    );
+  }, [stringifiedPairs, criteria]);
 
   return (
     <PageWrapper>
@@ -40,7 +65,7 @@ export default function Info() {
           onChange={(e) => setCriteria(e.target.value)}
         />
         <div className="mb-10 mt-5">
-          <PairList setSelectedPair={setSelectedPair} />
+          <PairList pairs={wrappedPairs} setSelectedPair={setSelectedPair} />
         </div>
       </Container>
     </PageWrapper>

@@ -1,12 +1,10 @@
-import { useTradingAllPairDatas, useTradingAllPairs } from "state/pair/hooks";
+import { useTradingAllPairDatas } from "state/pair/hooks";
 import PairCard from "./PairCard";
 import { ChainId } from "@brewlabs/sdk";
 
 const headers = ["Pair", "Last Price", "24h Change", "24h High", "24h Low", "24h Volume", "24h Volume (USD)", ""];
-export default function PairList({ setSelectedPair }) {
+export default function PairList({ pairs, setSelectedPair }) {
   const width = ["w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[120px]", "w-[30px]"];
-  useTradingAllPairs(ChainId.POLYGON);
-  const pairs = useTradingAllPairDatas(ChainId.POLYGON);
 
   return (
     <div className="primary-shadow rounded-md bg-[#18181B] p-[10px_0px_24px_0px] xsm:p-[10px_16px_24px_16px]">

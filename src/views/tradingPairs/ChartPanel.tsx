@@ -2,7 +2,9 @@ import { ChainId } from "@brewlabs/sdk";
 import { NETWORKS } from "config/constants/networks";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { Oval } from "react-loader-spinner";
 import { getVolumeHistory } from "state/pair/fetchTradingPairs";
+import styled from "styled-components";
 import { isAddress } from "utils";
 import { BigNumberFormat, getChainLogo } from "utils/functions";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
@@ -31,11 +33,10 @@ export default function ChartPanel({ pair }) {
     NETWORKS[8453],
   ];
 
-
   const chartData: any = {
     series: [
       {
-        name: "Price",
+        name: "Volume",
         data: histories,
       },
     ],
@@ -104,7 +105,7 @@ export default function ChartPanel({ pair }) {
   };
 
   return (
-    <div className="mb-4">
+    <StyledContainer className="mb-4">
       <div className="flex items-center justify-between">
         <div className="text-sm text-[#FFFFFF40]">BREWSWAP Volume</div>
         <div className="flex items-center">
@@ -143,7 +144,20 @@ export default function ChartPanel({ pair }) {
         </div>
       </div>
       <div className="h-[200px]">
-        <Chart options={chartData.options} series={chartData.series} type="area" height={190} />
+        {histories.length ? (
+          <Chart options={chartData.options} series={chartData.series} type="area" height={190} />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Oval
+              width={30}
+              height={30}
+              color={"white"}
+              secondaryColor="black"
+              strokeWidth={4}
+              strokeWidthSecondary={4}
+            />
+          </div>
+        )}
       </div>
       <div className="flex items-center">
         <div className="mr-4 text-xs text-[#FFFFFF40]">Display</div>
@@ -155,6 +169,38 @@ export default function ChartPanel({ pair }) {
           rounded={"6px"}
         />
       </div>
-    </div>
+    </StyledContainer>
   );
 }
+
+const StyledContainer = styled.div`
+  .apexcharts-tooltip {
+    color: white;
+  }
+  .apexcharts-tooltip.apexcharts-theme-light {
+    background: #eebc199d;
+  }
+  .apexcharts-tooltip-title {
+    display: none;
+  }
+  .apexcharts-xaxistooltip {
+    display: none;
+  }
+  .apexcharts-tooltip.apexcharts-theme-light {
+    border: none;
+  }
+  .apexcharts-tooltip-text-y-label {
+    display: none;
+  }
+  .apexcharts-tooltip-marker {
+    margin-right: 0;
+  }
+  > div:nth-child(2) > div {
+    min-height: unset !important;
+    margin-top: -35px;
+  }
+  height: 220px;
+  @media screen and (max-height: 725px) {
+    height: 200px;
+  }
+`;

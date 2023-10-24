@@ -60,7 +60,11 @@ export default function PairCard({ pair, setSelectedPair }) {
           {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hLow.toFixed(2))}`}
         </div>
         <div className={`${width[5]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.volume24h.toFixed(2))}`}
+          {isLoading ? (
+            <SkeletonComponent />
+          ) : (
+            `${numberWithCommas((data.volume24h / data.baseToken.price).toFixed(2))}`
+          )}
         </div>
         <div className={`${width[6]} `}>
           {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.volume24h.toFixed(2))}`}
@@ -83,7 +87,7 @@ export default function PairCard({ pair, setSelectedPair }) {
                 DEXTOOLS_CHAINNAME[data.chainId]
               }.png`}
               alt={""}
-              classNames="h-7 w-7"
+              classNames="h-7 w-7 z-10 relative"
             />
 
             <TokenLogo
@@ -91,7 +95,7 @@ export default function PairCard({ pair, setSelectedPair }) {
                 DEXTOOLS_CHAINNAME[data.chainId]
               }.png`}
               alt={""}
-              classNames="h-7 w-7 -ml-3 z-10"
+              classNames="h-7 w-7 -ml-3"
             />
             <div className="ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
               {data.baseToken.symbol}/{data.quoteToken.symbol}
@@ -117,7 +121,12 @@ export default function PairCard({ pair, setSelectedPair }) {
         </div>
         <div className="flex flex-wrap justify-between">
           <div className="mr-4 mt-2">
-            24H Volume: {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.volume24h.toFixed(2))}`}
+            24H Volume:{" "}
+            {isLoading ? (
+              <SkeletonComponent />
+            ) : (
+              `$${numberWithCommas((data.volume24h / data.baseToken.price).toFixed(2))}`
+            )}
           </div>
           <div className="mt-2">
             24H Volume (USD): {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.volume24h.toFixed(2))}`}
