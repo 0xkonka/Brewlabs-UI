@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, lockSVG, warningFarmerSVG } from "components/dashboard/assets/svgs";
@@ -36,7 +37,6 @@ import { fetchUserDepositData } from "state/pools/fetchPoolsUser";
 import { BIG_ZERO } from "utils/bigNumber";
 import { numberWithCommas } from "utils/functions";
 import { formatTvl, formatAmount } from "utils/formatApy";
-import { getBalanceNumber } from "utils/formatBalance";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -48,7 +48,6 @@ import StakingModal from "./Modals/StakingModal";
 import useLockupPool from "./hooks/useLockupPool";
 import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
-import { formatUnits } from "viem";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -90,15 +89,13 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   let reflectionUsdAmount = 0;
   const reflectionTokenBalances = [];
   for (let i = 0; i < reflectionTokens.length; i++) {
-    reflectionTokenBalances.push(
-      getBalanceNumber(accountData.reflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals)
-    );
-    if (accountData.reflections[i]?.gt(0)) hasReflections = true;
+    reflectionTokenBalances.push(+formatUnits(accountData.reflections[i] ?? BIG_ZERO, reflectionTokens[i].decimals));
+    if (accountData.reflections[i] > BigInt(0)) hasReflections = true;
 
     reflectionUsdAmount +=
       reflectionTokenBalances[i] * (tokenPrices[getCurrencyId(data.chainId, reflectionTokens[i].address)] ?? 0);
   }
-  const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
+  const earningTokenBalance = +formatUnits(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
 
   useEffect(() => {
     const fetchtotalRewardsAsync = async () => {
@@ -506,7 +503,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className=" flex text-primary">
                           {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                             "0.00"
-                          ) : accountData.earnings ? (
+                          ) : accountData.earnings !== undefined ? (
                             formatAmount(earningTokenBalance.toFixed(4))
                           ) : (
                             <SkeletonComponent />
@@ -519,7 +516,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             <div key={index} className="flex text-primary">
                               {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
                                 "0.00"
-                              ) : accountData.reflections[index] ? (
+                              ) : accountData.reflections[index] !== undefined ? (
                                 formatAmount(reflectionTokenBalances[index].toFixed(4))
                               ) : (
                                 <SkeletonComponent />
@@ -674,8 +671,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="flex">
                           {!address ? (
                             "0.00"
-                          ) : accountData.stakedBalance ? (
-                            `${formatAmount(getBalanceNumber(accountData.stakedBalance, stakingToken.decimals))}`
+                          ) : accountData.stakedBalance !== undefined ? (
+                            `${formatAmount(formatUnits(accountData.stakedBalance, stakingToken.decimals))}`
                           ) : (
                             <SkeletonComponent />
                           )}
@@ -688,9 +685,9 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="flex">
                           {!address ? (
                             "$0.00"
-                          ) : accountData.stakedBalance ? (
+                          ) : accountData.stakedBalance !== undefined ? (
                             `$${formatAmount(
-                              getBalanceNumber(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
+                              +formatUnits(accountData.stakedBalance, stakingToken.decimals) * (tokenPrice ?? 0)
                             )}`
                           ) : (
                             <SkeletonComponent />
