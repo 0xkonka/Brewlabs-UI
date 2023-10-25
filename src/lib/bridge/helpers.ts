@@ -30,7 +30,8 @@ export const handleWalletError = (error: any, showError: (msg: string) => void, 
       );
     } else {
       if (error.message.indexOf("TransactionExecutionError")) {
-        showError(error.message.split(":")[1]);
+        console.log(error.message.split(":"))
+        showError(error.message.split(":")[0].split("\n")[0]);
       } else if (error.message.indexOf("reverted with the following reason") > 0) {
         showError(error.message.split("\n")[1]);
       } else {
