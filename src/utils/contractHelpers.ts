@@ -1,4 +1,16 @@
 import { ChainId } from "@brewlabs/sdk";
+import {
+  WalletClient,
+  PublicClient,
+  getContract as viemGetContract,
+  Address,
+  Transport,
+  Chain,
+  Account,
+  Client,
+} from "viem";
+import { erc20ABI } from "wagmi";
+
 import { brewsToken } from "config/constants/tokens";
 import { AppId, Chef } from "config/constants/types";
 
@@ -52,11 +64,9 @@ import {
   getMirrorNftAddress,
   getNftStakingAddress,
 } from "utils/addressHelpers";
-import { WalletClient, PublicClient, getContract as viemGetContract, Address } from "viem";
 import { getViemClients } from "./viem";
-import { erc20ABI } from "wagmi";
 
-export const getContract=(
+export const getContract = (
   chainId: ChainId,
   address: string,
   abi: any,
@@ -66,8 +76,8 @@ export const getContract=(
   const c = viemGetContract({
     abi,
     address: address as Address,
-    publicClient: publicClient ?? getViemClients({ chainId }),
-    walletClient: walletClient,
+    publicClient: (publicClient ?? getViemClients({ chainId })) as Client<Transport, Chain> | undefined,
+    walletClient: walletClient as Client<Transport, Chain, Account> | undefined,
   });
   return {
     ...c,
