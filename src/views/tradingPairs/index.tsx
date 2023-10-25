@@ -4,7 +4,6 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { useEffect, useState } from "react";
 import PairList from "./PairList";
-import { useRouter } from "next/router";
 import ChartPanel from "./ChartPanel";
 import { useTradingAllPairDatas, useTradingAllPairs } from "state/pair/hooks";
 import { ChainId } from "@brewlabs/sdk";
@@ -26,7 +25,7 @@ export default function Info() {
 
   useEffect(() => {
     setWrappedPairs(
-      pairs.map(
+      pairs.filter(
         (pair) =>
           pair.address.toLowerCase().includes(criteria) ||
           pair.baseToken.address.toLowerCase().includes(criteria) ||
