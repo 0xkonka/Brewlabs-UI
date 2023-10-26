@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { useSecondRefreshEffect, useSlowRefreshEffect } from "./useRefreshEffect";
+import { useSlowRefreshEffect } from "./useRefreshEffect";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
@@ -10,8 +10,7 @@ import { getContract } from "utils/contractHelpers";
 import { isAddress } from "ethers/lib/utils.js";
 import { API_URL } from "config/constants";
 import { CommunityContext } from "contexts/CommunityContext";
-import { BASE_URL, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
-import { fetchTradingHistories } from "./useTokenAllPairs";
+import { BASE_URL, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
 
 export async function getBaseInfos(address, chainId) {
   try {
