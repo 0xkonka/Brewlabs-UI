@@ -1,6 +1,6 @@
 import SwapOption from "./SwapOption";
 import { useEffect, useState } from "react";
-import { defaultVolume, fetchTradingHistories, getVolumeDatas } from "@hooks/useTokenAllPairs";
+import { defaultVolume, fetchTradingHistoriesByDexScreener, getVolumeDatas } from "@hooks/useTokenAllPairs";
 import { isAddress } from "utils";
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { getBaseInfos } from "@hooks/useTokenInfo";
@@ -17,47 +17,32 @@ let wrappedQuery;
 export default function TradingPanel({ selectedPair, showReverse, marketInfos }) {
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
 
-  const getQuery = () => {
-    const query: any = {
-      address: selectedPair.baseToken.address,
-      current_token_id: `${selectedPair.baseToken.address}-${DEX_GURU_CHAIN_NAME[selectedPair.chainId]}`,
-      chainId: selectedPair.chainId,
-      pool_address: selectedPair.address,
-      amm: selectedPair.dexId,
-      date: { start_date: Date.now() - 3600 * 24 * 7 * 1000, end_date: Date.now() },
-      limit: 0,
-      offset: 0,
-      with_full_totals: true,
-      order: "desc",
-      token_status: "all",
-      transaction_types: ["swap"],
-      sort_by: "timestamp",
-    };
-    return query;
-  };
-
-  const stringifiedCurrency = JSON.stringify(
-    selectedPair && Object.keys(selectedPair).filter((key) => key !== "params")
-  );
+  const stringifiedPair = JSON.stringify(selectedPair);
 
   useEffect(() => {
     if (!selectedPair) return;
-    const query: any = getQuery();
-    if (!isAddress(query.address)) {
+    const query: any = {
+      pair: selectedPair.address,
+      quote: selectedPair.quoteToken.address,
+      a: selectedPair.a,
+      type: "buyOrSell",
+    };
+    if (!isAddress(query.pair)) {
       return;
     }
     wrappedQuery = JSON.stringify(query);
-    fetchTradingHistories(query, selectedPair.chainId)
+    console.log(selectedPair);
+    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all", Date.now() - 86400000 * 7)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
-          const volumeDatas = getVolumeDatas(selectedPair.baseToken.address, result);
+          const volumeDatas = getVolumeDatas(result);
           setVolumeDatas(volumeDatas);
         }
       })
       .catch((e) => {
         console.log(e);
       });
-  }, [stringifiedCurrency]);
+  }, [stringifiedPair]);
 
   const [balances, setBalances] = useState({});
   const [price, setPrice] = useState(0);
@@ -75,7 +60,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
         setLPPrice(result[1]);
       })
       .catch((e) => console.log(e));
-  }, [stringifiedCurrency]);
+  }, [stringifiedPair]);
 
   const { address: account } = useAccount();
 
@@ -92,7 +77,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
     )
       .then((result) => setBalances(result.balances))
       .catch((e) => console.log(e));
-  }, [stringifiedCurrency, account]);
+  }, [stringifiedPair, account]);
 
   const w2xl = useMediaQuery({ query: "(min-width: 1536px)" });
   return (

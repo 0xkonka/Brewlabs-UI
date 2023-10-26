@@ -5,6 +5,7 @@ import { fetchTradingAllPairAsync, fetchTradingPairAsync, fetchTradingPairFeesAs
 import { ChainId } from "@brewlabs/sdk";
 import { SerializedTradingPair, State } from "state/types";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 export const useTradingPair = (chainId, address) => {
   const dispatch = useAppDispatch();
@@ -19,12 +20,10 @@ export const useTradingPair = (chainId, address) => {
 };
 
 export const useTradingAllPairs = (chainId: ChainId) => {
-  const pairs = useTradingAllPairDatas(chainId);
   const dispatch = useAppDispatch();
-  useFastRefreshEffect(() => {
+  useEffect(() => {
     dispatch(fetchTradingAllPairAsync(chainId));
   }, [dispatch, chainId]);
-  return pairs;
 };
 
 export const useTradingPairData = (chainId: ChainId, pair: string): SerializedTradingPair => {

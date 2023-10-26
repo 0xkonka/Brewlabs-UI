@@ -204,51 +204,105 @@ export async function getTradingAllPairs(chainId: ChainId) {
   }
 }
 
-export async function getVolumeHistory(address, chainId, type) {
-  if (chainId !== ChainId.POLYGON) return [];
+export async function getVolumeHistory(address, chainId, period) {
+  console.log(address);
+  if (chainId !== ChainId.POLYGON) return { volumeHistory: [], feeHistory: [] };
   try {
-    if (type === "24h") {
+    let query,
+      swaps,
+      index = 0,
+      totalSwaps = [],
+      volumeHistory = [],
+      feeHistory = [],
+      tvlHistory = [];
+
+    const timestamp = Math.floor(Date.now() / 1000 - period);
+
+    do {
+      query = `{
+        swaps(
+          where: {pair_: {id: "${address.toLowerCase()}"}, timestamp_gte: "${timestamp}"}
+          first: 1000
+          skip:${1000 * index}
+          orderBy: timestamp
+        ) {
+          amount1In
+          amount0In
+          amount0Out
+          amount1Out
+          amountUSD
+          amountFeeUSD
+          timestamp
+        }
+      }`;
       const { data: response } = await axios.post(
         "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
-        {
-          query: `{
-            pairHourDatas(
-              where: {pair_: {id: "${address}"}, hourStartUnix_gte: ${Math.floor(Date.now() / 1000 - 86400)}}
-              orderBy: hourStartUnix
-            ) {
-              pair {
-                id
-              }
-              hourlyVolumeUSD
-              hourStartUnix
-            }
-          }`,
-        }
+        { query }
       );
-      const history = response.data.pairHourDatas.map((data) => data.hourlyVolumeUSD);
-      return !history.length ? [0, 0] : history.length === 1 ? [history[0], history[0]] : history;
-    }
-    const deltaTime = type === "7d" ? 86400 * 7 : 86400 * 30;
 
-    const { data: response } = await axios.post(
-      "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
-      {
-        query: `{
-          pairDayDatas(
-            where: {pairAddress: "${address.toLowerCase()}", date_gte: ${Math.floor(Date.now() / 1000 - deltaTime)}}
-            orderBy: date
-          ) {
-            dailyVolumeUSD
-            date
-          }
-        }`,
+      swaps = response.data.swaps;
+      totalSwaps = [...totalSwaps, ...swaps];
+      index++;
+    } while (swaps.length === 1000);
+
+    let j = 0;
+    for (let i = 1; i <= 10; i++) {
+      let v = 0,
+        fee = 0;
+      while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) <= timestamp + (period / 10) * i) {
+        v += Number(totalSwaps[j].amountUSD);
+        fee += Number(totalSwaps[j].amountFeeUSD);
+        j++;
       }
+      volumeHistory.push(v);
+      feeHistory.push(fee);
+    }
+
+    query = `{
+      pair(id: "${address.toLowerCase()}") {
+        reserve1
+        reserve0
+        token0 {
+          derivedUSD
+        }
+        token1 {
+          derivedUSD
+        }
+      }
+    }`;
+
+    const { data: reserveResponse } = await axios.post(
+      "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
+      { query }
     );
-    const history = response.data.pairDayDatas.map((data) => data.dailyVolumeUSD);
-    return !history.length ? [0, 0] : history.length === 1 ? [history[0], history[0]] : history;
+
+    let reserve0 = Number(reserveResponse.data.pair.reserve0);
+    let reserve1 = Number(reserveResponse.data.pair.reserve1);
+    let price0 = Number(reserveResponse.data.pair.token0.derivedUSD);
+    let price1 = Number(reserveResponse.data.pair.token1.derivedUSD);
+    console.log(reserve0, reserve1);
+
+    totalSwaps = totalSwaps.sort((a, b) => b.timestamp - a.timestamp);
+    j = 0;
+
+    for (let i = 1; i <= 10; i++) {
+      while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) >= Date.now() / 1000 - (period / 10) * i) {
+        reserve0 += Number(totalSwaps[j].amount0Out);
+        reserve0 -= Number(totalSwaps[j].amount0In);
+        reserve1 += Number(totalSwaps[j].amount1Out);
+        reserve1 -= Number(totalSwaps[j].amount1In);
+        price0 = getPriceByTx(totalSwaps[j]).price0;
+        price1 = getPriceByTx(totalSwaps[j]).price1;
+        console.log(price0, price1);
+        j++;
+      }
+      tvlHistory.push(reserve0 * price0 + reserve1 * price1);
+    }
+
+    return { volumeHistory, feeHistory, tvlHistory };
   } catch (e) {
     console.log(e);
-    return [];
+    return { volumeHistory: [], feeHistory: [] };
   }
 }
 
