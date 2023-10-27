@@ -44,8 +44,6 @@ export const PairSlice = createSlice({
           ...baseToken,
           price: !isBaseToken0 ? data.price.price0 : data.price.price1,
           price24h: !isBaseToken0 ? data.price24h.price24h0 : data.price24h.price24h1,
-          price24hHigh: !isBaseToken0 ? data.price24hHigh.price24hHigh0 : data.price24hHigh.price24hHigh1,
-          price24hLow: !isBaseToken0 ? data.price24hLow.price24hLow0 : data.price24hLow.price24hLow1,
           price24hChange: !isBaseToken0 ? data.price24hChange.price24hChange0 : data.price24hChange.price24hChange1,
         };
 
@@ -53,8 +51,6 @@ export const PairSlice = createSlice({
           ...quoteToken,
           price: isBaseToken0 ? data.price.price0 : data.price.price1,
           price24h: isBaseToken0 ? data.price24h.price24h0 : data.price24h.price24h1,
-          price24hHigh: isBaseToken0 ? data.price24hHigh.price24hHigh0 : data.price24hHigh.price24hHigh1,
-          price24hLow: isBaseToken0 ? data.price24hLow.price24hLow0 : data.price24hLow.price24hLow1,
           price24hChange: isBaseToken0 ? data.price24hChange.price24hChange0 : data.price24hChange.price24hChange1,
         };
 
@@ -63,6 +59,8 @@ export const PairSlice = createSlice({
           baseToken,
           quoteToken,
           volume24h: data.volume24h,
+          tvl: data.tvl,
+          feesCollected24h: data.feesCollected24h,
         };
       }
     },

@@ -43,12 +43,12 @@ export default function ChartPanel({ pair }) {
   const chartData: any = {
     series: [
       {
-        name: "Fee",
-        data: histories?.feeHistory ?? [],
-      },
-      {
         name: showTypes[selectedDisplayType].replace("USD", ""),
         data: wrappedHistories[selectedDisplayType],
+      },
+      {
+        name: "Fee",
+        data: histories?.feeHistory ?? [],
       },
     ],
     options: {
@@ -187,6 +187,8 @@ export default function ChartPanel({ pair }) {
 const StyledContainer = styled.div`
   .apexcharts-tooltip {
     color: white;
+    top: 50%!important;
+    transform:translateY(-50%);
   }
   .apexcharts-tooltip.apexcharts-theme-light {
     background: #eebc199d;
