@@ -187,7 +187,6 @@ export default function SwapPanel({
     query,
     error: aggregationCallbackError,
   } = useSwapAggregator(currencies, parsedAmount, autoMode ? slippage : userSlippageTolerance, deadline, recipient);
-
   const handleSwapUsingAggregator = async () => {
     if (!swapCallbackUsingAggregator) {
       return;
@@ -213,22 +212,15 @@ export default function SwapPanel({
       });
   };
 
+  const usingAggregator = noLiquidity; //|| query?.outputAmount?.toExact() > trade?.outputAmount?.toExact();
   const parsedAmounts = showWrap
     ? {
         [Field.INPUT]: parsedAmount,
         [Field.OUTPUT]: parsedAmount,
       }
     : {
-        [Field.INPUT]: noLiquidity
-          ? parsedAmount
-          : independentField === Field.INPUT
-          ? parsedAmount
-          : trade?.inputAmount,
-        [Field.OUTPUT]: noLiquidity
-          ? query?.outputAmount
-          : independentField === Field.OUTPUT
-          ? parsedAmount
-          : trade?.outputAmount,
+        [Field.INPUT]: parsedAmount,
+        [Field.OUTPUT]: usingAggregator ? query?.outputAmount : trade?.outputAmount,
       };
 
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput));
@@ -259,7 +251,7 @@ export default function SwapPanel({
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmounts[Field.INPUT]]);
 
   const onConfirm = () => {
-    if (noLiquidity) {
+    if (usingAggregator) {
       handleSwapUsingAggregator();
     } else {
       handleSwapUsingRouter();
@@ -335,7 +327,7 @@ export default function SwapPanel({
           buyTax={buyTax}
           sellTax={sellTax}
           currencies={currencies}
-          noLiquidity={noLiquidity}
+          noLiquidity={usingAggregator}
           size={size}
         />
       </div>
@@ -383,13 +375,13 @@ export default function SwapPanel({
                   pending={attemptingTxn}
                   disabled={
                     attemptingTxn ||
-                    (!noLiquidity && (!!swapCallbackError || priceImpactSeverity > 3)) ||
-                    (noLiquidity && !!aggregationCallbackError)
+                    (!usingAggregator && (!!swapCallbackError || priceImpactSeverity > 3)) ||
+                    (usingAggregator && !!aggregationCallbackError)
                   }
                 >
                   {attemptingTxn
                     ? "Swapping..."
-                    : !noLiquidity
+                    : !usingAggregator
                     ? !!swapCallbackError
                       ? swapCallbackError
                       : priceImpactSeverity > 3
