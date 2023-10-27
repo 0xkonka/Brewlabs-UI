@@ -2,81 +2,7 @@ import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
 import { isAddress } from "utils";
 
-export async function fetchTradingHistories(query, chainId) {
-  let histories = [];
-  if (query.account && !isAddress(query.account)) return [];
-  let count = query.limit;
-  if (!query.limit) {
-    const { data: response } = await axios.post("https://api.dex.guru/v3/tokens/transactions/count", query);
-    count = response.count;
-  }
-  const offset = query.offset;
-  const limit = query.limit;
-  await Promise.all(
-    new Array(Math.min(Math.ceil(count / 100), 100)).fill("").map(async (result, i) => {
-      query = { ...query, limit: limit ? limit : 100, offset: offset ? offset : 100 * i };
-      const { data }: any = await axios.post("https://api.dex.guru/v3/tokens/transactions", query);
-      histories = [
-        ...histories,
-        ...data.data.map((history) => {
-          return { ...history, chainId };
-        }),
-      ];
-      return histories;
-    })
-  );
-
-  if (isAddress(query.pool)) {
-    const pools = [query.pool];
-
-    const swapTxs = histories
-      .filter((history) => history.transactionType === "swap")
-      .filter((history) =>
-        query.type === "buy"
-          ? query.address === history.fromAddress
-          : query.type === "sell"
-          ? query.address !== history.fromAddress
-          : true
-      )
-      .map((tx) => {
-        return {
-          ...tx,
-          sender: query.account ?? tx.sender ?? (pools.includes(tx.toAddress) ? tx.fromAddress : tx.toAddress),
-        };
-      });
-
-    const erc20txs = histories
-      .filter(
-        (history) =>
-          history.transactionType === "transfer" &&
-          !swapTxs.find((sHistory) => sHistory.transactionAddress === history.transactionAddress)
-      )
-      .filter((history) =>
-        query.type === "buy"
-          ? pools.includes(history.fromAddress)
-          : query.type === "sell"
-          ? pools.includes(history.toAddress)
-          : pools.includes(history.toAddress) || pools.includes(history.fromAddress)
-      )
-      .map((history) => {
-        const pool = pools.find((pool) => pool === history.fromAddress || pool === history.toAddress);
-        return {
-          ...history,
-          fromAddress: history.fromAddress === pool ? "" : history.tokenAddresses[0],
-          amountStable: history.amountsStable[0],
-          nativeAmount: null,
-          walletsCategories: [],
-          sender: query.account ?? (pools.includes(history.toAddress) ? history.fromAddress : history.toAddress),
-          type: "",
-          poolAddress: query.pool,
-        };
-      });
-    return [...erc20txs, ...swapTxs];
-  }
-  return histories;
-}
-
-export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default") {
+export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default", timestamp = 0) {
   let histories = [];
   let tb = query.tb;
   try {
@@ -93,42 +19,38 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
       if (!response.result.logs) break;
       histories = [...histories, ...response.result.logs].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
       tb = histories[histories.length - 1].blockTimestamp;
-    } while (fetch === "all" && histories.length % 100 === 0);
+    } while (fetch === "all" && histories.length % 100 === 0 && tb >= timestamp);
 
-    return histories.map((log) => ({
-      timestamp: Number(log.blockTimestamp),
-      action: log.txnType,
-      price: Number(log.priceUsd),
-      amount: Number(log.amount0),
-      nativeAmount: undefined,
-      amountStable: Number(log.volumeUsd),
-      transactionAddress: log.txnHash,
-      walletsCategories: [],
-      chainId,
-      sender: log.maker,
-    }));
+    return histories
+      .filter((log) => log.blockTimestamp >= timestamp)
+      .map((log) => ({
+        timestamp: Number(log.blockTimestamp),
+        action: log.txnType,
+        price: Number(log.priceUsd),
+        amount: Number(log.amount0),
+        nativeAmount: undefined,
+        amountStable: Number(log.volumeUsd),
+        transactionAddress: log.txnHash,
+        walletsCategories: [],
+        chainId,
+        sender: log.maker,
+      }));
   } catch (e) {
     console.log(e);
     return [];
   }
 }
 
-export function getVolume(address, data, period) {
+export function getVolume(data, period) {
   let buyVolume = 0,
     sellVolume = 0;
 
   const sellCount = data
-    .filter(
-      (history) =>
-        history.fromAddress === address.toLowerCase() && Number(history.timestamp) >= Date.now() / 1000 - period
-    )
+    .filter((history) => history.action === "sell" && Number(history.timestamp) >= Date.now() - period)
     .map((history) => (sellVolume += history.amountStable)).length;
 
   const buyCount = data
-    .filter(
-      (history) =>
-        history.fromAddress !== address.toLowerCase() && Number(history.timestamp) >= Date.now() / 1000 - period
-    )
+    .filter((history) => history.action === "buy" && Number(history.timestamp) >= Date.now() - period)
     .map((history) => (buyVolume += history.amountStable)).length;
 
   return {
@@ -141,11 +63,11 @@ export function getVolume(address, data, period) {
   };
 }
 
-export function getVolumeDatas(address, histories) {
-  const v5m = getVolume(address, histories, 5 * 60);
-  const v30m = getVolume(address, histories, 30 * 60);
-  const v24hr = getVolume(address, histories, 3600 * 24);
-  const v7d = getVolume(address, histories, 3600 * 24 * 7);
+export function getVolumeDatas(histories) {
+  const v5m = getVolume(histories, 5 * 60000);
+  const v30m = getVolume(histories, 30 * 60000);
+  const v24hr = getVolume(histories, 3600000 * 24);
+  const v7d = getVolume(histories, 3600000 * 24 * 7);
   return {
     txn: {
       "5m": {

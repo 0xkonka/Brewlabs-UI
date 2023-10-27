@@ -54,6 +54,8 @@ import { useFetchMarketData } from "state/prices/hooks";
 import { useAccount, useSigner } from "wagmi";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useFetchTokenBalance } from "state/wallet/hooks";
+import { useTradingAllPairs } from "state/pair/hooks";
+import { ChainId } from "@brewlabs/sdk";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -85,6 +87,9 @@ function GlobalHooks() {
   useFetchMarketData();
 
   useFetchTokenBalance(account, chainId, signer);
+
+  useTradingAllPairs(ChainId.POLYGON);
+
   return null;
 }
 
@@ -243,7 +248,6 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
 
   // Use the layout defined at the page level, if available
   const Layout = Component.Layout || Fragment;
-  const isShowScrollToTopButton = Component.isShowScrollToTopButton || true;
 
   return (
     <>
