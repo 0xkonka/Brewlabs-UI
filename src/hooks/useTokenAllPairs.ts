@@ -1,5 +1,6 @@
 import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
+import { API_URL } from "config/constants";
 import { isAddress } from "utils";
 
 export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default", timestamp = 0) {

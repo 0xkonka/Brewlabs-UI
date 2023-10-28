@@ -47,12 +47,12 @@ export async function getTradingPair(chainId, pair) {
   const default_value = {
     pair: wrappedPairData,
     price: { price0: 0, price1: 0 },
-    price24h: { price24h0: 0, price24h1: 0 },
-    price24hHigh: { price24hHigh0: 0, price24hHigh1: 0 },
-    price24hLow: { price24hLow0: 0, price24hLow1: 0 },
     price24hChange: { price24hChange0: 0, price24hChange1: 0 },
     volume24h: 0,
+    tvl: 0,
+    feesCollected: 0,
   };
+
   if (chainId !== ChainId.POLYGON) return default_value;
   try {
     query = `{
@@ -68,6 +68,9 @@ export async function getTradingPair(chainId, pair) {
         amount1Out
         amountUSD
         timestamp
+        pair {
+          reserveUSD
+        }
       }
   }`;
     const { data: response } = await axios.post(
@@ -80,22 +83,25 @@ export async function getTradingPair(chainId, pair) {
     if (!swaps.length) return default_value;
     const timestamp = Math.floor(Date.now() / 1000 - 86400);
 
+    const tvl = Number(swaps[0].pair.reserveUSD);
+
     if (timestamp >= swaps[0].timestamp) {
       const price = getPriceByTx(swaps[0]);
       return {
         pair: wrappedPairData,
         price,
-        price24h: { price24h0: price.price0, price24h1: price.price1 },
-        price24hHigh: { price24hHigh0: price.price0, price24hHigh1: price.price1 },
-        price24hLow: { price24hLow0: price.price0, price24hLow1: price.price1 },
+        price24h: { price24h0: 0, price24h1: 0 },
         price24hChange: { price24hChange0: 0, price24hChange1: 0 },
         volume24h: 0,
+        tvl,
+        feesCollected24h: 0,
       };
     }
 
     let totalSwaps = [],
       index = 0;
     swaps = [];
+
     do {
       query = `{
         swaps(
@@ -109,7 +115,9 @@ export async function getTradingPair(chainId, pair) {
           amount0Out
           amount1Out
           amountUSD
+          amountFeeUSD
           timestamp
+        
         }
       }`;
       const { data: response } = await axios.post(
@@ -124,28 +132,19 @@ export async function getTradingPair(chainId, pair) {
 
     let price = getPriceByTx(totalSwaps[totalSwaps.length - 1]),
       price24h = { price24h0: getPriceByTx(totalSwaps[0]).price0, price24h1: getPriceByTx(totalSwaps[0]).price1 },
-      price24hHigh = { price24hHigh0: 0, price24hHigh1: 0 },
-      price24hLow = { price24hLow0: 1000000, price24hLow1: 1000000 },
-      volume24h = 0;
+      volume24h = 0,
+      feesCollected24h = 0;
     const price24hChange = {
-      price24hChange0: price24h.price24h0 ? (price.price0 / price24h.price24h0) * price.price0 * 100 : 0,
-      price24hChange1: price24h.price24h1 ? (price.price1 / price24h.price24h1) * price.price1 * 100 : 0,
+      price24hChange0: price24h.price24h0 ? (price.price0 - price24h.price24h0) * price.price0 * 100 : 0,
+      price24hChange1: price24h.price24h1 ? (price.price1 - price24h.price24h1) * price.price1 * 100 : 0,
     };
 
     for (let i = 0; i < totalSwaps.length; i++) {
       volume24h += Number(totalSwaps[i].amountUSD);
-      if (price24hHigh.price24hHigh0 <= getPriceByTx(totalSwaps[i]).price0)
-        price24hHigh.price24hHigh0 = getPriceByTx(totalSwaps[i]).price0;
-      if (price24hHigh.price24hHigh1 <= getPriceByTx(totalSwaps[i]).price1)
-        price24hHigh.price24hHigh1 = getPriceByTx(totalSwaps[i]).price1;
-
-      if (price24hLow.price24hLow0 >= getPriceByTx(totalSwaps[i]).price0)
-        price24hLow.price24hLow0 = getPriceByTx(totalSwaps[i]).price0;
-      if (price24hLow.price24hLow1 >= getPriceByTx(totalSwaps[i]).price1)
-        price24hLow.price24hLow1 = getPriceByTx(totalSwaps[i]).price1;
+      feesCollected24h += Number(totalSwaps[i].amountFeeUSD);
     }
 
-    return { price, price24h, price24hHigh, price24hLow, price24hChange, volume24h, pair: wrappedPairData };
+    return { price, price24h, price24hChange, volume24h, tvl, feesCollected24h, pair: wrappedPairData };
   } catch (e) {
     console.log(e);
     return default_value;
@@ -205,7 +204,6 @@ export async function getTradingAllPairs(chainId: ChainId) {
 }
 
 export async function getVolumeHistory(address, chainId, period) {
-  console.log(address);
   if (chainId !== ChainId.POLYGON) return { volumeHistory: [], feeHistory: [] };
   try {
     let query,
@@ -280,7 +278,6 @@ export async function getVolumeHistory(address, chainId, period) {
     let reserve1 = Number(reserveResponse.data.pair.reserve1);
     let price0 = Number(reserveResponse.data.pair.token0.derivedUSD);
     let price1 = Number(reserveResponse.data.pair.token1.derivedUSD);
-    console.log(reserve0, reserve1);
 
     totalSwaps = totalSwaps.sort((a, b) => b.timestamp - a.timestamp);
     j = 0;
@@ -293,7 +290,6 @@ export async function getVolumeHistory(address, chainId, period) {
         reserve1 -= Number(totalSwaps[j].amount1In);
         price0 = getPriceByTx(totalSwaps[j]).price0;
         price1 = getPriceByTx(totalSwaps[j]).price1;
-        console.log(price0, price1);
         j++;
       }
       tvlHistory.push(reserve0 * price0 + reserve1 * price1);
