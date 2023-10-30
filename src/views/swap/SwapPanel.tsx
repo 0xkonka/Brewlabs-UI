@@ -212,7 +212,7 @@ export default function SwapPanel({
       });
   };
 
-  const usingAggregator = noLiquidity; //|| query?.outputAmount?.toExact() > trade?.outputAmount?.toExact();
+  const usingAggregator = noLiquidity || query?.outputAmount?.toExact() > trade?.outputAmount?.toExact();
   const parsedAmounts = showWrap
     ? {
         [Field.INPUT]: parsedAmount,
