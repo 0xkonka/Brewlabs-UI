@@ -78,7 +78,11 @@ export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
                 />
               </div>
               <img
-                src={`https://dd.dexscreener.com/ds-data/dexes/${selectedPair.dexId}.png`}
+                src={
+                  selectedPair.a === "brewswap"
+                    ? "/images/brewlabsRouter.png"
+                    : `https://dd.dexscreener.com/ds-data/dexes/${selectedPair.dexId}.png`
+                }
                 alt={""}
                 className="primary-shadow mx-2 h-6 w-6 rounded-full"
               />
