@@ -31,7 +31,6 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
       return;
     }
     wrappedQuery = JSON.stringify(query);
-    console.log(selectedPair);
     fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all", Date.now() - 86400000 * 7)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {

@@ -131,21 +131,31 @@ export function useTokenMarketInfos(pair: any) {
       })
       .catch((e) => console.log(e));
 
-    const url = `https://io.dexscreener.com/dex/chart/amm/${pair.a}/bars/${DEXSCREENER_CHAINNAME[pair.chainId]}/${
-      pair.address
-    }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
-    axios
-      .post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url })
-      .then((result) => {
-        const bars = result.data.result.bars;
-        const v1 =
-          Number(bars[0].volumeUsd) + Number(bars[1].volumeUsd) + Number(bars[2].volumeUsd) + Number(bars[3].volumeUsd);
-        const v2 =
-          Number(bars[4].volumeUsd) + Number(bars[5].volumeUsd) + Number(bars[6].volumeUsd) + Number(bars[7].volumeUsd);
-        console.log(v1, v2);
-        setVolume24hChange((v2 ? (v2 - v1) / v2 : 0) * 100);
-      })
-      .catch((e) => console.log(e));
+    function getVolume(bars) {
+      const v1 =
+        Number(bars[0].volumeUsd) + Number(bars[1].volumeUsd) + Number(bars[2].volumeUsd) + Number(bars[3].volumeUsd);
+      const v2 =
+        Number(bars[4].volumeUsd) + Number(bars[5].volumeUsd) + Number(bars[6].volumeUsd) + Number(bars[7].volumeUsd);
+      console.log(v1, v2);
+      setVolume24hChange((v2 ? (v2 - v1) / v2 : 0) * 100);
+    }
+    if (pair.a === "brewswap") {
+      const url = `${API_URL}/chart/bars?pair=${pair.address.toLowerCase()}&${pair.quoteToken.address}&from=${
+        Date.now() - 86400000 * 2
+      }&to=${Date.now()}&res=${240}`;
+      axios
+        .get(url)
+        .then((result) => getVolume(result.data))
+        .catch((e) => console.log(e));
+    } else {
+      const url = `https://io.dexscreener.com/dex/chart/amm/${pair.a}/bars/${DEXSCREENER_CHAINNAME[pair.chainId]}/${
+        pair.address
+      }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
+      axios
+        .post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url })
+        .then((result) => getVolume(result.data.result.bars))
+        .catch((e) => console.log(e));
+    }
   }, [strigifiedCurrency]);
 
   return {

@@ -37,6 +37,7 @@ function getLanguageFromURL() {
 }
 
 const TradingViewChart = ({ selectedPair }) => {
+  const stringifiedPair = JSON.stringify(selectedPair);
   useEffect(() => {
     if (!selectedPair) return;
     window.tvWidget = new widget({
@@ -98,7 +99,7 @@ const TradingViewChart = ({ selectedPair }) => {
       },
     });
     //Do not forget to remove the script on unmounting the component!
-  }, [selectedPair.baseToken.address, selectedPair.chainId]); //eslint-disable-line
+  }, [selectedPair.address, selectedPair.chainId]); //eslint-disable-line
 
   return selectedPair ? (
     <div id="tv_chart_container" className="h-full overflow-hidden rounded-lg"></div>

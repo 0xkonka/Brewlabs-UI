@@ -34,7 +34,11 @@ export const usePairsByCriteria = (criteria, chainId = null, limit = 1): Seriali
     )
   );
   if (criteria === "") return [];
-  return pairs.sort((a, b) => b.volume.h24 - a.volume.h24).slice(0, limit);
+  return pairs
+    .sort(
+      (a, b) => b.volume.h24 + (b.a === "brewswap" ? 10000000 : 0) - a.volume.h24 - (a.a === "brewswap" ? 10000000 : 0)
+    )
+    .slice(0, limit);
 };
 
 export const usePairsByCriterias = (criterias): SerializedPairData[] => {

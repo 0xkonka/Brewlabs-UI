@@ -30,9 +30,9 @@ export default function Chart({ chain, address }) {
   const dispatch: any = useDispatch();
 
   const stringifiedPair = JSON.stringify(pair);
-
   useEffect(() => {
     if (!pair || !pair.length) return;
+    console.log(pair);
     setSelectedPair(pair[0]);
     setTokens();
   }, [stringifiedPair]);

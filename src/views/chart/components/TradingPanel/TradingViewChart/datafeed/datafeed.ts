@@ -1,6 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
+import { API_URL } from "config/constants";
 
 const lastBarsCache = new Map();
 
@@ -37,7 +38,7 @@ export default {
       id: "",
       name: "",
       description: symbolName.split("#")[1],
-      exchange: "BrewlabsSwap",
+      exchange: "BrewSwap",
       ticker: symbolName.split("#")[0],
       full_name: "",
       type: "crypto",
@@ -62,15 +63,30 @@ export default {
 
   getBars: async (symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) => {
     try {
+      const swap = symbolInfo.ticker.split("/")[0];
       console.log("Resolution", resolution, from, to);
       const resSec = resolutionToSeconds(resolution);
-      const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
-        to * 1000
-      }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
-        url,
-      });
-      const data = response.result.bars;
+      let data = [];
+      if (swap === "brewswap") {
+        const pair = symbolInfo.ticker.split("?")[0].split("/")[3];
+        const quote = symbolInfo.ticker.split("?")[1];
+        const url = `${API_URL}/chart/bars?pair=${pair.toLowerCase()}&${quote}&from=${from * 1000}&to=${
+          to * 1000
+        }&res=${resSec}`;
+        const { data: response } = await axios.get(url);
+        data = response;
+        console.log(response);
+      } else {
+        const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
+          to * 1000
+        }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
+        console.log(Math.floor((to - from) / (resSec * 60)));
+        const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+          url,
+        });
+        data = response.result.bars;
+        console.log(data);
+      }
       let bars = [];
       if (!data || !data.length) return;
       for (let i = 0; i < data.length; ++i) {

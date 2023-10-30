@@ -22,11 +22,11 @@ function getPairParams(pair) {
 export async function fetchAllPairs(criteria, chain = null, type = "none") {
   try {
     if (!criteria) return;
-    let searchedPairs = [];
 
-    // const brewSwapUrl = `http://localhost:5050/api/chart/search/pairs?q=${"0x55b66debfa695744d3de43e5e62aff6d128b3379"}`;
-    // const brewResponse = await axios.get(brewSwapUrl);
-    // console.log(brewResponse);
+    const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${criteria}`;
+    const { data: brewPairs } = await axios.get(brewSwapUrl);
+
+    let searchedPairs = [];
 
     if (isAddress(criteria) || type === "simple") {
       console.log("Fetch Address");
@@ -39,7 +39,6 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       });
     } else {
       console.log("FETCH START");
-
       const result = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc,polygon`);
       let tokens = result.data.data;
       const isLP = tokens.find((token) => token.address === criteria.toLowerCase() && token.marketType === "lp");
@@ -57,10 +56,11 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       );
       searchResult.map((data) => (searchedPairs = [...searchedPairs, ...data]));
     }
-    console.log(searchedPairs);
     searchedPairs = searchedPairs
       .filter((pair) => pair.liquidity?.usd && Object.keys(DEXSCREENER_CHAINNAME).includes(pair.chainId.toString()))
       .sort((a, b) => b.volume.h24 - a.volume.h24);
+
+    searchedPairs = [...searchedPairs, ...brewPairs];
     return searchedPairs;
   } catch (e) {
     console.log(e);
