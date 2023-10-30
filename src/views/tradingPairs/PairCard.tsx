@@ -1,24 +1,26 @@
+import { Currency } from "@brewlabs/sdk";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 import { ChevronRightVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
-import { DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
+import { DEXTOOLS_CHAINNAME } from "config";
 import Link from "next/link";
 import { useTradingPair } from "state/pair/hooks";
 import { SerializedTradingPair } from "state/types";
-import { numberWithCommas } from "utils/functions";
-import getTokenLogoURL from "utils/getTokenLogoURL";
+import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
 
 export default function PairCard({ pair, setSelectedPair }) {
-  const width = ["w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[120px]", "w-[30px]"];
+  const width = ["w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[120px]"];
   const { data }: { data: SerializedTradingPair } = useTradingPair(pair.chainId, pair.address);
 
   const isLoading = !data.baseToken;
 
+  
   return (
     <>
-      <div
-        className="mt-2 hidden h-[54px] cursor-pointer items-center justify-between rounded-md border border-transparent bg-[#29292C] px-4 font-brand text-white transition hover:border-brand lg:flex"
+      <Link
+        className="mt-2 hidden h-[54px] cursor-pointer items-center justify-between rounded-md border border-transparent bg-[#29292C] px-4 font-brand text-white transition duration-300 hover:scale-[1.03] hover:border-brand lg:flex"
         onClick={() => !isLoading && setSelectedPair(pair)}
+        href={getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId)}
       >
         <div className={`${width[0]} `}>
           {isLoading ? (
@@ -48,31 +50,21 @@ export default function PairCard({ pair, setSelectedPair }) {
           )}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[1]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price.toFixed(2))}`}
+          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[2]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24h.toFixed(2))}`}
+          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}`}
         </div>
         <div className={`${width[3]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hHigh.toFixed(2))}`}
+          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.volume24h.toFixed(2))}`}
         </div>
         <div className={`${width[4]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hLow.toFixed(2))}`}
+          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.tvl.toFixed(2))}`}
         </div>
         <div className={`${width[5]} `}>
-          {isLoading ? (
-            <SkeletonComponent />
-          ) : (
-            `${numberWithCommas((data.volume24h / data.baseToken.price).toFixed(2))}`
-          )}
+          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`}
         </div>
-        <div className={`${width[6]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.volume24h.toFixed(2))}`}
-        </div>
-        <Link className={`${width[7]} `} href={"/constructor"}>
-          {ChevronRightVG}
-        </Link>
-      </div>
+      </Link>
 
       <div
         className="mt-2.5 block w-full cursor-pointer rounded-md border border-transparent bg-[#29292C] p-4 text-sm text-white hover:border-primary lg:hidden"
@@ -107,29 +99,22 @@ export default function PairCard({ pair, setSelectedPair }) {
             Last Price: {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
           </div>
           <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} mt-2`}>
-            24H Change: {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24h.toFixed(2))}%`}
+            24H Change:{" "}
+            {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}%`}
           </div>
         </div>
         <div className="flex flex-wrap justify-between">
           <div className="mr-4 mt-2">
-            24H High:{" "}
-            {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price24hHigh.toFixed(2))}`}
-          </div>
-          <div className="mt-2">
-            24H Low: {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price24hLow.toFixed(2))}`}
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-between">
-          <div className="mr-4 mt-2">
-            24H Volume:{" "}
-            {isLoading ? (
-              <SkeletonComponent />
-            ) : (
-              `$${numberWithCommas((data.volume24h / data.baseToken.price).toFixed(2))}`
-            )}
-          </div>
-          <div className="mt-2">
             24H Volume (USD): {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.volume24h.toFixed(2))}`}
+          </div>
+          <div className="mt-2">
+            TVL: {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.tvl.toFixed(2))}`}
+          </div>
+        </div>
+        <div className="flex flex-wrap justify-between">
+          <div className="mr-4 mt-2">
+            Fees Collected:{" "}
+            {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`}
           </div>
         </div>
       </div>

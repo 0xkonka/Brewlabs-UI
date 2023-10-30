@@ -53,7 +53,7 @@ import {
   getMirrorNftAddress,
   getNftStakingAddress,
 } from "utils/addressHelpers";
-import { provider } from "./wagmi";
+import { simpleRpcProvider } from "./providers";
 
 export const getContract = (
   chainId: ChainId,
@@ -62,7 +62,7 @@ export const getContract = (
   signer?: ethers.Signer | ethers.providers.Provider
 ) => {
   if (!address) return null;
-  const signerOrProvider = signer ?? provider({ chainId });
+  const signerOrProvider = signer ?? simpleRpcProvider(chainId);
   return new ethers.Contract(address, abi, signerOrProvider);
 };
 export const getBrewsTokenContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {

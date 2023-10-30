@@ -18,17 +18,12 @@ export const useSwapAggregator = (
   deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
   recipientAddressOrName: string | null
 ) => {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const { data: signer } = useSigner();
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient = recipientAddressOrName === null ? account : recipientAddress;
-
-  const contract = useMemo(() => {
-    if (!chainId) return null;
-    return getAggregatorContract(chainId, signer);
-  }, [chainId, signer]);
 
   const callParams = useMemo(() => {
     if (
@@ -45,7 +40,7 @@ export const useSwapAggregator = (
         amountInWei, // amountIn
         currencies[Field.INPUT]?.wrapped.address, // tokenIn
         currencies[Field.OUTPUT]?.wrapped.address, // tokenOut
-        3, // maxSteps
+        2, // maxSteps
       ],
       value: currencies[Field.INPUT].isNative ? amountInWei : null,
     };
@@ -54,7 +49,13 @@ export const useSwapAggregator = (
   const [query, setQuery] = useState<any>(null);
 
   useEffect(() => {
+    setQuery(null);
+  }, [chainId]);
+
+  useEffect(() => {
+    const contract = getAggregatorContract(chainId);
     if (!contract || !callParams) return;
+
     const methodName = "findBestPath";
     contract[methodName](...callParams.args)
       .then((response: any) => {
@@ -83,11 +84,13 @@ export const useSwapAggregator = (
       .catch((error: any) => {
         console.error(error);
       });
-  }, [contract, callParams]);
+  }, [chainId, callParams]);
 
   const addTransaction = useTransactionAdder();
   return useMemo(() => {
-    if (!chainId || !library || !account || !signer || !contract || !callParams) {
+    const contract = getAggregatorContract(chainId, signer);
+
+    if (!chainId || !account || !signer || !contract || !callParams) {
       return { callback: null, error: "Missing dependencies", query };
     }
     if (!query || !query.outputAmount) {
@@ -153,11 +156,9 @@ export const useSwapAggregator = (
       query,
     };
   }, [
-    library,
     account,
     chainId,
     recipient,
-    contract,
     query,
     callParams,
     allowedSlippage,

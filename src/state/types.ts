@@ -310,8 +310,6 @@ export interface SerializedTradingPair {
     symbol: string;
     price?: number;
     price24h?: number;
-    price24hHigh?: number;
-    price24hLow?: number;
     price24hChange?: number;
   };
   quoteToken?: {
@@ -319,11 +317,11 @@ export interface SerializedTradingPair {
     symbol: string;
     price?: number;
     price24h?: number;
-    price24hHigh?: number;
-    price24hLow?: number;
     price24hChange?: number;
   };
   volume24h?: number;
+  feesCollected24h?: number;
+  tvl?: number;
   fees?: {
     totalFee?: number;
     lpFee?: number;

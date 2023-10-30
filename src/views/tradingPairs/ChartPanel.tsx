@@ -14,12 +14,18 @@ export default function ChartPanel({ pair }) {
   const [selectedPeriod, setSelectedPeriod] = useState(0);
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedDisplayType, setSelectedDisplayType] = useState(0);
-  const [histories, setHistories] = useState([]);
+  const [histories, setHistories] = useState(null);
 
-  const periodTypes = ["24h", "7d", "30d"];
+  const periodTypes = [
+    { name: "24 HRS", period: 86400 },
+    { name: "7 DAYS", period: 86400 * 7 },
+    { name: "30 DAYS", period: 86400 * 30 },
+  ];
+  const showTypes = ["Volume USD", "TVL"];
+
   useEffect(() => {
     if (!isAddress(pair.address)) return;
-    getVolumeHistory(pair.address, pair.chainId, periodTypes[selectedPeriod])
+    getVolumeHistory(pair.address, pair.chainId, periodTypes[selectedPeriod].period)
       .then((result) => setHistories(result))
       .catch((e) => console.log(e));
   }, [selectedPeriod, pair.address, pair.chainId]);
@@ -33,11 +39,16 @@ export default function ChartPanel({ pair }) {
     NETWORKS[8453],
   ];
 
+  const wrappedHistories = [histories?.volumeHistory ?? [], histories?.tvlHistory ?? []];
   const chartData: any = {
     series: [
       {
-        name: "Volume",
-        data: histories,
+        name: showTypes[selectedDisplayType].replace("USD", ""),
+        data: wrappedHistories[selectedDisplayType],
+      },
+      {
+        name: "Fee",
+        data: histories?.feeHistory ?? [],
       },
     ],
     options: {
@@ -107,12 +118,12 @@ export default function ChartPanel({ pair }) {
   return (
     <StyledContainer className="mb-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm text-[#FFFFFF40]">BREWSWAP Volume</div>
+        <div className="text-sm text-[#FFFFFF40]">BREWSWAP {showTypes[selectedDisplayType].replace("USD", "")}</div>
         <div className="flex items-center">
           <DropDown
             value={selectedPeriod}
             setValue={(i) => setSelectedPeriod(i)}
-            data={["24 HRS", "7 DAYS", "30 DAYS"]}
+            data={periodTypes.map((period) => period.name)}
             className="!mr-2 !w-20 !text-xs !font-bold"
             rounded={"6px"}
           />
@@ -143,8 +154,8 @@ export default function ChartPanel({ pair }) {
           />
         </div>
       </div>
-      <div className="h-[200px]">
-        {histories.length ? (
+      <div className="relative z-10 h-[200px]">
+        {histories ? (
           <Chart options={chartData.options} series={chartData.series} type="area" height={190} />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -164,7 +175,7 @@ export default function ChartPanel({ pair }) {
         <DropDown
           value={selectedDisplayType}
           setValue={(i) => setSelectedDisplayType(i)}
-          data={["Volume USD"]}
+          data={showTypes}
           className="!mr-2 !w-[100px] !text-xs !font-bold"
           rounded={"6px"}
         />
@@ -176,6 +187,8 @@ export default function ChartPanel({ pair }) {
 const StyledContainer = styled.div`
   .apexcharts-tooltip {
     color: white;
+    top: 50%!important;
+    transform:translateY(-50%);
   }
   .apexcharts-tooltip.apexcharts-theme-light {
     background: #eebc199d;
@@ -186,11 +199,11 @@ const StyledContainer = styled.div`
   .apexcharts-xaxistooltip {
     display: none;
   }
+  .apexcharts-tooltip-text-y-label {
+    margin-left: 4px;
+  }
   .apexcharts-tooltip.apexcharts-theme-light {
     border: none;
-  }
-  .apexcharts-tooltip-text-y-label {
-    display: none;
   }
   .apexcharts-tooltip-marker {
     margin-right: 0;
@@ -198,9 +211,5 @@ const StyledContainer = styled.div`
   > div:nth-child(2) > div {
     min-height: unset !important;
     margin-top: -35px;
-  }
-  height: 220px;
-  @media screen and (max-height: 725px) {
-    height: 200px;
   }
 `;

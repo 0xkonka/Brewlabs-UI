@@ -10,7 +10,6 @@ import { ERC20_BYTES32_ABI } from "config/abi/erc20";
 import ERC20_ABI from "config/abi/erc20.json";
 import WETH_ABI from "config/abi/weth.json";
 import LpTokenAbi from "config/abi/lpToken.json";
-import multiCallAbi from "config/abi/Multicall.json";
 import ConstructorABI from "config/abi/tokenTransfer.json";
 import ExternalMasterChefABI from "config/abi/externalMasterchef.json";
 
@@ -33,6 +32,7 @@ import {
   getFlaskNftContract,
   getMirrorNftContract,
   getNftStakingContract,
+  getMulticallContract,
 } from "utils/contractHelpers";
 import {
   getAddress,
@@ -190,7 +190,7 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 
 export function useMulticallContract(): Contract | null {
   const { chainId } = useActiveChainId();
-  return useContract(getMulticallAddress(chainId), multiCallAbi, false);
+  return useMemo(() => getMulticallContract(chainId), [chainId]);
 }
 
 export function useTokenTransferContract(withSignerIfPossible?: boolean): Contract | null {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
+import { API_URL } from "config/constants";
 import { isAddress } from "utils";
 
 // https://api.dexscreener.com/latest/dex/pairs/bsc/0x7213a321F1855CF1779f42c0CD85d3D95291D34C,0x16b9a82891338f9ba80e2d6970fdda79d1eb0dae
@@ -22,6 +23,11 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
   try {
     if (!criteria) return;
     let searchedPairs = [];
+
+    // const brewSwapUrl = `http://localhost:5050/api/chart/search/pairs?q=${"0x55b66debfa695744d3de43e5e62aff6d128b3379"}`;
+    // const brewResponse = await axios.get(brewSwapUrl);
+    // console.log(brewResponse);
+
     if (isAddress(criteria) || type === "simple") {
       console.log("Fetch Address");
       const url = `https://io.dexscreener.com/dex/search/pairs?q=${criteria}&s=2`;
@@ -33,6 +39,7 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       });
     } else {
       console.log("FETCH START");
+
       const result = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc,polygon`);
       let tokens = result.data.data;
       const isLP = tokens.find((token) => token.address === criteria.toLowerCase() && token.marketType === "lp");
