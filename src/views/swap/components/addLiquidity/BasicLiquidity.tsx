@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
+import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token, Pair } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -227,7 +227,10 @@ export default function BasicLiquidity() {
     if (!account || !pairData?.tokenOwner) {
       setValue(false);
     } else {
-      setValue(account.toLowerCase() === pairData.tokenOwner.toLowerCase() || account.toLowerCase() === pairData.owner.toLowerCase())
+      setValue(
+        account.toLowerCase() === pairData.tokenOwner.toLowerCase() ||
+          account.toLowerCase() === pairData.owner.toLowerCase()
+      );
     }
   }, [chainId, account, pairData.tokenOwner]);
 
@@ -362,7 +365,12 @@ export default function BasicLiquidity() {
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
           setAttemptingTxn(false);
-          dispatch(fetchTradingPairFeesAsync(chainId, pair.liquidityToken.address.toLowerCase()));
+          dispatch(
+            fetchTradingPairFeesAsync(
+              chainId,
+              Pair.getAddress(currencies[Field.CURRENCY_A].wrapped, currencies[Field.CURRENCY_B].wrapped).toLowerCase()
+            )
+          );
 
           addTransaction(response, {
             summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
