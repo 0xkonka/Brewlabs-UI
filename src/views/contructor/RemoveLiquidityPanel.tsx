@@ -35,6 +35,7 @@ import OutlinedButton from "views/swap/components/button/OutlinedButton";
 import SolidButton from "views/swap/components/button/SolidButton";
 
 import StyledSlider from "./StyledSlider";
+import TokenLogo from "@components/logo/TokenLogo";
 
 export default function RemoveLiquidityPanel({
   onBack,
@@ -434,7 +435,7 @@ export default function RemoveLiquidityPanel({
         name: "Brewswap LP",
         version: "1",
         chainId,
-        verifyingContract: pair.liquidityToken.address,
+        verifyingContract: pair?.liquidityToken?.address,
       };
       const Permit = [
         { name: "owner", type: "address" },
@@ -494,18 +495,18 @@ export default function RemoveLiquidityPanel({
   return (
     <div>
       <div className="mt-[52px] flex justify-center font-brand">
-        <img
+        <TokenLogo
           src={getTokenLogoURL(token0Address, selectedChainId)}
           alt={""}
-          className="h-20 w-20 rounded-full"
+          classNames="h-20 w-20 rounded-full"
           onError={(e: any) => {
             e.target.src = getEmptyTokenLogo(selectedChainId);
           }}
         />
-        <img
+        <TokenLogo
           src={getTokenLogoURL(token1Address, selectedChainId)}
           alt={""}
-          className="-ml-5 h-20 w-20 rounded-full"
+          classNames="-ml-5 h-20 w-20 rounded-full"
           onError={(e: any) => {
             e.target.src = getEmptyTokenLogo(selectedChainId);
           }}
@@ -553,10 +554,10 @@ export default function RemoveLiquidityPanel({
             </div>
             <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
               <div className="flex items-center">
-                <img
+                <TokenLogo
                   src={getTokenLogoURL(token0Address, selectedChainId)}
                   alt={""}
-                  className="mr-2 h-5 w-5 rounded-full"
+                  classNames="mr-2 h-5 w-5 rounded-full"
                   onError={(e: any) => {
                     e.target.src = getEmptyTokenLogo(selectedChainId);
                   }}
@@ -652,11 +653,11 @@ export default function RemoveLiquidityPanel({
               <img src={getExplorerLogo(selectedChainId)} alt={""} className="mr-2 h-5 w-5 rounded-full" />
               <a
                 className="max-w-[200px] flex-1 overflow-hidden text-ellipsis underline"
-                href={getExplorerLink(selectedChainId, "token", pair?.liquidityToken.address)}
+                href={getExplorerLink(selectedChainId, "token", pair?.liquidityToken?.address)}
                 target={"_blank"}
                 rel="noreferrer"
               >
-                {pair?.liquidityToken.address}
+                {pair?.liquidityToken?.address}
               </a>
             </div>
           </div>

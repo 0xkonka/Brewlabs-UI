@@ -40,6 +40,7 @@ import useFarm from "./hooks/useFarm";
 import { BASE_URL, DEXSCREENER_CHAINNAME } from "config";
 import useFarmImpl from "./hooks/useFarmImpl";
 import { useRouter } from "next/router";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -352,10 +353,10 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                   <div className="mt-4 flex w-[160px] items-center justify-center ">
-                    <img
+                    <TokenLogo
                       src={getTokenLogoURL(earningToken.address, data.chainId)}
                       alt={""}
-                      className="w-[100px] rounded-full"
+                      classNames="w-[100px] rounded-full"
                     />
                   </div>
                   <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">

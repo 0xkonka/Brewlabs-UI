@@ -26,7 +26,7 @@ const StyledButton = ({
     );
   };
   const base =
-    "flex items-center justify-center disabled:cursor-[not-allowed] font-brand rounded relative primary-shadow text-sm transition w-full h-full ";
+    "flex items-center justify-center disabled:cursor-[not-allowed] font-brand rounded relative primary-shadow text-sm transition w-full h-full p-2 ";
 
   return type === "secondary" ? (
     <button

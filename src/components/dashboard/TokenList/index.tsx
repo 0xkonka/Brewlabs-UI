@@ -19,6 +19,7 @@ import { Token, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import { DEX_GURU_WETH_ADDR } from "config/constants";
 import { isAddress } from "utils";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const TokenList = ({
   tokens,
@@ -136,7 +137,6 @@ const TokenList = ({
   });
 
   useEffect(() => {
-
     let _showData: any = [];
     let filteredTokens: any = [];
     if (listType === 0) {
@@ -289,14 +289,13 @@ const TokenList = ({
                     rel="noreferrer"
                     className="flex items-center"
                   >
-                    <img
+                    <TokenLogo
                       src={getTokenLogoURL(
                         isAddress(data.address === DEX_GURU_WETH_ADDR ? WNATIVE[data.chainId].address : data.address),
                         data.chainId
                       )}
                       alt=""
-                      className="mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"
-                      onError={(e: any) => (e.target.src = "/images/unknown.png")}
+                      classNames="mx-2.5 h-[15px] w-[15px] overflow-hidden rounded-full"
                     />
                     <div>
                       <div className="flex items-center text-white">

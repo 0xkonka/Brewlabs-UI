@@ -243,7 +243,7 @@ export default function BasicLiquidity() {
   };
 
   const setWalletAddress = async (address: string) => {
-    if (!chainId || !account || !pair || !signer) return;
+    if (!chainId || !account || !pair || !signer || !pair.liquidityToken || !pair.liquidityToken.address) return;
 
     setPending(true);
     try {
@@ -271,7 +271,7 @@ export default function BasicLiquidity() {
   };
 
   const setFeeDistribution = async () => {
-    if (!chainId || !account || !pair || !signer) return;
+    if (!chainId || !account || !pair || !signer || !pair.liquidityToken || !pair.liquidityToken.address) return;
 
     setPending(true);
     try {
@@ -715,7 +715,7 @@ export default function BasicLiquidity() {
               <div className="mt-3 flex flex-col justify-between sm:flex-row">
                 <a
                   href={`https://freezer.brewlabs.info/${FREEZER_CHAINS[chainId]}/pair-lock/new?pairAddress=${
-                    pair?.liquidityToken.address || ZERO_ADDRESS
+                    pair?.liquidityToken?.address || ZERO_ADDRESS
                   }`}
                   target="_blank"
                   className="mb-2 mr-0 flex-1 sm:mb-0 sm:mr-3"

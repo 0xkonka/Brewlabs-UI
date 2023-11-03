@@ -14,13 +14,16 @@ export default function PairCard({ pair, setSelectedPair }) {
 
   const isLoading = !data.baseToken;
 
-  
   return (
     <>
       <Link
         className="mt-2 hidden h-[54px] cursor-pointer items-center justify-between rounded-md border border-transparent bg-[#29292C] px-4 font-brand text-white transition duration-300 hover:scale-[1.03] hover:border-brand lg:flex"
         onClick={() => !isLoading && setSelectedPair(pair)}
-        href={getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId)}
+        href={
+          isLoading
+            ? "#"
+            : getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId)
+        }
       >
         <div className={`${width[0]} `}>
           {isLoading ? (
@@ -53,7 +56,7 @@ export default function PairCard({ pair, setSelectedPair }) {
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[2]} `}>
-          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}`}
+          {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}%`}
         </div>
         <div className={`${width[3]} `}>
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.volume24h.toFixed(2))}`}

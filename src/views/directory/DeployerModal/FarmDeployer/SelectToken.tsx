@@ -11,6 +11,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
 import RouterSelect from "../RouterSelect";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpInfo }) => {
   const { chainId } = useActiveChainId();
@@ -76,18 +77,18 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
                       e.target.src = getEmptyTokenLogo(chainId);
                     }}
                   />
-                  <img
+                  <TokenLogo
                     src={getTokenLogoURL(token0Address, chainId)}
                     alt={""}
-                    className="h-7 w-7 rounded-full"
+                    classNames="h-7 w-7 rounded-full"
                     onError={(e: any) => {
                       e.target.src = getEmptyTokenLogo(chainId);
                     }}
                   />
-                  <img
+                  <TokenLogo
                     src={getTokenLogoURL(token1Address, chainId)}
                     alt={""}
-                    className="-ml-3 h-7 w-7 rounded-full"
+                    classNames="-ml-3 h-7 w-7 rounded-full"
                     onError={(e: any) => {
                       e.target.src = getEmptyTokenLogo(chainId);
                     }}
