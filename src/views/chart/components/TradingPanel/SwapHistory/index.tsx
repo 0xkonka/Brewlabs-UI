@@ -147,7 +147,7 @@ export default function SwapHistory({ selectedPair }) {
         setTB={setTB}
         setCriteria={setCriteria}
         setShowType={setShowType}
-        isAccount={showType === 6}
+        isAccount={showType >= 3}
       />
     </div>
   );
