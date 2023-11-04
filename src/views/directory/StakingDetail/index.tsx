@@ -49,6 +49,7 @@ import useUnlockupPool from "./hooks/useUnlockupPool";
 import EmergencyModal from "./Modals/EmergencyModal";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
@@ -290,8 +291,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
               </Container>
             ) : (
               <Container className="font-brand">
-                <div className="flex items-center justify-between font-brand">
-                  <div className="flex w-[160px] flex-col">
+                <div className="flex flex-col items-center justify-between font-brand sm:flex-row">
+                  <div className="mb-5 flex w-fit flex-row sm:mb-0 sm:w-[160px] sm:flex-col">
                     <div className="h-[32px] w-[140px] ">
                       <StyledButton onClick={() => router.push("/staking")}>
                         <div className="absolute left-2 top-[7px]">{chevronLeftSVG}</div>
@@ -299,93 +300,97 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </StyledButton>
                     </div>
                     {data.isCustody && (
-                      <div className="mt-2 block h-[32px] w-[140px] xl:mt-0 xl:hidden">
-                        <StyledButton>
-                          <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                          <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
+                      <div className="ml-5 mt-0 block h-[32px] sm:ml-0 sm:mt-2 xl:mt-0 xl:hidden">
+                        <StyledButton className="!w-fit">
+                          <div className="mr-1">{lockSVG}</div>
+                          <div className="whitespace-nowrap">Brewlabs Custody</div>
                         </StyledButton>
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-1 justify-end">
+                  <div className="ml-0 flex flex-1 justify-between sm:ml-10">
                     {data.isCustody && (
-                      <div className="ml-5 hidden w-full max-w-[470px] xl:block">
-                        <div className="mt-2 h-[32px] w-[140px] xl:mt-0">
-                          <StyledButton>
-                            <div className="absolute left-2 top-2.5">{lockSVG}</div>
-                            <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
+                      <div className="hidden xl:block">
+                        <div className="mt-2 h-[32px] xl:mt-0">
+                          <StyledButton className="!w-fit">
+                            <div className="mr-1">{lockSVG}</div>
+                            <div className="whitespace-nowrap">Brewlabs Custody</div>
                           </StyledButton>
                         </div>
                       </div>
                     )}
-                    <div className="ml-3 flex w-full max-w-fit flex-col justify-end xl:ml-5 xl:max-w-[520px] xl:flex-row">
-                      {data.enableEmergencyWithdraw && (
-                        <div className="mr-0 h-[32px] w-[180px] xl:mr-5">
-                          <StyledButton
-                            type={"danger"}
-                            onClick={() => setEmergencyOpen(true)}
-                            disabled={pending || !address}
+                    <div className="flex flex-1 flex-col items-center justify-start sm:items-end xl:sm:items-start xl:flex-row xl:justify-end">
+                      <div className="mr-0 flex xl:mr-5">
+                        {data.enableEmergencyWithdraw && (
+                          <div className="mr-5 h-[32px]">
+                            <StyledButton
+                              type={"danger"}
+                              onClick={() => setEmergencyOpen(true)}
+                              disabled={pending || !address}
+                            >
+                              Emergency Withdraw
+                            </StyledButton>
+                          </div>
+                        )}
+                        <StyledButton
+                          className="primary-shadow mb-2 !h-8 !w-fit bg-[#B9B8B81A] font-brand font-semibold text-primary hover:border-white hover:text-white xl:mb-0"
+                          type={"default"}
+                          onClick={onSharePool}
+                        >
+                          <div className="flex items-center">
+                            <div className="mr-1.5">{isCopied ? "Copied" : "Share Pool"}</div> {LinkSVG}
+                          </div>
+                        </StyledButton>
+                      </div>
+                      <div className="flex">
+                        {data.earningToken.projectLink && (
+                          <a
+                            className="mr-5 h-[32px]"
+                            href={data.earningToken.projectLink}
+                            target="_blank"
+                            rel="noreferrer"
                           >
-                            Emergency Withdraw
-                          </StyledButton>
-                        </div>
-                      )}
-                      <StyledButton
-                        className="primary-shadow mb-2 !h-8 !w-[140px] bg-[#B9B8B81A] font-brand font-bold text-primary hover:border-white hover:text-white xl:mb-0"
-                        type={"default"}
-                        onClick={onSharePool}
-                      >
-                        <div className="flex items-center">
-                          <div className="mr-1.5">{isCopied ? "Copied" : "Share Pool"}</div> {LinkSVG}
-                        </div>
-                      </StyledButton>
-                      {data.earningToken.projectLink && (
-                        <a
-                          className="ml-0 h-[32px] w-[140px] xl:ml-5"
-                          href={data.earningToken.projectLink}
+                            <StyledButton className="!w-fit">
+                              <div>Website</div>
+                              <div className="ml-2 scale-125">{LinkSVG}</div>
+                            </StyledButton>
+                          </a>
+                        )}
+                        <Link
+                          className="mr-5 h-[32px]"
                           target="_blank"
+                          href={`/chart/${DEXSCREENER_CHAINNAME[stakingToken.chainId]}/${stakingToken.address}`}
+                          rel="noreferrer"
+                        >
+                          <StyledButton className="!w-fit">
+                            <div>Chart</div>
+                            <div className="ml-1 -scale-100">{chevronLeftSVG}</div>
+                          </StyledButton>
+                        </Link>
+                        <a
+                          className="h-[32px]"
+                          target="_blank"
+                          href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
                           rel="noreferrer"
                         >
                           <StyledButton>
-                            <div>Website</div>
-                            <div className="absolute right-2 top-2.5 scale-125">{LinkSVG}</div>
+                            <div>Swap</div>
+                            <div className="ml-1 -scale-100">{chevronLeftSVG}</div>
                           </StyledButton>
                         </a>
-                      )}
-                      <Link
-                        className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
-                        target="_blank"
-                        href={`/chart/${DEXSCREENER_CHAINNAME[stakingToken.chainId]}/${stakingToken.address}`}
-                        rel="noreferrer"
-                      >
-                        <StyledButton>
-                          <div>Chart</div>
-                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </Link>
-                      <a
-                        className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
-                        target="_blank"
-                        href={`${BASE_URL}/swap?outputCurrency=${stakingToken.address}`}
-                        rel="noreferrer"
-                      >
-                        <StyledButton>
-                          <div>Swap</div>
-                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </a>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-between md:flex-row">
                   <div className="mt-4 flex w-[160px] items-center justify-center ">
-                    <img
+                    <TokenLogo
                       src={getTokenLogoURL(data.isRevenue ? stakingToken.address : earningToken.address, data.chainId)}
                       alt={""}
-                      className="w-[100px] rounded-full"
+                      classNames="w-[100px] rounded-full"
                     />
                   </div>
-                  <div className="flex flex-1 flex-wrap justify-end xl:flex-nowrap">
+                  <div className="ml-0 flex flex-1 flex-wrap justify-between sm:ml-10 xl:flex-nowrap">
                     <div className="primary-shadow relative mt-4 w-full max-w-full rounded bg-[#B9B8B80D] p-[14px_12px_8px_12px] sm:p-[14px_25px_8px_25px] md:max-w-[520px] xl:md:max-w-[470px]">
                       <div className="flex flex-col justify-between text-xl xsm:flex-row">
                         <div>
@@ -484,7 +489,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </div>
 
-                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_12px_8px_12px] sm:p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
+                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_12px_8px_12px] sm:p-[6px_25px_8px_25px] md:max-w-[520px] xl:ml-[30px]">
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">

@@ -2,8 +2,9 @@
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import { useState } from "react";
 import { BigNumberFormat } from "utils/functions";
+import { SkeletonComponent } from "@components/SkeletonComponent";
 
-export default function VolumeInfo({ volumeDatas }) {
+export default function VolumeInfo({ volumeDatas, volumeDataLoading }) {
   const [showType, setShowType] = useState(0);
 
   const showTypes = [
@@ -55,7 +56,11 @@ export default function VolumeInfo({ volumeDatas }) {
                 {Object.keys(volumeDatas[showTypes[showType].key]).map((key, i) => {
                   return (
                     <div key={i} className="flex-1 text-right text-[11px] text-white">
-                      {BigNumberFormat(volumeDatas[showTypes[showType].key][key][data], showType ? 2 : 0)}
+                      {volumeDataLoading ? (
+                        <SkeletonComponent className="!min-w-[32px] !w-8" />
+                      ) : (
+                        BigNumberFormat(volumeDatas[showTypes[showType].key][key][data], showType ? 2 : 0)
+                      )}
                     </div>
                   );
                 })}

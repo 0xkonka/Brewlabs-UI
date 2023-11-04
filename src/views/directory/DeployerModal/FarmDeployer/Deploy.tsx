@@ -29,6 +29,7 @@ import LoadingText from "@components/LoadingText";
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
 import { useFactory } from "./hooks";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const DURATIONS = [365, 180, 90, 60];
 
@@ -202,20 +203,20 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
             }}
           />
           <div className="ml-4 flex items-center">
-            <img
+            <TokenLogo
               src={getTokenLogoURL(token0Address, chainId)}
               alt={""}
-              className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
+              classNames="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
               onError={(e: any) => {
                 e.target.src = getEmptyTokenLogo(chainId);
               }}
             />
 
             <div className="-ml-2 mr-2">
-              <img
+              <TokenLogo
                 src={getTokenLogoURL(token1Address, chainId)}
                 alt={""}
-                className="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
+                classNames="max-h-[32px] min-h-[32px] min-w-[32px] max-w-[32px] rounded-full"
                 onError={(e: any) => {
                   e.target.src = getEmptyTokenLogo(chainId);
                 }}

@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { escapeRegExp } from "../../utils";
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`); // match escaped "." characters via in a non-capturing group
+let searchTimeout;
 
 const NumericalInput = ({
   value,
@@ -19,9 +21,10 @@ const NumericalInput = ({
   isZap?: boolean;
   size?: string;
 }) => {
+  const [amount, setAmount] = useState("");
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === "" || inputRegex.test(escapeRegExp(nextUserInput))) {
-      onUserInput(nextUserInput);
+      setAmount(nextUserInput);
     }
   };
 
@@ -31,9 +34,16 @@ const NumericalInput = ({
     }
   };
 
+  useEffect(() => {
+    if (searchTimeout != undefined) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      onUserInput(amount);
+    }, 500);
+  }, [amount]);
+
   return (
     <input
-      value={value}
+      value={amount}
       onChange={handleOnChange}
       inputMode="decimal"
       placeholder={placeholder || "0.0"}

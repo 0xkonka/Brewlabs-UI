@@ -16,6 +16,7 @@ let wrappedQuery;
 
 export default function TradingPanel({ selectedPair, showReverse, marketInfos }) {
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
+  const [volumeDataLoading, setVolumeDataLoading] = useState(false);
 
   const stringifiedPair = JSON.stringify(selectedPair);
 
@@ -31,15 +32,18 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
       return;
     }
     wrappedQuery = JSON.stringify(query);
+    setVolumeDataLoading(true);
     fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all", Date.now() - 86400000 * 7)
       .then((result) => {
         if (wrappedQuery === JSON.stringify(query)) {
           const volumeDatas = getVolumeDatas(result);
           setVolumeDatas(volumeDatas);
         }
+        setVolumeDataLoading(false);
       })
       .catch((e) => {
         console.log(e);
+        setVolumeDataLoading(false);
       });
   }, [stringifiedPair]);
 
@@ -87,6 +91,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
             selectedPair={selectedPair}
             marketInfos={marketInfos}
             volumeDatas={volumeDatas}
+            volumeDataLoading={volumeDataLoading}
             balances={balances}
             price={price}
             lpPrice={lpPrice}
@@ -112,6 +117,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
             selectedPair={selectedPair}
             marketInfos={marketInfos}
             volumeDatas={volumeDatas}
+            volumeDataLoading={volumeDataLoading}
             balances={balances}
             price={price}
             lpPrice={lpPrice}

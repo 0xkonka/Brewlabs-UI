@@ -1,3 +1,4 @@
+import TokenLogo from "@components/logo/TokenLogo";
 import { useEffect, useRef, useState } from "react";
 import Carousel from "react-multi-carousel";
 import { useGlobalState } from "state";
@@ -32,7 +33,7 @@ export default function TrendingList({ trendings }) {
     if (temp.length) _fTrendings.push(temp);
     setFilteredTrendings(_fTrendings);
   }, [trendings]);
-  
+
   return (
     <div className="primary-shadow flex h-[44px] w-[300px] flex-col justify-center rounded bg-[#b9b8b8f] px-4 md:w-[360px]">
       <Carousel
@@ -49,10 +50,10 @@ export default function TrendingList({ trendings }) {
               {trendings.map((data, j) => {
                 return (
                   <div key={j} className="mr-2 flex w-[110px] items-center">
-                    <img
+                    <TokenLogo
                       src={getTokenLogoURL(isAddress(data.address), data.chainId)}
                       alt={""}
-                      className="mr-2 h-5 w-5 rounded-full"
+                      classNames="mr-2 h-5 w-5 rounded-full"
                     />
                     <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[#FFFFFF]">
                       {data.symbol}

@@ -61,6 +61,8 @@ const SwapContextProvider = ({ children }: any) => {
   const [addLiquidityStep, setAddLiquidityStep] = useState("default");
   const [openSettingModal, setOpenSettingModal] = useState(false);
 
+  const [isBrewRouter, setIsBrewRouter] = useState(false);
+
   const [swapFeeData, setSwapFeeData] = useState({
     eligiblePairs: [],
     ownedPairs: [],
@@ -83,7 +85,7 @@ const SwapContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     setSwapFeeData({ eligiblePairs, ownedPairs, lpBalances, collectiblePairs, rewards, pairTokens });
-     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s_eligiblePairs, s_ownedPairs, s_lpBalances, s_collectiblePairs, s_rewards, s_pairTokens]);
 
   return (
@@ -106,6 +108,7 @@ const SwapContextProvider = ({ children }: any) => {
         addLiquidityStep,
         openSettingModal,
         swapFeeData,
+        isBrewRouter,
         setQuoteData,
         setOutputAmount,
         setSlippageInput,
@@ -122,6 +125,7 @@ const SwapContextProvider = ({ children }: any) => {
         setSwapTab,
         setAddLiquidityStep,
         setOpenSettingModal,
+        setIsBrewRouter,
       }}
     >
       {children}

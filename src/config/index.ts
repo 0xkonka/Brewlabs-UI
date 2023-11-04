@@ -188,3 +188,8 @@ export const DEXSCREENER_CHAINNAME = {
   324: "zksync",
   43114: "avalanche",
 };
+
+export const TRUSTWALLET_ASSETS = {
+  1: "ethereum",
+  56: "smartchain",
+};
