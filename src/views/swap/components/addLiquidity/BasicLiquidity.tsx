@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token } from "@brewlabs/sdk";
+import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token, Pair } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -227,7 +227,10 @@ export default function BasicLiquidity() {
     if (!account || !pairData?.tokenOwner) {
       setValue(false);
     } else {
-      setValue(account.toLowerCase() === pairData.tokenOwner.toLowerCase() || account.toLowerCase() === pairData.owner.toLowerCase())
+      setValue(
+        account.toLowerCase() === pairData.tokenOwner.toLowerCase() ||
+          account.toLowerCase() === pairData.owner.toLowerCase()
+      );
     }
   }, [chainId, account, pairData.tokenOwner]);
 
@@ -240,7 +243,7 @@ export default function BasicLiquidity() {
   };
 
   const setWalletAddress = async (address: string) => {
-    if (!chainId || !account || !pair || !signer) return;
+    if (!chainId || !account || !pair || !signer || !pair.liquidityToken || !pair.liquidityToken.address) return;
 
     setPending(true);
     try {
@@ -268,7 +271,7 @@ export default function BasicLiquidity() {
   };
 
   const setFeeDistribution = async () => {
-    if (!chainId || !account || !pair || !signer) return;
+    if (!chainId || !account || !pair || !signer || !pair.liquidityToken || !pair.liquidityToken.address) return;
 
     setPending(true);
     try {
@@ -362,7 +365,12 @@ export default function BasicLiquidity() {
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
           setAttemptingTxn(false);
-          dispatch(fetchTradingPairFeesAsync(chainId, pair.liquidityToken.address.toLowerCase()));
+          dispatch(
+            fetchTradingPairFeesAsync(
+              chainId,
+              Pair.getAddress(currencies[Field.CURRENCY_A].wrapped, currencies[Field.CURRENCY_B].wrapped).toLowerCase()
+            )
+          );
 
           addTransaction(response, {
             summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
@@ -707,7 +715,7 @@ export default function BasicLiquidity() {
               <div className="mt-3 flex flex-col justify-between sm:flex-row">
                 <a
                   href={`https://freezer.brewlabs.info/${FREEZER_CHAINS[chainId]}/pair-lock/new?pairAddress=${
-                    pair?.liquidityToken.address || ZERO_ADDRESS
+                    pair?.liquidityToken?.address || ZERO_ADDRESS
                   }`}
                   target="_blank"
                   className="mb-2 mr-0 flex-1 sm:mb-0 sm:mr-3"

@@ -8,6 +8,8 @@ import { BigNumberFormat, priceFormat } from "utils/functions";
 import Carousel from "react-multi-carousel";
 
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import TokenLogo from "@components/logo/TokenLogo";
+import { WNATIVE } from "@brewlabs/sdk";
 
 const responsive = {
   desktop: {
@@ -170,7 +172,11 @@ const FeaturedPriceList = () => {
           return (
             <div className="feature-shadow relative w-[210px] rounded-[20px] px-[18px] py-3" key={i}>
               <div className="flex items-center">
-                <img src={getTokenLogoURL(data.address, data.chainId)} alt={""} className="mr-3 w-7 rounded-full" />
+                <TokenLogo
+                  src={getTokenLogoURL(data.isNative ? WNATIVE[data.chainId].address : data.address, data.chainId)}
+                  alt={""}
+                  classNames="mr-3 w-7 rounded-full"
+                />
                 <div className="">
                   <div className="text-sm text-white">{data.symbol}</div>
                   <div className={`${percent >= 0 ? "text-green" : "text-[#ea3943]"} text-xs`}>

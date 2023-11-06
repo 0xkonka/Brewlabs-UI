@@ -3,7 +3,7 @@ import { NETWORKS } from "config/constants/networks";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Oval } from "react-loader-spinner";
-import { getVolumeHistory } from "state/pair/fetchTradingPairs";
+import { getTradingPairHistories } from "state/pair/fetchTradingPairs";
 import styled from "styled-components";
 import { isAddress } from "utils";
 import { BigNumberFormat, getChainLogo } from "utils/functions";
@@ -25,7 +25,7 @@ export default function ChartPanel({ pair }) {
 
   useEffect(() => {
     if (!isAddress(pair.address)) return;
-    getVolumeHistory(pair.address, pair.chainId, periodTypes[selectedPeriod].period)
+    getTradingPairHistories(pair.chainId, periodTypes[selectedPeriod].period)
       .then((result) => setHistories(result))
       .catch((e) => console.log(e));
   }, [selectedPeriod, pair.address, pair.chainId]);
@@ -187,8 +187,8 @@ export default function ChartPanel({ pair }) {
 const StyledContainer = styled.div`
   .apexcharts-tooltip {
     color: white;
-    top: 50%!important;
-    transform:translateY(-50%);
+    top: 50% !important;
+    transform: translateY(-50%);
   }
   .apexcharts-tooltip.apexcharts-theme-light {
     background: #eebc199d;

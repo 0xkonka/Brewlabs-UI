@@ -101,7 +101,7 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
                 <span className="text-primary">24HR</span>
               </p>
               <p className={`${pair.priceChange.h24 > 0 ? "dark:text-green" : "dark:text-danger"} text-[10px]`}>
-                {pair.priceUsd} USD = 1.00 {pair.baseToken.symbol}
+                {pair.priceUsd.toFixed(4)} USD = 1.00 {pair.baseToken.symbol}
               </p>
             </div>
           </div>
@@ -115,7 +115,11 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
             <div className="flex">
               <img src={getChainLogo(pair.chainId)} alt={""} className="primary-shadow h-6 w-6 rounded-full" />
               <img
-                src={`https://dd.dexscreener.com/ds-data/dexes/${pair.dexId}.png`}
+                src={
+                  pair.a === "brewswap"
+                    ? "/images/brewlabsRouter.png"
+                    : `https://dd.dexscreener.com/ds-data/dexes/${pair.dexId}.png`
+                }
                 alt={""}
                 className="primary-shadow h-6 w-6 rounded-full"
               />

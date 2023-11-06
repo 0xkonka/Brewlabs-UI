@@ -203,7 +203,7 @@ export async function getTradingAllPairs(chainId: ChainId) {
   }
 }
 
-export async function getVolumeHistory(address, chainId, period) {
+export async function getTradingPairHistories(chainId, period) {
   if (chainId !== ChainId.POLYGON) return { volumeHistory: [], feeHistory: [] };
   try {
     let query,
@@ -219,7 +219,7 @@ export async function getVolumeHistory(address, chainId, period) {
     do {
       query = `{
         swaps(
-          where: {pair_: {id: "${address.toLowerCase()}"}, timestamp_gte: "${timestamp}"}
+          where: {timestamp_gte: "${timestamp}"}
           first: 1000
           skip:${1000 * index}
           orderBy: timestamp
@@ -231,6 +231,9 @@ export async function getVolumeHistory(address, chainId, period) {
           amountUSD
           amountFeeUSD
           timestamp
+          pair {
+            id
+          }
         }
       }`;
       const { data: response } = await axios.post(
@@ -257,7 +260,8 @@ export async function getVolumeHistory(address, chainId, period) {
     }
 
     query = `{
-      pair(id: "${address.toLowerCase()}") {
+      pairs {
+        id
         reserve1
         reserve0
         token0 {
@@ -266,7 +270,7 @@ export async function getVolumeHistory(address, chainId, period) {
         token1 {
           derivedUSD
         }
-      }
+     }
     }`;
 
     const { data: reserveResponse } = await axios.post(
@@ -274,25 +278,39 @@ export async function getVolumeHistory(address, chainId, period) {
       { query }
     );
 
-    let reserve0 = Number(reserveResponse.data.pair.reserve0);
-    let reserve1 = Number(reserveResponse.data.pair.reserve1);
-    let price0 = Number(reserveResponse.data.pair.token0.derivedUSD);
-    let price1 = Number(reserveResponse.data.pair.token1.derivedUSD);
+    const pairs = reserveResponse.data.pairs;
 
-    totalSwaps = totalSwaps.sort((a, b) => b.timestamp - a.timestamp);
-    j = 0;
+    let historiesByPair = [];
+    for (let i = 0; i < pairs.length; i++) {
+      const swapsByPair = totalSwaps
+        .filter((swap) => swap.pair.id === pairs[i].id)
+        .sort((a, b) => b.timestamp - a.timestamp);
+      let history = [];
 
-    for (let i = 1; i <= 10; i++) {
-      while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) >= Date.now() / 1000 - (period / 10) * i) {
-        reserve0 += Number(totalSwaps[j].amount0Out);
-        reserve0 -= Number(totalSwaps[j].amount0In);
-        reserve1 += Number(totalSwaps[j].amount1Out);
-        reserve1 -= Number(totalSwaps[j].amount1In);
-        price0 = getPriceByTx(totalSwaps[j]).price0;
-        price1 = getPriceByTx(totalSwaps[j]).price1;
-        j++;
+      for (let j = 0; j < 10; j++) {
+        let reserve0 = Number(pairs[i].reserve0);
+        let reserve1 = Number(pairs[i].reserve1);
+        let price0 = Number(pairs[i].token0.derivedUSD);
+        let price1 = Number(pairs[i].token1.derivedUSD);
+        let k = 0;
+        while (k < swapsByPair.length && Number(swapsByPair[k].timestamp) > Date.now() / 1000 - (period / 10) * j) {
+          reserve0 += Number(swapsByPair[k].amount0Out);
+          reserve0 -= Number(swapsByPair[k].amount0In);
+          reserve1 += Number(swapsByPair[k].amount1Out);
+          reserve1 -= Number(swapsByPair[k].amount1In);
+          price0 = getPriceByTx(swapsByPair[k]).price0;
+          price1 = getPriceByTx(swapsByPair[k]).price1;
+          k++;
+        }
+        history.push(reserve0 * price0 + reserve1 * price1);
       }
-      tvlHistory.push(reserve0 * price0 + reserve1 * price1);
+      historiesByPair.push(history);
+    }
+
+    for (let i = 9; i >= 0; i--) {
+      let s = 0;
+      for (let j = 0; j < historiesByPair.length; j++) s += historiesByPair[j][i];
+      tvlHistory.push(s);
     }
 
     return { volumeHistory, feeHistory, tvlHistory };

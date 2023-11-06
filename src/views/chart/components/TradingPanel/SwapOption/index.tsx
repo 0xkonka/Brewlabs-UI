@@ -11,7 +11,15 @@ import BalanceInfo from "./BalanceInfo";
 import Socials from "./Socials";
 import MomentumInfo from "./MomentumInfo";
 
-export default function SwapOption({ selectedPair, marketInfos, volumeDatas, balances, lpPrice, price }) {
+export default function SwapOption({
+  selectedPair,
+  marketInfos,
+  volumeDatas,
+  balances,
+  lpPrice,
+  price,
+  volumeDataLoading,
+}) {
   const { setOpenSettingModal }: any = useContext(SwapContext);
 
   return (
@@ -31,7 +39,7 @@ export default function SwapOption({ selectedPair, marketInfos, volumeDatas, bal
       <div className="ml-0 mt-0 w-[320px] flex-1 sm:ml-4 2xl:sm:ml-0 2xl:mt-2 2xl:flex-none">
         {selectedPair ? <SlippageInfo selectedPair={selectedPair} /> : ""}
         <div className="mt-2" />
-        <VolumeInfo volumeDatas={volumeDatas} />
+        <VolumeInfo volumeDatas={volumeDatas} volumeDataLoading={volumeDataLoading} />
         <MomentumInfo volumeDatas={volumeDatas} />
         {selectedPair ? (
           <BalanceInfo selectedPair={selectedPair} price={price} lpPrice={lpPrice} balances={balances} />

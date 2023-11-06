@@ -5,8 +5,20 @@ import { isAddress } from "utils";
 
 export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default", timestamp = 0) {
   let histories = [];
-  let tb = query.tb;
+  let tb = query.tb ?? 0;
   try {
+    if (query.a === "brewswap") {
+      do {
+        const brewSwapUrl = `${API_URL}/chart/log/all?pair=${query.pair.toLowerCase()}&q=${query.quote.toLowerCase()}&tb=${tb}${
+          query.account ? `&account=${query.account.toLowerCase()}` : ""
+        }&type=${query.type}`;
+        const { data: response } = await axios.get(brewSwapUrl);
+        if (!response.length) break;
+        histories = [...histories, ...response].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+        tb = histories[histories.length - 1].timestamp;
+      } while (fetch === "all" && histories.length % 100 === 0 && tb >= timestamp);
+      return histories;
+    }
     do {
       const url = `https://io.dexscreener.com/dex/log/amm/${query.a}/all/${DEXSCREENER_CHAINNAME[chainId]}/${
         query.pair

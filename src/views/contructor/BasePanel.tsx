@@ -14,6 +14,7 @@ import StyledButton from "views/directory/StyledButton";
 import { CircleRightSVG, InfoSVG, RightSVG, checkCircleSVG } from "components/dashboard/assets/svgs";
 import WalletSelector from "components/wallet/WalletSelector";
 import Modal from "components/Modal";
+import TokenLogo from "@components/logo/TokenLogo";
 
 const LoadingText = () => {
   const [dotCount, setDotCount] = useState([]);
@@ -64,18 +65,18 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           </div>
           <div className="flex flex-1 items-center">
             <div className="flex">
-              <img
+              <TokenLogo
                 src={getTokenLogoURL(token0Address, data.chainId)}
                 alt={""}
-                className="h-10 w-10 rounded-full"
+                classNames="h-10 w-10 rounded-full"
                 onError={(e: any) => {
                   e.target.src = getEmptyTokenLogo(data.chainId);
                 }}
               />
-              <img
+              <TokenLogo
                 src={getTokenLogoURL(token1Address, data.chainId)}
                 alt={""}
-                className="-ml-3 h-10 w-10 rounded-full"
+                classNames="-ml-3 h-10 w-10 rounded-full"
                 onError={(e: any) => {
                   e.target.src = getEmptyTokenLogo(data.chainId);
                 }}

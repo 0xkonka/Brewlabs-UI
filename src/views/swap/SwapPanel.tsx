@@ -60,7 +60,8 @@ export default function SwapPanel({
 
   // ----------------- ROUTER SWAP --------------------- //
 
-  const { autoMode, buyTax, sellTax, slippage, setAutoMode, setSlippageInput }: any = useContext(SwapContext);
+  const { autoMode, buyTax, sellTax, slippage, setAutoMode, setSlippageInput, isBrewRouter }: any =
+    useContext(SwapContext);
   // swap state
   const { independentField, typedValue, recipient } = useSwapState();
   const { currencies, currencyBalances, parsedAmount, inputError, v2Trade } = useDerivedSwapInfo();
@@ -187,6 +188,7 @@ export default function SwapPanel({
     query,
     error: aggregationCallbackError,
   } = useSwapAggregator(currencies, parsedAmount, autoMode ? slippage : userSlippageTolerance, deadline, recipient);
+
   const handleSwapUsingAggregator = async () => {
     if (!swapCallbackUsingAggregator) {
       return;
@@ -212,7 +214,9 @@ export default function SwapPanel({
       });
   };
 
-  const usingAggregator = noLiquidity || query?.outputAmount?.toExact() > trade?.outputAmount?.toExact();
+  const _usingAggregator = noLiquidity || query?.outputAmount?.toExact() > trade?.outputAmount?.toExact();
+  const usingAggregator = !isBrewRouter && _usingAggregator;
+
   const parsedAmounts = showWrap
     ? {
         [Field.INPUT]: parsedAmount,
@@ -220,7 +224,7 @@ export default function SwapPanel({
       }
     : {
         [Field.INPUT]: parsedAmount,
-        [Field.OUTPUT]: usingAggregator ? query?.outputAmount : trade?.outputAmount,
+        [Field.OUTPUT]: _usingAggregator ? query?.outputAmount : trade?.outputAmount,
       };
 
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput));
@@ -327,7 +331,7 @@ export default function SwapPanel({
           buyTax={buyTax}
           sellTax={sellTax}
           currencies={currencies}
-          noLiquidity={usingAggregator}
+          noLiquidity={_usingAggregator}
           size={size}
         />
       </div>

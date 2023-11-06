@@ -41,20 +41,13 @@ export const SearchInput = () => {
     }, 500);
   }, [cri]);
 
-  const router = useRouter();
-
-  function onUserInput(input, currency) {}
-  async function onCurrencySelect(input, currency) {
-    router.push(`/chart/${DEXSCREENER_CHAINNAME[currency.chainId]}/${currency.address}`);
-  }
-
   return (
     <div className="relative z-10 flex w-full">
       <div className="primary-shadow flex h-[44px] flex-1">
         <div className="relative flex-1">
           <div className=" relative flex h-full items-center justify-between overflow-hidden rounded-l bg-[#B9B8B81A]">
             <div
-              className="!h-full flex-1 cursor-pointer  bg-transparent font-brand !text-base !shadow-none focus:!shadow-none focus:!ring-0 z-10"
+              className="z-10 !h-full flex-1  cursor-pointer bg-transparent font-brand !text-base !shadow-none focus:!shadow-none focus:!ring-0"
               onClick={() => {
                 setIsOpen(3);
                 setSidebarContent(<CurrencySelector />);

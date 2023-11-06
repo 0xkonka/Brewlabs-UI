@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount } from "@brewlabs/sdk";
+import { Currency, CurrencyAmount, Price } from "@brewlabs/sdk";
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -10,6 +10,10 @@ import NumericalInput from "./NumericalInput";
 import TradeCard from "./TradeCard";
 import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
 import { defaultMarketData } from "state/prices/types";
+import { useDerivedSwapInfo } from "state/swap/hooks";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { Field } from "state/swap/actions";
+import { SwapContext } from "contexts/SwapContext";
 
 interface CurrencyOutputPanelProps {
   value: string;
@@ -49,6 +53,43 @@ const CurrencyOutputPanel = ({
   const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
   const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
 
+  const { v2Trade, parsedAmount } = useDerivedSwapInfo();
+  const { isBrewRouter, setIsBrewRouter }: any = useContext(SwapContext);
+
+  const usingAggregator = noLiquidity;
+
+  const parsedAmounts = {
+    [Field.INPUT]: parsedAmount,
+    [Field.OUTPUT]: v2Trade?.outputAmount,
+  };
+
+  const brewPrice = useMemo(() => {
+    if (
+      !parsedAmounts ||
+      !parsedAmounts[Field.INPUT] ||
+      !parsedAmounts[Field.OUTPUT] ||
+      !currencies[Field.INPUT] ||
+      !currencies[Field.OUTPUT] ||
+      parsedAmounts[Field.INPUT].equalTo(0)
+    )
+      return undefined;
+    return new Price(
+      currencies[Field.INPUT],
+      currencies[Field.OUTPUT],
+      parsedAmounts[Field.INPUT].raw,
+      parsedAmounts[Field.OUTPUT].raw
+    );
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmounts[Field.INPUT]]);
+
+  const stringified = JSON.stringify({
+    a: currencies[Field.INPUT],
+    b: currencies[Field.OUTPUT],
+    c: parsedAmounts[Field.INPUT],
+  });
+  useEffect(() => {
+    setIsBrewRouter(false);
+  }, [stringified]);
+
   return (
     <>
       <div className={`${size === "sm" ? "" : "sm:pr-4 lg:ml-6"} ml-0 py-2 pl-4 pr-2`}>
@@ -56,7 +97,7 @@ const CurrencyOutputPanel = ({
         <div className="mt-1 overflow-hidden">
           <div className="flex justify-between">
             <NumericalInput
-              value={value}
+              value={isBrewRouter ? parsedAmounts[Field.OUTPUT]?.toSignificant(6) : value}
               onUserInput={(val) => {
                 onUserInput(val);
               }}
@@ -102,16 +143,43 @@ const CurrencyOutputPanel = ({
         )}
       </div>
       {price ? (
-        <div className={`${size === "sm" ? "" : "sm:mx-6"} mx-2 mb-2 mt-3`}>
-          <TradeCard
-            data={data}
-            slippage={slippage}
-            price={price}
-            buyTax={buyTax}
-            sellTax={sellTax}
-            noLiquidity={noLiquidity}
-            size={size}
-          />
+        <div className={`${size === "sm" ? "" : "sm:mx-6"} mx-2 mb-2 mt-3 flex flex-col`}>
+          <div
+            className={`primary-shadow cursor-pointer rounded-xl border ${
+              !isBrewRouter ? "border-amber-300" : "border-[#ffffff20]"
+            } transition duration-300 hover:scale-[1.05]`}
+            onClick={() => setIsBrewRouter(false)}
+          >
+            <TradeCard
+              data={data}
+              slippage={slippage}
+              price={price}
+              buyTax={buyTax}
+              sellTax={sellTax}
+              noLiquidity={noLiquidity}
+              size={size}
+            />
+          </div>
+          {usingAggregator && brewPrice ? (
+            <div
+              className={`primary-shadow mt-1.5 cursor-pointer rounded-xl border ${
+                isBrewRouter ? "border-amber-300" : "border-[#ffffff20]"
+              } transition duration-300 hover:scale-[1.05]`}
+              onClick={() => setIsBrewRouter(true)}
+            >
+              <TradeCard
+                data={data}
+                slippage={slippage}
+                price={brewPrice}
+                buyTax={buyTax}
+                sellTax={sellTax}
+                noLiquidity={false}
+                size={size}
+              />
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       ) : null}
     </>

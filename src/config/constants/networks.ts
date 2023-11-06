@@ -123,7 +123,7 @@ export const EXPLORER_LOGO = {
   [ChainId.ETHEREUM]: "/images/explorer/etherscan.png",
   [ChainId.ARBITRUM]: "/images/explorer/arbiscan.png",
   [ChainId.BSC_MAINNET]: "/images/explorer/bscscan.png",
-  [ChainId.POLYGON]: "/images/networks/polygonscan.png",
+  [ChainId.POLYGON]: "/images/explorer/polygonscan.png",
   [ChainId.FANTOM]: "/images/networks/ftmscan.png",
   [ChainId.AVALANCHE]: "/images/networks/snowtrace.png",
   [ChainId.CRONOS]: "/images/networks/cronoscan.png",
