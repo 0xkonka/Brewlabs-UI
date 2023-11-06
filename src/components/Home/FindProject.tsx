@@ -39,8 +39,9 @@ const FindProject = () => {
       link: "https://earn.brewlabs.info/swap",
       detail:
         "BrewSwap allow users to swap pairs of tokens in a decentralised liquidity pools. Liquidity providers can earn fees in real time for the provision of liquidity. ",
-      activeNetwork: [],
-      isSoon: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+      activeNetwork: [ChainId.POLYGON],
+      isSoon: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+      isBeta: [ChainId.POLYGON],
     },
     {
       name: "Staking",
@@ -215,6 +216,11 @@ const FindProject = () => {
                     <div>{item.name}</div>
                     {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
                       <Soon className="!relative !top-0 !text-[10px]" />
+                    ) : (
+                      ""
+                    )}
+                    {(item?.isBeta ?? []).includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                      <Soon className="!relative !top-0 !text-[10px]" text={"Beta"} />
                     ) : (
                       ""
                     )}
