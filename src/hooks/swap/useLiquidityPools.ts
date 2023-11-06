@@ -75,7 +75,6 @@ export const useLiquidityPools = () => {
 
 export const useOwnedLiquidityPools = () => {
   const { address: account } = useAccount();
-  // const account = "0xe1f1dd010bbc2860f81c8f90ea4e38db949bb16f";
 
   const { chainId } = useActiveChainId();
   const pairs = useLiquidityPools();

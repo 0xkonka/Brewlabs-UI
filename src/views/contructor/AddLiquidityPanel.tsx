@@ -39,7 +39,6 @@ import { useCurrencySelectRoute } from "./useCurrencySelectRoute";
 export default function AddLiquidityPanel({
   onBack,
   fetchLPTokens,
-  selectedChainId,
   selecedDexId = undefined,
   currencyA: currencyA_ = undefined,
   currencyB: currencyB_ = undefined,
@@ -75,9 +74,6 @@ export default function AddLiquidityPanel({
   const { handleCurrencyASelect, handleCurrencyBSelect } = useCurrencySelectRoute();
 
   const lpManager = getLpManagerV2Address(chainId);
-  // (chainId === 1 && dexrouter?.key === "uniswap-v2") || (chainId === 56 && dexrouter?.key == "pcs-v2")
-  //   ? getLpManagerAddress(chainId)
-  //   : getLpManagerV2Address(chainId);
 
   const currencyA = currencies[Field.CURRENCY_A];
   const currencyB = currencies[Field.CURRENCY_B];

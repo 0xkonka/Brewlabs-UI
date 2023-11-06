@@ -29,7 +29,6 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
     let searchedPairs = [];
 
     if (isAddress(criteria) || type === "simple") {
-      console.log("Fetch Address");
       const url = `https://io.dexscreener.com/dex/search/pairs?q=${criteria}&s=2`;
       let result = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
       searchedPairs = result.data.result.pairs;
@@ -38,7 +37,6 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
         return getPairParams(pair);
       });
     } else {
-      console.log("FETCH START");
       const result = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc,polygon`);
       let tokens = result.data.data;
       const isLP = tokens.find((token) => token.address === criteria.toLowerCase() && token.marketType === "lp");
