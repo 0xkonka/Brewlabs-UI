@@ -15,7 +15,6 @@ import { useLPTokens } from "hooks/constructor/useLPTokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
 import { useUserSlippageTolerance } from "state/user/hooks";
-import { useUserLpTokenData } from "state/wallet/hooks";
 import { getLpManagerAddress } from "utils/addressHelpers";
 
 import Modal from "components/Modal";
@@ -102,42 +101,8 @@ export default function Constructor() {
               setShowCount={setShowCount}
               isLoading={isLoading}
             />
-          ) : curAction === "Remove" ? (
-            <RemoveLiquidityPanel
-              onBack={() => setCurAction("default")}
-              fetchLPTokens={fetchLPTokens}
-              selectedChainId={sortedTokens[selectedLP]?.chainId ?? chainId}
-              selecedDexId={SYMBOL_VS_SWAP_TABLE[sortedTokens[selectedLP]?.symbol]}
-              currencyA={
-                sortedTokens[selectedLP]?.token0.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId)||
-                sortedTokens[selectedLP]?.token0.symbol === WNATIVE[sortedTokens[selectedLP]?.chainId].symbol
-                  ? NATIVE_CURRENCIES[sortedTokens[selectedLP]?.chainId]
-                  : new Token(
-                      sortedTokens[selectedLP]?.chainId,
-                      sortedTokens[selectedLP]?.token0.address,
-                      +sortedTokens[selectedLP]?.token0.decimals,
-                      sortedTokens[selectedLP]?.token0.symbol
-                    )
-              }
-              currencyB={
-                sortedTokens[selectedLP]?.token1.symbol === getNativeSybmol(sortedTokens[selectedLP]?.chainId) ||
-                sortedTokens[selectedLP]?.token1.symbol === WNATIVE[sortedTokens[selectedLP]?.chainId].symbol
-                  ? NATIVE_CURRENCIES[sortedTokens[selectedLP]?.chainId]
-                  : new Token(
-                      sortedTokens[selectedLP]?.chainId,
-                      sortedTokens[selectedLP]?.token1.address,
-                      +sortedTokens[selectedLP]?.token1.decimals,
-                      sortedTokens[selectedLP]?.token1.symbol
-                    )
-              }
-              lpPrice={sortedTokens[selectedLP].price}
-            />
           ) : curAction === "addLiquidity" ? (
-            <AddLiquidityPanel
-              onBack={() => setCurAction("default")}
-              fetchLPTokens={fetchLPTokens}
-              selectedChainId={chainId}
-            />
+            <AddLiquidityPanel onBack={() => setCurAction("default")} fetchLPTokens={fetchLPTokens} />
           ) : (
             ""
           )}

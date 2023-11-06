@@ -6,7 +6,7 @@ import { useAccount, useConnect } from "wagmi";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { isAddress } from "utils";
-import { getChainLogo, getDexLogo, getEmptyTokenLogo, numberWithCommas } from "utils/functions";
+import { getChainLogo, getDexLogo, getEmptyTokenLogo, getRemoveLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import StyledButton from "views/directory/StyledButton";
@@ -15,6 +15,8 @@ import { CircleRightSVG, InfoSVG, RightSVG, checkCircleSVG } from "components/da
 import WalletSelector from "components/wallet/WalletSelector";
 import Modal from "components/Modal";
 import TokenLogo from "@components/logo/TokenLogo";
+import { useRouter } from "next/router";
+import { useCurrency } from "@hooks/Tokens";
 
 const LoadingText = () => {
   const [dotCount, setDotCount] = useState([]);
@@ -36,13 +38,15 @@ const LoadingText = () => {
 };
 
 export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
-  const token0Address: any = isAddress(data.token0.address);
-  const token1Address: any = isAddress(data.token1.address);
+  const currency0 = useCurrency(data.token0.address);
+  const currency1 = useCurrency(data.token1.address);
 
   const isNew = data.timeStamp >= Date.now() / 1000 - 3600 * 24;
 
+  const router = useRouter();
+
   return (
-    <div className="mx-2 my-1.5 rounded-[30px] border  border-[#FFFFFF80] p-[20px_12px_20px_12px] transition-all duration-300 hover:border-yellow sm:mx-4 sm:my-2.5  sm:p-6">
+    <div className="mx-2 my-1.5 rounded-[30px] border border-[#FFFFFF80] p-[20px_12px_20px_12px] transition-all duration-300 hover:border-yellow sm:mx-4 sm:my-2.5  sm:p-6">
       <ReactTooltip anchorId={"appValue" + i} place="top" content="Approximate value in USD" />
       <div className="flex items-center justify-between ">
         <div className="mx-auto flex items-center xmd:mx-0">
@@ -66,7 +70,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           <div className="flex flex-1 items-center">
             <div className="flex">
               <TokenLogo
-                src={getTokenLogoURL(token0Address, data.chainId)}
+                src={getTokenLogoURL(currency0.address, data.chainId)}
                 alt={""}
                 classNames="h-10 w-10 rounded-full"
                 onError={(e: any) => {
@@ -74,7 +78,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
                 }}
               />
               <TokenLogo
-                src={getTokenLogoURL(token1Address, data.chainId)}
+                src={getTokenLogoURL(currency1.address, data.chainId)}
                 alt={""}
                 classNames="-ml-3 h-10 w-10 rounded-full"
                 onError={(e: any) => {
@@ -93,10 +97,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
         <div className="relative mt-0 hidden h-[36px] w-[110px] xmd:block">
           <StyledButton
             type={"quinary"}
-            onClick={() => {
-              setCurAction("Remove");
-              setSelectedLP(i);
-            }}
+            onClick={() => router.push(getRemoveLiquidityUrl("brewlabs", currency0, currency1, data.chainId))}
           >
             <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
             <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
@@ -121,10 +122,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
         <div className="relative mx-auto mb-3 mt-5 h-[36px] w-full max-w-[160px]">
           <StyledButton
             type={"quinary"}
-            onClick={() => {
-              setCurAction("Remove");
-              setSelectedLP(i);
-            }}
+            onClick={() => router.push(getRemoveLiquidityUrl("brewlabs", currency0, currency1, data.chainId))}
           >
             <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
             <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
@@ -152,7 +150,6 @@ export default function BasePanel({
 }) {
   const { address: account } = useAccount();
   const { isLoading } = useConnect();
-  const { chainId } = useActiveChainId();
   const [openWalletModal, setOpenWalletModal] = useState(false);
 
   return (

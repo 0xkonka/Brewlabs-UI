@@ -3,12 +3,15 @@ import { TokenAmount, Pair, Currency, ChainId } from "@brewlabs/sdk";
 import { Pair as V2Pair, Token as V2Token, TokenAmount as V2TokenAmount } from "@sushiswap-core/sdk";
 import { Interface } from "@ethersproject/abi";
 
+import DefaultLpToken from "config/abi/lpToken.json";
 import BrewlabsPairABI from "config/abi/brewlabsPair.json";
 import { useMultipleContractSingleData } from "../state/multicall/hooks";
 import { wrappedCurrency } from "../utils/wrappedCurrency";
 import { useActiveChainId } from "./useActiveChainId";
+import multicall from "utils/multicall";
 
-const PAIR_INTERFACE = new Interface(BrewlabsPairABI);
+const BREWSWAP_PAIR_INTERFACE = new Interface(BrewlabsPairABI);
+const DEFAULT_PAIR_INTERFACE = new Interface(DefaultLpToken);
 
 export enum PairState {
   LOADING,
@@ -47,7 +50,11 @@ export function usePairs(
     [tokens, chainId]
   );
 
-  const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, "getReserves");
+  const results = useMultipleContractSingleData(
+    pairAddresses,
+    dexId === "brewswap" ? BREWSWAP_PAIR_INTERFACE : DEFAULT_PAIR_INTERFACE,
+    "getReserves"
+  );
 
   return useMemo(() => {
     return results.map((result, i) => {

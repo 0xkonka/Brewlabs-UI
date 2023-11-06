@@ -12,7 +12,8 @@ const BAD_SRCS: { [tokenAddress: string]: true } = {};
 const TokenLogo = ({ src, classNames, large, alt, ...rest }: any) => {
   const [, refresh] = useState<number>(0);
 
-  const _src: string | undefined = src.find((s) => !BAD_SRCS[s]);
+  const wrappedSRC = isArray(src) ? src : [src];
+  const _src: string | undefined = wrappedSRC.find((s) => !BAD_SRCS[s]);
 
   const { width }: any = { ...rest };
 
