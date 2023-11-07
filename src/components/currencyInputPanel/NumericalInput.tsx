@@ -41,6 +41,10 @@ const NumericalInput = ({
     }, 500);
   }, [amount]);
 
+  useEffect(() => {
+    setAmount(value.toString());
+  }, [value]);
+
   return (
     <input
       value={amount}
