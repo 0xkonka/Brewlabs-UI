@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount } from "@brewlabs/sdk";
+import { Currency, CurrencyAmount, WNATIVE } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import useTokenPrice from "hooks/useTokenPrice";
@@ -6,6 +6,7 @@ import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import CurrencySelectButton from "components/CurrencySelectButton";
 import NumericalInput from "./NumericalInput";
+import { useTokenMarketChart } from "state/prices/hooks";
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -36,12 +37,13 @@ const CurrencyInputPanel = ({
   size,
 }: CurrencyInputPanelProps) => {
   const { chainId } = useActiveWeb3React();
-  let tokenPrice, wrappedPrice;
-  wrappedPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
-  tokenPrice = wrappedPrice;
+  const tokenMarketData = useTokenMarketChart(chainId);
+  const tokenPrice =
+    tokenMarketData?.[currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()]
+      ?.usd ?? 0;
 
   return (
-    <div className={`${size === "sm" ? "" : "sm:pr-4 lg:ml-6"} ml-0 pl-4 pr-2 py-2`}>
+    <div className={`${size === "sm" ? "" : "sm:pr-4 lg:ml-6"} ml-0 py-2 pl-4 pr-2`}>
       <span>{label}</span>
       <div className="mt-1 overflow-hidden">
         <div className="flex justify-between">

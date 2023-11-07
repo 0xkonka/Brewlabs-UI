@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Price } from "@brewlabs/sdk";
+import { Currency, CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -51,11 +51,12 @@ const CurrencyOutputPanel = ({
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
   const tokenMarketData = useTokenMarketChart(chainId);
   const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
-  const tokenPrice = useTokenPrice(currency?.chainId, currency?.wrapped?.address);
+  const tokenPrice =
+    tokenMarketData?.[currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()]
+      ?.usd ?? 0;
 
   const { v2Trade, parsedAmount } = useDerivedSwapInfo();
   const { isBrewRouter, setIsBrewRouter }: any = useContext(SwapContext);
-
   const usingAggregator = noLiquidity;
 
   const parsedAmounts = {
@@ -160,7 +161,7 @@ const CurrencyOutputPanel = ({
               size={size}
             />
           </div>
-          {usingAggregator && brewPrice ? (
+          {usingAggregator && brewPrice && v2Trade?.route?.pairs?.[0].liquidityToken?.symbol.includes("BREW") ? (
             <div
               className={`primary-shadow mt-1.5 cursor-pointer rounded-xl border ${
                 isBrewRouter ? "border-amber-300" : "border-[#ffffff20]"
