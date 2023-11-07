@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext, useEffect } from "react";
+import React, { useState, useMemo, useContext, useEffect, useRef } from "react";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
@@ -142,6 +142,8 @@ const CurrencySelector = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const criteriaRef: any = useRef();
+
   const dispatch: any = useDispatch();
   const { trendings, newListings }: any = useCMCListings();
   const { trendings: cgTrendings, gainers: cgGainers, losers: cgLosers }: any = useCGListings();
@@ -199,6 +201,10 @@ const CurrencySelector = () => {
     }, 500);
   }, [cri]);
 
+  useEffect(() => {
+    if (activeTab === -1) criteriaRef.current.focus();
+  }, [activeTab]);
+
   return (
     <div className="relative w-full">
       <div className="mb-6 flex items-center justify-between">
@@ -250,6 +256,7 @@ const CurrencySelector = () => {
           type="text"
           placeholder="Search by contract address or by name"
           className="input-bordered input w-full"
+          ref={criteriaRef}
         />
       ) : (
         ""
