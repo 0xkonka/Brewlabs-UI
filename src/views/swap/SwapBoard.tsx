@@ -14,10 +14,8 @@ import SwapRewards from "./components/SwapRewards";
 import { NFTSVG } from "@components/dashboard/assets/svgs";
 import Security from "@components/SwapComponents/Security";
 import SlippageText from "@components/SwapComponents/SlippageText";
-import TradingViewChart from "views/chart/components/TradingPanel/TradingViewChart";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useDerivedSwapInfo } from "state/swap/hooks";
-import { Field } from "state/swap/actions";
 
 export default function SwapBoard({ type = "swap", disableChainSelect = false }) {
   const {

@@ -5,8 +5,6 @@ import { WalletState } from "state/types";
 import { getNFTBalances } from "./fetchNFTBalances";
 import { ChainId } from "@brewlabs/sdk";
 import { getTokenBalances, getTokenDetails } from "./fetchTokenBalances";
-import { useUserTokenData } from "./hooks";
-import { useTokenMarketChart } from "state/prices/hooks";
 
 const initialState: WalletState = {
   nfts: {},

@@ -51,7 +51,7 @@ export default function RemoveLiquidityPanel({
 
   const { chainId } = useActiveChainId();
   const { library }: any = useActiveWeb3React();
-  const { canSwitch, switchNetwork } = useSwitchNetwork();
+  const { switchNetwork } = useSwitchNetwork();
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(
@@ -60,7 +60,7 @@ export default function RemoveLiquidityPanel({
 
   const [tokenA, tokenB] = useMemo(() => [currencyA?.wrapped, currencyB?.wrapped], [currencyA, currencyB]);
 
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(
+  const { pair, parsedAmounts } = useDerivedBurnInfo(
     currencyA ?? undefined,
     currencyB ?? undefined,
     ROUTER_ADDRESS_MAP[selecedDexId]?.[chainId] ? selecedDexId : "default"
@@ -134,7 +134,6 @@ export default function RemoveLiquidityPanel({
       let methodNames: string[];
       let args: Array<string | string[] | number | boolean>;
       const currencyBIsETH = currencyB.wrapped.address === WNATIVE[selectedChainId].address;
-      const currencyAIsETH = currencyA.wrapped.address === WNATIVE[selectedChainId].address;
       if (approval === ApprovalState.APPROVED) {
         // removeLiquidityETH
         if (!isGetWETH) {
@@ -329,92 +328,6 @@ export default function RemoveLiquidityPanel({
     }
   }
 
-  async function onRemoveWithManagerV1() {
-    if (!chainId || !signer || !account || !deadline) throw new Error("missing dependencies");
-    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts;
-    if (!currencyAmountA || !currencyAmountB) {
-      throw new Error("missing currency amounts");
-    }
-
-    const lpManagerContract = getLpManagerContract(chainId, signer);
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-
-    if (!currencyA || !currencyB) throw new Error("missing tokens");
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-    if (!liquidityAmount) throw new Error("missing liquidity amount");
-
-    const currencyBIsETH = currencyB.isNative;
-    const oneCurrencyIsETH = currencyA.isNative || currencyBIsETH;
-
-    if (!tokenA || !tokenB) throw new Error("could not wrap");
-
-    let methodNames: string[];
-    let args: Array<string | string[] | number | boolean>;
-    // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
-      // removeLiquidityETH
-      if (oneCurrencyIsETH) {
-        methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
-        args = [currencyBIsETH ? tokenA.address : tokenB.address, liquidityAmount.raw.toString()];
-      }
-      // removeLiquidity
-      else {
-        methodNames = ["removeLiquidity"];
-        args = [tokenA.address, tokenB.address, liquidityAmount.raw.toString()];
-      }
-    } else {
-      throw new Error("Attempting to confirm without approval. Please contact support.");
-    }
-
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
-      methodNames.map((methodName) =>
-        lpManagerContract.estimateGas[methodName](...args)
-          .then(calculateGasMargin)
-          .catch((err) => {
-            console.error(`estimateGas failed`, methodName, args, err);
-            return undefined;
-          })
-      )
-    );
-
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate)
-    );
-
-    // all estimations failed...
-    if (indexOfSuccessfulEstimation === -1) {
-      console.error("This transaction would fail. Please contact support.");
-    } else {
-      const methodName = methodNames[indexOfSuccessfulEstimation];
-      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
-
-      setPending(true);
-      await lpManagerContract[methodName](...args, {
-        gasLimit: safeGasEstimate,
-        gasPrice,
-      })
-        .then((response: TransactionResponse) => {
-          setPending(false);
-
-          addTransaction(response, {
-            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencyA?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
-          });
-          toast.success("Liquidity was removed");
-
-          fetchLPTokens(chainId);
-          onBack();
-          // setTxHash(response.hash)
-        })
-        .catch((err: Error) => {
-          setPending(false);
-          // we only care if the error is something _other_ than the user rejected the tx
-          console.error(err);
-        });
-    }
-  }
-
   async function onAttemptToApprove() {
     try {
       if (!pairContract || !pair || !library || !deadline) throw new Error("missing dependencies");
@@ -495,21 +408,11 @@ export default function RemoveLiquidityPanel({
   return (
     <div>
       <div className="mt-[52px] flex justify-center font-brand">
-        <TokenLogo
-          src={getTokenLogoURL(token0Address, selectedChainId)}
-          alt={""}
-          classNames="h-20 w-20 rounded-full"
-          onError={(e: any) => {
-            e.target.src = getEmptyTokenLogo(selectedChainId);
-          }}
-        />
+        <TokenLogo src={getTokenLogoURL(token0Address, selectedChainId)} alt={""} classNames="h-20 w-20 rounded-full" />
         <TokenLogo
           src={getTokenLogoURL(token1Address, selectedChainId)}
           alt={""}
           classNames="-ml-5 h-20 w-20 rounded-full"
-          onError={(e: any) => {
-            e.target.src = getEmptyTokenLogo(selectedChainId);
-          }}
         />
       </div>
       <div className="mr-6 mt-6 flex items-center justify-between">
@@ -558,9 +461,6 @@ export default function RemoveLiquidityPanel({
                   src={getTokenLogoURL(token0Address, selectedChainId)}
                   alt={""}
                   classNames="mr-2 h-5 w-5 rounded-full"
-                  onError={(e: any) => {
-                    e.target.src = getEmptyTokenLogo(selectedChainId);
-                  }}
                 />
                 <div>{currencyAmountA && !currencyAmountA.equalTo(0) ? currencyAmountA.toFixed(3) : "0.000"}</div>
               </div>
@@ -568,14 +468,14 @@ export default function RemoveLiquidityPanel({
                 <div className="h-8 w-[110px]">
                   <StyledButton type={"quinary"} onClick={() => setIsGetWETH(!isGetWETH)}>
                     <div className="flex items-center justify-between">
-                      <img
+                      <TokenLogo
                         src={
                           !isGetWETH
                             ? getTokenLogoURL(WNATIVE[selectedChainId].address, selectedChainId)
-                            : getChainLogo(selectedChainId)
+                            : [getChainLogo(selectedChainId)]
                         }
                         alt={""}
-                        className="mr-2 h-5 w-5 rounded-full"
+                        classNames="mr-2 h-5 w-5 rounded-full"
                       />
                       <div className="text-xs leading-none">
                         GET{" "}
@@ -601,19 +501,16 @@ export default function RemoveLiquidityPanel({
             </div>
             <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
               <div className="flex items-center">
-                <img
+                <TokenLogo
                   src={
                     currencyB && currencyB.wrapped.address === WNATIVE[selectedChainId].address
                       ? isGetWETH
                         ? getTokenLogoURL(currencyB.wrapped.address, selectedChainId)
-                        : getChainLogo(selectedChainId)
+                        : [getChainLogo(selectedChainId)]
                       : getTokenLogoURL(token1Address, selectedChainId)
                   }
                   alt={""}
-                  className="mr-2 h-5 w-5 rounded-full"
-                  onError={(e: any) => {
-                    e.target.src = getEmptyTokenLogo(selectedChainId);
-                  }}
+                  classNames="mr-2 h-5 w-5 rounded-full"
                 />
                 <div>{currencyAmountB && !currencyAmountB.equalTo(0) ? currencyAmountB.toFixed(3) : "0.000"}</div>
               </div>
@@ -621,17 +518,14 @@ export default function RemoveLiquidityPanel({
                 <div className="h-8 w-[110px]">
                   <StyledButton type={"quinary"} onClick={() => setIsGetWETH(!isGetWETH)}>
                     <div className="flex items-center justify-between">
-                      <img
+                      <TokenLogo
                         src={
                           !isGetWETH
                             ? getTokenLogoURL(WNATIVE[selectedChainId].address, selectedChainId)
-                            : getChainLogo(selectedChainId)
+                            : [getChainLogo(selectedChainId)]
                         }
                         alt={""}
-                        className="mr-2 h-5 w-5 rounded-full"
-                        onError={(e: any) => {
-                          e.target.src = getEmptyTokenLogo(selectedChainId);
-                        }}
+                        classNames="mr-2 h-5 w-5 rounded-full"
                       />
                       <div className="text-xs leading-none">
                         GET{" "}

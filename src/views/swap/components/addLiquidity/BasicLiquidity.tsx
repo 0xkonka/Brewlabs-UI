@@ -47,7 +47,7 @@ import { useTradingPair } from "state/pair/hooks";
 import { useAppDispatch } from "state";
 import { fetchTradingPairFeesAsync } from "state/pair";
 
-export default function BasicLiquidity() {
+export default function BasicLiquidity({ currencyA: currencyA_ = undefined, currencyB: currencyB_ = undefined }) {
   const dispatch = useAppDispatch();
   const { account, chainId, library } = useActiveWeb3React();
   const { data: signer } = useSigner();
@@ -59,8 +59,8 @@ export default function BasicLiquidity() {
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const { dependentField, currencies, pair, currencyBalances, parsedAmounts, noLiquidity, error } = useDerivedMintInfo(
-    undefined,
-    undefined
+    currencyA_ ?? undefined,
+    currencyB_ ?? undefined
   );
 
   const { data: pairData } = useTradingPair(chainId, pair?.liquidityToken?.address);

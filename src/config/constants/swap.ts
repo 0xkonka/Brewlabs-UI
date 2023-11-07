@@ -27,7 +27,7 @@ export const SUPPORTED_DEXES = {
   },
 };
 
-export const SUPPORTED_LPs = {
+export const  SUPPORTED_LPs = {
   [ChainId.ETHEREUM]: ["UNI-V2"],
   [ChainId.BSC_MAINNET]: ["Cake-LP"],
   [ChainId.BSC_TESTNET]: ["BREWSWAP-LP"],

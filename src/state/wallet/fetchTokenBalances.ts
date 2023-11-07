@@ -31,7 +31,7 @@ async function getTokenBaseBalances(account: string, chainId: number) {
     data = data.data;
   } else {
     const { data: response } = await axios.get(
-      `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?block-height=18278289`,
+      `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?`,
       { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
     );
     if (response.error) return [];
@@ -232,7 +232,6 @@ export async function getTokenBalances(account: string, chainId: ChainId, tokenM
         chainId,
       });
     }
-
     return _tokens;
   } catch (error) {
     console.log(error);
