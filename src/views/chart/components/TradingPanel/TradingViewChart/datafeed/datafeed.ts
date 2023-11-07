@@ -5,7 +5,7 @@ import { API_URL } from "config/constants";
 
 const lastBarsCache = new Map();
 
-const supportedResolutions = ["5", "10", "30", "60", "240", "D"];
+const supportedResolutions = ["5", "15", "30", "60", "240", "D"];
 
 const config = {
   supported_resolutions: supportedResolutions,
@@ -55,7 +55,7 @@ export default {
       pricescale: 1000000000,
       minmov: 1,
       has_intraday: true,
-      supported_resolutions: ["1", "5", "10", "30", "60", "240", "720", "1D", "1W"],
+      supported_resolutions: ["1", "5", "15", "30", "60", "240", "720", "1D", "1W"],
     };
     console.log("[resolveSymbol]: Symbol resolved", symbolName);
     onSymbolResolvedCallback(symbolInfo);
@@ -73,6 +73,7 @@ export default {
         const url = `${API_URL}/chart/bars?pair=${pair.toLowerCase()}&${quote}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}`;
+        console.log(url);
         const { data: response } = await axios.get(url);
         data = response;
         console.log(response);
@@ -80,7 +81,7 @@ export default {
         const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-        console.log(Math.floor((to - from) / (resSec * 60)));
+        console.log(url);
         const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });

@@ -23,10 +23,9 @@ const NumericalInput = ({
   disable?: boolean;
   size?: string;
 }) => {
-  const [amount, setAmount] = useState("");
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === "" || inputRegex.test(escapeRegExp(nextUserInput))) {
-      setAmount(nextUserInput);
+      onUserInput(nextUserInput);
     }
   };
 
@@ -35,17 +34,6 @@ const NumericalInput = ({
       enforcer(e.target.value.replace(/,/g, "."));
     }
   };
-
-  useEffect(() => {
-    if (searchTimeout != undefined) clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-      onUserInput(amount);
-    }, 500);
-  }, [amount]);
-
-  useEffect(() => {
-    setAmount(value.toString());
-  }, [value]);
 
   return (
     <input
