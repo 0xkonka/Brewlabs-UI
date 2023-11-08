@@ -62,14 +62,6 @@ const InfoCarousel = () => {
   const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
   const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
 
-  const apr =
-    flaskNft.mintFee && pool?.totalStaked
-      ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[chainId]) * 100) /
-        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
-          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
-          (pool?.totalStaked ?? 0))
-      : 0;
-
   const recentIndexes = indexes.filter(
     (index) => new Date(index.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
   );
@@ -189,7 +181,12 @@ const InfoCarousel = () => {
       name: "Brewlabs NFT Staking",
       suffix: "APR",
       icon: NFTFillSVG,
-      value: !apr ? <SkeletonComponent className="!min-w-[100px]" /> : `${apr.toFixed(2)}%`,
+      value:
+        homeDatas.nftStakings.apy === null ? (
+          <SkeletonComponent className="!min-w-[100px]" />
+        ) : (
+          `${homeDatas.nftStakings.apy.toFixed(2)}%`
+        ),
       tooltip:
         "NFT minting fees (stablecoin) are designated to the following categories: 50% of mint fee to NFT staking protocol, 25% of mint fees to Brewlabs Treasury, 25% of mint fees to Brewlabs development fund. 100% of all BREWLABS tokens used in mint fees are sent to Brewlabs Treasury.",
       subItem: {
