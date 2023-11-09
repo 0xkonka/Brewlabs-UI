@@ -101,7 +101,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
                 ""
               )}
             </div>
-            <div className="mr-10 flex max-w-[360px] flex-1 items-center">
+            <div className="mr-10 flex max-w-[360px] flex-1 items-center" id={"heldAmount" + i}>
               <div className="h-2 w-full overflow-hidden rounded-lg bg-[#ffffff33]">
                 <div className="h-full rounded-lg bg-[#FFFFFF80]" style={{ width: list.ownerShip + "%" }} />
               </div>
@@ -167,7 +167,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
                 }
               }}
             >
-              <div className="mr-2 text-tailwind [&>svg]:h-4 [&>svg]:w-4" id={"walletType" + i}>
+              <div className="mr-2 text-tailwind [&>svg]:h-4 [&>svg]:w-4" id={"walletType1" + i}>
                 {typeSvgs[type]}
               </div>
               <div
@@ -227,7 +227,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
 
           <div className="flex items-center">
             <div>Held:</div>&nbsp;
-            <div className="ml-2 flex max-w-[360px] flex-1 items-center">
+            <div className="ml-2 flex max-w-[360px] flex-1 items-center" id={"heldAmount1" + i}>
               <div className="h-2 w-full overflow-hidden rounded-lg bg-[#ffffff33]">
                 <div className="h-full rounded-lg bg-[#FFFFFF80]" style={{ width: list.ownerShip + "%" }} />
               </div>
@@ -244,6 +244,10 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
       <ReactTooltip anchorId={"downOwnership1" + i} place="left" content="Token balance decreased in last 30D." />
 
       <ReactTooltip anchorId={"walletType" + i} place="left" content={typeTexts[type]} />
+      <ReactTooltip anchorId={"walletType1" + i} place="left" content={typeTexts[type]} />
+
+      <ReactTooltip anchorId={"heldAmount" + i} place="top" content={list.ownerShip.toFixed(2) + "%"} />
+      <ReactTooltip anchorId={"heldAmount1" + i} place="top" content={list.ownerShip.toFixed(2) + "%"} />
     </>
   );
 }
