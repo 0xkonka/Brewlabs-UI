@@ -47,7 +47,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, selecte
               className="flex w-[100px] items-center justify-between"
               onClick={() => {
                 setCriteria(list.wallet);
-                setShowType(6);
+                setShowType(7);
               }}
               ref={makerRef1}
             >
@@ -100,7 +100,7 @@ export default function HistoryCard({ list, i, setCriteria, setShowType, selecte
             className="my-1 flex w-[140px] items-center justify-between whitespace-nowrap text-white"
             onClick={() => {
               setCriteria(list.wallet);
-              setShowType(6);
+              setShowType(7);
             }}
             ref={makerRef2}
           >

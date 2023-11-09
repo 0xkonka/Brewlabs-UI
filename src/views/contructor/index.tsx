@@ -1,7 +1,5 @@
 import { useContext, useState } from "react";
-import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
-import { useAccount } from "wagmi";
 
 import { SwapContext } from "contexts/SwapContext";
 import PageHeader from "components/layout/PageHeader";
@@ -10,10 +8,9 @@ import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
 import { InfoSVG } from "components/dashboard/assets/svgs";
 
-import { SYMBOL_VS_SWAP_TABLE } from "config/constants/swap";
 import { useLPTokens } from "hooks/constructor/useLPTokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
+import { getExplorerLink } from "lib/bridge/helpers";
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { getLpManagerAddress } from "utils/addressHelpers";
 
@@ -21,7 +18,6 @@ import Modal from "components/Modal";
 import SettingModal from "views/swap/components/modal/SettingModal";
 
 import BasePanel from "./BasePanel";
-import RemoveLiquidityPanel from "./RemoveLiquidityPanel";
 import AddLiquidityPanel from "./AddLiquidityPanel";
 
 export default function Constructor() {
@@ -94,9 +90,7 @@ export default function Constructor() {
           {curAction === "default" ? (
             <BasePanel
               setCurAction={setCurAction}
-              setSelectedLP={setSelectedLP}
               sortedTokens={sortedTokens}
-              lpTokens={lpTokens}
               showCount={showCount}
               setShowCount={setShowCount}
               isLoading={isLoading}

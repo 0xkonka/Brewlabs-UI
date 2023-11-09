@@ -21,13 +21,19 @@ export function useCMCListings() {
       const cheerio = require("cheerio");
       let $ = cheerio.load(response[0].data.result);
       $("div.hide-ranking-number").each((i, element) => {
-        _trendings.push(element.children[0].children[0].data);
+        _trendings.push({
+          name: element.children[0].children[0].data,
+          symbol: element.children[1].children[1].children[0].data.toUpperCase(),
+        });
       });
       setTrendings(_trendings.slice(0, 10));
 
       $ = cheerio.load(response[1].data.result);
       $("div.hide-ranking-number").each((i, element) => {
-        _listings.push(element.children[0].children[0].data);
+        _listings.push({
+          name: element.children[0].children[0].data,
+          symbol: element.children[1].children[1].children[0].data.toUpperCase(),
+        });
       });
       setNewListings(_listings.slice(0, 10));
     } catch (e) {
@@ -48,7 +54,7 @@ export function useCGListings() {
   async function getTrendings() {
     try {
       const { data: response } = await axios.get(`https://api.coingecko.com/api/v3/search/trending`);
-      setTrendings(response.coins.map((coin) => coin.item.name));
+      setTrendings(response.coins.map((coin) => ({ name: coin.item.name, symbol: coin.item.symbol.toUpperCase() })));
     } catch (e) {
       console.log(e);
     }
@@ -57,8 +63,16 @@ export function useCGListings() {
   async function getGainersOrLosers() {
     try {
       const { data: response } = await axios.post(`${API_URL}/chart/getCGGainersOrLosers`);
-      setGainers(response.result.top_gainers.map((gainer) => gainer.name).slice(0, 10));
-      setLosers(response.result.top_losers.map((loser) => loser.name).slice(0, 10));
+      setGainers(
+        response.result.top_gainers
+          .map((gainer) => ({ name: gainer.name, symbol: gainer.symbol.toUpperCase() }))
+          .slice(0, 10)
+      );
+      setLosers(
+        response.result.top_losers
+          .map((loser) => ({ name: loser.name, symbol: loser.symbol.toUpperCase() }))
+          .slice(0, 10)
+      );
     } catch (e) {
       console.log(e);
     }
@@ -79,7 +93,7 @@ export function useWatcherGuruTrending() {
       const { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, {
         url: "https://api.watcher.guru/coin/trending",
       });
-      setTrendings(response.result.map((coin) => coin.name));
+      setTrendings(response.result.map((coin) => ({ name: coin.name, symbol: coin.symbol.toUpperCase() })));
     } catch (e) {
       console.log(e);
     }

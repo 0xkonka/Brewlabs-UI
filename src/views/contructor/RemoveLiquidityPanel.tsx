@@ -24,9 +24,9 @@ import { useUserSlippageTolerance } from "state/user/hooks";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
-import { getLpManagerContract, getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
+import { getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { formatAmount } from "utils/formatApy";
-import { getChainLogo, getEmptyTokenLogo, getExplorerLogo } from "utils/functions";
+import { getChainLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 

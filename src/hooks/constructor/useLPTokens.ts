@@ -62,7 +62,6 @@ export const useLPTokens = () => {
               },
             ];
             const result = await multicall(ERC20_ABI, calls, chainId);
-            console.log(result);
             pair = {
               ...pair,
               baseToken: { ...pair.baseToken, decimals: result[0][0] },

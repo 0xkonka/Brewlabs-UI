@@ -152,12 +152,12 @@ const CurrencySelector = () => {
 
   const arrays = [
     favourites.map((pair) => pair.address),
-    trendings,
-    newListings,
-    cgTrendings,
-    cgGainers,
-    cgLosers,
-    watcherGuruTrendings,
+    trendings.map((pair) => pair.name),
+    newListings.map((pair) => pair.name),
+    cgTrendings.map((pair) => pair.name),
+    cgGainers.map((pair) => pair.name),
+    cgLosers.map((pair) => pair.name),
+    watcherGuruTrendings.map((pair) => pair.name),
   ];
 
   const selectedPairs = usePairsByCriterias(activeTab === -1 ? [] : arrays[activeTab]);
