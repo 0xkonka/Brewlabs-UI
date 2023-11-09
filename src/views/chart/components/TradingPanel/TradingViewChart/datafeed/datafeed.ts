@@ -73,20 +73,16 @@ export default {
         const url = `${API_URL}/chart/bars?pair=${pair.toLowerCase()}&${quote}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}`;
-        console.log(url);
         const { data: response } = await axios.get(url);
         data = response;
-        console.log(response);
       } else {
         const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-        console.log(url);
         const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });
         data = response.result.bars;
-        console.log(data);
       }
       let bars = [];
       if (!data || !data.length) return;

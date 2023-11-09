@@ -183,7 +183,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                           <App {...props} />
                                         </AnimatePresence>
                                       </LazyMotion>
-                                      {/* {loading ? <LoadingPage /> : ""} */}
+                                      {loading ? <LoadingPage /> : ""}
                                     </div>
                                   </div>
                                   <ToastContainer />

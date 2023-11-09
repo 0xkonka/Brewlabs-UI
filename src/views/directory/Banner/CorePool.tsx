@@ -7,6 +7,7 @@ import { SkeletonComponent } from "components/SkeletonComponent";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import StyledButton from "../StyledButton";
 import { BASE_URL } from "config";
+import Link from "next/link";
 
 const CorePool = ({
   setSelectPoolDetail,
@@ -95,23 +96,18 @@ const CorePool = ({
         {CreatePoolInfoPanel("pc")}
 
         <div className="w-[50%] max-w-[200px] md:w-[340px] md:max-w-full">
-          <a href={`${BASE_URL}/swap?outputCurrency=${data?.stakingToken.address}`} target={"_blank"} rel="noreferrer">
+          <Link href={data ? `/swap?outputCurrency=${data.stakingToken.address}` : ""} target={"_blank"}>
             <div className="h-[50px]">
               <StyledButton>
                 <span className="mr-1">Get</span> {data ? data.stakingToken.symbol : <SkeletonComponent />}
               </StyledButton>
             </div>
-          </a>
+          </Link>
           <div className="mt-2 h-[50px]">
             {data ? (
-              <StyledButton
-                onClick={() => {
-                  setSelectPoolDetail(true);
-                  setCurPool({ type: data.type, pid: data.sousId, chainId: data.chainId });
-                }}
-              >
-                Deposit {data.stakingToken.symbol}
-              </StyledButton>
+              <Link href={`/staking/${data.chainId}/${data.sousId}`}>
+                <StyledButton>Deposit {data.stakingToken.symbol}</StyledButton>
+              </Link>
             ) : (
               <StyledButton>
                 <span className="mr-1">Deposit</span> <SkeletonComponent />
