@@ -4,7 +4,7 @@ import { BigNumber, TransactionResponse } from "alchemy-sdk";
 import router from "next/router";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount, useConnect, useSigner } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 
 import { ONE_BIPS } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -24,6 +24,7 @@ import { getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import maxAmountSpend from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
+import { useSigner } from "utils/wagmi";
 
 import CurrencyInputPanel from "components/currencyInputPanel";
 import Modal from "components/Modal";

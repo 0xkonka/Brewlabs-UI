@@ -1,17 +1,20 @@
-import CountDown from "@components/CountDown";
-import { BellSVG, InfoSVG, RequirementSVG } from "@components/dashboard/assets/svgs";
-import useENSName from "@hooks/ENS/useENSName";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import useTokenBalances from "@hooks/useTokenMultiChainBalance";
-import { CommunityContext } from "contexts/CommunityContext";
-import { DashboardContext } from "contexts/DashboardContext";
-import { handleWalletError } from "lib/bridge/helpers";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
+
+import { CommunityContext } from "contexts/CommunityContext";
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import useENSName from "hooks/ENS/useENSName";
+import useTokenBalances from "hooks/useTokenMultiChainBalance";
+import { handleWalletError } from "lib/bridge/helpers";
 import { getBep20Contract } from "utils/contractHelpers";
 import { showError } from "utils/functions";
+import { useSigner } from "utils/wagmi";
+
+import CountDown from "components/CountDown";
+import { BellSVG, InfoSVG, RequirementSVG } from "components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
-import { useAccount, useSigner } from "wagmi";
 
 const ProposalCard = ({ proposal, community }: { proposal: any; community: any }) => {
   const { address: account } = useAccount();
@@ -124,7 +127,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             <div className="mt-3 flex items-center text-sm">
               <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
               <div className="ml-2.5 text-[#FFFFFFBF]">
-                {proposal.createdTime + proposal.duration >= Date.now()? (
+                {proposal.createdTime + proposal.duration >= Date.now() ? (
                   <CountDown time={proposal.createdTime + proposal.duration} />
                 ) : (
                   "Time elapsed"

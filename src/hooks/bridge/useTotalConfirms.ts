@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { fetchConfirmations } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
-import { provider } from "utils/wagmi";
 
 export const useTotalConfirms = (
   homeChainId: ChainId,

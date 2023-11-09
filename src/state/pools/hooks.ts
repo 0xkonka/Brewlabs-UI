@@ -24,7 +24,7 @@ export const useFetchPublicPoolsData = () => {
 
   useSlowRefreshEffect(() => {
     const fetchPoolsPublicData = async () => {
-      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber();
+      const blockNumber = simpleRpcProvider(chainId).getBlockNumber();
       dispatch(fetchPoolsPublicDataAsync(blockNumber, chainId));
     };
 

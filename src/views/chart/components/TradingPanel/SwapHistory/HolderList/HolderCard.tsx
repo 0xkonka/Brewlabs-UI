@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
+import { getExplorerLink } from "lib/bridge/helpers";
 import { BigNumberFormat, getEllipsis, getExplorerLogo } from "utils/functions";
-import { getExplorerLink, getNativeSybmol } from "lib/bridge/helpers";
-import { useEffect, useRef, useState } from "react";
 import { simpleRpcProvider } from "utils/providers";
 
 export default function HolderCard({ list, i, selectedPair }) {
