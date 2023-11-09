@@ -1,10 +1,9 @@
-import { Provider } from "@wagmi/core";
 import { Contract, utils } from "ethers";
 
 export const NOT_ENOUGH_COLLECTED_SIGNATURES =
   "Transaction to the bridge is found but oracles’ confirmations are not collected yet. Wait for a minute and try again.";
 
-export const getMessageData = async (isHome: boolean, ethersProvider: Provider, txHash: string, txReceipt?: any) => {
+export const getMessageData = async (isHome: boolean, ethersProvider: any, txHash: string, txReceipt?: any) => {
   const abi = isHome
     ? new utils.Interface(["event UserRequestForSignature(bytes32 indexed messageId, bytes encodedData)"])
     : new utils.Interface(["event UserRequestForAffirmation(bytes32 indexed messageId, bytes encodedData)"]);
@@ -33,7 +32,7 @@ export const getMessageData = async (isHome: boolean, ethersProvider: Provider, 
   };
 };
 
-export const getMessage = async (isHome: boolean, provider: Provider, ambAddress: string, txHash: string) => {
+export const getMessage = async (isHome: boolean, provider: any, ambAddress: string, txHash: string) => {
   const { messageId, messageData } = await getMessageData(isHome, provider, txHash);
   const messageHash = utils.solidityKeccak256(["bytes"], [messageData]);
 
@@ -67,21 +66,21 @@ export const getMessage = async (isHome: boolean, provider: Provider, ambAddress
   };
 };
 
-export const messageCallStatus = async (ambAddress: string, ethersProvider: Provider, messageId: string) => {
+export const messageCallStatus = async (ambAddress: string, ethersProvider: any, messageId: string) => {
   const abi = ["function messageCallStatus(bytes32 _messageId) public view returns (bool)"];
   const ambContract = new Contract(ambAddress, abi, ethersProvider);
   const claimed = await ambContract.messageCallStatus(messageId);
   return claimed;
 };
 
-export const fetchRequiredSignatures = async (homeAmbAddress: string, homeProvider: Provider) => {
+export const fetchRequiredSignatures = async (homeAmbAddress: string, homeProvider: any) => {
   const abi = ["function requiredSignatures() public view returns (uint256)"];
   const ambContract = new Contract(homeAmbAddress, abi, homeProvider);
   const numRequired = await ambContract.requiredSignatures();
   return numRequired;
 };
 
-export const fetchValidatorList = async (homeAmbAddress: string, homeProvider: Provider) => {
+export const fetchValidatorList = async (homeAmbAddress: string, homeProvider: any) => {
   const ambContract = new Contract(
     homeAmbAddress,
     ["function validatorContract() public view returns (address)"],
