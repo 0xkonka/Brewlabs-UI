@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { fetchConfirmations } from "lib/bridge/amb";
 import { getNetworkLabel } from "lib/bridge/helpers";
+import { simpleRpcProvider } from "utils/providers";
 
 export const useTotalConfirms = (
   homeChainId: ChainId,
@@ -22,8 +23,8 @@ export const useTotalConfirms = (
     const fetchConfirms = async () => {
       try {
         const [homeProvider, foreignProvider] = await Promise.all([
-          provider({ chainId: homeChainId }),
-          provider({ chainId: foreignChainId }),
+          simpleRpcProvider(homeChainId),
+          simpleRpcProvider(foreignChainId),
         ]);
         const [home, foreign] = await Promise.all([
           fetchConfirmations(homeAmbAddress, homeProvider),
