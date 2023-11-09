@@ -14,7 +14,7 @@ import { useMediaQuery } from "react-responsive";
 
 let wrappedQuery;
 
-export default function TradingPanel({ selectedPair, showReverse, marketInfos }) {
+export default function TradingPanel({ selectedPair, showReverse, marketInfos, holders30d }) {
   const [volumeDatas, setVolumeDatas] = useState(defaultVolume);
   const [volumeDataLoading, setVolumeDataLoading] = useState(false);
 
@@ -85,7 +85,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
   const w2xl = useMediaQuery({ query: "(min-width: 1536px)" });
   return (
     <div className="mt-6">
-      <div className={`flex ${showReverse ? "flex-row-reverse" : ""}`}>
+      <div className={`flex ${showReverse ? "flex-row-reverse" : ""} h-[1300px]`}>
         <div className="hidden w-[320px] 2xl:block">
           <SwapOption
             selectedPair={selectedPair}
@@ -97,11 +97,11 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos })
             lpPrice={lpPrice}
           />
         </div>
-        <div className="mx-0 flex-1 2xl:mx-4">
+        <div className="mx-0 flex flex-1 flex-col 2xl:mx-4">
           <div className="h-[660px]">
             <TradingViewChart selectedPair={selectedPair} />
           </div>
-          {selectedPair ? <SwapHistory selectedPair={selectedPair} /> : ""}
+          {selectedPair ? <SwapHistory selectedPair={selectedPair} holders30d={holders30d} /> : ""}
         </div>
         {w2xl ? (
           <div className="w-[280px]">

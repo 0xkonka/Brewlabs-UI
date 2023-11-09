@@ -12,9 +12,8 @@ const config = {
 };
 
 const resolutionToSeconds = (r) => {
-  if (r === "D") {
-    return 1440;
-  }
+  if (r === "D" || r === "W" || r === "M") return 1440;
+
   return Number(r);
 };
 
@@ -55,7 +54,7 @@ export default {
       pricescale: 1000000000,
       minmov: 1,
       has_intraday: true,
-      supported_resolutions: ["1", "5", "15", "30", "60", "240", "720", "1D", "1W"],
+      supported_resolutions: ["1", "5", "15", "30", "60", "240", "720", "1D", "1W", "1M"],
     };
     console.log("[resolveSymbol]: Symbol resolved", symbolName);
     onSymbolResolvedCallback(symbolInfo);
@@ -64,8 +63,10 @@ export default {
   getBars: async (symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) => {
     try {
       const swap = symbolInfo.ticker.split("/")[0];
+
       console.log("Resolution", resolution, from, to);
       const resSec = resolutionToSeconds(resolution);
+
       let data = [];
       if (swap === "brewswap") {
         const pair = symbolInfo.ticker.split("?")[0].split("/")[3];
@@ -83,6 +84,7 @@ export default {
           url,
         });
         data = response.result.bars;
+        console.log(data);
       }
       let bars = [];
       if (!data || !data.length) return;

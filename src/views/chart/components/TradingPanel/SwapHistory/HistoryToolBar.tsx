@@ -1,13 +1,24 @@
 import StyledInput from "@components/StyledInput";
 import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import StyledButton from "views/directory/StyledButton";
+
+let searchTimeout;
 
 export default function HistoryToolBar({ showType, setShowType, criteria, setCriteria }: any) {
   const filters1 = ["Swaps", "Buys", "Sells", "Holders"];
   const filters2 = ["My swaps", "My buys", "My sells"];
   const [address, setAddress] = useState("");
+
+  useEffect(() => {
+    if (searchTimeout != undefined) clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(async () => {
+      setCriteria(address);
+    }, 500);
+  }, [address]);
+
   return (
     <div className="mt-2 flex flex-col items-start justify-between md:flex-row md:items-center ">
       <div className="flex ">

@@ -79,7 +79,7 @@ export default function HistoryList({
   }, [stringifiedHistories, nativePrice]);
 
   return (
-    <div className="mt-2 rounded-md p-1.5 text-sm">
+    <div className="mt-2 flex min-h-[100px] flex-1 flex-col rounded-md pt-1.5 text-sm">
       <div className="hidden justify-between rounded-[2px] bg-[#D9D9D91A] p-[4px_12px] text-[#FFFFFFBF] lg:flex">
         <div className="flex">
           <div className="w-[90px]">Tx</div>
@@ -96,7 +96,7 @@ export default function HistoryList({
         </div>
       </div>
       <div
-        className="yellowScroll mt-2.5 max-h-[400px] w-[calc(100%+6px)] overflow-x-clip overflow-y-scroll"
+        className="yellowScroll mt-2.5 min-h-[100px] w-[calc(100%+6px)] flex-1 overflow-y-auto overflow-x-clip"
         ref={node}
       >
         {wrappedHistories.map((list, i) => {
