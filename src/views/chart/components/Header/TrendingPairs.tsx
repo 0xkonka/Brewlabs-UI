@@ -1,3 +1,4 @@
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { GradientFlameSVG, InfoSVG } from "@components/dashboard/assets/svgs";
 import { useCGListings, useCMCListings, useWatcherGuruTrending } from "@hooks/chart/useScrappingSite";
 import { DEXSCREENER_CHAINNAME } from "config";
@@ -52,7 +53,9 @@ export const TrendingPairs = () => {
 
   return (
     <div className="mt-5 flex items-center font-roboto">
-      <div className="mr-3 [&>svg]:!h-4 [&>svg]:!w-4">{InfoSVG}</div>
+      <div className="mr-3 [&>svg]:!h-4 [&>svg]:!w-4" id={"totalmarketheatmap"}>
+        {InfoSVG}
+      </div>
       <div className="-mt-1 mr-2 [&>svg]:!h-5 [&>svg]:!w-5">{GradientFlameSVG}</div>
       <div className="mr-4 text-xs font-medium text-[#FFFFFFBF]">Total market heat map</div>
       <div className={`flex ${isFadeout !== 0 ? "animate-bounce" : ""} h-6 flex-1`}>
@@ -63,6 +66,12 @@ export const TrendingPairs = () => {
         ))}
         <div className="w-0 opacity-0">test</div>
       </div>
+      <ReactTooltip
+        anchorId={"totalmarketheatmap"}
+        place="top"
+        content={"Trending currencies across the global cryptocurrency market."}
+        className="!z-[1000]"
+      />
     </div>
   );
 };

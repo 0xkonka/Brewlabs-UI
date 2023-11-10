@@ -9,11 +9,15 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
   try {
     if (query.type === "holders") {
       //
+      console.log(
+        `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/tokens/${query.address}/token_holders_v2/?page-size=100&page-number=${tb}`
+      );
       const { data: response } = await axios.get(
         `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/tokens/${query.address}/token_holders_v2/?page-size=100&page-number=${tb}`,
         { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
       );
       const holders = response.data.items;
+      console.log(holders);
       return holders.map((holder) => ({
         address: holder.address,
         timestamp: tb,

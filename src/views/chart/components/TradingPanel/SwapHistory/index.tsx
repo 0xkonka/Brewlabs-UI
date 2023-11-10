@@ -10,7 +10,7 @@ import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshE
 import HolderList from "./HolderList";
 
 let wrappedQuery;
-export default function SwapHistory({ selectedPair }) {
+export default function SwapHistory({ selectedPair, holders30d }) {
   const { address: account } = useAccount();
   const [showType, setShowType] = useState(0);
   const [criteria, setCriteria] = useState("");
@@ -133,7 +133,7 @@ export default function SwapHistory({ selectedPair }) {
   }, [strigifiedRecentHistories]);
 
   return (
-    <div className="duraton-300 transition-all">
+    <div className="duraton-300 flex min-h-[100px] flex-1 flex-col transition-all">
       <HistoryToolBar showType={showType} setShowType={setShowType} criteria={criteria} setCriteria={setCriteria} />
       <UserInfo
         selectedPair={selectedPair}
@@ -143,7 +143,15 @@ export default function SwapHistory({ selectedPair }) {
         setCriteria={setCriteria}
       />
       {showType === 3 ? (
-        <HolderList histories={totalHistories} selectedPair={selectedPair} loading={loading} setTB={setTB} />
+        <HolderList
+          histories={totalHistories}
+          selectedPair={selectedPair}
+          loading={loading}
+          setTB={setTB}
+          holders30d={holders30d}
+          setShowType={setShowType}
+          setCriteria={setCriteria}
+        />
       ) : (
         <HistoryList
           histories={totalHistories}
