@@ -1,18 +1,19 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
+import { ChainId } from "@brewlabs/sdk";
 import clsx from "clsx";
 import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
-import Image from "next/image";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import Script from "next/script";
 import { DefaultSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
-import Script from "next/script";
 
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
 import { SWRConfig } from "swr";
+import { useAccount } from "wagmi";
 
 import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -20,15 +21,27 @@ import "react-multi-carousel/lib/styles.css";
 import "react-tooltip/dist/react-tooltip.css";
 
 import { BridgeProvider } from "contexts/BridgeContext";
+import { ChartContextProvider } from "contexts/ChartContext";
+import { CommunityContextProvider } from "contexts/CommunityContext";
+import { UserContextProvider } from "contexts/UserContext";
 import { WagmiProvider } from "contexts/wagmi";
 import { TokenPriceContextProvider } from "contexts/TokenPriceContext";
 import { SwapContextProvider } from "contexts/SwapContext";
 import { DashboardContextProvider } from "contexts/DashboardContext";
 import { LanguageProvider } from "contexts/localization";
+import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
-import { client } from "utils/wagmi";
+import { usePollFarmFactoryData, usePollIndexFactoryData } from "state/deploy/hooks";
+import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
+import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
+import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
+import { useTradingAllPairs } from "state/pair/hooks";
+import { useFetchMarketData } from "state/prices/hooks";
+import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
+import { useFetchTokenBalance } from "state/wallet/hooks";
+import { useSigner } from "utils/wagmi";
 
 import "animate.css";
 import "../styles/globals.css";
@@ -40,22 +53,9 @@ import UserSidebar from "components/dashboard/UserSidebar";
 import HeaderMobile from "components/navigation/HeaderMobile";
 import NavigationDesktop from "components/navigation/NavigationDesktop";
 import NavigationMobile from "components/navigation/NavigationMobile";
+import LoadingPage from "components/LoadingPage";
+
 import { Updaters } from "../index";
-import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
-import { useFetchPoolsWithUserData, useFetchPublicPoolsData, usePollPoolsPublicDataFromApi } from "state/pools/hooks";
-import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
-import { UserContextProvider } from "contexts/UserContext";
-import { usePollFarmFactoryData, usePollIndexFactoryData } from "state/deploy/hooks";
-import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
-import LoadingPage from "@components/LoadingPage";
-import { ChartContextProvider } from "contexts/ChartContext";
-import { CommunityContextProvider } from "contexts/CommunityContext";
-import { useFetchMarketData } from "state/prices/hooks";
-import { useAccount, useSigner } from "wagmi";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useFetchTokenBalance } from "state/wallet/hooks";
-import { useTradingAllPairs } from "state/pair/hooks";
-import { ChainId } from "@brewlabs/sdk";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -136,7 +136,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
   return (
     <>
-      <WagmiProvider client={client}>
+      <WagmiProvider>
         <Provider store={store}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <TokenPriceContextProvider>

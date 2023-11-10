@@ -2,7 +2,8 @@ import { ChainId } from "@brewlabs/sdk";
 import { BigNumber, Contract, ethers, Signer } from "ethers";
 import { BridgeToken, Version } from "config/constants/types";
 import { bridgeConfigs } from "config/constants/bridge";
-import { provider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
+
 import { fetchTokenName } from "./token";
 import { getMediatorAddress, getNetworkLabel } from "./helpers";
 
@@ -21,8 +22,8 @@ const fetchToTokenDetails = async (bridgeDirectionId: number, fromToken: BridgeT
   const fromMediatorAddress = getMediatorAddress(bridgeDirectionId, fromChainId);
   const toMediatorAddress = getMediatorAddress(bridgeDirectionId, toChainId);
 
-  const fromEthersProvider = await provider({ chainId: fromChainId });
-  const toEthersProvider = await provider({ chainId: toChainId });
+  const fromEthersProvider = simpleRpcProvider(fromChainId);
+  const toEthersProvider = simpleRpcProvider(toChainId);
   const abi = [
     "function isRegisteredAsNativeToken(address) view returns (bool)",
     "function bridgedTokenAddress(address) view returns (address)",
@@ -82,7 +83,7 @@ export const fetchToAmount = async (
   }
 
   try {
-    const ethersProvider = await provider({ chainId: version ? fromToken.chainId : homeChainId });
+    const ethersProvider = simpleRpcProvider(version ? fromToken.chainId : homeChainId);
     const abi = ["function calculateFee(bytes32, address, uint256) view returns (uint256)"];
     const feeManagerContract = new Contract(feeManagerAddress, abi, ethersProvider);
 
@@ -166,12 +167,12 @@ export const fetchTokenLimits = async (
     const fromMediatorContract = new Contract(
       fromToken.mediator ?? ethers.constants.AddressZero,
       abi,
-      await provider({ chainId: fromToken.chainId })
+      simpleRpcProvider(fromToken.chainId)
     );
     const toMediatorContract = new Contract(
       toToken.mediator ?? ethers.constants.AddressZero,
       abi,
-      await provider({ chainId: toToken.chainId })
+      simpleRpcProvider(toToken.chainId)
     );
 
     const fromTokenAddress = fromToken.address;

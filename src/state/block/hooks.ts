@@ -2,10 +2,10 @@
 import { ChainId } from "@brewlabs/sdk";
 import useSWR, { useSWRConfig, unstable_serialize } from "swr";
 import useSWRImmutable from "swr/immutable";
-import { useProvider } from "wagmi";
 
 import { FAST_INTERVAL, SECOND_INTERVAL, SLOW_INTERVAL } from "config/constants";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useProvider } from "utils/wagmi";
 
 const REFRESH_BLOCK_INTERVAL = 6000;
 
@@ -87,14 +87,14 @@ export const useChainCurrentBlock = (chainId: number): number => {
 };
 
 export const useChainCurrentBlocks = () => {
-  let blocks = {}
-  blocks[ChainId.ETHEREUM] = useChainCurrentBlock(ChainId.ETHEREUM)
-  blocks[ChainId.BSC_MAINNET] = useChainCurrentBlock(ChainId.BSC_MAINNET)
-  blocks[ChainId.POLYGON] = useChainCurrentBlock(ChainId.POLYGON)
-  blocks[ChainId.AVALANCHE] = useChainCurrentBlock(ChainId.AVALANCHE)
+  let blocks = {};
+  blocks[ChainId.ETHEREUM] = useChainCurrentBlock(ChainId.ETHEREUM);
+  blocks[ChainId.BSC_MAINNET] = useChainCurrentBlock(ChainId.BSC_MAINNET);
+  blocks[ChainId.POLYGON] = useChainCurrentBlock(ChainId.POLYGON);
+  blocks[ChainId.AVALANCHE] = useChainCurrentBlock(ChainId.AVALANCHE);
 
-  return blocks
-}
+  return blocks;
+};
 
 export const useInitialBlock = (): number => {
   const { chainId } = useActiveChainId();

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useProvider } from "wagmi";
 
 import Button from "components/Button";
 import Modal from "components/Modal";
@@ -10,6 +9,8 @@ import { useClaim } from "hooks/bridge/useClaim";
 import { isRevertedError, TOKENS_CLAIMED } from "lib/bridge/amb";
 import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { messageCallStatus } from "lib/bridge/message";
+import { useProvider } from "utils/wagmi";
+
 import LoadingModal from "./LoadingModal";
 
 type ClaimTransferModalProps = {
@@ -108,7 +109,7 @@ const ClaimTransferModal = ({ message, setMessage }: ClaimTransferModalProps) =>
               {claiming && (
                 <div role="status">
                   <svg
-                    className="mr-2 inline h-5 w-5 animate-spin fill-yellow-500 text-gray-200 dark:text-gray-600"
+                    className="fill-yellow-500 mr-2 inline h-5 w-5 animate-spin text-gray-200 dark:text-gray-600"
                     viewBox="0 0 100 101"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"

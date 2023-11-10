@@ -4,14 +4,20 @@ import { Contract } from "ethers";
 import { useAccount } from "wagmi";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { provider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
 import { useBridgeDirection } from "./useBridgeDirection";
 
 export const useMediatorInfo = () => {
   const { address: account } = useAccount();
   const { chainId: providerChainId } = useActiveChainId();
 
-  const { version: bridgeVersion, homeChainId, homeMediatorAddress, foreignChainId, foreignMediatorAddress } = useBridgeDirection();
+  const {
+    version: bridgeVersion,
+    homeChainId,
+    homeMediatorAddress,
+    foreignChainId,
+    foreignMediatorAddress,
+  } = useBridgeDirection();
   const [currentDay, setCurrentDay] = useState<string>();
   const [homeFeeManagerAddress, setHomeFeeManagerAddress] = useState<string>();
   const [foreignFeeManagerAddress, setForeignFeeManagerAddress] = useState<string>();
@@ -26,7 +32,7 @@ export const useMediatorInfo = () => {
   );
 
   const calculateFees = useCallback(async (managerAddress: string, chainId: ChainId) => {
-    const ethersProvider = await provider({ chainId });
+    const ethersProvider = simpleRpcProvider(chainId);
     const abi = [
       "function FOREIGN_TO_HOME_FEE() view returns (bytes32)",
       "function HOME_TO_FOREIGN_FEE() view returns (bytes32)",
@@ -47,7 +53,7 @@ export const useMediatorInfo = () => {
         setRewardAddress(false);
         return;
       }
-      const ethersProvider = await provider({ chainId });
+      const ethersProvider = simpleRpcProvider(chainId);
       const abi = ["function isRewardAddress(address) view returns (bool)"];
       const feeManagerContract = new Contract(managerAddress, abi, ethersProvider);
       const is = await feeManagerContract.isRewardAddress(account);
@@ -61,7 +67,7 @@ export const useMediatorInfo = () => {
     const processMediatorData = async () => {
       try {
         setFetching(true);
-        const ethersProvider = await provider({ chainId: homeChainId });
+        const ethersProvider = simpleRpcProvider(homeChainId);
         const abi = [
           "function getCurrentDay() view returns (uint256)",
           "function feeManager() public view returns (address)",
@@ -85,21 +91,21 @@ export const useMediatorInfo = () => {
 
         setHomeFeeManagerAddress(homeManagerAddress);
 
-        let foreignManagerAddress
-        if(bridgeVersion) {
-          const foreignEthersProvider = await provider({ chainId: foreignChainId });
+        let foreignManagerAddress;
+        if (bridgeVersion) {
+          const foreignEthersProvider = simpleRpcProvider(foreignChainId);
           const foreignMediatorContract = new Contract(foreignMediatorAddress, abi, foreignEthersProvider);
           foreignManagerAddress = await foreignMediatorContract.feeManager();
           setForeignFeeManagerAddress(foreignManagerAddress);
         } else {
-          foreignManagerAddress = homeFeeManagerAddress
-          setForeignFeeManagerAddress(homeManagerAddress)
+          foreignManagerAddress = homeFeeManagerAddress;
+          setForeignFeeManagerAddress(homeManagerAddress);
         }
 
         await Promise.all([
           checkRewardAddress(
-            (providerChainId === homeChainId || !bridgeVersion) ? homeManagerAddress : foreignManagerAddress,
-            (providerChainId === homeChainId || !bridgeVersion) ? homeChainId : foreignChainId
+            providerChainId === homeChainId || !bridgeVersion ? homeManagerAddress : foreignManagerAddress,
+            providerChainId === homeChainId || !bridgeVersion ? homeChainId : foreignChainId
           ),
           calculateFees(homeManagerAddress, homeChainId),
         ]);

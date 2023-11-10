@@ -2,7 +2,7 @@ import { useMemo } from "react";
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from "@ethersproject/contracts";
 import { ChainId, WNATIVE } from "@brewlabs/sdk";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import ENS_PUBLIC_RESOLVER_ABI from "config/abi/ens-public-resolver.json";
 import ENS_ABI from "config/abi/ens-registrar.json";
@@ -15,7 +15,8 @@ import ExternalMasterChefABI from "config/abi/externalMasterchef.json";
 
 // import { useAppId } from 'state/zap/hooks'
 import { Chef } from "config/constants/types";
-
+import { useAppId } from "state/zap/hooks";
+import { getExternalMasterChefAddress, getTokenTransferAddress } from "utils/addressHelpers";
 import {
   getBep20Contract,
   getMasterchefContract,
@@ -34,15 +35,9 @@ import {
   getNftStakingContract,
   getMulticallContract,
 } from "utils/contractHelpers";
-import {
-  getAddress,
-  getExternalMasterChefAddress,
-  getMulticallAddress,
-  getTokenTransferAddress,
-} from "utils/addressHelpers";
+import { useSigner } from "utils/wagmi";
 
 import { useActiveChainId } from "./useActiveChainId";
-import { useAppId } from "state/zap/hooks";
 
 /**
  * Helper hooks to get specific contracts (by ABI)

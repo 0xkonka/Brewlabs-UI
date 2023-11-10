@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { chevronLeftSVG, LinkSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
@@ -23,6 +23,7 @@ import { getIndexContract } from "utils/contractHelpers";
 import { calculateGasMargin } from "utils";
 import { getChainLogo, getIndexName } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
+import { useSigner } from "utils/wagmi";
 
 import useIndexImpl from "../hooks/useIndexImpl";
 

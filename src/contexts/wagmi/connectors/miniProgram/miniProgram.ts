@@ -1,8 +1,8 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
-import { getAddress } from "@ethersproject/address";
-import { Chain, ConnectorNotFoundError, ResourceUnavailableError, RpcError, UserRejectedRequestError } from "wagmi";
+import { getAddress } from "viem";
+import { Address, Chain, ConnectorNotFoundError } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 declare global {
@@ -58,9 +58,9 @@ export class MiniProgramConnector extends InjectedConnector {
       }
 
       return { account, chain: { id, unsupported }, provider };
-    } catch (error) {
-      if (this.isUserRejectedRequestError(error)) throw new UserRejectedRequestError(error);
-      if ((<RpcError>error).code === -32002) throw new ResourceUnavailableError(error);
+    } catch (error: any) {
+      if (this.isUserRejectedRequestError(error)) throw new Error(error);
+      if (error.code === -32002) throw new Error(error);
       throw error;
     }
   }
@@ -72,7 +72,7 @@ export class MiniProgramConnector extends InjectedConnector {
       method: "eth_accounts",
     });
     // return checksum address
-    return getAddress(<string>accounts[0]);
+    return getAddress(<Address>accounts[0]);
   }
 
   async getChainId(): Promise<number> {

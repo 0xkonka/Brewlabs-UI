@@ -2,16 +2,21 @@ import { useState, useMemo, useCallback, useContext, useEffect } from "react";
 import { CurrencyAmount, Percent, Price, ChainId } from "@brewlabs/sdk";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
+import { useConnect } from "wagmi";
 
 import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ALLOWED_PRICE_IMPACT_HIGH } from "config/constants";
 import contracts from "config/constants/contracts";
+import { NETWORKS } from "config/constants/networks";
 import { useTranslation } from "contexts/localization";
 import { SwapContext } from "contexts/SwapContext";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
-import { useSwapAggregator } from "@hooks/swap/useSwapAggregator";
-import useSwapCallback from "@hooks/swap/useSwapCallback";
-import useWrapCallback, { WrapType } from "@hooks/swap/useWrapCallback";
+import { useSwapAggregator } from "hooks/swap/useSwapAggregator";
+import useSwapCallback from "hooks/swap/useSwapCallback";
+import useWrapCallback, { WrapType } from "hooks/swap/useWrapCallback";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { useTokenTaxes } from "hooks/useTokenInfo";
+import { useTokenMarketChart } from "state/prices/hooks";
 import { useUserSlippageTolerance, useUserTransactionTTL } from "state/user/hooks";
 import { Field } from "state/swap/actions";
 import { useSwapState, useSwapActionHandlers, useDerivedSwapInfo } from "state/swap/hooks";
@@ -22,19 +27,16 @@ import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
 import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
-import WarningModal from "@components/warningModal";
+import Modal from "components/Modal";
+import WalletSelector from "components/wallet/WalletSelector";
+import WarningModal from "components/warningModal";
+import StyledButton from "views/directory/StyledButton";
 
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
-import StyledButton from "views/directory/StyledButton";
-import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
-import { NETWORKS } from "config/constants/networks";
-import { useTokenTaxes } from "@hooks/useTokenInfo";
-import ConnectWallet from "@components/wallet/ConnectWallet";
-import Modal from "@components/Modal";
-import WalletSelector from "@components/wallet/WalletSelector";
-import { useConnect } from "wagmi";
+
+const AGGREGATOR_LOST_LIMIT = 0.05;
 
 export default function SwapPanel({
   showHistory = true,
@@ -74,6 +76,8 @@ export default function SwapPanel({
   const trade = showWrap ? undefined : v2Trade;
 
   const { onUserInput, onSwitchTokens } = useSwapActionHandlers();
+
+  const tokenMarketData = useTokenMarketChart(chainId);
 
   // txn values
   const [deadline] = useUserTransactionTTL();
@@ -157,8 +161,6 @@ export default function SwapPanel({
       });
   }, [priceImpactWithoutFee, swapCallbackUsingRouter]);
 
-  // warnings on slippage
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
   const handleMaxInput = useCallback(() => {
     if (maxAmountInput) {
       onUserInput(Field.INPUT, maxAmountInput.toExact());
@@ -214,7 +216,7 @@ export default function SwapPanel({
       });
   };
 
-  const _usingAggregator = noLiquidity || query?.outputAmount?.toExact() > trade?.outputAmount?.toExact();
+  const _usingAggregator = noLiquidity || +query?.outputAmount?.toExact() > +trade?.outputAmount?.toExact();
   const usingAggregator = !isBrewRouter && _usingAggregator;
 
   const parsedAmounts = showWrap
@@ -253,6 +255,18 @@ export default function SwapPanel({
       parsedAmounts[Field.OUTPUT].raw
     );
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmounts[Field.INPUT]]);
+
+  const sellTokenPrice = tokenMarketData?.[currencies[Field.INPUT]?.wrapped.address.toLowerCase()]?.usd ?? 0;
+  const buyTokenPrice = tokenMarketData?.[currencies[Field.OUTPUT]?.wrapped.address.toLowerCase()]?.usd ?? 0;
+  const priceImpactOnAggregator =
+    buyTokenPrice && sellTokenPrice
+      ? 1 -
+        ((query ? +query.outputAmount?.toExact() : 0) * buyTokenPrice) /
+          ((parsedAmount ? +parsedAmount.toExact() : 0) * sellTokenPrice)
+      : 0;
+
+  // warnings on slippage
+  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
 
   const onConfirm = () => {
     if (usingAggregator) {
@@ -380,7 +394,8 @@ export default function SwapPanel({
                   disabled={
                     attemptingTxn ||
                     (!usingAggregator && (!!swapCallbackError || priceImpactSeverity > 3)) ||
-                    (usingAggregator && !!aggregationCallbackError)
+                    (usingAggregator && !!aggregationCallbackError) ||
+                    priceImpactOnAggregator > AGGREGATOR_LOST_LIMIT
                   }
                 >
                   {attemptingTxn
@@ -393,6 +408,8 @@ export default function SwapPanel({
                       : "Swap"
                     : !!aggregationCallbackError
                     ? aggregationCallbackError
+                    : priceImpactOnAggregator > AGGREGATOR_LOST_LIMIT
+                    ? "Price Impact Too High"
                     : "Swap"}
                   {(attemptingTxn || aggregationCallbackError === "Querying swap path...") && (
                     <div className="absolute right-2 top-0 flex h-full items-center">

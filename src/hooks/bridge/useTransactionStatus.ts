@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useProvider } from "wagmi";
 
 import { POLLING_INTERVAL } from "config/constants/bridge";
 import { useBridgeContext } from "contexts/BridgeContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { timeout, withTimeout } from "lib/bridge/helpers";
 import { getMessage, getMessageData, messageCallStatus, NOT_ENOUGH_COLLECTED_SIGNATURES } from "lib/bridge/message";
-import { provider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
+import { useProvider } from "utils/wagmi";
 
 import { useBridgeDirection } from "./useBridgeDirection";
 import { useNeedsClaiming } from "./useNeedsClaiming";
@@ -32,9 +32,7 @@ export const useTransactionStatus = (setMessage: any) => {
     setLoading(false);
     setLoadingText(undefined);
     setConfirmations(0);
-    toast.success(
-      `The token has been successfully transferred. After a while it will appear in the history table.`
-    );
+    toast.success(`The token has been successfully transferred. After a while it will appear in the history table.`);
   }, [setLoading, setTxHash]);
 
   const incompleteReceipt = useCallback(() => {
@@ -61,7 +59,7 @@ export const useTransactionStatus = (setMessage: any) => {
       if (txReceipt) {
         setConfirmations(numConfirmations);
         if (enoughConfirmations) {
-          const bridgeProvider = await provider({ chainId: bridgeChainId });
+          const bridgeProvider = simpleRpcProvider(bridgeChainId);
           const bridgeAmbAddress = getAMBAddress(bridgeChainId);
           if (needsClaiming) {
             setLoadingText("Collecting Signatures");

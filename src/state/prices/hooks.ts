@@ -1,7 +1,7 @@
 import { AppId } from "config/constants/types";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { useAppDispatch } from "state";
 import { LpTokenPricesState, State } from "state/types";
 import { fetchLpTokenPrices, fetchMarketDataAsync } from ".";
@@ -30,12 +30,13 @@ export const useFetchMarketData = () => {
 
 export const useLpTokenPrices = () => {
   const { isInitialized, isLoading, data }: LpTokenPricesState = useSelector(
-    (state: State) => state.prices.lpTokenPrices
+    (state: State) => state.prices.lpTokenPrices,
+    shallowEqual
   );
   return { lpTokenPrices: data, isInitialized, isLoading };
 };
 
 export const useTokenMarketChart = (chainId) => {
-  const marketData = useSelector((state: State) => state.prices.marketDatas[chainId] ?? {});
+  const marketData = useSelector((state: State) => state.prices.marketDatas[chainId] ?? {}, shallowEqual);
   return marketData;
 };

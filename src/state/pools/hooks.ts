@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
@@ -55,10 +55,18 @@ export const useFetchPoolsWithUserData = () => {
 };
 
 export const usePools = (): { pools: DeserializedPool[]; userDataLoaded: boolean; dataFetched: boolean } => {
-  const { pools, userDataLoaded, dataFetched } = useSelector((state: State) => ({
-    pools: state.pools.data,
-    userDataLoaded: state.pools.userDataLoaded,
-    dataFetched: state.pools.dataFetched,
-  }));
-  return { pools: pools.map(transformPool), userDataLoaded, dataFetched };
+  const { pools, userDataLoaded, dataFetched } = useSelector(
+    (state: State) => ({
+      pools: state.pools.data,
+      userDataLoaded: state.pools.userDataLoaded,
+      dataFetched: state.pools.dataFetched,
+    }),
+    shallowEqual
+  );
+
+  return {
+    pools: pools.map(transformPool),
+    userDataLoaded,
+    dataFetched,
+  };
 };
