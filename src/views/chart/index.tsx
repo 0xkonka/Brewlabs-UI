@@ -17,7 +17,7 @@ import { DEXSCREENER_CHAINNAME } from "config";
 import { NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { Field } from "state/swap/actions";
 import TokenInfo from "./components/TokenInfo";
-import { useTokenMarketInfos } from "@hooks/useTokenInfo";
+import { useTokenHolders, useTokenMarketInfos } from "@hooks/useTokenInfo";
 import TradingPanel from "./components/TradingPanel";
 
 export default function Chart({ chain, address }) {
@@ -63,6 +63,7 @@ export default function Chart({ chain, address }) {
   }, [chain, address]);
 
   const { infos: marketInfos }: any = useTokenMarketInfos(selectedPair);
+  const { holders30d }: any = useTokenHolders(selectedPair?.baseToken?.address, selectedPair?.chainId);
 
   const { pending }: any = useContext(ChartContext);
 
@@ -126,6 +127,7 @@ export default function Chart({ chain, address }) {
               }}
               showReverse={showReverse}
               marketInfos={marketInfos}
+              holders30d={holders30d}
             />
           </div>
         ) : (
