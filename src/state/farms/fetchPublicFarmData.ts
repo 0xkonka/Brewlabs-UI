@@ -250,7 +250,7 @@ export const fetchFarmTotalRewards = async (farm) => {
     [availableRewards, availableReflections] = await multicall(erc20, calls, farm.chainId);
 
     if (farm.reflectionToken?.isNative) {
-      availableReflections = await simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
+      availableReflections = simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
       availableReflections = new BigNumber(availableReflections._hex);
     }
   }

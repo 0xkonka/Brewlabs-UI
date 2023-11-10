@@ -21,7 +21,7 @@ export const wallets: WalletConfig<ConnectorNames>[] = [
     title: "Metamask",
     description: "Connect to your MetaMask Wallet",
     icon: "/images/wallets/metamask.png",
-    installed: typeof window !== "undefined" && Boolean(window.ethereum?.isMetaMask),
+    installed: typeof window !== "undefined" && Boolean(window.ethereum?.["isMetaMask"]),
     connectorId: ConnectorNames.MetaMask,
     deepLink: "https://metamask.app.link/dapp/earn.brewlabs.info/",
     downloadLink: "https://metamask.app.link/dapp/earn.brewlabs.info/",
@@ -66,7 +66,7 @@ export const wallets: WalletConfig<ConnectorNames>[] = [
     installed:
       typeof window !== "undefined" &&
       !(window.ethereum as ExtendEthereum)?.isSafePal && // SafePal has isTrust flag
-      (Boolean(window.ethereum?.isTrust) ||
+      (Boolean(window.ethereum?.["isTrust"]) ||
         // @ts-ignore
         Boolean(window.ethereum?.isTrustWallet)),
     deepLink: `https://link.trustwallet.com/open_url?coin_id=20000714&url=${BASE_URL}`,

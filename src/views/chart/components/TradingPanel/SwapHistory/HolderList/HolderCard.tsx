@@ -1,6 +1,6 @@
-import { BigNumberFormat, getEllipsis, getExplorerLogo } from "utils/functions";
-import { getExplorerLink } from "lib/bridge/helpers";
 import { useEffect, useState } from "react";
+import { getExplorerLink } from "lib/bridge/helpers";
+import { BigNumberFormat, getEllipsis, getExplorerLogo } from "utils/functions";
 import { simpleRpcProvider } from "utils/providers";
 import {
   ChevronDownSVG,

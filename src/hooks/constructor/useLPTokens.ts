@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
 import { getAddress } from "ethers/lib/utils.js";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { ERC20_ABI } from "config/abi/erc20";
-import LpTokenAbi from "config/abi/lpToken.json";
 
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { getNativeSybmol } from "lib/bridge/helpers";
-import { useUserLpTokenData } from "state/wallet/hooks";
-import multicall from "utils/multicall";
-import { useAppDispatch } from "state";
-import { fetchTokenBalancesAsync } from "state/wallet";
-import { useTokenMarketChart } from "state/prices/hooks";
 import { DEXSCREENER_CHAINNAME } from "config";
 import { API_URL } from "config/constants";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useAppDispatch } from "state";
+import { useTokenMarketChart } from "state/prices/hooks";
+import { fetchTokenBalancesAsync } from "state/wallet";
+import { useUserLpTokenData } from "state/wallet/hooks";
+import multicall from "utils/multicall";
+import { useSigner } from "utils/wagmi";
 
 export const useLPTokens = () => {
   const dispatch = useAppDispatch();

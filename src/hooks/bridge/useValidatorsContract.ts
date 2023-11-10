@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { getNetworkLabel } from "lib/bridge/helpers";
 import { fetchRequiredSignatures, fetchValidatorList } from "lib/bridge/message";
-import { provider as getProvider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
 
 export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress: string) => {
   const [requiredSignatures, setRequiredSignatures] = useState(0);
@@ -13,7 +13,7 @@ export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
     const fetchValue = async () => {
       try {
-        const provider = await getProvider({ chainId: foreignChainId });
+        const provider = simpleRpcProvider(foreignChainId);
         const res = await fetchRequiredSignatures(foreignAmbAddress, provider);
         const signatures = Number.parseInt(res.toString(), 10);
         setRequiredSignatures(signatures);
@@ -35,7 +35,7 @@ export const useValidatorsContract = (foreignChainId: ChainId, foreignAmbAddress
     const key = `${label}-${foreignAmbAddress.toUpperCase()}-VALIDATOR-LIST`;
     const fetchValue = async () => {
       try {
-        const provider = await getProvider({ chainId: foreignChainId });
+        const provider = simpleRpcProvider(foreignChainId);
         const res = await fetchValidatorList(foreignAmbAddress, provider);
         setValidatorList(res);
         sessionStorage.setItem(key, JSON.stringify(res));

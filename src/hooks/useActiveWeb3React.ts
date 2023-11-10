@@ -1,4 +1,5 @@
-import { useAccount, useNetwork, useProvider } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import { useProvider } from "utils/wagmi";
 import { useActiveChainId } from "./useActiveChainId";
 
 export default function useActiveWeb3React() {

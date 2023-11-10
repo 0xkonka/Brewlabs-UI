@@ -2,7 +2,6 @@
 import { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import { useSigner } from "wagmi";
 
 import FarmFactoryAbi from "config/abi/farm/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
@@ -21,15 +20,16 @@ import { calculateGasMargin, isAddress } from "utils";
 import { getContract } from "utils/contractHelpers";
 import { getDexLogo, getEmptyTokenLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import { useSigner } from "utils/wagmi";
 
 import { checkCircleSVG, InfoSVG, MinusSVG, PlusSVG, UploadSVG } from "components/dashboard/assets/svgs";
 import DropDown from "components/dashboard/TokenList/Dropdown";
-import LoadingText from "@components/LoadingText";
+import LoadingText from "components/LoadingText";
+import TokenLogo from "components/logo/TokenLogo";
 
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
 import { useFactory } from "./hooks";
-import TokenLogo from "@components/logo/TokenLogo";
 
 const DURATIONS = [365, 180, 90, 60];
 

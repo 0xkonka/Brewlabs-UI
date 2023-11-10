@@ -1,29 +1,36 @@
-import { useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token, Pair } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import { TransactionResponse } from "@ethersproject/providers";
-import CurrencyInputPanel from "components/currencyInputPanel";
-import React, { useContext, useState } from "react";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
-import SolidButton from "../button/SolidButton";
-import OutlinedButton from "../button/OutlinedButton";
-import { SwapContext } from "contexts/SwapContext";
+import { ethers } from "ethers";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import { toast } from "react-toastify";
 
-import { useSigner } from "wagmi";
+import { DashboardContext } from "contexts/DashboardContext";
+import { SwapContext } from "contexts/SwapContext";
+import { DEAD_ADDRESS, FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
-import { useUserSlippageTolerance } from "state/user/hooks";
+import useTotalSupply from "@hooks/useTotalSupply";
+import { handleWalletError } from "lib/bridge/helpers";
+import { useAppDispatch } from "state";
 import { Field } from "state/mint/actions";
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from "state/mint/hooks";
+import { useTradingPair } from "state/pair/hooks";
+import { defaultMarketData } from "state/prices/types";
+import { useTokenMarketChart } from "state/prices/hooks";
+import { fetchTradingPairFeesAsync } from "state/pair";
+import { useTransactionAdder } from "state/transactions/hooks";
+import { useUserSlippageTolerance } from "state/user/hooks";
 import { calculateSlippageAmount, calculateGasMargin, isAddress } from "utils";
+import { getBep20Contract, getBrewlabsFeeManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
+import { getChainLogo, showError } from "utils/functions";
 import { maxAmountSpend } from "utils/maxAmountSpend";
 import { wrappedCurrency } from "utils/wrappedCurrency";
-import { getBep20Contract, getBrewlabsFeeManagerContract, getBrewlabsRouterContract } from "utils/contractHelpers";
-import { useTransactionAdder } from "state/transactions/hooks";
-import { CurrencyLogo } from "@components/logo";
-import useTotalSupply from "@hooks/useTotalSupply";
-import { getChainLogo, showError } from "utils/functions";
+import { useSigner } from "utils/wagmi";
+
 import {
   BurnSVG,
   EditSVG,
@@ -34,18 +41,13 @@ import {
   PoolFeeSVG,
   checkCircleSVG,
 } from "@components/dashboard/assets/svgs";
-import { DEAD_ADDRESS, FREEZER_CHAINS, ZERO_ADDRESS } from "config/constants";
+import CurrencyInputPanel from "components/currencyInputPanel";
+import { CurrencyLogo } from "@components/logo";
 import WarningModal from "@components/warningModal";
-import { defaultMarketData } from "state/prices/types";
-import { useTokenMarketChart } from "state/prices/hooks";
+import SolidButton from "../button/SolidButton";
+import OutlinedButton from "../button/OutlinedButton";
+
 import SetWalletModal from "./SetWalletModal";
-import { handleWalletError } from "lib/bridge/helpers";
-import { ethers } from "ethers";
-import { DashboardContext } from "contexts/DashboardContext";
-import { toast } from "react-toastify";
-import { useTradingPair } from "state/pair/hooks";
-import { useAppDispatch } from "state";
-import { fetchTradingPairFeesAsync } from "state/pair";
 
 export default function BasicLiquidity({ currencyA: currencyA_ = undefined, currencyB: currencyB_ = undefined }) {
   const dispatch = useAppDispatch();

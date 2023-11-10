@@ -1,10 +1,9 @@
-import { Provider } from "@wagmi/core";
 import { Contract, Signer, utils } from "ethers";
 import { NOT_ENOUGH_COLLECTED_SIGNATURES } from "./message";
 
 export const TOKENS_CLAIMED = "Tokens already claimed";
 
-export const fetchConfirmations = async (address: string, ethersProvider: Provider) => {
+export const fetchConfirmations = async (address: string, ethersProvider: any) => {
   const abi = ["function requiredBlockConfirmations() view returns (uint256)"];
   const ambContract = new Contract(address, abi, ethersProvider);
   const requiredConfirmations = await ambContract
@@ -13,7 +12,7 @@ export const fetchConfirmations = async (address: string, ethersProvider: Provid
   return parseInt(requiredConfirmations, 10);
 };
 
-export const fetchAmbVersion = async (address: string, ethersProvider: Provider) => {
+export const fetchAmbVersion = async (address: string, ethersProvider: any) => {
   if (!ethersProvider) {
     return { major: 0, minor: 0, patch: 0 };
   }

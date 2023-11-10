@@ -94,7 +94,7 @@ const getFeeCollected = async () => {
       { chainId: 56, address: "0x408c4aDa67aE1244dfeC7D609dea3c232843189A" },
       { chainId: 56, address: "0x5Ac58191F3BBDF6D037C6C6201aDC9F99c93C53A" },
     ].map(async (data) => {
-      const provider = await simpleRpcProvider(data.chainId);
+      const provider = simpleRpcProvider(data.chainId);
       const balance: any = await provider.getBalance(data.address);
       balances[data.chainId] += balance / Math.pow(10, 18);
     })
@@ -117,7 +117,7 @@ const getChangedFeeCollected = async () => {
       );
       let _balance = 0;
       if (!result.data.result) return {};
-      
+
       result.data.result
         .filter((tx) => tx.to === data.address.toLowerCase() && tx.timeStamp > Date.now() / 1000 - 3600 * 24)
         .map((tx) => (_balance += tx.value / Math.pow(10, 18)));

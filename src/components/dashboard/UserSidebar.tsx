@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import ConnectWallet from "./ConnectWallet";
+
 import UserDashboard from "components/dashboard/UserDashboard";
-import { useGlobalState } from "../../state";
+import { useGlobalState } from "state";
+
+import ConnectWallet from "./ConnectWallet";
 
 const UserSidebar = () => {
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");

@@ -1,18 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import clsx from "clsx";
 import Link from "next/link";
-import LogoIcon from "../LogoIcon";
-import ConnectWallet from "../wallet/ConnectWallet";
-import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
-import { setGlobalState } from "../../state";
-import { navigationData, navigationExtraData } from "../../config/constants/navigation";
 import { useMediaQuery } from "react-responsive";
-import Notification from "@components/Notification";
+
 import { CommunityContext } from "contexts/CommunityContext";
+import { navigationData, navigationExtraData } from "config/constants/navigation";
+import { setGlobalState } from "state";
+
+import Notification from "@components/Notification";
 import Soon from "@components/Soon";
+
+import LogoIcon from "../LogoIcon";
+import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
+import ConnectWallet from "../wallet/ConnectWallet";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();

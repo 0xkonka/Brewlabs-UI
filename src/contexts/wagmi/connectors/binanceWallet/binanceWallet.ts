@@ -4,11 +4,12 @@
 import {
   Chain,
   ConnectorNotFoundError,
-  ResourceUnavailableError,
-  RpcError,
-  UserRejectedRequestError,
+  // ResourceUnavailableError,
+  // RpcError,
+  // UserRejectedRequestError,
   SwitchChainNotSupportedError,
 } from "wagmi";
+
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { bsc } from "contexts/wagmi";
 
@@ -80,9 +81,9 @@ export class BinanceWalletConnector extends InjectedConnector {
       }
 
       return { account, chain: { id, unsupported }, provider };
-    } catch (error) {
-      if (this.isUserRejectedRequestError(error)) throw new UserRejectedRequestError(error);
-      if ((<RpcError>error).code === -32002) throw new ResourceUnavailableError(error);
+    } catch (error: any) {
+      if (this.isUserRejectedRequestError(error)) throw new Error(error);
+      if (error.code === -32002) throw new Error(error);
       throw error;
     }
   }
@@ -110,9 +111,9 @@ export class BinanceWalletConnector extends InjectedConnector {
         await provider.switchNetwork?.(mappingNetwork[chainId]);
 
         return this.chains.find((x) => x.id === chainId) ?? bsc;
-      } catch (error) {
+      } catch (error: any) {
         if ((error as any).error === "user rejected") {
-          throw new UserRejectedRequestError(error);
+          throw new Error(error);
         }
       }
     }

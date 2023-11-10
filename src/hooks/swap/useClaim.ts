@@ -1,7 +1,6 @@
-import { BrewlabsPair } from "config/constants/types";
+import { useCallback } from "react";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useBrewlabsFeeManager } from "hooks/useContract";
-import { useCallback } from "react";
 
 export const useClaim = () => {
   const { chainId } = useActiveWeb3React();

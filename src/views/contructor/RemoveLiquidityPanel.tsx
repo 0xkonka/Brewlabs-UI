@@ -5,7 +5,7 @@ import { BigNumber, Contract, ethers } from "ethers";
 import { splitSignature } from "ethers/lib/utils";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { NETWORKS } from "config/constants/networks";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -29,13 +29,14 @@ import { formatAmount } from "utils/formatApy";
 import { getChainLogo, getExplorerLogo } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import getTokenLogoURL from "utils/getTokenLogoURL";
+import { useSigner } from "utils/wagmi";
 
+import TokenLogo from "@components/logo/TokenLogo";
 import StyledButton from "views/directory/StyledButton";
 import OutlinedButton from "views/swap/components/button/OutlinedButton";
 import SolidButton from "views/swap/components/button/SolidButton";
 
 import StyledSlider from "./StyledSlider";
-import TokenLogo from "@components/logo/TokenLogo";
 
 export default function RemoveLiquidityPanel({
   onBack,
@@ -448,14 +449,14 @@ export default function RemoveLiquidityPanel({
         <div className="text-lg text-[#FFFFFFBF]">Receive</div>
         <div>
           <div className="flex flex-wrap items-center justify-between text-sm">
-            <div className="w-full xsm:w-[50%]">
+            <div className="xsm:w-[50%] w-full">
               {currencyA && currencyA.wrapped.address === WNATIVE[selectedChainId].address
                 ? isGetWETH
                   ? `W${NETWORKS[selectedChainId].nativeCurrency.name}`
                   : NETWORKS[selectedChainId].nativeCurrency.name
                 : tokenA?.symbol}
             </div>
-            <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
+            <div className="xsm:w-[50%] mt-1 flex w-full items-center justify-between xsm:mt-0">
               <div className="flex items-center">
                 <TokenLogo
                   src={getTokenLogoURL(token0Address, selectedChainId)}
@@ -492,14 +493,14 @@ export default function RemoveLiquidityPanel({
             </div>
           </div>
           <div className="mt-1 flex flex-wrap items-center justify-between text-sm">
-            <div className="w-full xsm:w-[50%]">
+            <div className="xsm:w-[50%] w-full">
               {currencyB && currencyB.wrapped.address === WNATIVE[selectedChainId].address
                 ? isGetWETH
                   ? `W${NETWORKS[selectedChainId].nativeCurrency.name}`
                   : NETWORKS[selectedChainId].nativeCurrency.name
                 : tokenB?.symbol}
             </div>
-            <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
+            <div className="xsm:w-[50%] mt-1 flex w-full items-center justify-between xsm:mt-0">
               <div className="flex items-center">
                 <TokenLogo
                   src={
@@ -542,8 +543,8 @@ export default function RemoveLiquidityPanel({
             </div>
           </div>
           <div className="mt-1 flex flex-wrap flex-wrap justify-between text-sm">
-            <div className="w-full xsm:w-[50%]">Liquidity token address</div>
-            <div className="mt-1 flex w-full items-center xsm:mt-0 xsm:w-[50%]">
+            <div className="xsm:w-[50%] w-full">Liquidity token address</div>
+            <div className="xsm:w-[50%] mt-1 flex w-full items-center xsm:mt-0">
               <img src={getExplorerLogo(selectedChainId)} alt={""} className="mr-2 h-5 w-5 rounded-full" />
               <a
                 className="max-w-[200px] flex-1 overflow-hidden text-ellipsis underline"

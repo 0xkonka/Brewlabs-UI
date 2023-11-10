@@ -1,7 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useBridgeDirection } from "hooks/bridge/useBridgeDirection";
 import { useActiveChainId } from "hooks/useActiveChainId";
@@ -9,7 +9,8 @@ import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { executeSignatures, TOKENS_CLAIMED } from "lib/bridge/amb";
 import { getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { getMessage, getRemainingSignatures, messageCallStatus } from "lib/bridge/message";
-import { provider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
+import { useSigner } from "utils/wagmi";
 
 const useExecution = () => {
   const { canSwitch, switchNetworkAsync } = useSwitchNetwork();
@@ -107,7 +108,7 @@ export const useClaim = () => {
       }
       let message = txMessage && txMessage.messageData && txMessage.signatures ? txMessage : null;
       if (!message) {
-        const homeProvider = await provider({ chainId: homeChainId });
+        const homeProvider = simpleRpcProvider(homeChainId);
         message = await getMessage(true, homeProvider, homeAmbAddress, txHash);
       }
       message.signatures = getRemainingSignatures(
@@ -116,7 +117,7 @@ export const useClaim = () => {
         requiredSignatures,
         validatorList
       );
-      const foreignProvider = await provider({ chainId: foreignChainId });
+      const foreignProvider = simpleRpcProvider(foreignChainId);
       const claimed = await messageCallStatus(foreignAmbAddress, foreignProvider, message.messageId);
       if (claimed) {
         throw Error(TOKENS_CLAIMED);

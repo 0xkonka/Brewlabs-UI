@@ -1,8 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
-import { Provider } from "@wagmi/core";
 import { BigNumber, Contract, ethers, Signer, utils } from "ethers";
 import { BridgeToken } from "config/constants/types";
-import { provider } from "utils/wagmi";
+import { simpleRpcProvider } from "utils/providers";
 import { getMediatorAddress } from "./helpers";
 
 export const fetchAllowance = async ({ mediator, address }: BridgeToken, account: string, ethersProvider: Signer) => {
@@ -28,7 +27,7 @@ export const fetchAllowance = async ({ mediator, address }: BridgeToken, account
 };
 
 const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
-  const ethersProvider = await provider({ chainId: token.chainId });
+  const ethersProvider = simpleRpcProvider(token.chainId);
   const mediatorAddress = getMediatorAddress(bridgeDirectionId, token.chainId);
   const abi = ["function nativeTokenAddress(address) view returns (address)"];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
@@ -38,7 +37,7 @@ const fetchMode = async (bridgeDirectionId: number, token: BridgeToken) => {
 };
 
 export const fetchTokenName = async (token: { chainId: ChainId; name?: string; address: string } | BridgeToken) => {
-  const ethersProvider = await provider({ chainId: token.chainId });
+  const ethersProvider = simpleRpcProvider(token.chainId);
 
   let tokenName = token.name || "";
   try {
@@ -58,7 +57,7 @@ export const fetchTokenName = async (token: { chainId: ChainId; name?: string; a
 };
 
 const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
-  const ethersProvider = await provider({ chainId: token.chainId });
+  const ethersProvider = simpleRpcProvider(token.chainId);
   const abi = [
     "function decimals() view returns (uint8)",
     "function symbol() view returns (bytes32)",
@@ -78,7 +77,7 @@ const fetchTokenDetailsBytes32 = async (token: BridgeToken) => {
 };
 
 const fetchTokenDetailsString = async (token: BridgeToken) => {
-  const ethersProvider = await provider({ chainId: token.chainId });
+  const ethersProvider = simpleRpcProvider(token.chainId);
   const abi = [
     "function decimals() view returns (uint8)",
     "function symbol() view returns (string)",
@@ -131,12 +130,12 @@ export const approveToken = async (signer: Signer, { address, mediator }: Bridge
 };
 
 export const fetchTokenBalance = async (token: BridgeToken, account: string) => {
-  const ethersProvider = await provider({ chainId: token.chainId });
+  const ethersProvider = simpleRpcProvider(token.chainId);
   return fetchTokenBalanceWithProvider(ethersProvider, token, account);
 };
 
 export const fetchTokenBalanceWithProvider = async (
-  ethersProvider: Provider,
+  ethersProvider: any,
   { address, mode, symbol }: BridgeToken,
   account: string
 ) => {
