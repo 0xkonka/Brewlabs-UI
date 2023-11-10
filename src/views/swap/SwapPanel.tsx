@@ -36,6 +36,8 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
 
+const AGGREGATOR_LOST_LIMIT = 0.05;
+
 export default function SwapPanel({
   showHistory = true,
   size,
@@ -393,7 +395,7 @@ export default function SwapPanel({
                     attemptingTxn ||
                     (!usingAggregator && (!!swapCallbackError || priceImpactSeverity > 3)) ||
                     (usingAggregator && !!aggregationCallbackError) ||
-                    priceImpactOnAggregator > 0.15
+                    priceImpactOnAggregator > AGGREGATOR_LOST_LIMIT
                   }
                 >
                   {attemptingTxn
@@ -406,7 +408,7 @@ export default function SwapPanel({
                       : "Swap"
                     : !!aggregationCallbackError
                     ? aggregationCallbackError
-                    : priceImpactOnAggregator > 0.15
+                    : priceImpactOnAggregator > AGGREGATOR_LOST_LIMIT
                     ? "Price Impact Too High"
                     : "Swap"}
                   {(attemptingTxn || aggregationCallbackError === "Querying swap path...") && (
