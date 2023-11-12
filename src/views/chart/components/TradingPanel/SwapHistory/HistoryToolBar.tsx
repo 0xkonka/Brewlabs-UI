@@ -1,19 +1,30 @@
 import StyledInput from "@components/StyledInput";
 import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 import StyledButton from "views/directory/StyledButton";
 
+let searchTimeout;
+
 export default function HistoryToolBar({ showType, setShowType, criteria, setCriteria }: any) {
-  const filters1 = ["Swaps", "Buys", "Sells"];
+  const filters1 = ["Swaps", "Buys", "Sells", "Holders"];
   const filters2 = ["My swaps", "My buys", "My sells"];
   const [address, setAddress] = useState("");
+
+  useEffect(() => {
+    if (searchTimeout != undefined) clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(async () => {
+      setCriteria(address);
+    }, 500);
+  }, [address]);
+
   return (
     <div className="mt-2 flex flex-col items-start justify-between md:flex-row md:items-center ">
       <div className="flex ">
         <div className="mr-1.5">
           <DropDown
-            value={showType >= 3 ? 0 : showType}
+            value={showType >= 4 ? 0 : showType}
             setValue={setShowType}
             data={filters1.map((filter: any, i: number) => (
               <div className="flex items-center" key={i}>
@@ -27,23 +38,23 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
             ))}
             height={"32px"}
             rounded={"4px"}
-            className="!w-[92px] !bg-[#29292B] !font-brand !text-sm !text-white"
+            className="!w-[100px] !bg-[#29292B] !font-brand !text-sm !text-white"
             bodyClassName="!bg-none !bg-[#29292B]"
             itemClassName={`hover:!bg-[#48484b] !justify-start !px-2`}
           />
         </div>
         <div className="mr-1.5">
           <DropDown
-            value={showType < 3 || showType > 5 ? 0 : showType - 3}
-            setValue={(i) => setShowType(i + 3)}
+            value={showType < 4 || showType > 6 ? 0 : showType - 4}
+            setValue={(i) => setShowType(i + 4)}
             data={filters2.map((filter: any, i: number) => (
               <div className="flex items-center" key={i}>
                 <div
                   className={`mr-2 h-2 w-2 rounded-full bg-[#32FFB5] ${
-                    showType - 3 === i ? "" : "hidden"
+                    showType - 4 === i ? "" : "hidden"
                   } shadow-[0px_0px_2px_#32FFB5]`}
                 />
-                <div className={showType - 3 === i ? "text-white" : "text-[#FFFFFF80]"}>{filter}</div>
+                <div className={showType - 4 === i ? "text-white" : "text-[#FFFFFF80]"}>{filter}</div>
               </div>
             ))}
             height={"32px"}
@@ -74,7 +85,7 @@ export default function HistoryToolBar({ showType, setShowType, criteria, setCri
         <div
           className="flex h-full w-14 cursor-pointer items-center justify-center  bg-[#202023] text-primary [&>svg]:!h-4 [&>svg]:!w-4"
           onClick={() => {
-            setShowType(6);
+            setShowType(7);
             setCriteria(address);
           }}
         >

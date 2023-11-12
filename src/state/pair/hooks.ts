@@ -4,7 +4,7 @@ import { isAddress } from "utils";
 import { fetchTradingAllPairAsync, fetchTradingPairAsync, fetchTradingPairFeesAsync } from ".";
 import { ChainId } from "@brewlabs/sdk";
 import { SerializedTradingPair, State } from "state/types";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 export const useTradingPair = (chainId, address) => {
@@ -37,5 +37,5 @@ export const useTradingAllPairDatas = (chainId: ChainId): SerializedTradingPair[
           .filter((address) => state.pair.tradingPairs[chainId][address])
           .map((address) => state.pair.tradingPairs[chainId][address])
       : []
-  );
+  , shallowEqual);
 };

@@ -1,15 +1,16 @@
 import { Currency, CurrencyAmount, TokenAmount, Token } from "@brewlabs/sdk";
-import useENS from "@hooks/ENS/useENS";
-import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
-import { ethers } from "ethers";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useEffect, useMemo, useState } from "react";
+import { ethers } from "ethers";
+
+import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
+import useENS from "hooks/ENS/useENS";
 import { Field } from "state/swap/actions";
 import { useTransactionAdder } from "state/transactions/hooks";
 import { calculateGasMargin, isAddress, shortenAddress } from "utils";
 import { getAggregatorContract } from "utils/contractHelpers";
 import { makeBigNumber } from "utils/functions";
-import { useSigner } from "wagmi";
+import { useSigner } from "utils/wagmi";
 
 export const useSwapAggregator = (
   currencies: { [field in Field]?: Currency },

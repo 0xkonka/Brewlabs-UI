@@ -11,14 +11,16 @@ import {
   TradeType,
 } from "@brewlabs/sdk";
 import { useMemo } from "react";
-import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "../../config/constants";
+
+import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from "config/constants";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useTransactionAdder } from "state/transactions/hooks";
-import { calculateGasMargin, isAddress, shortenAddress } from "../../utils";
+import { calculateGasMargin, isAddress, shortenAddress } from "utils";
 import { getBrewlabsRouterContract } from "utils/contractHelpers";
-import isZero from "../../utils/isZero";
-import useActiveWeb3React from "@hooks/useActiveWeb3React";
+import isZero from "utils/isZero";
+import { useSigner } from "utils/wagmi";
+
 import useENS from "../ENS/useENS";
-import { useSigner } from "wagmi";
 
 enum SwapCallbackState {
   INVALID,

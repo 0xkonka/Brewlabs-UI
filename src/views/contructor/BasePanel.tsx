@@ -4,8 +4,6 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useAccount, useConnect } from "wagmi";
 
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { isAddress } from "utils";
 import { getChainLogo, getDexLogo, getEmptyTokenLogo, getRemoveLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -15,8 +13,7 @@ import { CircleRightSVG, InfoSVG, RightSVG, checkCircleSVG } from "components/da
 import WalletSelector from "components/wallet/WalletSelector";
 import Modal from "components/Modal";
 import TokenLogo from "@components/logo/TokenLogo";
-import { useRouter } from "next/router";
-import { useCurrency } from "@hooks/Tokens";
+import Link from "next/link";
 
 const LoadingText = () => {
   const [dotCount, setDotCount] = useState([]);
@@ -30,20 +27,15 @@ const LoadingText = () => {
   return (
     <div>
       Loading LPs
-      {dotCount.map((data) => {
+      {dotCount.map(() => {
         return ".";
       })}
     </div>
   );
 };
 
-export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
-  const currency0 = useCurrency(data.token0.address);
-  const currency1 = useCurrency(data.token1.address);
-
+export function TokenItem({ data, i }) {
   const isNew = data.timeStamp >= Date.now() / 1000 - 3600 * 24;
-
-  const router = useRouter();
 
   return (
     <div className="mx-2 my-1.5 rounded-[30px] border border-[#FFFFFF80] p-[20px_12px_20px_12px] transition-all duration-300 hover:border-yellow sm:mx-4 sm:my-2.5  sm:p-6">
@@ -70,7 +62,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           <div className="flex flex-1 items-center">
             <div className="flex">
               <TokenLogo
-                src={getTokenLogoURL(currency0.address, data.chainId)}
+                src={getTokenLogoURL(data.token0.address, data.chainId)}
                 alt={""}
                 classNames="h-10 w-10 rounded-full"
                 onError={(e: any) => {
@@ -78,7 +70,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
                 }}
               />
               <TokenLogo
-                src={getTokenLogoURL(currency1.address, data.chainId)}
+                src={getTokenLogoURL(data.token1.address, data.chainId)}
                 alt={""}
                 classNames="-ml-3 h-10 w-10 rounded-full"
                 onError={(e: any) => {
@@ -95,13 +87,20 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           </div>
         </div>
         <div className="relative mt-0 hidden h-[36px] w-[110px] xmd:block">
-          <StyledButton
-            type={"quinary"}
-            onClick={() => router.push(getRemoveLiquidityUrl("brewlabs", currency0, currency1, data.chainId))}
+          <Link
+            href={getRemoveLiquidityUrl(
+              data.symbol.toLowerCase().includes("brew") ? "brewlabs" : "default",
+              data.token0,
+              data.token1,
+              data.chainId
+            )}
+            target="_blank"
           >
-            <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
-            <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
-          </StyledButton>
+            <StyledButton type={"quinary"}>
+              <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
+              <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
+            </StyledButton>
+          </Link>
           <div className="absolute -bottom-[18px] left-2 flex items-center">
             <div className="text-white" id={"appValue" + i}>
               {InfoSVG}
@@ -120,13 +119,20 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
           ""
         )}
         <div className="relative mx-auto mb-3 mt-5 h-[36px] w-full max-w-[160px]">
-          <StyledButton
-            type={"quinary"}
-            onClick={() => router.push(getRemoveLiquidityUrl("brewlabs", currency0, currency1, data.chainId))}
+          <Link
+            href={getRemoveLiquidityUrl(
+              data.symbol.toLowerCase().includes("brew") ? "brewlabs" : "default",
+              data.token0,
+              data.token1,
+              data.chainId
+            )}
+            target="_blank"
           >
-            <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
-            <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
-          </StyledButton>
+            <StyledButton type={"quinary"}>
+              <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
+              <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
+            </StyledButton>
+          </Link>
           <div className="absolute -bottom-[18px] z-10 flex w-full items-center justify-center">
             <div className="text-white" id={"appValue" + i}>
               {InfoSVG}
@@ -139,15 +145,7 @@ export function TokenItem({ data, i, setCurAction, setSelectedLP }) {
   );
 }
 
-export default function BasePanel({
-  setCurAction,
-  setSelectedLP,
-  sortedTokens,
-  lpTokens,
-  showCount,
-  setShowCount,
-  isLoading: lpLoading,
-}) {
+export default function BasePanel({ setCurAction, sortedTokens, showCount, setShowCount, isLoading: lpLoading }) {
   const { address: account } = useAccount();
   const { isLoading } = useConnect();
   const [openWalletModal, setOpenWalletModal] = useState(false);
@@ -178,11 +176,9 @@ export default function BasePanel({
         >
           <div className={`max-h-[512px] ${showCount >= 4 ? "overflow-y-scroll" : ""}`}>
             {!lpLoading ? (
-              lpTokens.length ? (
+              sortedTokens.length ? (
                 sortedTokens.map((data: any, i: number) => {
-                  return (
-                    <TokenItem key={i} data={data} i={i} setCurAction={setCurAction} setSelectedLP={setSelectedLP} />
-                  );
+                  return <TokenItem key={i} data={data} i={i} />;
                 })
               ) : (
                 <div className="flex h-full max-h-[210px] min-h-[210px] w-full items-center justify-center">
@@ -194,12 +190,12 @@ export default function BasePanel({
                 <LoadingText />
               </div>
             )}
-            {lpTokens && lpTokens.length > 3 ? (
+            {sortedTokens && sortedTokens.length > 3 ? (
               <div
                 className="my-5 flex cursor-pointer items-center justify-center text-[#FFFFFF80] transition hover:text-white"
-                onClick={() => setShowCount(showCount < lpTokens.length ? lpTokens.length : 3)}
+                onClick={() => setShowCount(showCount < sortedTokens.length ? sortedTokens.length : 3)}
               >
-                <div className="leading-none">{showCount < lpTokens.length ? "View more" : "View less"}</div>
+                <div className="leading-none">{showCount < sortedTokens.length ? "View more" : "View less"}</div>
                 <div className="ml-2 mt-0.5">{RightSVG}</div>
               </div>
             ) : (

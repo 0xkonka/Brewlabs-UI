@@ -1,20 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
+import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import { Dialog } from "@headlessui/react";
-import StyledButton from "../../StyledButton";
-import { chevronLeftSVG } from "components/dashboard/assets/svgs";
-import styled from "styled-components";
-import { makeBigNumber, numberWithCommas } from "utils/functions";
-import { DashboardContext } from "contexts/DashboardContext";
-import { getBep20Contract, getUnLockStakingContract } from "utils/contractHelpers";
-import { useAccount, useSigner } from "wagmi";
-import { useActiveChainId } from "hooks/useActiveChainId";
 import { ethers } from "ethers";
-import GetLPModal from "./ZapInModal";
+import styled from "styled-components";
+import { useAccount } from "wagmi";
+
+import { DashboardContext } from "contexts/DashboardContext";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useCurrency } from "hooks/Tokens";
 import { useCurrencyBalance } from "state/wallet/hooks";
-import { useCurrency } from "@hooks/Tokens";
+import { numberWithCommas } from "utils/functions";
+import { getBep20Contract } from "utils/contractHelpers";
+import { useSigner } from "utils/wagmi";
+
+import { chevronLeftSVG } from "components/dashboard/assets/svgs";
+import StyledButton from "../../StyledButton";
 
 const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: any; type: string; data: any }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -181,7 +183,7 @@ const StakingModal = ({ open, setOpen, type, data }: { open: boolean; setOpen: a
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="absolute -top-2 -right-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
+                className="absolute -right-2 -top-2 rounded-full bg-white p-2 dark:bg-zinc-900 sm:dark:bg-zinc-800"
               >
                 <span className="sr-only">Close</span>
                 <XMarkIcon className="h-6 w-6 dark:text-slate-400" />

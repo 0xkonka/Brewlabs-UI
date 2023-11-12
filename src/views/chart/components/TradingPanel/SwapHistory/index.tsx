@@ -7,9 +7,10 @@ import { isAddress } from "utils";
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { fetchTradingHistoriesByDexScreener } from "@hooks/useTokenAllPairs";
 import { useFastRefreshEffect, useSecondRefreshEffect } from "@hooks/useRefreshEffect";
+import HolderList from "./HolderList";
 
 let wrappedQuery;
-export default function SwapHistory({ selectedPair }) {
+export default function SwapHistory({ selectedPair, holders30d }) {
   const { address: account } = useAccount();
   const [showType, setShowType] = useState(0);
   const [criteria, setCriteria] = useState("");
@@ -34,24 +35,26 @@ export default function SwapHistory({ selectedPair }) {
       case 2:
         return { ...query, type: "sell" };
       case 3:
+        return { ...query, type: "holders", address: selectedPair.baseToken.address };
+      case 4:
         return {
           ...query,
           account: account ? account.toLowerCase() : "0x0",
           type: "buyOrSell",
         };
-      case 4:
+      case 5:
         return {
           ...query,
           account: account ? account.toLowerCase() : "0x0",
           type: "buy",
         };
-      case 5:
+      case 6:
         return {
           ...query,
           account: account ? account.toLowerCase() : "0x0",
           type: "sell",
         };
-      case 6:
+      case 7:
         return {
           ...query,
           account: criteria ? criteria.toLowerCase() : "0x0",
@@ -130,25 +133,37 @@ export default function SwapHistory({ selectedPair }) {
   }, [strigifiedRecentHistories]);
 
   return (
-    <div className="duraton-300 transition-all">
+    <div className="duraton-300 flex min-h-[100px] flex-1 flex-col transition-all">
       <HistoryToolBar showType={showType} setShowType={setShowType} criteria={criteria} setCriteria={setCriteria} />
       <UserInfo
         selectedPair={selectedPair}
-        active={showType >= 3}
-        account={showType === 6 ? criteria : account}
+        active={showType >= 4}
+        account={showType === 7 ? criteria : account}
         setShowType={setShowType}
         setCriteria={setCriteria}
       />
-      <HistoryList
-        histories={totalHistories}
-        selectedPair={selectedPair}
-        loading={loading}
-        tb={tb}
-        setTB={setTB}
-        setCriteria={setCriteria}
-        setShowType={setShowType}
-        isAccount={showType >= 3}
-      />
+      {showType === 3 ? (
+        <HolderList
+          histories={totalHistories}
+          selectedPair={selectedPair}
+          loading={loading}
+          setTB={setTB}
+          holders30d={holders30d}
+          setShowType={setShowType}
+          setCriteria={setCriteria}
+        />
+      ) : (
+        <HistoryList
+          histories={totalHistories}
+          selectedPair={selectedPair}
+          loading={loading}
+          tb={tb}
+          setTB={setTB}
+          setCriteria={setCriteria}
+          setShowType={setShowType}
+          isAccount={showType >= 4}
+        />
+      )}
     </div>
   );
 }

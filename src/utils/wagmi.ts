@@ -1,75 +1,52 @@
-import { configureChains, createClient } from "wagmi";
 import memoize from "lodash/memoize";
+import { useMemo } from "react";
+import { providers } from "ethers";
+import { type HttpTransport } from "viem";
+import { type PublicClient, usePublicClient, useWalletClient, type WalletClient } from "wagmi";
 
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { LedgerConnector } from "wagmi/connectors/ledger";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { SafeConnector } from "wagmi/connectors/safe";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { mainnet, BinanceWalletConnector } from "../contexts/wagmi";
 import { SupportedChains } from "config/constants/networks";
-import { BASE_URL } from "config";
 
-export const { provider, webSocketProvider, chains } = configureChains(SupportedChains, [
-  jsonRpcProvider({
-    rpc: (chain) => {
-      switch (chain.id) {
-        case mainnet.id:
-          return { http: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161" };
-        default:
-          return { http: chain.rpcUrls.default.http[0] };
-      }
-    },
-  }),
-]);
-
-export const client = createClient({
-  autoConnect: true,
-  provider,
-  webSocketProvider,
-  connectors: [
-    new MetaMaskConnector({
-      chains,
-      options: {
-        UNSTABLE_shimOnConnectSelectAccount: true,
-      },
-    }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: "Brewlabs Earn",
-        appLogoUrl: `${BASE_URL}/logo.png`,
-      },
-    }),
-    new BinanceWalletConnector({ chains }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId: "3f9ccaf57c23a26a29b6ede970ea33c1",
-      },
-    }),
-    new LedgerConnector({ chains }),
-    new InjectedConnector({
-      chains,
-      options: {
-        name: (detectedName) =>
-          `Injected (${typeof detectedName === "string" ? detectedName : detectedName.join(", ")})`,
-        shimDisconnect: true,
-      },
-    }),
-    new SafeConnector({
-      chains,
-      options: {
-        allowedDomains: [/https:\/\/app.safe.global$/],
-        debug: false,
-      },
-    }),
-  ],
-});
-
-export const CHAIN_IDS = chains.map((c) => c.id);
+export const CHAIN_IDS = SupportedChains.map((c) => c.id);
 
 export const isChainSupported = memoize((chainId: number) => CHAIN_IDS.includes(chainId));
-export const isChainTestnet = memoize((chainId: number) => chains.find((c) => c.id === chainId)?.["testnet"]);
+export const isChainTestnet = memoize((chainId: number) => SupportedChains.find((c) => c.id === chainId)?.["testnet"]);
+
+export function publicClientToProvider(publicClient: PublicClient) {
+  const { chain, transport } = publicClient;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  if (transport.type === "fallback")
+    return new providers.FallbackProvider(
+      (transport.transports as ReturnType<HttpTransport>[]).map(
+        ({ value }) => new providers.JsonRpcProvider(value?.url, network)
+      )
+    );
+  return new providers.JsonRpcProvider(transport.url, network);
+}
+
+/** Hook to convert a viem Public Client to an ethers.js Provider. */
+export function useProvider({ chainId }: { chainId?: number } = {}) {
+  const publicClient = usePublicClient({ chainId });
+  return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
+}
+
+export function walletClientToSigner(walletClient: WalletClient) {
+  const { account, chain, transport } = walletClient;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  const provider = new providers.Web3Provider(transport as any, network);
+  const signer = provider.getSigner(account.address);
+  return signer;
+}
+
+/** Hook to convert a viem Wallet Client to an ethers.js Signer. */
+export function useSigner() {
+  const { data: walletClient } = useWalletClient();
+  return useMemo(() => ({ data: walletClient ? walletClientToSigner(walletClient) : undefined }), [walletClient]);
+}

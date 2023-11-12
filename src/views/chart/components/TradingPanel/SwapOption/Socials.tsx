@@ -43,7 +43,16 @@ export default function Socials({ selectedPair, marketInfos }) {
   return (
     <div>
       <div className="primary-shadow mt-2 w-full rounded-[6px] bg-[#B9B8B80D] p-3 font-roboto text-[#FFFFFFBF]">
-        <div className="mb-2 font-bold">Description</div>
+        <div className="mb-2 flex items-center justify-between">
+          <div className="font-bold">Description</div>
+          {marketInfos?.audit?.is_contract_renounced ? (
+            <div className="rounded-[12px] bg-[#3AFDB7] p-[1px_14px] font-roboto text-[10px] font-bold text-black">
+              Ownership renounced
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
         <div className="line-clamp-[7] overflow-hidden text-ellipsis text-xs">{marketInfos?.info?.description}</div>
         <div className="mb-2 mt-4 flex">
           {socials.map((social: any, i) => {

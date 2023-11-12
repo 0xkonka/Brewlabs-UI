@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import useSWRImmutable from "swr/immutable";
 
 import { SLOW_INTERVAL } from "config/constants";
@@ -114,7 +114,7 @@ export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
 };
 
 export const useFarms = (): DeserializedFarmsState => {
-  const farms: any = useSelector((state: State) => state.farms);
+  const farms: any = useSelector((state: State) => state.farms, shallowEqual);
   const deserializedFarmsData = farms.data.map(deserializeFarm);
   const { userDataLoaded } = farms;
 
@@ -125,19 +125,20 @@ export const useFarms = (): DeserializedFarmsState => {
 };
 
 export const useFarmFromPid = (pid: number): DeserializedFarm => {
-  const farm: any = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid));
+  const farm: any = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid), shallowEqual);
   return deserializeFarm(farm);
 };
 
 export const useFarmFromFarmIdAndPoolId = (farmId: number, poolId: number): DeserializedFarm => {
-  const farm: any = useSelector((state: State) =>
-    state.farms.data.find((f) => f.farmId === farmId && f.poolId === poolId)
+  const farm: any = useSelector(
+    (state: State) => state.farms.data.find((f) => f.farmId === farmId && f.poolId === poolId),
+    shallowEqual
   );
   return deserializeFarm(farm);
 };
 
 export const useFarmFromLpSymbol = (lpSymbol: string): DeserializedFarm => {
-  const farm: any = useSelector((state: State) => state.farms.data.find((f) => f.lpSymbol === lpSymbol));
+  const farm: any = useSelector((state: State) => state.farms.data.find((f) => f.lpSymbol === lpSymbol), shallowEqual);
   return deserializeFarm(farm);
 };
 

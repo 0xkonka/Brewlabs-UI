@@ -10,7 +10,7 @@ import { getContract } from "utils/contractHelpers";
 import { isAddress } from "ethers/lib/utils.js";
 import { API_URL } from "config/constants";
 import { CommunityContext } from "contexts/CommunityContext";
-import { BASE_URL, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
+import { BASE_URL, COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
 
 export async function getBaseInfos(address, chainId) {
   try {
@@ -189,5 +189,44 @@ export function useTokenTaxes(address, chainId) {
   }, [address, chainId]);
 
   return { buyTaxes, sellTaxes };
+}
+
+export function useTokenHolders(address, chainId) {
+  const [holders30d, setHolders30D] = useState([]);
+
+  function formatDate(date) {
+    var d = new Date(date),
+      month = "" + (d.getMonth() + 1),
+      day = "" + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
+  }
+  async function fetchHolders30d() {
+    try {
+      const dateString = formatDate(Date.now() - 86400000 * 30);
+      const { data: response } = await axios.get(
+        `https://api.covalenthq.com/v1/${
+          COVALENT_CHAIN_NAME[chainId]
+        }/tokens/${address}/token_holders_v2/?page-size=1000&page-number=${0}&date=${dateString}`,
+        { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
+      );
+      const holders = response.data.items.map((holder) => ({
+        ...holder,
+        balance: holder.balance / Math.pow(10, holder.contract_decimals),
+      }));
+      setHolders30D(holders);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  useEffect(() => {
+    if (!isAddress(address)) return;
+    fetchHolders30d();
+  }, [address, chainId]);
+  return { holders30d };
 }
 export default useTokenInfo;

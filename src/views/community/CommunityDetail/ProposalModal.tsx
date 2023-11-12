@@ -2,22 +2,24 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
-import DropDown from "@components/dashboard/TokenList/Dropdown";
 import { useContext, useState } from "react";
-import { InfoSVG } from "@components/dashboard/assets/svgs";
+import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import StyledInput from "@components/StyledInput";
-import StyledButton from "views/directory/StyledButton";
-import RequireAlert from "@components/RequireAlert";
+import { useAccount } from "wagmi";
+
+import { NETWORKS } from "config/constants/networks";
 import { CommunityContext } from "contexts/CommunityContext";
 import { DashboardContext } from "contexts/DashboardContext";
-import { toast } from "react-toastify";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useAccount, useSigner } from "wagmi";
-import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
-import { NETWORKS } from "config/constants/networks";
-import { getBep20Contract } from "utils/contractHelpers";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { handleWalletError } from "lib/bridge/helpers";
+import { getBep20Contract } from "utils/contractHelpers";
+import { useSigner } from "utils/wagmi";
+
+import DropDown from "components/dashboard/TokenList/Dropdown";
+import { InfoSVG } from "components/dashboard/assets/svgs";
+import StyledInput from "components/StyledInput";
+import StyledButton from "views/directory/StyledButton";
 
 const ProposalModal = ({ open, setOpen, community }) => {
   const coreCurrency = community.currencies[community.coreChainId];

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { DEXSCREENER_CHAINNAME } from "config";
+import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME } from "config";
 import { API_URL } from "config/constants";
 import { isAddress } from "utils";
 
@@ -7,6 +7,28 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
   let histories = [];
   let tb = query.tb ?? 0;
   try {
+    if (query.type === "holders") {
+      //
+      console.log(
+        `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/tokens/${query.address}/token_holders_v2/?page-size=100&page-number=${tb}`
+      );
+      const { data: response } = await axios.get(
+        `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/tokens/${query.address}/token_holders_v2/?page-size=100&page-number=${tb}`,
+        { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
+      );
+      const holders = response.data.items;
+      console.log(holders);
+      return holders.map((holder) => ({
+        address: holder.address,
+        timestamp: tb,
+        decimals: holder.contract_decimals,
+        symbol: holder.contract_ticker_symbol,
+        balance: holder.balance / Math.pow(10, holder.contract_decimals),
+        ownerShip: (holder.balance / holder.total_supply) * 100,
+        chainId,
+      }));
+    }
+
     if (query.a === "brewswap") {
       do {
         const brewSwapUrl = `${API_URL}/chart/log/all?pair=${query.pair.toLowerCase()}&q=${query.quote.toLowerCase()}&tb=${tb}${

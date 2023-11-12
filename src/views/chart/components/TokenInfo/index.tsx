@@ -57,7 +57,7 @@ export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
 
   return (
     <div
-      className={`relative z-0 mr-0 mt-8 flex flex-col items-start justify-between lg:flex-row lg:items-center ${
+      className={`relative z-0 mr-0 mt-2 flex flex-col items-start justify-between lg:flex-row lg:items-center ${
         showReverse ? "2xl:mr-[332px]" : "2xl:mr-[292px]"
       }`}
     >

@@ -78,7 +78,7 @@ export const fetchUserBalances = async (account, chainId, pools) => {
   );
 
   // BNB pools
-  const bnbBalance = await simpleRpcProvider(chainId).getBalance(account);
+  const bnbBalance = simpleRpcProvider(chainId).getBalance(account);
   const bnbPools = pools.filter((pool) => pool.stakingToken.isNative);
   const bnbBalances = bnbPools
     .filter((p) => p.chainId === chainId)
@@ -295,7 +295,7 @@ export const fetchPoolAllowance = async (pool, account, chainId) => {
 
 export const fetchUserBalance = async (pool, account, chainId) => {
   if (pool.stakingToken.isNative) {
-    const bnbBalance = await simpleRpcProvider(chainId).getBalance(account);
+    const bnbBalance = simpleRpcProvider(chainId).getBalance(account);
     return bnbBalance;
   }
 

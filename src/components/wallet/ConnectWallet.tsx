@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { BeakerIcon } from "@heroicons/react/24/outline";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
 
+import UserDashboard from "components/dashboard/UserDashboard";
 import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { useGlobalState } from "state";
 
-import { useGlobalState } from "../../state";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
-import Modal from "../Modal";
-import WalletSelector from "./WalletSelector";
-import UserDashboard from "components/dashboard/UserDashboard";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
 }
 
 const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
-  const { address, isConnected, connector } = useAccount();
+  const { address, isConnected, isConnecting, connector } = useAccount();
+  const { open } = useWeb3Modal();
   const { isLoading } = useConnect();
   const { disconnect } = useDisconnect();
   const { chain } = useNetwork();
@@ -28,12 +28,10 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { chainId, isWrongNetwork } = useActiveChainId();
 
   const [mounted, setMounted] = useState(false);
+  const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
 
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
   const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
-
-  const [openWalletModal, setOpenWalletModal] = useState(false);
-  const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -49,9 +47,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
-      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)} className="!z-[100]">
-        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
-      </Modal>
       <SwitchNetworkModal
         open={openSwitchNetworkModal}
         networks={supportedNetworks}
@@ -65,7 +60,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
       {!isConnected ? (
         <button
           onClick={() => {
-            setOpenWalletModal(true);
+            open({ view: "Connect" });
           }}
           className="group block w-full flex-shrink-0"
         >
@@ -75,7 +70,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-700 group-hover:text-gray-500">
-                {openWalletModal ? `Connecting wallet` : `Connect wallet`}
+                {isConnecting ? `Connecting wallet` : `Connect wallet`}
               </p>
               <p className="text-sm font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
             </div>
@@ -89,6 +84,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 if (supportedNetworks.length > 1 && !allowDisconnect) {
                   e.stopPropagation();
                   setOpenSwitchNetworkModal(true);
+                  // open({view: "Networks"})
                 }
               }}
               className="rounded-full border-2"

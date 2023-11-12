@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useMediumRefreshEffect, useSlowRefreshEffect } from "hooks/useRefreshEffect";
@@ -54,9 +54,12 @@ export const useFetchIndexesWithUserData = () => {
 };
 
 export const useIndexes = (): { indexes: DeserializedIndex[]; userDataLoaded: boolean } => {
-  const { indexes, userDataLoaded } = useSelector((state: State) => ({
-    indexes: state.indexes.data,
-    userDataLoaded: state.indexes.userDataLoaded,
-  }));
+  const { indexes, userDataLoaded } = useSelector(
+    (state: State) => ({
+      indexes: state.indexes.data,
+      userDataLoaded: state.indexes.userDataLoaded,
+    }),
+    shallowEqual
+  );
   return { indexes: indexes.map(transformIndex), userDataLoaded };
 };

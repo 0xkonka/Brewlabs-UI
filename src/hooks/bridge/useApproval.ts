@@ -1,9 +1,11 @@
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
+
 import { BridgeToken } from "config/constants/types";
-import { approveToken, fetchAllowance } from "lib/bridge/token";
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { approveToken, fetchAllowance } from "lib/bridge/token";
+import { useSigner } from "utils/wagmi";
 
 export const useApproval = (fromToken: BridgeToken, fromAmount: BigNumber, txHash?: string) => {
   const { chainId: providerChainId } = useActiveChainId();
