@@ -26,19 +26,19 @@ const CommunityContextProvider = ({ children }: any) => {
     else if (successText) toast.success(successText);
   };
   async function getCommunities() {
-    axios.post(`${API_URL}/community/getCommunities`, {}).then((data) => {
+    axios.post(`http://localhost:5050/api/community/getCommunities`, {}).then((data) => {
       setCommunities(data.data);
     });
   }
 
   async function addCommunity(community) {
-    const result = await axios.post(`${API_URL}/community/addCommunities`, { community });
+    const result = await axios.post(`http://localhost:5050/api/community/addCommunities`, { community });
     handleError(result.data, "Community Added");
     getCommunities();
   }
 
   async function joinOrLeaveCommunity(address, pid) {
-    const result = await axios.post(`${API_URL}/community/joinOrLeaveCommunity`, {
+    const result = await axios.post(`http://localhost:5050/api/community/joinOrLeaveCommunity`, {
       address: address.toLowerCase(),
       pid,
     });
@@ -47,13 +47,19 @@ const CommunityContextProvider = ({ children }: any) => {
   }
 
   async function addProposal(proposal, pid) {
-    const result = await axios.post(`${API_URL}/community/addProposal`, { proposal, pid });
+    const result = await axios.post(`http://localhost:5050/api/community/addProposal`, { proposal, pid });
     handleError(result.data, "Proposal Submitted");
     getCommunities();
   }
 
+  async function addPoll(poll, pid) {
+    const result = await axios.post(`http://localhost:5050/api/community/addPoll`, { poll, pid });
+    handleError(result.data, "Poll Submitted");
+    getCommunities();
+  }
+
   async function voteOrAgainst(address, pid, index, type) {
-    const result = await axios.post(`${API_URL}/community/voteOrAgainst`, {
+    const result = await axios.post(`http://localhost:5050/api/community/voteOrAgainst`, {
       address: address.toLowerCase(),
       pid,
       index,
@@ -61,6 +67,19 @@ const CommunityContextProvider = ({ children }: any) => {
     });
     handleError(result.data, "Voted Successfully");
     getCommunities();
+    return result.data.success;
+  }
+
+  async function voteOnPoll(address, pid, index, optionIndex) {
+    const result = await axios.post(`http://localhost:5050/api/community/voteOnPoll`, {
+      address: address.toLowerCase(),
+      pid,
+      index,
+      optionIndex,
+    });
+    handleError(result.data, "Voted Successfully");
+    getCommunities();
+    return result.data.success;
   }
 
   useFastRefreshEffect(() => {
@@ -93,6 +112,8 @@ const CommunityContextProvider = ({ children }: any) => {
         addProposal,
         voteOrAgainst,
         addCommunity,
+        addPoll,
+        voteOnPoll,
         newProposalCount,
         totalStakedValues: totalStakedValues,
       }}

@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import ProposalModal from "./ProposalModal";
 import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import Soon from "@components/Soon";
+import PollModal from "./PollModal";
 
 const InfoPanel = ({ community, circulatingSupply }: { community: any; circulatingSupply: any }) => {
   let explorers = [
@@ -42,26 +43,23 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   Object.keys(community.currencies).map((key, i) => {
     let result = [];
     community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
+    community.polls.map((poll) => {
+      poll.voted.map((vote) => (result = [...result, ...vote]));
+    });
     addresses[key] = [...(addresses[key] ?? []), ...result];
-  });
-  Object.keys(community.currencies).map((key, i) => {
-    let result = [];
-    community.proposals.map((proposal) =>
-      [...proposal.yesVoted, ...proposal.noVoted].map((data) => (result = [...result, community.currencies[key]]))
-    );
-    tokens[key] = [...(tokens[key] ?? []), ...result];
+    tokens[key] = new Array(result.length).fill(community.currencies[key]);
   });
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
 
   const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
-  const totalVotePercent = community.proposals.length
-    ? (totalVoteBalance / community.proposals.length / totalSupply) * 100
-    : 0;
+  const totalProposals = (community?.proposals?.length ?? 0) + (community?.polls?.length ?? 0);
+  const totalVotePercent = totalProposals ? (totalVoteBalance / totalProposals / totalSupply) * 100 : 0;
 
   const circulatingPercent = (circulatingSupply / totalSupply) * 100;
 
   const [proposalOpen, setProposalOpen] = useState(false);
+  const [pollOpen, setPollOpen] = useState(false);
 
   const durations = [7, 14, 30];
   const infos = [
@@ -94,6 +92,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   return (
     <div>
       {community && <ProposalModal open={proposalOpen} setOpen={setProposalOpen} community={community} />}
+      {community && <PollModal open={pollOpen} setOpen={setPollOpen} community={community} />}
       <div className="mt-2 flex justify-end">
         {explorers.map((data, i) => {
           return (
@@ -137,10 +136,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
             Submit&nbsp;<span className="font-normal">new proposal</span>
           </StyledButton>
           <div className="mr-0 mt-4 xsm:mr-3 xsm:mt-0" />
-          <StyledButton
-            className="!w-fit p-[10px_12px] disabled:!bg-[#505050]"
-            // disabled
-          >
+          <StyledButton className="!w-fit p-[10px_12px] disabled:!bg-[#505050]" onClick={() => setPollOpen(true)}>
             Submit&nbsp;<span className="font-normal">new poll</span>
             <Soon className="!-right-5" />
           </StyledButton>

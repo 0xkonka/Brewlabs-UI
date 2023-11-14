@@ -57,9 +57,7 @@ export async function getBalances(tokens: any, addresses: any) {
           return { ...tokens[key][i], balance, account: addresses[key][i] };
         });
         balances[key] = tokenDatas;
-      } catch (e) {
-        // console.log(e);
-      }
+      } catch (e) {}
     })
   );
   return { balances, totalBalance };

@@ -26,30 +26,30 @@ const CommunityCard = ({
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
 
-  const archivedProposalCount = community.proposals.filter(
+  const totalProposals = [...community.proposals, ...community.polls];
+
+  const archivedProposalCount = totalProposals.filter(
     (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
   ).length;
-  const activeProposalCount = community.proposals.length - archivedProposalCount;
+  const activeProposalCount = totalProposals.length - archivedProposalCount;
 
   let addresses = new Object();
   tokens = new Object();
   Object.keys(community.currencies).map((key, i) => {
     let result = [];
     community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
-    addresses[key] = [...(addresses[key] ?? []), ...result];
-  });
-  Object.keys(community.currencies).map((key, i) => {
-    let result = [];
-    community.proposals.map((proposal) =>
-      [...proposal.yesVoted, ...proposal.noVoted].map((data) => (result = [...result, community.currencies[key]]))
-    );
-    tokens[key] = [...(tokens[key] ?? []), ...result];
+    community.polls.map((poll) => {
+      let totalVotes = [];
+      poll.voted.map((vote) => (totalVotes = [...totalVotes, ...vote]));
+      result = [...result, ...totalVotes];
+    });
+    addresses[key] = result;
+    tokens[key] = new Array(result.length).fill(community.currencies[key]);
   });
 
   const { totalBalance: totalVoteBalance } = useTokenBalances(tokens, addresses);
-  const totalVotePercent = community.proposals.length
-    ? (totalVoteBalance / community.proposals.length / totalSupply) * 100
-    : 0;
+
+  const totalVotePercent = totalProposals.length ? (totalVoteBalance / totalProposals.length / totalSupply) * 100 : 0;
 
   const newCount = account
     ? community.proposals.filter(
