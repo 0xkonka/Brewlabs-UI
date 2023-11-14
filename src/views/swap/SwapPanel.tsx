@@ -320,8 +320,6 @@ export default function SwapPanel({
     }
   }, [buyTaxes, currencies[Field.OUTPUT]?.address]);
 
-  console.log(usingAggregator);
-
   return (
     <>
       <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)} className="!z-[100]">
