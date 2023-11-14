@@ -83,7 +83,7 @@ export default function SwapPanel({
   // txn values
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
-
+  
   const noLiquidity = useMemo(() => {
     if (chainId === ChainId.BSC_TESTNET || chainId === ChainId.POLYGON)
       return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
@@ -263,9 +263,9 @@ export default function SwapPanel({
     return true;
   };
   const handleSwapUsingAggregator = async () => {
-    if (priceImpactOnAggregator && !confirmPriceImpactForSwapAggregator(priceImpactOnAggregator)) {
-      return;
-    }
+    // if (priceImpactOnAggregator && !confirmPriceImpactForSwapAggregator(priceImpactOnAggregator)) {
+    //   return;
+    // }
     if (!swapCallbackUsingAggregator) {
       return;
     }
@@ -409,8 +409,12 @@ export default function SwapPanel({
               ) : (
                 <PrimarySolidButton
                   onClick={() => {
-                    if (priceImpactSeverity === 3) setWarningOpen(true);
-                    else onConfirm();
+                    if (
+                      priceImpactSeverity === 3 ||
+                      priceImpactOnAggregator > Math.max(AGGREGATOR_LOST_LIMIT, userSlippageTolerance / 10000)
+                    ) {
+                      setWarningOpen(true);
+                    } else onConfirm();
                   }}
                   pending={attemptingTxn}
                   disabled={
