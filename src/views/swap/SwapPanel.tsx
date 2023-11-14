@@ -36,7 +36,7 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
 
-const AGGREGATOR_LOST_LIMIT = 0.05;
+const AGGREGATOR_LOST_LIMIT = 0.15;
 
 export default function SwapPanel({
   showHistory = true,
