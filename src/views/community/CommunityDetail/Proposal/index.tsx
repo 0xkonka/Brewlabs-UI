@@ -17,7 +17,7 @@ const Proposal = ({ community }: { community: any }) => {
   Object.keys(community.currencies).map((key, i) => {
     let result = [];
     community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
-    community.polls.map((poll) => {
+    (community?.polls ?? []).map((poll) => {
       let totalVotes = [];
       poll.voted.map((vote) => (totalVotes = [...totalVotes, ...vote]));
       result = [...result, ...totalVotes];
@@ -40,7 +40,7 @@ const Proposal = ({ community }: { community: any }) => {
 
   const totalProposals = [
     ...community.proposals.map((proposal) => ({ type: "proposal", ...proposal })),
-    ...community.polls.map((poll) => ({ type: "poll", ...poll })),
+    ...(community?.polls ?? []).map((poll) => ({ type: "poll", ...poll })),
   ];
   const filteredProposals = totalProposals
     .filter(

@@ -43,7 +43,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
   Object.keys(community.currencies).map((key, i) => {
     let result = [];
     community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
-    community.polls.map((poll) => {
+    (community?.polls ?? []).map((poll) => {
       poll.voted.map((vote) => (result = [...result, ...vote]));
     });
     addresses[key] = [...(addresses[key] ?? []), ...result];

@@ -26,7 +26,7 @@ const CommunityCard = ({
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
 
-  const totalProposals = [...community.proposals, ...community.polls];
+  const totalProposals = [...community.proposals, ...(community?.polls ?? [])];
 
   const archivedProposalCount = totalProposals.filter(
     (data) => data.createdTime / 1 + data.duration / 1 < Date.now()
@@ -38,7 +38,7 @@ const CommunityCard = ({
   Object.keys(community.currencies).map((key, i) => {
     let result = [];
     community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
-    community.polls.map((poll) => {
+    (community?.polls ?? []).map((poll) => {
       let totalVotes = [];
       poll.voted.map((vote) => (totalVotes = [...totalVotes, ...vote]));
       result = [...result, ...totalVotes];
