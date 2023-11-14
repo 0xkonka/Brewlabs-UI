@@ -280,7 +280,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </StyledButton>
                     </div>
                     {data.isCustody ? (
-                      <div className="mt-2 block h-[32px] w-[140px] xl:mt-0 xl:hidden">
+                      <div className="mt-2 block h-[32px] w-fit xl:mt-0 xl:hidden">
                         <StyledButton>
                           <div className="absolute left-2 top-2.5">{lockSVG}</div>
                           <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
@@ -293,7 +293,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                   <div className="flex flex-1 justify-end">
                     {data.isCustody ? (
                       <div className="hidden w-full max-w-[470px] xl:block">
-                        <div className="ml-5 mt-2 h-[32px] w-[140px] xl:mt-0">
+                        <div className="ml-5 mt-2 h-[32px] w-fit xl:mt-0">
                           <StyledButton>
                             <div className="absolute left-2 top-2.5">{lockSVG}</div>
                             <div className="ml-3 whitespace-nowrap">Brewlabs Custody</div>
