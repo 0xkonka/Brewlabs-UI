@@ -16,7 +16,7 @@ import CountDown from "components/CountDown";
 import { BellSVG, InfoSVG, RequirementSVG } from "components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 
-const ProposalCard = ({ proposal, community }: { proposal: any; community: any }) => {
+const ProposalCard = ({ proposal, community, index }: { proposal: any; community: any; index: number }) => {
   const { address: account } = useAccount();
   const name = useENSName(proposal.owner);
   const { voteOrAgainst }: any = useContext(CommunityContext);
@@ -84,11 +84,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
 
   return (
     <div
-      className={`primary-shadow relative mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] ${
-        isNew
-          ? "p-[20px_12px_32px_40px] md:p-[20px_20px_32px_60px]"
-          : "p-[20px_12px_32px_12px] md:p-[20px_20px_32px_20px]"
-      }`}
+      className={`primary-shadow relative mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] p-[20px_12px_32px_40px] md:p-[20px_20px_32px_60px]`}
     >
       {isExcalmation && proposal.createdTime + duration >= Date.now() ? (
         <div className="absolute left-2.5 top-[22px] text-primary md:left-5 [&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!opacity-100">
@@ -107,7 +103,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
                   : "text-primary"
               }`}
             >
-              Proposal #{proposal.index + 1}
+              Proposal #{index + 1}
             </div>
             <div className="w-[110px] overflow-hidden text-ellipsis text-sm text-white">
               {name.loading ? proposal.owner : name.ENSName ?? proposal.owner}
