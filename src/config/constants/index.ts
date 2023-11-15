@@ -278,8 +278,8 @@ export const slippageWithTVL = 200;
 export const slippageDefault = 50;
 
 export const FREEZER_CHAINS = {
-  1: "ethereum",
-  56: "smartchain",
+  [ChainId.ETHEREUM]: "ethereum",
+  [ChainId.BSC_MAINNET]: "smartchain",
 };
 
 export const LIVECOIN_APIS = [
@@ -290,13 +290,14 @@ export const LIVECOIN_APIS = [
 ];
 
 export const TOKENLIST_URI = {
-  1: "https://tokens.coingecko.com/ethereum/all.json",
-  56: "https://tokens.coingecko.com/binance-smart-chain/all.json",
-  137: "https://tokens.coingecko.com/polygon-pos/all.json",
-  250: "https://tokens.coingecko.com/fantom/all.json",
-  43114: "https://tokens.coingecko.com/avalanche/all.json",
-  42161: "https://tokens.coingecko.com/arbitrum-one/all.json",
-  25: "https://tokens.coingecko.com/cronos/all.json",
+  [ChainId.ETHEREUM]: "https://tokens.coingecko.com/ethereum/all.json",
+  [ChainId.BSC_MAINNET]: "https://tokens.coingecko.com/binance-smart-chain/all.json",
+  [ChainId.POLYGON]: "https://tokens.coingecko.com/polygon-pos/all.json",
+  [ChainId.BASE]: "https://tokens.coingecko.com/base/all.json",
+  [ChainId.FANTOM]: "https://tokens.coingecko.com/fantom/all.json",
+  [ChainId.AVALANCHE]: "https://tokens.coingecko.com/avalanche/all.json",
+  [ChainId.ARBITRUM]: "https://tokens.coingecko.com/arbitrum-one/all.json",
+  [ChainId.CRONOS]: "https://tokens.coingecko.com/cronos/all.json",
 };
 
 export const CHART_PERIOD_RESOLUTION = {

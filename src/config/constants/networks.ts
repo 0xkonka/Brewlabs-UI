@@ -145,7 +145,7 @@ export const EMPTY_TOKEN_LOGO = {
 
   [ChainId.GOERLI]: "/images/dashboard/tokens/empty/eth.wep",
   [ChainId.BSC_TESTNET]: "/images/dashboard/tokens/empty/bnb.webp",
-}
+};
 
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   id: chainId,
@@ -268,8 +268,8 @@ export const NETWORKS = {
     rpcUrls: ["https://evm.cronos.org"],
     blockExplorerUrls: ["https://cronoscan.com"],
   },
-  8453: {
-    chainId: `0x2105`,
+  [ChainId.BASE]: {
+    chainId: `0x${Number(ChainId.BASE).toString(16)}`,
     chainName: "Base Mainnet",
     nativeCurrency: {
       name: "ETH",
@@ -279,8 +279,8 @@ export const NETWORKS = {
     rpcUrls: ["https://mainnet.base.org"],
     blockExplorerUrls: ["https://basescan.org"],
   },
-  324: {
-    chainId: `0x144`,
+  [ChainId.ZKSYNC]: {
+    chainId: `0x${Number(ChainId.ZKSYNC).toString(16)}`,
     chainName: "zkSync Era Mainnet",
     nativeCurrency: {
       name: "ETH",
