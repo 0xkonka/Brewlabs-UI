@@ -138,7 +138,6 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
           <div className="mr-0 mt-4 xsm:mr-3 xsm:mt-0" />
           <StyledButton className="!w-fit p-[10px_12px] disabled:!bg-[#505050]" onClick={() => setPollOpen(true)}>
             Submit&nbsp;<span className="font-normal">new poll</span>
-            <Soon className="!-right-5" />
           </StyledButton>
         </div>
       </div>

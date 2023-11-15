@@ -39,7 +39,14 @@ const ViewPollModal = ({ open, setOpen, community, poll, setIsVoted }) => {
     try {
       if (community.feeToVote.type === "Yes" || (community.feeToVote.type === "Sometimes" && poll.isFeeToVote)) {
         const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-        const tx = await tokenContract.transfer(community.feeToVote.address, community.feeToVote.amount);
+        const estimateGas = await tokenContract.estimateGas.transfer(
+          community.feeToVote.address,
+          community.feeToVote.amount
+        );
+
+        const tx = await tokenContract.transfer(community.feeToVote.address, community.feeToVote.amount, {
+          gasLimit: Math.ceil(Number(estimateGas) * 1.2),
+        });
         await tx.wait();
       }
       const success = await voteOnPoll(account, community.pid, poll.index, selectedOption);
