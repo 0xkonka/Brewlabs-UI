@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { TokenAmount } from "@brewlabs/sdk";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { BigNumber, TransactionResponse } from "alchemy-sdk";
 import router from "next/router";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { ONE_BIPS } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
@@ -27,8 +28,6 @@ import { wrappedCurrency } from "utils/wrappedCurrency";
 import { useSigner } from "utils/wagmi";
 
 import CurrencyInputPanel from "components/currencyInputPanel";
-import Modal from "components/Modal";
-import WalletSelector from "components/wallet/WalletSelector";
 
 import ChainSelect from "views/directory/DeployerModal/ChainSelect";
 import RouterSelect from "views/directory/DeployerModal/RouterSelect";
@@ -48,16 +47,15 @@ export default function AddLiquidityPanel({
   const { library }: any = useActiveWeb3React();
   const { address: account } = useAccount();
   const { data: signer } = useSigner();
+  const { open } = useWeb3Modal();
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const deadline = useTransactionDeadline();
   const [allowedSlippage] = useUserSlippageTolerance();
   const addTransaction = useTransactionAdder();
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
-  const { isLoading } = useConnect();
   const { pending, setPending }: any = useContext(DashboardContext);
 
-  const [openWalletModal, setOpenWalletModal] = useState(false);
   const [dexrouter, setDexRouter] = useState<any>({ name: "" });
 
   const {
@@ -349,9 +347,6 @@ export default function AddLiquidityPanel({
 
   return (
     <div>
-      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
-        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
-      </Modal>
       <div className="mt-3">
         <ChainSelect />
       </div>
@@ -504,7 +499,7 @@ export default function AddLiquidityPanel({
               // } else {
               onAdd();
               // }
-              if (error === "Connect Wallet") setOpenWalletModal(true);
+              if (error === "Connect Wallet") open({ view: "Connect" });
             }}
             disabled={
               (!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED || pending) &&
