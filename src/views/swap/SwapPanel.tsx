@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useContext, useEffect } from "react";
 import { CurrencyAmount, Percent, Price, ChainId } from "@brewlabs/sdk";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { Oval } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import { useConnect } from "wagmi";
@@ -27,8 +28,6 @@ import CurrencyInputPanel from "components/currencyInputPanel";
 import CurrencyOutputPanel from "components/currencyOutputPanel";
 import { PrimarySolidButton } from "components/button/index";
 import Button from "components/Button";
-import Modal from "components/Modal";
-import WalletSelector from "components/wallet/WalletSelector";
 import WarningModal from "components/warningModal";
 import StyledButton from "views/directory/StyledButton";
 
@@ -52,14 +51,13 @@ export default function SwapPanel({
 
   const { t } = useTranslation();
   const { isLoading } = useConnect();
+  const { open } = useWeb3Modal();
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
   const [txConfirmInfo, setTxConfirmInfo] = useState({ type: "confirming", tx: "" });
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false); // clicked confirm
-
-  const [openWalletModal, setOpenWalletModal] = useState(false);
 
   // ----------------- ROUTER SWAP --------------------- //
 
@@ -322,9 +320,6 @@ export default function SwapPanel({
 
   return (
     <>
-      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)} className="!z-[100]">
-        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
-      </Modal>
       <WarningModal open={warningOpen} setOpen={setWarningOpen} type={"highpriceimpact"} onClick={onConfirm} />
       <ConfirmationModal
         open={openConfirmationModal}
@@ -467,7 +462,7 @@ export default function SwapPanel({
         <StyledButton
           className="!w-full whitespace-nowrap p-[10px_12px] !font-roboto"
           onClick={() => {
-            setOpenWalletModal(true);
+            open({ view: "Connect" });
           }}
           pending={isLoading}
         >

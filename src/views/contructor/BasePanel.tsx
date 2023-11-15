@@ -1,8 +1,10 @@
 import { EXCHANGE_MAP } from "@brewlabs/sdk";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import styled from "styled-components";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { getChainLogo, getDexLogo, getEmptyTokenLogo, getRemoveLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -10,10 +12,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import StyledButton from "views/directory/StyledButton";
 
 import { CircleRightSVG, InfoSVG, RightSVG, checkCircleSVG } from "components/dashboard/assets/svgs";
-import WalletSelector from "components/wallet/WalletSelector";
-import Modal from "components/Modal";
-import TokenLogo from "@components/logo/TokenLogo";
-import Link from "next/link";
+import TokenLogo from "components/logo/TokenLogo";
 
 const LoadingText = () => {
   const [dotCount, setDotCount] = useState([]);
@@ -147,14 +146,10 @@ export function TokenItem({ data, i }) {
 
 export default function BasePanel({ setCurAction, sortedTokens, showCount, setShowCount, isLoading: lpLoading }) {
   const { address: account } = useAccount();
-  const { isLoading } = useConnect();
-  const [openWalletModal, setOpenWalletModal] = useState(false);
+  const { open } = useWeb3Modal();
 
   return (
     <>
-      <Modal open={openWalletModal} onClose={() => !isLoading && setOpenWalletModal(false)}>
-        <WalletSelector onDismiss={() => setOpenWalletModal(false)} />
-      </Modal>
       <div
         className="mt-3.5 flex h-[140px] w-full cursor-pointer items-center justify-center rounded-[30px] border border-dashed border-[#FFFFFF80] hover:border-white hover:text-white"
         onClick={() => setCurAction("addLiquidity")}
@@ -165,7 +160,7 @@ export default function BasePanel({ setCurAction, sortedTokens, showCount, setSh
       {!account ? (
         <div
           className="mt-4 flex h-[210px] cursor-pointer items-center justify-center rounded-[30px] border border-[#FFFFFF80] hover:border-white hover:text-white"
-          onClick={() => setOpenWalletModal(true)}
+          onClick={() => open({ view: "Connect" })}
         >
           <span className="text-[#FFFFFF80]">Connect </span>&nbsp;a wallet to view liquidity pairs
         </div>
