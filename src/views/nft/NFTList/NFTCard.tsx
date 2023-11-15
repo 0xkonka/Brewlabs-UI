@@ -8,7 +8,7 @@ import CountDown from "@components/CountDown";
 import { CircleRightSVG, CircleMinusSVG, CirclePlusSVG } from "@components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 
-import { NFT_RARE_COUNT, NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
+import { NFT_RARITY, NFT_RARITY_NAME } from "config/constants/nft";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useFlaskNftContract } from "@hooks/useContract";
 import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
@@ -22,12 +22,8 @@ import { getChainLogo } from "utils/functions";
 
 import { useNftStaking } from "../hooks/useNftStaking";
 import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
-import useTokenBalances from "@hooks/useTokenMultiChainBalance";
-import { tokens } from "config/constants/tokens";
 import { NETWORKS } from "config/constants/networks";
-import { useOETHMonthlyAPY } from "@hooks/useOETHAPY";
 import NFTRarityText from "@components/NFTRarityText";
-import { useTokenMarketChart } from "state/prices/hooks";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   const dispatch = useAppDispatch();
@@ -51,36 +47,13 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const isPending = !pool || pool.startBlock > currentBlock;
   const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
 
-  const apr = flaskNft.mintFee && pool?.totalStaked
-    ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
-      ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
-        +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
-        (pool?.totalStaked ?? 0))
-    : 0;
-  // const tokenMarketData = useTokenMarketChart(1);
-
-  // const OETHPrice = tokenMarketData[tokens[1].oeth.address.toLowerCase()]
-  //   ? tokenMarketData[tokens[1].oeth.address.toLowerCase()].usd
-  //   : null;
-
-  // const OETHMontlyAPY = useOETHMonthlyAPY();
-  // const { balances: NFT_wallet_balance } = useTokenBalances(
-  //   { 1: [tokens[1].oeth, tokens[1].oeth] },
-  //   {
-  //     1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
-  //   }
-  // );
-
-  // const NFT_Apr = {
-  //   1:
-  //     NFT_wallet_balance && OETHMontlyAPY && OETHPrice
-  //       ? ((OETHMontlyAPY * NFT_wallet_balance[1][0].balance * OETHPrice) / NFT_RARE_COUNT[1] / 9) * 12
-  //       : null,
-  //   56:
-  //     NFT_wallet_balance && OETHMontlyAPY && OETHPrice
-  //       ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
-  //       : null,
-  // };
+  const apr =
+    flaskNft.mintFee && pool?.totalStaked
+      ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
+        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
+          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+          (pool?.totalStaked ?? 0))
+      : 0;
 
   const stakingDate = new Date(1696118400000); // Oct 01 2023 00:00:00 GMT
   let date =

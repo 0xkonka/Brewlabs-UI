@@ -48,7 +48,14 @@ const ProposalModal = ({ open, setOpen, community }) => {
     try {
       if (community.feeToProposal.type === "Yes") {
         const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-        const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount);
+        const estimateGas = await tokenContract.estimateGas.transfer(
+          community.feeToProposal.address,
+          community.feeToProposal.amount
+        );
+
+        const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount, {
+          gasLimit: Math.ceil(Number(estimateGas) * 1.2),
+        });
         await tx.wait();
       }
       const durations = [3600 * 24 * 7, 3600 * 24 * 14, 3600 * 24 * 30];
@@ -184,7 +191,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
               </ul>
               {Object.keys(community.currencies).includes(chainId.toString()) ? (
                 <StyledButton
-                  className="!w-fit p-[10px_12px]"
+                  className={`!w-fit ${pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"} whitespace-nowrap`}
                   onClick={() => {
                     setSubmitClicked(true);
                     onSubmitProposal();

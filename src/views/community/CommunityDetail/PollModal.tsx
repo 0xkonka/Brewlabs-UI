@@ -16,6 +16,8 @@ import { useSigner } from "utils/wagmi";
 import { CommunityContext } from "contexts/CommunityContext";
 import { toast } from "react-toastify";
 import { handleWalletError } from "lib/bridge/helpers";
+import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
+import { NETWORKS } from "config/constants/networks";
 
 const PollModal = ({ open, setOpen, community }) => {
   const coreCurrency = community.currencies[community.coreChainId];
@@ -36,6 +38,7 @@ const PollModal = ({ open, setOpen, community }) => {
   const { chainId } = useActiveChainId();
   const { data: signer } = useSigner();
   const { addPoll }: any = useContext(CommunityContext);
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
@@ -54,7 +57,14 @@ const PollModal = ({ open, setOpen, community }) => {
     try {
       if (community.feeToProposal.type === "Yes") {
         const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-        const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount);
+        const estimateGas = await tokenContract.estimateGas.transfer(
+          community.feeToProposal.address,
+          community.feeToProposal.amount
+        );
+
+        const tx = await tokenContract.transfer(community.feeToProposal.address, community.feeToProposal.amount, {
+          gasLimit: Math.ceil(Number(estimateGas) * 1.2),
+        });
         await tx.wait();
       }
       const durations = [3600 * 24 * 7, 3600 * 24 * 14, 3600 * 24 * 30];
@@ -252,17 +262,31 @@ const PollModal = ({ open, setOpen, community }) => {
                 <li>You can only post one proposal or poll at a time.</li>
                 <li>Proposals or polls with profanities will be removed.</li>
               </ul>
-              <StyledButton
-                className="mt-4 !w-fit whitespace-nowrap p-[10px_12px] !font-normal sm:mt-0"
-                onClick={() => {
-                  setSubmitClicked(true);
-                  onSubmitPoll();
-                }}
-                disabled={pending}
-                pending={pending}
-              >
-                <span className="!font-roboto font-bold">Submit</span>&nbsp;my poll
-              </StyledButton>
+              {Object.keys(community.currencies).includes(chainId.toString()) ? (
+                <StyledButton
+                  className={`mt-4 !w-fit whitespace-nowrap ${
+                    pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"
+                  } !font-normal sm:mt-0`}
+                  onClick={() => {
+                    setSubmitClicked(true);
+                    onSubmitPoll();
+                  }}
+                  disabled={pending}
+                  pending={pending}
+                >
+                  <span className="!font-roboto font-bold">Submit</span>&nbsp;my poll
+                </StyledButton>
+              ) : (
+                <StyledButton
+                  className="!w-fit whitespace-nowrap p-[10px_12px]"
+                  onClick={() => {
+                    switchNetwork(community.coreChainId);
+                  }}
+                  disabled={!canSwitch}
+                >
+                  Switch {NETWORKS[community.coreChainId].chainName}
+                </StyledButton>
+              )}
             </div>
 
             <button
