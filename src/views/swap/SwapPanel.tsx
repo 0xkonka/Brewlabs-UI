@@ -35,7 +35,8 @@ import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
 
-const AGGREGATOR_LOST_LIMIT = 0.15;
+const AGGREGATOR_LOST_MAX_LIMIT = 0.15;
+const AGGREGATOR_LOST_LIMIT = 0.05;
 
 export default function SwapPanel({
   showHistory = true,
@@ -80,7 +81,7 @@ export default function SwapPanel({
   // txn values
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
-
+  
   const noLiquidity = useMemo(() => {
     if (chainId === ChainId.BSC_TESTNET || chainId === ChainId.POLYGON)
       return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
@@ -189,31 +190,6 @@ export default function SwapPanel({
     error: aggregationCallbackError,
   } = useSwapAggregator(currencies, parsedAmount, autoMode ? slippage : userSlippageTolerance, deadline, recipient);
 
-  const handleSwapUsingAggregator = async () => {
-    if (!swapCallbackUsingAggregator) {
-      return;
-    }
-    setAttemptingTxn(true);
-
-    swapCallbackUsingAggregator()
-      .then((hash) => {
-        setAttemptingTxn(false);
-        onUserInput(Field.INPUT, "");
-      })
-      .catch((error) => {
-        if (error.reason) {
-          if (error.reason == "BrewlabsAggregatonRouter: Insufficient output amount") {
-            toast.error("Insufficient output amount, please check slippage.");
-          } else toast.error(error.reason.split(":").slice(-1)[0]);
-        } else if (error.message) {
-          toast.error(error.message.split("(")[0]);
-        }
-
-        setAttemptingTxn(false);
-        onUserInput(Field.INPUT, "");
-      });
-  };
-
   const _usingAggregator = noLiquidity || +query?.outputAmount?.toExact() > +trade?.outputAmount?.toExact();
   const usingAggregator = !isBrewRouter && _usingAggregator;
 
@@ -265,6 +241,52 @@ export default function SwapPanel({
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
+
+  const confirmPriceImpactForSwapAggregator = (priceImpact: number) => {
+    if (priceImpact > AGGREGATOR_LOST_MAX_LIMIT) {
+      return window.confirm(
+        `This swap has a price impact of at least ${
+          AGGREGATOR_LOST_MAX_LIMIT * 100
+        }%. Please confirm that you would like to continue with this swap.`
+      );
+    } else if (priceImpact > AGGREGATOR_LOST_LIMIT) {
+      return (
+        window.prompt(
+          `This swap has a price impact of at least ${
+            AGGREGATOR_LOST_LIMIT * 100
+          }%. Please type the word "confirm" to continue with this swap.`
+        ) === "confirm"
+      );
+    }
+    return true;
+  };
+  const handleSwapUsingAggregator = async () => {
+    // if (priceImpactOnAggregator && !confirmPriceImpactForSwapAggregator(priceImpactOnAggregator)) {
+    //   return;
+    // }
+    if (!swapCallbackUsingAggregator) {
+      return;
+    }
+    setAttemptingTxn(true);
+
+    swapCallbackUsingAggregator()
+      .then((hash) => {
+        setAttemptingTxn(false);
+        onUserInput(Field.INPUT, "");
+      })
+      .catch((error) => {
+        if (error.reason) {
+          if (error.reason == "BrewlabsAggregatonRouter: Insufficient output amount") {
+            toast.error("Insufficient output amount, please check slippage.");
+          } else toast.error(error.reason.split(":").slice(-1)[0]);
+        } else if (error.message) {
+          toast.error(error.message.split("(")[0]);
+        }
+
+        setAttemptingTxn(false);
+        onUserInput(Field.INPUT, "");
+      });
+  };
 
   const onConfirm = () => {
     if (usingAggregator) {
@@ -382,15 +404,18 @@ export default function SwapPanel({
               ) : (
                 <PrimarySolidButton
                   onClick={() => {
-                    if (priceImpactSeverity === 3) setWarningOpen(true);
-                    else onConfirm();
+                    if (
+                      priceImpactSeverity === 3 ||
+                      priceImpactOnAggregator > Math.max(AGGREGATOR_LOST_LIMIT, userSlippageTolerance / 10000)
+                    ) {
+                      setWarningOpen(true);
+                    } else onConfirm();
                   }}
                   pending={attemptingTxn}
                   disabled={
                     attemptingTxn ||
                     (!usingAggregator && (!!swapCallbackError || priceImpactSeverity > 3)) ||
-                    (usingAggregator && !!aggregationCallbackError) ||
-                    priceImpactOnAggregator > AGGREGATOR_LOST_LIMIT
+                    (usingAggregator && !!aggregationCallbackError)
                   }
                 >
                   {attemptingTxn
@@ -403,8 +428,6 @@ export default function SwapPanel({
                       : "Swap"
                     : !!aggregationCallbackError
                     ? aggregationCallbackError
-                    : priceImpactOnAggregator > AGGREGATOR_LOST_LIMIT
-                    ? "Price Impact Too High"
                     : "Swap"}
                   {(attemptingTxn || aggregationCallbackError === "Querying swap path...") && (
                     <div className="absolute right-2 top-0 flex h-full items-center">

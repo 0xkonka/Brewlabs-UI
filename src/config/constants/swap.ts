@@ -9,6 +9,7 @@ export const AGGREGATOR_SUBGRAPH_NAMES = {
 };
 
 export const ROUTER_SUBGRAPH_NAMES = {
+  [ChainId.BSC_MAINNET]: "brewswap-bsc",
   [ChainId.POLYGON]: "brewswap-polygon",
   [ChainId.BSC_TESTNET]: "brewswap-chapel",
 };
@@ -16,7 +17,7 @@ export const ROUTER_SUBGRAPH_NAMES = {
 export const SUPPORTED_DEXES = {
   liquidity: {
     [ChainId.ETHEREUM]: ["uniswap-v2"],
-    [ChainId.BSC_MAINNET]: ["pcs-v2", "apeswap"],
+    [ChainId.BSC_MAINNET]: ["brewlabs", "pcs-v2", "apeswap"],
     [ChainId.BSC_TESTNET]: ["brewlabs", "pcs-v2"],
     [ChainId.POLYGON]: ["brewlabs"],
   },
@@ -27,17 +28,17 @@ export const SUPPORTED_DEXES = {
   },
 };
 
-export const  SUPPORTED_LPs = {
+export const SUPPORTED_LPs = {
   [ChainId.ETHEREUM]: ["UNI-V2"],
-  [ChainId.BSC_MAINNET]: ["Cake-LP"],
+  [ChainId.BSC_MAINNET]: ["BREWSWAP-LP", "Cake-LP"],
   [ChainId.BSC_TESTNET]: ["BREWSWAP-LP"],
   [ChainId.POLYGON]: ["BREWSWAP-LP"],
 };
 
 export const SYMBOL_VS_SWAP_TABLE = {
   "UNI-V2": "uniswap-v2",
-  "Cake-LP": "pcs-v2",  
-  "BREWSWAP-LP": "brewlabs",  
+  "Cake-LP": "pcs-v2",
+  "BREWSWAP-LP": "brewlabs",
 };
 
 export const DEX_LOGOS = {

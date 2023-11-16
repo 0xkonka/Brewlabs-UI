@@ -29,8 +29,12 @@ const SelectionPanel = ({
     (name, index) =>
       `${name} (${
         proposals.filter((data) => {
-          let totalVoteBalance = 0;
-          [...data.yesVoted, ...data.noVoted].map((account, i) => {
+          let totalVoteBalance = 0,
+            totalVotes = [];
+          if (data.type === "proposal") totalVotes = [...data.yesVoted, ...data.noVoted];
+          else for (let i = 0; i < data.voted.length; i++) totalVotes = [...totalVotes, ...data.voted[i]];
+
+          totalVotes.map((account, i) => {
             balances &&
               Object.keys(balances).map((key, j) => {
                 const exsitingAccount = balances[key].find((balance) => balance.account === account);

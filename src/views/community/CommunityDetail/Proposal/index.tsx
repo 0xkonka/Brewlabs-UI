@@ -13,17 +13,17 @@ const Proposal = ({ community }: { community: any }) => {
 
   let addresses = new Object();
   let tokens = new Object();
+
   Object.keys(community.currencies).map((key, i) => {
     let result = [];
     community.proposals.map((proposal) => (result = [...result, ...proposal.yesVoted, ...proposal.noVoted]));
-    addresses[key] = [...(addresses[key] ?? []), ...result];
-  });
-  Object.keys(community.currencies).map((key, i) => {
-    let result = [];
-    community.proposals.map((proposal) =>
-      [...proposal.yesVoted, ...proposal.noVoted].map((data) => (result = [...result, community.currencies[key]]))
-    );
-    tokens[key] = [...(tokens[key] ?? []), ...result];
+    (community?.polls ?? []).map((poll) => {
+      let totalVotes = [];
+      poll.voted.map((vote) => (totalVotes = [...totalVotes, ...vote]));
+      result = [...result, ...totalVotes];
+    });
+    addresses[key] = result;
+    tokens[key] = new Array(result.length).fill(community.currencies[key]);
   });
 
   const totalSupply = community.totalSupply / Math.pow(10, community.currencies[community.coreChainId].decimals);
@@ -38,18 +38,25 @@ const Proposal = ({ community }: { community: any }) => {
       .catch((e) => console.log(e));
   }, [strigifiedTokens, strigifiedAddresses]);
 
-  const filteredProposals = community.proposals
+  const totalProposals = [
+    ...community.proposals.map((proposal) => ({ type: "proposal", ...proposal })),
+    ...(community?.polls ?? []).map((poll) => ({ type: "poll", ...poll })),
+  ];
+  const filteredProposals = totalProposals
     .filter(
       (data) =>
         data.title.toLowerCase().includes(criteria.toLowerCase()) ||
         data.description.toLowerCase().includes(criteria.toLowerCase())
     )
     .filter((data) => {
-      let totalVoteBalance = 0;
-      [...data.yesVoted, ...data.noVoted].map((account, i) => {
+      let totalVoteBalance = 0,
+        totalVotes = [];
+      if (data.type === "proposal") totalVotes = [...data.yesVoted, ...data.noVoted];
+      else for (let i = 0; i < data.voted.length; i++) totalVotes = [...totalVotes, ...data.voted[i]];
+      totalVotes.map((account, i) => {
         balances &&
           Object.keys(balances).map((key, j) => {
-            const exsitingAccount = balances[key].find((balance) => balance.account === account);
+            const exsitingAccount = balances[key].find((balance, j) => balance.account === account);
             if (exsitingAccount) totalVoteBalance += exsitingAccount.balance;
           });
       });
@@ -72,7 +79,7 @@ const Proposal = ({ community }: { community: any }) => {
           setCurFilter={setCurFilter}
           criteria={criteria}
           setCriteria={setCriteria}
-          proposals={community.proposals}
+          proposals={totalProposals}
           community={community}
           balances={balances}
           totalSupply={totalSupply}

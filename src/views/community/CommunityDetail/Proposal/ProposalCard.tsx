@@ -16,7 +16,7 @@ import CountDown from "components/CountDown";
 import { BellSVG, InfoSVG, RequirementSVG } from "components/dashboard/assets/svgs";
 import StyledButton from "views/directory/StyledButton";
 
-const ProposalCard = ({ proposal, community }: { proposal: any; community: any }) => {
+const ProposalCard = ({ proposal, community, index }: { proposal: any; community: any; index: number }) => {
   const { address: account } = useAccount();
   const name = useENSName(proposal.owner);
   const { voteOrAgainst }: any = useContext(CommunityContext);
@@ -36,7 +36,14 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
     try {
       if (community.feeToVote.type === "Yes" || (community.feeToVote.type === "Sometimes" && proposal.isFeeToVote)) {
         const tokenContract = getBep20Contract(chainId, community.currencies[chainId].address, signer);
-        const tx = await tokenContract.transfer(community.feeToVote.address, community.feeToVote.amount);
+        const estimateGas = await tokenContract.estimateGas.transfer(
+          community.feeToVote.address,
+          community.feeToVote.amount
+        );
+
+        const tx = await tokenContract.transfer(community.feeToVote.address, community.feeToVote.amount, {
+          gasLimit: Math.ceil(Number(estimateGas) * 1.2),
+        });
         await tx.wait();
       }
       await voteOrAgainst(account, pid, index, type);
@@ -84,11 +91,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
 
   return (
     <div
-      className={`primary-shadow relative mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] ${
-        isNew
-          ? "p-[20px_12px_32px_40px] md:p-[20px_20px_32px_60px]"
-          : "p-[20px_12px_32px_12px] md:p-[20px_20px_32px_20px]"
-      }`}
+      className={`primary-shadow relative mb-3 flex w-full justify-end rounded bg-[#B9B8B80D] p-[20px_12px_32px_40px] md:p-[20px_20px_32px_60px]`}
     >
       {isExcalmation && proposal.createdTime + duration >= Date.now() ? (
         <div className="absolute left-2.5 top-[22px] text-primary md:left-5 [&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!opacity-100">
@@ -107,7 +110,7 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
                   : "text-primary"
               }`}
             >
-              Proposal #{proposal.index + 1}
+              Proposal #{index + 1}
             </div>
             <div className="w-[110px] overflow-hidden text-ellipsis text-sm text-white">
               {name.loading ? proposal.owner : name.ENSName ?? proposal.owner}
@@ -227,9 +230,10 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
           <div className="ml-0 mr-0 mt-4 flex flex-row md:ml-4 md:mt-0 md:flex-col xl:mr-14">
             <div className="relative">
               <StyledButton
-                className="!h-fit p-[10px_12px]"
+                className={`!h-fit ${pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"} whitespace-nowrap`}
                 onClick={() => onVoteOrAgainst(account, community.pid, proposal.index, "yesVoted")}
                 disabled={pending}
+                pending={pending}
               >
                 {proposal.yesVoted.includes(account?.toLowerCase()) ? "I'm for it!" : "For"}
               </StyledButton>
@@ -241,9 +245,12 @@ const ProposalCard = ({ proposal, community }: { proposal: any; community: any }
             </div>
             <div className="relative ml-4 mt-0 md:ml-0 md:mt-8">
               <StyledButton
-                className="!h-fit !bg-[#27272A] p-[10px_12px] text-primary"
+                className={`!h-fit !bg-[#27272A] ${
+                  pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"
+                } whitespace-nowrap text-primary`}
                 onClick={() => onVoteOrAgainst(account, community.pid, proposal.index, "noVoted")}
                 disabled={pending}
+                pending={pending}
               >
                 {proposal.noVoted.includes(account?.toLowerCase()) ? "I'm against it" : "Against"}
               </StyledButton>

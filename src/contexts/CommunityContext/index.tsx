@@ -52,6 +52,12 @@ const CommunityContextProvider = ({ children }: any) => {
     getCommunities();
   }
 
+  async function addPoll(poll, pid) {
+    const result = await axios.post(`${API_URL}/community/addPoll`, { poll, pid });
+    handleError(result.data, "Poll Submitted");
+    getCommunities();
+  }
+
   async function voteOrAgainst(address, pid, index, type) {
     const result = await axios.post(`${API_URL}/community/voteOrAgainst`, {
       address: address.toLowerCase(),
@@ -61,6 +67,19 @@ const CommunityContextProvider = ({ children }: any) => {
     });
     handleError(result.data, "Voted Successfully");
     getCommunities();
+    return result.data.success;
+  }
+
+  async function voteOnPoll(address, pid, index, optionIndex) {
+    const result = await axios.post(`${API_URL}/community/voteOnPoll`, {
+      address: address.toLowerCase(),
+      pid,
+      index,
+      optionIndex,
+    });
+    handleError(result.data, "Voted Successfully");
+    getCommunities();
+    return result.data.success;
   }
 
   useFastRefreshEffect(() => {
@@ -93,6 +112,8 @@ const CommunityContextProvider = ({ children }: any) => {
         addProposal,
         voteOrAgainst,
         addCommunity,
+        addPoll,
+        voteOnPoll,
         newProposalCount,
         totalStakedValues: totalStakedValues,
       }}

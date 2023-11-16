@@ -2,48 +2,57 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
-import { useContext, useState } from "react";
-import { toast } from "react-toastify";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useAccount } from "wagmi";
-
-import { NETWORKS } from "config/constants/networks";
-import { CommunityContext } from "contexts/CommunityContext";
-import { DashboardContext } from "contexts/DashboardContext";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { handleWalletError } from "lib/bridge/helpers";
-import { getBep20Contract } from "utils/contractHelpers";
-import { useSigner } from "utils/wagmi";
-
-import DropDown from "components/dashboard/TokenList/Dropdown";
-import { InfoSVG } from "components/dashboard/assets/svgs";
-import StyledInput from "components/StyledInput";
+import { InfoSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import { useContext, useState } from "react";
+import DropDown from "@components/dashboard/TokenList/Dropdown";
+import StyledInput from "@components/StyledInput";
 import StyledButton from "views/directory/StyledButton";
+import { DashboardContext } from "contexts/DashboardContext";
+import { getBep20Contract } from "utils/contractHelpers";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useSigner } from "utils/wagmi";
+import { CommunityContext } from "contexts/CommunityContext";
+import { toast } from "react-toastify";
+import { handleWalletError } from "lib/bridge/helpers";
+import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
+import { NETWORKS } from "config/constants/networks";
 
-const ProposalModal = ({ open, setOpen, community }) => {
+const PollModal = ({ open, setOpen, community }) => {
   const coreCurrency = community.currencies[community.coreChainId];
+
+  const { address: account } = useAccount();
 
   const [isFeeToVote, setIsFeeToVote] = useState(0);
   const [duration, setDuration] = useState(0);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [choiceCount, setChoiceCount] = useState(2);
+  const [options, setOptions] = useState([]);
 
-  const { addProposal }: any = useContext(CommunityContext);
-  const { chainId } = useActiveChainId();
-  const { address: account } = useAccount();
-  const { data: signer } = useSigner();
-  const { canSwitch, switchNetwork } = useSwitchNetwork();
+  const durations = [7, 14, 30].filter((data, i) => i <= community.maxProposal);
   const { pending, setPending }: { pending: boolean; setPending: (pending: boolean) => {} } =
     useContext(DashboardContext);
+  const { chainId } = useActiveChainId();
+  const { data: signer } = useSigner();
+  const { addPoll }: any = useContext(CommunityContext);
+  const { canSwitch, switchNetwork } = useSwitchNetwork();
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
   };
 
-  const onSubmitProposal = async () => {
-    if (!title || !description) return;
+  const onSubmitPoll = async () => {
+    if (
+      !title ||
+      !description ||
+      title.length > 35 ||
+      description.length > 1000 ||
+      options.slice(0, choiceCount).filter((option) => option.length > 50 || !option).length
+    )
+      return;
     setPending(true);
     try {
       if (community.feeToProposal.type === "Yes") {
@@ -59,7 +68,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
         await tx.wait();
       }
       const durations = [3600 * 24 * 7, 3600 * 24 * 14, 3600 * 24 * 30];
-      await addProposal(
+      await addPoll(
         {
           title,
           description,
@@ -67,8 +76,8 @@ const ProposalModal = ({ open, setOpen, community }) => {
           duration: durations[duration] * 1000,
           owner: account.toLowerCase(),
           createdTime: Date.now(),
-          yesVoted: [],
-          noVoted: [],
+          voted: new Array(choiceCount).fill([]),
+          options: options.slice(0, choiceCount),
         },
         community.pid
       );
@@ -80,12 +89,11 @@ const ProposalModal = ({ open, setOpen, community }) => {
     setPending(false);
   };
 
-  const durations = [7, 14, 30].filter((data, i) => i <= community.maxProposal);
   return (
     <Dialog
       open={open}
       className="fixed inset-0 z-[100] overflow-y-auto bg-gray-300 bg-opacity-90 font-brand backdrop-blur-[2px] dark:bg-zinc-900 dark:bg-opacity-80"
-      onClose={() => {}}
+      onClose={() => setOpen(false)}
     >
       <div className="flex min-h-full items-center justify-center p-4 ">
         <motion.div
@@ -114,7 +122,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
           <div className="primary-shadow relative w-[calc(100vw-24px)] max-w-[720px] rounded bg-[#18181B] p-[38px_12px_40px_12px] text-white md:p-[38px_47px_40px_64px] ">
             <div className="flex justify-between">
               <div className="flex-1 overflow-hidden">
-                <div className="text-xl text-primary">New proposal</div>
+                <div className="text-xl text-primary">New poll</div>
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                   By <span className="text-[#FFFFFF80]">{account}</span>
                 </div>
@@ -123,7 +131,8 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 <img src={community.logo} alt={""} className="w-10 rounded" />
               </div>
             </div>
-            <div className="mt-4 flex items-center justify-end text-sm">
+
+            <div className="mt-4 flex flex-col items-end justify-end text-sm xsm:flex-row xsm:items-center">
               {community.feeToVote.type === "Sometimes" ? (
                 <div className="flex items-center">
                   <div className="relative mr-3">
@@ -147,59 +156,125 @@ const ProposalModal = ({ open, setOpen, community }) => {
               ) : (
                 ""
               )}
-              <div className="mx-3">Duration</div>
-              <DropDown
-                value={duration}
-                setValue={setDuration}
-                values={durations.map((data) => data + " Days")}
-                type={"secondary"}
-                width="w-[100px]"
-                className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
-              />
+              <div className="my-2 flex items-center xsm:my-0">
+                <div className="mx-3">Duration</div>
+                <DropDown
+                  value={duration}
+                  setValue={setDuration}
+                  values={durations.map((data) => data + " Days")}
+                  type={"secondary"}
+                  width="w-[100px]"
+                  className="primary-shadow !rounded-lg !bg-[#FFFFFF1A] !p-[6px_10px] text-sm text-primary"
+                />
+              </div>
             </div>
+
             <div>
-              <div>Proposal title</div>
+              <div className="flex flex-col items-start xsm:flex-row xsm:items-center">
+                <div>Poll title</div>
+                <div
+                  className={`mb-2 ml-0 font-roboto text-xs font-medium xsm:mb-0 xsm:ml-5 ${
+                    title.length > 35 ? "text-[#DC4545]" : "text-[#FFFFFF80]"
+                  }`}
+                >
+                  Max characters for poll title 35.
+                </div>
+              </div>
+
               <StyledInput
                 value={title}
                 setValue={setTitle}
                 placeholder="Write your title here"
-                className="w-full !rounded-none"
+                className="w-full !rounded-none !bg-[#202023]"
                 isValid={!submitClicked || title}
               />
             </div>
             <div className="mt-[18px]">
-              <div>Description</div>
+              <div className="flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
+                <div>Poll description</div>
+                <div
+                  className={`font-roboto text-xs font-medium ${
+                    description.length > 1000 ? "text-[#DC4545]" : "text-[#FFFFFF80]"
+                  } mb-2 xsm:mb-0`}
+                >
+                  Max characters per poll description 1000.
+                </div>
+              </div>
               <StyledInput
                 type={"textarea"}
                 value={description}
                 setValue={setDescription}
-                placeholder="Write about your proposal here..."
-                className="h-[183px] w-full !rounded-none"
+                placeholder="Write about your poll here..."
+                className="h-[120px] w-full !rounded-none !bg-[#202023]"
                 isValid={!submitClicked || description}
               />
             </div>
-            <div className="ml-4 mt-4 flex flex-col justify-end text-xs leading-[1.2] text-[#FFFFFF80] md:ml-0 md:flex-row">
-              <ul className="max-w-full list-disc md:max-w-[200px]">
-                <li>
-                  Submit community proposal fee {community.feeToProposal.amount / Math.pow(10, coreCurrency.decimals)}{" "}
-                  {coreCurrency.symbol} token.
-                </li>
+
+            <div className="mt-2 flex flex-col font-roboto sm:flex-row">
+              <div className="w-full sm:w-[160px]">
+                <div className="flex items-center justify-between">
+                  <div>Poll choices</div>
+                  <DropDown
+                    value={choiceCount - 2}
+                    setValue={(e) => setChoiceCount(e + 2)}
+                    values={[2, 3, 4, 5]}
+                    type={"secondary"}
+                    width="w-14"
+                    className="primary-shadow !rounded-lg !bg-[#FFFFFF1A]   !p-[6px_10px] text-sm text-primary"
+                  />
+                </div>
+                <div className="mt-1 text-sm text-[#FFFFFF80]">Max characters per choice 50.</div>
+              </div>
+              <div className="ml-0 mt-4 flex-1 sm:ml-5 sm:mt-0">
+                {new Array(choiceCount).fill("").map((data, i) => (
+                  <div key={i} className="mb-1.5 flex text-sm">
+                    <div className="mt-2 text-[#FFFFFF80]">{String.fromCharCode(65 + i)}</div>
+                    <div className="mx-2 flex-1">
+                      <StyledInput
+                        value={options[i]}
+                        setValue={(e) => {
+                          let temp = [...options];
+                          temp[i] = e;
+                          setOptions(temp);
+                        }}
+                        placeholder={`What is option ${String.fromCharCode(65 + i)}?`}
+                        className="h-8 w-full !rounded-none !bg-[#202023] !px-2"
+                        isValid={!submitClicked || options[i]}
+                      />
+                    </div>
+                    <div
+                      className={`mt-2 ${
+                        options[i] ? (options[i].length > 50 ? "text-[#DC4545]" : "text-white") : "text-tailwind"
+                      } [&>svg]:!h-4 [&>svg]:!w-4`}
+                    >
+                      {checkCircleSVG}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col justify-end font-roboto text-xs text-[#FFFFFF80] sm:flex-row">
+              <ul className="max-w-full list-disc sm:max-w-[200px]">
+                <li>Submit community proposal fee 1000 {coreCurrency.symbol} token.</li>
               </ul>
-              <ul className="mb-4 ml-0 mr-0 max-w-full list-disc md:mb-0 md:ml-6 md:mr-3 md:max-w-[200px]">
-                <li>You can only post one proposal at a time. </li>
-                <li>Proposals with profanities will be removed.</li>
+              <ul className="mx-0 max-w-full list-disc sm:mx-4 sm:max-w-[240px]">
+                <li>You can only post one proposal or poll at a time.</li>
+                <li>Proposals or polls with profanities will be removed.</li>
               </ul>
               {Object.keys(community.currencies).includes(chainId.toString()) ? (
                 <StyledButton
-                  className={`!w-fit ${pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"} whitespace-nowrap`}
+                  className={`mt-4 !w-fit whitespace-nowrap ${
+                    pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"
+                  } !font-normal sm:mt-0`}
                   onClick={() => {
                     setSubmitClicked(true);
-                    onSubmitProposal();
+                    onSubmitPoll();
                   }}
-                  pending={pending}
                   disabled={pending}
+                  pending={pending}
                 >
-                  Submit my proposal
+                  <span className="!font-roboto font-bold">Submit</span>&nbsp;my poll
                 </StyledButton>
               ) : (
                 <StyledButton
@@ -213,6 +288,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
                 </StyledButton>
               )}
             </div>
+
             <button
               onClick={() => {
                 setOpen(false);
@@ -234,4 +310,4 @@ const ProposalModal = ({ open, setOpen, community }) => {
   );
 };
 
-export default ProposalModal;
+export default PollModal;

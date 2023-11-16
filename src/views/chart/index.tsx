@@ -108,7 +108,7 @@ export default function Chart({ chain, address }) {
           />
         </Modal>
       )}
-      <div className={`px-3 pb-10 font-roboto md:px-6 3xl:md:px-16 ${pending ? "opacity-50" : ""}`}>
+      <div className={`px-3 xl:pb-10 pb-48 font-roboto md:px-6 3xl:md:px-16 ${pending ? "opacity-50" : ""}`}>
         {selectedPair ? (
           <div className="relative mx-auto mt-24 w-full lg:mt-0">
             <Header setShowReverse={setShowReverse} showReverse={showReverse} />
