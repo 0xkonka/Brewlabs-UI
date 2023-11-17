@@ -256,7 +256,10 @@ const PollModal = ({ open, setOpen, community }) => {
 
             <div className="mt-10 flex flex-col justify-end font-roboto text-xs text-[#FFFFFF80] sm:flex-row">
               <ul className="max-w-full list-disc sm:max-w-[200px]">
-                <li>Submit community proposal fee 1000 {coreCurrency.symbol} token.</li>
+                <li>
+                  Submit community proposal fee {community.feeToProposal.amount / Math.pow(10, coreCurrency.decimals)}{" "}
+                  {coreCurrency.symbol} token.
+                </li>
               </ul>
               <ul className="mx-0 max-w-full list-disc sm:mx-4 sm:max-w-[240px]">
                 <li>You can only post one proposal or poll at a time.</li>
