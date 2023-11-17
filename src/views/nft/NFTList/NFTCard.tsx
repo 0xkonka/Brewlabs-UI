@@ -40,9 +40,11 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const { onStake, onUnstakeNft, onClaim } = useNftStaking(pool?.performanceFee ?? "0");
 
   const [pending, setPending] = useState(false);
-
-  const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
-  const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
+  const ethPrice = useTokenPrice(
+    nft.chainId == 97 ? 56 : nft.chainId,
+    WNATIVE[nft.chainId == 97 ? 56 : nft.chainId].address
+  );
+  const brewsPrice = useTokenPrice(nft.chainId, flaskNft.brewsToken.address);
 
   const isPending = !pool || pool.startBlock > currentBlock;
   const earnings = pool?.userData?.stakedAmount ? +formatEther(pool.userData.earnings) / pool.userData.stakedAmount : 0;
@@ -262,7 +264,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <>
             <div className="mt-2 flex items-center justify-between">
               <div className="w-fit text-white">
-                APR: {apr ? "Pending APR" : `${apr?.toFixed(2) ?? "0.00"}%`}
+                APR: {!apr ? "Pending" : `${apr.toFixed(2) ?? "0.00"}%`} APR
                 <br />
                 <span className="text-[10px] font-normal text-[#FFFFFF80]">
                   in {NETWORKS[nft.chainId].nativeCurrency.symbol} approx.
