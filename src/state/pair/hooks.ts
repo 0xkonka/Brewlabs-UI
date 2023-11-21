@@ -19,11 +19,12 @@ export const useTradingPair = (chainId, address) => {
   return { data };
 };
 
-export const useTradingAllPairs = (chainId: ChainId) => {
+export const useTradingAllPairs = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(fetchTradingAllPairAsync(chainId));
-  }, [dispatch, chainId]);
+    dispatch(fetchTradingAllPairAsync(ChainId.POLYGON));
+    dispatch(fetchTradingAllPairAsync(ChainId.BSC_MAINNET));
+  }, [dispatch]);
 };
 
 export const useTradingPairData = (chainId: ChainId, pair: string): SerializedTradingPair => {
@@ -31,11 +32,13 @@ export const useTradingPairData = (chainId: ChainId, pair: string): SerializedTr
 };
 
 export const useTradingAllPairDatas = (chainId: ChainId): SerializedTradingPair[] => {
-  return useSelector((state: State) =>
-    state.pair.tradingPairs[chainId]
-      ? Object.keys(state.pair.tradingPairs[chainId])
-          .filter((address) => state.pair.tradingPairs[chainId][address])
-          .map((address) => state.pair.tradingPairs[chainId][address])
-      : []
-  , shallowEqual);
+  return useSelector(
+    (state: State) =>
+      state.pair.tradingPairs[chainId]
+        ? Object.keys(state.pair.tradingPairs[chainId])
+            .filter((address) => state.pair.tradingPairs[chainId][address])
+            .map((address) => state.pair.tradingPairs[chainId][address])
+        : [],
+    shallowEqual
+  );
 };

@@ -10,7 +10,7 @@ import { BigNumberFormat, getChainLogo } from "utils/functions";
 import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function ChartPanel({ pair }) {
+export default function ChartPanel() {
   const [selectedPeriod, setSelectedPeriod] = useState(0);
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedDisplayType, setSelectedDisplayType] = useState(0);
@@ -24,11 +24,31 @@ export default function ChartPanel({ pair }) {
   const showTypes = ["Volume USD", "TVL"];
 
   useEffect(() => {
-    if (!isAddress(pair.address)) return;
-    getTradingPairHistories(pair.chainId, periodTypes[selectedPeriod].period)
-      .then((result) => setHistories(result))
+    Promise.all([
+      getTradingPairHistories(ChainId.BSC_MAINNET, periodTypes[selectedPeriod].period),
+      getTradingPairHistories(ChainId.POLYGON, periodTypes[selectedPeriod].period),
+    ])
+      .then((result: any) => {
+        let feeHistory = [],
+          tvlHistory = [],
+          volumeHistory = [];
+        for (let i = 0; i < 10; i++) {
+          let fee = 0,
+            tvl = 0,
+            volume = 0;
+          for (let j = 0; j < result.length; j++) {
+            fee += result[j].feeHistory[i];
+            tvl += result[j].tvlHistory[i];
+            volume += result[j].volumeHistory[i];
+          }
+          feeHistory.push(fee);
+          tvlHistory.push(tvl);
+          volumeHistory.push(volume);
+        }
+        setHistories({ feeHistory, tvlHistory, volumeHistory });
+      })
       .catch((e) => console.log(e));
-  }, [selectedPeriod, pair.address, pair.chainId]);
+  }, [selectedPeriod]);
 
   const networks: any = [
     "All",

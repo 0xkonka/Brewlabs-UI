@@ -88,7 +88,7 @@ function GlobalHooks() {
 
   useFetchTokenBalance(account, chainId, signer);
 
-  useTradingAllPairs(ChainId.POLYGON);
+  useTradingAllPairs();
 
   return null;
 }

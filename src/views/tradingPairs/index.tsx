@@ -28,7 +28,7 @@ export default function Info() {
             liquidity instantly.
           </div>
         </div>
-        <ChartPanel pair={selectedPair} />
+        <ChartPanel />
 
         <PairList selectedPair={selectedPair} setSelectedPair={setSelectedPair} />
       </Container>
