@@ -1,15 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import PhoneFrame from "@components/PhoneFrame";
 import { ArrowPathRoundedSquareIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Container from "./Container";
-import { NFTSVG } from "@components/dashboard/assets/svgs";
-import Soon from "@components/Soon";
+
+import HeroImageParallax from "@components/HeroImageParallax";
 
 const PageHero = () => {
   return (
-    <section className="relative flex flex-col justify-center bg-zinc-900 pt-32 md:justify-end lg:overflow-hidden lg:pt-32">
+    <section className="relative flex flex-col justify-center overflow-hidden bg-zinc-900 pt-32 md:justify-end lg:pt-32">
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
           <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none xl:col-span-6">
@@ -42,21 +40,9 @@ const PageHero = () => {
             </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, translateY: 100 }}
-            whileInView={{ opacity: 1, translateY: 0 }}
-            transition={{
-              duration: 0.75,
-              delay: 0.5,
-            }}
-            className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6"
-          >
-            <div className="-mx-4 h-[380px] px-9 [mask-image:linear-gradient(to_bottom,white_70%,transparent)] sm:mx-0 sm:h-[550px] lg:absolute lg:-inset-x-10 lg:-bottom-20 lg:-top-10 lg:h-auto lg:px-0 lg:pt-10 xl:-bottom-32">
-              <PhoneFrame className="mx-auto max-w-[366px]" priority>
-                <img src="./images/bridge-promo-mobile.png" alt="Brewlabs Bridge" className="absolute left-0 top-2" />
-              </PhoneFrame>
-            </div>
-          </motion.div>
+          <div className="relative mt-10 sm:mt-20 lg:col-span-5 lg:row-span-2 lg:mt-0 xl:col-span-6">
+            <HeroImageParallax />
+          </div>
         </div>
       </Container>
 

@@ -3,7 +3,6 @@ import { useCallback, useContext, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
 import orderBy from "lodash/orderBy";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAccount } from "wagmi";
 
 import Container from "components/layout/Container";
@@ -261,85 +260,78 @@ const Directory = ({ page }: { page: number }) => {
     <PageWrapper>
       {renderDetailPage()}
 
-      <AnimatePresence>
-        {!selectPoolDetail && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
-              <PageHeader
-                title={
-                  <div className="text-[40px]">
-                    <WordHighlight content="Brewlabs Pool Directory" />
-                    <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
-                      Stake, farm, zap and explore indexes for passive income
-                    </div>
+      {!selectPoolDetail && (
+        <div>
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
+            <PageHeader
+              title={
+                <div className="text-[40px]">
+                  <WordHighlight content="Brewlabs Pool Directory" />
+                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
+                    Stake, farm, zap and explore indexes for passive income
                   </div>
-                }
-              />
-              <Container className="font-brand">
-                <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
-                {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
-                  <div className="-mb-4 -mt-4 flex justify-end">
-                    <Link
-                      href={`${
-                        curFilter === Category.FARM
-                          ? "/deployer/farm"
-                          : curFilter === Category.INDEXES
-                          ? "/deployer/index"
-                          : ""
-                      }`}
-                    >
-                      <StyledButton className="!w-fit p-[6px_12px] !text-sm">
-                        {curFilter === Category.FARM
-                          ? "Create Farm"
-                          : curFilter === Category.INDEXES
-                          ? "Create Index"
-                          : ""}
-                      </StyledButton>
-                    </Link>
-                  </div>
-                ) : curFilter === Category.POOL ? (
-                  <div className="flex w-full justify-end -mt-[44px]">
-                    <a
-                      href={"https://t.me/MaverickBL"}
-                      target="_blank"
-                      className="text-sm !text-[#FFFFFF80] hover:!text-white"
-                    >
-                      Advertise with us
-                    </a>
-                  </div>
-                ) : (
-                  ""
-                )}
-                <div className="mt-8">
-                  <SelectionPanel
-                    pools={allPools}
-                    curFilter={curFilter}
-                    setCurFilter={setCurFilter}
-                    criteria={criteria}
-                    setCriteria={setCriteria}
-                    activity={status}
-                    setActivity={setStatus}
-                  />
                 </div>
-                <div className="mb-[100px] mt-[18px]">
-                  <PoolList
-                    pools={chosenPools}
-                    setSelectPoolDetail={setSelectPoolDetail}
-                    setCurPool={setCurPool}
-                    setSortOrder={setSortOrder}
-                    loading={dataFetched}
-                  />
+              }
+            />
+            <Container className="font-brand">
+              <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
+              {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
+                <div className="-mb-4 -mt-4 flex justify-end">
+                  <Link
+                    href={`${
+                      curFilter === Category.FARM
+                        ? "/deployer/farm"
+                        : curFilter === Category.INDEXES
+                        ? "/deployer/index"
+                        : ""
+                    }`}
+                  >
+                    <StyledButton className="!w-fit p-[6px_12px] !text-sm">
+                      {curFilter === Category.FARM
+                        ? "Create Farm"
+                        : curFilter === Category.INDEXES
+                        ? "Create Index"
+                        : ""}
+                    </StyledButton>
+                  </Link>
                 </div>
-              </Container>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ) : curFilter === Category.POOL ? (
+                <div className="-mt-[44px] flex w-full justify-end">
+                  <a
+                    href={"https://t.me/MaverickBL"}
+                    target="_blank"
+                    className="text-sm !text-[#FFFFFF80] hover:!text-white"
+                  >
+                    Advertise with us
+                  </a>
+                </div>
+              ) : (
+                ""
+              )}
+              <div className="mt-8">
+                <SelectionPanel
+                  pools={allPools}
+                  curFilter={curFilter}
+                  setCurFilter={setCurFilter}
+                  criteria={criteria}
+                  setCriteria={setCriteria}
+                  activity={status}
+                  setActivity={setStatus}
+                />
+              </div>
+              <div className="mb-[100px] mt-[18px]">
+                <PoolList
+                  pools={chosenPools}
+                  setSelectPoolDetail={setSelectPoolDetail}
+                  setCurPool={setCurPool}
+                  setSortOrder={setSortOrder}
+                  loading={dataFetched}
+                />
+              </div>
+            </Container>
+          </div>
+        </div>
+      )}
     </PageWrapper>
   );
 };
