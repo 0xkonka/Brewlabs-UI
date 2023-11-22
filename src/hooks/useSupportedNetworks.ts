@@ -10,7 +10,13 @@ export const useSupportedNetworks = () => {
 
   useEffect(() => {
     const page = pathname.split("/")[1];
-    setNetworks(NetworkOptions.filter((network) => PAGE_SUPPORTED_CHAINS[page]?.includes(network.id)));
+    setNetworks(
+      NetworkOptions.filter((network) =>
+        PAGE_SUPPORTED_CHAINS[page]
+          ? PAGE_SUPPORTED_CHAINS[page].includes(network.id)
+          : PAGE_SUPPORTED_CHAINS[""].includes(network.id)
+      )
+    );
   }, [pathname]);
 
   return networks || [];
