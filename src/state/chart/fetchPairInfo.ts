@@ -23,7 +23,7 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
   try {
     if (!criteria) return;
 
-    const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${criteria}`;
+    const brewSwapUrl = `http://localhost:5050/api/chart/search/pairs?q=${criteria}`;
     const { data: brewPairs } = await axios.get(brewSwapUrl);
 
     let searchedPairs = [];

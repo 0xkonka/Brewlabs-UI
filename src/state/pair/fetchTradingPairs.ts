@@ -55,7 +55,7 @@ export async function getTradingPair(chainId, pair) {
     price24hChange: { price24hChange0: 0, price24hChange1: 0 },
     volume24h: 0,
     tvl: 0,
-    feesCollected: 0,
+    feesCollected24h: 0,
   };
 
   if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString())) return default_value;
@@ -251,10 +251,10 @@ export async function getTradingPairHistories(chainId, period) {
       index++;
     } while (swaps.length === 1000);
 
-    let j = 0;
+    let j = 0,
+      v = 0,
+      fee = 0;
     for (let i = 1; i <= 10; i++) {
-      let v = 0,
-        fee = 0;
       while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) <= timestamp + (period / 10) * i) {
         v += Number(totalSwaps[j].amountUSD);
         fee += Number(totalSwaps[j].amountFeeUSD);
