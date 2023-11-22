@@ -6,10 +6,10 @@ import { DEXTOOLS_CHAINNAME } from "config";
 import Link from "next/link";
 import { useTradingPair } from "state/pair/hooks";
 import { SerializedTradingPair } from "state/types";
-import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
+import { getAddLiquidityUrl, getChainLogo, numberWithCommas } from "utils/functions";
 
 export default function PairCard({ pair, setSelectedPair }) {
-  const width = ["w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[120px]"];
+  const width = ["w-14", "w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
   const { data }: { data: SerializedTradingPair } = useTradingPair(pair.chainId, pair.address);
 
   const isLoading = !data.baseToken;
@@ -25,7 +25,16 @@ export default function PairCard({ pair, setSelectedPair }) {
             : getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId)
         }
       >
-        <div className={`${width[0]} `}>
+        <div className={`${width[0]}`}>
+          {isLoading ? (
+            <SkeletonComponent />
+          ) : (
+            <div className="flex justify-center">
+              <img src={getChainLogo(data.chainId)} alt={""} className="h-7 w-7 rounded-full" />
+            </div>
+          )}
+        </div>
+        <div className={`${width[1]} `}>
           {isLoading ? (
             <SkeletonComponent />
           ) : (
@@ -52,19 +61,19 @@ export default function PairCard({ pair, setSelectedPair }) {
             </div>
           )}
         </div>
-        <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[1]} `}>
+        <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[2]} `}>
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
         </div>
-        <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[2]} `}>
+        <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[3]} `}>
           {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}%`}
         </div>
-        <div className={`${width[3]} `}>
+        <div className={`${width[4]} `}>
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.volume24h.toFixed(2))}`}
         </div>
-        <div className={`${width[4]} `}>
+        <div className={`${width[5]} `}>
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.tvl.toFixed(2))}`}
         </div>
-        <div className={`${width[5]} `}>
+        <div className={`${width[6]} `}>
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`}
         </div>
       </Link>

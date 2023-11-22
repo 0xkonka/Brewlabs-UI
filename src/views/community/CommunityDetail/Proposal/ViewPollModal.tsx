@@ -64,6 +64,8 @@ const ViewPollModal = ({ open, setOpen, community, poll, setIsVoted }) => {
     setPending(false);
   }
 
+  const coreCurrency = community.currencies[community.coreChainId];
+
   return (
     <Dialog
       open={open}
@@ -147,7 +149,12 @@ const ViewPollModal = ({ open, setOpen, community, poll, setIsVoted }) => {
               </div>
             </div>
 
-            <div className="mt-10 flex justify-end font-roboto text-xs text-[#FFFFFF80]">
+            <div className="mt-8 text-xs text-[#FFFFFF80]">
+              Submit community proposal fee {community.feeToVote.amount / Math.pow(10, coreCurrency.decimals)}{" "}
+              {coreCurrency.symbol} token.
+            </div>
+
+            <div className="mt-2 flex justify-end font-roboto text-xs text-[#FFFFFF80]">
               <StyledButton
                 className={`mt-0 !w-fit whitespace-nowrap ${
                   pending ? "p-[10px_40px_10px_12px]" : "p-[10px_12px]"

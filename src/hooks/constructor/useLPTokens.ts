@@ -21,6 +21,7 @@ export const useLPTokens = () => {
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
+  // const account = "0xa3913CBaBc05FA44a5F03d62950c0F28d49CcA15";
   const { data: signer } = useSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
@@ -29,6 +30,7 @@ export const useLPTokens = () => {
   const [lpTokens, setLPTokens] = useState(null);
 
   async function fetchLPInfo(data: any, chainId: ChainId) {
+    console.log(data);
     const pairInfos = await Promise.all(
       data.map(async (data) => {
         try {

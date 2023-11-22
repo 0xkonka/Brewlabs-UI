@@ -1,5 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
+import { ROUTER_SUBGRAPH_NAMES } from "config/constants/swap";
 import { ethers } from "ethers";
 import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
 
@@ -30,9 +31,12 @@ export async function getTradingPair(chainId, pair) {
     }
   }`;
 
-  const { data: response } = await axios.post("https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon", {
-    query,
-  });
+  const { data: response } = await axios.post(
+    `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
+    {
+      query,
+    }
+  );
 
   const pairData = response.data.pair;
   if (!pairData) return {};
@@ -47,13 +51,14 @@ export async function getTradingPair(chainId, pair) {
   const default_value = {
     pair: wrappedPairData,
     price: { price0: 0, price1: 0 },
+    price24h: { price24h0: 0, price24h1: 0 },
     price24hChange: { price24hChange0: 0, price24hChange1: 0 },
     volume24h: 0,
     tvl: 0,
     feesCollected: 0,
   };
 
-  if (chainId !== ChainId.POLYGON) return default_value;
+  if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString())) return default_value;
   try {
     query = `{
       swaps(
@@ -74,7 +79,7 @@ export async function getTradingPair(chainId, pair) {
       }
   }`;
     const { data: response } = await axios.post(
-      "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
+      `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
       {
         query,
       }
@@ -121,7 +126,7 @@ export async function getTradingPair(chainId, pair) {
         }
       }`;
       const { data: response } = await axios.post(
-        "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
+        `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
         { query }
       );
 
@@ -152,14 +157,14 @@ export async function getTradingPair(chainId, pair) {
 }
 
 export async function getTradingAllPairs(chainId: ChainId) {
-  if (chainId !== ChainId.POLYGON) return [];
+  if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString())) return [];
   try {
     let totalPairs = [];
     let pairs = [],
       index = 0;
     do {
       const { data: response } = await axios.post(
-        "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
+        `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
         {
           query: `{
             pairs(
@@ -204,7 +209,7 @@ export async function getTradingAllPairs(chainId: ChainId) {
 }
 
 export async function getTradingPairHistories(chainId, period) {
-  if (chainId !== ChainId.POLYGON) return { volumeHistory: [], feeHistory: [] };
+  if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString())) return { volumeHistory: [], feeHistory: [] };
   try {
     let query,
       swaps,
@@ -237,7 +242,7 @@ export async function getTradingPairHistories(chainId, period) {
         }
       }`;
       const { data: response } = await axios.post(
-        "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
+        `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
         { query }
       );
 
@@ -274,7 +279,7 @@ export async function getTradingPairHistories(chainId, period) {
     }`;
 
     const { data: reserveResponse } = await axios.post(
-      "https://api.thegraph.com/subgraphs/name/brainstormk/brewswap-polygon",
+      `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
       { query }
     );
 

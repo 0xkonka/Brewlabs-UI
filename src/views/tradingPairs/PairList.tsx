@@ -4,15 +4,17 @@ import { ChainId } from "@brewlabs/sdk";
 import { useEffect, useState } from "react";
 import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
 
-const headers = ["Pair", "Token Price", "24h Change", "24h Volume", "TVL", "Fees Collected"];
+const headers = ["Network", "Pair", "Token Price", "24h Change", "24h Volume", "TVL", "Fees Collected"];
 
 export default function PairList({ selectedPair, setSelectedPair }) {
-  const width = ["w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[120px]"];
+  const width = ["w-14", "w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
 
   const [criteria, setCriteria] = useState("");
   const [wrappedPairs, setWrappedPairs] = useState([]);
 
-  const pairs = useTradingAllPairDatas(ChainId.POLYGON);
+  const polygon_pairs = useTradingAllPairDatas(ChainId.POLYGON);
+  const bsc_pairs = useTradingAllPairDatas(ChainId.BSC_MAINNET);
+  const pairs = [...bsc_pairs, ...polygon_pairs];
 
   const stringifiedPairs = JSON.stringify(pairs);
 
