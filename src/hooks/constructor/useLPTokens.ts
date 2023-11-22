@@ -14,6 +14,7 @@ import { useUserLpTokenData } from "state/wallet/hooks";
 import multicall from "utils/multicall";
 import { useSigner } from "utils/wagmi";
 import { useAccount } from "wagmi";
+import { API_URL } from "config/constants";
 
 export const useLPTokens = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +35,7 @@ export const useLPTokens = () => {
         try {
           let pair;
           if (data.symbol === "BREWSWAP-LP") {
-            const brewSwapUrl = `http://localhost:5050/api/chart/search/pairs?q=${data.address}`;
+            const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${data.address}`;
             const { data: brewPairs } = await axios.get(brewSwapUrl);
             if (!brewPairs || !brewPairs.length) return null;
             pair = brewPairs[0];
