@@ -24,8 +24,12 @@
   --parallax-speed: -12;
 }
 
-.parallax_phones {
-  --parallax-speed: 10;
+.parallax_phone_back {
+  --parallax-speed: 5;
+}
+
+.parallax_phone_front {
+  --parallax-speed: 7;
 }
 
 .parallax_bg {

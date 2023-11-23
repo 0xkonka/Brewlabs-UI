@@ -30,11 +30,20 @@ const HeroImageParallax = () => {
 
       <Image
         priority={true}
-        width={592}
-        height={547}
-        src="/images/brewlabs-hero-phones.png"
+        width={518}
+        height={815}
+        src="/images/brewlabs-hero-phone-back.png"
         alt="Brewlabs Swap interface"
-        className={`${styles.parallax_phones} z-10 h-auto w-96 sm:w-auto`}
+        className={`${styles.parallax_phone_back} z-10 ml-2 mt-12 w-auto sm:ml-16 `}
+      />
+
+      <Image
+        priority={true}
+        width={523}
+        height={815}
+        src="/images/brewlabs-hero-phone-front.png"
+        alt="Brewlabs Swap interface"
+        className={`${styles.parallax_phone_front} z-10 ml-24 mt-28 w-auto sm:ml-60`}
       />
 
       <Image
