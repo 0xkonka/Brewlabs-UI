@@ -98,8 +98,8 @@ export function useApproveCallback(
         approval: { tokenAddress: token.address, spender },
       });
       return response;
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      throw new Error(e);
     }
   }, [approvalState, token, tokenContract, amountToApprove, spender, addTransaction, chainId, library]);
 

@@ -7,9 +7,10 @@ import Link from "next/link";
 import { useTradingPair } from "state/pair/hooks";
 import { SerializedTradingPair } from "state/types";
 import { getAddLiquidityUrl, getChainLogo, numberWithCommas } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 export default function PairCard({ pair, setSelectedPair }) {
-  const width = ["w-14", "w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
+  const width = ["w-14", "w-[200px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
   const { data }: { data: SerializedTradingPair } = useTradingPair(pair.chainId, pair.address);
 
   const isLoading = !data.baseToken;
@@ -39,18 +40,10 @@ export default function PairCard({ pair, setSelectedPair }) {
             <SkeletonComponent />
           ) : (
             <div className="flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
-              <TokenLogo
-                src={`https://assets-stage.dex.guru/icons/${data.baseToken.address}-${
-                  DEXTOOLS_CHAINNAME[data.chainId]
-                }.png`}
-                alt={""}
-                classNames="h-7 w-7"
-              />
+              <TokenLogo src={getTokenLogoURL(data.baseToken.address, data.chainId)} alt={""} classNames="h-7 w-7" />
 
               <TokenLogo
-                src={`https://assets-stage.dex.guru/icons/${data.quoteToken.address}-${
-                  DEXTOOLS_CHAINNAME[data.chainId]
-                }.png`}
+                src={getTokenLogoURL(data.quoteToken.address, data.chainId)}
                 alt={""}
                 classNames="h-7 w-7 -ml-3 z-10"
               />

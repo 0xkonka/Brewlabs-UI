@@ -426,7 +426,7 @@ export default function RemoveLiquidityPanel({
               <div className="text-xs leading-none">Max</div>
             </StyledButton>
           </div>
-          <div className="absolute -bottom-[28px] right-0 whitespace-nowrap text-sm">
+          <div className="absolute -top-[28px] right-0 whitespace-nowrap text-sm">
             {lpPrice ? (
               <>
                 $
@@ -449,14 +449,14 @@ export default function RemoveLiquidityPanel({
         <div className="text-lg text-[#FFFFFFBF]">Receive</div>
         <div>
           <div className="flex flex-wrap items-center justify-between text-sm">
-            <div className="xsm:w-[50%] w-full">
+            <div className="w-full xsm:w-[50%]">
               {currencyA && currencyA.wrapped.address === WNATIVE[selectedChainId].address
                 ? isGetWETH
                   ? `W${NETWORKS[selectedChainId].nativeCurrency.name}`
                   : NETWORKS[selectedChainId].nativeCurrency.name
                 : tokenA?.symbol}
             </div>
-            <div className="xsm:w-[50%] mt-1 flex w-full items-center justify-between xsm:mt-0">
+            <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
               <div className="flex items-center">
                 <TokenLogo
                   src={getTokenLogoURL(token0Address, selectedChainId)}
@@ -493,14 +493,14 @@ export default function RemoveLiquidityPanel({
             </div>
           </div>
           <div className="mt-1 flex flex-wrap items-center justify-between text-sm">
-            <div className="xsm:w-[50%] w-full">
+            <div className="w-full xsm:w-[50%]">
               {currencyB && currencyB.wrapped.address === WNATIVE[selectedChainId].address
                 ? isGetWETH
                   ? `W${NETWORKS[selectedChainId].nativeCurrency.name}`
                   : NETWORKS[selectedChainId].nativeCurrency.name
                 : tokenB?.symbol}
             </div>
-            <div className="xsm:w-[50%] mt-1 flex w-full items-center justify-between xsm:mt-0">
+            <div className="mt-1 flex w-full items-center justify-between xsm:mt-0 xsm:w-[50%]">
               <div className="flex items-center">
                 <TokenLogo
                   src={
@@ -543,8 +543,8 @@ export default function RemoveLiquidityPanel({
             </div>
           </div>
           <div className="mt-1 flex flex-wrap flex-wrap justify-between text-sm">
-            <div className="xsm:w-[50%] w-full">Liquidity token address</div>
-            <div className="xsm:w-[50%] mt-1 flex w-full items-center xsm:mt-0">
+            <div className="w-full xsm:w-[50%]">Liquidity token address</div>
+            <div className="mt-1 flex w-full items-center xsm:mt-0 xsm:w-[50%]">
               <img src={getExplorerLogo(selectedChainId)} alt={""} className="mr-2 h-5 w-5 rounded-full" />
               <a
                 className="max-w-[200px] flex-1 overflow-hidden text-ellipsis underline"

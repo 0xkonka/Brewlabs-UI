@@ -31,8 +31,7 @@ export function useDerivedBurnInfo(
   };
   error?: string;
 } {
-  const { account, chainId } = useActiveWeb3React();
-
+  const { chainId, account } = useActiveWeb3React();
   const { independentField, typedValue } = useBurnState();
 
   const { t } = useTranslation();
@@ -60,7 +59,8 @@ export function useDerivedBurnInfo(
     userLiquidity &&
     tokenA &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw) && JSBI.greaterThan(totalSupply.raw, JSBI.BigInt(0))
+    JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw) &&
+    JSBI.greaterThan(totalSupply.raw, JSBI.BigInt(0))
       ? new TokenAmount(tokenA, pair.getLiquidityValue(tokenA, totalSupply, userLiquidity, false).raw)
       : undefined;
   const liquidityValueB =
@@ -69,7 +69,8 @@ export function useDerivedBurnInfo(
     userLiquidity &&
     tokenB &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw) && JSBI.greaterThan(totalSupply.raw, JSBI.BigInt(0))
+    JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw) &&
+    JSBI.greaterThan(totalSupply.raw, JSBI.BigInt(0))
       ? new TokenAmount(tokenB, pair.getLiquidityValue(tokenB, totalSupply, userLiquidity, false).raw)
       : undefined;
   const liquidityValues: { [Field.CURRENCY_A]?: TokenAmount; [Field.CURRENCY_B]?: TokenAmount } = {

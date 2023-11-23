@@ -42,7 +42,7 @@ export const SYMBOL_VS_SWAP_TABLE = {
 };
 
 export const DEX_LOGOS = {
-  brewlabs: "/images/brewlabsRouter.png",
+  brewswap: "/images/brewlabsRouter.png",
   "pcs-v2": "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
   pancakeswap: "https://assets-stage.dex.guru/icons/56/0x10ED43C718714eb63d5aA57B78B54704E256024E.svg",
   pancakeswap_v3: "https://assets-stage.dex.guru/icons/56/0x10ED43C718714eb63d5aA57B78B54704E256024E.svg",

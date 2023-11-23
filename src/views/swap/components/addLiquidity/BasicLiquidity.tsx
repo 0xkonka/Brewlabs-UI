@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { TokenAmount, NATIVE_CURRENCIES, ROUTER_ADDRESS_MAP, EXCHANGE_MAP, Token, Pair } from "@brewlabs/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -76,6 +76,8 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
   const isValid = !error;
 
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false);
+  const [attemptingApproveATxn, setAttemptingApproveATxn] = useState<boolean>(false);
+  const [attemptingApproveBTxn, setAttemptingApproveBTxn] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
   const [burnWarningOpen, setBurnWarningOpen] = useState<boolean>(false);
   const [walletOpen, setWalletOpen] = useState(false);
@@ -144,7 +146,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
   const data = [
     {
       key: "Estimated token price",
-      value: `$${poolTokenPrice.toFixed(2)}`,
+      value: `$${poolTokenPrice.toFixed(4)}`,
     },
     {
       key: "Estimated pool starting marketcap",
@@ -169,7 +171,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
   const existingData = [
     {
       key: "Token price",
-      value: `$${poolTokenPrice.toFixed(2)}`,
+      value: `$${(pairData?.baseToken?.price ?? 0).toFixed(4)}`,
     },
     {
       key: "Liquidity performance",
@@ -419,6 +421,26 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
     }
   };
 
+  async function onApproveACallback() {
+    setAttemptingApproveATxn(true);
+    approveACallback()
+      .then((result) => setAttemptingApproveATxn(false))
+      .catch((e) => {
+        setAttemptingApproveATxn(false);
+        handleWalletError(e, showError);
+      });
+  }
+
+  async function onApproveBCallback() {
+    setAttemptingApproveBTxn(true);
+    approveBCallback()
+      .then((result) => setAttemptingApproveBTxn(false))
+      .catch((e) => {
+        setAttemptingApproveBTxn(false);
+        handleWalletError(e, showError);
+      });
+  }
+
   const isReferralFeeUpdatable = dynamicFees[0] === 0 || pairData?.referrer !== ethers.constants.AddressZero;
   const isStakingFeeUpdatable = dynamicFees[1] === 0 || pairData?.stakingPool !== ethers.constants.AddressZero;
   const isOwnerFeeUpdatable = dynamicFees[2] === 0 || pairData?.tokenOwner !== ethers.constants.AddressZero;
@@ -657,22 +679,22 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
               >
                 {approvalA !== ApprovalState.APPROVED && (
                   <SolidButton
-                    onClick={approveACallback}
-                    disabled={approvalA === ApprovalState.PENDING}
-                    pending={approvalA === ApprovalState.PENDING}
+                    onClick={onApproveACallback}
+                    disabled={attemptingApproveATxn}
+                    pending={attemptingApproveATxn}
                   >
-                    {approvalA === ApprovalState.PENDING
+                    {attemptingApproveATxn
                       ? `Approving ${currencies[Field.CURRENCY_A]?.symbol}`
                       : `Approve ${currencies[Field.CURRENCY_A]?.symbol}`}
                   </SolidButton>
                 )}
                 {approvalB !== ApprovalState.APPROVED && (
                   <SolidButton
-                    onClick={approveBCallback}
-                    disabled={approvalB === ApprovalState.PENDING}
-                    pending={approvalB === ApprovalState.PENDING}
+                    onClick={onApproveBCallback}
+                    disabled={attemptingApproveBTxn}
+                    pending={attemptingApproveBTxn}
                   >
-                    {approvalB === ApprovalState.PENDING
+                    {attemptingApproveBTxn
                       ? `Approving ${currencies[Field.CURRENCY_B]?.symbol}`
                       : `Approve ${currencies[Field.CURRENCY_B]?.symbol}`}
                   </SolidButton>
