@@ -29,7 +29,6 @@ export const useLPTokens = () => {
   const [lpTokens, setLPTokens] = useState(null);
 
   async function fetchLPInfo(data: any, chainId: ChainId) {
-    console.log(data);
     const pairInfos = await Promise.all(
       data.map(async (data) => {
         try {

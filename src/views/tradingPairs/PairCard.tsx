@@ -1,5 +1,6 @@
 import { Currency } from "@brewlabs/sdk";
 import { SkeletonComponent } from "@components/SkeletonComponent";
+import StyledPrice from "@components/StyledPrice";
 import { ChevronRightVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { DEXTOOLS_CHAINNAME } from "config";
@@ -55,7 +56,11 @@ export default function PairCard({ pair, setSelectedPair }) {
           )}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[2]} `}>
-          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
+          {isLoading ? (
+            <SkeletonComponent />
+          ) : (
+            <StyledPrice itemClassName="!text-[10px]" decimals={4} price={data.baseToken.price} />
+          )}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[3]} `}>
           {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}%`}
@@ -105,7 +110,12 @@ export default function PairCard({ pair, setSelectedPair }) {
         )}
         <div className="flex flex-wrap justify-between">
           <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} mr-4 mt-2`}>
-            Last Price: {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
+            Last Price:{" "}
+            {isLoading ? (
+              <SkeletonComponent />
+            ) : (
+              <StyledPrice itemClassName="!text-[10px]" decimals={4} price={data.baseToken.price} />
+            )}
           </div>
           <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} mt-2`}>
             24H Change:{" "}
