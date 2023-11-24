@@ -2,18 +2,19 @@ import { Currency, CurrencyAmount, Price, WNATIVE } from "@brewlabs/sdk";
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon } from "@heroicons/react/24/outline";
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import useTokenPrice from "hooks/useTokenPrice";
+import { useDexPrice } from "hooks/useTokenPrice";
 import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import CurrencySelectButton from "components/CurrencySelectButton";
 import NumericalInput from "./NumericalInput";
 import TradeCard from "./TradeCard";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import { defaultMarketData } from "state/prices/types";
 import { useDerivedSwapInfo } from "state/swap/hooks";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { Field } from "state/swap/actions";
 import { SwapContext } from "contexts/SwapContext";
+import { SkeletonComponent } from "@components/SkeletonComponent";
 
 interface CurrencyOutputPanelProps {
   value: string;
@@ -51,9 +52,10 @@ const CurrencyOutputPanel = ({
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
   const tokenMarketData = useTokenMarketChart(chainId);
   const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
-  const tokenPrice =
-    tokenMarketData?.[currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()]
-      ?.usd ?? 0;
+  const { price: tokenPrice } = useDexPrice(
+    chainId,
+    currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()
+  );
 
   const { v2Trade, parsedAmount } = useDerivedSwapInfo();
   const { isBrewRouter, setIsBrewRouter }: any = useContext(SwapContext);
@@ -109,8 +111,9 @@ const CurrencyOutputPanel = ({
             <CurrencySelectButton inputCurrencySelect={false} currencies={currencies} size={size} />
           </div>
           <div className="flex justify-between">
-            <div className="ml-1 text-sm opacity-40">
-              {value && tokenPrice ? new BigNumber(value).times(tokenPrice).toFixed(2) : "0.00"} USD
+            <div className="ml-1 flex text-sm opacity-40">
+              {value ? tokenPrice ? new BigNumber(value).times(tokenPrice).toFixed(2) : <SkeletonComponent /> : "0.00"}
+              &nbsp;USD
             </div>
             {currency && (
               <div className="ml-1">

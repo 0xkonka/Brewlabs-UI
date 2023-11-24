@@ -1,5 +1,6 @@
 import { Currency } from "@brewlabs/sdk";
 import { SkeletonComponent } from "@components/SkeletonComponent";
+import StyledPrice from "@components/StyledPrice";
 import { ChevronRightVG } from "@components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { DEXTOOLS_CHAINNAME } from "config";
@@ -7,9 +8,10 @@ import Link from "next/link";
 import { useTradingPair } from "state/pair/hooks";
 import { SerializedTradingPair } from "state/types";
 import { getAddLiquidityUrl, getChainLogo, numberWithCommas } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 export default function PairCard({ pair, setSelectedPair }) {
-  const width = ["w-14", "w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
+  const width = ["w-14", "w-[200px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
   const { data }: { data: SerializedTradingPair } = useTradingPair(pair.chainId, pair.address);
 
   const isLoading = !data.baseToken;
@@ -39,18 +41,10 @@ export default function PairCard({ pair, setSelectedPair }) {
             <SkeletonComponent />
           ) : (
             <div className="flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
-              <TokenLogo
-                src={`https://assets-stage.dex.guru/icons/${data.baseToken.address}-${
-                  DEXTOOLS_CHAINNAME[data.chainId]
-                }.png`}
-                alt={""}
-                classNames="h-7 w-7"
-              />
+              <TokenLogo src={getTokenLogoURL(data.baseToken.address, data.chainId)} alt={""} classNames="h-7 w-7" />
 
               <TokenLogo
-                src={`https://assets-stage.dex.guru/icons/${data.quoteToken.address}-${
-                  DEXTOOLS_CHAINNAME[data.chainId]
-                }.png`}
+                src={getTokenLogoURL(data.quoteToken.address, data.chainId)}
                 alt={""}
                 classNames="h-7 w-7 -ml-3 z-10"
               />
@@ -62,7 +56,11 @@ export default function PairCard({ pair, setSelectedPair }) {
           )}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[2]} `}>
-          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
+          {isLoading ? (
+            <SkeletonComponent />
+          ) : (
+            <StyledPrice itemClassName="!text-[10px]" decimals={4} price={data.baseToken.price} />
+          )}
         </div>
         <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} ${width[3]} `}>
           {isLoading ? <SkeletonComponent /> : `${numberWithCommas(data.baseToken.price24hChange.toFixed(2))}%`}
@@ -112,7 +110,12 @@ export default function PairCard({ pair, setSelectedPair }) {
         )}
         <div className="flex flex-wrap justify-between">
           <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} mr-4 mt-2`}>
-            Last Price: {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.baseToken.price.toFixed(2))}`}
+            Last Price:{" "}
+            {isLoading ? (
+              <SkeletonComponent />
+            ) : (
+              <StyledPrice itemClassName="!text-[10px]" decimals={4} price={data.baseToken.price} />
+            )}
           </div>
           <div className={`${data?.baseToken?.price24hChange >= 0 ? "text-green" : "text-danger"} mt-2`}>
             24H Change:{" "}

@@ -1,4 +1,4 @@
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { ChainId, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
 import { erc20ABI } from "wagmi";
 
@@ -14,6 +14,7 @@ import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
 import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
+import { bsc } from "contexts/wagmi";
 
 async function getNativeBalance(address: string, chainId: number) {
   let ethBalance = 0;
@@ -26,73 +27,26 @@ async function getTokenBaseBalances(account: string, chainId: number) {
   if (!isAddress(account) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString())) return [];
 
   let data: any = [];
-  if (chainId === 56) {
-    data = await axios.post(`${API_URL}/html/getTokenBalances`, { address: account, chainId });
-    data = data.data;
-  } else {
-    const { data: response } = await axios.get(
-      `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?`,
-      { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
-    );
-    if (response.error) return [];
-    const items = response.data.items;
-    data = items
-      .filter((i) => i.balance !== "0" || i.contract_address === DEX_GURU_WETH_ADDR)
-      .map((item) => {
-        return {
-          address: item.contract_address,
-          balance: item.balance / Math.pow(10, item.contract_decimals),
-          decimals: item.contract_decimals,
-          name: item.contract_name,
-          symbol: item.contract_ticker_symbol,
-        };
-      });
-
-    // fetch missing symbol & decimals
-    const calls = [];
-    data
-      .filter((i) => !i.name)
-      .forEach((element) => {
-        calls.push(
-          {
-            name: "name",
-            address: element.address,
-          },
-          {
-            name: "symbol",
-            address: element.address,
-          },
-          {
-            name: "decimals",
-            address: element.address,
-          }
-        );
-      });
-    const result = await multicall(ERC20_ABI, calls, chainId);
-
-    data = [
-      ...data.filter((i) => i.name),
-      ...data
-        .filter((i) => !i.name)
-        .map((item, index) => ({
-          address: item.address,
-          balance: item.balance / Math.pow(10, result[3 * index + 2][0]),
-          decimals: result[3 * index + 2][0],
-          name: result[3 * index][0],
-          symbol: result[3 * index + 1][0],
-        })),
-    ];
-  }
-  if (chainId === ChainId.BSC_MAINNET) {
-    const ethBalance = await getNativeBalance(account, chainId);
-    data.push({
-      address: DEX_GURU_WETH_ADDR,
-      balance: ethBalance / Math.pow(10, 18),
-      decimals: 18,
-      name: "Binance",
-      symbol: "BNB",
+  const { data: response } = await axios.get(
+    `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?`,
+    { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
+  );
+  if (response.error) return [];
+  const items = response.data.items;
+  data = items
+    .filter((i) => i.balance !== "0" || i.contract_address === DEX_GURU_WETH_ADDR)
+    .map((item) => {
+      return {
+        address: item.contract_address,
+        balance: item.balance / Math.pow(10, item.contract_decimals),
+        decimals: item.contract_decimals,
+        name: item.contract_name,
+        symbol: item.contract_ticker_symbol,
+        isScam: item.is_spam,
+      };
     });
-  }
+
+  // fetch missing symbol & decimals
   if (!data.length) {
     data.push({
       address: DEX_GURU_WETH_ADDR,
@@ -104,22 +58,6 @@ async function getTokenBaseBalances(account: string, chainId: number) {
   }
   return data;
 }
-
-const isScamToken = async (token: any, signer: any, chainId: number) => {
-  let isScam = false;
-
-  if (!token.name?.includes("_Tracker")) {
-    try {
-      if (signer && token.address !== DEX_GURU_WETH_ADDR) {
-        const tokenContract = getContract(chainId, token.address, erc20ABI, signer);
-        await tokenContract.estimateGas.transfer("0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 1);
-      }
-    } catch (error) {
-      isScam = true;
-    }
-  }
-  return isScam;
-};
 
 const fetchTokenInfo = async (token: any, chainId: number, address: string, signer: any) => {
   try {
@@ -150,15 +88,15 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string, sign
         const rewardTokenBaseinfo = await fetchTokenBaseInfo(rewardTokenAddress, chainId);
         rewardToken = {
           address: rewardTokenAddress,
-          name: rewardTokenBaseinfo[0][0],
-          symbol: rewardTokenBaseinfo[1][0],
-          decimals: rewardTokenBaseinfo[2][0],
+          name: rewardTokenBaseinfo[0][0] ?? "",
+          symbol: rewardTokenBaseinfo[1][0] ?? "",
+          decimals: rewardTokenBaseinfo[2][0] ?? 0,
         };
       } catch (e) {
         rewardToken = {
           address: "0x0",
-          name: getNativeSybmol[chainId],
-          symbol: getNativeSybmol[chainId],
+          name: getNativeSybmol(chainId),
+          symbol: getNativeSybmol(chainId),
           decimals: 18,
         };
       }
@@ -186,11 +124,8 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string, sign
       isReward = true;
     } catch (e) {}
 
-    let scamResult: any = await isScamToken(token, signer, chainId);
-
     return {
       reward,
-      isScam: scamResult !== undefined ? scamResult : token.isScam,
       isReward,
     };
   } catch (error) {

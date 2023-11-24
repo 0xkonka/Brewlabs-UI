@@ -2,8 +2,10 @@ import { useContext, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import axios from "axios";
-import { DEX_GURU_CHAIN_NAME } from "config";
+import { DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
 import { useSlowRefreshEffect } from "./useRefreshEffect";
+import { API_URL } from "config/constants";
+import { isAddress } from "utils";
 
 export const useTokenPrices = () => {
   const { tokenPrices } = useContext(TokenPriceContext);
@@ -23,14 +25,14 @@ const useTokenPrice = (chainId: ChainId, address: string | undefined, isLiquidit
 
 export async function fetchDexGuruPrice(chainId: number, address: string) {
   try {
-    const { data: response } = await axios.post("https://api.dex.guru/v3/tokens", {
-      ids: [`${address}-${DEX_GURU_CHAIN_NAME[chainId]}`],
-      limit: 1,
-      network: DEX_GURU_CHAIN_NAME[chainId],
+    if (!isAddress(address)) return 0;
+
+    const { data: response } = await axios.post(`${API_URL}/chart/getDexData`, {
+      url: `https://api.dextools.io/v1/token?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${address}&page=1&pageSize=5`,
     });
-    return response.data[0].priceUSD;
+    return response.result.data.reprPair.price;
   } catch (e) {
-    console.log(e);
+    console.log(e, address, chainId);
     return 0;
   }
 }
@@ -38,9 +40,7 @@ export const useDexPrice = (chainId: number, address: string) => {
   const [price, setPrice] = useState(null);
 
   useSlowRefreshEffect(() => {
-    fetchDexGuruPrice(chainId, address)
-      .then((result) => setPrice(result))
-      .catch((e) => console.log(e));
+    fetchDexGuruPrice(chainId, address).then((result) => setPrice(result));
   }, [chainId, address]);
 
   return { price };

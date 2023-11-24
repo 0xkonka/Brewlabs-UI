@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
 import { getAddress } from "ethers/lib/utils.js";
-import { useAccount } from "wagmi";
 
 import { ERC20_ABI } from "config/abi/erc20";
 
 import { DEXSCREENER_CHAINNAME } from "config";
-import { API_URL } from "config/constants";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAppDispatch } from "state";
 import { useTokenMarketChart } from "state/prices/hooks";
@@ -15,13 +13,14 @@ import { fetchTokenBalancesAsync } from "state/wallet";
 import { useUserLpTokenData } from "state/wallet/hooks";
 import multicall from "utils/multicall";
 import { useSigner } from "utils/wagmi";
+import { useAccount } from "wagmi";
+import { API_URL } from "config/constants";
 
 export const useLPTokens = () => {
   const dispatch = useAppDispatch();
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  // const account = "0xa3913CBaBc05FA44a5F03d62950c0F28d49CcA15";
   const { data: signer } = useSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
@@ -30,7 +29,6 @@ export const useLPTokens = () => {
   const [lpTokens, setLPTokens] = useState(null);
 
   async function fetchLPInfo(data: any, chainId: ChainId) {
-    console.log(data);
     const pairInfos = await Promise.all(
       data.map(async (data) => {
         try {
@@ -67,9 +65,10 @@ export const useLPTokens = () => {
               ...pair,
               baseToken: { ...pair.baseToken, decimals: result[0][0] },
               quoteToken: { ...pair.quoteToken, decimals: result[1][0] },
+              a: pair.dexId,
             };
           }
-
+          console.log(pair);
           return {
             timeStamp: Math.floor(pair.pairCreatedAt / 1000),
             address: getAddress(data.address),
@@ -80,6 +79,7 @@ export const useLPTokens = () => {
             price: pair.liquidity.quote,
             volume: pair.volume.h24 ?? 0,
             chainId,
+            a: pair.a,
           };
         } catch (e) {
           console.log(e);

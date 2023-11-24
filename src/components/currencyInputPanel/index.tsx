@@ -1,12 +1,12 @@
 import { Currency, CurrencyAmount, WNATIVE } from "@brewlabs/sdk";
 import BigNumber from "bignumber.js";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import useTokenPrice from "hooks/useTokenPrice";
+import { useDexPrice } from "hooks/useTokenPrice";
 import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
 
 import CurrencySelectButton from "components/CurrencySelectButton";
 import NumericalInput from "./NumericalInput";
-import { useTokenMarketChart } from "state/prices/hooks";
+import { SkeletonComponent } from "@components/SkeletonComponent";
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -37,10 +37,10 @@ const CurrencyInputPanel = ({
   size,
 }: CurrencyInputPanelProps) => {
   const { chainId } = useActiveWeb3React();
-  const tokenMarketData = useTokenMarketChart(chainId);
-  const tokenPrice =
-    tokenMarketData?.[currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()]
-      ?.usd ?? 0;
+  const { price: tokenPrice } = useDexPrice(
+    chainId,
+    currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()
+  );
 
   return (
     <div className={`${size === "sm" ? "" : "sm:pr-4 lg:ml-6"} ml-0 py-2 pl-4 pr-2`}>
@@ -65,8 +65,9 @@ const CurrencyInputPanel = ({
           />
         </div>
         <div className="flex justify-between">
-          <div className="ml-1 text-sm opacity-40">
-            {value && tokenPrice ? new BigNumber(value).times(tokenPrice).toFixed(2) : "0.00"} USD
+          <div className="ml-1 flex text-sm opacity-40">
+            {value ? tokenPrice ? new BigNumber(value).times(tokenPrice).toFixed(2) : <SkeletonComponent /> : "0.00"}
+            &nbsp;USD
           </div>
           {currency && (
             <div className="ml-1">

@@ -211,7 +211,6 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.ETHEREUM]: [tokens[ChainId.ETHEREUM].weth, tokens[ChainId.ETHEREUM].usdt],
   [ChainId.BSC_MAINNET]: [
     tokens[ChainId.BSC_MAINNET].wbnb,
-    tokens[ChainId.BSC_MAINNET].brews,
     tokens[ChainId.BSC_MAINNET].dai,
     tokens[ChainId.BSC_MAINNET].busd,
     tokens[ChainId.BSC_MAINNET].usdt,

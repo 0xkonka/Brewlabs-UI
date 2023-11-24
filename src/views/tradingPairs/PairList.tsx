@@ -7,7 +7,7 @@ import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
 const headers = ["Network", "Pair", "Token Price", "24h Change", "24h Volume", "TVL", "Fees Collected"];
 
 export default function PairList({ selectedPair, setSelectedPair }) {
-  const width = ["w-14", "w-[160px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
+  const width = ["w-14", "w-[200px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
 
   const [criteria, setCriteria] = useState("");
   const [wrappedPairs, setWrappedPairs] = useState([]);
@@ -27,11 +27,11 @@ export default function PairList({ selectedPair, setSelectedPair }) {
     setWrappedPairs(
       pairs.filter(
         (pair) =>
-          pair.address.toLowerCase().includes(criteria) ||
-          pair.baseToken.address.toLowerCase().includes(criteria) ||
-          pair.baseToken.symbol.toLowerCase().includes(criteria) ||
-          pair.quoteToken.address.toLowerCase().includes(criteria) ||
-          pair.quoteToken.symbol.toLowerCase().includes(criteria)
+          pair.address?.toLowerCase().includes(criteria) ||
+          pair.baseToken?.address.toLowerCase().includes(criteria) ||
+          pair.baseToken?.symbol.toLowerCase().includes(criteria) ||
+          pair.quoteToken?.address.toLowerCase().includes(criteria) ||
+          pair.quoteToken?.symbol.toLowerCase().includes(criteria)
       )
     );
   }, [stringifiedPairs, criteria]);

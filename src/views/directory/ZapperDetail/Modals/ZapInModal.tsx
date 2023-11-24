@@ -108,6 +108,12 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
     }
   };
 
+  async function onApproveCallback() {
+    approveCallback()
+      .then((result) => "")
+      .catch((e) => console.log(e));
+  }
+
   return (
     <AnimatePresence exitBeforeEnter>
       <Dialog
@@ -211,7 +217,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                   {inputError ? (
                     <StyledButton disabled>{t(inputError)}</StyledButton>
                   ) : approval <= ApprovalState.PENDING ? (
-                    <StyledButton onClick={approveCallback}>
+                    <StyledButton onClick={onApproveCallback}>
                       {approval === ApprovalState.PENDING ? t("Approving") : t("Approve")}
                     </StyledButton>
                   ) : (

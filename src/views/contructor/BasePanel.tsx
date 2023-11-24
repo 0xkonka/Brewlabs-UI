@@ -35,18 +35,13 @@ const LoadingText = () => {
 
 export function TokenItem({ data, i }) {
   const isNew = data.timeStamp >= Date.now() / 1000 - 3600 * 24;
-
   return (
     <div className="mx-2 my-1.5 rounded-[30px] border border-[#FFFFFF80] p-[20px_12px_20px_12px] transition-all duration-300 hover:border-yellow sm:mx-4 sm:my-2.5  sm:p-6">
       <ReactTooltip anchorId={"appValue" + i} place="top" content="Approximate value in USD" />
       <div className="flex items-center justify-between ">
         <div className="mx-auto flex items-center xmd:mx-0">
           <img src={getChainLogo(data.chainId)} alt={""} className="h-10 w-10 rounded-full border border-black" />
-          <img
-            src={getDexLogo(EXCHANGE_MAP[data.chainId][0]?.id)}
-            alt={""}
-            className="-ml-3 mr-3 h-10 w-10 rounded-full sm:mr-5"
-          />
+          <img src={getDexLogo(data.a)} alt={""} className="-ml-3 mr-3 h-10 w-10 rounded-full sm:mr-5" />
 
           <div className="relative mr-3 hidden w-[34px] flex-col items-center text-[#EEBB19] xmd:flex sm:mr-5">
             {isNew ? (

@@ -1,5 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
+import { API_URL } from "config/constants";
 import { ROUTER_SUBGRAPH_NAMES } from "config/constants/swap";
 import { ethers } from "ethers";
 import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
@@ -10,150 +11,12 @@ function getPriceByTx(tx) {
   return { price0: tx.amountUSD / amount0, price1: tx.amountUSD / amount1 };
 }
 export async function getTradingPair(chainId, pair) {
-  let query = `{
-    pair(
-      id: "${pair.toLowerCase()}"
-    ) {
-      id
-      token0 {
-        decimals
-        id
-        name
-        symbol
-      }
-      token1 {
-        decimals
-        id
-        name
-        symbol
-      }
-      reserveETH
-    }
-  }`;
-
-  const { data: response } = await axios.post(
-    `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
-    {
-      query,
-    }
-  );
-
-  const pairData = response.data.pair;
-  if (!pairData) return {};
-
-  const wrappedPairData = {
-    ...pairData,
-    address: pairData.id,
-    token0: { ...pairData.token0, address: pairData.token0.id },
-    token1: { ...pairData.token1, address: pairData.token1.id },
-    chainId,
-  };
-  const default_value = {
-    pair: wrappedPairData,
-    price: { price0: 0, price1: 0 },
-    price24h: { price24h0: 0, price24h1: 0 },
-    price24hChange: { price24hChange0: 0, price24hChange1: 0 },
-    volume24h: 0,
-    tvl: 0,
-    feesCollected: 0,
-  };
-
-  if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString())) return default_value;
-  try {
-    query = `{
-      swaps(
-        where: {pair_: {id: "${pair.toLowerCase()}"}}
-        first: 1
-        orderBy: timestamp
-        orderDirection: desc
-      ) {
-        amount1In
-        amount0In
-        amount0Out
-        amount1Out
-        amountUSD
-        timestamp
-        pair {
-          reserveUSD
-        }
-      }
-  }`;
-    const { data: response } = await axios.post(
-      `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
-      {
-        query,
-      }
-    );
-    let swaps = response.data.swaps;
-    if (!swaps.length) return default_value;
-    const timestamp = Math.floor(Date.now() / 1000 - 86400);
-
-    const tvl = Number(swaps[0].pair.reserveUSD);
-
-    if (timestamp >= swaps[0].timestamp) {
-      const price = getPriceByTx(swaps[0]);
-      return {
-        pair: wrappedPairData,
-        price,
-        price24h: { price24h0: 0, price24h1: 0 },
-        price24hChange: { price24hChange0: 0, price24hChange1: 0 },
-        volume24h: 0,
-        tvl,
-        feesCollected24h: 0,
-      };
-    }
-
-    let totalSwaps = [],
-      index = 0;
-    swaps = [];
-
-    do {
-      query = `{
-        swaps(
-          where: {pair_: {id: "${pair.toLowerCase()}"}, timestamp_gte: "${timestamp}"}
-          first: 1000
-          skip:${1000 * index}
-          orderBy: timestamp
-        ) {
-          amount1In
-          amount0In
-          amount0Out
-          amount1Out
-          amountUSD
-          amountFeeUSD
-          timestamp
-        
-        }
-      }`;
-      const { data: response } = await axios.post(
-        `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
-        { query }
-      );
-
-      swaps = response.data.swaps;
-      totalSwaps = [...totalSwaps, ...swaps];
-      index++;
-    } while (swaps.length === 1000);
-
-    let price = getPriceByTx(totalSwaps[totalSwaps.length - 1]),
-      price24h = { price24h0: getPriceByTx(totalSwaps[0]).price0, price24h1: getPriceByTx(totalSwaps[0]).price1 },
-      volume24h = 0,
-      feesCollected24h = 0;
-    const price24hChange = {
-      price24hChange0: price24h.price24h0 ? (price.price0 - price24h.price24h0) * price.price0 * 100 : 0,
-      price24hChange1: price24h.price24h1 ? (price.price1 - price24h.price24h1) * price.price1 * 100 : 0,
-    };
-
-    for (let i = 0; i < totalSwaps.length; i++) {
-      volume24h += Number(totalSwaps[i].amountUSD);
-      feesCollected24h += Number(totalSwaps[i].amountFeeUSD);
-    }
-
-    return { price, price24h, price24hChange, volume24h, tvl, feesCollected24h, pair: wrappedPairData };
-  } catch (e) {
-    console.log(e);
-    return default_value;
+  const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${pair}`;
+  const { data: brewPairs } = await axios.get(brewSwapUrl);
+  if (brewPairs.length) {
+    return brewPairs[0];
   }
+  return null;
 }
 
 export async function getTradingAllPairs(chainId: ChainId) {
@@ -251,10 +114,10 @@ export async function getTradingPairHistories(chainId, period) {
       index++;
     } while (swaps.length === 1000);
 
-    let j = 0;
+    let j = 0,
+      v = 0,
+      fee = 0;
     for (let i = 1; i <= 10; i++) {
-      let v = 0,
-        fee = 0;
       while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) <= timestamp + (period / 10) * i) {
         v += Number(totalSwaps[j].amountUSD);
         fee += Number(totalSwaps[j].amountFeeUSD);
