@@ -11,8 +11,9 @@ const initialState: PairState = {
 };
 
 export const fetchTradingPairAsync = (chainId: ChainId, address: string) => async (dispatch) => {
-  const data = await getTradingPair(chainId, address);
-  dispatch(setPairData({ chainId, address, data }));
+  const pair = await getTradingPair(chainId, address);
+  if (!pair) return;
+  dispatch(setPairData({ chainId, address, pair }));
 };
 
 export const fetchTradingPairFeesAsync = (chainId: ChainId, address: string) => async (dispatch) => {
@@ -30,39 +31,9 @@ export const PairSlice = createSlice({
   initialState,
   reducers: {
     setPairData: (state: any, action) => {
-      const { chainId, data } = action.payload;
+      const { chainId, pair } = action.payload;
       if (!state.tradingPairs[chainId]) state.tradingPairs[chainId] = {};
-      const pair = data.pair;
-      if (pair) {
-        const isBaseToken0 = BASES_TO_TRACK_LIQUIDITY_FOR[chainId].find(
-          (token) => token.address.toLowerCase() === pair.token0.address
-        );
-        let baseToken: any = !isBaseToken0 ? pair.token0 : pair.token1,
-          quoteToken: any = !isBaseToken0 ? pair.token1 : pair.token0;
-
-        baseToken = {
-          ...baseToken,
-          price: !isBaseToken0 ? data.price.price0 : data.price.price1,
-          price24h: !isBaseToken0 ? data.price24h.price24h0 : data.price24h.price24h1,
-          price24hChange: !isBaseToken0 ? data.price24hChange.price24hChange0 : data.price24hChange.price24hChange1,
-        };
-
-        quoteToken = {
-          ...quoteToken,
-          price: isBaseToken0 ? data.price.price0 : data.price.price1,
-          price24h: isBaseToken0 ? data.price24h.price24h0 : data.price24h.price24h1,
-          price24hChange: isBaseToken0 ? data.price24hChange.price24hChange0 : data.price24hChange.price24hChange1,
-        };
-
-        state.tradingPairs[chainId][pair.address] = {
-          ...state.tradingPairs[chainId][pair.address],
-          baseToken,
-          quoteToken,
-          volume24h: data.volume24h,
-          tvl: data.tvl,
-          feesCollected24h: data.feesCollected24h,
-        };
-      }
+      state.tradingPairs[chainId][pair.address] = pair;
     },
     setPairs: (state, action) => {
       const { chainId, pairs } = action.payload;
