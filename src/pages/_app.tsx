@@ -56,6 +56,7 @@ import NavigationMobile from "components/navigation/NavigationMobile";
 import LoadingPage from "components/LoadingPage";
 
 import { Updaters } from "../index";
+import { useDexPairs } from "state/chart/hooks";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -89,6 +90,8 @@ function GlobalHooks() {
   useFetchTokenBalance(account, chainId, signer);
 
   useTradingAllPairs();
+
+  useDexPairs("0xD8A8442013f071bB118C3C3e03f6D07576d85a53", "ethereum");
 
   return null;
 }

@@ -1,25 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ChevronDownSVG } from "@components/dashboard/assets/svgs";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect, useRef } from "react";
 
 const DropDown = ({
+  defaultValue = null,
   value,
   setValue,
   data,
   className,
   bodyClassName,
   itemClassName,
+  chevronClassName,
   rounded = "8px",
   height = "30px",
   isBorder,
 }: {
+  defaultValue?: string;
   setValue?: any;
   value: number;
   data: any[];
   className?: string;
   bodyClassName?: string;
   itemClassName?: string;
+  chevronClassName?: string;
   rounded?: string;
   height?: string;
   isBorder?: boolean;
@@ -44,8 +47,12 @@ const DropDown = ({
       ref={dropRef}
       onClick={() => setOpen(!open)}
     >
-      <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{data[value]}</div>
-      <div className={`${open ? "-scale-y-100" : ""} [&>svg]:!h-3 [&>svg]:!w-3`}>{ChevronDownSVG}</div>
+      <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+        {value === -1 ? defaultValue : data[value]}
+      </div>
+      <div className={`${open ? "-scale-y-100" : ""} [&>svg]:!h-3 [&>svg]:!w-3 ${chevronClassName}`}>
+        {ChevronDownSVG}
+      </div>
 
       <div
         className={`primary-shadow absolute  left-0 w-full overflow-hidden bg-[linear-gradient(180deg,#ffcc32,#e5cc7e)] transition-all ${bodyClassName}`}

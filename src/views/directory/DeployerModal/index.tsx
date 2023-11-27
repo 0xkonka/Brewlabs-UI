@@ -12,6 +12,7 @@ import StyledButton from "../StyledButton";
 import FarmDeployer from "./FarmDeployer";
 import PoolDeployer from "./PoolDeployer";
 import IndexDeployer from "./IndexDeployer";
+import TokenDeployer from "./TokenDeployer";
 
 const responsive = {
   desktop: {
@@ -70,7 +71,7 @@ const HeroSection = ({
           customRightArrow={<CustomRightArrow onClick={undefined} />}
           customLeftArrow={<CustomLeftArrow onClick={undefined} />}
         >
-          {[/*"Staking Pool",*/ "Yield Farm", "Index" /*, "Token"*/].map((data, i) => {
+          {[/*"Staking Pool",*/ "Yield Farm", "Index", "Token"].map((data, i) => {
             return (
               <DeployItem
                 key={i}
@@ -159,7 +160,7 @@ const DeployerModal = ({
               ) : deployType === "Index" ? (
                 <IndexDeployer setOpen={setOpen} step={step} setStep={setStep} />
               ) : (
-                ""
+                <TokenDeployer setOpen={setOpen} step={step} setStep={setStep} />
               )}
 
               <button

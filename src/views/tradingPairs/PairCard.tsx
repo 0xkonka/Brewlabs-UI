@@ -72,11 +72,7 @@ export default function PairCard({ pair, setSelectedPair }) {
           {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.tvl.toFixed(2))}`}
         </div>
         <div className={`${width[6]} `}>
-          {isLoading || !data.feesCollected24h ? (
-            <SkeletonComponent />
-          ) : (
-            `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`
-          )}
+          {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`}
         </div>
       </Link>
 
@@ -133,11 +129,7 @@ export default function PairCard({ pair, setSelectedPair }) {
         <div className="flex flex-wrap justify-between">
           <div className="mr-4 mt-2">
             Fees Collected:{" "}
-            {isLoading || !data.feesCollected24h ? (
-              <SkeletonComponent />
-            ) : (
-              `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`
-            )}
+            {isLoading ? <SkeletonComponent /> : `$${numberWithCommas(data.feesCollected24h.toFixed(2))}`}
           </div>
         </div>
       </div>
