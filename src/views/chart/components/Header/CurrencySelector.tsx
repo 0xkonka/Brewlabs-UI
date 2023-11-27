@@ -94,7 +94,7 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
                   </span>
                 ) : (
                   <span className="flex items-center text-danger">
-                    {Math.abs(pair.priceChange.h24).toFixed(3)}%{" "}
+                    {Math.abs(pair.priceChange.h24 ?? 0).toFixed(3)}%{" "}
                     <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
                   </span>
                 )}

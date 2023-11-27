@@ -3,6 +3,17 @@ import { useSelector } from "react-redux";
 import { State } from "../types";
 import { ChainId } from "@brewlabs/sdk";
 import { SerializedPairData } from "./type";
+import { useAppDispatch } from "state";
+import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
+import { fetchPairsAsync } from ".";
+
+export const useDexPairs = (pair, chain) => {
+  const dispatch = useAppDispatch();
+
+  useSlowRefreshEffect(() => {
+    dispatch(fetchPairsAsync(pair, chain, "simple"));
+  }, [dispatch, pair, chain]);
+};
 
 export const usePairInfo = (chainId: ChainId, address: string): SerializedPairData => {
   const pair = useSelector((state: State) => state.chart.pairs[chainId]?.[address.toLowerCase()]);
