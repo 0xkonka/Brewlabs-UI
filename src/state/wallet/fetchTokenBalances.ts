@@ -33,12 +33,22 @@ async function getTokenBaseBalances(account: string, chainId: number) {
   );
   if (response.error) return [];
   const items = response.data.items;
+  const calls = items
+    .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
+    .map((item) => ({
+      name: "balanceOf",
+      params: [account],
+      address: item.contract_address,
+    }));
+
+  const balanceResult = await multicall(ERC20_ABI, calls, chainId);
+
   data = items
-    .filter((i) => i.balance !== "0" || i.contract_address === DEX_GURU_WETH_ADDR)
-    .map((item) => {
+    .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
+    .map((item, i) => {
       return {
         address: item.contract_address,
-        balance: item.balance / Math.pow(10, item.contract_decimals),
+        balance: balanceResult[i] / Math.pow(10, item.contract_decimals),
         decimals: item.contract_decimals,
         name: item.contract_name,
         symbol: item.contract_ticker_symbol,
@@ -167,6 +177,7 @@ export async function getTokenBalances(account: string, chainId: ChainId, tokenM
         chainId,
       });
     }
+
     return _tokens;
   } catch (error) {
     console.log(error);
