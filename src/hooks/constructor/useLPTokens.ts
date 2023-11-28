@@ -21,8 +21,8 @@ export const useLPTokens = () => {
   const dispatch = useAppDispatch();
 
   const { chainId } = useActiveChainId();
-  // const { address: account } = useAccount();
-  const account = "0xcae3f0b9bebdd3085d817e09e65d55f010b023c8";
+  const { address: account } = useAccount();
+  // const account = "0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799";
   const { data: signer } = useSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
@@ -43,6 +43,7 @@ export const useLPTokens = () => {
             pair = {
               ...pair,
               liquidity: { ...pair.liquidity, quote: pair.liquidity.usd / (pair.totalSupply ?? 1) },
+              a: "brewlabs",
             };
           } else {
             const url = `https://io.dexscreener.com/dex/search/pairs?q=${data.address}&s=2`;
@@ -85,7 +86,7 @@ export const useLPTokens = () => {
             price: pair.liquidity.usd / pair.totalSupply,
             volume: pair.volume.h24 ?? 0,
             chainId,
-            a: pair.a,
+            a: pair.a === "pancakeswap" ? "pcs-v2" : pair.a === "uniswap" ? "uniswap-v2" : pair.a,
           };
         } catch (e) {
           console.log(e);

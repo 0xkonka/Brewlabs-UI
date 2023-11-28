@@ -1,4 +1,4 @@
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { ChainId, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
 
 import claimableTokenAbi from "config/abi/claimableToken.json";
@@ -52,18 +52,18 @@ async function getTokenBaseBalances(account: string, chainId: number) {
         symbol: item.contract_ticker_symbol,
         isScam: item.is_spam,
       };
-    });
+    })
+    .filter((item) => item.balance > 0);
 
-  // fetch missing symbol & decimals
-  if (!data.length) {
-    data.push({
-      address: DEX_GURU_WETH_ADDR,
-      balance: 0,
-      decimals: 18,
-      name: WNATIVE[chainId].name,
-      symbol: WNATIVE[chainId].symbol,
-    });
-  }
+  const ethBalance = await getNativeBalance(account, chainId);
+
+  data.push({
+    address: DEX_GURU_WETH_ADDR,
+    balance: ethBalance / Math.pow(10, 18),
+    decimals: 18,
+    name: NATIVE_CURRENCIES[chainId].name,
+    symbol: NATIVE_CURRENCIES[chainId].symbol,
+  });
   return data;
 }
 

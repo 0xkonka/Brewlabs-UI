@@ -87,7 +87,7 @@ function GlobalHooks() {
 
   useFetchMarketData();
 
-  useFetchTokenBalance("0xcae3f0b9bebdd3085d817e09e65d55f010b023c8", chainId, signer);
+  useFetchTokenBalance(account, chainId, signer);
 
   useTradingAllPairs();
 

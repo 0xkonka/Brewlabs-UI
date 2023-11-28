@@ -51,8 +51,7 @@ import SetWalletModal from "./SetWalletModal";
 
 export default function BasicLiquidity({ currencyA: currencyA_ = undefined, currencyB: currencyB_ = undefined }) {
   const dispatch = useAppDispatch();
-  const { chainId, library } = useActiveWeb3React();
-  const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
+  const { chainId, library, account } = useActiveWeb3React();
   const { data: signer } = useSigner();
 
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -220,6 +219,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
     { key: "Total dynamic pool fee", value: `${(dynamicFees[0] + dynamicFees[1] + dynamicFees[2]).toFixed(2)}%` },
   ];
 
+
   useEffect(() => {
     const setValue = (value) => {
       setIsOwner(value);
@@ -239,7 +239,6 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
     }
   }, [chainId, account, pairData.tokenOwner]);
 
-  console.log(isOwner, pairData);
 
   useEffect(() => {
     setDynamicFees([referralFee, stakingFee, tokenOwnerFee]);

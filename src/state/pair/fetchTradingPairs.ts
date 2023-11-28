@@ -11,7 +11,7 @@ function getPriceByTx(tx) {
   return { price0: tx.amountUSD / amount0, price1: tx.amountUSD / amount1 };
 }
 export async function getTradingPair(chainId, pair) {
-  const brewSwapUrl = `http://localhost:5050/api/chart/search/pairs?q=${pair}`;
+  const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${pair}`;
   const { data: brewPairs } = await axios.get(brewSwapUrl);
   if (brewPairs.length) {
     return brewPairs[0];
