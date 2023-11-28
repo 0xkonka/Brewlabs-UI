@@ -51,7 +51,8 @@ import SetWalletModal from "./SetWalletModal";
 
 export default function BasicLiquidity({ currencyA: currencyA_ = undefined, currencyB: currencyB_ = undefined }) {
   const dispatch = useAppDispatch();
-  const { account, chainId, library } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
+  const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
   const { data: signer } = useSigner();
 
   const { pending, setPending }: any = useContext(DashboardContext);
@@ -237,6 +238,8 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
       );
     }
   }, [chainId, account, pairData.tokenOwner]);
+
+  console.log(isOwner, pairData);
 
   useEffect(() => {
     setDynamicFees([referralFee, stakingFee, tokenOwnerFee]);

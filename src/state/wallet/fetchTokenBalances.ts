@@ -12,6 +12,7 @@ import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
 import { getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
+import { ERC20_ABI } from "config/abi/erc20";
 
 async function getNativeBalance(address: string, chainId: number) {
   let ethBalance = 0;

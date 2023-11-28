@@ -21,7 +21,8 @@ export const useLPTokens = () => {
   const dispatch = useAppDispatch();
 
   const { chainId } = useActiveChainId();
-  const { address: account } = useAccount();
+  // const { address: account } = useAccount();
+  const account = "0xcae3f0b9bebdd3085d817e09e65d55f010b023c8";
   const { data: signer } = useSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
