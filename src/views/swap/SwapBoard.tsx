@@ -1,21 +1,20 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useUserSlippageTolerance } from "state/user/hooks";
 
-import { Tooltip as ReactTooltip } from "react-tooltip";
-
-import SubNav from "./components/nav/SubNav";
-import ChainSelect from "./components/ChainSelect";
-import SettingModal from "./components/modal/SettingModal";
-import Modal from "components/Modal";
 import { SwapContext } from "contexts/SwapContext";
-import SwapPanel from "./SwapPanel";
-import AddLiquidityPanel from "./AddLiquidityPanel";
-import SwapRewards from "./components/SwapRewards";
 import { NFTSVG } from "@components/dashboard/assets/svgs";
+import Modal from "components/Modal";
 import Security from "@components/SwapComponents/Security";
 import SlippageText from "@components/SwapComponents/SlippageText";
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useDerivedSwapInfo } from "state/swap/hooks";
+
+import ChainSelect from "./components/ChainSelect";
+import SettingModal from "./components/modal/SettingModal";
+import SubNav from "./components/nav/SubNav";
+
+import AddLiquidityPanel from "./AddLiquidityPanel";
+import SwapPanel from "./SwapPanel";
+import SwapRewards from "./components/SwapRewards";
 
 export default function SwapBoard({ type = "swap", disableChainSelect = false }) {
   const {
@@ -32,9 +31,6 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
 
   // txn values
   const [, setUserSlippageTolerance] = useUserSlippageTolerance();
-  const [swapType, setSwapType] = useState(0);
-  const { chainId } = useActiveChainId();
-  const { currencies } = useDerivedSwapInfo();
 
   const parseCustomSlippage = (value: string) => {
     setSlippageInput(value);
