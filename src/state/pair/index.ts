@@ -33,7 +33,7 @@ export const PairSlice = createSlice({
     setPairData: (state: any, action) => {
       const { chainId, pair } = action.payload;
       if (!state.tradingPairs[chainId]) state.tradingPairs[chainId] = {};
-      state.tradingPairs[chainId][pair.address] = pair;
+      state.tradingPairs[chainId][pair.address] = {...state.tradingPairs[chainId][pair.address], ...pair};
     },
     setPairs: (state, action) => {
       const { chainId, pairs } = action.payload;

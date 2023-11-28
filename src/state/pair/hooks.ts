@@ -21,7 +21,7 @@ export const useTradingPair = (chainId, address) => {
 
 export const useTradingAllPairs = () => {
   const dispatch = useAppDispatch();
-  useEffect(() => {
+  useFastRefreshEffect(() => {
     dispatch(fetchTradingAllPairAsync(ChainId.POLYGON));
     dispatch(fetchTradingAllPairAsync(ChainId.BSC_MAINNET));
   }, [dispatch]);

@@ -37,6 +37,7 @@ import OutlinedButton from "views/swap/components/button/OutlinedButton";
 import SolidButton from "views/swap/components/button/SolidButton";
 
 import StyledSlider from "./StyledSlider";
+import Link from "next/link";
 
 export default function RemoveLiquidityPanel({
   onBack,
@@ -596,9 +597,11 @@ export default function RemoveLiquidityPanel({
             </SolidButton>
           )}
         </div>
-        <OutlinedButton small onClick={onBack}>
-          Back
-        </OutlinedButton>
+        <Link href={"/constructor"}>
+          <OutlinedButton small onClick={onBack}>
+            Back
+          </OutlinedButton>
+        </Link>
       </div>
     </div>
   );
