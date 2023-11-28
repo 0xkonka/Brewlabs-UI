@@ -1,20 +1,17 @@
-import { ChainId, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
-import { erc20ABI } from "wagmi";
 
-import { ERC20_ABI } from "config/abi/erc20";
 import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME } from "config";
-import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
+import { DEX_GURU_WETH_ADDR } from "config/constants";
 import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrices";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
-import { getContract, getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
+import { getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
-import { bsc } from "contexts/wagmi";
 
 async function getNativeBalance(address: string, chainId: number) {
   let ethBalance = 0;
