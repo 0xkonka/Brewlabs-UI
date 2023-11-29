@@ -83,7 +83,7 @@ export function TokenItem({ data, i }) {
         <div className="relative mt-0 hidden h-[36px] w-[110px] xmd:block">
           <Link
             href={getRemoveLiquidityUrl(
-              data.symbol.toLowerCase().includes("brew") ? "brewlabs" : "default",
+              data.a,
               data.token0,
               data.token1,
               data.chainId
@@ -142,7 +142,6 @@ export function TokenItem({ data, i }) {
 export default function BasePanel({ setCurAction, sortedTokens, showCount, setShowCount, isLoading: lpLoading }) {
   const { address: account } = useAccount();
   const { open } = useWeb3Modal();
-
   return (
     <>
       <div

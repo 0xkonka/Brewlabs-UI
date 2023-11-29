@@ -16,7 +16,6 @@ export default function PairList({ selectedPair, setSelectedPair }) {
   const bsc_pairs = useTradingAllPairDatas(ChainId.BSC_MAINNET);
   const pairs = [...bsc_pairs, ...polygon_pairs];
 
-  console.log(pairs);
 
   const stringifiedPairs = JSON.stringify(pairs);
 
