@@ -52,7 +52,7 @@ export function usePairs(
 
   const results = useMultipleContractSingleData(
     pairAddresses,
-    dexId === "brewswap" ? BREWSWAP_PAIR_INTERFACE : DEFAULT_PAIR_INTERFACE,
+    dexId === "brewlabs" ? BREWSWAP_PAIR_INTERFACE : DEFAULT_PAIR_INTERFACE,
     "getReserves"
   );
 
