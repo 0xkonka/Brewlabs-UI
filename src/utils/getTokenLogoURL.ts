@@ -10,6 +10,7 @@ import { DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME, TRUSTWA
 const getTokenLogoURL = (address: string, chainId: ChainId, logo?: string, appId?: AppId, tokenSymbol?: string) => {
   if (logo) return [logo];
   if (!address) return [];
+  if (address.toLowerCase() === "0x2f86747a9c5db9b80840a3a588e2b87f367188d6") return ["/images/brewlabs.jpg"];
 
   const existingLogo =
     appId === AppId.APESWAP
