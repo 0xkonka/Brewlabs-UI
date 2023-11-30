@@ -43,7 +43,6 @@ export const useLPTokens = () => {
             pair = {
               ...pair,
               liquidity: { ...pair.liquidity, quote: pair.liquidity.usd / (pair.totalSupply ?? 1) },
-              a: "brewlabs",
             };
           } else {
             const url = `https://io.dexscreener.com/dex/search/pairs?q=${data.address}&s=2`;

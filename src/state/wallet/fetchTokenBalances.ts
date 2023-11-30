@@ -23,14 +23,15 @@ async function getNativeBalance(address: string, chainId: number) {
 
 async function getTokenBaseBalances(account: string, chainId: number) {
   if (!isAddress(account) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString())) return [];
-
   let data: any = [];
   const { data: response } = await axios.get(
     `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?`,
     { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
   );
   if (response.error) return [];
-  const items = response.data.items;
+  const items = response.data.items.filter(
+    (item) => item.contract_name && item.contract_decimals && item.contract_ticker_symbol
+  );
   const calls = items
     .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
     .map((item) => ({
@@ -54,6 +55,7 @@ async function getTokenBaseBalances(account: string, chainId: number) {
       };
     })
     .filter((item) => item.balance > 0);
+
 
   const ethBalance = await getNativeBalance(account, chainId);
 

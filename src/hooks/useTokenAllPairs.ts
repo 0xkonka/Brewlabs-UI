@@ -29,7 +29,7 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
       }));
     }
 
-    if (query.a === "brewswap") {
+    if (query.a === "brewlabs") {
       do {
         const brewSwapUrl = `${API_URL}/chart/log/all?pair=${query.pair.toLowerCase()}&q=${query.quote.toLowerCase()}&tb=${tb}${
           query.account ? `&account=${query.account.toLowerCase()}` : ""

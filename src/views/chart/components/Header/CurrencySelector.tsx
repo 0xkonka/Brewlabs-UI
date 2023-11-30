@@ -116,7 +116,7 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
               <img src={getChainLogo(pair.chainId)} alt={""} className="primary-shadow h-6 w-6 rounded-full" />
               <img
                 src={
-                  pair.a === "brewswap"
+                  pair.a === "brewlabs"
                     ? "/images/brewlabsRouter.png"
                     : `https://dd.dexscreener.com/ds-data/dexes/${pair.dexId}.png`
                 }
