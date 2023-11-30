@@ -1,4 +1,4 @@
-import { ChainId, WNATIVE } from "@brewlabs/sdk";
+import { ChainId, NATIVE_CURRENCIES, WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
 
 import claimableTokenAbi from "config/abi/claimableToken.json";
@@ -12,6 +12,7 @@ import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
 import { getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
+import { ERC20_ABI } from "config/abi/erc20";
 
 async function getNativeBalance(address: string, chainId: number) {
   let ethBalance = 0;
@@ -22,37 +23,49 @@ async function getNativeBalance(address: string, chainId: number) {
 
 async function getTokenBaseBalances(account: string, chainId: number) {
   if (!isAddress(account) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString())) return [];
-
   let data: any = [];
   const { data: response } = await axios.get(
     `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?`,
     { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
   );
   if (response.error) return [];
-  const items = response.data.items;
+  const items = response.data.items.filter(
+    (item) => item.contract_name && item.contract_decimals && item.contract_ticker_symbol
+  );
+  const calls = items
+    .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
+    .map((item) => ({
+      name: "balanceOf",
+      params: [account],
+      address: item.contract_address,
+    }));
+
+  const balanceResult = await multicall(ERC20_ABI, calls, chainId);
+
   data = items
-    .filter((i) => i.balance !== "0" || i.contract_address === DEX_GURU_WETH_ADDR)
-    .map((item) => {
+    .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
+    .map((item, i) => {
       return {
         address: item.contract_address,
-        balance: item.balance / Math.pow(10, item.contract_decimals),
+        balance: balanceResult[i] / Math.pow(10, item.contract_decimals),
         decimals: item.contract_decimals,
         name: item.contract_name,
         symbol: item.contract_ticker_symbol,
         isScam: item.is_spam,
       };
-    });
+    })
+    .filter((item) => item.balance > 0);
 
-  // fetch missing symbol & decimals
-  if (!data.length) {
-    data.push({
-      address: DEX_GURU_WETH_ADDR,
-      balance: 0,
-      decimals: 18,
-      name: WNATIVE[chainId].name,
-      symbol: WNATIVE[chainId].symbol,
-    });
-  }
+
+  const ethBalance = await getNativeBalance(account, chainId);
+
+  data.push({
+    address: DEX_GURU_WETH_ADDR,
+    balance: ethBalance / Math.pow(10, 18),
+    decimals: 18,
+    name: NATIVE_CURRENCIES[chainId].name,
+    symbol: NATIVE_CURRENCIES[chainId].symbol,
+  });
   return data;
 }
 
@@ -164,6 +177,7 @@ export async function getTokenBalances(account: string, chainId: ChainId, tokenM
         chainId,
       });
     }
+
     return _tokens;
   } catch (error) {
     console.log(error);

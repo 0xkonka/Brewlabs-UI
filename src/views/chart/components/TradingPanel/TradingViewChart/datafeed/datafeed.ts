@@ -68,7 +68,7 @@ export default {
       const resSec = resolutionToSeconds(resolution);
 
       let data = [];
-      if (swap === "brewswap") {
+      if (swap === "brewlabs") {
         const pair = symbolInfo.ticker.split("?")[0].split("/")[3];
         const quote = symbolInfo.ticker.split("?")[1];
         const url = `${API_URL}/chart/bars?pair=${pair.toLowerCase()}&${quote}&from=${from * 1000}&to=${

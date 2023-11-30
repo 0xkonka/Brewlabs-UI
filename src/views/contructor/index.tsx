@@ -91,6 +91,7 @@ export default function Constructor() {
             <BasePanel
               setCurAction={setCurAction}
               sortedTokens={sortedTokens}
+              count={lpTokens?.length ?? 0}
               showCount={showCount}
               setShowCount={setShowCount}
               isLoading={isLoading}

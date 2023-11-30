@@ -5,11 +5,8 @@ import StyledButton from "../../StyledButton";
 import StyledInput from "@components/StyledInput";
 import { numberWithCommas } from "utils/functions";
 
-const Deploy = ({ setOpen, step, setStep }) => {
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [decimals, setDecimals] = useState(18);
-  const [totalSupply, setTotalSupply] = useState();
+const Deploy = ({ setOpen, step, setStep, values }) => {
+  const { name, symbol, decimals, totalSupply, setName, setSymbol, setDecimals, setTotalSupply } = values;
 
   return (
     <div className="font-brand text-white">
@@ -74,9 +71,18 @@ const Deploy = ({ setOpen, step, setStep }) => {
             {totalSupply ? `${numberWithCommas(Number(totalSupply).toFixed(2))} ${symbol}` : "Pending..."}
           </div>
         </div>
+        <div className="flex justify-between">
+          <div>Fee</div>
+          <div className="text-[#FFFFFF40]">1 BNB</div>
+        </div>
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
-      <StyledButton type="primary" className="!h-12" disabled={!name || !symbol || !decimals || !totalSupply}>
+      <StyledButton
+        type="primary"
+        className="!h-12"
+        disabled={!name || !symbol || !decimals || !totalSupply}
+        onClick={() => setStep(3)}
+      >
         Create my token
       </StyledButton>
     </div>

@@ -139,7 +139,7 @@ export function useTokenMarketInfos(pair: any) {
       console.log(v1, v2);
       setVolume24hChange((v2 ? (v2 - v1) / v2 : 0) * 100);
     }
-    if (pair.a === "brewswap") {
+    if (pair.a === "brewlabs") {
       const url = `${API_URL}/chart/bars?pair=${pair.address.toLowerCase()}&${pair.quoteToken.address}&from=${
         Date.now() - 86400000 * 2
       }&to=${Date.now()}&res=${240}`;

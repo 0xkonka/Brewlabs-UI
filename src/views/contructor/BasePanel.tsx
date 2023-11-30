@@ -81,15 +81,7 @@ export function TokenItem({ data, i }) {
           </div>
         </div>
         <div className="relative mt-0 hidden h-[36px] w-[110px] xmd:block">
-          <Link
-            href={getRemoveLiquidityUrl(
-              data.symbol.toLowerCase().includes("brew") ? "brewlabs" : "default",
-              data.token0,
-              data.token1,
-              data.chainId
-            )}
-            target="_blank"
-          >
+          <Link href={getRemoveLiquidityUrl(data.a, data.token0, data.token1, data.chainId)} target="_blank">
             <StyledButton type={"quinary"}>
               <div className="-ml-4 font-brand text-xs leading-none">Remove</div>
               <div className="absolute right-2 scale-125 text-[#EEBB19]">{CircleRightSVG}</div>
@@ -139,10 +131,16 @@ export function TokenItem({ data, i }) {
   );
 }
 
-export default function BasePanel({ setCurAction, sortedTokens, showCount, setShowCount, isLoading: lpLoading }) {
+export default function BasePanel({
+  setCurAction,
+  sortedTokens,
+  showCount,
+  setShowCount,
+  isLoading: lpLoading,
+  count,
+}) {
   const { address: account } = useAccount();
   const { open } = useWeb3Modal();
-
   return (
     <>
       <div
@@ -180,12 +178,12 @@ export default function BasePanel({ setCurAction, sortedTokens, showCount, setSh
                 <LoadingText />
               </div>
             )}
-            {sortedTokens && sortedTokens.length > 3 ? (
+            {count > 3 ? (
               <div
                 className="my-5 flex cursor-pointer items-center justify-center text-[#FFFFFF80] transition hover:text-white"
-                onClick={() => setShowCount(showCount < sortedTokens.length ? sortedTokens.length : 3)}
+                onClick={() => setShowCount(showCount < count ? count : 3)}
               >
-                <div className="leading-none">{showCount < sortedTokens.length ? "View more" : "View less"}</div>
+                <div className="leading-none">{showCount < count ? "View more" : "View less"}</div>
                 <div className="ml-2 mt-0.5">{RightSVG}</div>
               </div>
             ) : (
