@@ -164,6 +164,18 @@ export function useTokenMarketInfos(pair: any) {
       volume24hChange,
       community,
       totalSupply: dexInfos.totalSupply ?? 0,
+      info: {
+        ...dexInfos.info,
+        description: isExisitngCommunity?.description ?? dexInfos.info?.description ?? "",
+      },
+      links: {
+        ...dexInfos.links,
+        ...(isExisitngCommunity?.socials ?? {}),
+      },
+      audit: {
+        ...dexInfos.audit,
+        codeVerified: isExisitngCommunity ? true : dexInfos.audit?.codeVerified,
+      },
     },
   };
 }

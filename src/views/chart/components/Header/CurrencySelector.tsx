@@ -83,7 +83,7 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
               classNames="primary-shadow z-10 h-10 w-10 rounded-full"
             />
             <div className="ml-4 text-start">
-              <p className="text-lg">
+              <p className="text-lg whitespace-nowrap">
                 {pair.baseToken.symbol} /{" "}
                 <span className="text-sm leading-none text-gray-500">{pair.quoteToken.symbol}</span>
               </p>
