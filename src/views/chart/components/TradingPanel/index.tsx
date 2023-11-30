@@ -2,15 +2,14 @@ import SwapOption from "./SwapOption";
 import { useEffect, useState } from "react";
 import { defaultVolume, fetchTradingHistoriesByDexScreener, getVolumeDatas } from "@hooks/useTokenAllPairs";
 import { isAddress } from "utils";
-import { DEX_GURU_CHAIN_NAME } from "config";
-import { getBaseInfos } from "@hooks/useTokenInfo";
-import { useAccount } from "wagmi";
 import { getBalances } from "@hooks/useTokenMultiChainBalance";
 import { fetchDexGuruPrice } from "@hooks/useTokenPrice";
 import FavouritePanel from "./FavouritePanel";
 import SwapHistory from "./SwapHistory";
 import TradingViewChart from "./TradingViewChart";
 import { useMediaQuery } from "react-responsive";
+import { useFastRefreshEffect } from "@hooks/useRefreshEffect";
+import { useAccount } from "wagmi";
 
 let wrappedQuery;
 
@@ -67,7 +66,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos, h
 
   const { address: account } = useAccount();
 
-  useEffect(() => {
+  useFastRefreshEffect(() => {
     if (!selectedPair) return;
     getBalances(
       {
@@ -81,7 +80,6 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos, h
       .then((result) => setBalances(result.balances))
       .catch((e) => console.log(e));
   }, [stringifiedPair, account]);
-
   const w2xl = useMediaQuery({ query: "(min-width: 1536px)" });
   return (
     <div className="mt-6">
