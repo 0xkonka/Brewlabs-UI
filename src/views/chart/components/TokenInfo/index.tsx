@@ -79,7 +79,7 @@ export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
               </div>
               <img
                 src={
-                  selectedPair.a === "brewlabs"
+                  (selectedPair.otherdexId ?? selectedPair.a) === "brewlabs"
                     ? "/images/brewlabsRouter.png"
                     : `https://dd.dexscreener.com/ds-data/dexes/${selectedPair.dexId}.png`
                 }

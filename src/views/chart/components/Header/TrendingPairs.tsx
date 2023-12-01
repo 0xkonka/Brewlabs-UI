@@ -87,7 +87,7 @@ const PairCard = ({ token, index }) => {
 
   return (
     <Link
-      className="cursor-pointer text-sm !text-[#FFFFFF59] hover:!text-white"
+      className="whitespace-nowrap cursor-pointer text-sm !text-[#FFFFFF59] hover:!text-white"
       href={pairs.length ? `/chart/${DEXSCREENER_CHAINNAME[pairs[0].chainId]}/${pairs[0].address}` : "#"}
     >
       <span className="font-brand text-base">#</span>
