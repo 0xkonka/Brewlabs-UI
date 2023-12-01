@@ -81,7 +81,7 @@ export default function SwapPanel({
   // txn values
   const [deadline] = useUserTransactionTTL();
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
-  
+
   const noLiquidity = useMemo(() => {
     if (chainId === ChainId.BSC_TESTNET || chainId === ChainId.POLYGON)
       return currencies[Field.INPUT] && currencies[Field.OUTPUT] && !trade;
@@ -144,7 +144,7 @@ export default function SwapPanel({
     }
     setAttemptingTxn(true);
     swapCallbackUsingRouter()
-      .then((hash) => {
+      .then(() => {
         setAttemptingTxn(false);
         onUserInput(Field.INPUT, "");
       })
@@ -242,24 +242,6 @@ export default function SwapPanel({
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee);
 
-  const confirmPriceImpactForSwapAggregator = (priceImpact: number) => {
-    if (priceImpact > AGGREGATOR_LOST_MAX_LIMIT) {
-      return window.confirm(
-        `This swap has a price impact of at least ${
-          AGGREGATOR_LOST_MAX_LIMIT * 100
-        }%. Please confirm that you would like to continue with this swap.`
-      );
-    } else if (priceImpact > AGGREGATOR_LOST_LIMIT) {
-      return (
-        window.prompt(
-          `This swap has a price impact of at least ${
-            AGGREGATOR_LOST_LIMIT * 100
-          }%. Please type the word "confirm" to continue with this swap.`
-        ) === "confirm"
-      );
-    }
-    return true;
-  };
   const handleSwapUsingAggregator = async () => {
     // if (priceImpactOnAggregator && !confirmPriceImpactForSwapAggregator(priceImpactOnAggregator)) {
     //   return;
@@ -270,7 +252,7 @@ export default function SwapPanel({
     setAttemptingTxn(true);
 
     swapCallbackUsingAggregator()
-      .then((hash) => {
+      .then(() => {
         setAttemptingTxn(false);
         onUserInput(Field.INPUT, "");
       })
@@ -307,16 +289,23 @@ export default function SwapPanel({
       console.error(error);
     }
   };
-  const { buyTaxes, sellTaxes }: any = useTokenTaxes(currencies[Field.OUTPUT]?.address, chainId);
+  const { buyTaxes: outputBuyTaxes }: any = useTokenTaxes(currencies[Field.OUTPUT]?.address, chainId);
+  const { sellTaxes: inputSellTaxes }: any = useTokenTaxes(currencies[Field.INPUT]?.address, chainId);
 
   useEffect(() => {
-    if (!buyTaxes) {
-      setAutoMode(true);
+    if (!(outputBuyTaxes + inputSellTaxes)) {
+      if (
+        currencies[Field.OUTPUT]?.address?.toLowerCase() === "0x2f86747a9c5db9b80840a3a588e2b87f367188d6" ||
+        currencies[Field.INPUT]?.address?.toLowerCase() === "0x2f86747a9c5db9b80840a3a588e2b87f367188d6"
+      ) {
+        setAutoMode(false);
+        parseCustomSlippage("4");
+      } else setAutoMode(true);
     } else {
       setAutoMode(false);
-      parseCustomSlippage(buyTaxes + 1);
+      parseCustomSlippage(outputBuyTaxes + inputSellTaxes + 1);
     }
-  }, [buyTaxes, currencies[Field.OUTPUT]?.address]);
+  }, [outputBuyTaxes, currencies[Field.OUTPUT]?.address, inputSellTaxes, currencies[Field.INPUT]?.address]);
 
   return (
     <>

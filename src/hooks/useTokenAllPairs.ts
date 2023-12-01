@@ -68,7 +68,7 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
         transactionAddress: log.txnHash,
         walletsCategories: [],
         chainId,
-        sender: log.maker,
+        from: log.maker,
       }));
   } catch (e) {
     console.log(e);
