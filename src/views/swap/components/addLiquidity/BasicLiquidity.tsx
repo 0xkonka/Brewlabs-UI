@@ -51,8 +51,7 @@ import SetWalletModal from "./SetWalletModal";
 
 export default function BasicLiquidity({ currencyA: currencyA_ = undefined, currencyB: currencyB_ = undefined }) {
   const dispatch = useAppDispatch();
-  const { chainId, library } = useActiveWeb3React();
-  const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
+  const { chainId, library, account } = useActiveWeb3React();
   const { data: signer } = useSigner();
 
   const { pending, setPending }: any = useContext(DashboardContext);
