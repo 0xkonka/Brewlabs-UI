@@ -4,33 +4,70 @@ import StyledButton from "../../StyledButton";
 import { getBlockExplorerLink, getExplorerLogo, numberWithCommas } from "utils/functions";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { LinkSVG } from "@components/dashboard/assets/svgs";
+import { useState } from "react";
+import { addTokenToMetamask } from "lib/bridge/helpers";
+import { useAccount } from "wagmi";
+import { BridgeToken } from "config/constants/types";
 
 const Summarize = ({ setOpen, values }) => {
   const { name, symbol, decimals, totalSupply, deployedAddress } = values;
   const { chainId } = useActiveChainId();
+  const { connector } = useAccount();
+  const [isCopied, setIsCopied] = useState(false);
+
+  const onCopyAddress = () => {
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+    navigator.clipboard.writeText(getBlockExplorerLink(deployedAddress, "token", chainId));
+  };
+
+  function onAddToMetamask() {
+    console.log(deployedAddress);
+    addTokenToMetamask(connector, {
+      address: deployedAddress,
+      decimals,
+      symbol,
+    } as unknown as BridgeToken);
+  }
 
   return (
     <div className="font-brand text-white">
       <div className="mt-5">
         <div className="font-roboto text-sm font-semibold">Congratulations your token was deployed to your wallet!</div>
-        <a className="mt-2.5 flex" target="_blank" href={getBlockExplorerLink(deployedAddress, "token", chainId)}>
-          <div className="primary-shadow flex h-12 flex-1 items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap rounded-xl bg-[#18181A] sm:px-[28px] px-4">
-            <img
-              src={getExplorerLogo(chainId)}
-              alt={""}
-              className="mr-1.5 h-4 w-4 rounded-full border border-white bg-white"
-            />
-            <div className="mx-2.5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-center font-roboto text-sm font-bold text-white">
-              {deployedAddress}
+        <div className="mt-2.5 flex">
+          <div className="relative flex-1">
+            <a
+              target="_blank"
+              href={getBlockExplorerLink(deployedAddress, "token", chainId)}
+              className="primary-shadow relative flex h-12 items-center justify-between rounded-xl bg-[#18181A] px-4 sm:px-[28px]"
+            >
+              <img
+                src={getExplorerLogo(chainId)}
+                alt={""}
+                className="mr-1.5 h-4 w-4 rounded-full border border-white bg-white"
+              />
+              <div className="mx-2.5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-center font-roboto text-sm font-bold text-white">
+                {deployedAddress}
+              </div>
+              <div className="text-tailwind">{LinkSVG}</div>
+            </a>
+            <div className="absolute -bottom-6 right-0 flex text-xs text-[#FFFFFF80]">
+              <div className="cursor-pointer hover:text-white" onClick={() => onCopyAddress()}>
+                {isCopied ? "COPIED" : "COPY TOKEN ADDRESS"}
+              </div>
+              <div className="ml-4 cursor-pointer hover:text-white" onClick={() => onAddToMetamask()}>
+                +ADD TOKEN TO METMAMASK
+              </div>
             </div>
-            <div className="text-tailwind">{LinkSVG}</div>
           </div>
           <div className="ml-4 flex h-12 w-20 items-center justify-center rounded-xl bg-[#3AFDB7] font-roboto text-xs font-bold text-black">
             Deployed
           </div>
-        </a>
+        </div>
       </div>
-      <div className="my-6 font-roboto text-sm font-medium leading-[1.8]">
+      <div className="mb-6 mt-8 font-roboto text-sm font-medium leading-[1.8]">
         <div>Summary</div>
         <div className="mt-1 flex justify-between">
           <div>Status</div>

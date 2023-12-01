@@ -8,9 +8,10 @@ export default function MomentumInfo({ volumeDatas }) {
 
   const buyAmount = volumeDatas["txn (usd)"]["7d"].Buys;
   const sellAmount = volumeDatas["txn (usd)"]["7d"].Sells;
+  const totalAmount = buyAmount + sellAmount;
   const max = buyAmount > sellAmount ? 1 : 0;
-  const buyPercent = isActive ? (buyAmount / (buyAmount + sellAmount)) * 100 : 100;
-  const sellPercent = isActive ? (sellAmount / (buyAmount + sellAmount)) * 100 : 0;
+  const buyPercent = isActive ? (totalAmount ? (buyAmount / totalAmount) * 100 : 50) : 100;
+  const sellPercent = isActive ? (totalAmount ? (sellAmount / totalAmount) * 100 : 50) : 0;
 
   return (
     <div className="primary-shadow mt-2 rounded-md bg-[#B9B8B80D] p-[8px_16px_16px_16px]">

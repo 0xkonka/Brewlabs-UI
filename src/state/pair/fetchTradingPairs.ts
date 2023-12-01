@@ -6,6 +6,9 @@ import { ethers } from "ethers";
 import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
 
 function getPriceByTx(tx) {
+  if (tx.type === "mint") {
+    return { price0: tx.amountUSD / tx.amount0, price1: tx.amountUSD / tx.amount1 };
+  }
   const amount0 = Math.max(tx.amount0In, tx.amount0Out);
   const amount1 = Math.max(tx.amount1In, tx.amount1Out);
   return { price0: tx.amountUSD / amount0, price1: tx.amountUSD / amount1 };
@@ -76,6 +79,7 @@ export async function getTradingPairHistories(chainId, period) {
   try {
     let query,
       swaps,
+      mints,
       index = 0,
       totalSwaps = [],
       volumeHistory = [],
@@ -103,6 +107,20 @@ export async function getTradingPairHistories(chainId, period) {
             id
           }
         }
+        mints(
+          where: {timestamp_gte: "${timestamp}"}
+          first: 1000
+          skip:${1000 * index}
+          orderBy: timestamp
+        ) {
+          amount0
+          amount1
+          amountUSD
+          timestamp
+          pair {
+            id
+          }
+        }
       }`;
       const { data: response } = await axios.post(
         `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
@@ -110,9 +128,18 @@ export async function getTradingPairHistories(chainId, period) {
       );
 
       swaps = response.data.swaps;
-      totalSwaps = [...totalSwaps, ...swaps];
+      mints = response.data.mints.map((mint) => ({
+        ...mint,
+        type: "mint",
+        amount0In: mint.amount0,
+        amount1In: mint.amount1,
+        amount0Out: 0,
+        amount1Out: 0,
+        amountFeeUSD: 0,
+      }));
+      totalSwaps = [...totalSwaps, ...swaps, ...mints];
       index++;
-    } while (swaps.length === 1000);
+    } while (swaps.length === 1000 || mints.length === 1000);
 
     let j = 0,
       v = 0,
@@ -132,11 +159,20 @@ export async function getTradingPairHistories(chainId, period) {
         id
         reserve1
         reserve0
-        token0 {
-          derivedUSD
+        swaps(orderDirection: desc, orderBy: timestamp, first: 1) {
+          amount0In
+          amount0Out
+          amount1In
+          amount1Out
+          amountFeeUSD
+          amountUSD
+          timestamp
         }
-        token1 {
-          derivedUSD
+        mints(first: 1, orderBy: timestamp, orderDirection: desc) {
+          amountUSD
+          amount0
+          amount1
+          timestamp
         }
      }
     }`;
@@ -155,11 +191,22 @@ export async function getTradingPairHistories(chainId, period) {
         .sort((a, b) => b.timestamp - a.timestamp);
       let history = [];
 
+      const swap = pairs[i].swaps?.[0];
+      const mint = pairs[i].mints?.[0];
+      const lastTx =
+        swap && mint
+          ? Number(swap.timestamp) > Number(mint.timestamp)
+            ? swap
+            : { ...mint, type: "mint" }
+          : swap ?? { ...mint, type: "mint" };
+
+      let price0 = getPriceByTx(lastTx).price0;
+      let price1 = getPriceByTx(lastTx).price1;
+
       for (let j = 0; j < 10; j++) {
         let reserve0 = Number(pairs[i].reserve0);
         let reserve1 = Number(pairs[i].reserve1);
-        let price0 = Number(pairs[i].token0.derivedUSD);
-        let price1 = Number(pairs[i].token1.derivedUSD);
+
         let k = 0;
         while (k < swapsByPair.length && Number(swapsByPair[k].timestamp) > Date.now() / 1000 - (period / 10) * j) {
           reserve0 += Number(swapsByPair[k].amount0Out);
@@ -180,11 +227,10 @@ export async function getTradingPairHistories(chainId, period) {
       for (let j = 0; j < historiesByPair.length; j++) s += historiesByPair[j][i];
       tvlHistory.push(s);
     }
-
     return { volumeHistory, feeHistory, tvlHistory };
   } catch (e) {
     console.log(e);
-    return { volumeHistory: [], feeHistory: [] };
+    return { volumeHistory: [], feeHistory: [], tvlHistory: [] };
   }
 }
 
