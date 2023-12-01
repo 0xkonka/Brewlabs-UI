@@ -25,7 +25,6 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
 
     const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${criteria}`;
     const { data: brewPairs } = await axios.get(brewSwapUrl);
-    console.log(brewPairs);
 
     let searchedPairs = [];
 
