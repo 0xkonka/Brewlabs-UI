@@ -24,7 +24,7 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
     if (!criteria) return;
 
     const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${criteria}`;
-    const { data: brewPairs } = await axios.get(brewSwapUrl);
+    let { data: brewPairs } = await axios.get(brewSwapUrl);
 
     let searchedPairs = [];
 
@@ -56,8 +56,14 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
     }
     searchedPairs = searchedPairs
       .filter((pair) => pair.liquidity?.usd && Object.keys(DEXSCREENER_CHAINNAME).includes(pair.chainId.toString()))
-      .sort((a, b) => b.volume.h24 - a.volume.h24);
+      .sort((a, b) => b.volume.h24 - a.volume.h24)
+      .map((pair) => {
+        const isBrewPair = brewPairs.find((bPair) => bPair.address === pair.address);
+        if (isBrewPair) return { ...pair, otherdexId: "brewlabs" };
+        return pair;
+      });
 
+    brewPairs = brewPairs.filter((pair) => !searchedPairs.find((sPair) => sPair.address === pair.address));
     searchedPairs = [...searchedPairs, ...brewPairs];
     return searchedPairs;
   } catch (e) {
