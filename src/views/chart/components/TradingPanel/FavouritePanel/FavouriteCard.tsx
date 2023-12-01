@@ -41,7 +41,7 @@ export default function FavouriteCard({ pair, type, network }) {
         }
       }}
     >
-      <div className="flex items-center">
+      <div className="flex items-center overflow-hidden text-ellipsis flex-1">
         <TokenLogo
           src={getTokenLogoURL(isAddress(wrappedPair?.baseToken?.address), wrappedPair?.chainId)}
           alt={""}

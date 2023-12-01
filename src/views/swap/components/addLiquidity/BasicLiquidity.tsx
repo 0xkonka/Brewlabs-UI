@@ -219,7 +219,6 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
     { key: "Total dynamic pool fee", value: `${(dynamicFees[0] + dynamicFees[1] + dynamicFees[2]).toFixed(2)}%` },
   ];
 
-
   useEffect(() => {
     const setValue = (value) => {
       setIsOwner(value);
@@ -238,7 +237,6 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
       );
     }
   }, [chainId, account, pairData.tokenOwner]);
-
 
   useEffect(() => {
     setDynamicFees([referralFee, stakingFee, tokenOwnerFee]);
