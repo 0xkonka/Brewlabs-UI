@@ -50,7 +50,6 @@ export default function SwapOption({
         {selectedPair ? <VotePanel selectedPair={selectedPair} /> : ""}
       </div>
 
-      <div className={`mt-4 hidden h-[120px] rounded-lg bg-[url('/images/directory/truenft.png')] 2xl:block`} />
     </div>
   );
 }

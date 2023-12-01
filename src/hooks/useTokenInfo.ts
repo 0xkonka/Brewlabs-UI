@@ -133,11 +133,16 @@ export function useTokenMarketInfos(pair: any) {
 
     function getVolume(bars) {
       const v1 =
-        Number(bars[0].volumeUsd) + Number(bars[1].volumeUsd) + Number(bars[2].volumeUsd) + Number(bars[3].volumeUsd);
+        Number(bars[0]?.volumeUsd ?? 0) +
+        Number(bars[1]?.volumeUsd ?? 0) +
+        Number(bars[2]?.volumeUsd ?? 0) +
+        Number(bars[3]?.volumeUsd ?? 0);
       const v2 =
-        Number(bars[4].volumeUsd) + Number(bars[5].volumeUsd) + Number(bars[6].volumeUsd) + Number(bars[7].volumeUsd);
-      console.log(v1, v2);
-      setVolume24hChange((v2 ? (v2 - v1) / v2 : 0) * 100);
+        Number(bars[4]?.volumeUsd ?? 0) +
+        Number(bars[5]?.volumeUsd ?? 0) +
+        Number(bars[6]?.volumeUsd ?? 0) +
+        Number(bars[7]?.volumeUsd ?? 0);
+      setVolume24hChange((v2 ? (v2 - v1) / v2 : 1) * 100);
     }
     if (pair.a === "brewlabs") {
       const url = `${API_URL}/chart/bars?pair=${pair.address.toLowerCase()}&${pair.quoteToken.address}&from=${
@@ -153,7 +158,9 @@ export function useTokenMarketInfos(pair: any) {
       }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
       axios
         .post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url })
-        .then((result) => getVolume(result.data.result.bars))
+        .then((result) => {
+          getVolume(result.data.result.bars);
+        })
         .catch((e) => console.log(e));
     }
   }, [strigifiedCurrency]);
