@@ -48,7 +48,7 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
         query.quote ? `q=${query.quote.toLowerCase()}` : ""
       }&${tb ? `tb=${tb}` : ""}`;
 
-      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+      const { data: response } = await axios.post(`${API_URL}/html/getHTML`, {
         url,
       });
       if (!response.result.logs) break;
