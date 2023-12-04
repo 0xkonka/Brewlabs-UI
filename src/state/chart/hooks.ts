@@ -47,7 +47,11 @@ export const usePairsByCriteria = (criteria, chainId = null, limit = 1): Seriali
   if (criteria === "") return [];
   return pairs
     .sort(
-      (a, b) => b.volume.h24 + (b.a === "brewlabs" ? 10000000 : 0) - a.volume.h24 - (a.a === "brewlabs" ? 10000000 : 0)
+      (a, b) =>
+        b.volume.h24 +
+        ((b.otherdexId ?? b.a) === "brewlabs" ? 10000000 : 0) -
+        a.volume.h24 -
+        ((a.otherdexId ?? a.a) === "brewlabs" ? 10000000 : 0)
     )
     .slice(0, limit);
 };
