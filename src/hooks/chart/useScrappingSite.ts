@@ -9,10 +9,10 @@ export function useCMCListings() {
   async function getScrappingSite() {
     try {
       const response = await Promise.all([
-        axios.post(`${API_URL}/html/getHTML`, {
+        axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url: "https://coinmarketcap.com/trending-cryptocurrencies/",
         }),
-        axios.post(`${API_URL}/html/getHTML`, {
+        axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url: "https://coinmarketcap.com/new/",
         }),
       ]);
@@ -90,7 +90,7 @@ export function useWatcherGuruTrending() {
 
   async function getTrendings() {
     try {
-      const { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, {
+      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
         url: "https://api.watcher.guru/coin/trending",
       });
       setTrendings(response.result.map((coin) => ({ name: coin.name, symbol: coin.symbol.toUpperCase() })));

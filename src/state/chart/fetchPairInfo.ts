@@ -45,7 +45,7 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       const searchResult = await Promise.all(
         filteredTokens.map(async (token) => {
           const url = `https://io.dexscreener.com/dex/search/v2/pairs?q=${token.address}`;
-          let result = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
+          let result = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", { url });
           const searchedPairs = result.data.result.pairs;
           return searchedPairs.map((pair) => {
             return getPairParams(pair);
