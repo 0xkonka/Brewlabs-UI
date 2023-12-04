@@ -45,8 +45,8 @@ export const useLPTokens = () => {
               liquidity: { ...pair.liquidity, quote: pair.liquidity.usd / (pair.totalSupply ?? 1) },
             };
           } else {
-            const url = `https://io.dexscreener.com/dex/search/pairs?q=${data.address}&s=2`;
-            const { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, {
+            const url = `https://io.dexscreener.com/dex/search/v2/pairs?q=${data.address}&s=2`;
+            const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
               url,
             });
             if (!response.result.pairs.length) return null;

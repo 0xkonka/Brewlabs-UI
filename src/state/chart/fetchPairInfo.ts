@@ -24,12 +24,12 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
     if (!criteria) return;
 
     const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${criteria}`;
-    const { data: brewPairs } = await axios.get(brewSwapUrl);
+    let { data: brewPairs } = await axios.get(brewSwapUrl);
 
     let searchedPairs = [];
 
     if (isAddress(criteria) || type === "simple") {
-      const url = `https://io.dexscreener.com/dex/search/pairs?q=${criteria}&s=2`;
+      const url = `https://io.dexscreener.com/dex/search/v2/pairs?q=${criteria}`;
       let result = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
       searchedPairs = result.data.result.pairs;
       if (chain) searchedPairs = searchedPairs.filter((pair) => pair.chainId === chain);
@@ -44,8 +44,8 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       const filteredTokens = tokens.filter((token) => token.liquidityUSD).slice(0, 10);
       const searchResult = await Promise.all(
         filteredTokens.map(async (token) => {
-          const url = `https://io.dexscreener.com/dex/search/pairs?q=${token.address}&s=2`;
-          let result = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
+          const url = `https://io.dexscreener.com/dex/search/v2/pairs?q=${token.address}`;
+          let result = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", { url });
           const searchedPairs = result.data.result.pairs;
           return searchedPairs.map((pair) => {
             return getPairParams(pair);
@@ -56,8 +56,14 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
     }
     searchedPairs = searchedPairs
       .filter((pair) => pair.liquidity?.usd && Object.keys(DEXSCREENER_CHAINNAME).includes(pair.chainId.toString()))
-      .sort((a, b) => b.volume.h24 - a.volume.h24);
+      .sort((a, b) => b.volume.h24 - a.volume.h24)
+      .map((pair) => {
+        const isBrewPair = brewPairs.find((bPair) => bPair.address === pair.address);
+        if (isBrewPair) return { ...pair, otherdexId: "brewlabs" };
+        return pair;
+      });
 
+    brewPairs = brewPairs.filter((pair) => !searchedPairs.find((sPair) => sPair.address === pair.address));
     searchedPairs = [...searchedPairs, ...brewPairs];
     return searchedPairs;
   } catch (e) {

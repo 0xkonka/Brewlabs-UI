@@ -116,7 +116,6 @@ export default function FavouritePanel() {
           })}
         </div>
       </div>
-      <div className={`mb-4 mt-2 hidden h-[120px] rounded-lg  bg-[url('/images/directory/truenft.png')] 2xl:block`} />
     </>
   );
 }
