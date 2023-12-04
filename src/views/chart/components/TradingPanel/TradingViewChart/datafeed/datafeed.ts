@@ -80,7 +80,7 @@ export default {
         const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-        const { data: response } = await axios.post(`${API_URL}/html/getHTML`, {
+        const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });
         data = response.result.bars;

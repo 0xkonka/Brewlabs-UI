@@ -157,7 +157,7 @@ export function useTokenMarketInfos(pair: any) {
         pair.address
       }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
       axios
-        .post(`${API_URL}/html/getHTML`, { url })
+        .post("https://pein-api.vercel.app/api/tokenController/getHTML", { url })
         .then((result) => {
           getVolume(result.data.result.bars);
         })
