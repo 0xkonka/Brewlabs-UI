@@ -1,23 +1,71 @@
 import axios from "axios";
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME } from "config";
 import { API_URL } from "config/constants";
-import { isAddress } from "utils";
+import { ethers } from "ethers";
+import { simpleRpcProvider } from "utils/providers";
 
+function checkString(string) {
+  return !isNaN(string) && string.toString().indexOf(".") != -1;
+}
+
+async function getValues(str, chainId) {
+  try {
+    const valueList = str.split(" ");
+    const txHash = valueList.find((value) => ethers.utils.isHexString(value));
+    const sender = valueList.find((value) => ethers.utils.isAddress(value.replace("T", "")));
+    const index = valueList.findIndex((value) => value === "buy" || value === "sell");
+    const values = [];
+
+    for (let i = index + 1; i < valueList.length; i++) {
+      if (checkString(valueList[i])) values.push(valueList[i]);
+    }
+
+    const isBuy = valueList.find((value) => value === "buy");
+    if (!txHash || !sender || values.length !== 4 || values.find((value) => !checkString(value))) {
+      console.log(txHash, sender, values, valueList);
+      return null;
+    }
+    const provider = simpleRpcProvider(chainId);
+    const transaction = await provider.getTransaction(txHash);
+    const { timestamp } = await provider.getBlock(transaction.blockNumber);
+    // const { data: response } = await axios.get(
+    //   `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/transaction_v2/${txHash}/?`,
+    //   { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
+    // );
+
+    // console.log(response);
+
+    return {
+      txnHash: txHash,
+      maker: sender.replace("T", ""),
+      priceUsd: values[0],
+      volumeUsd: values[1],
+      amount0: values[2],
+      txnType: isBuy ? "buy" : "sell",
+      blockTimestamp: timestamp * 100,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function analyzeLog(str, chainId) {
+  const temp = str.replace(/[\u0000-\u0020]/g, " ");
+  const swapList = temp.split("swap");
+  if (swapList.length) swapList.splice(0, 1);
+  const values = await Promise.all(swapList.map((swap) => getValues(swap, chainId)).filter((swap) => swap));
+  return values;
+}
 export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default", timestamp = 0) {
   let histories = [];
   let tb = query.tb ?? 0;
   try {
     if (query.type === "holders") {
-      //
-      console.log(
-        `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/tokens/${query.address}/token_holders_v2/?page-size=100&page-number=${tb}`
-      );
       const { data: response } = await axios.get(
         `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/tokens/${query.address}/token_holders_v2/?page-size=100&page-number=${tb}`,
         { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
       );
       const holders = response.data.items;
-      console.log(holders);
       return holders.map((holder) => ({
         address: holder.address,
         timestamp: tb,
@@ -42,18 +90,41 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
       return histories;
     }
     do {
-      const url = `https://io.dexscreener.com/dex/log/amm/${query.a}/all/${DEXSCREENER_CHAINNAME[chainId]}/${
+      const url = `https://io.dexscreener.com/dex/log/amm/v2/${query.a}/all/${DEXSCREENER_CHAINNAME[chainId]}/${
         query.pair
       }?${query.type ? `ft=${query.type}` : ""}&${query.account ? `m=${query.account.toLowerCase()}` : ""}&${
         query.quote ? `q=${query.quote.toLowerCase()}` : ""
       }&${tb ? `tb=${tb}` : ""}`;
-
-      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+      const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
         url,
       });
-      if (!response.result.logs) break;
-      histories = [...histories, ...response.result.logs].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
-      tb = histories[histories.length - 1].blockTimestamp;
+      const txs = await analyzeLog(response.result, chainId);
+
+      let dexguruQuery = {
+        sort_by: "timestamp",
+        limit: 18,
+        offset: 0,
+        order: "desc",
+        with_full_totals: true,
+        pool_address: "0xd8a8442013f071bb118c3c3e03f6d07576d85a53",
+        transaction_types: ["swap"],
+        token_status: "buy",
+        date: {
+          period: "custom",
+          start_date: 1699401600,
+          end_date: 1701475199,
+        },
+        current_token_id: "0xdad33e12e61dc2f2692f2c12e6303b5ade7277ba-eth",
+      };
+      const { data: dexGuruResponse } = await axios.post("https://api.dex.guru/v3/tokens/transactions", dexguruQuery);
+      console.log(dexGuruResponse);
+      histories = [...histories, ...txs];
+
+      const provider = simpleRpcProvider(chainId);
+      const transaction = await provider.getTransaction(histories[histories.length - 1].txnHash);
+      const { timestamp } = await provider.getBlock(transaction.blockNumber);
+
+      tb = timestamp * 1000;
     } while (fetch === "all" && histories.length % 100 === 0 && tb >= timestamp);
 
     return histories

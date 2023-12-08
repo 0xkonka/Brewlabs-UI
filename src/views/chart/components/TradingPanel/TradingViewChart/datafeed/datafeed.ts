@@ -77,12 +77,14 @@ export default {
         const { data: response } = await axios.get(url);
         data = response;
       } else {
-        const url = `https://io.dexscreener.com/dex/chart/amm/${symbolInfo.ticker}&from=${from * 1000}&to=${
+        const url = `https://io.dexscreener.com/dex/chart/amm/v2/${symbolInfo.ticker}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-        const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+        console.log(url);
+        const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
           url,
         });
+        console.log(response);
         data = response.result.bars;
         console.log(data);
       }

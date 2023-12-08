@@ -1,5 +1,7 @@
+import { Category } from "config/constants/types";
 import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useContext } from "react";
+import { useChainCurrentBlocks } from "state/block/hooks";
 import { useFarms } from "state/farms/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { usePools } from "state/pools/hooks";
@@ -14,6 +16,7 @@ const useTotalStakedValues = () => {
   const { pools } = usePools();
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
+  const currentBlocks = useChainCurrentBlocks();
 
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const allPools = [
@@ -41,7 +44,17 @@ const useTotalStakedValues = () => {
         }
         return { ..._index, tvl };
       }),
-  ];
+  ].filter(
+    (pool: any) =>
+      !pool.isFinished &&
+      ((pool.type === Category.POOL && +pool.startBlock > 0) ||
+        (pool.type === Category.FARM &&
+          pool.multiplier > 0 &&
+          +pool.startBlock > 0 &&
+          +pool.startBlock < currentBlocks[pool.chainId]) ||
+        pool.type === Category.INDEXES ||
+        (pool.type === Category.ZAPPER && pool.pid !== 0 && pool.multiplier !== "0X"))
+  );
 
   let tvl = 0;
   allPools.map((data) => (tvl += data.tvl));

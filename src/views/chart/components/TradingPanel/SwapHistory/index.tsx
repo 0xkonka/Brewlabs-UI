@@ -26,6 +26,7 @@ export default function SwapHistory({ selectedPair, holders30d }) {
       quote: selectedPair.quoteToken.address,
       tb,
       a: selectedPair.a,
+      base: selectedPair.baseToken.address,
     };
     switch (showType) {
       case 0:
