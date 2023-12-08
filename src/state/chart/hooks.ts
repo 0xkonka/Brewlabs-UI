@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 import { State } from "../types";
 import { ChainId } from "@brewlabs/sdk";
-import { SerializedPairData } from "./type";
+import { SerializedPairData, SerializedTxData } from "./type";
 import { useAppDispatch } from "state";
 import { useSlowRefreshEffect } from "@hooks/useRefreshEffect";
 import { fetchPairsAsync } from ".";
@@ -22,15 +22,20 @@ export const usePairInfo = (chainId: ChainId, address: string): SerializedPairDa
 
 function isPair(pair, criteria) {
   return (
-    pair.pairAddress.toLowerCase().includes(criteria) ||
-    pair.baseToken.address.toLowerCase().includes(criteria) ||
-    pair.baseToken.name.toLowerCase().includes(criteria) ||
-    pair.baseToken.symbol.toLowerCase().includes(criteria) ||
-    pair.quoteToken.address.toLowerCase().includes(criteria) ||
-    pair.quoteToken.name.toLowerCase().includes(criteria) ||
-    pair.quoteToken.symbol.toLowerCase().includes(criteria)
+    pair?.pairAddress?.toLowerCase().includes(criteria) ||
+    pair?.baseToken?.address?.toLowerCase().includes(criteria) ||
+    pair?.baseToken?.name?.toLowerCase().includes(criteria) ||
+    pair?.baseToken?.symbol?.toLowerCase().includes(criteria) ||
+    pair?.quoteToken?.address?.toLowerCase().includes(criteria) ||
+    pair?.quoteToken?.name?.toLowerCase().includes(criteria) ||
+    pair?.quoteToken?.symbol?.toLowerCase().includes(criteria)
   );
 }
+
+export const usePairTxInfoByHash = (pair, chainId, txHash): SerializedTxData => {
+  const tx = useSelector((state: State) => state.chart.pairs?.[chainId]?.[pair]?.[txHash] ?? {});
+  return tx;
+};
 
 export const usePairsByCriteria = (criteria, chainId = null, limit = 1): SerializedPairData[] => {
   let pairs = [];

@@ -24,6 +24,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos, h
     const query: any = {
       pair: selectedPair.address,
       quote: selectedPair.quoteToken.address,
+      base: selectedPair.baseToken.address,
       a: selectedPair.a,
       type: "buyOrSell",
     };
