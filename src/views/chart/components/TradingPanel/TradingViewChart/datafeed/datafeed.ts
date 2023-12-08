@@ -17,6 +17,38 @@ const resolutionToSeconds = (r) => {
   return Number(r);
 };
 
+function checkString(string) {
+  return !isNaN(string) && string.toString().indexOf(".") != -1;
+}
+
+function analyzeLog(str, to, resolution) {
+  try {
+    to = to - (to % resolution);
+    const temp = str.replace(/[\u0000-\u0020]/g, " ");
+    const valueList = temp.split(" ").filter((value) => checkString(value));
+    let values = [];
+    let j = 0;
+    console.log(valueList);
+    for (let i = valueList.length - 1; i >= 7; i -= 9) {
+      values.push({
+        openUsd: valueList[i - 7],
+        highUsd: valueList[i - 5],
+        lowUsd: valueList[i - 3],
+        closeUsd: valueList[i - 1],
+        volumeUsd: valueList[i],
+        timestamp: (to - j * resolution) * 1000,
+      });
+      j++;
+    }
+
+    values.reverse();
+    return values;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
+
 export default {
   onReady: (callback) => {
     console.log("[onReady]: Method call");
@@ -80,13 +112,10 @@ export default {
         const url = `https://io.dexscreener.com/dex/chart/amm/v2/${symbolInfo.ticker}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-        console.log(url);
         const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
           url,
         });
-        console.log(response);
-        data = response.result.bars;
-        console.log(data);
+        data = analyzeLog(response.result, to, resSec * 60);
       }
       let bars = [];
       if (!data || !data.length) return;

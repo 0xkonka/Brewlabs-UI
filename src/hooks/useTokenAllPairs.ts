@@ -1,14 +1,13 @@
 import axios from "axios";
-import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME } from "config";
+import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME, SUBGRAPH_URL } from "config";
 import { API_URL } from "config/constants";
 import { ethers } from "ethers";
-import { simpleRpcProvider } from "utils/providers";
 
 function checkString(string) {
   return !isNaN(string) && string.toString().indexOf(".") != -1;
 }
 
-async function getValues(str, chainId) {
+function getValues(str, chainId) {
   try {
     const valueList = str.split(" ");
     const txHash = valueList.find((value) => ethers.utils.isHexString(value));
@@ -25,16 +24,6 @@ async function getValues(str, chainId) {
       console.log(txHash, sender, values, valueList);
       return null;
     }
-    const provider = simpleRpcProvider(chainId);
-    const transaction = await provider.getTransaction(txHash);
-    const { timestamp } = await provider.getBlock(transaction.blockNumber);
-    // const { data: response } = await axios.get(
-    //   `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/transaction_v2/${txHash}/?`,
-    //   { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
-    // );
-
-    // console.log(response);
-
     return {
       txnHash: txHash,
       maker: sender.replace("T", ""),
@@ -42,19 +31,44 @@ async function getValues(str, chainId) {
       volumeUsd: values[1],
       amount0: values[2],
       txnType: isBuy ? "buy" : "sell",
-      blockTimestamp: timestamp * 100,
     };
   } catch (e) {
     return null;
   }
 }
 
-async function analyzeLog(str, chainId) {
-  const temp = str.replace(/[\u0000-\u0020]/g, " ");
-  const swapList = temp.split("swap");
-  if (swapList.length) swapList.splice(0, 1);
-  const values = await Promise.all(swapList.map((swap) => getValues(swap, chainId)).filter((swap) => swap));
-  return values;
+async function analyzeLog(str, chainId, dexId) {
+  try {
+    const temp = str.replace(/[\u0000-\u0020]/g, " ");
+    const swapList = temp.split("swap");
+    if (swapList.length) swapList.splice(0, 1);
+    const values = swapList.map((swap) => getValues(swap, chainId)).filter((swap) => swap);
+    console.log(values);
+    const txs = values.map((value) => `"${value.txnHash}"` + ",");
+    const result = await Promise.all(
+      SUBGRAPH_URL[dexId].map((graph) =>
+        axios.post(graph, {
+          query: `{
+            swaps(first: 1000, where: {hash_in: [${txs}]}) {
+              timestamp
+              hash
+            }
+          }`,
+        })
+      )
+    );
+
+    let swaps = [];
+    for (let i = 0; i < result.length; i++) swaps = [...swaps, ...result[i].data.data.swaps];
+
+    return values.map((value) => ({
+      ...value,
+      blockTimestamp: (swaps.find((swap) => swap.hash === value.txnHash)?.timestamp ?? 0) * 1000,
+    }));
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 }
 export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default", timestamp = 0) {
   let histories = [];
@@ -98,33 +112,11 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
       const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
         url,
       });
-      const txs = await analyzeLog(response.result, chainId);
+      const txs = await analyzeLog(response.result, chainId, query.a);
 
-      let dexguruQuery = {
-        sort_by: "timestamp",
-        limit: 18,
-        offset: 0,
-        order: "desc",
-        with_full_totals: true,
-        pool_address: "0xd8a8442013f071bb118c3c3e03f6d07576d85a53",
-        transaction_types: ["swap"],
-        token_status: "buy",
-        date: {
-          period: "custom",
-          start_date: 1699401600,
-          end_date: 1701475199,
-        },
-        current_token_id: "0xdad33e12e61dc2f2692f2c12e6303b5ade7277ba-eth",
-      };
-      const { data: dexGuruResponse } = await axios.post("https://api.dex.guru/v3/tokens/transactions", dexguruQuery);
-      console.log(dexGuruResponse);
       histories = [...histories, ...txs];
-
-      const provider = simpleRpcProvider(chainId);
-      const transaction = await provider.getTransaction(histories[histories.length - 1].txnHash);
-      const { timestamp } = await provider.getBlock(transaction.blockNumber);
-
-      tb = timestamp * 1000;
+      if (!histories.length) break;
+      tb = histories[histories.length - 1].blockTimestamp;
     } while (fetch === "all" && histories.length % 100 === 0 && tb >= timestamp);
 
     return histories

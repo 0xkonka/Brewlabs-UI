@@ -27,11 +27,6 @@ export default function HistoryList({
 }) {
   const [wrappedHistories, setWrappedHistories] = useState([]);
   const tokenMarketData = useTokenMarketChart(selectedPair.chainId);
-  const { timestamp } = usePairTxInfoByHash(
-    selectedPair.address,
-    selectedPair.chainId,
-    histories.length ? histories[histories.length - 1].transactionAddress : ""
-  );
   const nativePrice = tokenMarketData[WNATIVE[selectedPair.chainId].address.toLowerCase()]?.usd;
 
   const node: any = useRef();
@@ -39,11 +34,11 @@ export default function HistoryList({
   const handleScroll = useCallback(() => {
     const { scrollTop, scrollHeight, clientHeight } = node.current;
     if (scrollTop + clientHeight === scrollHeight && !loading && scrollHeight > 50) {
-      console.log("reached bottom hook in scroll component", timestamp);
-      setTB(timestamp);
+      console.log("reached bottom hook in scroll component");
+      setTB(histories[histories.length - 1].timestamp);
     } else {
     }
-  }, [node, loading, timestamp]);
+  }, [node, loading, stringifiedHistories]);
 
   useEffect(() => {
     if (node.current) {
