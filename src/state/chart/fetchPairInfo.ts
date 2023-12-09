@@ -16,7 +16,6 @@ async function analyzeLog(str) {
     const chain = valueList.find((value) =>
       Object.keys(DEXSCREENER_CHAINNAME).find((key, i) => value.includes(DEXSCREENER_CHAINNAME[key]))
     );
-    console.log(valueList);
 
     if (!chain) return null;
 
@@ -118,7 +117,7 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
 
     if (isAddress(criteria) || type === "simple") {
       const url = `https://io.dexscreener.com/dex/search/v3/pairs?q=${criteria}`;
-      let { data: response } = await axios.post(`http://localhost:5000/api/tokenController/getHTML`, { url });
+      let { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
       const pair = await analyzeLog(response.result);
       if (pair) searchedPairs = [pair];
       // searchedPairs = result.data.result.pairs;

@@ -71,12 +71,10 @@ export const useChainCurrentBlock = (chainId: number): number => {
   const provider = useProvider({ chainId });
   const { data: currentBlock = 0 } = useSWR(
     activeChainId === chainId ? ["blockNumber", chainId] : ["chainBlockNumber", chainId],
-    activeChainId !== chainId
-      ? async () => {
-          const blockNumber = await provider.getBlockNumber();
-          return blockNumber;
-        }
-      : () => {},
+    async () => {
+      const blockNumber = await provider.getBlockNumber();
+      return blockNumber;
+    },
     activeChainId !== chainId
       ? {
           refreshInterval: REFRESH_BLOCK_INTERVAL,
@@ -92,7 +90,6 @@ export const useChainCurrentBlocks = () => {
   blocks[ChainId.BSC_MAINNET] = useChainCurrentBlock(ChainId.BSC_MAINNET);
   blocks[ChainId.POLYGON] = useChainCurrentBlock(ChainId.POLYGON);
   blocks[ChainId.AVALANCHE] = useChainCurrentBlock(ChainId.AVALANCHE);
-
   return blocks;
 };
 
