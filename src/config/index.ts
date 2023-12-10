@@ -179,7 +179,17 @@ export const DEXSCREENER_CHAINNAME = {
   43114: "avalanche",
 };
 
+export const DEXSCREENER_DEXID = ["uniswap", "pancakeswap"];
+
 export const TRUSTWALLET_ASSETS = {
   1: "ethereum",
   56: "smartchain",
+};
+
+export const SUBGRAPH_URL = {
+  uniswap: [
+    "https://api.thegraph.com/subgraphs/name/messari/substream-uniswap-v2-ethereum",
+    "https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-ethereum",
+  ],
+  pancakeswap: ["https://data-platform.nodereal.io/graph/v1/59e783c72fc84fcb9274f57574e23878/projects/pancakeswap"],
 };
