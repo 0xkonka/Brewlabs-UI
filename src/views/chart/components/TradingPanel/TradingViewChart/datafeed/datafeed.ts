@@ -28,7 +28,6 @@ function analyzeLog(str, to, resolution) {
     const valueList = temp.split(" ").filter((value) => checkString(value));
     let values = [];
     let j = 0;
-    console.log(valueList);
     for (let i = valueList.length - 1; i >= 7; i -= 9) {
       values.push({
         openUsd: valueList[i - 7],
@@ -112,7 +111,7 @@ export default {
         const url = `https://io.dexscreener.com/dex/chart/amm/v2/${symbolInfo.ticker}&from=${from * 1000}&to=${
           to * 1000
         }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
-        const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
+        const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });
         data = analyzeLog(response.result, to, resSec * 60);

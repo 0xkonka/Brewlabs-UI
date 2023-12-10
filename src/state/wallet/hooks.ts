@@ -70,11 +70,17 @@ export function useTokenBalancesWithLoadingIndicator(
     [tokens]
   );
 
-  const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [JSON.stringify(validatedTokens)]);
+  const validatedTokenAddresses = useMemo(
+    () => validatedTokens.map((vt) => vt.address),
+    [JSON.stringify(validatedTokens)]
+  );
 
   const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, "balanceOf", [address]);
 
-  const anyLoading: boolean = useMemo(() => balances.some((callState) => callState.loading), [JSON.stringify(balances)]);
+  const anyLoading: boolean = useMemo(
+    () => balances.some((callState) => callState.loading),
+    [JSON.stringify(balances)]
+  );
 
   return [
     useMemo(
@@ -193,5 +199,8 @@ export const useUserTokenData = (chainId: ChainId, account: string): SerializedW
 };
 
 export const useUserLpTokenData = (chainId: ChainId, account: string): SerializedWalletToken[] => {
-  return useSelector((state: State) => state.wallet.tokens[chainId]?.[account]?.filter((token) => SUPPORTED_LPs[chainId].includes(token.symbol)) ?? []);
+  return useSelector(
+    (state: State) =>
+      state.wallet.tokens[chainId]?.[account]?.filter((token) => SUPPORTED_LPs[chainId].includes(token.symbol)) ?? []
+  );
 };

@@ -153,15 +153,16 @@ export function useTokenMarketInfos(pair: any) {
         .then((result) => getVolume(result.data))
         .catch((e) => console.log(e));
     } else {
-      const url = `https://io.dexscreener.com/dex/chart/amm/${pair.a}/bars/${DEXSCREENER_CHAINNAME[pair.chainId]}/${
-        pair.address
-      }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
-      axios
-        .post("https://pein-api.vercel.app/api/tokenController/getHTML", { url })
-        .then((result) => {
-          getVolume(result.data.result.bars);
-        })
-        .catch((e) => console.log(e));
+      setVolume24hChange(0);
+
+      // const url = `https://io.dexscreener.com/dex/chart/amm/${pair.a}/bars/${DEXSCREENER_CHAINNAME[pair.chainId]}/${
+      //   pair.address
+      // }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=240&cb=8`;
+      // axios
+      //   .post("https://pein-api.vercel.app/api/tokenController/getHTML", { url })
+      //   .then((result) => {
+      //   })
+      //   .catch((e) => console.log(e));
     }
   }, [strigifiedCurrency]);
 

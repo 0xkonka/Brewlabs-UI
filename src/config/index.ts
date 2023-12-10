@@ -188,7 +188,8 @@ export const TRUSTWALLET_ASSETS = {
 
 export const SUBGRAPH_URL = {
   uniswap: [
-    "https://api.thegraph.com/subgraphs/name/messari/uniswap-v2-swap-ethereum",
+    "https://api.thegraph.com/subgraphs/name/messari/substream-uniswap-v2-ethereum",
     "https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-ethereum",
   ],
+  pancakeswap: ["https://data-platform.nodereal.io/graph/v1/59e783c72fc84fcb9274f57574e23878/projects/pancakeswap"],
 };

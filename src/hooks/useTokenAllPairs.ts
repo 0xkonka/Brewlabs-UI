@@ -2,6 +2,7 @@ import axios from "axios";
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME, SUBGRAPH_URL } from "config";
 import { API_URL } from "config/constants";
 import { ethers } from "ethers";
+import { getPancakeswapV2Transactions } from "utils/getChartTransactions";
 
 function checkString(string) {
   return !isNaN(string) && string.toString().indexOf(".") != -1;
@@ -37,29 +38,36 @@ function getValues(str, chainId) {
   }
 }
 
-async function analyzeLog(str, chainId, dexId) {
+async function analyzeLog(str, chainId, dexId, pair) {
   try {
     const temp = str.replace(/[\u0000-\u0020]/g, " ");
     const swapList = temp.split("swap");
     if (swapList.length) swapList.splice(0, 1);
     const values = swapList.map((swap) => getValues(swap, chainId)).filter((swap) => swap);
-    console.log(values);
     const txs = values.map((value) => `"${value.txnHash}"` + ",");
     const result = await Promise.all(
-      SUBGRAPH_URL[dexId].map((graph) =>
-        axios.post(graph, {
+      SUBGRAPH_URL[dexId].map(async (graph, index) => {
+        if (dexId === "pancakeswap" && index == 0) {
+          const swaps = await getPancakeswapV2Transactions(
+            values.map((value) => value.txnHash),
+            pair
+          );
+          return swaps;
+        }
+        const { data: response } = await axios.post(graph, {
           query: `{
             swaps(first: 1000, where: {hash_in: [${txs}]}) {
               timestamp
               hash
             }
           }`,
-        })
-      )
+        });
+        return response.data.swaps;
+      })
     );
 
     let swaps = [];
-    for (let i = 0; i < result.length; i++) swaps = [...swaps, ...result[i].data.data.swaps];
+    for (let i = 0; i < result.length; i++) swaps = [...swaps, ...result[i]];
 
     return values.map((value) => ({
       ...value,
@@ -109,10 +117,10 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
       }?${query.type ? `ft=${query.type}` : ""}&${query.account ? `m=${query.account.toLowerCase()}` : ""}&${
         query.quote ? `q=${query.quote.toLowerCase()}` : ""
       }&${tb ? `tb=${tb}` : ""}`;
-      const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
+      const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
         url,
       });
-      const txs = await analyzeLog(response.result, chainId, query.a);
+      const txs = await analyzeLog(response.result, chainId, query.dexId, query.pair);
 
       histories = [...histories, ...txs];
       if (!histories.length) break;
