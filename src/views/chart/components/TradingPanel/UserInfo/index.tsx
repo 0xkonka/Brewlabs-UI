@@ -35,9 +35,9 @@ export default function UserInfo({ selectedPair, active, account, setShowType, s
       tb: 0,
       account,
       type: "buyOrSell",
-      a: selectedPair.a,
+      a: selectedPair.otherdexId ?? selectedPair.a,
       base: selectedPair.baseToken.address,
-      dexId: selectedPair.dexId,
+      dexId: selectedPair.otherdexId ?? selectedPair.dexId,
     };
     return query;
   };
