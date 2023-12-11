@@ -2,6 +2,7 @@
 import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
 import { API_URL } from "config/constants";
+import { analyzeBarLog } from "utils/getChartTransactions";
 
 const lastBarsCache = new Map();
 
@@ -16,37 +17,6 @@ const resolutionToSeconds = (r) => {
 
   return Number(r);
 };
-
-function checkString(string) {
-  return !isNaN(string) && string.toString().indexOf(".") != -1;
-}
-
-function analyzeLog(str, to, resolution) {
-  try {
-    to = to - (to % resolution);
-    const temp = str.replace(/[\u0000-\u0020]/g, " ");
-    const valueList = temp.split(" ").filter((value) => checkString(value));
-    let values = [];
-    let j = 0;
-    for (let i = valueList.length - 1; i >= 7; i -= 9) {
-      values.push({
-        openUsd: valueList[i - 7],
-        highUsd: valueList[i - 5],
-        lowUsd: valueList[i - 3],
-        closeUsd: valueList[i - 1],
-        volumeUsd: valueList[i],
-        timestamp: (to - j * resolution) * 1000,
-      });
-      j++;
-    }
-
-    values.reverse();
-    return values;
-  } catch (e) {
-    console.log(e);
-    return [];
-  }
-}
 
 export default {
   onReady: (callback) => {
@@ -114,7 +84,7 @@ export default {
         const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });
-        data = analyzeLog(response.result, to, resSec * 60);
+        data = analyzeBarLog(response.result, to, resSec * 60);
       }
       let bars = [];
       if (!data || !data.length) return;

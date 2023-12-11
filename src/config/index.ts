@@ -175,11 +175,12 @@ export const DEXSCREENER_CHAINNAME = {
   137: "polygon",
   300: "optimism",
   8453: "base",
-  324: "zksync",
   43114: "avalanche",
 };
 
-export const DEXSCREENER_DEXID = ["uniswap", "pancakeswap"];
+export const DEXSCREENER_VERSION = ["v1", "v2", "v3"];
+
+export const DEXSCREENER_DEXID = ["uniswap", "pancakeswap", "pcsv3"];
 
 export const TRUSTWALLET_ASSETS = {
   1: "ethereum",

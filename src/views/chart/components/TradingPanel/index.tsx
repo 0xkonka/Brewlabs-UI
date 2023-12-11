@@ -25,7 +25,7 @@ export default function TradingPanel({ selectedPair, showReverse, marketInfos, h
       pair: selectedPair.address,
       quote: selectedPair.quoteToken.address,
       base: selectedPair.baseToken.address,
-      a: selectedPair.a,
+      a: selectedPair.otherdexId ?? selectedPair.a,
       dexId: selectedPair.dexId,
       type: "buyOrSell",
     };

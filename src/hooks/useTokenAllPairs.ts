@@ -2,7 +2,7 @@ import axios from "axios";
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME, DEXSCREENER_CHAINNAME, SUBGRAPH_URL } from "config";
 import { API_URL } from "config/constants";
 import { ethers } from "ethers";
-import { getPancakeswapV2Transactions } from "utils/getChartTransactions";
+import { getBSCTransactions } from "utils/getChartTransactions";
 
 function checkString(string) {
   return !isNaN(string) && string.toString().indexOf(".") != -1;
@@ -38,7 +38,7 @@ function getValues(str, chainId) {
   }
 }
 
-async function analyzeLog(str, chainId, dexId, pair) {
+async function analyzeLog(str, chainId, dexId, token) {
   try {
     const temp = str.replace(/[\u0000-\u0020]/g, " ");
     const swapList = temp.split("swap");
@@ -47,10 +47,10 @@ async function analyzeLog(str, chainId, dexId, pair) {
     const txs = values.map((value) => `"${value.txnHash}"` + ",");
     const result = await Promise.all(
       SUBGRAPH_URL[dexId].map(async (graph, index) => {
-        if (dexId === "pancakeswap" && index == 0) {
-          const swaps = await getPancakeswapV2Transactions(
+        if (Number(chainId) === 56) {
+          const swaps = await getBSCTransactions(
             values.map((value) => value.txnHash),
-            pair
+            token
           );
           return swaps;
         }
@@ -120,7 +120,8 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
       const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
         url,
       });
-      const txs = await analyzeLog(response.result, chainId, query.dexId, query.pair);
+
+      const txs = await analyzeLog(response.result, chainId, query.dexId, query.base);
 
       histories = [...histories, ...txs];
       if (!histories.length) break;
