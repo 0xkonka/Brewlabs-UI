@@ -77,7 +77,7 @@ function splitArrays(valueList) {
   for (let i = 0; i < valueList.length; i++) {
     const temp = valueList[i];
     pairs[c].push(temp);
-    if (valueList[i - 1] === "a" && i > 0) {
+    if (valueList[i - 1] === "a" && i > 0 && DEXSCREENER_DEXID.includes(valueList[i])) {
       c++;
       pairs.push([]);
     }
@@ -93,103 +93,109 @@ export async function analyzePairLog(str) {
     const pairValues = splitArrays(splitList);
     const pairs = await Promise.all(
       pairValues.map(async (valueList) => {
-        const chain = valueList.find((value) =>
-          Object.keys(DEXSCREENER_CHAINNAME).find((key, i) => value.includes(DEXSCREENER_CHAINNAME[key]))
-        );
+        try {
+          const chain = valueList.find((value) =>
+            Object.keys(DEXSCREENER_CHAINNAME).find((key, i) => value.includes(DEXSCREENER_CHAINNAME[key]))
+          );
 
-        if (!chain) return null;
-        valueList = valueList.filter((value) => value !== chain);
+          if (!chain) return null;
+          valueList = valueList.filter((value) => value !== chain);
 
-        const chainId = Object.keys(DEXSCREENER_CHAINNAME).find((key, i) => chain.includes(DEXSCREENER_CHAINNAME[key]));
+          const chainId = Object.keys(DEXSCREENER_CHAINNAME).find((key, i) =>
+            chain.includes(DEXSCREENER_CHAINNAME[key])
+          );
 
-        let dexIds = valueList.filter((value) => DEXSCREENER_DEXID.includes(value));
-        console.log(dexIds);
-        if (dexIds.length === 1) {
-          dexIds = [dexIds[0], dexIds[0]];
-        }
-
-        let addresses = [],
-          names = [],
-          symbols = [],
-          index = 0;
-        valueList.map((value, i) => {
-          const splitAddresses = value
-            .split("T")
-            .filter((addr) => isAddress(addr))
-            .map((addr) => addr.toLowerCase());
-
-          addresses = [...addresses, ...splitAddresses];
-          if (splitAddresses.length > 0) {
-            if (index === 0) {
-              names.push(valueList[i + 1]);
-            }
-            if (index === 1) {
-              symbols.push(value.split("T")[0]);
-              names.push(valueList[i + 1]);
-              symbols.push(valueList[i + 2]);
-            }
-            index++;
+          let dexIds = valueList.filter((value) => DEXSCREENER_DEXID.includes(value));
+          if (dexIds.length === 1) {
+            dexIds = [dexIds[0], dexIds[0]];
           }
-        });
 
-        const prices = valueList.filter((value) => checkString(value));
-        if (!dexIds[1]) return null;
+          let addresses = [],
+            names = [],
+            symbols = [],
+            index = 0;
+          valueList.map((value, i) => {
+            const splitAddresses = value
+              .split("T")
+              .filter((addr) => isAddress(addr))
+              .map((addr) => addr.toLowerCase());
 
-        const url = `https://io.dexscreener.com/dex/chart/amm/v2/${dexIds[1]}/bars/${DEXSCREENER_CHAINNAME[chainId]}/${
-          addresses[0]
-        }?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=1440&cb=1`;
-        const result = await Promise.all([
-          axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", { url }),
-          multicall(
-            ERC20_ABI,
-            [
-              { name: "balanceOf", address: addresses[1], params: [addresses[0]] },
-              { name: "decimals", address: addresses[1] },
-            ],
-            Number(chainId)
-          ),
-        ]);
+            addresses = [...addresses, ...splitAddresses];
+            if (splitAddresses.length > 0) {
+              if (index === 0) {
+                names.push(valueList[i + 1]);
+              }
+              if (index === 1) {
+                symbols.push(value.split("T")[0]);
+                names.push(valueList[i + 1]);
+                symbols.push(valueList[i + 2]);
+              }
+              index++;
+            }
+          });
 
-        const liquidity = (result[1][0][0] * Number(prices[1]) * 2) / Math.pow(10, result[1][1][0]);
-        const priceBar = analyzeBarLog(result[0].data.result, Date.now(), 1440);
-        let priceChange = 0,
-          volume = 0;
-        if (priceBar.length) {
-          const { closeUsd, openUsd, volumeUsd } = priceBar[0];
-          volume = Number(volumeUsd);
-          priceChange = openUsd ? ((closeUsd - openUsd) / openUsd) * 100 : 0;
+          const prices = valueList.filter((value) => checkString(value));
+          if (!dexIds[1]) return null;
+
+          const url = `https://io.dexscreener.com/dex/chart/amm/v2/${dexIds[1]}/bars/${
+            DEXSCREENER_CHAINNAME[chainId]
+          }/${addresses[0]}?from=${Date.now() - 86400000 * 2}&to=${Date.now()}&res=1440&cb=1`;
+          const result = await Promise.all([
+            axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", { url }),
+            multicall(
+              ERC20_ABI,
+              [
+                { name: "balanceOf", address: addresses[1], params: [addresses[0]] },
+                { name: "decimals", address: addresses[1] },
+              ],
+              Number(chainId)
+            ),
+          ]);
+
+          const liquidity = (result[1][0][0] * Number(prices[1]) * 2) / Math.pow(10, result[1][1][0]);
+          const priceBar = analyzeBarLog(result[0].data.result, Date.now(), 1440);
+          let priceChange = 0,
+            volume = 0;
+          if (priceBar.length) {
+            const { closeUsd, openUsd, volumeUsd } = priceBar[0];
+            volume = Number(volumeUsd);
+            priceChange = openUsd ? ((closeUsd - openUsd) / openUsd) * 100 : 0;
+          }
+          return {
+            chainId: Number(chainId),
+            a: dexIds[1],
+            dexId: dexIds[0],
+            address: addresses[0],
+            pairAddress: addresses[0],
+            baseToken: {
+              address: addresses[1],
+              name: names[0],
+              symbol: symbols[0],
+              price: Number(prices[1]),
+            },
+            quoteToken: {
+              address: addresses[2],
+              name: names[1],
+              symbol: symbols[1],
+              price: prices[1] / prices[0],
+            },
+            priceUsd: Number(prices[1]),
+            reserve0: 0,
+            reserve1: 0,
+            liquidity: { usd: liquidity },
+            tvl: liquidity,
+            volume: { h24: volume ?? 0 },
+            priceChange: { h24: priceChange ?? 0 },
+          };
+        } catch (e) {
+          console.log(e);
+          return null;
         }
-        return {
-          chainId: Number(chainId),
-          a: dexIds[1],
-          dexId: dexIds[0],
-          address: addresses[0],
-          pairAddress: addresses[0],
-          baseToken: {
-            address: addresses[1],
-            name: names[0],
-            symbol: symbols[0],
-            price: Number(prices[1]),
-          },
-          quoteToken: {
-            address: addresses[2],
-            name: names[1],
-            symbol: symbols[1],
-            price: prices[1] / prices[0],
-          },
-          priceUsd: Number(prices[1]),
-          reserve0: 0,
-          reserve1: 0,
-          liquidity: { usd: liquidity },
-          tvl: liquidity,
-          volume: { h24: volume ?? 0 },
-          priceChange: { h24: priceChange ?? 0 },
-        };
       })
     );
     return pairs.filter((pair) => pair);
   } catch (e) {
     console.log(e);
-    return null;
+    return [];
   }
 }
