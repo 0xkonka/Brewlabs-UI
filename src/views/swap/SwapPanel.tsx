@@ -299,7 +299,7 @@ export default function SwapPanel({
         currencies[Field.INPUT]?.address?.toLowerCase() === "0x2f86747a9c5db9b80840a3a588e2b87f367188d6"
       ) {
         setAutoMode(false);
-        parseCustomSlippage("4");
+        parseCustomSlippage("5.5");
       } else setAutoMode(true);
     } else {
       setAutoMode(false);
