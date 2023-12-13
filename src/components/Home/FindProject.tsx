@@ -14,7 +14,7 @@ const FindProject = () => {
     NETWORKS[ChainId.POLYGON],
     NETWORKS[ChainId.AVALANCHE],
     NETWORKS[ChainId.FANTOM],
-    NETWORKS[324],
+    NETWORKS[ChainId.ARBITRUM],
   ];
 
   const [selectedNetwork, setSelectedNetwork] = useState(0);
@@ -31,7 +31,15 @@ const FindProject = () => {
       link: "https://brewlabs-airdrop.tools/",
       detail:
         "Brewlabs airdrop tool is a simple multisend tool that allows users to transfer tokens or NFTs to target wallets. Transfer tokens to hundreds or thousands of addresses quickly and seemlessly with this affordable solution to suite your multi-transfer needs.",
-      activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.AVALANCHE, ChainId.FANTOM],
+      activeNetwork: [
+        ChainId.ETHEREUM,
+        ChainId.BSC_MAINNET,
+        ChainId.POLYGON,
+        ChainId.AVALANCHE,
+        ChainId.FANTOM,
+        ChainId.BASE,
+        ChainId.ARBITRUM,
+      ],
       isSoon: [],
     },
     {
