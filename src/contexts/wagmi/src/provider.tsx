@@ -10,7 +10,8 @@ const wagmiConfig = defaultWagmiConfig({
   projectId: ProjectId,
   metadata: Metadata,
 });
-createWeb3Modal({ wagmiConfig, projectId: ProjectId, chains });
+const ledgerId = '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927';
+createWeb3Modal({ wagmiConfig, projectId: ProjectId, chains, excludeWalletIds: [ledgerId] });
 
 export function WagmiProvider(props) {
   return <WagmiConfig config={wagmiConfig}>{props.children}</WagmiConfig>;
