@@ -30,6 +30,8 @@ import TokenLogo from "components/logo/TokenLogo";
 import StyledButton from "../../StyledButton";
 import TokenSelect from "../TokenSelect";
 import { useFactory } from "./hooks";
+import { useUserTokenData } from "state/wallet/hooks";
+import { useAccount } from "wagmi";
 
 const DURATIONS = [365, 180, 90, 60];
 
@@ -37,8 +39,11 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
   const dispatch = useAppDispatch();
   const { chainId } = useActiveChainId();
   const { data: signer } = useSigner();
+  const { address: account } = useAccount();
 
-  const { pending, setPending, tokens }: any = useContext(DashboardContext);
+  const tokens = useUserTokenData(chainId, account);
+
+  const { pending, setPending }: any = useContext(DashboardContext);
 
   const factory = useFarmFactory(chainId);
   const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
