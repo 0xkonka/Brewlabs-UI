@@ -99,7 +99,6 @@ export async function analyzePairLog(str) {
           );
 
           if (!chain) return null;
-          console.log(valueList);
           valueList = valueList.filter((value) => value !== chain);
 
           const chainId = Object.keys(DEXSCREENER_CHAINNAME).find((key, i) =>
