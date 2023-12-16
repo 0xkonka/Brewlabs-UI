@@ -11,6 +11,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import CurrencySelector from "components/CurrencySelector";
 import { DrawSVG } from "components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
+import { isAddress } from "utils";
 
 const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const { chainId } = useActiveChainId();
@@ -23,7 +24,7 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const filteredTokenList = useMemo(
     () =>
       supportedTokens
-        .filter((t) => t.chainId === chainId && t.address)
+        .filter((t) => isAddress(t.address) && t.chainId === chainId && t.address)
         .map((t) => new Token(chainId, getAddress(t.address), t.decimals, t.symbol, t.name, undefined, t.logoURI)),
     [supportedTokens.length]
   );

@@ -16,13 +16,14 @@ import { useSigner } from "utils/wagmi";
 import { useAccount } from "wagmi";
 import { API_URL } from "config/constants";
 import { ethers } from "ethers";
+import { analyzePairLog } from "utils/getChartTransactions";
 
 export const useLPTokens = () => {
   const dispatch = useAppDispatch();
 
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  // const account = "0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799";
+  // const account = "0xaE837FD1c51705F3f8f232910dfeCB9180541B27";
   const { data: signer } = useSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
@@ -45,13 +46,13 @@ export const useLPTokens = () => {
               liquidity: { ...pair.liquidity, quote: pair.liquidity.usd / (pair.totalSupply ?? 1) },
             };
           } else {
-            const url = `https://io.dexscreener.com/dex/search/v2/pairs?q=${data.address}&s=2`;
-            const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
+            const url = `https://io.dexscreener.com/dex/search/v3/pairs?q=${data.address}`;
+            const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
               url,
             });
-            if (!response.result.pairs.length) return null;
-
-            pair = response.result.pairs[0];
+            const pairs = await analyzePairLog(response.result);
+            if (!pairs.length) return null;
+            pair = pairs[0];
             const calls = [
               {
                 name: "decimals",

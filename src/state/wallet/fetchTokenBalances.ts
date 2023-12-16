@@ -5,7 +5,7 @@ import claimableTokenAbi from "config/abi/claimableToken.json";
 import dividendTrackerAbi from "config/abi/dividendTracker.json";
 
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME } from "config";
-import { DEX_GURU_WETH_ADDR } from "config/constants";
+import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
 import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrices";
 import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
@@ -23,50 +23,84 @@ async function getNativeBalance(address: string, chainId: number) {
 
 async function getTokenBaseBalances(account: string, chainId: number) {
   if (!isAddress(account) || !Object.keys(COVALENT_CHAIN_NAME).includes(chainId.toString())) return [];
-  let data: any = [];
-  const { data: response } = await axios.get(
-    `https://api.covalenthq.com/v1/${COVALENT_CHAIN_NAME[chainId]}/address/${account}/historical_balances/?`,
-    { headers: { Authorization: `Bearer ${COVALENT_API_KEYS[0]}` } }
-  );
-  if (response.error) return [];
-  const items = response.data.items.filter(
-    (item) => item.contract_name && item.contract_decimals && item.contract_ticker_symbol
-  );
-  const calls = items
-    .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
-    .map((item) => ({
-      name: "balanceOf",
-      params: [account],
-      address: item.contract_address,
-    }));
+  let tokens: any = [];
+  if (chainId === 56) {
+    const { data: response } = await axios.post(`${API_URL}/html/getTokenBalances`, { chainId, address: account });
+    tokens = response.map((item) => ({ ...item, isScam: false }));
+  } else {
+    const baseURL = `https://eth-mainnet.g.alchemy.com/v2/bXqwnLZHuGoI2wcSnabNiQJL0K83OTnQ`;
 
-  const balanceResult = await multicall(ERC20_ABI, calls, chainId);
+    // Data for making the request to query token balances
+    const data = JSON.stringify({
+      jsonrpc: "2.0",
+      method: "alchemy_getTokenBalances",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      params: [`${account}`],
+      id: 42,
+    });
 
-  data = items
-    .filter((item) => item.contract_address !== DEX_GURU_WETH_ADDR)
-    .map((item, i) => {
-      return {
-        address: item.contract_address,
-        balance: balanceResult[i] / Math.pow(10, item.contract_decimals),
-        decimals: item.contract_decimals,
-        name: item.contract_name,
-        symbol: item.contract_ticker_symbol,
-        isScam: item.is_spam,
-      };
-    })
-    .filter((item) => item.balance > 0);
+    // config object for making a request with axios
+    const config = {
+      method: "post",
+      url: baseURL,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
 
+    let response = await axios(config);
+    response = response["data"];
 
+    // Getting balances from the response
+    const balances = response["result"];
+
+    // Remove tokens with zero balance
+    const nonZeroBalances = await balances.tokenBalances.filter((token) => {
+      return parseInt(token.tokenBalance) !== 0;
+    });
+
+    tokens = await Promise.all(
+      nonZeroBalances.map(async (token) => {
+        const options = {
+          method: "POST",
+          url: baseURL,
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+          },
+          data: {
+            id: 1,
+            jsonrpc: "2.0",
+            method: "alchemy_getTokenMetadata",
+            params: [token.contractAddress],
+          },
+        };
+
+        // getting the token metadata
+        const { data: metadata } = await axios.request(options);
+        return {
+          ...metadata.result,
+          balance: token.tokenBalance / Math.pow(10, metadata.result.decimals),
+          address: token.contractAddress,
+        };
+      })
+    );
+    tokens = tokens.map((token) => ({ ...token, isScam: false }));
+  }
   const ethBalance = await getNativeBalance(account, chainId);
 
-  data.push({
+  tokens.push({
     address: DEX_GURU_WETH_ADDR,
     balance: ethBalance / Math.pow(10, 18),
     decimals: 18,
     name: NATIVE_CURRENCIES[chainId].name,
     symbol: NATIVE_CURRENCIES[chainId].symbol,
   });
-  return data;
+
+  return tokens;
 }
 
 const fetchTokenInfo = async (token: any, chainId: number, address: string, signer: any) => {

@@ -29,7 +29,6 @@ export async function getTransactions() {
           axios.post("https://api.dex.guru/v3/tokens/transactions/count", query),
           axios.post("https://api.dex.guru/v3/tokens/transactions/count", query24h),
         ]);
-        console.log(response);
         count += response[0].data.count;
         count24h += response[1].data.count;
         return;
