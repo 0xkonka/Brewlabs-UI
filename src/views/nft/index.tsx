@@ -7,6 +7,7 @@ import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
 import NFTActions from "./NFTActions";
 import NFTList from "./NFTList";
+import { DocSVG } from "@components/dashboard/assets/svgs";
 
 const NFT = () => {
   return (
@@ -23,6 +24,14 @@ const NFT = () => {
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Brewlabs NFT's" />
+                  <a
+                    className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
+                    href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-brewlabs-nft"
+                    target="_blank"
+                  >
+                    <div>LEARN MORE</div>
+                    <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
+                  </a>
                 </div>
               }
             />

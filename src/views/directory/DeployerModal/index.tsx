@@ -13,6 +13,7 @@ import FarmDeployer from "./FarmDeployer";
 import PoolDeployer from "./PoolDeployer";
 import IndexDeployer from "./IndexDeployer";
 import TokenDeployer from "./TokenDeployer";
+import Soon from "@components/Soon";
 
 const responsive = {
   desktop: {
@@ -82,6 +83,11 @@ const HeroSection = ({
                 <div>{data}</div>
                 <div className="mt-7 scale-125">{UploadSVG}</div>
                 {deployType === data ? <div className="absolute right-0 top-0 scale-[0.6]">{checkCircleSVG}</div> : ""}
+                {data === "Token" ? (
+                  <Soon text={"New"} className="!left-2 !top-2 !rounded !px-0.5 !py-0.5 !text-[10px]" />
+                ) : (
+                  ""
+                )}
               </DeployItem>
             );
           })}
