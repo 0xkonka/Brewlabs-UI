@@ -16,6 +16,9 @@ export const getMasterChefAddress = (chainId: ChainId) => {
 export const getMulticallAddress = (chainId: ChainId) => {
   return getAddress(addresses.multiCall, chainId);
 };
+export const getTokenFactoryAddress = (chainId: ChainId) => {
+  return getAddress(addresses.tokenFactory, chainId);
+};
 export const getFarmFactoryAddress = (chainId: ChainId) => {
   return getAddress(addresses.farmFactory, chainId);
 };
@@ -46,13 +49,13 @@ export const getAggregatorAddress = (chainId: ChainId) => {
 };
 export const getBrewlabsAggregationRouterAddress = (chainId: ChainId) => {
   return getAddress(addresses.brewlabsAggregationRouter, chainId);
-}
+};
 export const getBrewlabsRouterAddress = (chainId: ChainId) => {
   return ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId]?.[0]?.key]?.[chainId];
-}
+};
 export const getBrewlabsFeeManagerAddress = (chainId: ChainId) => {
   return getAddress(addresses.brewlabsFeeManager, chainId);
-}
+};
 export const getZapperAddress = (chainId: ChainId) => {
   return getAddress(addresses.zapper, chainId);
 };
@@ -79,4 +82,4 @@ export const getExternalMasterChefAddress = (appId: AppId, version = Chef.MASTER
 };
 export const addressWithout0x = (address: string) => {
   return address.replace("0x", "");
-}
+};

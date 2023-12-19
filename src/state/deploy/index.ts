@@ -3,11 +3,18 @@ import { NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { serializeToken } from "state/user/hooks/helpers";
-import { getFarmFactoryAddress, getIndexFactoryAddress } from "utils/addressHelpers";
+import { getFarmFactoryAddress, getIndexFactoryAddress, getTokenFactoryAddress } from "utils/addressHelpers";
 import { fetchFarmFactoryData } from "./fetchFactory";
 import { fetchIndexFactoryData } from "./fetchIndex";
+import { fetchTokenFactoryData } from "./fetchToken";
 
 const initialState = {
+  token: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => ({
+    chainId,
+    address: getTokenFactoryAddress(chainId),
+    payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
+    serviceFee: "0",
+  })),
   farm: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => ({
     chainId,
     address: getFarmFactoryAddress(chainId),
@@ -28,6 +35,12 @@ const initialState = {
     depositFeeLimit: 0.25,
     commissionFeeLimit: 1,
   })),
+};
+
+export const fetchTokenFactoryDataAsync = (chainId) => async (dispatch) => {
+  const result = await fetchTokenFactoryData(chainId);
+
+  dispatch(setDeployPublicData({ type: "token", data: result }));
 };
 
 export const fetchFarmFactoryDataAsync = (chainId) => async (dispatch) => {

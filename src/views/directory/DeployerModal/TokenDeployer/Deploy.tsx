@@ -1,12 +1,65 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useState } from "react";
 import StyledButton from "../../StyledButton";
 import StyledInput from "@components/StyledInput";
 import { numberWithCommas } from "utils/functions";
+import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useTokenFactory } from "state/deploy/hooks";
+import { useFactory } from "./hooks";
+import { toast } from "react-toastify";
+import { useContext } from "react";
+import { DashboardContext } from "contexts/DashboardContext";
+import { ethers } from "ethers";
+import TokenFactoryAbi from "config/abi/token/factory.json";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 
 const Deploy = ({ setOpen, step, setStep, values }) => {
-  const { name, symbol, decimals, totalSupply, setName, setSymbol, setDecimals, setTotalSupply } = values;
+  const { name, symbol, decimals, totalSupply, setName, setSymbol, setDecimals, setTotalSupply, setDeployedAddress } =
+    values;
+
+  const { chainId } = useActiveChainId();
+
+  const factory = useTokenFactory(chainId);
+
+  const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+
+  const { pending, setPending }: any = useContext(DashboardContext);
+
+  const showError = (errorMsg: string) => {
+    if (errorMsg) toast.error(errorMsg);
+  };
+
+  const handleDeploy = async () => {
+    if (totalSupply === 0) {
+      toast.error("Total supply should be greater than zero");
+      return;
+    }
+
+    setPending(true);
+
+    try {
+      // deploy farm contract
+      const tx = await onCreate(name, symbol, decimals, totalSupply);
+
+      const iface = new ethers.utils.Interface(TokenFactoryAbi);
+      for (let i = 0; i < tx.logs.length; i++) {
+        try {
+          const log = iface.parseLog(tx.logs[i]);
+          if (log.name === "StandardTokenCreated") {
+            const token = log.args.token;
+            setDeployedAddress(token);
+            setStep(3);
+            break;
+          }
+        } catch (e) {}
+      }
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError, getNativeSybmol(chainId));
+      setStep(2);
+    }
+    setPending(false);
+  };
 
   return (
     <div className="font-brand text-white">
@@ -73,15 +126,18 @@ const Deploy = ({ setOpen, step, setStep, values }) => {
         </div>
         <div className="flex justify-between">
           <div>Fee</div>
-          <div className="text-[#FFFFFF40]">1 BNB</div>
+          <div className="text-[#FFFFFF40]">
+            {ethers.utils.formatEther(factory.serviceFee)} {getNativeSybmol(chainId)}
+          </div>
         </div>
       </div>
       <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" />
       <StyledButton
         type="primary"
         className="!h-12"
-        disabled={!name || !symbol || !decimals || !totalSupply}
-        onClick={() => setStep(3)}
+        disabled={!name || !symbol || !decimals || !totalSupply || pending}
+        pending={pending}
+        onClick={() => handleDeploy()}
       >
         Create my token
       </StyledButton>

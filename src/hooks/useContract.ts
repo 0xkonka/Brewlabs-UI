@@ -34,6 +34,7 @@ import {
   getMirrorNftContract,
   getNftStakingContract,
   getMulticallContract,
+  getTokenFactoryContract,
 } from "utils/contractHelpers";
 import { useSigner } from "utils/wagmi";
 
@@ -99,6 +100,11 @@ export const useOldIndexContract = (chainId: ChainId, contractAddress: string) =
     () => getOldIndexContract(chainId, contractAddress, signer ?? undefined),
     [chainId, contractAddress, signer]
   );
+};
+
+export const useTokenFactoryContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getTokenFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 export const useFarmFactoryContract = (chainId: ChainId) => {
