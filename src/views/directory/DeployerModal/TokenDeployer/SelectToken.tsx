@@ -10,7 +10,7 @@ import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
 const SelectToken = ({ setStep, tokenType, setTokenType }) => {
   const { chainId } = useActiveChainId();
 
-  const isSupportedChain = Object.keys(contracts.farmFactory).includes(chainId.toString());
+  const isSupportedChain = Object.keys(contracts.tokenFactory).includes(chainId.toString());
 
   const tokenTypes = ["Standard Token"];
 

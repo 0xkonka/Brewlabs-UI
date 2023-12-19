@@ -11,6 +11,7 @@ import fantomTokens from "./250";
 import avalancheTokens from "./43114";
 import cronosTokens from "./25";
 import briseTokens from "./32520";
+import arbitrumTokens from "./42161";
 
 interface SerializedTokenList {
   [symbol: string]: SerializedToken;
@@ -26,6 +27,7 @@ export const tokens = {
   [ChainId.AVALANCHE]: avalancheTokens,
   [ChainId.CRONOS]: cronosTokens,
   [ChainId.BRISE]: briseTokens,
+  [ChainId.ARBITRUM]: arbitrumTokens,
 };
 
 export const usdToken = {

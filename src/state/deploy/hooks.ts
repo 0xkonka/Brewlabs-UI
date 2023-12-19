@@ -6,7 +6,21 @@ import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useAppDispatch } from "state";
 import { State } from "state/types";
 
-import { fetchFarmFactoryDataAsync, fetchIndexFactoryDataAsync } from ".";
+import { fetchFarmFactoryDataAsync, fetchIndexFactoryDataAsync, fetchTokenFactoryDataAsync } from ".";
+
+export const usePollTokenFactoryData = () => {
+  const dispatch = useAppDispatch();
+
+  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+    Object.keys(contracts.tokenFactory)
+      .map((c) => +c)
+      .includes(chainId)
+  );
+
+  useEffect(() => {
+    supportedChains.forEach((chainId) => dispatch(fetchTokenFactoryDataAsync(chainId)));
+  }, [dispatch]);
+};
 
 export const usePollFarmFactoryData = () => {
   const dispatch = useAppDispatch();
@@ -41,3 +55,6 @@ export const useFarmFactory = (chainId) =>
 
 export const useIndexFactory = (chainId) =>
   useSelector((state: State) => state.deploy.indexes.find((data) => data.chainId === chainId));
+
+export const useTokenFactory = (chainId) =>
+  useSelector((state: State) => state.deploy.token.find((data) => data.chainId === chainId));

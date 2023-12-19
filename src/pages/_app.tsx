@@ -33,7 +33,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAccountEventListener } from "hooks/useAccountEventListener";
 import { persistor, useStore } from "state";
 import { usePollBlockNumber } from "state/block/hooks";
-import { usePollFarmFactoryData, usePollIndexFactoryData } from "state/deploy/hooks";
+import { usePollFarmFactoryData, usePollIndexFactoryData, usePollTokenFactoryData } from "state/deploy/hooks";
 import { usePollFarmsPublicDataFromApi, usePollFarmsWithUserData } from "state/farms/hooks";
 import { useFetchIndexesWithUserData, useFetchPublicIndexesData, usePollIndexesFromApi } from "state/indexes/hooks";
 import { useFetchNftUserData, useFetchPublicNftData } from "state/nfts/hooks";
@@ -79,6 +79,7 @@ function GlobalHooks() {
   useFetchPublicIndexesData();
   useFetchIndexesWithUserData();
 
+  usePollTokenFactoryData();
   usePollFarmFactoryData();
   usePollIndexFactoryData();
 

@@ -25,7 +25,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.ARBITRUM],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
@@ -67,6 +67,7 @@ export const EXPLORER_NAMES = {
 
 export const EXPLORER_URLS = {
   [ChainId.ETHEREUM]: "https://etherscan.io",
+  [ChainId.GOERLI]: "https://goerli.etherscan.io/",
   [ChainId.ARBITRUM]: "https://arbiscan.io",
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
   [ChainId.POLYGON]: "https://polygonscan.com",
@@ -180,11 +181,22 @@ export const NETWORKS = {
       decimals: 18,
     },
     rpcUrls: [
+      "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       "https://eth.llamarpc.com",
       "https://ethereum.publicnode.com",
-      "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       "https://eth.meowrpc.com",
     ],
+    blockExplorerUrls: ["https://etherscan.io"],
+  },
+  [ChainId.GOERLI]: {
+    chainId: `0x${Number(ChainId.GOERLI).toString(16)}`,
+    chainName: "Goerli Mainnet",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   [ChainId.ARBITRUM]: {

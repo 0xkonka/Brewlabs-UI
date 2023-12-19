@@ -10,6 +10,7 @@ import CommunityList from "./CommunityList";
 import CommunityModal from "./CommunityModal";
 import { useState } from "react";
 import NFTComponent from "@components/NFTComponent";
+import { DocSVG } from "@components/dashboard/assets/svgs";
 
 const Community = () => {
   const [communityOpen, setCommunityOpen] = useState(false);
@@ -28,7 +29,14 @@ const Community = () => {
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Community Proposals" />
-                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">By Brewlabs</div>
+                  <a
+                    className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
+                    href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-communities"
+                    target="_blank"
+                  >
+                    <div>LEARN MORE</div>
+                    <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
+                  </a>
                 </div>
               }
             />

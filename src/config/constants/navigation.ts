@@ -7,6 +7,7 @@ type NavigationItem = {
   external: boolean;
   icon: IconName;
   isBeta?: boolean;
+  isNew?: boolean;
   svg?: boolean;
   newItem?: number;
 };
@@ -72,6 +73,7 @@ export const navigationData = [
     external: false,
     icon: "ArrowDownOnSquareIcon",
     svg: DeployerSVG,
+    isNew: true,
   },
   {
     name: "Brewlabs NFT",

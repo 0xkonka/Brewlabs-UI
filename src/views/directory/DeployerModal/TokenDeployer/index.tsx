@@ -24,7 +24,17 @@ const TokenDeployer = ({ setOpen, step, setStep }) => {
           setOpen={setOpen}
           step={step}
           setStep={setStep}
-          values={{ name, symbol, decimals, totalSupply, setName, setSymbol, setDecimals, setTotalSupply }}
+          values={{
+            name,
+            symbol,
+            decimals,
+            totalSupply,
+            setName,
+            setSymbol,
+            setDecimals,
+            setTotalSupply,
+            setDeployedAddress,
+          }}
         />
       ) : step === 3 ? (
         <Summarize setOpen={setOpen} values={{ name, symbol, decimals, totalSupply, deployedAddress }} />

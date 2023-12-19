@@ -34,6 +34,7 @@ import FarmFactoryAbi from "config/abi/farm/factory.json";
 import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
 import MirrorNftAbi from "config/abi/nfts/mirrorNft.json";
 import NftStakingAbi from "config/abi/nfts/nftStaking.json";
+import TokenFactoryAbi from "config/abi/token/factory.json";
 
 // Addresses
 import {
@@ -52,6 +53,7 @@ import {
   getFlaskNftAddress,
   getMirrorNftAddress,
   getNftStakingAddress,
+  getTokenFactoryAddress,
 } from "utils/addressHelpers";
 import { simpleRpcProvider } from "./providers";
 
@@ -163,6 +165,10 @@ export const getBrewlabsAggregationRouterContract = (
   signer?: ethers.Signer | ethers.providers.Provider
 ) => {
   return getContract(chainId, getBrewlabsAggregationRouterAddress(chainId), brewlabsAggregationRouterAbi, signer);
+};
+
+export const getTokenFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getTokenFactoryAddress(chainId), TokenFactoryAbi, signer);
 };
 
 export const getFarmFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {

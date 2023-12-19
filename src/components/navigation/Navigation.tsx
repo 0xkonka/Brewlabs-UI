@@ -51,7 +51,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     item.href === router.pathname
                       ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-500 dark:hover:bg-gray-800",
-                    "group flex items-center rounded-md px-2 py-2 text-sm font-medium tooltip tooltip-right"
+                    "group tooltip tooltip-right flex items-center rounded-md px-2 py-2 text-sm font-medium"
                   )}
                 >
                   {item.svg ? (
@@ -78,12 +78,14 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     {item.name}
                     {item.isBeta ? (
                       <Soon text={"Beta"} className="!-right-12 !-top-3 !rounded !px-0.5 !py-0.5 !text-[10px]" />
+                    ) : item.isNew ? (
+                      <Soon text={"New"} className="!-right-12 !-top-3 !rounded !px-0.5 !py-0.5 !text-[10px]" />
                     ) : (
                       ""
                     )}
                     {item.name === "Communities" ? (
                       <Notification count={newProposalCount} className="-right-7 -top-1" />
-                    ) : ( 
+                    ) : (
                       ""
                     )}
                   </span>
