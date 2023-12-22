@@ -22,7 +22,6 @@ function getValues(str, chainId) {
 
     const isBuy = valueList.find((value) => value === "buy");
     if (!txHash || !sender || values.length !== 4 || values.find((value) => !checkString(value))) {
-      console.log(txHash, sender, values, valueList);
       return null;
     }
     return {
@@ -79,8 +78,8 @@ async function analyzeLog(str, chainId, dexId, token) {
   }
 }
 export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch = "default", timestamp = 0) {
-  let histories = [];
-  let tb = query.tb ?? 0;
+  let brewTb = query.tb ?? 0,
+    tb = query.tb ?? 0;
   try {
     if (query.type === "holders") {
       const { data: response } = await axios.get(
@@ -98,19 +97,21 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
         chainId,
       }));
     }
-
-    if (query.a === "brewlabs") {
+    let brewHistories = [];
+    if (query.otherdexId === "brewlabs") {
       do {
         const brewSwapUrl = `${API_URL}/chart/log/all?pair=${query.pair.toLowerCase()}&q=${query.quote.toLowerCase()}&tb=${tb}${
           query.account ? `&account=${query.account.toLowerCase()}` : ""
         }&type=${query.type}`;
         const { data: response } = await axios.get(brewSwapUrl);
         if (!response.length) break;
-        histories = [...histories, ...response].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
-        tb = histories[histories.length - 1].timestamp;
-      } while (fetch === "all" && histories.length % 100 === 0 && tb >= timestamp);
-      return histories;
+        brewHistories = [...brewHistories, ...response].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+        brewTb = brewHistories[brewHistories.length - 1].timestamp;
+      } while (fetch === "all" && brewHistories.length % 100 === 0 && brewTb >= timestamp);
     }
+
+    let histories = [];
+
     do {
       const url = `https://io.dexscreener.com/dex/log/amm/v2/${query.a}/all/${DEXSCREENER_CHAINNAME[chainId]}/${
         query.pair
@@ -121,8 +122,11 @@ export async function fetchTradingHistoriesByDexScreener(query, chainId, fetch =
         url,
       });
 
-      const txs = await analyzeLog(response.result, chainId, query.dexId, query.base);
-
+      let txs = await analyzeLog(response.result, chainId, query.dexId, query.base);
+      txs = txs.map((tx) => {
+        const isExsiting = brewHistories.find((brewTx) => brewTx.transactionAddress === tx.txnHash);
+        return { ...tx, blockTimestamp: isExsiting ? isExsiting.timestamp : tx.blockTimestamp };
+      });
       histories = [...histories, ...txs];
       if (!histories.length) break;
       tb = histories[histories.length - 1].blockTimestamp;

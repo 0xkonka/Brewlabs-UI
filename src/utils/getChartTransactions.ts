@@ -43,22 +43,42 @@ export function checkString(string) {
   return !isNaN(string) && string.toString().indexOf(".") != -1;
 }
 
-export function analyzeBarLog(str, to, resolution) {
+export function analyzeBarLog(str, resToSec, to, resolution) {
   try {
-    to = to - (to % resolution);
     const temp = str.replace(/[\u0000-\u0020]/g, " ");
     const valueList = temp.split(" ").filter((value) => checkString(value));
     let values = [];
-    let j = 0;
-    for (let i = valueList.length - 1; i >= 7; i -= 9) {
-      values.push({
-        openUsd: valueList[i - 7],
-        highUsd: valueList[i - 5],
-        lowUsd: valueList[i - 3],
-        closeUsd: valueList[i - 1],
-        volumeUsd: valueList[i],
-        timestamp: (to - j * resolution) * 1000,
-      });
+    let j = 0,
+      i = valueList.length - 1;
+    to = to - (to % (resToSec * resolution));
+    let openUsd,
+      highUsd = -1,
+      lowUsd = 1000000000,
+      closeUsd = null,
+      volumeUsd = 0;
+    for (; i >= 7; i -= 9) {
+      closeUsd = closeUsd === null ? parseFloat(valueList[i - 1]) : closeUsd;
+      highUsd = highUsd < parseFloat(valueList[i - 5]) ? parseFloat(valueList[i - 5]) : highUsd;
+      lowUsd = lowUsd > parseFloat(valueList[i - 3]) ? parseFloat(valueList[i - 3]) : lowUsd;
+
+      volumeUsd += parseFloat(valueList[i]);
+      if (j % resolution === resolution - 1) {
+        openUsd = parseFloat(valueList[i - 7]);
+        values.push({
+          openUsd,
+          highUsd,
+          lowUsd,
+          closeUsd,
+          volumeUsd,
+          timestamp: (to - j * resToSec) * 1000,
+        });
+        openUsd = null;
+        highUsd = -1;
+        lowUsd = 1000000000;
+        closeUsd = null;
+        volumeUsd = 0;
+      }
+
       j++;
     }
 
@@ -150,7 +170,7 @@ export async function analyzePairLog(str) {
             ),
           ]);
           const liquidity = (result[1][0][0] * Number(prices[1]) * 2) / Math.pow(10, result[1][1][0]);
-          const priceBar = analyzeBarLog(result[0].data.result, Date.now(), 1440);
+          const priceBar = analyzeBarLog(result[0].data.result, 1440 * 60, Date.now(), 1);
           let priceChange = 0,
             volume = 0;
           if (priceBar.length) {
@@ -185,7 +205,6 @@ export async function analyzePairLog(str) {
             priceChange: { h24: priceChange ?? 0 },
           };
         } catch (e) {
-          console.log(e);
           return null;
         }
       })

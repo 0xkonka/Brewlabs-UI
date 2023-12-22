@@ -25,9 +25,10 @@ export default function SwapHistory({ selectedPair, holders30d }) {
       pair: selectedPair.address,
       quote: selectedPair.quoteToken.address,
       tb,
-      a: selectedPair.otherdexId ?? selectedPair.a,
+      a: selectedPair.a,
       base: selectedPair.baseToken.address,
-      dexId: selectedPair.otherdexId ?? selectedPair.dexId,
+      dexId: selectedPair.dexId,
+      otherdexId: selectedPair.otherdexId,
     };
     switch (showType) {
       case 0:

@@ -3,10 +3,11 @@ import axios from "axios";
 import { DEXSCREENER_CHAINNAME } from "config";
 import { API_URL } from "config/constants";
 import { analyzeBarLog } from "utils/getChartTransactions";
+import avro from "avsc";
 
 const lastBarsCache = new Map();
 
-const supportedResolutions = ["5", "15", "30", "60", "240", "D"];
+const supportedResolutions = ["5", "15", "30", "60", "240", "D", "W", "M"];
 
 const config = {
   supported_resolutions: supportedResolutions,
@@ -17,6 +18,11 @@ const resolutionToSeconds = (r) => {
 
   return Number(r);
 };
+let lastResc = null;
+let lastTime = null;
+let lastTicker = null;
+let lastBars = [];
+let lastBlock = 1000000000000000;
 
 export default {
   onReady: (callback) => {
@@ -64,10 +70,18 @@ export default {
   getBars: async (symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) => {
     try {
       const swap = symbolInfo.ticker.split("/")[0];
+      const chain = symbolInfo.ticker.split("/")[2];
+      console.log("Resolution", resolution, from, to, swap);
 
-      console.log("Resolution", resolution, from, to);
       const resSec = resolutionToSeconds(resolution);
 
+      if (lastResc !== resolution || lastTicker !== symbolInfo.ticker) {
+        lastTime = null;
+        lastBlock = 1000000000000000;
+        lastResc = resolution;
+        lastTicker = symbolInfo.ticker;
+        lastBars = [];
+      }
       let data = [];
       if (swap === "brewlabs") {
         const pair = symbolInfo.ticker.split("?")[0].split("/")[3];
@@ -78,28 +92,54 @@ export default {
         const { data: response } = await axios.get(url);
         data = response;
       } else {
-        const url = `https://io.dexscreener.com/dex/chart/amm/v3/${symbolInfo.ticker}&from=${from * 1000}&to=${
-          to * 1000
-        }&res=${resSec}&cb=${Math.floor((to - from) / (resSec * 60))}`;
+        const url = `https://io.dexscreener.com/dex/chart/amm/v3/${symbolInfo.ticker}&cb=${Math.floor(
+          (to - from) / (resSec * 60)
+        )}&res=${resSec}&bbn=${lastBlock}`;
         const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });
-        data = analyzeBarLog(response.result, to, resSec * 60);
+
+        data = analyzeBarLog(
+          response.result,
+          resSec * 60,
+          lastTime ?? to,
+          resolution === "M" ? 30 : resolution === "W" ? 7 : 1
+        ).filter(
+          (item) =>
+            !lastBars.find(
+              (lastItem) =>
+                item.closeUsd === lastItem.closeUsd &&
+                item.openUsd === lastItem.openUsd &&
+                item.highUsd === lastItem.highUsd &&
+                item.lowUsd === lastItem.lowUsd &&
+                item.volumeUsd === lastItem.volumeUsd
+            )
+        );
       }
       let bars = [];
       if (!data || !data.length) return;
+      if (swap !== "brewlabs") {
+        const { data: blockResult } = await axios.get(
+          `https://coins.llama.fi/block/${chain}/${data[0].timestamp / 1000}`
+        );
+        if (lastBlock === blockResult.height) return;
+        lastBlock = blockResult.height;
+        lastTime = data[0].timestamp / 1000;
+        lastBars = [...data];
+      }
       for (let i = 0; i < data.length; ++i) {
         const barValue: any = {
           time: data[i].timestamp,
-          close: parseFloat(data[i].closeUsd),
-          open: parseFloat(data[i].openUsd),
-          high: parseFloat(data[i].highUsd),
-          low: parseFloat(data[i].lowUsd),
-          volume: parseFloat(data[i].volumeUsd),
+          close: data[i].closeUsd,
+          open: data[i].openUsd,
+          high: data[i].highUsd,
+          low: data[i].lowUsd,
+          volume: data[i].volumeUsd,
         };
 
         bars.push(barValue);
       }
+
       if (firstDataRequest) {
         lastBarsCache.set(symbolInfo.full_name, {
           ...bars[bars.length - 1],

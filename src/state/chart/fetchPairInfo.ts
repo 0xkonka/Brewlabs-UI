@@ -15,6 +15,8 @@ function getPairParams(pair) {
     priceUsd: Number(pair.priceUsd),
     baseToken: { ...pair.baseToken, address: pair.baseToken.address.toLowerCase() },
     quoteToken: { ...pair.quoteToken, address: pair.quoteToken.address.toLowerCase() },
+    dexId: isAddress(pair.dexId) ? "uniswap" : pair.dexId,
+    a: "uniswap",
   };
 }
 
@@ -27,33 +29,28 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
     let searchedPairs = [];
 
     if (isAddress(criteria) || type === "simple") {
-      const url = `https://io.dexscreener.com/dex/search/v3/pairs?q=${criteria}`;
-      let { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
-      const pairs = await analyzePairLog(response.result);
-      searchedPairs = pairs;
-    } else {
-      const result = await axios.get(`https://api.dex.guru/v3/tokens/search/${criteria}?network=eth,bsc,polygon`);
-      let tokens = result.data.data;
-      const isLP = tokens.find((token) => token.address === criteria.toLowerCase() && token.marketType === "lp");
-      if (isLP) tokens = [isLP];
-      const filteredTokens = tokens.filter((token) => token.liquidityUSD).slice(0, 10);
-      const searchResult = await Promise.all(
-        filteredTokens.map(async (token) => {
-          const url = `https://io.dexscreener.com/dex/search/v2/pairs?q=${token.address}`;
-          let result = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", { url });
-          const searchedPairs = result.data.result.pairs;
-          return searchedPairs.map((pair) => {
-            return getPairParams(pair);
-          });
-        })
-      );
-      searchResult.map((data) => (searchedPairs = [...searchedPairs, ...data]));
+      const pair = brewPairs.find((pair) => pair.address === criteria.toLowerCase());
+      if (pair) chain = DEXSCREENER_CHAINNAME[pair.chainId];
+      if (isAddress(criteria) && chain) {
+        const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${criteria}`;
+        let { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
+        const pair = response?.result?.pair;
+        if (pair) {
+          searchedPairs = [getPairParams(pair)];
+        }
+      } else {
+        const url = `https://io.dexscreener.com/dex/search/v3/pairs?q=${criteria}`;
+        let { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
+        const pairs = await analyzePairLog(response.result);
+        searchedPairs = pairs;
+      }
     }
+
     searchedPairs = searchedPairs
       .filter((pair) => pair.liquidity?.usd && Object.keys(DEXSCREENER_CHAINNAME).includes(pair.chainId.toString()))
       .sort((a, b) => b.volume.h24 - a.volume.h24)
       .map((pair) => {
-        const isBrewPair = brewPairs.find((bPair) => bPair.address === pair.address);
+        const isBrewPair = brewPairs.find((bPair) => bPair.address.toLowerCase() === pair.address.toLowerCase());
         if (isBrewPair) return { ...pair, otherdexId: "brewlabs" };
         return pair;
       });

@@ -4,10 +4,10 @@ import { ChainId } from "@brewlabs/sdk";
 import { useEffect, useState } from "react";
 import { SearchCircleSVG } from "@components/dashboard/assets/svgs";
 
-const headers = ["Network", "Pair", "Token Price", "24h Change", "24h Volume", "TVL", "Fees Collected"];
+const headers = ["Network", "Pair", "Token Price", "24h Change", "24h Volume", "TVL", "Fees Collected", "Action"];
 
 export default function PairList({ selectedPair, setSelectedPair }) {
-  const width = ["w-14", "w-[200px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]"];
+  const width = ["w-14", "w-[200px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]", "w-[90px]"];
 
   const [criteria, setCriteria] = useState("");
   const [wrappedPairs, setWrappedPairs] = useState([]);
@@ -15,7 +15,6 @@ export default function PairList({ selectedPair, setSelectedPair }) {
   const polygon_pairs = useTradingAllPairDatas(ChainId.POLYGON);
   const bsc_pairs = useTradingAllPairDatas(ChainId.BSC_MAINNET);
   const pairs = [...bsc_pairs, ...polygon_pairs];
-
 
   const stringifiedPairs = JSON.stringify(pairs);
 
@@ -70,7 +69,11 @@ export default function PairList({ selectedPair, setSelectedPair }) {
         </div>
         <div>
           {wrappedPairs.map((pair, i) => {
-            return <PairCard pair={pair} key={i} setSelectedPair={setSelectedPair} />;
+            return (
+              <div key={i} style={{ zIndex: 100000 - i }} className="relative">
+                <PairCard pair={pair} setSelectedPair={setSelectedPair} />
+              </div>
+            );
           })}
         </div>
       </div>
