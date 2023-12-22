@@ -196,19 +196,25 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
             transition={{ duration: 0.3 }}
           >
             <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
-              <PageHeader
-                title={
-                  <div className="text-[40px]">
-                    <WordHighlight content="Brewlabs Deployer" />
-                    <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
-                      Stake, farm, zap and explore indexes for passive income
-                    </div>
-                  </div>
-                }
-              />
-              <Container className="font-brand">
-                <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={totalPools} />
+              <section>
+                <Container className="pb-16 pt-20">
+                  <header className="font-brand sm:pr-0">
+                    <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">
+                      <WordHighlight content="Deploy smart contracts" />
+                    </h1>
 
+                    <div className="mt-4 text-[#FFFFFF80] sm:text-base text-sm">
+                      The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
+                      deployment of smart contracts across a range of networks. No matter if you are a novice or an
+                      expert in the industry, this simple deployment tool enables teams to create tokens, supporting
+                      utility smart contract, staking and yield farming and more. All contracts that are deployed by our
+                      deployer tools are safe, transparent and verified to ensure user security.
+                    </div>
+                  </header>
+                </Container>
+              </section>
+
+              <Container className="font-brand">
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}

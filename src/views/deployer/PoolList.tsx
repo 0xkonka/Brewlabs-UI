@@ -53,7 +53,7 @@ const PoolList = ({
           Total supply staked
         </div>
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("apr")}>
-          APR
+          Performance
         </div>
       </PoolHeader>
       <div className="h-[1px] w-full bg-[#FFFFFF80]" />
