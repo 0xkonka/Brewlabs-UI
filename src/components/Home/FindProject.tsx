@@ -81,7 +81,7 @@ const FindProject = () => {
       link: "https://earn.brewlabs.info/deployer/farm",
       detail:
         "Teams can use this tool to deploy a yield farm for their project, the deployer wizard will create the contract for the team and post it to the yield farm directory",
-      activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+      activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BASE, ChainId.ARBITRUM],
       isSoon: [],
     },
     {
