@@ -25,6 +25,7 @@ import StakingDetail from "views/directory/StakingDetail";
 
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
+import { DocSVG } from "@components/dashboard/assets/svgs";
 
 const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -202,8 +203,15 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
                     <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">
                       <WordHighlight content="Deploy smart contracts" />
                     </h1>
-
-                    <div className="mt-4 text-sm text-[#FFFFFF80] sm:text-base">
+                    <a
+                      className="primary-shadow mt-4 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
+                      href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
+                      target="_blank"
+                    >
+                      <div className="whitespace-nowrap">LEARN MORE</div>
+                      <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
+                    </a>
+                    <div className="mt-5 text-sm text-[#FFFFFF80] sm:text-base">
                       The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
                       deployment of smart contracts across a range of networks. No matter if you are a novice or an
                       expert in the industry, this simple deployment tool enables teams to create tokens, supporting

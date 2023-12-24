@@ -156,14 +156,6 @@ const DeployerModal = ({
             <StyledPanel>
               <div className="flex items-center justify-between border-b border-[#FFFFFF80] pb-2.5">
                 <div className="text-primary">Brewlabs Project Deployer</div>
-                <a
-                  className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
-                  href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
-                  target="_blank"
-                >
-                  <div className="whitespace-nowrap">LEARN MORE</div>
-                  <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
-                </a>
               </div>
               {step === 0 ? (
                 <HeroSection deployType={deployType} setDeployType={setDeployType} setStep={setStep} />
