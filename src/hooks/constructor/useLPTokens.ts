@@ -47,7 +47,7 @@ export const useLPTokens = () => {
             };
           } else {
             const url = `https://io.dexscreener.com/dex/search/v3/pairs?q=${data.address}`;
-            const { data: response } = await axios.post("http://localhost:5000/api/tokenController/getHTML", {
+            const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
               url,
             });
             const pairs = await analyzePairLog(response.result);
