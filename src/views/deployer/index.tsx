@@ -43,7 +43,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const [deployType, setDeployType] = useState("Yield Farm");
 
   useEffect(() => {
-    setDeployType(type === "index" ? "Index" : "Yield Farm");
+    setDeployType(type === "index" ? "Index" : type === "token" ? "Token" : "Yield Farm");
     setStep(type ? 1 : 0);
     setDeployerOpen(type ? true : false);
   }, [type]);
@@ -203,7 +203,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
                       <WordHighlight content="Deploy smart contracts" />
                     </h1>
 
-                    <div className="mt-4 text-[#FFFFFF80] sm:text-base text-sm">
+                    <div className="mt-4 text-sm text-[#FFFFFF80] sm:text-base">
                       The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
                       deployment of smart contracts across a range of networks. No matter if you are a novice or an
                       expert in the industry, this simple deployment tool enables teams to create tokens, supporting

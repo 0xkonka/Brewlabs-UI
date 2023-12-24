@@ -78,7 +78,7 @@ const Deploy = ({ setOpen, step, setStep, values }) => {
         <div className="mb-1 text-sm">2. Select a symbol for your token</div>
         <StyledInput
           type={"text"}
-          placeholder="i.e Brewlabs Token....."
+          placeholder="i.e BNB"
           value={symbol}
           setValue={setSymbol}
           className="primary-shadow h-12 w-full rounded-lg bg-[#18181A] text-white"
@@ -88,7 +88,7 @@ const Deploy = ({ setOpen, step, setStep, values }) => {
         <div className="mb-1 text-sm">3. Select decimals for your token</div>
         <StyledInput
           type={"text"}
-          placeholder="i.e Brewlabs Token....."
+          placeholder="i.e 18"
           value={decimals}
           setValue={setDecimals}
           className="primary-shadow h-12 w-full rounded-lg bg-[#18181A] text-white"
@@ -98,7 +98,7 @@ const Deploy = ({ setOpen, step, setStep, values }) => {
         <div className="mb-1 text-sm">4. How many tokens do you want to create?</div>
         <StyledInput
           type={"text"}
-          placeholder="i.e Brewlabs Token....."
+          placeholder="i.e 10000000"
           value={totalSupply}
           setValue={setTotalSupply}
           className="primary-shadow h-12 w-full rounded-lg bg-[#18181A] text-white"
