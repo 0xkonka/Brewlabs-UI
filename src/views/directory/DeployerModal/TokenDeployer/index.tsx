@@ -13,7 +13,7 @@ const TokenDeployer = ({ setOpen, step, setStep }) => {
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(18);
   const [totalSupply, setTotalSupply] = useState();
-  const [deployedAddress, setDeployedAddress] = useState("0xdAd33e12e61dC2f2692F2c12e6303B5Ade7277Ba");
+  const [deployedAddress, setDeployedAddress] = useState("");
 
   return (
     <div>

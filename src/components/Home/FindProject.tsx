@@ -21,9 +21,18 @@ const FindProject = () => {
   const [selectedItem, setSelectedItem] = useState(0);
 
   useEffect(() => {
-    if (selectedNetwork === 2 || selectedNetwork === 6) setSelectedItem(-1);
-    else setSelectedItem(0);
+    setSelectedItem(0);
   }, [selectedNetwork]);
+
+  const airdropSubLinks = {
+    [ChainId.ETHEREUM]: "eth",
+    [ChainId.BSC_MAINNET]: "bsc",
+    [ChainId.POLYGON]: "matic",
+    [ChainId.AVALANCHE]: "avax",
+    [ChainId.FANTOM]: "ftm",
+    [ChainId.BASE]: "base",
+    [ChainId.ARBITRUM]: "arbitrum",
+  };
 
   const items = [
     {
@@ -72,6 +81,14 @@ const FindProject = () => {
       link: "https://earn.brewlabs.info/deployer/farm",
       detail:
         "Teams can use this tool to deploy a yield farm for their project, the deployer wizard will create the contract for the team and post it to the yield farm directory",
+      activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BASE, ChainId.ARBITRUM],
+      isSoon: [],
+    },
+    {
+      name: "Token deployer",
+      link: "/deployer/token",
+      detail:
+        "Teams can use this tool to deploy a token for their project, the deployer wizard will create the contract for the team and post it to the token directory",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
       isSoon: [],
     },
@@ -266,7 +283,9 @@ const FindProject = () => {
                 <a
                   target="_blank"
                   href={
-                    selectedItem === 14
+                    selectedItem === 0
+                      ? items[selectedItem].link + airdropSubLinks[parseInt(networks[selectedNetwork].chainId)]
+                      : selectedItem === 14
                       ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
                       : items[selectedItem].link
                   }

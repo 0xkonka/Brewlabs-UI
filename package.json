@@ -22,6 +22,8 @@
     "alchemy-sdk": "^2.6.1",
     "animate.css": "^4.1.1",
     "apexcharts": "^3.36.3",
+    "avro-js": "^1.11.3",
+    "avsc": "^5.7.7",
     "axios": "^1.2.1",
     "axios-retry": "^3.4.0",
     "bignumber.js": "^9.1.0",

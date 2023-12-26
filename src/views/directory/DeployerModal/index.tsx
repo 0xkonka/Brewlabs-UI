@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Carousel from "react-multi-carousel";
 import styled from "styled-components";
 
-import { checkCircleSVG, chevronLeftSVG, UploadSVG } from "components/dashboard/assets/svgs";
+import { checkCircleSVG, chevronLeftSVG, DocSVG, UploadSVG } from "components/dashboard/assets/svgs";
 
 import StyledButton from "../StyledButton";
 import FarmDeployer from "./FarmDeployer";

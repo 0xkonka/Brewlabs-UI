@@ -58,9 +58,6 @@ const InfoCarousel = () => {
 
   let flaskNft = flaskNfts.find((p) => p.chainId === chainId);
   flaskNft = flaskNft ?? flaskNfts[0];
-  const pool = data.find((p) => p.chainId === chainId);
-  const ethPrice = useTokenPrice(chainId == 97 ? 56 : chainId, WNATIVE[chainId == 97 ? 56 : chainId].address);
-  const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
 
   const recentIndexes = indexes.filter(
     (index) => new Date(index.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24

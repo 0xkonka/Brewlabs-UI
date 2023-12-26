@@ -20,7 +20,6 @@ export const fetchTokenFactoryData = async (chainId: ChainId) => {
     },
   ];
   const result = await multicall(TokenFactoryAbi, calls, chainId);
-  console.log(tokens[chainId], chainId);
   return {
     chainId,
     payingToken: {

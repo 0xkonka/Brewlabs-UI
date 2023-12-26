@@ -25,6 +25,7 @@ import StakingDetail from "views/directory/StakingDetail";
 
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
+import { DocSVG } from "@components/dashboard/assets/svgs";
 
 const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -43,7 +44,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const [deployType, setDeployType] = useState("Yield Farm");
 
   useEffect(() => {
-    setDeployType(type === "index" ? "Index" : "Yield Farm");
+    setDeployType(type === "index" ? "Index" : type === "token" ? "Token" : "Yield Farm");
     setStep(type ? 1 : 0);
     setDeployerOpen(type ? true : false);
   }, [type]);
@@ -196,19 +197,32 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
             transition={{ duration: 0.3 }}
           >
             <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
-              <PageHeader
-                title={
-                  <div className="text-[40px]">
-                    <WordHighlight content="Brewlabs Deployer" />
-                    <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
-                      Stake, farm, zap and explore indexes for passive income
+              <section>
+                <Container className="pb-16 pt-20">
+                  <header className="font-brand sm:pr-0">
+                    <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">
+                      <WordHighlight content="Deploy smart contracts" />
+                    </h1>
+                    <a
+                      className="primary-shadow mt-4 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
+                      href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
+                      target="_blank"
+                    >
+                      <div className="whitespace-nowrap">LEARN MORE</div>
+                      <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
+                    </a>
+                    <div className="mt-5 text-sm text-[#FFFFFF80] sm:text-base">
+                      The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
+                      deployment of smart contracts across a range of networks. No matter if you are a novice or an
+                      expert in the industry, this simple deployment tool enables teams to create tokens, supporting
+                      utility smart contract, staking and yield farming and more. All contracts that are deployed by our
+                      deployer tools are safe, transparent and verified to ensure user security.
                     </div>
-                  </div>
-                }
-              />
-              <Container className="font-brand">
-                <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={totalPools} />
+                  </header>
+                </Container>
+              </section>
 
+              <Container className="font-brand">
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}
