@@ -197,32 +197,35 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
             transition={{ duration: 0.3 }}
           >
             <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
-              <section>
-                <Container className="pb-16 pt-20">
-                  <header className="font-brand sm:pr-0">
-                    <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">
-                      <WordHighlight content="Deploy smart contracts" />
-                    </h1>
+              <PageHeader
+                title={
+                  <div className="text-[40px]">
+                    <WordHighlight content="Product Deployer" />
                     <a
-                      className="primary-shadow mt-4 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
+                      className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
                       href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
                       target="_blank"
                     >
-                      <div className="whitespace-nowrap">LEARN MORE</div>
+                      <div>LEARN MORE</div>
                       <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
                     </a>
-                    <div className="mt-5 text-sm text-[#FFFFFF80] sm:text-base">
+                  </div>
+                }
+              />
+
+              <Container className="pb-[180px] font-brand">
+                <div className="mb-20 flex flex-col items-center justify-between sm:flex-row">
+                  <div>
+                    <div className="text-lg leading-[1.2] text-primary">Deploy smart contracts.</div>
+                    <div className="mt-1.5 max-w-[750px] text-sm leading-[1.2]">
                       The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
                       deployment of smart contracts across a range of networks. No matter if you are a novice or an
                       expert in the industry, this simple deployment tool enables teams to create tokens, supporting
                       utility smart contract, staking and yield farming and more. All contracts that are deployed by our
                       deployer tools are safe, transparent and verified to ensure user security.
                     </div>
-                  </header>
-                </Container>
-              </section>
-
-              <Container className="font-brand">
+                  </div>
+                </div>
                 <div className="mt-8">
                   <SelectionPanel
                     pools={allPools}
