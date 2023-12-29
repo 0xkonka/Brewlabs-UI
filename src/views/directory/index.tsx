@@ -256,6 +256,7 @@ const Directory = ({ page }: { page: number }) => {
         return "";
     }
   };
+
   return (
     <PageWrapper>
       {renderDetailPage()}
