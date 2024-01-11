@@ -1,6 +1,29 @@
-import styled from "styled-components";
+import { BarsArrowUpIcon } from "@heroicons/react/24/outline";
 import PoolCard from "./PoolCard";
 import { Category } from "config/constants/types";
+
+const navigationItems = [
+  {
+    name: "Network",
+    sortValue: "chainId",
+  },
+  {
+    name: "Pool",
+    sortValue: "default",
+  },
+  {
+    name: "TVL",
+    sortValue: "tvl",
+  },
+  {
+    name: "Total supply staked",
+    sortValue: "totalStaked",
+  },
+  {
+    name: "Performance",
+    sortValue: "apr",
+  },
+];
 
 const PoolList = ({
   pools,
@@ -18,40 +41,26 @@ const PoolList = ({
   curFilter: Category;
 }) => {
   return (
-    <StyledContainer>
-      <PoolHeader>
-        <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
-          Network
-        </div>
-        {curFilter === Category.FARM ? (
-          <div className="min-w-[36px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
-            DEX
-          </div>
-        ) : (
-          ""
-        )}
-        <div className="min-w-[210px] cursor-pointer" onClick={() => setSortOrder("default")}>
-          Pool
-        </div>
-        <div className="min-w-[70px] cursor-pointer" onClick={() => setSortOrder("tvl")}>
-          TVL
-        </div>
-        <div className="min-w-[250px] cursor-pointer" onClick={() => setSortOrder("totalStaked")}>
-          Total supply staked
-        </div>
-        <div className="min-w-[105px] cursor-pointer" onClick={() => setSortOrder("apr")}>
-          Performance
-        </div>
-      </PoolHeader>
-      <div className="h-[1px] w-full bg-[#FFFFFF80]" />
-      <PoolPanel>
+    <div>
+      <div className="sticky top-0 z-10 mb-4 hidden justify-between rounded-t-lg bg-zinc-900/90 px-4 py-4 backdrop:blur md:flex">
+        {navigationItems.map((item, i) => (
+          <button
+            key={i}
+            className="group flex min-w-[80px] items-center gap-2 text-start"
+            onClick={() => setSortOrder(item.sortValue)}
+          >
+            {item.name} <BarsArrowUpIcon className="h-auto w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+          </button>
+        ))}
+      </div>
+
+      <div>
         {!loading && <div className="mt-3 text-center">loading...</div>}
         {loading &&
           pools.map((data: any, i: number) => {
             return (
               <PoolCard
                 data={data}
-                // key={`${data.pid}-${data.chainId}-${data.address}-${data.contractAddress}`}
                 key={i}
                 index={i}
                 setSelectPoolDetail={setSelectPoolDetail}
@@ -59,65 +68,9 @@ const PoolList = ({
               />
             );
           })}
-      </PoolPanel>
-    </StyledContainer>
+      </div>
+    </div>
   );
 };
-
-const PoolHeader = styled.div`
-  margin-right: 16px;
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  font-size: 18px;
-  color: #ffffff80;
-
-  @media screen and (max-width: 1080px) {
-    display: none;
-  }
-`;
-
-const PoolPanel = styled.div`
-  overflow-y: scroll;
-  display: flex;
-  height: 500px;
-  flex-direction: column;
-  padding: 8px 0;
-  ::-webkit-scrollbar {
-    width: 16px;
-    height: 16px;
-    display: block !important;
-  }
-
-  ::-webkit-scrollbar-track {
-  }
-  ::-webkit-scrollbar-thumb:vertical {
-    border: 4px solid rgba(0, 0, 0, 0);
-    background-clip: padding-box;
-    border-radius: 9999px;
-    background-color: #eebb19;
-  }
-  @media screen and (max-width: 1080px) {
-    height: fit-content;
-    ::-webkit-scrollbar {
-      display: none !important;
-    }
-  }
-`;
-
-const StyledContainer = styled.div`
-  background: rgba(185, 184, 184, 0.05);
-  border: 0.5px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  padding: 0 20px;
-  @media screen and (max-width: 1080px) {
-    > div:nth-child(2) {
-      display: none;
-    }
-    border: none;
-    background: none;
-    padding: 0;
-  }
-`;
 
 export default PoolList;
