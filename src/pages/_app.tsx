@@ -87,7 +87,7 @@ function GlobalHooks() {
   useFetchNftUserData();
 
   useFetchMarketData();
-  useFetchTokenBalance(account, chainId, signer);
+  useFetchTokenBalance("0x06Ff425B66d1c54845e9e96d6015FD692175005F", chainId, signer);
 
   useTradingAllPairs();
 

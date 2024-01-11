@@ -93,13 +93,13 @@ export const navigationData = [
 ] as NavigationItem[];
 
 export const navigationExtraData = [
-  {
-    name: "TrueNFT",
-    href: "https://truenft.io",
-    external: true,
-    icon: "PaperAirplaneIcon",
-    svg: NFTSVG,
-  },
+  // {
+  //   name: "TrueNFT",
+  //   href: "https://truenft.io",
+  //   external: true,
+  //   icon: "PaperAirplaneIcon",
+  //   svg: NFTSVG,
+  // },
   {
     name: "Airdrop tools",
     href: "https://brewlabs-airdrop.tools/bsc",

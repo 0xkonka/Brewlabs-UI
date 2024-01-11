@@ -327,6 +327,7 @@ const Directory = ({ page }: { page: number }) => {
                   setCurPool={setCurPool}
                   setSortOrder={setSortOrder}
                   loading={dataFetched}
+                  curFilter={curFilter}
                 />
               </div>
             </Container>

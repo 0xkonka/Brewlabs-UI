@@ -16,6 +16,7 @@ export async function fetchTokenBalances(address: string, chainId: number) {
   if (chainId === 56) {
     data = await axios.post(`${API_URL}/html/getTokenBalances`, { address, chainId });
     data = data.data;
+    console.log(data);
   } else if (chainId === 137 || chainId === 1) {
     let offset = 0;
     let tokens = [];

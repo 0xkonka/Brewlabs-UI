@@ -70,7 +70,7 @@ export default function HistoryList({
                 ? ContractSVG
                 : NonSellerSVG,
             txHash: history.transactionAddress,
-            ago: timeAgo.format(history.timestamp),
+            ago: history.timestamp ? timeAgo.format(history.timestamp) : "A long time ago",
             wallet: history.from,
             info: history.type,
             chainId: history.chainId,

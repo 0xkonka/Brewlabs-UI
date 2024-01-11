@@ -23,7 +23,6 @@ function getPairParams(pair) {
 export async function fetchAllPairs(criteria, chain = null, type = "none") {
   try {
     if (!criteria) return;
-
     const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${criteria}`;
     let { data: brewPairs } = await axios.get(brewSwapUrl);
     let searchedPairs = [];
@@ -34,6 +33,7 @@ export async function fetchAllPairs(criteria, chain = null, type = "none") {
       if (isAddress(criteria) && chain) {
         const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${criteria}`;
         let { data: response } = await axios.post(`https://pein-api.vercel.app/api/tokenController/getHTML`, { url });
+
         const pair = response?.result?.pair;
         if (pair) {
           searchedPairs = [getPairParams(pair)];

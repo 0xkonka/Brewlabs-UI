@@ -1,8 +1,8 @@
 import { gql } from "graphql-request";
 
 export const SWAP_LOGS = gql`
-query getSwapLogs($first: Int!, $skip: Int!) {
-  logs: swaps(orderDirection: desc, first: $first, skip: $skip) {
+query getSwapLogs($first: Int!, $skip: Int!, $caller: String!) {
+  logs: swaps(orderDirection: desc, first: $first, skip: $skip, where: {from: $caller}) {
     id
     transaction {
       id

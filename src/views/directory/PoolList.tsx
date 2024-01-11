@@ -1,5 +1,6 @@
 import { BarsArrowUpIcon } from "@heroicons/react/24/outline";
 import PoolCard from "./PoolCard";
+import { Category } from "config/constants/types";
 
 const navigationItems = [
   {
@@ -30,12 +31,14 @@ const PoolList = ({
   setCurPool,
   setSortOrder,
   loading,
+  curFilter,
 }: {
   pools: any;
   setSelectPoolDetail: any;
   setCurPool: any;
   setSortOrder: any;
   loading: boolean;
+  curFilter: Category;
 }) => {
   return (
     <div>

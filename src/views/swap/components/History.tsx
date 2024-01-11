@@ -7,7 +7,11 @@ import { useSwapHistory } from "hooks/swap/useSwapHistory";
 import { useCurrency } from "hooks/Tokens";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ETH_ADDRESSES } from "config/constants";
-import { getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
+import { BigNumberFormat, getBlockExplorerLink, getBlockExplorerLogo } from "utils/functions";
+import TokenLogo from "@components/logo/TokenLogo";
+import getTokenLogoURL from "utils/getTokenLogoURL";
+import { ChevronDownSVG, ChevronRightVG, CircleRightSVG, SwapSVG, downSVG } from "@components/dashboard/assets/svgs";
+import StyledButton from "views/directory/StyledButton";
 
 const Row = (data: any) => {
   const {
@@ -28,19 +32,48 @@ const Row = (data: any) => {
   const { chainId } = useActiveWeb3React();
 
   return (
-    <div className="flex select-none items-center justify-between">
-      <p className="flex">
-        {inputCurrency?.symbol}&nbsp;<span className="dark:text-primary">SWAP</span>&nbsp;{outputCurrency?.symbol}
-      </p>
-      <p className="flex items-center justify-between gap-2">
-        <span className="opacity-40">
-          {Number(amount).toFixed(4)}&nbsp;{outputCurrency?.symbol}
-        </span>
-        <a href={getBlockExplorerLink(transactionHash, "transaction", chainId)} target="_blank" rel="noreferrer">
-          <img src={getBlockExplorerLogo(chainId)} alt="" className="h-3 w-3" />
-        </a>
-      </p>
-    </div>
+    <a
+      className="mb-2 flex items-center justify-between rounded-lg border border-[#FFFFFF40] p-[10px] font-roboto text-sm transition-all duration-300 hover:scale-[1.03] hover:border-brand"
+      href={getBlockExplorerLink(transactionHash, "transaction", chainId)}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <div className="mr-0 flex max-w-[260px] flex-1 items-center justify-between xs:mr-2 xs:max-w-full sm:xs:max-w-[320px]">
+        <div className="flex w-[90px] items-center xs:w-[120px]">
+          <TokenLogo src={getTokenLogoURL(inputCurrency.address, chainId)} classNames="h-4 w-4 rounded-full" />
+          &nbsp;
+          <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-white">
+            {inputCurrency.symbol}
+          </div>
+          <div>
+            &nbsp;~&nbsp;
+            {BigNumberFormat(
+              Number(spentAmount / (source === "aggregator" ? Math.pow(10, inputCurrency.decimals) : 1)),
+              2
+            )}
+          </div>
+        </div>
+        <span className="mx-3 dark:text-primary">{CircleRightSVG}</span>
+        <div className="flex w-[90px] items-center justify-end xs:w-[120px]">
+          <div>
+            ~&nbsp;
+            {BigNumberFormat(
+              Number(returnAmount / (source === "aggregator" ? Math.pow(10, outputCurrency.decimals) : 1)),
+              2
+            )}
+          </div>
+          &nbsp;
+          <TokenLogo src={getTokenLogoURL(outputCurrency.address, chainId)} classNames="h-4 w-4 rounded-full" />
+          &nbsp;
+          <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-white">
+            {outputCurrency.symbol}
+          </div>
+        </div>
+      </div>
+      <div className="hidden w-[120px] rounded-md text-xs text-[#FFFFFF80] sm:block">
+        1.00 ~ {(returnAmount / spentAmount).toFixed(6)}
+      </div>
+    </a>
   );
 };
 
@@ -51,30 +84,27 @@ const History = () => {
 
   return (
     <div className="mt-6">
-      <button
+      <StyledButton
+        className="hidden !h-10 bg-[#B9B8B81A] font-brand !text-base text-primary hover:border-white hover:text-white xl:flex"
+        type={"default"}
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mx-auto flex w-fit items-center justify-between gap-2 px-1"
       >
-        <span className="text-lg dark:text-gray-500">Show History</span>
-        <ChevronUpIcon className={clsx("h-4 w-4 transition-all dark:text-gray-500", !isExpanded && "rotate-180")} />
-      </button>
+        <div className="flex items-center">
+          <div className="mr-1.5">Show History</div>{" "}
+          <div className={isExpanded ? "-scale-y-100" : ""}>{ChevronDownSVG}</div>
+        </div>
+      </StyledButton>
+
       {isExpanded && (
-        <div className="mt-4 w-full rounded-xl border border-gray-700 p-3">
-          <div className="mt-2">
-            {logs.map((data, index) => {
-              return <Row data={data} key={index} />;
-            })}
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <img src={getBlockExplorerLogo(chainId)} alt="Ether scan logo" className="h-4 w-4" />
-            <a
-              href={getBlockExplorerLink(account, "address", chainId)}
-              target="_blank"
-              rel="noreferrer"
-              className="text-base"
-            >
-              Visit Wallet
-            </a>
+        <div className="mt-4 w-full rounded-xl border border-gray-700 px-1 py-3">
+          <div className="yellowScroll mt-2 max-h-[300px] overflow-y-scroll px-2">
+            {logs.length ? (
+              logs.map((data, index) => {
+                return <Row data={data} key={index} />;
+              })
+            ) : (
+              <div className="mb-2 text-center text-brand font-brand">No Histories</div>
+            )}
           </div>
         </div>
       )}
