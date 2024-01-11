@@ -1,5 +1,6 @@
 import { CheckIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import Container from "@components/layout/Container";
 
 const features = [
   {
@@ -42,8 +43,8 @@ const features = [
 
 const FeaturePlug = () => {
   return (
-    <div className="bg-zinc-900">
-      <div className="mx-auto max-w-7xl py-24 px-6 sm:py-32 lg:grid lg:grid-cols-3 lg:gap-x-12 lg:px-8 lg:py-40">
+    <Container>
+      <div className="py-24 sm:py-32 lg:grid lg:grid-cols-3 lg:gap-x-12 lg:py-40">
         <div>
           <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
             Everything you need
@@ -74,7 +75,7 @@ const FeaturePlug = () => {
                     />
                     <p className="ml-10 text-lg font-semibold leading-8 text-gray-900">{feature.name}</p>
                   </dt>
-                  <dd className="mt-2 ml-10 text-base leading-7 text-gray-600 dark:text-gray-400">
+                  <dd className="ml-10 mt-2 text-base leading-7 text-gray-600 dark:text-gray-400">
                     {feature.description}
                   </dd>
                 </Link>
@@ -83,7 +84,7 @@ const FeaturePlug = () => {
           </dl>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

@@ -1,6 +1,7 @@
 import { ChainId } from "@brewlabs/sdk";
 import Soon from "@components/Soon";
-import { InfoSVG, XMarkSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import { XMarkSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+import Container from "@components/layout/Container";
 import { NETWORKS } from "config/constants/networks";
 import { useEffect, useState } from "react";
 import { getChainLogo } from "utils/functions";
@@ -183,123 +184,122 @@ const FindProject = () => {
   ];
 
   return (
-    <div>
-      <div className={`mx-auto ${selectedItem === -1 ? "max-w-7xl" : "max-w-[1500px]"} px-3 sm:px-6  lg:px-8 `}>
-        <div className="flex flex-wrap justify-between">
-          <div className="mt-10 max-w-[240px]">
-            <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
-              Find a product
-            </h2>
-            <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Product and tool suite</p>
-            <p className="mt-6 text-base leading-7 text-gray-600">
-              Each listed product or tool generates income for the Brewlabs ecosytem.
-            </p>
-          </div>
-          <div className="mx-0 mt-10 sm:mx-8">
-            {networks.map((network, i) => {
-              return (
+    <Container>
+      <div>
+        <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
+          Find a product
+        </h2>
+        <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Product and tool suite</p>
+        <p className="mt-4 text-base leading-7 text-gray-600">
+          Each listed product or tool generates income for the Brewlabs ecosystem.
+        </p>
+      </div>
+
+      <div className="mt-10 flex flex-wrap justify-between gap-y-12">
+        <div>
+          {networks.map((network, i) => {
+            return (
+              <div
+                className={`${
+                  selectedNetwork === i ? "bg-[#4B5563] text-white" : "bg-[#4B556340] text-[#FFFFFF40] hover:opacity-70"
+                } primary-shadow mb-2.5 flex w-[200px] cursor-pointer items-center rounded-[12px] p-[6px_16px] font-roboto font-bold transition`}
+                key={i}
+                onClick={() => setSelectedNetwork(i)}
+              >
+                <img
+                  src={getChainLogo(parseInt(network.chainId))}
+                  alt={""}
+                  className="mr-4 h-[18px] w-[18px] rounded-full"
+                />
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">{network.chainName}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col flex-wrap gap-x-12 text-sm sm:max-h-72">
+          {items.map((item: any, i) => {
+            return (
+              <div key={i}>
                 <div
                   className={`${
-                    selectedNetwork === i
-                      ? "bg-[#4B5563] text-white"
-                      : "bg-[#4B556340] text-[#FFFFFF40] hover:opacity-70"
-                  } primary-shadow mb-2.5 flex w-[200px] cursor-pointer items-center rounded-[12px] p-[6px_16px] font-roboto font-bold transition`}
-                  key={i}
-                  onClick={() => setSelectedNetwork(i)}
+                    selectedItem === i
+                      ? "text-primary"
+                      : item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
+                      ? "text-white hover:opacity-70"
+                      : "text-tailwind"
+                  } my-1.5 mr-8 flex cursor-pointer items-center font-roboto font-bold`}
+                  onClick={() =>
+                    item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
+                  }
                 >
-                  <img
-                    src={getChainLogo(parseInt(network.chainId))}
-                    alt={""}
-                    className="mr-4 h-[18px] w-[18px] rounded-full"
-                  />
-                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">{network.chainName}</div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-10 flex h-fit w-[450px] flex-col flex-wrap text-sm xsm:h-[300px]">
-            {items.map((item: any, i) => {
-              return (
-                <div key={i}>
-                  <div
-                    className={`${
-                      selectedItem === i
-                        ? "text-primary"
-                        : item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
-                        ? "text-white hover:opacity-70"
-                        : "text-tailwind"
-                    } my-1.5 mr-8 flex cursor-pointer items-center font-roboto font-bold`}
-                    onClick={() =>
-                      item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
-                    }
-                  >
-                    <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
-                      {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
-                        ? checkCircleSVG
-                        : XMarkSVG}
-                    </div>
-                    <div>{item.name}</div>
-                    {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
-                      <Soon className="!relative !top-0 !text-[10px]" />
-                    ) : (
-                      ""
-                    )}
-                    {(item?.isBeta ?? []).includes(parseInt(networks[selectedNetwork].chainId)) ? (
-                      <Soon className="!relative !top-0 !text-[10px]" text={"Beta"} />
-                    ) : (
-                      ""
-                    )}
+                  <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
+                    {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
+                      ? checkCircleSVG
+                      : XMarkSVG}
                   </div>
-
-                  {selectedItem === i ? (
-                    <div className="primary-shadow my-4 flex h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold xsm:hidden">
-                      <div className="text-2xl text-primary">{items[selectedItem].name}</div>
-                      <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
-                      <div className="flex w-full flex-1 items-end justify-end">
-                        <a
-                          target="_blank"
-                          href={
-                            selectedItem === 14
-                              ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
-                              : items[selectedItem].link
-                          }
-                        >
-                          <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
-                        </a>
-                      </div>
-                    </div>
+                  <div>{item.name}</div>
+                  {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                    <Soon className="!relative !top-0 !text-[10px]" />
+                  ) : (
+                    ""
+                  )}
+                  {(item?.isBeta ?? []).includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                    <Soon className="!relative !top-0 !text-[10px]" text={"Beta"} />
                   ) : (
                     ""
                   )}
                 </div>
-              );
-            })}
-          </div>
-          {selectedItem !== -1 ? (
-            <div className="primary-shadow mt-10 hidden h-[240px] w-[320px] flex-col rounded-[12px] bg-[#232326] p-[17px_23px] font-roboto font-bold xsm:flex">
-              <div className="text-2xl text-primary">{items[selectedItem].name}</div>
-              <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
-              <div className="flex w-full flex-1 items-end justify-end">
-                <a
-                  target="_blank"
-                  href={
-                    selectedItem === 0
-                      ? items[selectedItem].link + airdropSubLinks[parseInt(networks[selectedNetwork].chainId)]
-                      : selectedItem === 14
-                      ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
-                      : items[selectedItem].link
-                  }
-                >
-                  <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
-                </a>
+
+                {selectedItem === i ? (
+                  <div className="primary-shadow my-4 flex h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:hidden">
+                    <div className="text-2xl text-primary">{items[selectedItem].name}</div>
+                    <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
+                    <div className="flex w-full flex-1 items-end justify-end">
+                      <a
+                        target="_blank"
+                        href={
+                          selectedItem === 14
+                            ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
+                            : items[selectedItem].link
+                        }
+                      >
+                        <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
-            </div>
-          ) : (
-            ""
-          )}
+            );
+          })}
         </div>
+
+        {selectedItem !== -1 ? (
+          <div className="primary-shadow hidden h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:flex lg:w-96 ">
+            <h4 className="text-2xl font-bold text-primary">{items[selectedItem].name}</h4>
+            <p className="mt-4 text-xs tracking-wider text-white">{items[selectedItem].detail}</p>
+            <div className="flex w-full flex-1 items-end justify-end">
+              <a
+                target="_blank"
+                href={
+                  selectedItem === 0
+                    ? items[selectedItem].link + airdropSubLinks[parseInt(networks[selectedNetwork].chainId)]
+                    : selectedItem === 14
+                    ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
+                    : items[selectedItem].link
+                }
+              >
+                <button className="btn-secondary btn mt-4">Go to tool</button>
+              </a>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
-    </div>
+    </Container>
   );
 };
 

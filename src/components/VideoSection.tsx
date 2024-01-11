@@ -2,7 +2,6 @@ import Container from "@components/layout/Container";
 import CardVideo from "@components/cards/CardVideo";
 import InfoCarousel from "./layout/InfoCarousel";
 import FindProject from "./Home/FindProject";
-import { useEffect } from "react";
 import { useFetchHomeData } from "state/home/hooks";
 
 const VideoSection = () => {
@@ -14,6 +13,7 @@ const VideoSection = () => {
       </Container>
 
       <FindProject />
+
       <Container className="mt-32">
         <div className="grid grid-cols-4 gap-16">
           <div className="col-span-4 sm:mr-24 md:col-span-2">
