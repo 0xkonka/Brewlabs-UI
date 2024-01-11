@@ -250,6 +250,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
                     setStep={setStep}
                     deployType={deployType}
                     setDeployType={setDeployType}
+                    curFilter={curFilter}
                   />
                 </div>
               </Container>

@@ -362,37 +362,41 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
     }
 
     setAttemptingTxn(true);
-    await estimate(...args, value ? { value } : {})
-      .then((estimatedGasLimit) =>
-        method(...args, {
+    try {
+      const estimatedGasLimit = await estimate(...args, value ? { value } : {});
+      try {
+        const response = await method(...args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
-        }).then((response) => {
-          setAttemptingTxn(false);
-          dispatch(
-            fetchTradingPairFeesAsync(
-              chainId,
-              Pair.getAddress(currencies[Field.CURRENCY_A].wrapped, currencies[Field.CURRENCY_B].wrapped).toLowerCase()
-            )
-          );
-
-          addTransaction(response, {
-            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencies[Field.CURRENCY_A]?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
-          });
-
-          setTxHash(response.hash);
-        })
-      )
-      .catch((e) => {
+        });
         setAttemptingTxn(false);
-        // we only care if the error is something _other_ than the user rejected the tx
-        if (e?.code !== 4001) {
-          console.error(e);
-          handleWalletError(e, showError);
-        }
-      });
+        dispatch(
+          fetchTradingPairFeesAsync(
+            chainId,
+            Pair.getAddress(currencies[Field.CURRENCY_A].wrapped, currencies[Field.CURRENCY_B].wrapped).toLowerCase()
+          )
+        );
+
+        addTransaction(response, {
+          summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+            currencies[Field.CURRENCY_A]?.symbol
+          } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
+        });
+
+        setTxHash(response.hash);
+      } catch (e) {
+        console.log(e);
+        setAttemptingTxn(false);
+      }
+    } catch (e: any) {
+      console.log(e);
+      setAttemptingTxn(false);
+      // we only care if the error is something _other_ than the user rejected the tx
+      if (e?.code !== 4001) {
+        console.error(e);
+        handleWalletError(e, showError);
+      }
+    }
   };
 
   const onBurn = async () => {
@@ -446,6 +450,8 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
   const isOwnerFeeUpdatable = dynamicFees[2] === 0 || pairData?.tokenOwner !== ethers.constants.AddressZero;
   const isChanged = referralFee !== dynamicFees[0] || stakingFee !== dynamicFees[1] || tokenOwnerFee !== dynamicFees[2];
   const isUpdatable = isChanged && isReferralFeeUpdatable && isStakingFeeUpdatable && isOwnerFeeUpdatable;
+
+  console.log(txHash ? true : false);
 
   return (
     <>

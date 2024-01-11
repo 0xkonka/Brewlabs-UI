@@ -98,7 +98,6 @@ export default {
         const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
           url,
         });
-
         data = analyzeBarLog(
           response.result,
           resSec * 60,
@@ -115,6 +114,7 @@ export default {
                 item.volumeUsd === lastItem.volumeUsd
             )
         );
+        console.log(data);
       }
       let bars = [];
       if (!data || !data.length) return;

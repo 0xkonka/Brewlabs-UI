@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PoolCard from "./PoolCard";
+import { Category } from "config/constants/types";
 
 const PoolList = ({
   pools,
@@ -7,12 +8,14 @@ const PoolList = ({
   setCurPool,
   setSortOrder,
   loading,
+  curFilter,
 }: {
   pools: any;
   setSelectPoolDetail: any;
   setCurPool: any;
   setSortOrder: any;
   loading: boolean;
+  curFilter: Category;
 }) => {
   return (
     <StyledContainer>
@@ -20,6 +23,13 @@ const PoolList = ({
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
           Network
         </div>
+        {curFilter === Category.FARM ? (
+          <div className="min-w-[36px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
+            DEX
+          </div>
+        ) : (
+          ""
+        )}
         <div className="min-w-[210px] cursor-pointer" onClick={() => setSortOrder("default")}>
           Pool
         </div>
