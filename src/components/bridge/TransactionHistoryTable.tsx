@@ -73,7 +73,7 @@ const History = () => {
                 </li>
                 <li className="mb-4">
                   <span className="font-bold">Amount: </span>
-                  {ethers.utils.formatUnits(entry.amount, entry.fromToken.decimals).toString()}{" "}
+                  {ethers.utils.formatUnits(entry.amount, entry.fromToken?.decimals).toString()}{" "}
                 </li>
               </ul>
               <ul className="mt-4 pl-6">
@@ -141,7 +141,7 @@ const History = () => {
                         />
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        {ethers.utils.formatUnits(entry.amount, entry.fromToken.decimals).toString()}
+                        {ethers.utils.formatUnits(entry.amount, entry.fromToken?.decimals).toString()}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">{truncateHash(entry.user ?? "")}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">{dateToString(entry.timestamp)}</td>

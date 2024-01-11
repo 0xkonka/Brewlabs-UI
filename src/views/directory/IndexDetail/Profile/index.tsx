@@ -343,6 +343,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                   setCurPool={setCurPool}
                   setSortOrder={setSortOrder}
                   loading={true}
+                  curFilter={curFilter}
                 />
               </div>
             </Container>
