@@ -157,7 +157,7 @@ const PoolCard = ({
             <SkeletonComponent />
           )}
         </div>
-        <div className="min-w-[105px]">
+        <div className="px-6">
           {data.type !== Category.INDEXES ? (
             !data.isRevenue &&
             (data.apr || data.apr === 0.0 ? (

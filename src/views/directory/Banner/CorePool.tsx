@@ -123,7 +123,6 @@ const CorePool = ({
 };
 
 const PoolInfoPanel = styled.div<{ type: string }>`
-  border: 1px solid white;
   background: #b9b8b80d;
   padding: 14px 26px 8px 26px;
   border-radius: 4px;
