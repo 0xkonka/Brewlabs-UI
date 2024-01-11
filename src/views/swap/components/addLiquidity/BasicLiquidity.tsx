@@ -451,7 +451,6 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
   const isChanged = referralFee !== dynamicFees[0] || stakingFee !== dynamicFees[1] || tokenOwnerFee !== dynamicFees[2];
   const isUpdatable = isChanged && isReferralFeeUpdatable && isStakingFeeUpdatable && isOwnerFeeUpdatable;
 
-  console.log(txHash ? true : false);
 
   return (
     <>
