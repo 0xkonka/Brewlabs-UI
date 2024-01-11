@@ -17,10 +17,14 @@ export async function getBSCTransactions(txs, token) {
   ]);
 
   timestamps = timestamps.map((time) => time.data.result.data.blockTimeStamp);
-  let { data: response } = await axios.post("https://api.thegraph.com/subgraphs/name/bcoder778/bsc-transfer-assets", {
-    query: `{
+  let events = [],
+    num = 0;
+  while (true) {
+    let { data: response } = await axios.post("https://api.thegraph.com/subgraphs/name/bcoder778/bsc-transfer-assets", {
+      query: `{
         transferEvents(
           first: 1000
+          skip : ${num * 1000}
           orderDirection: desc
           orderBy: timestamp
           where: {contract: "${token}", timestamp_gte: "${timestamps[1]}", timestamp_lte: "${timestamps[0]}"}
@@ -34,19 +38,23 @@ export async function getBSCTransactions(txs, token) {
           height
         }
       }`,
-  });
+    });
+    events = [...events, ...response.data.transferEvents];
+    num++;
+    if (response.data.transferEvents.length !== 1000 || num === 6) break;
+  }
 
-  return response.data.transferEvents.map((event) => ({ hash: event.id.split("-")[0], timestamp: event.timestamp }));
+  return events.map((event) => ({ hash: event.id.split("-")[0], timestamp: event.timestamp }));
 }
 
 export function checkString(string) {
-  return !isNaN(string) && string.toString().indexOf(".") != -1;
+  const strs = string.split(".");
+  return !isNaN(string) && strs.length > 1 && strs[0] !== "" && strs[1] !== "";
 }
 
 export function analyzeBarLog(str, resToSec, to, resolution) {
   try {
-    const temp = str.replace(/[\u0000-\u0020]/g, " ");
-    const valueList = temp.split(" ").filter((value) => checkString(value));
+    const valueList = str.match(/[0-9.]+/g).filter((value) => checkString(value));
     let values = [];
     let j = 0,
       i = valueList.length - 1;

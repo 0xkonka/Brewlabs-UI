@@ -324,18 +324,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           </div>
                         </StyledButton>
                         <div className="mt-2" />
-                        <OptionDropdown
-                          values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
-                          setValue={onIndexOption}
-                          status={[
-                            true,
-                            true,
-                            data.feeWallet?.toLowerCase() === account?.toLowerCase() && !data.userData?.deployerNftItem,
-                            isMintable && !pending,
-                            isStakable && !pending,
-                            isUnstakable && !pending,
-                          ]}
-                        />
                       </div>
                     </div>
                   </div>
@@ -386,32 +374,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                         </div>
                       </StyledButton>
-                      <div className="mr-4 mt-2 hidden xl:mt-0 xl:block" />
-                      <div className="hidden xl:block">
-                        <OptionDropdown
-                          values={data.category >= 0 ? availableActions : availableActions.slice(0, 2)}
-                          setValue={onIndexOption}
-                          status={[
-                            true,
-                            true,
-                            data.feeWallet?.toLowerCase() === account?.toLowerCase() && !data.userData?.deployerNftItem,
-                            isMintable,
-                            isStakable,
-                            isUnstakable,
-                          ]}
-                        />
-                      </div>
-                      <a
-                        className=" ml-0 h-[32px] w-[140px] xl:ml-4 "
-                        target="_blank"
-                        href={`${BASE_URL}/swap?outputCurrency=${tokens[0].address}`}
-                        rel="noreferrer"
-                      >
-                        <StyledButton>
-                          <div>Swap</div>
-                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </a>
+                      
                     </div>
                   </div>
                 </div>
@@ -486,7 +449,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                               data={aprTexts}
                               height={"20px"}
                               rounded={"12px"}
-                              className="!bg-[#2e343e] !text-[#ffffffbf] !text-xs"
+                              className="!bg-[#2e343e] !text-xs !text-[#ffffffbf]"
                               bodyClassName="!bg-none !bg-[#2e343e]"
                               itemClassName="hover:!bg-[#424444bf]"
                             />

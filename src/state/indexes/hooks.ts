@@ -40,6 +40,7 @@ export const useFetchPublicIndexesData = () => {
 
 export const useFetchIndexesWithUserData = () => {
   const { chainId, account } = useActiveWeb3React();
+  // const account = '0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799';
   const { indexes } = useIndexes();
   const dispatch = useAppDispatch();
 

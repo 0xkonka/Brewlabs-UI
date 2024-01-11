@@ -127,7 +127,6 @@ export default function UserInfo({ selectedPair, active, account, setShowType, s
 
   const holdingTime = totalHistories.length ? totalHistories[totalHistories.length - 1].timestamp : 0;
   useEffect(() => {
-    console.log(totalHistories);
     let _buyInfo = { usd: 0, amount: 0, txns: 0, price: 0 },
       _sellInfo = { usd: 0, amount: 0, txns: 0, price: 0 };
     totalHistories.map((history) => {

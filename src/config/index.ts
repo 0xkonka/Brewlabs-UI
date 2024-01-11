@@ -130,7 +130,7 @@ export const COVALENT_CHAIN_NAME = {
   [ChainId.BSC_MAINNET]: "bsc-mainnet",
   [ChainId.BSC_TESTNET]: "bsc-testnet",
   [ChainId.POLYGON]: "matic-mainnet",
-  [ChainId.ARBITRUM]: "arbitrum-aminnet",
+  [ChainId.ARBITRUM]: "arbitrum-mainnet",
   [ChainId.FANTOM]: "fantom-mainnet",
   [ChainId.AVALANCHE]: "avalanche-mainnet",
 };

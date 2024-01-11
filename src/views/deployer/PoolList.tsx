@@ -3,6 +3,7 @@ import PoolCard from "./PoolCard";
 import { PlusSVG } from "@components/dashboard/assets/svgs";
 import DeployerModal from "views/directory/DeployerModal";
 import { useState } from "react";
+import { Category } from "config/constants/types";
 
 const PoolList = ({
   pools,
@@ -16,6 +17,7 @@ const PoolList = ({
   setStep,
   deployType,
   setDeployType,
+  curFilter,
 }: {
   pools: any;
   setSelectPoolDetail: any;
@@ -28,6 +30,7 @@ const PoolList = ({
   setStep: any;
   deployType: any;
   setDeployType: any;
+  curFilter: Category;
 }) => {
   return (
     <StyledContainer>
@@ -43,6 +46,13 @@ const PoolList = ({
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
           Network
         </div>
+        {curFilter === Category.FARM ? (
+          <div className="min-w-[36px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
+            DEX
+          </div>
+        ) : (
+          ""
+        )}
         <div className="min-w-[210px] cursor-pointer" onClick={() => setSortOrder("default")}>
           Pool
         </div>

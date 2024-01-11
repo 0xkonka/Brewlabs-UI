@@ -11,6 +11,7 @@ import TokenLogo from "@components/logo/TokenLogo";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { useRouter } from "next/router";
 import { isAddress } from "utils";
+import { DEX_LOGOS } from "config/constants/swap";
 
 const poolNames = {
   [Category.POOL]: "Staking Pool",
@@ -66,6 +67,13 @@ const PoolCard = ({
         <div className="w-[80px] pl-4">
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
+        {data.type === Category.FARM ? (
+          <div className="w-[36px]">
+            <img src={DEX_LOGOS[data.lpManager]} alt={""} className="w-9" />
+          </div>
+        ) : (
+          ""
+        )}
         <div className="flex w-[210px] items-center">
           {data.type === Category.INDEXES ? (
             <IndexLogo tokens={data.tokens} />
