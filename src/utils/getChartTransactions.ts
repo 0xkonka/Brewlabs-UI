@@ -39,10 +39,9 @@ export async function getBSCTransactions(txs, token) {
         }
       }`,
     });
-    if (!response.data) break;
     events = [...events, ...response.data.transferEvents];
     num++;
-    if (response.data.transferEvents.length !== 1000) break;
+    break;
   }
 
   return events.map((event) => ({ hash: event.id.split("-")[0], timestamp: event.timestamp }));
