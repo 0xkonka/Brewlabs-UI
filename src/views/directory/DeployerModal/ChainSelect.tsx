@@ -10,7 +10,7 @@ import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-const ChainSelect = ({ networks = null }: { networks: any }) => {
+const ChainSelect = ({ networks }: { networks?: any }) => {
   const _supportedNetworks = useSupportedNetworks();
   const { switchNetwork } = useSwitchNetwork();
   const { chainId } = useActiveChainId();
