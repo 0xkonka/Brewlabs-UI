@@ -40,7 +40,7 @@
     "lodash": "^4.17.21",
     "multicodec": "^3.2.1",
     "multihashes": "^4.0.3",
-    "next": "^13.2.4",
+    "next": "^14.0.4",
     "next-seo": "^5.14.1",
     "next-themes": "^0.2.0",
     "nft.storage": "^7.1.0",
@@ -82,7 +82,7 @@
     "autoprefixer": "^10.4.14",
     "daisyui": "^4.6.0",
     "eslint": "8.14.0",
-    "eslint-config-next": "^13.2.4",
+    "eslint-config-next": "^14.0.4",
     "eslint-config-prettier": "^8.5.0",
     "postcss": "^8.4.22",
     "prettier": "^2.7.1",
@@ -95,7 +95,10 @@
     "ethereumjs-abi": "https://registry.npmjs.org/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz"
   },
   "volta": {
-    "node": "18.18.2",
-    "yarn": "1.22.19"
+    "node": "20.9.0"
+  },
+  "engines": {
+    "node": ">=18.17",
+    "pnpm": ">=8.14.1"
   }
 }

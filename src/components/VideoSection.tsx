@@ -7,7 +7,7 @@ import { useFetchHomeData } from "state/home/hooks";
 const VideoSection = () => {
   useFetchHomeData();
   return (
-    <section className="bg-gradient-to-b from-zinc-800 to-zinc-900 pb-16 pt-20">
+    <section className="bg-gradient-to-b from-zinc-800 to-zinc-900 pb-16 pt-20 [mask-image:linear-gradient(to_bottom,black_90%,transparent)]">
       <Container>
         <InfoCarousel />
       </Container>
