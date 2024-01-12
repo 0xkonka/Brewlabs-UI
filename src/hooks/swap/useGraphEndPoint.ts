@@ -11,7 +11,9 @@ export const useGraphEndPoint = () => {
     if (chainId) {
       setGraphEndPoint({
         aggregator: AGGREGATOR_SUBGRAPH_NAMES[chainId]
-          ? `https://api.thegraph.com/subgraphs/name/devscninja/${AGGREGATOR_SUBGRAPH_NAMES[chainId]}`
+          ? chainId === 56
+            ? `https://api.thegraph.com/subgraphs/name/kittystardev/brewlabs-aggregator-bsc`
+            : `https://api.thegraph.com/subgraphs/name/devscninja/${AGGREGATOR_SUBGRAPH_NAMES[chainId]}`
           : undefined,
         router: ROUTER_SUBGRAPH_NAMES[chainId]
           ? `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`

@@ -5,8 +5,8 @@ import { useGraphEndPoint } from "./useGraphEndPoint";
 import { getSwapLogs } from "lib/swap/history";
 
 export const useSwapHistory = () => {
-  const { chainId } = useActiveWeb3React();
-  const account = "0x330518cc95c92881bcac1526185a514283a5584d";
+  const { chainId, account } = useActiveWeb3React();
+  // const account = "0x330518cc95c92881bcac1526185a514283a5584d";
 
   const [swapLogs, setSwapLogs] = useState<any[]>([]);
 
