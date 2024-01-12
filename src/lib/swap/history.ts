@@ -27,7 +27,6 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
         skip: page * pageSize,
         caller,
       });
-      console.log(data);
       if (data) {
         logs = data.logs.concat(logs);
       }

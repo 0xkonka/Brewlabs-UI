@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { WNATIVE } from "@brewlabs/sdk";
+import { ChainId, WNATIVE } from "@brewlabs/sdk";
 import styled from "styled-components";
 
 import { PlusSVG } from "components/dashboard/assets/svgs";
@@ -10,6 +10,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
 import TokenSelect from "../TokenSelect";
+import { NetworkOptions } from "config/constants/networks";
 
 const SelectToken = ({ setStep, tokens, setTokens }) => {
   const { chainId } = useActiveChainId();
@@ -33,7 +34,7 @@ const SelectToken = ({ setStep, tokens, setTokens }) => {
       <div>
         <div className="mt-2 text-white">
           <div className="mb-1">1.Select deployment network:</div>
-          <ChainSelect />
+          <ChainSelect networks={NetworkOptions.filter((network) => network.id === 56 || network.id === 137)} />
         </div>
         <div className="text-white">
           <div className="mb-1">2. Select token:</div>

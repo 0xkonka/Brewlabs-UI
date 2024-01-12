@@ -1,7 +1,7 @@
 import { parseUnits } from "@ethersproject/units";
 import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, Trade } from "@brewlabs/sdk";
 import { ParsedQs } from "qs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useENS from "hooks/ENS/useENS";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
@@ -16,6 +16,7 @@ import { useCurrencyBalances } from "../wallet/hooks";
 import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from "./actions";
 import { SwapState } from "./reducer";
 import { useUserSlippageTolerance } from "../user/hooks";
+import { SwapContext } from "contexts/SwapContext";
 
 export function useSwapState(): AppState["swap"] {
   return useSelector<AppState, AppState["swap"]>((state) => state.swap);
@@ -114,6 +115,7 @@ export function useDerivedSwapInfo(): {
 } {
   const { account } = useActiveWeb3React();
   const { t } = useTranslation();
+  const { isSwapAndTransfer }: any = useContext(SwapContext);
 
   const {
     independentField,
@@ -125,8 +127,8 @@ export function useDerivedSwapInfo(): {
 
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
-  const recipientLookup = useENS(recipient ?? undefined);
-  const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null;
+  // const recipientLookup = useENS(recipient ?? undefined);
+  const to: string | null = (isSwapAndTransfer ? (!isAddress(recipient) ? null : recipient) : account) ?? null;
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
@@ -166,7 +168,7 @@ export function useDerivedSwapInfo(): {
 
   const formattedTo = isAddress(to);
   if (!to || !formattedTo) {
-    inputError = inputError ?? t("Enter a recipient");
+    inputError = inputError ?? t("Enter a valid recipient");
   } else if (
     BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
     (bestTradeExactIn && involvesAddress(bestTradeExactIn, formattedTo)) ||

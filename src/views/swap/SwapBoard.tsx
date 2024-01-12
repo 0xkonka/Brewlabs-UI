@@ -3,7 +3,7 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useUserSlippageTolerance } from "state/user/hooks";
 
 import { SwapContext } from "contexts/SwapContext";
-import { NFTSVG } from "@components/dashboard/assets/svgs";
+import { NFTSVG, TransferToUserSVG } from "@components/dashboard/assets/svgs";
 import Modal from "components/Modal";
 import Security from "@components/SwapComponents/Security";
 import SlippageText from "@components/SwapComponents/SlippageText";
@@ -27,6 +27,8 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
     openSettingModal,
     setOpenSettingModal,
     addLiquidityStep,
+    isSwapAndTransfer,
+    setIsSwapAndTransfer,
   }: any = useContext(SwapContext);
 
   // txn values
@@ -50,6 +52,12 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
         type === "swap" ? "border-t px-3 dark:border-slate-600" : ""
       } dark:bg-zinc-900 sm:px-10 md:mx-0`}
     >
+      <div
+        className="primary-shadow absolute right-[82px] top-7 cursor-pointer text-primary"
+        onClick={() => setIsSwapAndTransfer(!isSwapAndTransfer)}
+      >
+        {TransferToUserSVG}
+      </div>
       <div
         className="tooltip absolute right-14 top-6 scale-75 cursor-pointer text-[rgb(75,85,99)]"
         data-tip="No Brewlabs NFT found."

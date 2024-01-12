@@ -63,12 +63,12 @@ const PoolCard = ({
         }
       }}
     >
-      <div className="flex items-center justify-between">
-        <div className="w-[80px] pl-4">
+      <div className="flex items-center justify-between px-4">
+        <div className="w-[88px]">
           <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
         </div>
         {data.type === Category.FARM ? (
-          <div className="w-[36px]">
+          <div className="w-[56px]">
             <img src={DEX_LOGOS[data.lpManager]} alt={""} className="w-9" />
           </div>
         ) : (
@@ -165,7 +165,7 @@ const PoolCard = ({
             <SkeletonComponent />
           )}
         </div>
-        <div className="px-6">
+        <div className="w-[120px]">
           {data.type !== Category.INDEXES ? (
             !data.isRevenue &&
             (data.apr || data.apr === 0.0 ? (
@@ -184,6 +184,99 @@ const PoolCard = ({
           ) : (
             <SkeletonComponent />
           )}
+        </div>
+      </div>
+      <div className="flex hidden flex-col px-6">
+        <div className="flex  items-center justify-between ">
+          <div className="flex items-center">
+            {data.type === Category.INDEXES ? (
+              <IndexLogo tokens={data.tokens} />
+            ) : (
+              <TokenLogo
+                src={
+                  !data.isRevenue
+                    ? getTokenLogoURL(data.earningToken.address, data.chainId, data.earningToken.logo)
+                    : getTokenLogoURL(data.stakingToken.address, data.chainId, data.stakingToken.logo)
+                }
+                classNames="mr-3 h-7 w-7"
+              />
+            )}
+            <div>
+              <div className="leading-none">
+                {data.type === Category.INDEXES ? (
+                  <>{getIndexName(data.tokens)}</>
+                ) : (
+                  <>
+                    <span className="text-primary">Earn</span> {data.earningToken.symbol}
+                  </>
+                )}
+              </div>
+              <div className="text-xs">
+                {poolNames[data.type]} - {data.lockup === undefined ? "Flexible" : `${data.duration} day lock`}
+              </div>
+              <div className="text-xs leading-none">
+                {data.type === Category.INDEXES ? (
+                  data.priceChanges ? (
+                    <div className={data.priceChanges[0].percent >= 0 ? "text-success" : "text-danger"}>
+                      Performance - {data.priceChanges[0].percent.toFixed(2)}% 24hrs
+                    </div>
+                  ) : (
+                    <SkeletonComponent />
+                  )
+                ) : (
+                  ""
+                )}
+                {data.type === Category.INDEXES && (data.pid === 3 || data.pid === 5) && (
+                  <span className="text-warning">{data.pid === 3 ? "Attention needed" : "Migrated"}</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
+        </div>
+        <div className="mt-6 flex flex-col justify-between xsm:flex-row ">
+          <div className={`flex text-xl ${data.type === Category.INDEXES ? "hidden xsm:block" : ""}`}>
+            Performance:&nbsp;
+            {data.type !== 3 ? (
+              data.apr !== undefined ? (
+                `${(+data.apr).toFixed(2)}%`
+              ) : (
+                <div className="mr-2">{<SkeletonComponent />}</div>
+              )
+            ) : (
+              "N/A"
+            )}
+          </div>
+          <div>
+            <div className="text-left xsm:text-right">Total supply staked</div>
+            <div className="text-left text-sm xsm:text-right">
+              {data.totalStaked !== undefined ? (
+                data.type === Category.INDEXES ? (
+                  <div className="leading-none">
+                    {data.tokens.map((t, index) => (
+                      <div key={index} className="text-[14px]">
+                        {formatAmount(data.totalStaked[index])} {t.symbol}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    {formatAmount(data.totalStaked)}{" "}
+                    {[Category.FARM, Category.ZAPPER].includes(data.type)
+                      ? data.lpSymbol.split(" ")[0]
+                      : data.stakingToken.symbol}
+                  </>
+                )
+              ) : (
+                <SkeletonComponent />
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-col items-start justify-between xsm:flex-row xsm:items-center">
+          <div className="flex">
+            TVL:&nbsp;{data.tvl !== undefined ? `$${numberWithCommas(data.tvl.toFixed(2))}` : <SkeletonComponent />}
+          </div>
         </div>
       </div>
     </StyledContainer>
