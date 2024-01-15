@@ -32,7 +32,7 @@ export function useDerivedBurnInfo(
   error?: string;
 } {
   const { chainId, account } = useActiveWeb3React();
-  // const account = '0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799'
+  // const account = '0x94f11f8092dd8b1b4073a41ed87598c5a5cf2666'
   const { independentField, typedValue } = useBurnState();
 
   const { t } = useTranslation();

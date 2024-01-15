@@ -23,6 +23,7 @@ const Row = (data: any) => {
       transactionHash,
       source,
     },
+    index,
   } = data;
   const inputCurrency = useCurrency(ETH_ADDRESSES.includes(srcToken) ? "ETH" : srcToken);
   const outputCurrency = useCurrency(ETH_ADDRESSES.includes(dstToken) ? "ETH" : dstToken);
@@ -38,7 +39,9 @@ const Row = (data: any) => {
     inputCurrency &&
     outputCurrency && (
       <a
-        className="mb-2 flex items-center justify-between rounded-lg border border-[#FFFFFF40] p-[10px] font-roboto text-sm transition-all duration-300 hover:scale-[1.03] hover:border-brand"
+        className={`mb-2 flex items-center justify-between rounded ${
+          index % 2 ? "bg-[#D9D9D91A]" : "bg-[#D9D9D90D]"
+        } p-[10px] font-roboto text-sm transition-all duration-300 hover:scale-[1.03] hover:border-brand`}
         href={getBlockExplorerLink(transactionHash, "transaction", chainId)}
         target="_blank"
         rel="noreferrer"
@@ -84,7 +87,7 @@ const History = () => {
   return (
     <div className="mt-6">
       <StyledButton
-        className="hidden !h-10 bg-[#B9B8B81A] font-brand !text-base text-primary hover:border-white hover:text-white xl:flex"
+        className="flex !h-10 bg-[#B9B8B81A] font-brand !text-base text-primary hover:border-white hover:text-white"
         type={"default"}
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -95,11 +98,11 @@ const History = () => {
       </StyledButton>
 
       {isExpanded && (
-        <div className="mt-4 w-full rounded-xl border border-gray-700 px-1 py-3">
+        <div className="-ml-2 mt-4 w-[calc(100%+16px)] py-3">
           <div className="yellowScroll mt-2 max-h-[300px] overflow-y-scroll px-2">
             {logs.length ? (
               logs.map((data, index) => {
-                return <Row data={data} key={index} />;
+                return <Row data={data} key={index} index={index} />;
               })
             ) : (
               <div className="mb-2 text-center font-brand text-brand">No Histories</div>

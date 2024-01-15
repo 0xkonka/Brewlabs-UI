@@ -53,7 +53,9 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
       } dark:bg-zinc-900 sm:px-10 md:mx-0`}
     >
       <div
-        className="primary-shadow absolute right-[82px] top-7 cursor-pointer text-primary"
+        className={`primary-shadow absolute right-[82px] top-7 cursor-pointer ${
+          isSwapAndTransfer ? "text-primary" : "text-[#4b5563]"
+        }`}
         onClick={() => setIsSwapAndTransfer(!isSwapAndTransfer)}
       >
         {TransferToUserSVG}

@@ -383,11 +383,11 @@ export default function SwapPanel({
                 ""
               )}
               {inputError ? (
-                <button className="btn-outline btn" disabled={true}>
+                <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
                   {t(inputError)}
                 </button>
               ) : currencyBalances[Field.INPUT] === undefined ? (
-                <button className="btn-outline btn" disabled={true}>
+                <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
                   {t("Loading")}
                 </button>
               ) : showWrap ? (
