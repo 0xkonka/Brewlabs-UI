@@ -49,7 +49,6 @@ export default function RemoveLiquidityPanel({
   lpPrice = undefined,
 }) {
   const { address: account } = useAccount();
-  // const account = '0x94f11f8092dd8b1b4073a41ed87598c5a5cf2666'
   const { data: signer } = useSigner();
 
   const { chainId } = useActiveChainId();
@@ -139,7 +138,7 @@ export default function RemoveLiquidityPanel({
       const currencyBIsETH = currencyB.wrapped.address === WNATIVE[selectedChainId].address;
       if (approval === ApprovalState.APPROVED) {
         // removeLiquidityETH
-        if (!isGetWETH) {
+        if (isGetWETH) {
           methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
           args = [
             currencyBIsETH ? tokenA.address : tokenB.address,
@@ -171,6 +170,7 @@ export default function RemoveLiquidityPanel({
             .then(calculateGasMargin)
             .catch((err) => {
               console.error(`estimateGas failed`, methodName, args, err);
+              handleWalletError(err, showError);
               return undefined;
             })
         )
@@ -209,6 +209,7 @@ export default function RemoveLiquidityPanel({
           .catch((err: Error) => {
             setPending(false);
             // we only care if the error is something _other_ than the user rejected the tx
+            handleWalletError(err, showError);
             console.error(err);
           });
       }
@@ -339,78 +340,14 @@ export default function RemoveLiquidityPanel({
   }
 
   async function onAttemptToApprove() {
-    try {
-      if (!pairContract || !pair || !library || !deadline) throw new Error("missing dependencies");
-      const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-      if (!liquidityAmount) throw new Error("missing liquidity amount");
-
-      setPending(true);
-      // try to gather a signature for permission
-      const nonce = await pairContract.nonces(account);
-
-      const EIP712Domain = [
-        { name: "name", type: "string" },
-        { name: "version", type: "string" },
-        { name: "chainId", type: "uint256" },
-        { name: "verifyingContract", type: "address" },
-      ];
-      const domain = {
-        name: "Brewswap LP",
-        version: "1",
-        chainId,
-        verifyingContract: pair?.liquidityToken?.address,
-      };
-      const Permit = [
-        { name: "owner", type: "address" },
-        { name: "spender", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "nonce", type: "uint256" },
-        { name: "deadline", type: "uint256" },
-      ];
-      const message = {
-        owner: account,
-        spender: isUsingRouter ? routerAddr : lpManager,
-        value: liquidityAmount.raw.toString(),
-        nonce: nonce.toHexString(),
-        deadline: deadline.toNumber(),
-      };
-      const data = JSON.stringify({
-        types: {
-          EIP712Domain,
-          Permit,
-        },
-        domain,
-        primaryType: "Permit",
-        message,
+    if (!pairContract || !pair || !library || !deadline) throw new Error("missing dependencies");
+    setPending(true);
+    approveCallback()
+      .then((result) => setPending(false))
+      .catch((e) => {
+        setPending(false);
+        handleWalletError(e, showError);
       });
-
-      if (isUsingRouter) {
-        library
-          .send("eth_signTypedData_v4", [account, data])
-          .then(splitSignature)
-          .then((signature) => {
-            setSignatureData({
-              v: signature.v,
-              r: signature.r,
-              s: signature.s,
-              deadline: deadline.toNumber(),
-            });
-          })
-          .catch((err) => {
-            // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-            if (err?.code !== 4001) {
-              approveCallback();
-            }
-          });
-      } else {
-        await approveCallback();
-      }
-    } catch (e) {
-      console.log(e);
-      handleWalletError(e, showError);
-    } finally {
-      setPending(false);
-    }
   }
 
   const token0Address: any = isAddress(tokenA?.address);
