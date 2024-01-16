@@ -24,7 +24,7 @@ const Farms: NextPage = () => {
   const data = allPools.find(
     (pool: any) =>
       pool.type === 2 &&
-      pool["contractAddress"].toLowerCase() === address.toLowerCase() &&
+      pool["contractAddress"].toLowerCase() === address?.toLowerCase() &&
       pool["chainId"] / 1 === chainId / 1
   );
   if (!data) return;
