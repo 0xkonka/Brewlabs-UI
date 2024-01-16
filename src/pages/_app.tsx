@@ -57,6 +57,7 @@ import LoadingPage from "components/LoadingPage";
 
 import { Updaters } from "../index";
 import { useDexPairs } from "state/chart/hooks";
+import { getMulticallContract } from "utils/contractHelpers";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 
@@ -87,7 +88,7 @@ function GlobalHooks() {
   useFetchNftUserData();
 
   useFetchMarketData();
-  useFetchTokenBalance("0x06Ff425B66d1c54845e9e96d6015FD692175005F", chainId, signer);
+  useFetchTokenBalance(account, chainId, signer);
 
   useTradingAllPairs();
 

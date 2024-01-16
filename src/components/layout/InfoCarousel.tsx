@@ -51,13 +51,25 @@ const responsive = {
 const InfoCarousel = () => {
   const { totalStakedValues, communities }: any = useContext(CommunityContext);
 
-  const { chainId } = useActiveWeb3React();
   const homeDatas = useAllHomeData();
   const { indexes } = useIndexes();
   const { flaskNft: flaskNfts, data } = useAllNftData();
 
+  const chainId = 56;
   let flaskNft = flaskNfts.find((p) => p.chainId === chainId);
   flaskNft = flaskNft ?? flaskNfts[0];
+
+  const ethPrice = useTokenPrice(chainId, WNATIVE[chainId].address);
+  const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
+  const pool = data.find((p) => p.chainId === 56);
+
+  const apr =
+    flaskNft.mintFee && pool?.totalStaked
+      ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[chainId]) * 100) /
+        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
+          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+          (pool?.totalStaked ?? 0))
+      : 0;
 
   const recentIndexes = indexes.filter(
     (index) => new Date(index.createdAt).getTime() / 1000 > Date.now() / 1000 - 3600 * 24
@@ -178,12 +190,7 @@ const InfoCarousel = () => {
       name: "Brewlabs NFT Staking",
       suffix: "APR",
       icon: NFTFillSVG,
-      value:
-        homeDatas.nftStakings.apy === null ? (
-          <SkeletonComponent className="!min-w-[100px]" />
-        ) : (
-          `${homeDatas.nftStakings.apy.toFixed(2)}%`
-        ),
+      value: !apr ? <SkeletonComponent className="!min-w-[100px]" /> : `${apr.toFixed(2)}%`,
       tooltip:
         "NFT minting fees (stablecoin) are designated to the following categories: 50% of mint fee to NFT staking protocol, 25% of mint fees to Brewlabs Treasury, 25% of mint fees to Brewlabs development fund. 100% of all BREWLABS tokens used in mint fees are sent to Brewlabs Treasury.",
       subItem: {

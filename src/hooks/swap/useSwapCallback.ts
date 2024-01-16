@@ -61,8 +61,8 @@ function useSwapCallArguments(
   const { account, chainId, library } = useActiveWeb3React();
   const { data: signer } = useSigner();
 
-  const { address: recipientAddress } = useENS(recipientAddressOrName);
-  const recipient = recipientAddressOrName === null ? account : recipientAddress;
+  // const { address: recipientAddress } = useENS(recipientAddressOrName);
+  const recipient = !isAddress(recipientAddressOrName) ? account : recipientAddressOrName;
   const routerAddr = ROUTER_ADDRESS_MAP[EXCHANGE_MAP[chainId]?.[0]?.key]?.[chainId];
 
   return useMemo(() => {
@@ -115,8 +115,8 @@ export function useSwapCallback(
 
   const addTransaction = useTransactionAdder();
 
-  const { address: recipientAddress } = useENS(recipientAddressOrName);
-  const recipient = recipientAddressOrName === null ? account : recipientAddress;
+  // const { address: recipientAddress } = useENS(recipientAddressOrName);
+  const recipient = !isAddress(recipientAddressOrName) ? account : recipientAddressOrName;
 
   return useMemo(() => {
     if (!trade || !library || !account || !chainId) {

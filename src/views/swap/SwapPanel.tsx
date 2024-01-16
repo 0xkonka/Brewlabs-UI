@@ -34,6 +34,9 @@ import StyledButton from "views/directory/StyledButton";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
+import StyledInput from "@components/StyledInput";
+import { handleWalletError } from "lib/bridge/helpers";
+import { showError } from "utils/functions";
 
 const AGGREGATOR_LOST_MAX_LIMIT = 0.15;
 const AGGREGATOR_LOST_LIMIT = 0.05;
@@ -61,7 +64,7 @@ export default function SwapPanel({
 
   // ----------------- ROUTER SWAP --------------------- //
 
-  const { autoMode, buyTax, sellTax, slippage, setAutoMode, setSlippageInput, isBrewRouter }: any =
+  const { autoMode, buyTax, sellTax, slippage, setAutoMode, setSlippageInput, isBrewRouter, isSwapAndTransfer }: any =
     useContext(SwapContext);
   // swap state
   const { independentField, typedValue, recipient } = useSwapState();
@@ -74,7 +77,7 @@ export default function SwapPanel({
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const trade = showWrap ? undefined : v2Trade;
 
-  const { onUserInput, onSwitchTokens } = useSwapActionHandlers();
+  const { onUserInput, onSwitchTokens, onChangeRecipient } = useSwapActionHandlers();
 
   const tokenMarketData = useTokenMarketChart(chainId);
 
@@ -129,10 +132,13 @@ export default function SwapPanel({
   };
 
   const handleApproveUsingRouter = async () => {
-    try {
-      const response = await approveCallback();
-      await response.wait();
-    } catch (e) {}
+    setAttemptingTxn(true);
+    approveCallback()
+      .then((result) => setAttemptingTxn(false))
+      .catch((e) => {
+        setAttemptingTxn(false);
+        handleWalletError(e, showError);
+      });
   };
 
   const handleSwapUsingRouter = useCallback(() => {
@@ -307,6 +313,10 @@ export default function SwapPanel({
     }
   }, [outputBuyTaxes, currencies[Field.OUTPUT]?.address, inputSellTaxes, currencies[Field.INPUT]?.address]);
 
+  useEffect(() => {
+    if (!isSwapAndTransfer) onChangeRecipient("");
+  }, [isSwapAndTransfer]);
+
   return (
     <>
       <WarningModal open={warningOpen} setOpen={setWarningOpen} type={"highpriceimpact"} onClick={onConfirm} />
@@ -359,12 +369,25 @@ export default function SwapPanel({
         !(toChainId && toChainId !== chainId) ? (
           Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
             <>
+              {isSwapAndTransfer ? (
+                <div className="-mt-5">
+                  <div className="text-xs text-white">Swap and send to ....</div>
+                  <StyledInput
+                    value={recipient ?? ""}
+                    className="mb-3 mt-1 w-full !bg-[#B9B8B80D] font-roboto"
+                    setValue={(e) => onChangeRecipient(e)}
+                    placeholder="0x000..."
+                  />
+                </div>
+              ) : (
+                ""
+              )}
               {inputError ? (
-                <button className="btn-outline btn" disabled={true}>
+                <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
                   {t(inputError)}
                 </button>
               ) : currencyBalances[Field.INPUT] === undefined ? (
-                <button className="btn-outline btn" disabled={true}>
+                <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
                   {t("Loading")}
                 </button>
               ) : showWrap ? (
@@ -378,13 +401,11 @@ export default function SwapPanel({
                     onClick={() => {
                       handleApproveUsingRouter();
                     }}
-                    pending={approval === ApprovalState.PENDING}
-                    disabled={approval === ApprovalState.PENDING}
+                    pending={attemptingTxn}
+                    disabled={attemptingTxn}
                   >
-                    {approval === ApprovalState.PENDING ? (
-                      <span>{t("Approving %asset%", { asset: currencies[Field.INPUT]?.symbol })}</span>
-                    ) : approval === ApprovalState.UNKNOWN ? (
-                      <span>{t("Loading", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                    {attemptingTxn ? (
+                      <span>{t("Approving %asset%...", { asset: currencies[Field.INPUT]?.symbol })}</span>
                     ) : (
                       t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
                     )}

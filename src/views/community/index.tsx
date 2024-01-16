@@ -44,7 +44,7 @@ const Community = () => {
               <div className="mb-20 flex flex-col items-center justify-between sm:flex-row">
                 <div>
                   <div className="text-lg leading-[1.2] text-primary">Welcome to the Brewlabs Community Proposals</div>
-                  <div className="mt-1.5 max-w-[750px] text-sm leading-[1.2]">
+                  <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">
                     This tool is designed to allow communities to submit, vote and determine pathways through governance
                     proposals. Decentralised organisations, community members and teams can use this tool to vote
                     together on significant decentralised decision making. Each community may have different proposal

@@ -82,6 +82,8 @@ export function filterPoolsByStatus(pools, currentBlocks, status) {
             (pool.type === Category.INDEXES && new Date(pool.createdAt).getTime() + 86400 * 1000 >= Date.now()))
       );
       break;
+    case "all":
+      break;
     default:
       chosenPools = chosenPools.filter(
         (pool) =>

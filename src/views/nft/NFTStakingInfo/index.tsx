@@ -16,10 +16,32 @@ import useTokenBalances from "@hooks/useTokenMultiChainBalance";
 import { tokens } from "config/constants/tokens";
 import { NFT_RARE_COUNT } from "config/constants/nft";
 import { SkeletonComponent } from "@components/SkeletonComponent";
-import { useDexPrice } from "@hooks/useTokenPrice";
+import useTokenPrice, { useDexPrice } from "@hooks/useTokenPrice";
+import { useAllNftData } from "state/nfts/hooks";
+import { WNATIVE } from "@brewlabs/sdk";
+import { BLOCK_TIMES, SECONDS_PER_YEAR } from "config";
+import { formatEther, formatUnits } from "ethers/lib/utils";
 
 const NFTStakingInfo = () => {
   const [mintOpen, setMintOpen] = useState(false);
+
+  const { flaskNft: flaskNfts, data } = useAllNftData();
+
+  const chainId = 56;
+  let flaskNft = flaskNfts.find((p) => p.chainId === chainId);
+  flaskNft = flaskNft ?? flaskNfts[0];
+
+  const ethPrice = useTokenPrice(chainId, WNATIVE[chainId].address);
+  const brewsPrice = useTokenPrice(chainId, flaskNft.brewsToken.address);
+  const pool = data.find((p) => p.chainId === chainId);
+
+  const apr =
+    flaskNft.mintFee && pool?.totalStaked
+      ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[chainId]) * 100) /
+        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
+          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+          (pool?.totalStaked ?? 0))
+      : 0;
 
   const OETHMontlyAPY = useOETHMonthlyAPY();
   const { balances: NFT_wallet_balance } = useTokenBalances(
@@ -30,17 +52,6 @@ const NFTStakingInfo = () => {
   );
 
   const { price: OETHPrice } = useDexPrice(1, tokens[1].oeth.address);
-
-  const NFT_MontlyApr = {
-    1:
-      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
-        ? ((OETHMontlyAPY * NFT_wallet_balance[1][0].balance * OETHPrice) / NFT_RARE_COUNT[1] / 9) * 12
-        : null,
-    56:
-      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
-        ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
-        : null,
-  };
 
   const infos = [
     {
@@ -75,7 +86,7 @@ const NFTStakingInfo = () => {
   const aprByNetworks = [
     {
       chainId: 1,
-      apr: NFT_MontlyApr[1],
+      apr: 0,
       totalPosition: NFT_wallet_balance && OETHPrice ? NFT_wallet_balance[1][0].balance * OETHPrice : null,
       weeklyROI:
         OETHPrice && OETHMontlyAPY && NFT_wallet_balance
@@ -86,7 +97,7 @@ const NFTStakingInfo = () => {
 
     {
       chainId: 56,
-      apr: NFT_MontlyApr[56],
+      apr: apr,
       totalPosition: NFT_wallet_balance && OETHPrice ? NFT_wallet_balance[1][1].balance * OETHPrice : null,
       weeklyROI:
         OETHPrice && OETHMontlyAPY && NFT_wallet_balance
@@ -206,7 +217,7 @@ const NFTStakingInfo = () => {
                       <div className="flex items-center">
                         <img src={getChainLogo(data.chainId)} alt={""} className="mr-2 h-6 w-6 rounded-full" />
                         <div className="text-lg">
-                          {i !== 2 ? data.apr ? `${data.apr.toFixed(2)}% APR` : <SkeletonComponent /> : "Pending..."}
+                          {i === 1 ? data.apr ? `${data.apr.toFixed(2)}% APR` : <SkeletonComponent /> : "Pending..."}
                         </div>
                       </div>
                       <div className="mt-3.5 flex justify-between text-sm">

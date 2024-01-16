@@ -26,17 +26,12 @@ export const navigationData = [
     icon: "PresentationChartLineIcon",
   },
   {
-    name: "Staking",
+    name: "Invest",
     href: "/staking",
     external: false,
     icon: "ClockIcon",
   },
-  {
-    name: "Farms",
-    href: "/farms",
-    external: false,
-    icon: "ArrowTrendingUpIcon",
-  },
+
   {
     name: "Indexes",
     href: "/indexes",
@@ -49,12 +44,7 @@ export const navigationData = [
     external: false,
     icon: "ArrowsRightLeftIcon",
   },
-  {
-    name: "Zap",
-    href: "/zapper",
-    external: false,
-    icon: "BoltIcon",
-  },
+
   {
     name: "Swap",
     href: "/swap",

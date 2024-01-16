@@ -11,9 +11,8 @@ import { getBalances } from "@hooks/useTokenMultiChainBalance";
 
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
-let wrappedQuery;
 
-export default function UserInfo({ selectedPair, active, account, setShowType, setCriteria }) {
+export default function UserInfo({ selectedPair, active, account, setShowType, setCriteria, totalHistories }) {
   const isXs = useMediaQuery({ query: "(max-width: 450px)" });
   // const account = "0xae837fd1c51705f3f8f232910dfecb9180541b27";
 
@@ -23,105 +22,7 @@ export default function UserInfo({ selectedPair, active, account, setShowType, s
   const [sellInfo, setSellInfo] = useState({ usd: 0, amount: 0, txns: 0, price: 0 });
   const [isFade, setIsFade] = useState(false);
   const [show, setShow] = useState(false);
-  const [histories, setHistories] = useState([]);
-  const [totalHistories, setTotalHistories] = useState([]);
-  const [recentHistories, setRecentHistories] = useState([]);
   const [balance, setBalance] = useState(0);
-
-  const getQuery = () => {
-    const query: any = {
-      pair: selectedPair.address,
-      quote: selectedPair.quoteToken.address,
-      tb: 0,
-      account,
-      type: "buyOrSell",
-      a: selectedPair.a,
-      base: selectedPair.baseToken.address,
-      dexId: selectedPair.dexId,
-      otherdexId: selectedPair.otherdexId,
-    };
-    return query;
-  };
-
-  const stringifiedCurrency = JSON.stringify(selectedPair);
-  useEffect(() => {
-    if (!account || !active) return;
-    getBalances(
-      {
-        [selectedPair.chainId]: [
-          { address: selectedPair.baseToken.address, decimals: selectedPair.baseToken.decimals },
-        ],
-      },
-      {
-        [selectedPair.chainId]: [account],
-      }
-    )
-      .then((result) => {
-        setBalance(result.balances[selectedPair.chainId][0].balance);
-      })
-      .catch((e) => console.log(e));
-  }, [stringifiedCurrency, account, active]);
-
-  useEffect(() => {
-    const query: any = getQuery();
-    if (!isAddress(account) || !isAddress(selectedPair.address)) {
-      return;
-    }
-    setHistories([]);
-    setTotalHistories([]);
-    wrappedQuery = JSON.stringify(query);
-    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all")
-      .then((result) => {
-        if (wrappedQuery === JSON.stringify(query)) {
-          setHistories(result);
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, [selectedPair.address, account]);
-
-  useFastRefreshEffect(() => {
-    let query = getQuery();
-    query.tb = 0;
-    if (!isAddress(account) || !isAddress(selectedPair.address)) {
-      return;
-    }
-    fetchTradingHistoriesByDexScreener(query, selectedPair.chainId, "all")
-      .then((result) => {
-        if (wrappedQuery === JSON.stringify(query)) setRecentHistories(result);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, [selectedPair.address, account]);
-
-  const strigifiedHistories = JSON.stringify(histories);
-  const strigifiedRecentHistories = JSON.stringify(recentHistories);
-
-  useEffect(() => {
-    const total = [...histories];
-    let temp = [...totalHistories];
-    for (let i = 0; i < total.length; i++) {
-      const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
-      if (!isExisting) {
-        temp.push(total[i]);
-      }
-    }
-    setTotalHistories(temp.sort((a, b) => b.timestamp - a.timestamp));
-  }, [strigifiedHistories]);
-
-  useEffect(() => {
-    const total = [...recentHistories];
-    let temp = [...totalHistories];
-    for (let i = 0; i < total.length; i++) {
-      const isExisting = temp.find((history) => JSON.stringify(history) === JSON.stringify(total[i]));
-      if (!isExisting) {
-        temp.push(total[i]);
-      }
-    }
-    setTotalHistories(temp.sort((a, b) => b.timestamp - a.timestamp));
-  }, [strigifiedRecentHistories]);
 
   const stringifiedTotalHistories = JSON.stringify(totalHistories);
 

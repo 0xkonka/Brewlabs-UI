@@ -1,46 +1,52 @@
 import { gql } from "graphql-request";
 
 export const SWAP_LOGS = gql`
-query getSwapLogs($first: Int!, $skip: Int!, $caller: String!) {
-  logs: swaps(orderDirection: desc, first: $first, skip: $skip, where: {from: $caller}) {
-    id
-    transaction {
+  query getSwapLogs($first: Int!, $skip: Int!, $caller: String!) {
+    logs: swaps(orderDirection: desc, first: $first, skip: $skip, where: { from: $caller }) {
       id
-    }
-    pair {
+      transaction {
+        id
+      }
+      pair {
         token0 {
-            id
+          id
         }
         token1 {
-            id
+          id
         }
+      }
+      amount0In
+      amount0Out
+      amount1In
+      amount1Out
+      to
+      timestamp
     }
-    amount0In
-    amount0Out
-    amount1In
-    amount1Out
-    to
   }
-}
 `;
 
 export const PAIR_DAY_DATA = gql`
-query pairDayDatas($pairAddress: Bytes!, $startTimestamp: Int!) {
-  pairDayDatas(first: 1000, orderBy: date, orderDirection: desc, where: { pairAddress_in: $pairAddress, date_gt: $startTimestamp }) {
-    id
-    date
-    dailyVolumeToken0
-    dailyVolumeToken1
-    totalSupply
+  query pairDayDatas($pairAddress: Bytes!, $startTimestamp: Int!) {
+    pairDayDatas(
+      first: 1000
+      orderBy: date
+      orderDirection: desc
+      where: { pairAddress_in: $pairAddress, date_gt: $startTimestamp }
+    ) {
+      id
+      date
+      dailyVolumeToken0
+      dailyVolumeToken1
+      totalSupply
+    }
   }
-}
-`
+`;
 export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
-  let pairsString = `[`
+  let pairsString = `[`;
   pairs.map((pair) => {
-    return (pairsString += `"${pair}"`)
-  })
-  pairsString += ']'
+    return (pairsString += `"${pair}"`);
+  });
+  pairsString += "]";
   const queryString = `
     query days {
       pairDayDatas(first: 1000, orderBy: date, orderDirection: asc, where: { pairAddress_in: ${pairsString}, date_gt: ${startTimestamp} }) {
@@ -56,6 +62,8 @@ export const PAIR_DAY_DATA_BULK = (pairs, startTimestamp) => {
         totalSupply
       }
     } 
-`
-  return gql`${queryString}`
-}
+`;
+  return gql`
+    ${queryString}
+  `;
+};

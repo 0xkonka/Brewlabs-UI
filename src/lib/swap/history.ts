@@ -27,7 +27,6 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
         skip: page * pageSize,
         caller,
       });
-      console.log(data);
       if (data) {
         logs = data.logs.concat(logs);
       }
@@ -51,6 +50,7 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
       amount0Out,
       amount1In,
       amount1Out,
+      timestamp,
     } = log;
 
     if (Number(amount0In) > 0) {
@@ -61,6 +61,7 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
         _amountOut: amount1Out,
         transactionHash,
         source: "router",
+        timestamp,
       };
     } else {
       return {
@@ -70,6 +71,7 @@ export const getSwapLogsFromRouter = async (graphEndpoint: string, caller: strin
         _amountOut: amount0Out,
         transactionHash,
         source: "router",
+        timestamp,
       };
     }
   });
@@ -101,5 +103,5 @@ export const getSwapLogsFromAggregator = async (graphEndpoint: string, caller: s
       break;
     }
   }
-  return logs.map((log) => ({ ...log, source: "aggregator" }));
+  return logs.map((log) => ({ ...log, source: "aggregator", timestamp: log.blockTimestamp }));
 };

@@ -86,8 +86,7 @@ export function useDerivedMintInfo(
   poolTokenPercentage?: Percent;
   error?: string;
 } {
-  const { account, chainId } = useActiveWeb3React();
-
+  const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
 
   const {

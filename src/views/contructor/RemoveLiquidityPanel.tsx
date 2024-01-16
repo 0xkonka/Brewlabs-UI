@@ -17,7 +17,7 @@ import useDebouncedChangeHandler from "hooks/useDebouncedChangeHandler";
 import { usePairContract } from "hooks/useContract";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTransactionDeadline from "hooks/useTransactionDeadline";
-import { getExplorerLink, getNetworkLabel } from "lib/bridge/helpers";
+import { getExplorerLink, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useBurnActionHandlers, useDerivedBurnInfo } from "state/burn/hooks";
 import { Field } from "state/burn/actions";
 import { useUserSlippageTolerance } from "state/user/hooks";
@@ -26,7 +26,7 @@ import { calculateGasMargin, calculateSlippageAmount, isAddress } from "utils";
 import { getLpManagerV2Address } from "utils/addressHelpers";
 import { getBrewlabsRouterContract, getLpManagerV2Contract } from "utils/contractHelpers";
 import { formatAmount } from "utils/formatApy";
-import { getChainLogo, getExplorerLogo } from "utils/functions";
+import { getChainLogo, getExplorerLogo, showError } from "utils/functions";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useSigner } from "utils/wagmi";
@@ -138,7 +138,7 @@ export default function RemoveLiquidityPanel({
       const currencyBIsETH = currencyB.wrapped.address === WNATIVE[selectedChainId].address;
       if (approval === ApprovalState.APPROVED) {
         // removeLiquidityETH
-        if (!isGetWETH) {
+        if (isGetWETH) {
           methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
           args = [
             currencyBIsETH ? tokenA.address : tokenB.address,
@@ -170,6 +170,7 @@ export default function RemoveLiquidityPanel({
             .then(calculateGasMargin)
             .catch((err) => {
               console.error(`estimateGas failed`, methodName, args, err);
+              handleWalletError(err, showError);
               return undefined;
             })
         )
@@ -208,200 +209,145 @@ export default function RemoveLiquidityPanel({
           .catch((err: Error) => {
             setPending(false);
             // we only care if the error is something _other_ than the user rejected the tx
+            handleWalletError(err, showError);
             console.error(err);
           });
       }
     } catch (e) {
       console.log(e);
+      handleWalletError(e, showError);
     }
     setPending(false);
   }
 
   async function onRemoveWithManager() {
     if (!chainId || !signer || !account || !deadline) throw new Error("missing dependencies");
-    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts;
-    if (!currencyAmountA || !currencyAmountB) {
-      throw new Error("missing currency amounts");
-    }
-
-    // if((chainId === 1 && (!selecedDexId || selecedDexId === "uniswap-v2")) || (chainId === 56 && (!selecedDexId || selecedDexId == "pcs-v2"))) {
-    //   await onRemoveWithManagerV1();
-    //   return;
-    // }
-
-    const lpManagerContract = getLpManagerV2Contract(chainId, signer);
-    const gasPrice = await getNetworkGasPrice(library, chainId);
-
-    const amountsMin = {
-      [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
-      [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
-    };
-
-    if (!currencyA || !currencyB) throw new Error("missing tokens");
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-    if (!liquidityAmount) throw new Error("missing liquidity amount");
-
-    const currencyBIsETH = currencyB.isNative;
-    const oneCurrencyIsETH = currencyA.isNative || currencyBIsETH;
-
-    if (!tokenA || !tokenB) throw new Error("could not wrap");
-
-    let methodNames: string[];
-    let args: Array<string | string[] | number | boolean>;
-    // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
-      // removeLiquidityETH
-      if (oneCurrencyIsETH) {
-        methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
-        args = [
-          routerAddr,
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          deadline.toHexString(),
-        ];
+    try {
+      const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts;
+      if (!currencyAmountA || !currencyAmountB) {
+        throw new Error("missing currency amounts");
       }
-      // removeLiquidity
-      else {
-        methodNames = ["removeLiquidity"];
-        args = [
-          routerAddr,
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          deadline.toHexString(),
-        ];
-      }
-    } else {
-      throw new Error("Attempting to confirm without approval. Please contact support.");
-    }
 
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
-      methodNames.map((methodName) =>
-        lpManagerContract.estimateGas[methodName](...args)
-          .then(calculateGasMargin)
-          .catch((err) => {
-            console.error(`estimateGas failed`, methodName, args, err);
-            return undefined;
+      // if((chainId === 1 && (!selecedDexId || selecedDexId === "uniswap-v2")) || (chainId === 56 && (!selecedDexId || selecedDexId == "pcs-v2"))) {
+      //   await onRemoveWithManagerV1();
+      //   return;
+      // }
+
+      const lpManagerContract = getLpManagerV2Contract(chainId, signer);
+      const gasPrice = await getNetworkGasPrice(library, chainId);
+
+      const amountsMin = {
+        [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
+        [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
+      };
+
+      if (!currencyA || !currencyB) throw new Error("missing tokens");
+      const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
+      if (!liquidityAmount) throw new Error("missing liquidity amount");
+
+      const currencyBIsETH = currencyB.isNative;
+      const oneCurrencyIsETH = currencyA.isNative || currencyBIsETH;
+
+      if (!tokenA || !tokenB) throw new Error("could not wrap");
+
+      let methodNames: string[];
+      let args: Array<string | string[] | number | boolean>;
+      // we have approval, use normal remove liquidity
+      if (approval === ApprovalState.APPROVED) {
+        // removeLiquidityETH
+        if (oneCurrencyIsETH) {
+          methodNames = ["removeLiquidityETH", "removeLiquidityETHSupportingFeeOnTransferTokens"];
+          args = [
+            routerAddr,
+            currencyBIsETH ? tokenA.address : tokenB.address,
+            liquidityAmount.raw.toString(),
+            amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+            amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+            account,
+            deadline.toHexString(),
+          ];
+        }
+        // removeLiquidity
+        else {
+          methodNames = ["removeLiquidity"];
+          args = [
+            routerAddr,
+            tokenA.address,
+            tokenB.address,
+            liquidityAmount.raw.toString(),
+            amountsMin[Field.CURRENCY_A].toString(),
+            amountsMin[Field.CURRENCY_B].toString(),
+            account,
+            deadline.toHexString(),
+          ];
+        }
+      } else {
+        throw new Error("Attempting to confirm without approval. Please contact support.");
+      }
+
+      const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+        methodNames.map((methodName) =>
+          lpManagerContract.estimateGas[methodName](...args)
+            .then(calculateGasMargin)
+            .catch((err) => {
+              console.error(`estimateGas failed`, methodName, args, err);
+              return undefined;
+            })
+        )
+      );
+
+      const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+        BigNumber.isBigNumber(safeGasEstimate)
+      );
+
+      // all estimations failed...
+      if (indexOfSuccessfulEstimation === -1) {
+        console.error("This transaction would fail. Please contact support.");
+      } else {
+        const methodName = methodNames[indexOfSuccessfulEstimation];
+        const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
+
+        setPending(true);
+        await lpManagerContract[methodName](...args, {
+          gasLimit: safeGasEstimate,
+          gasPrice,
+        })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+                currencyA?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+            });
+            toast.success("Liquidity was removed");
+
+            fetchLPTokens(chainId);
+            onBack();
+            // setTxHash(response.hash)
           })
-      )
-    );
-
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate)
-    );
-
-    // all estimations failed...
-    if (indexOfSuccessfulEstimation === -1) {
-      console.error("This transaction would fail. Please contact support.");
-    } else {
-      const methodName = methodNames[indexOfSuccessfulEstimation];
-      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
-
-      setPending(true);
-      await lpManagerContract[methodName](...args, {
-        gasLimit: safeGasEstimate,
-        gasPrice,
-      })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencyA?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+          .catch((err: Error) => {
+            // we only care if the error is something _other_ than the user rejected the tx
+            handleWalletError(err, showError);
+            console.error(err);
+          })
+          .finally(() => {
+            setPending(false);
           });
-          toast.success("Liquidity was removed");
-
-          fetchLPTokens(chainId);
-          onBack();
-          // setTxHash(response.hash)
-        })
-        .catch((err: Error) => {
-          // we only care if the error is something _other_ than the user rejected the tx
-          console.error(err);
-        })
-        .finally(() => {
-          setPending(false);
-        });
+      }
+    } catch (e) {
+      console.log(e);
+      handleWalletError(e, showError);
     }
   }
 
   async function onAttemptToApprove() {
-    try {
-      if (!pairContract || !pair || !library || !deadline) throw new Error("missing dependencies");
-      const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
-      if (!liquidityAmount) throw new Error("missing liquidity amount");
-
-      setPending(true);
-      // try to gather a signature for permission
-      const nonce = await pairContract.nonces(account);
-
-      const EIP712Domain = [
-        { name: "name", type: "string" },
-        { name: "version", type: "string" },
-        { name: "chainId", type: "uint256" },
-        { name: "verifyingContract", type: "address" },
-      ];
-      const domain = {
-        name: "Brewswap LP",
-        version: "1",
-        chainId,
-        verifyingContract: pair?.liquidityToken?.address,
-      };
-      const Permit = [
-        { name: "owner", type: "address" },
-        { name: "spender", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "nonce", type: "uint256" },
-        { name: "deadline", type: "uint256" },
-      ];
-      const message = {
-        owner: account,
-        spender: isUsingRouter ? routerAddr : lpManager,
-        value: liquidityAmount.raw.toString(),
-        nonce: nonce.toHexString(),
-        deadline: deadline.toNumber(),
-      };
-      const data = JSON.stringify({
-        types: {
-          EIP712Domain,
-          Permit,
-        },
-        domain,
-        primaryType: "Permit",
-        message,
+    if (!pairContract || !pair || !library || !deadline) throw new Error("missing dependencies");
+    setPending(true);
+    approveCallback()
+      .then((result) => setPending(false))
+      .catch((e) => {
+        setPending(false);
+        handleWalletError(e, showError);
       });
-
-      if (isUsingRouter) {
-        library
-          .send("eth_signTypedData_v4", [account, data])
-          .then(splitSignature)
-          .then((signature) => {
-            setSignatureData({
-              v: signature.v,
-              r: signature.r,
-              s: signature.s,
-              deadline: deadline.toNumber(),
-            });
-          })
-          .catch((err) => {
-            // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-            if (err?.code !== 4001) {
-              approveCallback();
-            }
-          });
-      } else {
-        await approveCallback();
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setPending(false);
-    }
   }
 
   const token0Address: any = isAddress(tokenA?.address);

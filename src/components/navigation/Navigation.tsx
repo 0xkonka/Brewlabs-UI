@@ -16,11 +16,23 @@ import Soon from "@components/Soon";
 import LogoIcon from "../LogoIcon";
 import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
 import ConnectWallet from "../wallet/ConnectWallet";
+import { usePools } from "state/pools/hooks";
+import { useFarms } from "state/farms/hooks";
+import { useFarms as useZaps } from "state/zap/hooks";
+import { useAccount } from "wagmi";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
 
   const { newProposalCount }: any = useContext(CommunityContext);
+  const { address: account } = useAccount();
+
+  const { pools } = usePools();
+  const { data: farms } = useFarms();
+  const { data: zaps } = useZaps(account);
+
+  const allPools = [...pools.filter((p) => p.visible), ...farms.filter((p) => p.visible), ...zaps];
+  const investCount = allPools.filter((data) => data.userData?.stakedBalance.gt(0)).length;
 
   // Close the mobile navigation when navigating
   useEffect(() => {
@@ -88,6 +100,8 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     ) : (
                       ""
                     )}
+
+                    {item.name === "Invest" ? <Notification count={investCount} className="-right-8 -top-1" /> : ""}
                   </span>
                 </motion.div>
               </Link>

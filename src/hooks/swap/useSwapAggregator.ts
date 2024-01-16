@@ -23,8 +23,8 @@ export const useSwapAggregator = (
 
   const { data: signer } = useSigner();
 
-  const { address: recipientAddress } = useENS(recipientAddressOrName);
-  const recipient = recipientAddressOrName === null ? account : recipientAddress;
+  // const { address: recipientAddress } = useENS(recipientAddressOrName);
+  const recipient = !isAddress(recipientAddressOrName) ? account : recipientAddressOrName;
 
   const callParams = useMemo(() => {
     if (
