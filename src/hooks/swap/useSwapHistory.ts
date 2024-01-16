@@ -6,7 +6,6 @@ import { getSwapLogs } from "lib/swap/history";
 
 export const useSwapHistory = () => {
   const { chainId, account } = useActiveWeb3React();
-
   const [swapLogs, setSwapLogs] = useState<any[]>([]);
 
   const graphEndPoint = useGraphEndPoint();
@@ -16,7 +15,7 @@ export const useSwapHistory = () => {
 
     async function update() {
       const _swapLogs = await getSwapLogs(graphEndPoint, account, chainId);
-      if (isSubscribed) setSwapLogs(_swapLogs);
+      if (isSubscribed) setSwapLogs(_swapLogs.sort((a, b) => Number(b.timestamp) - Number(a.timestamp)));
     }
 
     update();

@@ -9,6 +9,7 @@ query getSwapLogs($caller: String!, $first: Int!, $skip: Int!) {
     _amountIn
     _amountOut
     transactionHash
+    blockTimestamp
   }
 }
 `;
