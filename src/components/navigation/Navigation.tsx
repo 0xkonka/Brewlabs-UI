@@ -20,6 +20,7 @@ import { usePools } from "state/pools/hooks";
 import { useFarms } from "state/farms/hooks";
 import { useFarms as useZaps } from "state/zap/hooks";
 import { useAccount } from "wagmi";
+import { useIndexes } from "state/indexes/hooks";
 
 const Navigation = ({ slim }: { slim?: boolean }) => {
   const router = useRouter();
@@ -30,6 +31,11 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
   const { pools } = usePools();
   const { data: farms } = useFarms();
   const { data: zaps } = useZaps(account);
+  const { indexes } = useIndexes();
+
+  const indexCount = indexes
+    .filter((data) => data.visible)
+    .filter((data) => +data.userData?.stakedUsdAmount > 0).length;
 
   const allPools = [...pools.filter((p) => p.visible), ...farms.filter((p) => p.visible), ...zaps];
   const investCount = allPools.filter((data) => data.userData?.stakedBalance.gt(0)).length;
@@ -102,6 +108,7 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
                     )}
 
                     {item.name === "Invest" ? <Notification count={investCount} className="-right-8 -top-1" /> : ""}
+                    {item.name === "Indexes" ? <Notification count={indexCount} className="-right-8 -top-1" /> : ""}
                   </span>
                 </motion.div>
               </Link>

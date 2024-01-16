@@ -42,6 +42,7 @@ import ZapperDetail from "./ZapperDetail";
 import StyledButton from "./StyledButton";
 import Link from "next/link";
 import { DocSVG } from "@components/dashboard/assets/svgs";
+import contents from "./contents";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -200,7 +201,6 @@ const Directory = ({ page }: { page: number }) => {
     filterPoolsByStatus(chosenPools, currentBlocks, curFilter === Category.MY_POSITION ? "all" : status)
   );
 
-
   const renderDetailPage = () => {
     switch (curPool.type) {
       case Category.POOL:
@@ -261,6 +261,8 @@ const Directory = ({ page }: { page: number }) => {
     }
   };
 
+  const content = contents[curFilter === Category.INDEXES ? "indexes" : "invest"];
+
   return (
     <PageWrapper>
       {renderDetailPage()}
@@ -274,7 +276,7 @@ const Directory = ({ page }: { page: number }) => {
                   <WordHighlight content="Brewlabs Pool Directory" />
                   <a
                     className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
-                    href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-brewlabs-indexes"
+                    href={content.link}
                     target="_blank"
                   >
                     <div>LEARN MORE</div>
@@ -285,15 +287,8 @@ const Directory = ({ page }: { page: number }) => {
             />
             <Container className="font-brand">
               <div className="mb-10">
-                <div className="text-lg leading-[1.2] text-primary">{"Brewlabs Indexes - Cryptocurrency ETF’s."}</div>
-                <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">
-                  Brewlabs token indexes allow users to create baskets of tokens to trade, share, profit and dilute
-                  risk. Users can dilute a purchase of tokens by means of using a single payment transaction to purchase
-                  nominated tokens within the index. Tokens purchased are then retained in the index smart contract
-                  until liquidated for profit or loss at the discretion of the user. Indexes can be created and deployed
-                  for <span className="text-primary">free</span> by any user. Create an index and share it with your
-                  friends, earn a commission on every participant in your indexes!
-                </div>
+                <div className="text-lg leading-[1.2] text-primary">{content.header}</div>
+                <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">{content.body}</div>
               </div>
               <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
               {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
