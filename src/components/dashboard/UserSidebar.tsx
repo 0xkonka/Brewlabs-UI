@@ -59,7 +59,7 @@ const UserSidebar = () => {
               <div className="relative flex h-full w-full flex-1 flex-col items-center px-2 py-6 xsm:px-6">
                 {sidebarContent ?? <UserDashboard />}
               </div>
-              {isOpen !== 3 ? <ConnectWallet allowDisconnect /> : ""}
+              {isOpen !== 3 ? <ConnectWallet /> : ""}
             </Dialog.Panel>
           </Transition.Child>
         </div>

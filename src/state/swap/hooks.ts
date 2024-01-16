@@ -115,7 +115,7 @@ export function useDerivedSwapInfo(): {
 } {
   const { account } = useActiveWeb3React();
   const { t } = useTranslation();
-  const { isSwapAndTransfer }: any = useContext(SwapContext);
+  const { isSwapAndTransfer }: { isSwapAndTransfer: boolean } = useContext(SwapContext);
 
   const {
     independentField,

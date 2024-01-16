@@ -10,6 +10,7 @@ import singleStakingABI from "config/abi/staking/singlestaking.json";
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { PoolCategory } from "config/constants/types";
 import { BIG_ZERO } from "utils/bigNumber";
+import { getLockupStakingContract } from "utils/contractHelpers";
 import multicall from "utils/multicall";
 import { simpleRpcProvider } from "utils/providers";
 
@@ -231,11 +232,14 @@ export const fetchUserPendingReflections = async (account, chainId, pools) => {
           name: "pendingDividends",
           params: [account],
         }));
-        const lockupCalls = lockupReflectionPools.map((p) => ({
-          address: p.contractAddress,
-          name: "pendingDividends",
-          params: [account, p.lockup],
-        }));
+
+        const lockupCalls = lockupReflectionPools
+          .filter((p) => p.contractAddress !== "0xEe8E812Fd17AFAaa3c14461bD44591791f8d843E")
+          .map((p) => ({
+            address: p.contractAddress,
+            name: "pendingDividends",
+            params: [account, p.lockup],
+          }));
 
         const nonLockupRes = await multicall(singleStakingABI, calls, chainId);
         const lockupRes = await multicall(lockupStakingABI, lockupCalls, chainId);

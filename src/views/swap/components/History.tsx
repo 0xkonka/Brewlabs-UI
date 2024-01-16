@@ -105,7 +105,7 @@ const History = () => {
                 return <Row data={data} key={index} index={index} />;
               })
             ) : (
-              <div className="mb-2 text-center font-brand text-brand">No Histories</div>
+              <div className="mb-2 text-center font-brand text-primary">No Histories</div>
             )}
           </div>
         </div>

@@ -62,7 +62,7 @@ const SwapContextProvider = ({ children }: any) => {
   const [swapTab, setSwapTab] = useState(0);
   const [addLiquidityStep, setAddLiquidityStep] = useState("default");
   const [openSettingModal, setOpenSettingModal] = useState(false);
-  const [isSwapAndTransfer, setIsSwapAndTransfer] = useState('');
+  const [isSwapAndTransfer, setIsSwapAndTransfer] = useState(false);
 
   const [isBrewRouter, setIsBrewRouter] = useState(false);
 

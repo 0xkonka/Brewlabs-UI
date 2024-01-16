@@ -57,6 +57,7 @@ import LoadingPage from "components/LoadingPage";
 
 import { Updaters } from "../index";
 import { useDexPairs } from "state/chart/hooks";
+import { getMulticallContract } from "utils/contractHelpers";
 
 const Bubbles = lazy(() => import("components/animations/Bubbles"));
 

@@ -6,12 +6,12 @@ const navigationItems = [
   {
     name: "Network",
     sortValue: "chainId",
-    width: "min-w-[88px]",
+    width: "min-w-24",
   },
   {
     name: "DEX",
     sortValue: "chainId",
-    width: "min-w-[56px]",
+    width: "min-w-16",
   },
   {
     name: "Pool",

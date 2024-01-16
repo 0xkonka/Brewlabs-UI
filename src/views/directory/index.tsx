@@ -196,7 +196,10 @@ const Directory = ({ page }: { page: number }) => {
               : data.userData?.stakedBalance?.gt(0)))
       );
   }
-  chosenPools = sortPools(filterPoolsByStatus(chosenPools, currentBlocks, status));
+  chosenPools = sortPools(
+    filterPoolsByStatus(chosenPools, currentBlocks, curFilter === Category.MY_POSITION ? "all" : status)
+  );
+
 
   const renderDetailPage = () => {
     switch (curPool.type) {
