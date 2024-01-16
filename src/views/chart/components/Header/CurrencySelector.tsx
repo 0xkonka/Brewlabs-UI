@@ -234,7 +234,7 @@ const CurrencySelector = () => {
         ))}
       </nav>
 
-      <nav className="mb-4 block sm:hidden" aria-label="Tabs">
+      <nav className="mb-4 block sm:hidden relative z-10" aria-label="Tabs">
         <DropDown
           width="w-full"
           value={activeTab + 1}
