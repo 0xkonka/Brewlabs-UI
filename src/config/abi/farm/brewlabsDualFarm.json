@@ -1,29 +1,27 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "_brews",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_reflectionToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_rewardPerBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "_hasDividend",
-        "type": "bool"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "tokenRecovered",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "AdminTokenRecovered",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -35,10 +33,23 @@
         "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256[2]",
+        "name": "amount",
+        "type": "uint256[2]"
+      }
+    ],
+    "name": "Claim",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -54,16 +65,23 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "DurationChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "user",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
       },
       {
         "indexed": false,
@@ -73,6 +91,64 @@
       }
     ],
     "name": "EmergencyWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "blockNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "EndBlockChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newMgr",
+        "type": "address"
+      }
+    ],
+    "name": "FeeManagerChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[2]",
+        "name": "rewardsPerBlock",
+        "type": "uint256[2]"
+      }
+    ],
+    "name": "NewRewardsPerBlock",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldOperator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newOperator",
+        "type": "address"
+      }
+    ],
+    "name": "OperatorTransferred",
     "type": "event"
   },
   {
@@ -98,38 +174,19 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startBlock",
+        "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "newAddress",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "endBlock",
+        "type": "uint256"
       }
     ],
-    "name": "SetBuyBackWallet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newAddress",
-        "type": "address"
-      }
-    ],
-    "name": "SetFeeAddress",
+    "name": "RewardsStart",
     "type": "event"
   },
   {
@@ -138,11 +195,43 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "blockNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardsStop",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
       }
     ],
-    "name": "SetPerformanceFee",
+    "name": "ServiceInfoChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
+      }
+    ],
+    "name": "SetAutoAdjustableForRewardRate",
     "type": "event"
   },
   {
@@ -162,19 +251,25 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "depositFee",
+        "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "rewardPerBlock",
+        "name": "withdrawFee",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "feeAddr",
+        "type": "address"
       }
     ],
-    "name": "UpdateEmissionRate",
+    "name": "SetSettings",
     "type": "event"
   },
   {
@@ -185,12 +280,6 @@
         "internalType": "address",
         "name": "user",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "pid",
-        "type": "uint256"
       },
       {
         "indexed": false,
@@ -204,7 +293,7 @@
   },
   {
     "inputs": [],
-    "name": "BONUS_MULTIPLIER",
+    "name": "MAX_FEE",
     "outputs": [
       {
         "internalType": "uint256",
@@ -217,20 +306,7 @@
   },
   {
     "inputs": [],
-    "name": "PERCENT_PRECISION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "accReflectionPerPoint",
+    "name": "PRECISION_FACTOR",
     "outputs": [
       {
         "internalType": "uint256",
@@ -245,43 +321,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_allocPoint",
+        "name": "",
         "type": "uint256"
-      },
-      {
-        "internalType": "contract IERC20",
-        "name": "_lpToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_depositFee",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_withdrawFee",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_duration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "_withUpdate",
-        "type": "bool"
       }
     ],
-    "name": "add",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "availableDividendTokens",
+    "name": "accTokensPerShare",
     "outputs": [
       {
         "internalType": "uint256",
@@ -293,7 +337,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "idx",
+        "type": "uint8"
+      }
+    ],
     "name": "availableRewardTokens",
     "outputs": [
       {
@@ -307,10 +357,30 @@
   },
   {
     "inputs": [],
-    "name": "brews",
+    "name": "bonusEndBlock",
     "outputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimReward",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deployer",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -320,63 +390,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimDividend",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimReward",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "compoundDividend",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      }
-    ],
-    "name": "compoundReward",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      },
       {
         "internalType": "uint256",
         "name": "_amount",
@@ -389,7 +402,25 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "depositFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "idx",
+        "type": "uint8"
+      },
       {
         "internalType": "uint256",
         "name": "_amount",
@@ -402,34 +433,39 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "duration",
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "emergencyWithdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "emergencyWithdrawReflections",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "idx",
+        "type": "uint8"
+      },
       {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "emergencyWithdrawRewards",
+    "name": "emergencyRewardWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emergencyWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -450,47 +486,10 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_from",
-        "type": "uint256"
+        "internalType": "uint8",
+        "name": "idx",
+        "type": "uint8"
       },
-      {
-        "internalType": "uint256",
-        "name": "_to",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_endBlock",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMultiplier",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "hasDividend",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
       {
         "internalType": "uint256",
         "name": "_amount",
@@ -503,7 +502,66 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "_lpToken",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20[2]",
+        "name": "_rewardTokens",
+        "type": "address[2]"
+      },
+      {
+        "internalType": "uint256[2]",
+        "name": "_rewardsPerBlock",
+        "type": "uint256[2]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_depositFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_withdrawFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_duration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_feeManager",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_deployer",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "idx",
+        "type": "uint8"
+      }
+    ],
     "name": "insufficientRewards",
     "outputs": [
       {
@@ -517,9 +575,41 @@
   },
   {
     "inputs": [],
-    "name": "massUpdatePools",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "lastRewardBlock",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lpToken",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "operator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -539,16 +629,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
       }
     ],
-    "name": "pendingReflections",
+    "name": "paidRewards",
     "outputs": [
       {
         "internalType": "uint256",
@@ -562,11 +647,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "_user",
         "type": "address"
@@ -575,9 +655,9 @@
     "name": "pendingRewards",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint256[2]",
         "name": "",
-        "type": "uint256"
+        "type": "uint256[2]"
       }
     ],
     "stateMutability": "view",
@@ -597,104 +677,10 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "poolExistence",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "poolInfo",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "lpToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "allocPoint",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "duration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "bonusEndBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastRewardBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "accTokenPerShare",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "accReflectionPerShare",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastReflectionPerPoint",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint16",
-        "name": "depositFee",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "withdrawFee",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "poolLength",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -705,27 +691,7 @@
         "type": "address"
       }
     ],
-    "name": "recoverWrongToken",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "reflectionToken",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
+    "name": "rescueTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -760,36 +726,49 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "",
         "type": "uint256"
-      },
+      }
+    ],
+    "name": "rewardTokens",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "uint256",
-        "name": "_allocPoint",
+        "name": "",
         "type": "uint256"
-      },
+      }
+    ],
+    "name": "rewardsPerBlock",
+    "outputs": [
       {
-        "internalType": "uint16",
-        "name": "_depositFee",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_withdrawFee",
-        "type": "uint16"
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "uint256",
         "name": "_duration",
         "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "_withUpdate",
-        "type": "bool"
       }
     ],
-    "name": "set",
+    "name": "setDuration",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -798,37 +777,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_addr",
+        "name": "_feeManager",
         "type": "address"
       }
     ],
-    "name": "setBuyBackWallet",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_feeAddress",
-        "type": "address"
-      }
-    ],
-    "name": "setFeeAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_fee",
-        "type": "uint256"
-      }
-    ],
-    "name": "setPerformanceFee",
+    "name": "setFeeManager",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -849,42 +802,40 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_treasury",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "_fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setServiceInfo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_depositFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_withdrawFee",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "_uniRouter",
+        "name": "_feeAddr",
         "type": "address"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_earnedToToken0",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_earnedToToken1",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_reflectionToToken0",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_reflectionToToken1",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_enabled",
-        "type": "bool"
       }
     ],
-    "name": "setSwapSetting",
+    "name": "setSettings",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -903,55 +854,21 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "swapSettings",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "lpToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "swapRouter",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "enabled",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
+    "inputs": [],
+    "name": "startReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "totalAllocPoint",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "stopReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [],
     "name": "totalStaked",
     "outputs": [
       {
@@ -967,18 +884,24 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "newOwner",
+        "name": "_operator",
         "type": "address"
       }
     ],
-    "name": "transferOwnership",
+    "name": "transferOperator",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "transferToHarvest",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -999,9 +922,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_rewardPerBlock",
-        "type": "uint256"
+        "internalType": "uint256[2]",
+        "name": "_rewardsPerBlock",
+        "type": "uint256[2]"
       }
     ],
     "name": "updateEmissionRate",
@@ -1013,35 +936,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "_endBlock",
         "type": "uint256"
       }
     ],
-    "name": "updatePool",
+    "name": "updateEndBlock",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_startBlock",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateStartBlock",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
       {
         "internalType": "address",
         "name": "",
@@ -1062,7 +967,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "reflectionDebt",
+        "name": "rewardDebt1",
         "type": "uint256"
       }
     ],
@@ -1073,11 +978,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_pid",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
       }
@@ -1085,6 +985,19 @@
     "name": "withdraw",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
