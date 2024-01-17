@@ -6,6 +6,7 @@ import erc20 from "config/abi/erc20.json";
 import masterchefABI from "config/abi/farm/masterchef.json";
 import masterchefV2ABI from "config/abi/farm/masterchefV2.json";
 import farmImplAbi from "config/abi/farm/farmImpl.json";
+import dualFarmImplABI from "config/abi/farm/brewlabsDualFarm.json";
 
 import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
 import { SerializedFarmConfig, Version } from "config/constants/types";
@@ -216,51 +217,73 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
 };
 
 export const fetchFarmTotalRewards = async (farm) => {
-  let availableRewards, availableReflections;
-  if (farm.pid > 10) {
+  if(farm.category === 2) {
     let calls = [
       {
         address: farm.contractAddress,
         name: "availableRewardTokens",
-        params: [],
+        params: [0],
       },
       {
         address: farm.contractAddress,
-        name: "availableDividendTokens",
-        params: [],
-      },
+        name: "availableRewardTokens",
+        params: [1],
+      }      
     ];
-    [availableRewards, availableReflections] = await multicall(masterchefV2ABI, calls, farm.chainId);
-  } else {
-    let calls = [
-      {
-        address: farm.earningToken.address,
-        name: "balanceOf",
-        params: [farm.contractAddress],
-      },
-      {
-        address:
-          !farm.reflectionToken || farm.reflectionToken?.isNative
-            ? farm.earningToken.address
-            : farm.reflectionToken.address,
-        name: "balanceOf",
-        params: [farm.contractAddress],
-      },
-    ];
-    [availableRewards, availableReflections] = await multicall(erc20, calls, farm.chainId);
-
-    if (farm.reflectionToken?.isNative) {
-      availableReflections = simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
-      availableReflections = new BigNumber(availableReflections._hex);
+    const [availableRewards, availableRewards1] = await multicall(dualFarmImplABI, calls, farm.chainId);
+    return {
+      availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
+      availableRewards1: getBalanceNumber(availableRewards1, farm.earningToken1?.decimals || 18),
+      availableReflections: 0,
+    };
+ }  
+  else {
+    let availableRewards, availableReflections;
+    if (farm.pid > 10) {
+      let calls = [
+        {
+          address: farm.contractAddress,
+          name: "availableRewardTokens",
+          params: [],
+        },
+        {
+          address: farm.contractAddress,
+          name: "availableDividendTokens",
+          params: [],
+        },
+      ];
+      [availableRewards, availableReflections] = await multicall(masterchefV2ABI, calls, farm.chainId);
+    } else {
+      let calls = [
+        {
+          address: farm.earningToken.address,
+          name: "balanceOf",
+          params: [farm.contractAddress],
+        },
+        {
+          address:
+            !farm.reflectionToken || farm.reflectionToken?.isNative
+              ? farm.earningToken.address
+              : farm.reflectionToken.address,
+          name: "balanceOf",
+          params: [farm.contractAddress],
+        },
+      ];
+      [availableRewards, availableReflections] = await multicall(erc20, calls, farm.chainId);
+  
+      if (farm.reflectionToken?.isNative) {
+        availableReflections = simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
+        availableReflections = new BigNumber(availableReflections._hex);
+      }
     }
+  
+    return {
+      availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
+      availableReflections: farm.reflectionToken
+        ? getBalanceNumber(availableReflections, farm.reflectionToken.decimals)
+        : 0,
+    };
   }
-
-  return {
-    availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
-    availableReflections: farm.reflectionToken
-      ? getBalanceNumber(availableReflections, farm.reflectionToken.decimals)
-      : 0,
-  };
 };
 
 export const fetchFarmFeeHistories = async (farm) => {
