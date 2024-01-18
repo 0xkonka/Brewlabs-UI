@@ -1,55 +1,72 @@
-import { Cog8ToothIcon } from "@heroicons/react/24/outline";
-import { useContext, useState } from "react";
-
-import { SwapContext } from "../../../../contexts/SwapContext";
-import MobileNav from "./MobileNav";
-import Notification from "@components/Notification";
-import Soon from "@components/Soon";
+import { useContext } from "react";
 import Link from "next/link";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 
-type Props = {
-  openSettingModal: () => void;
-};
+import Soon from "@components/Soon";
+import Notification from "@components/Notification";
+import { SwapContext } from "../../../../contexts/SwapContext";
 
-const SubNav = ({ openSettingModal }: Props) => {
+const SubNav = () => {
   const { swapTab, setSwapTab, setAddLiquidityStep, swapFeeData }: any = useContext(SwapContext);
-
   const { collectiblePairs } = swapFeeData;
 
-  const [toggle, setToggle] = useState(false);
-
-  return (
-    <div className="mb-2 flex">
-      <div className="tabs tabs-boxed mr-[48px] hidden sm:block">
-        <button className={`tab px-3 ${swapTab === 0 ? "tab-active" : ""}`} onClick={() => setSwapTab(0)}>
+  const subNavItems = [
+    {
+      tabKey: 0,
+      component: (
+        <>
           <span className="dark:text-primary">Brew</span>Swap
           <img src="/images/logo-vector.svg" className="ml-3" alt="Brew swap" />
-        </button>
-        <button
-          className={`tab px-3 ${swapTab === 1 ? "tab-active" : ""} relative`}
-          onClick={() => {
-            setSwapTab(1);
-            setAddLiquidityStep("default");
-          }}
-          // disabled
-        >
+        </>
+      ),
+    },
+
+    {
+      tabKey: 1,
+      component: (
+        <>
           Liquidity tools
           <Notification count={collectiblePairs.length} />
-          {/* <Soon /> */}
-        </button>
-        <Link href={"/tradingPairs"}>
-          <button
-            className={`tab px-3 ${swapTab === 2 ? "tab-active" : ""} relative`}
-            //  onClick={() => setSwapTab(2)}
-          >
-            Pools & analytics
-            <Soon text="Beta" className="!text-[10px]" />
-          </button>
-        </Link>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="flex items-center">
+      <div className="dropdown-hover dropdown">
+        <div tabIndex={0} role="button" className="btn m-1">
+          <Bars3Icon className="h-5 w-5" />
+        </div>
+
+        <ul tabIndex={0} className="dropdown-content menu z-[1] w-48 space-y-2 rounded-xl bg-base-100 p-1 shadow">
+          <li>
+            <button type="button" onClick={() => setSwapTab(0)} className={`px-4 ${swapTab === 0 && "bg-gray-800"}`}>
+              {subNavItems[0].component}
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => {
+                setSwapTab(1);
+                setAddLiquidityStep("default");
+              }}
+              className={`px-4 ${swapTab === 1 && "bg-gray-800"}`}
+            >
+              {subNavItems[1].component}
+            </button>
+          </li>
+          <li>
+            <Link href="/tradingPairs" className={`px-4 ${swapTab === 2 ? "bg-gray-800" : ""}`}>
+              Pools & analytics
+              <Soon text="Beta" className="text-[10px]" />
+            </Link>
+          </li>
+        </ul>
       </div>
-      <MobileNav></MobileNav>
-      <div className="absolute right-7 top-6" onClick={openSettingModal}>
-        <Cog8ToothIcon className="h-6 w-6 cursor-pointer hover:animate-spin dark:text-primary" />
+      <div className=" -ml-2 flex h-12 items-center whitespace-nowrap rounded-r-lg border-2 border-gray-800/20 px-4 py-2 text-sm">
+        {subNavItems[swapTab].component}
       </div>
     </div>
   );

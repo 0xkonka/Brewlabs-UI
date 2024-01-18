@@ -348,7 +348,7 @@ export default function SwapPanel({
         }}
       />
 
-      <div className="mb-6 rounded-2xl border border-dashed border-gray-600">
+      <div className="mb-1 rounded-2xl border border-dashed border-gray-600">
         <CurrencyOutputPanel
           label={t("Buy")}
           value={formattedAmounts[Field.OUTPUT]}
@@ -369,18 +369,20 @@ export default function SwapPanel({
         !(toChainId && toChainId !== chainId) ? (
           Object.keys(contracts.aggregator).includes(chainId.toString()) ? (
             <>
-              {isSwapAndTransfer ? (
-                <div className="-mt-5">
-                  <div className="text-xs text-white">Swap and send to ....</div>
-                  <StyledInput
+              {isSwapAndTransfer && (
+                <label className="form-control mb-4 w-full">
+                  <div className="label">
+                    <span className="label-text">Swap and send to ...</span>
+                  </div>
+                  <input
+                    type="text"
+                    autoComplete="off"
                     value={recipient ?? ""}
-                    className="mb-3 mt-1 w-full !bg-[#B9B8B80D] font-roboto"
-                    setValue={(e) => onChangeRecipient(e)}
                     placeholder="0x000..."
+                    onChange={(e) => onChangeRecipient(e.target.value)}
+                    className="input-bordered input-ghost input w-full"
                   />
-                </div>
-              ) : (
-                ""
+                </label>
               )}
               {inputError ? (
                 <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
