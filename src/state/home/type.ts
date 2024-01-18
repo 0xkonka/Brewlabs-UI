@@ -15,3 +15,12 @@ export interface SerializedTreasuryData {
   value: number;
   value24h: number;
 }
+
+export interface SerialziedTokenListData {
+  chainId: number;
+  address: string;
+  name: string;
+  symbol: string;
+  logoURI: string;
+  decimals: number;
+}

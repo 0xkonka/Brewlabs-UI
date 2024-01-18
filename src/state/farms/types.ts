@@ -10,6 +10,7 @@ interface SerializedFarmUserData {
   tokenBalance: string;
   stakedBalance: string;
   earnings: string;
+  earnings1?: BigNumber;
   reflections: string;
   deposits: SerializedDeposit[];
 }
@@ -19,6 +20,7 @@ export interface DeserializedFarmUserData {
   tokenBalance: BigNumber;
   stakedBalance: BigNumber;
   earnings: BigNumber;
+  earnings1?: BigNumber;
   reflections: BigNumber;
   deposits: DeserializedDeposit[];
 }

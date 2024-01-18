@@ -1,9 +1,10 @@
 import { ChainId } from "@brewlabs/sdk";
 import axios from "axios";
 import { API_URL } from "config/constants";
-import { ROUTER_SUBGRAPH_NAMES } from "config/constants/swap";
+import { AGGREGATOR_SUBGRAPH_NAMES, ROUTER_SUBGRAPH_NAMES } from "config/constants/swap";
 import { ethers } from "ethers";
 import { getBrewlabsFeeManagerContract, getBrewlabsPairContract } from "utils/contractHelpers";
+import { formatUnits } from "viem";
 
 function getPriceByTx(tx) {
   if (tx.type === "mint") {
@@ -74,22 +75,15 @@ export async function getTradingAllPairs(chainId: ChainId) {
   }
 }
 
-export async function getTradingPairHistories(chainId, period) {
-  if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString())) return { volumeHistory: [], feeHistory: [] };
+async function getRouterTxs(chainId, period) {
   try {
-    let query,
-      swaps,
+    const timestamp = Math.floor(Date.now() / 1000 - period);
+    let swaps,
       mints,
       index = 0,
-      totalSwaps = [],
-      volumeHistory = [],
-      feeHistory = [],
-      tvlHistory = [];
-
-    const timestamp = Math.floor(Date.now() / 1000 - period);
-
+      totalSwaps = [];
     do {
-      query = `{
+      const query = `{
         swaps(
           where: {timestamp_gte: "${timestamp}"}
           first: 1000
@@ -122,6 +116,7 @@ export async function getTradingPairHistories(chainId, period) {
           }
         }
       }`;
+
       const { data: response } = await axios.post(
         `https://api.thegraph.com/subgraphs/name/brainstormk/${ROUTER_SUBGRAPH_NAMES[chainId]}`,
         { query }
@@ -140,6 +135,80 @@ export async function getTradingPairHistories(chainId, period) {
       totalSwaps = [...totalSwaps, ...swaps, ...mints];
       index++;
     } while (swaps.length === 1000 || mints.length === 1000);
+    return totalSwaps;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
+
+async function getAggregatorTxs(chainId, period, marketData, tokenList) {
+  try {
+    const timestamp = Math.floor(Date.now() / 1000 - period);
+    let swaps,
+      index = 0,
+      totalSwaps = [];
+    do {
+      const query = `{
+      brewlabsSwaps(
+          where: {blockTimestamp_gte: "${timestamp}"}
+          first: 1000
+          skip:${1000 * index}
+          orderBy: blockTimestamp
+        ) {
+          _amountIn
+          _tokenIn
+          _tokenOut
+          _amountOut
+          blockTimestamp
+        }
+      }`;
+
+      const { data: response } = await axios.post(
+        AGGREGATOR_SUBGRAPH_NAMES[chainId]
+          ? chainId === 56
+            ? `https://api.thegraph.com/subgraphs/name/kittystardev/brewlabs-aggregator-bsc`
+            : `https://api.thegraph.com/subgraphs/name/devscninja/${AGGREGATOR_SUBGRAPH_NAMES[chainId]}`
+          : undefined,
+        { query }
+      );
+
+      swaps = response.data.brewlabsSwaps.map((swap) => {
+        const token = tokenList.find((_token) => _token.address === swap._tokenIn);
+        return {
+          timestamp: swap.blockTimestamp,
+          amountUSD: Number(formatUnits(swap._amountIn, token?.decimals ?? 18)) * (marketData[swap._tokenIn]?.usd ?? 0),
+          amountFeeUSD: 0,
+        };
+      });
+
+      totalSwaps = [...totalSwaps, ...swaps];
+      index++;
+    } while (swaps.length === 1000);
+    return totalSwaps;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
+
+export async function getTradingPairHistories(chainId, period, marketData, tokenList) {
+  if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString()))
+    return { volumeHistory: [], feeHistory: [], tvlHistory: [] };
+  try {
+    let query,
+      totalSwaps = [],
+      volumeHistory = [],
+      feeHistory = [],
+      tvlHistory = [];
+
+    const timestamp = Math.floor(Date.now() / 1000 - period);
+
+    const txsResult = await Promise.all([
+      getRouterTxs(chainId, period),
+      getAggregatorTxs(chainId, period, marketData, tokenList),
+    ]);
+    totalSwaps = [...txsResult[0], ...txsResult[1]];
 
     let j = 0,
       v = 0,
@@ -153,6 +222,8 @@ export async function getTradingPairHistories(chainId, period) {
       volumeHistory.push(v);
       feeHistory.push(fee);
     }
+
+    totalSwaps = txsResult[0];
 
     query = `{
       pairs {

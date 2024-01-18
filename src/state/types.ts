@@ -18,6 +18,7 @@ import {
   SerializedNFTStakingData,
   SerializedTransactionData,
   SerializedTreasuryData,
+  SerialziedTokenListData,
 } from "./home/type";
 import { SerializedWalletNFT, SerializedWalletToken } from "./wallet/type";
 import { SerializedPairData } from "./chart/type";
@@ -81,6 +82,7 @@ export interface HomeState {
   feeCollected: SerializedFeeCollectedData;
   treasuryValues: SerializedTreasuryData;
   marketValues: Record<number, number[]>;
+  tokenList: Record<number, SerialziedTokenListData[]>;
 }
 
 export interface ChartState {
@@ -253,6 +255,7 @@ interface SerializedFarmUserData {
   tokenBalance: string;
   stakedBalance: string;
   earnings: string;
+  earnings1?: string;
   reflections: string;
 }
 

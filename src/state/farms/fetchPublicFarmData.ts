@@ -217,7 +217,7 @@ export const fetchTotalStakesForFarms = async (chainId, farmsToFetch: Serialized
 };
 
 export const fetchFarmTotalRewards = async (farm) => {
-  if(farm.category === 2) {
+  if (farm.category === 2) {
     let calls = [
       {
         address: farm.contractAddress,
@@ -228,7 +228,7 @@ export const fetchFarmTotalRewards = async (farm) => {
         address: farm.contractAddress,
         name: "availableRewardTokens",
         params: [1],
-      }      
+      },
     ];
     const [availableRewards, availableRewards1] = await multicall(dualFarmImplABI, calls, farm.chainId);
     return {
@@ -236,8 +236,7 @@ export const fetchFarmTotalRewards = async (farm) => {
       availableRewards1: getBalanceNumber(availableRewards1, farm.earningToken1?.decimals || 18),
       availableReflections: 0,
     };
- }  
-  else {
+  } else {
     let availableRewards, availableReflections;
     if (farm.pid > 10) {
       let calls = [
@@ -270,13 +269,13 @@ export const fetchFarmTotalRewards = async (farm) => {
         },
       ];
       [availableRewards, availableReflections] = await multicall(erc20, calls, farm.chainId);
-  
+
       if (farm.reflectionToken?.isNative) {
         availableReflections = simpleRpcProvider(farm.chainId).getBalance(farm.contractAddress);
         availableReflections = new BigNumber(availableReflections._hex);
       }
     }
-  
+
     return {
       availableRewards: getBalanceNumber(availableRewards, farm.earningToken.decimals),
       availableReflections: farm.reflectionToken

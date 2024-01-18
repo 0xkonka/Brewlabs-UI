@@ -56,7 +56,7 @@ const TokenList = ({
   const { chainId } = useActiveChainId();
   const { address } = useAccount();
   const { data: signer }: any = useSigner();
-  const { pending, setPending, tokenList, viewType, setViewType }: any = useContext(DashboardContext);
+  const { pending, setPending, setViewType }: any = useContext(DashboardContext);
   const valueRef: any = useRef();
 
   const { onCurrencySelection } = useSwapActionHandlers();

@@ -37,7 +37,7 @@ export const usePollFarmsPublicData = () => {
 
 export const usePollFarmsWithUserData = () => {
   const dispatch = useAppDispatch();
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { data: farms } = useFarms();
 
   useSWRImmutable(
@@ -87,7 +87,7 @@ const deserializedDeposit = (deposit: SerializedDeposit): DeserializedDeposit =>
 };
 
 const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData => {
-  return {
+  let value: DeserializedFarmUserData = {
     allowance: farm.userData ? new BigNumber(farm.userData.allowance) : BIG_ZERO,
     tokenBalance: farm.userData ? new BigNumber(farm.userData.tokenBalance) : BIG_ZERO,
     stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : BIG_ZERO,
@@ -95,6 +95,10 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
     reflections: farm.userData ? new BigNumber(farm.userData.reflections) : BIG_ZERO,
     deposits: farm.userData.deposits.map(deserializedDeposit),
   };
+  if (farm.category === 2) {
+    value = { ...value, earnings1: farm.userData ? new BigNumber(farm.userData.earnings1) : BIG_ZERO };
+  }
+  return value;
 };
 
 export const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {

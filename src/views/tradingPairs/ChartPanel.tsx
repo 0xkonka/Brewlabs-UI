@@ -1,9 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChainId } from "@brewlabs/sdk";
 import { NETWORKS } from "config/constants/networks";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Oval } from "react-loader-spinner";
+import { useTokenList } from "state/home/hooks";
+import { useAllLists } from "state/lists/hooks";
 import { getTradingPairHistories } from "state/pair/fetchTradingPairs";
+import { useTokenMarketChart } from "state/prices/hooks";
 import styled from "styled-components";
 import { isAddress } from "utils";
 import { BigNumberFormat, getChainLogo } from "utils/functions";
@@ -16,6 +20,17 @@ export default function ChartPanel() {
   const [selectedDisplayType, setSelectedDisplayType] = useState(0);
   const [histories, setHistories] = useState(null);
 
+  const bscMarketData = useTokenMarketChart(ChainId.BSC_MAINNET);
+  const polyMarketData = useTokenMarketChart(ChainId.POLYGON);
+  const bscTokenList = useTokenList(ChainId.BSC_MAINNET);
+  const polyTokenList = useTokenList(ChainId.POLYGON);
+
+  const bscMarketDataStringified = JSON.stringify(bscMarketData);
+  const polyMarketDataStringified = JSON.stringify(polyMarketData);
+
+  const bscTokenListStringified = JSON.stringify(bscTokenList);
+  const polyTokenListStringified = JSON.stringify(polyTokenList);
+
   const periodTypes = [
     { name: "24 HRS", period: 86400 },
     { name: "7 DAYS", period: 86400 * 7 },
@@ -25,8 +40,8 @@ export default function ChartPanel() {
 
   useEffect(() => {
     Promise.all([
-      getTradingPairHistories(ChainId.BSC_MAINNET, periodTypes[selectedPeriod].period),
-      getTradingPairHistories(ChainId.POLYGON, periodTypes[selectedPeriod].period),
+      getTradingPairHistories(ChainId.BSC_MAINNET, periodTypes[selectedPeriod].period, bscMarketData, bscTokenList),
+      getTradingPairHistories(ChainId.POLYGON, periodTypes[selectedPeriod].period, polyMarketData, polyTokenList),
     ])
       .then((result: any) => {
         let feeHistory = [],
@@ -48,7 +63,13 @@ export default function ChartPanel() {
         setHistories({ feeHistory, tvlHistory, volumeHistory });
       })
       .catch((e) => console.log(e));
-  }, [selectedPeriod]);
+  }, [
+    selectedPeriod,
+    bscMarketDataStringified,
+    polyMarketDataStringified,
+    bscTokenListStringified,
+    polyTokenListStringified,
+  ]);
 
   const networks: any = [
     "All",

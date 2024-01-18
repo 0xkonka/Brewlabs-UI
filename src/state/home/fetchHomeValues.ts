@@ -4,11 +4,13 @@ import { getBalances } from "@hooks/useTokenMultiChainBalance";
 import { fetchDexGuruPrice } from "@hooks/useTokenPrice";
 import axios from "axios";
 import { DEX_GURU_CHAIN_NAME } from "config";
+import { TOKENLIST_URI } from "config/constants";
 import contracts from "config/constants/contracts";
 import { EXPLORER_API_KEYS, EXPLORER_API_URLS } from "config/constants/networks";
 import { NFT_RARE_COUNT } from "config/constants/nft";
-import { tokens } from "config/constants/tokens";
+import { customTokensForDeploy, tokens } from "config/constants/tokens";
 import { simpleRpcProvider } from "utils/providers";
+import { zeroAddress } from "viem";
 
 export async function getTransactions() {
   try {
@@ -200,5 +202,23 @@ export async function getTreasuryValues() {
   } catch (e) {
     console.log(e);
     return { value: 0, value24h: 0 };
+  }
+}
+
+export async function getTokenLists(chainId) {
+  try {
+    const customTokens = (customTokensForDeploy[chainId] ?? []).map((token) => ({
+      ...token,
+      address: token.address ?? zeroAddress,
+      logoURI: token.logo ?? "",
+    }));
+    if (!TOKENLIST_URI[chainId]) {
+      return customTokens ?? [];
+    }
+    const result = await axios.get(TOKENLIST_URI[chainId]);
+    return [...(customTokens ?? []), ...result.data.tokens];
+  } catch (e) {
+    console.log(e);
+    return [];
   }
 }
