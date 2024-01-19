@@ -60,7 +60,6 @@ const SubNav = () => {
           <li>
             <Link href="/tradingPairs" className={`px-4 ${swapTab === 2 ? "bg-gray-800" : ""}`}>
               Pools & analytics
-              <Soon text="Beta" className="text-[10px]" />
             </Link>
           </li>
         </ul>
