@@ -11,6 +11,24 @@ dependencies:
   '@brewlabs/sdk':
     specifier: ^1.3.4
     version: 1.3.4(@ethersproject/address@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/networks@5.7.1)(@ethersproject/providers@5.7.2)(@ethersproject/solidity@5.7.0)
+  '@ethersproject/abi':
+    specifier: ^5.7.0
+    version: 5.7.0
+  '@ethersproject/bignumber':
+    specifier: ^5.7.0
+    version: 5.7.0
+  '@ethersproject/constants':
+    specifier: ^5.7.0
+    version: 5.7.0
+  '@ethersproject/contracts':
+    specifier: ^5.7.0
+    version: 5.7.0
+  '@ethersproject/providers':
+    specifier: ^5.7.2
+    version: 5.7.2
+  '@ethersproject/strings':
+    specifier: ^5.7.0
+    version: 5.7.0
   '@headlessui/react':
     specifier: ^1.6.0
     version: 1.7.18(react-dom@18.2.0)(react@18.2.0)
@@ -23,6 +41,9 @@ dependencies:
   '@sushiswap-core/sdk':
     specifier: ^3.0.3-beta.1
     version: 3.0.3-beta.1(@ethersproject/address@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/networks@5.7.1)(@ethersproject/providers@5.7.2)(@ethersproject/solidity@5.7.0)
+  '@types/qs':
+    specifier: ^6.9.11
+    version: 6.9.11
   '@types/react-portal':
     specifier: ^4.0.4
     version: 4.0.7
@@ -110,6 +131,9 @@ dependencies:
   nft.storage:
     specifier: ^7.1.0
     version: 7.1.1(node-fetch@3.3.2)
+  qs:
+    specifier: ^6.11.2
+    version: 6.11.2
   rc-slider:
     specifier: ^10.1.1
     version: 10.5.0(react-dom@18.2.0)(react@18.2.0)
@@ -3036,6 +3060,10 @@ packages:
 
   /@types/prop-types@15.7.11:
     resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}
+
+  /@types/qs@6.9.11:
+    resolution: {integrity: sha512-oGk0gmhnEJK4Yyk+oI7EfXsLayXatCWPHary1MtcmbAifkobT9cM9yutG/hZKIseOU0MqbIwQ/u2nn/Gb+ltuQ==}
+    dev: false
 
   /@types/react-dom@18.0.0:
     resolution: {integrity: sha512-49897Y0UiCGmxZqpC8Blrf6meL8QUla6eb+BBhn69dTXlmuOlzkfr7HHY/O8J25e1lTUMs+YYxSlVDAaGHCOLg==}
