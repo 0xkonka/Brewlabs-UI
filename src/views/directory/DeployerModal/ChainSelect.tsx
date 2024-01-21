@@ -10,12 +10,14 @@ import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-const ChainSelect = () => {
-  const supportedNetworks = useSupportedNetworks();
+const ChainSelect = ({ networks }: { networks?: any }) => {
+  const _supportedNetworks = useSupportedNetworks();
   const { switchNetwork } = useSwitchNetwork();
   const { chainId } = useActiveChainId();
 
   const [open, setOpen] = useState(false);
+
+  const supportedNetworks = networks ?? _supportedNetworks;
 
   const network = useMemo(() => {
     return supportedNetworks.find((network) => network.id === chainId) || supportedNetworks[0];

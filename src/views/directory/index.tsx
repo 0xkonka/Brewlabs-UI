@@ -41,6 +41,8 @@ import StakingDetail from "./StakingDetail";
 import ZapperDetail from "./ZapperDetail";
 import StyledButton from "./StyledButton";
 import Link from "next/link";
+import { DocSVG } from "@components/dashboard/assets/svgs";
+import contents from "./contents";
 
 const Directory = ({ page }: { page: number }) => {
   const [curFilter, setCurFilter] = useState(page);
@@ -195,7 +197,9 @@ const Directory = ({ page }: { page: number }) => {
               : data.userData?.stakedBalance?.gt(0)))
       );
   }
-  chosenPools = sortPools(filterPoolsByStatus(chosenPools, currentBlocks, status));
+  chosenPools = sortPools(
+    filterPoolsByStatus(chosenPools, currentBlocks, curFilter === Category.MY_POSITION ? "all" : status)
+  );
 
   const renderDetailPage = () => {
     switch (curPool.type) {
@@ -257,6 +261,8 @@ const Directory = ({ page }: { page: number }) => {
     }
   };
 
+  const content = contents[curFilter === Category.INDEXES ? "indexes" : "invest"];
+
   return (
     <PageWrapper>
       {renderDetailPage()}
@@ -268,13 +274,22 @@ const Directory = ({ page }: { page: number }) => {
               title={
                 <div className="text-[40px]">
                   <WordHighlight content="Brewlabs Pool Directory" />
-                  <div className="whitespace-wrap mt-5 text-xl font-normal sm:whitespace-nowrap">
-                    Stake, farm, zap and explore indexes for passive income
-                  </div>
+                  <a
+                    className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
+                    href={content.link}
+                    target="_blank"
+                  >
+                    <div>LEARN MORE</div>
+                    <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
+                  </a>
                 </div>
               }
             />
             <Container className="font-brand">
+              <div className="mb-10">
+                <div className="text-lg leading-[1.2] text-primary">{content.header}</div>
+                <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">{content.body}</div>
+              </div>
               <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
               {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
                 <div className="-mb-4 -mt-4 flex justify-end">

@@ -43,25 +43,6 @@ export async function getTransactions() {
 
 export async function getNFTStakingValues() {
   try {
-    const response = await Promise.all([
-      fetchOETHMontlyAPY(),
-      getBalances(
-        { 1: [tokens[1].oeth, tokens[1].oeth] },
-        {
-          1: ["0x5b4b372Ef4654E98576301706248a14a57Ed0164", "0xEDDcEa807da853Fed51fa4bF0E8d6C9d1f7f9Caa"],
-        }
-      ),
-      fetchDexGuruPrice(1, tokens[1].oeth.address),
-    ]);
-    const OETHMontlyAPY = response[0];
-    const { balances: NFT_wallet_balance } = response[1];
-    const OETHPrice = response[2];
-
-    const apy =
-      NFT_wallet_balance && OETHMontlyAPY && OETHPrice
-        ? ((OETHMontlyAPY * NFT_wallet_balance[1][1].balance * OETHPrice) / NFT_RARE_COUNT[56] / 9) * 12
-        : null;
-
     let stakedCount = 0;
     await Promise.all(
       [
@@ -79,7 +60,7 @@ export async function getNFTStakingValues() {
         stakedCount += txs.length;
       })
     );
-    return { apy, stakedCount };
+    return { apy: 0, stakedCount };
   } catch (e) {
     console.log(e);
     return { apy: 0, stakedCount: 0 };

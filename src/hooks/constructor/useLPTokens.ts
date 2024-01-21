@@ -22,8 +22,7 @@ export const useLPTokens = () => {
   const dispatch = useAppDispatch();
 
   const { chainId } = useActiveChainId();
-  // const { address: account } = useAccount();
-  const account = "0x06Ff425B66d1c54845e9e96d6015FD692175005F";
+  const { address: account } = useAccount();
   const { data: signer } = useSigner();
 
   const ownedlpTokens = useUserLpTokenData(chainId, account);
@@ -32,6 +31,7 @@ export const useLPTokens = () => {
   const [lpTokens, setLPTokens] = useState(null);
 
   async function fetchLPInfo(data: any, chainId: ChainId) {
+    console.log(data);
     const pairInfos = await Promise.all(
       data.map(async (data) => {
         try {
@@ -46,13 +46,11 @@ export const useLPTokens = () => {
               liquidity: { ...pair.liquidity, quote: pair.liquidity.usd / (pair.totalSupply ?? 1) },
             };
           } else {
-            const url = `https://io.dexscreener.com/dex/search/v3/pairs?q=${data.address}`;
+            const url = `https://api.dexscreener.com/latest/dex/pairs/${DEXSCREENER_CHAINNAME[chainId]}/${data.address}`;
             const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
               url,
             });
-            const pairs = await analyzePairLog(response.result);
-            if (!pairs.length) return null;
-            pair = pairs[0];
+            pair = response.result.pair;
             const calls = [
               {
                 name: "decimals",

@@ -93,13 +93,13 @@ const SelectionPanel = ({
             <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
           </div>
         </div>
-        <div className="ml-4 hidden w-[145px] xl:block">
+        <div className={`ml-4 w-[145px] ${curFilter === Category.MY_POSITION ? "hidden" : "hidden xl:block"}`}>
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>
       <div className="ml-4 block w-[160px] xsm:ml-10  md:hidden">
         <DropDown value={curFilter} setValue={setCurFilter} data={filters} />
-        <div className="mt-2 w-full">
+        <div className={`mt-2 w-full ${curFilter === Category.MY_POSITION ? "hidden" : ""}`}>
           <ActivityDropdown value={activity} setValue={setActivity} counts={activityCnts} />
         </div>
       </div>

@@ -24,6 +24,7 @@ const SwapContext: any = React.createContext({
   addLiquidityStep: "default",
   openSettingModal: false,
   swapFeeData: "",
+  isSwapAndTransfer: false,
   setQuoteData: () => {},
   setOutputAmount: () => {},
   setSlippageInput: () => {},
@@ -40,6 +41,7 @@ const SwapContext: any = React.createContext({
   setSwapTab: () => {},
   setAddLiquidityStep: () => {},
   setOpenSettingModal: () => {},
+  setIsSwapAndTransfer: () => {},
 });
 
 const SwapContextProvider = ({ children }: any) => {
@@ -60,6 +62,7 @@ const SwapContextProvider = ({ children }: any) => {
   const [swapTab, setSwapTab] = useState(0);
   const [addLiquidityStep, setAddLiquidityStep] = useState("default");
   const [openSettingModal, setOpenSettingModal] = useState(false);
+  const [isSwapAndTransfer, setIsSwapAndTransfer] = useState(false);
 
   const [isBrewRouter, setIsBrewRouter] = useState(false);
 
@@ -109,6 +112,7 @@ const SwapContextProvider = ({ children }: any) => {
         openSettingModal,
         swapFeeData,
         isBrewRouter,
+        isSwapAndTransfer,
         setQuoteData,
         setOutputAmount,
         setSlippageInput,
@@ -126,6 +130,7 @@ const SwapContextProvider = ({ children }: any) => {
         setAddLiquidityStep,
         setOpenSettingModal,
         setIsBrewRouter,
+        setIsSwapAndTransfer,
       }}
     >
       {children}

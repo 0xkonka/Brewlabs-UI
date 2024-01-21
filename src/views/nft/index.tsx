@@ -40,7 +40,7 @@ const NFT = () => {
                 <div className="text-lg leading-[1.2] text-primary">
                   {"Mint, upgrade, benefit and earn with Brewlabs NFT's."}
                 </div>
-                <div className="mt-1.5 max-w-[750px] text-sm leading-[1.2]">
+                <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">
                   Brewlabs is responsible for number of products and utilities deployed across the decentralised finance
                   industry. The Brewlabs NFT collection allows users to mint a Brewlabs NFT at anytime to gain access to
                   a number of benefits within the Brewlabs ecosystem including fee discounts, premium features,

@@ -144,6 +144,7 @@ export default function SwapHistory({ selectedPair, holders30d }) {
         account={showType === 7 ? criteria : account}
         setShowType={setShowType}
         setCriteria={setCriteria}
+        totalHistories={totalHistories}
       />
       {showType === 3 ? (
         <HolderList
