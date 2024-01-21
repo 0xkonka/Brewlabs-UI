@@ -1,5 +1,3 @@
-import { Tooltip as ReactTooltip } from "react-tooltip";
-
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
@@ -90,7 +88,7 @@ export default function Swap() {
           >
             {NFTSVG}
           </div>
-          <SubNav openSettingModal={() => setOpenSettingModal(true)} />
+          <SubNav />
 
           <div className="flex items-center justify-between">
             <SlippageText className="!text-xs" />
@@ -130,8 +128,6 @@ export default function Swap() {
               />
             </Modal>
           )}
-
-          <ReactTooltip anchorId={"nfticon"} place="top" content="No Brewlabs NFT found." />
         </div>
       </Container>
     </PageWrapper>

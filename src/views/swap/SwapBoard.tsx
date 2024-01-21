@@ -1,10 +1,11 @@
 import { useContext } from "react";
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import { useUserSlippageTolerance } from "state/user/hooks";
+import { Cog8ToothIcon, MapIcon } from "@heroicons/react/24/outline";
 
 import { SwapContext } from "contexts/SwapContext";
-import { NFTSVG, TransferToUserSVG } from "@components/dashboard/assets/svgs";
-import Modal from "components/Modal";
+import { TransferToUserSVG } from "@components/dashboard/assets/svgs";
+
+import Modal from "@components/Modal";
 import Security from "@components/SwapComponents/Security";
 import SlippageText from "@components/SwapComponents/SlippageText";
 
@@ -48,56 +49,51 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
 
   return (
     <div
-      className={`relative mx-auto mb-4 flex w-fit min-w-full flex-col gap-1 rounded-3xl pb-10 pt-4 sm:min-w-[540px] ${
-        type === "swap" ? "border-t px-3 dark:border-slate-600" : ""
-      } dark:bg-zinc-900 sm:px-10 md:mx-0`}
+      className={`relative mx-auto mb-4 flex w-full max-w-2xl flex-col gap-1 rounded-3xl border-t px-3 pb-10 pt-4 shadow-xl shadow-amber-500/10 dark:border-slate-600 dark:bg-zinc-900 sm:px-10 md:mx-0`}
     >
-      <div
-        className={`primary-shadow absolute right-[82px] top-7 cursor-pointer ${
-          isSwapAndTransfer ? "text-primary" : "text-[#4b5563]"
-        }`}
-        onClick={() => setIsSwapAndTransfer(!isSwapAndTransfer)}
-      >
-        {TransferToUserSVG}
+      <div className="mb-8 flex items-center justify-between">
+        <SubNav />
+
+        <div className="ml-auto flex items-center gap-1">
+          <button
+            type="button"
+            data-tip="Send to another user"
+            onClick={() => setIsSwapAndTransfer(!isSwapAndTransfer)}
+            className={`btn-ghost btn btn-sm tooltip ${isSwapAndTransfer ? "text-primary" : "text-gray-400"}`}
+          >
+            {TransferToUserSVG}
+          </button>
+
+          <button
+            type="button"
+            data-tip="No Brewlabs NFT found."
+            className="btn-ghost btn btn-sm tooltip text-gray-400"
+          >
+            <MapIcon className="h-auto w-6" />
+          </button>
+
+          <button
+            type="button"
+            data-tip="Open settings"
+            onClick={openSettingModal}
+            className="btn-ghost btn btn-sm tooltip text-gray-400"
+          >
+            <Cog8ToothIcon className="h-6 w-6 hover:animate-spin dark:text-primary" />
+          </button>
+        </div>
       </div>
-      <div
-        className="tooltip absolute right-14 top-6 scale-75 cursor-pointer text-[rgb(75,85,99)]"
-        data-tip="No Brewlabs NFT found."
-      >
-        {NFTSVG}
-      </div>
-      <SubNav openSettingModal={() => setOpenSettingModal(true)} />
 
       <div className="flex items-center justify-between">
-        {swapTab !== 1 ? <Security size="lg" /> : <div />}
+        {swapTab !== 1 && <Security size="lg" />}
         <SlippageText className="!text-xs" />
       </div>
 
       {!disableChainSelect && <ChainSelect id="chain-select" />}
 
-      {/* <SwapSelection swapType={swapType} setSwapType={setSwapType} /> */}
-
       <div className="flex flex-col">
-        {swapTab === 0 ? (
-          <SwapPanel />
-        ) : swapTab === 1 ? (
-          addLiquidityStep === "ViewHarvestFees" ? (
-            <SwapRewards />
-          ) : (
-            <AddLiquidityPanel />
-          )
-        ) : (
-          ""
-        )}
+        {swapTab === 0 && <SwapPanel />}
+        {swapTab === 1 && (addLiquidityStep === "ViewHarvestFees" ? <SwapRewards /> : <AddLiquidityPanel />)}
       </div>
-
-      {/* {swapType === 1 && currencies[Field.INPUT] && currencies[Field.OUTPUT] ? (
-        <TradingViewChart
-          currency={{ tokenAddresses: [currencies[Field.INPUT].address, currencies[Field.OUTPUT].address], chainId }}
-        />
-      ) : (
-        ""
-      )} */}
 
       {openSettingModal && (
         <Modal
@@ -108,15 +104,13 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
         >
           <SettingModal
             autoMode={autoMode}
-            setAutoMode={setAutoMode}
             slippage={slippage}
+            setAutoMode={setAutoMode}
             slippageInput={slippageInput}
             parseCustomSlippage={parseCustomSlippage}
           />
         </Modal>
       )}
-
-      <ReactTooltip anchorId={"nfticon"} place="top" content="No Brewlabs NFT found." />
     </div>
   );
 }
