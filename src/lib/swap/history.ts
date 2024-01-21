@@ -1,5 +1,4 @@
 import { request } from "graphql-request";
-import { waitForTransaction } from "@wagmi/core";
 
 import { SWAP_LOGS as AGGREGATOR_SWAP_LOGS } from "config/queries/aggregator";
 import { SWAP_LOGS as ROUTER_SWAP_LOGS } from "config/queries/router";

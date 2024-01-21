@@ -1,5 +1,4 @@
 import { request } from "graphql-request";
-
 import { PAIR_DAY_DATA_BULK } from "config/queries/router";
 
 export const getPairDayDatas = async (graphEndpoint: string, pairs: string[]) => {
