@@ -75,7 +75,7 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
           <button
             type="button"
             data-tip="Open settings"
-            onClick={openSettingModal}
+            onClick={() => setOpenSettingModal(true)}
             className="btn-ghost btn btn-sm tooltip text-gray-400"
           >
             <Cog8ToothIcon className="h-6 w-6 hover:animate-spin dark:text-primary" />
