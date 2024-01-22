@@ -2,7 +2,7 @@ import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import WordHighlight from "components/text/WordHighlight";
-import { NFTSVG } from "@components/dashboard/assets/svgs";
+
 import { useUserSlippageTolerance } from "state/user/hooks";
 import { SwapContext } from "contexts/SwapContext";
 import { useContext, useEffect } from "react";
@@ -21,6 +21,7 @@ import { useCurrency } from "@hooks/Tokens";
 import CreateLiquidityOption from "views/swap/components/addLiquidity/CreateLiquidityOption";
 import SwapRewards from "views/swap/components/SwapRewards";
 import SwapPanel from "views/swap/SwapPanel";
+import { MapIcon, Cog8ToothIcon } from "@heroicons/react/24/outline";
 
 export default function Swap() {
   const {
@@ -82,13 +83,28 @@ export default function Swap() {
         <div
           className={`relative mx-auto mb-4 flex w-fit min-w-full flex-col gap-1 rounded-3xl border-t px-3 pb-10 pt-4 dark:border-slate-600 dark:bg-zinc-900 sm:min-w-[540px] sm:px-10 md:mx-0`}
         >
-          <div
-            className="tooltip absolute right-14 top-6 scale-75 cursor-pointer text-[rgb(75,85,99)]"
-            data-tip="No Brewlabs NFT found."
-          >
-            {NFTSVG}
+          <div className="mb-8 flex items-center justify-between">
+            <SubNav />
+
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                type="button"
+                data-tip="No Brewlabs NFT found."
+                className="btn-ghost btn btn-sm tooltip text-gray-400"
+              >
+                <MapIcon className="h-auto w-6" />
+              </button>
+
+              <button
+                type="button"
+                data-tip="Open settings"
+                onClick={openSettingModal}
+                className="btn-ghost btn btn-sm tooltip text-gray-400"
+              >
+                <Cog8ToothIcon className="h-6 w-6 hover:animate-spin dark:text-primary" />
+              </button>
+            </div>
           </div>
-          <SubNav />
 
           <div className="flex items-center justify-between">
             <SlippageText className="!text-xs" />
