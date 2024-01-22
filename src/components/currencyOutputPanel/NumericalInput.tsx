@@ -42,9 +42,7 @@ const NumericalInput = ({
       inputMode="decimal"
       placeholder={placeholder || "0.0"}
       pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
-      className={`w-full max-w-[250px] truncate bg-transparent ${
-        size === "sm" ? "" : "sm:text-4xl"
-      } text-2xl outline-0`}
+      className={`truncate bg-transparent input w-full max-w-xs ${size === "sm" ? "" : "sm:text-4xl"} text-2xl`}
       maxLength={79}
       disabled={disable}
     />
