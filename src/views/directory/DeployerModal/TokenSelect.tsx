@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Token } from "@brewlabs/sdk";
 import { getAddress } from "@ethersproject/address";
 
-import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useGlobalState } from "state";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -12,10 +11,11 @@ import CurrencySelector from "components/CurrencySelector";
 import { DrawSVG } from "components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { isAddress } from "utils";
+import { useTokenList } from "state/home/hooks";
 
 const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const { chainId } = useActiveChainId();
-  const { tokenList: supportedTokens }: any = useContext(DashboardContext);
+  const supportedTokens = useTokenList(chainId);
 
   const dropdownRef: any = useRef();
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");

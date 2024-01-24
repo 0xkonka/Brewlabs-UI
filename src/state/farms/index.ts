@@ -21,6 +21,7 @@ const initialUserData = {
   tokenBalance: "0",
   stakedBalance: "0",
   earnings: "0",
+  earnings1: "0",
   reflections: "0",
   deposits: [],
 };
@@ -133,25 +134,25 @@ export const fetchFarmUserDataAsync =
     ).then((data) => {
       dispatch(setFarmUserData(data));
     });
-    await fetchFarmUserReflections(
-      account,
-      chainId,
-      farmsToFetch.filter((f) => ![15, 16, 17].includes(f.farmId))
-    ).then((userFarmReflections) => {
-      const data = farmsToFetch
-        .filter((f) => ![15, 16, 17].includes(f.farmId))
-        .filter((f) => !f.enableEmergencyWithdraw)
-        .map((farm, index) => {
-          return {
-            pid: farm.pid,
-            farmId: farm.farmId,
-            poolId: farm.poolId,
-            chainId: farm.chainId,
-            reflections: userFarmReflections[index] ?? "0",
-          };
-        });
-      dispatch(setFarmUserData(data));
-    });
+    // await fetchFarmUserReflections(
+    //   account,
+    //   chainId,
+    //   farmsToFetch.filter((f) => ![15, 16, 17].includes(f.farmId))
+    // ).then((userFarmReflections) => {
+    //   const data = farmsToFetch
+    //     .filter((f) => ![15, 16, 17].includes(f.farmId))
+    //     .filter((f) => !f.enableEmergencyWithdraw)
+    //     .map((farm, index) => {
+    //       return {
+    //         pid: farm.pid,
+    //         farmId: farm.farmId,
+    //         poolId: farm.poolId,
+    //         chainId: farm.chainId,
+    //         reflections: userFarmReflections[index] ?? "0",
+    //       };
+    //     });
+    //   dispatch(setFarmUserData(data));
+    // });
   };
 
 export const farmsSlice = createSlice({

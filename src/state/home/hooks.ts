@@ -9,9 +9,12 @@ import {
   fetchFeeCollectedDataAsync,
   fetchMarketInfoAsync,
   fetchNFTStakingDataAsync,
+  fetchTokenListAsync,
   fetchTransactionDataAsync,
   fetchTreasuryValueAsync,
 } from ".";
+import { useEffect } from "react";
+import { ChainId } from "@brewlabs/sdk";
 
 export const useFetchHomeData = () => {
   const dispatch = useAppDispatch();
@@ -31,6 +34,16 @@ export const useFetchMarketValues = (period) => {
   }, [dispatch, period]);
 };
 
+export const useFetchTokenLists = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchTokenListAsync(ChainId.ETHEREUM));
+    dispatch(fetchTokenListAsync(ChainId.BSC_MAINNET));
+    dispatch(fetchTokenListAsync(ChainId.POLYGON));
+  }, [dispatch]);
+};
+
 export const useHomeTransaction = (): { transactions: SerializedTransactionData } => {
   const { transactions } = useSelector((state: State) => ({
     transactions: state.home.transactions,
@@ -41,3 +54,5 @@ export const useHomeTransaction = (): { transactions: SerializedTransactionData 
 export const useAllHomeData = () => useSelector((state: State) => state.home);
 
 export const useMarketValues = (period) => useSelector((state: State) => state.home.marketValues[period] ?? []);
+
+export const useTokenList = (chainId) => useSelector((state: State) => state.home.tokenList[chainId] ?? []);

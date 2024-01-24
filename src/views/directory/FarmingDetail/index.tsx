@@ -27,7 +27,7 @@ import { fetchFarmFeeHistories, fetchFarmTotalRewards } from "state/farms/fetchP
 import { BIG_ZERO } from "utils/bigNumber";
 import { formatAmount, formatTvl } from "utils/formatApy";
 import { getBalanceNumber } from "utils/formatBalance";
-import { getAddLiquidityUrl, numberWithCommas } from "utils/functions";
+import { getAddLiquidityUrl, getDexLogo, numberWithCommas } from "utils/functions";
 import getCurrencyId from "utils/getCurrencyId";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
@@ -44,9 +44,12 @@ import TokenLogo from "@components/logo/TokenLogo";
 
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
+
+  console.log(data);
+
   const dispatch = useAppDispatch();
 
-  const { userData: accountData, token, quoteToken, earningToken, reflectionToken } = data;
+  const { userData: accountData, token, quoteToken, earningToken, earningToken1, reflectionToken } = data;
 
   const [stakingModalOpen, setStakingModalOpen] = useState(false);
   const [curType, setCurType] = useState("deposit");
@@ -88,8 +91,13 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
 
   useEffect(() => {
     const fetchtotalRewardsAsync = async () => {
-      const { availableRewards, availableReflections } = await fetchFarmTotalRewards(data);
-      dispatch(setFarmsPublicData([{ pid: data.pid, availableRewards, availableReflections }]));
+      if (data.category === 2) {
+        const { availableRewards, availableRewards1, availableReflections } = await fetchFarmTotalRewards(data);
+        dispatch(setFarmsPublicData([{ pid: data.pid, availableRewards, availableRewards1, availableReflections }]));
+      } else {
+        const { availableRewards, availableReflections } = await fetchFarmTotalRewards(data);
+        dispatch(setFarmsPublicData([{ pid: data.pid, availableRewards, availableReflections }]));
+      }
     };
 
     const fetchFeeHistoriesAsync = async () => {
@@ -223,7 +231,10 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
       : [];
 
   const earningTokenBalance = getBalanceNumber(accountData.earnings ?? BIG_ZERO, earningToken.decimals);
+  const earningTokenBalance1 = getBalanceNumber(accountData.earnings1 ?? BIG_ZERO, earningToken1?.decimals ?? 18);
   const reflectionTokenBalance = getBalanceNumber(accountData.reflections ?? BIG_ZERO, reflectionToken?.decimals ?? 18);
+
+  const isDual = data.category === 2;
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -382,8 +393,12 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                       <div className="flex justify-between text-base  text-[#FFFFFF80]">
                         <div>
-                          Stake: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span> earn{" "}
-                          <span className="text-primary">{earningToken.symbol}</span>
+                          Stake: <span className="text-primary">{data.lpSymbol.split(" ")[0]}</span>
+                          <br />
+                          earn{" "}
+                          <span className="text-primary">
+                            {earningToken.symbol + (earningToken1 ? ` + ${earningToken1.symbol}` : "")}
+                          </span>
                         </div>
                         <div className="text-primary">Flexible</div>
                       </div>
@@ -407,9 +422,23 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           <div className="ml-1 mt-[2px]">{warningFarmerSVG("11px")}</div>
                         </div>
                       </div>
-                      <div className="absolute bottom-2 right-2">
+                      <div className="absolute bottom-4 right-4 flex items-center">
                         {data ? (
-                          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6" />
+                          <>
+                            {isDual ? (
+                              <div className="primary-shadow mr-2.5 rounded-[12px] bg-primary px-1.5 font-roboto text-[10px] font-bold text-black">
+                                Dual reward
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            <img
+                              src={getDexLogo(data.lpManager)}
+                              alt={""}
+                              className="relative z-10 -mr-3 w-6 rounded-full"
+                            />
+                            <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-6 rounded-full" />
+                          </>
                         ) : (
                           <SkeletonComponent />
                         )}
@@ -421,6 +450,14 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
                           <span className="text-primary">{earningToken.symbol}</span> earned
+                          {earningToken1 ? (
+                            <>
+                              <br />
+                              <span className="text-primary">{earningToken1.symbol}</span> earned
+                            </>
+                          ) : (
+                            ""
+                          )}
                         </div>
                         {reflectionToken && (
                           <div className="text-[#FFFFFF80]">
@@ -441,6 +478,21 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {earningToken.symbol}
                         </div>
+                        {earningToken1 ? (
+                          <div className=" flex text-primary">
+                            {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                              "0.00"
+                            ) : accountData.earnings !== undefined ? (
+                              formatAmount(earningTokenBalance1.toFixed(4))
+                            ) : (
+                              <SkeletonComponent />
+                            )}
+                            &nbsp;
+                            {earningToken1.symbol}
+                          </div>
+                        ) : (
+                          ""
+                        )}
                         {reflectionToken && (
                           <div className="flex text-primary">
                             {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
@@ -468,6 +520,21 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           &nbsp;
                           {earningToken.symbol}
                         </div>
+                        {earningToken1 ? (
+                          <div className=" flex text-primary">
+                            {!address ? (
+                              "0.00"
+                            ) : data.availableRewards1 !== undefined ? (
+                              formatAmount(data.availableRewards1.toFixed(2))
+                            ) : (
+                              <SkeletonComponent />
+                            )}
+                            &nbsp;
+                            {earningToken1.symbol}
+                          </div>
+                        ) : (
+                          ""
+                        )}
                         {reflectionToken && (
                           <div className=" flex text-primary">
                             {!address ? (
@@ -605,7 +672,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             }
                             onClick={handleHarvest}
                           >
-                            <div className="flex w-full items-center justify-between px-4">
+                            <div className="flex w-full items-center justify-between px-2">
                               <div className="flex">
                                 Harvest&nbsp;
                                 {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
@@ -616,12 +683,31 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                                   <SkeletonComponent />
                                 )}
                                 <span className="text-primary">&nbsp;{earningToken.symbol}</span>
+                                {earningToken1 ? (
+                                  <>
+                                    &nbsp;&&nbsp;
+                                    <span className="text-primary">{earningToken1.symbol}</span>&nbsp;
+                                    {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
+                                      0
+                                    ) : accountData.earnings !== undefined ? (
+                                      formatAmount(earningTokenBalance1.toFixed(4))
+                                    ) : (
+                                      <SkeletonComponent />
+                                    )}
+                                  </>
+                                ) : (
+                                  ""
+                                )}
                               </div>
                               <div className="text-sm">
                                 $
                                 {(
                                   earningTokenBalance *
-                                  (tokenPrices[getCurrencyId(data.chainId, earningToken.address)] ?? 0)
+                                    (tokenPrices[getCurrencyId(data.chainId, earningToken.address)] ?? 0) +
+                                  (earningToken1
+                                    ? earningTokenBalance1 *
+                                      (tokenPrices[getCurrencyId(data.chainId, earningToken1.address)] ?? 0)
+                                    : 0)
                                 ).toFixed(2)}
                               </div>
                             </div>
@@ -662,84 +748,6 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               </div>
                             </StyledButton>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="mr-0 flex-1 xsm:mr-[14px]">
-                        {reflectionToken && data.version > Version.V2 && (
-                          <>
-                            <div className="text-xl text-[#FFFFFFBF]">Pool Reflections</div>
-                            <div className="mt-2 h-[56px]">
-                              <StyledButton
-                                type="teritary"
-                                boxShadow={address && reflectionTokenBalance > 0}
-                                disabled={
-                                  !address ||
-                                  reflectionTokenBalance === 0 ||
-                                  (data.enableEmergencyWithdraw && data.disableHarvest) ||
-                                  pending
-                                }
-                                onClick={handleHarvestDividned}
-                              >
-                                <div className="flex w-full items-center justify-between px-4">
-                                  <div className="flex">
-                                    Harvest&nbsp;
-                                    {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                      0
-                                    ) : accountData.reflections !== undefined ? (
-                                      formatAmount(reflectionTokenBalance.toFixed(4))
-                                    ) : (
-                                      <SkeletonComponent />
-                                    )}
-                                    <span className="text-primary">&nbsp;{reflectionToken.symbol}</span>
-                                  </div>
-                                  <div className="text-sm">
-                                    $
-                                    {(
-                                      reflectionTokenBalance *
-                                      (tokenPrices[getCurrencyId(data.chainId, reflectionToken.address)] ?? 0)
-                                    ).toFixed(2)}
-                                  </div>
-                                </div>
-                              </StyledButton>
-                            </div>
-                            {data.compoundRelection && (
-                              <div className="mt-2 h-[56px]">
-                                <StyledButton
-                                  type="teritary"
-                                  boxShadow={address && reflectionTokenBalance > 0}
-                                  disabled={
-                                    !address ||
-                                    reflectionTokenBalance === 0 ||
-                                    (data.enableEmergencyWithdraw && data.disableHarvest) ||
-                                    pending
-                                  }
-                                  onClick={handleCompoundDividend}
-                                >
-                                  <div className="flex w-full items-center justify-between px-4">
-                                    <div className="flex">
-                                      Compound&nbsp;
-                                      {!address || (data.enableEmergencyWithdraw && data.disableHarvest) ? (
-                                        0
-                                      ) : accountData.reflections !== undefined ? (
-                                        formatAmount(reflectionTokenBalance.toFixed(4))
-                                      ) : (
-                                        <SkeletonComponent />
-                                      )}
-                                      <span className="text-primary">&nbsp;{reflectionToken.symbol}</span>
-                                    </div>
-                                    <div className="text-sm">
-                                      $
-                                      {(
-                                        reflectionTokenBalance *
-                                        (tokenPrices[getCurrencyId(data.chainId, reflectionToken.address)] ?? 0)
-                                      ).toFixed(2)}
-                                    </div>
-                                  </div>
-                                </StyledButton>
-                              </div>
-                            )}
-                          </>
                         )}
                       </div>
                     </div>

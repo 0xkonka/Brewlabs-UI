@@ -68,11 +68,11 @@ const PoolCard = ({
     >
       <div className="flex items-center justify-between">
         <div className="w-[80px] pl-4">
-          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
+          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9 rounded-full" />
         </div>
         {data.type === Category.FARM ? (
           <div className="w-[36px]">
-            <img src={DEX_LOGOS[data.lpManager]} alt={""} className="w-9" />
+            <img src={DEX_LOGOS[data.lpManager]} alt={""} className="w-9 rounded-full" />
           </div>
         ) : (
           ""

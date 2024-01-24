@@ -1,8 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext } from "react";
-
 import contracts from "config/constants/contracts";
-import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { isAddress } from "utils";
 import { getDexLogo, getEmptyTokenLogo } from "utils/functions";
@@ -12,10 +9,11 @@ import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
 import RouterSelect from "../RouterSelect";
 import TokenLogo from "@components/logo/TokenLogo";
+import { useTokenList } from "state/home/hooks";
 
 const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpInfo }) => {
   const { chainId } = useActiveChainId();
-  const { tokenList: supportedTokens }: any = useContext(DashboardContext);
+  const supportedTokens = useTokenList(chainId);
 
   const isSupportedChain = Object.keys(contracts.farmFactory).includes(chainId.toString());
   const token0Address = isAddress(lpInfo?.pair?.token0.address);

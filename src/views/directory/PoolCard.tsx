@@ -65,11 +65,11 @@ const PoolCard = ({
     >
       <div className="flex items-center justify-between px-4">
         <div className="w-24">
-          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9" />
+          <img src={CHAIN_ICONS[data.chainId]} alt={""} className="w-9 rounded-full" />
         </div>
         {data.type === Category.FARM ? (
           <div className="w-16">
-            <img src={DEX_LOGOS[data.lpManager]} alt={""} className="w-9" />
+            <img src={DEX_LOGOS[data.lpManager]} alt={""} className="w-9 rounded-full" />
           </div>
         ) : (
           ""
@@ -79,6 +79,8 @@ const PoolCard = ({
             <IndexLogo tokens={data.tokens} />
           ) : data.type === Category.ZAPPER ? (
             <IndexLogo tokens={[data.token, data.quoteToken]} appId={data.appId} />
+          ) : data.earningToken1 ? (
+            <IndexLogo tokens={[data.earningToken, data.earningToken1]} />
           ) : (
             <TokenLogo
               src={
@@ -98,8 +100,10 @@ const PoolCard = ({
                 <div>Earning : {data.earningToken.symbol}</div>
               </div>
             ) : (
-              <div className="overflow-hidden text-ellipsis leading-none">
-                <span className="text-primary">Earn</span> {data.earningToken.symbol}
+              <div className={`overflow-hidden text-ellipsis leading-none ${data.earningToken1 ? "text-sm" : ""}`}>
+                <span className="text-primary text-base">Earn</span> {data.earningToken1 ? <br /> : ""}
+                {data.earningToken.symbol}
+                {data.earningToken1 ? ` + ${data.earningToken1.symbol}` : ""}
               </div>
             )}
             <div className="overflow-hidden text-ellipsis text-xs">
@@ -207,7 +211,8 @@ const PoolCard = ({
                   <>{getIndexName(data.tokens)}</>
                 ) : (
                   <>
-                    <span className="text-primary">Earn</span> {data.earningToken.symbol}
+                    <span className="text-primary">Earn</span> {data.earningToken.symbol}{" "}
+                    {data.earningToken1 ? ` + ${data.earningToken1.symbol}` : ""}
                   </>
                 )}
               </div>
