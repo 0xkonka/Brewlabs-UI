@@ -45,8 +45,6 @@ import TokenLogo from "@components/logo/TokenLogo";
 const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
   const { data } = detailDatas;
 
-  console.log(data);
-
   const dispatch = useAppDispatch();
 
   const { userData: accountData, token, quoteToken, earningToken, earningToken1, reflectionToken } = data;
