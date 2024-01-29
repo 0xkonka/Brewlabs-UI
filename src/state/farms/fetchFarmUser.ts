@@ -188,36 +188,32 @@ export const fetchFarmUserEarnings = async (
           earnings: rawEarnings[index][0].toString(),
         });
       });
-    
+
     // fetch dual farms
-    const dualFarms = farmsToFetch
-    .filter((f) => !f.enableEmergencyWithdraw)
-    .filter((f) => f.category === 2);
-    if(dualFarms.length >0) {
+    const dualFarms = farmsToFetch.filter((f) => !f.enableEmergencyWithdraw).filter((f) => f.category === 2);
+    if (dualFarms.length > 0) {
       rawEarnings = await multicall(
         dualFarmImplABI,
-        dualFarms
-          .map((farm) => ({
-            address: farm.contractAddress,
-            name: "pendingRewards",
-            params: [account],
-          })),
+        dualFarms.map((farm) => ({
+          address: farm.contractAddress,
+          name: "pendingRewards",
+          params: [account],
+        })),
         chainId
       );
-  
-      dualFarms
-        .forEach((farm, index) => {
-          data.push({
-            pid: farm.pid,
-            farmId: farm.farmId,
-            poolId: farm.poolId,
-            chainId: farm.chainId,
-            earnings: rawEarnings[index][0][0].toString(),
-            earnings1: rawEarnings[index][0][1].toString(),
-          });
+
+      dualFarms.forEach((farm, index) => {
+        data.push({
+          pid: farm.pid,
+          farmId: farm.farmId,
+          poolId: farm.poolId,
+          chainId: farm.chainId,
+          earnings: rawEarnings[index][0][0].toString(),
+          earnings1: rawEarnings[index][0][1].toString(),
         });
+      });
     }
-    
+
     return data;
   } catch (e) {
     return [];
