@@ -3,7 +3,6 @@ import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import SwapBoard from "./SwapBoard";
-import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import WordHighlight from "@components/text/WordHighlight";
 
 export default function Swap() {
