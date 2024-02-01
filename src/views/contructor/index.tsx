@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
-
+import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { SwapContext } from "contexts/SwapContext";
 import PageHeader from "components/layout/PageHeader";
 import Container from "components/layout/Container";
