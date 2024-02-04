@@ -197,22 +197,33 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
             transition={{ duration: 0.3 }}
           >
             <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
-              <PageHeader
-                title={
-                  <div className="text-[40px]">
-                    <WordHighlight content="Product Deployer" />
-                    <a
-                      className="primary-shadow mt-2 flex w-fit items-center rounded bg-[#FFFFFF1A] p-2 font-roboto text-xs font-bold !text-primary transition hover:scale-[1.1]"
-                      href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
-                      target="_blank"
-                    >
-                      <div>LEARN MORE</div>
-                      <div className="ml-1 [&>svg]:!h-2.5 [&>svg]:!w-2.5">{DocSVG}</div>
-                    </a>
-                  </div>
+              <PageWrapper>
+                <PageHeader
+                  title={
+                    <>
+                      Exchange tokens at the <WordHighlight content="best" /> rate on the market.
+                    </>
+                  }
+                  summary={
+                    <>
+                      Brewlabs BrewSwap is an aggregated decentralised exchange (aDEX) that seeks the most affordable swap route
+                      for the user. The BrewSwap aggregator feature fetches price’s for your swap through a number of relay
+                      contracts to obtain the ideal swap from the industries largest liquidity pools. The combined decentralised
+                      exchange features allow for unique liquidity pool creation and token tax management, instant fee issuance to
+                      liquidity providers and innovate fee reduction benefits for Brewlabs NFT holders.
+                    </>
                 }
-              />
-
+              >
+                <a
+                  className="btn mt-4"
+                  target="_blank"
+                  href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/testing-brewswap-router"
+                >
+                  <DocumentTextIcon className="h-auto w-6" />
+                  Learn more
+                </a>
+      </PageHeader>
+                
               <Container className="pb-[180px] font-brand">
                 <div className="mb-20 flex flex-col items-center justify-between sm:flex-row">
                   <div>
