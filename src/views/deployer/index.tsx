@@ -223,18 +223,9 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
                   Learn more
                 </a>
       </PageHeader>
-                
-              <Container className="pb-[180px] font-brand">
-                <div className="mb-20 flex flex-col items-center justify-between sm:flex-row">
-                  <div>
-                    <div className="text-lg leading-[1.2] text-primary">Deploy smart contracts.</div>
-                    <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">
-                      The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
-                      deployment of smart contracts across a range of networks. No matter if you are a novice or an
-                      expert in the industry, this simple deployment tool enables teams to create tokens, supporting
-                      utility smart contract, staking and yield farming and more. All contracts that are deployed by our
-                      deployer tools are safe, transparent and verified to ensure user security.
-                    </div>
+    </PageWrapper>
+  );
+}
                   </div>
                 </div>
                 <div className="mt-8">
