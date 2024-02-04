@@ -253,6 +253,7 @@ const Bridge: NextPage = () => {
           <DocumentTextIcon className="h-auto w-6" />
           Learn more
         </a>
+        
         <a
           className="btn mt-4"
           target="_blank"
