@@ -197,7 +197,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
             transition={{ duration: 0.3 }}
           >
             <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
-              <PageWrapper>
+          
                 <PageHeader
                   title={
                     <>
@@ -223,9 +223,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
                   Learn more
                 </a>
       </PageHeader>
-    </PageWrapper>
-  );
-}
+              
                   </div>
                 </div>
                 <div className="mt-8">
