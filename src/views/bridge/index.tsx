@@ -253,6 +253,14 @@ const Bridge: NextPage = () => {
           <DocumentTextIcon className="h-auto w-6" />
           Learn more
         </a>
+        <a
+          className="btn mt-4"
+          target="_blank"
+          href="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2022/live-brewlabs-bridge"
+        >
+          <DocumentTextIcon className="h-auto w-6" />
+          Learn more
+        </a>
       </PageHeader>
 
       <BridgeLoadingModal />
