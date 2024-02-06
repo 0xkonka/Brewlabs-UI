@@ -78,7 +78,6 @@ const InputFile = forwardRef<HTMLInputElement, InputProps>(({ className, ...prop
         {/* <Input type="file" {...props} ref={ref} accept="image/png, image/jpeg" /> */}
         <Input
           {...props}
-          id="dropzone-file"
           type="file"
           className="opacity-0"
           accept="image/png, image/jpeg"
