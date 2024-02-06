@@ -1,8 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Dialog } from "@headlessui/react";
-import { AnimatePresence, motion } from "framer-motion";
 import Carousel from "react-multi-carousel";
 import styled from "styled-components";
 
@@ -140,7 +136,7 @@ const DeployerModal = ({
           ) : deployType === "Index" ? (
             <IndexDeployer setOpen={setOpen} step={step} setStep={setStep} />
           ) : (
-            <TokenDeployer setOpen={setOpen} step={step} setStep={setStep} />
+            <TokenDeployer />
           )}
 
           <button
