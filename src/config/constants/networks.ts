@@ -43,6 +43,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
     ChainId.AVALANCHE,
     ChainId.CRONOS,
     ChainId.BRISE,
+    ChainId.ARBITRUM,
   ],
   staking: [
     ChainId.ETHEREUM,
