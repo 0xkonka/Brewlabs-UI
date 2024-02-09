@@ -9,10 +9,10 @@ export const tokenDeployerSchema = z.object({
     .string()
     .min(2, { message: "The token symbol must be more than 2 characters." })
     .max(50, { message: "The token symbol contains too many characters." }),
-  tokenImage: z.string(),
+  tokenImage: z.string().optional(),
   tokenDecimals: z.coerce
     .number()
-    .min(16, { message: "You need at least 16 decimals." })
+    .min(1, { message: "You need at least 16 decimals." })
     .max(77, { message: "You can't have more than 77 decimals." }),
   tokenTotalSupply: z.coerce.number().min(100, { message: "You must make more than 100 tokens" }),
   tokenDescription: z.string().max(1000, { message: "The description is too long." }),
