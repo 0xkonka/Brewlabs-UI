@@ -20,7 +20,7 @@ enum ExtendedChainId {
 }
 
 // Augment ChainId type to include the new extended values
-type AugmentedChainId = ChainId | ExtendedChainId;
+export type AugmentedChainId = ChainId | ExtendedChainId;
 
 export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
 
@@ -54,7 +54,14 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.ARBITRUM, ExtendedChainId.SOLANA_MAINNET, ExtendedChainId.SOLANA_DEVNET],
+  deployer: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.POLYGON,
+    ChainId.ARBITRUM,
+    ExtendedChainId.SOLANA_MAINNET,
+    ExtendedChainId.SOLANA_DEVNET,
+  ],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
