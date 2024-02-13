@@ -9,8 +9,8 @@
   height: 16px;
   display: none !important;
 }
+
 html.dark a,
-html.dark p,
 html.dark h3 {
   color: #d1d5db; /* gray-300 */
 }
