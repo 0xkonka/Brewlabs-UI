@@ -79,12 +79,12 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
                     <button
                       onClick={() => network.id !== chainId && switchNetwork(network.id)}
                       disabled={isLoading || !canSwitch}
-                      className="flex w-full items-center py-4 outline-none hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
+                      className="flex w-full items-center from-zinc-900 via-zinc-800 to-zinc-900 py-4 outline-none hover:bg-gradient-to-r"
                     >
                       <img className="h-10 w-10 rounded-full" src={network.image} alt="" />
                       <div className="ml-4 flex-col text-left">
-                        <p className="text-sm font-medium text-gray-900">{network.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-500">
+                        <p className="text-sm font-medium text-gray-200">{network.name}</p>
+                        <p className="text-sm text-gray-500">
                           Current price: {` $`}
                           {network.id == (900 as ChainId) || network.id == (901 as ChainId)
                             ? "Solana token value"
