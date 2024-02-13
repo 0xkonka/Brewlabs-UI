@@ -155,10 +155,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
   const solNetwork = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(solNetwork), [solNetwork]);
   // initialise all the wallets you want to use
-  const wallets = useMemo(
-    () => [new PhantomWalletAdapter(), new TorusWalletAdapter(), new LedgerWalletAdapter()],
-    []
-  );
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new TorusWalletAdapter(), new LedgerWalletAdapter()], []);
 
   return (
     <>
@@ -216,7 +213,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                               {loading ? <LoadingPage /> : ""}
                                             </div>
                                           </div>
-                                          <ToastContainer />
+                                          <ToastContainer theme="dark" />
                                         </div>
                                       </PersistGate>
                                     </SWRConfig>
