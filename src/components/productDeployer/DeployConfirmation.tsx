@@ -52,7 +52,12 @@ const DeployConfirmation = () => {
   //   setIsDeploying(false);
   // };
 
-  const handleDeploy = async () => {};
+  const handleDeploy = async () => {
+    setTimeout(() => {
+      setDeployedAddress("0x1234");
+      setDeployerStep("success");
+    }, 1000);
+  };
 
   return (
     <div className={`mx-auto my-8 max-w-xl ${isDeploying && "animate-pulse"}`}>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, UserCheck2 } from "lucide-react";
 
 import TokenSummary from "@components/productDeployer/TokenSummary";
 
@@ -11,15 +11,14 @@ import { addTokenToMetamask } from "lib/bridge/helpers";
 import { BridgeToken } from "config/constants/types";
 
 import { useDeployerState } from "state/deploy/deployer.store";
+import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 
 const SuccessfulDeploy = () => {
-  const { connector } = useAccount();
+  const { connector, address } = useAccount();
   const { chainId } = useActiveChainId();
   const [isCopied, setIsCopied] = useState(false);
   const [deployedAddress] = useDeployerState("deployedAddress");
   const [{ tokenSymbol, tokenDecimals }] = useDeployerState("tokenInfo");
-
-  console.log(connector);
 
   const onCopyAddress = () => {
     setIsCopied(true);
@@ -42,11 +41,11 @@ const SuccessfulDeploy = () => {
       <h4 className="mb-6 text-3xl">Congratulations your token was deployed!</h4>
 
       <div className="flex flex-col gap-4">
-        <div className="ml-auto flex items-center  gap-3">
-          <button className="btn-ghost btn btn-xs font-light" onClick={() => onCopyAddress()}>
+        <div className="ml-auto flex items-center gap-3">
+          <button className="btn-ghost btn btn-xs font-light text-gray-400" onClick={() => onCopyAddress()}>
             {isCopied ? "Copied" : "Copy token address"}
           </button>
-          <button className="btn-ghost btn btn-xs font-light" onClick={() => onAddToMetamask()}>
+          <button className="btn-ghost btn btn-xs font-light text-gray-400" onClick={() => onAddToMetamask()}>
             + Add to MetaMask
           </button>
         </div>
@@ -69,8 +68,16 @@ const SuccessfulDeploy = () => {
         </div>
       </div>
 
-      <div>
-        <h4 className="my-6 text-xl">Summary</h4>
+      <div className="mt-4 flex flex-col gap-4">
+        <h4 className="my-2 text-xl">Summary</h4>
+        <p className="flex items-center gap-2">
+          <ShieldCheckIcon className="h-6 w-6 text-green-500" /> Deployed and verified
+        </p>
+        <p className="flex items-center gap-2">
+          <UserCheck2 className="h-6 w-6" /> Deployed to{" "}
+          <span className="rounded-3xl px-2 py-1 text-sm ring-1 ring-zinc-600">{address}</span>
+        </p>
+
         <TokenSummary />
       </div>
 

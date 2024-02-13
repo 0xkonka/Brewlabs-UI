@@ -1,4 +1,4 @@
-import { Check, Cross } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { numberWithCommas } from "utils/functions";
 import { useDeployerState } from "state/deploy/deployer.store";
 import { Avatar, AvatarImage } from "@components/ui/avatar";
@@ -53,7 +53,7 @@ const TokenSummary = () => {
       </div>
 
       {tokenDescription && (
-        <div className="flex flex-col gap-4 bg-slate-500/10 p-4">
+        <div className="flex flex-col gap-4 p-4">
           <dt className="text-gray-400">Token description</dt>
           <dd className="font-medium text-gray-200">{tokenDescription}</dd>
         </div>
@@ -61,17 +61,17 @@ const TokenSummary = () => {
 
       <div className="flex items-center justify-between p-4">
         <dt className="text-gray-400">Token is immutable</dt>
-        <dd className="font-medium text-gray-200">{tokenImmutable ? <Check /> : <Cross />}</dd>
+        <dd className="font-medium text-gray-200">{tokenImmutable ? <Check /> : <X />}</dd>
       </div>
 
       <div className="flex items-center justify-between p-4">
         <dt className="text-gray-400">Token can revoke freeze</dt>
-        <dd className="font-medium text-gray-200">{tokenRevokeFreeze ? <Check /> : <Cross />}</dd>
+        <dd className="font-medium text-gray-200">{tokenRevokeFreeze ? <Check /> : <X />}</dd>
       </div>
 
       <div className="flex items-center justify-between p-4">
         <dt className="text-gray-400">Token can revoke mint</dt>
-        <dd className="font-medium text-gray-200">{tokenRevokeMint ? <Check /> : <Cross />}</dd>
+        <dd className="font-medium text-gray-200">{tokenRevokeMint ? <Check /> : <X />}</dd>
       </div>
 
       <div className="flex items-center justify-between p-4">
