@@ -1,26 +1,41 @@
+import { Check, Cross } from "lucide-react";
 import { numberWithCommas } from "utils/functions";
 import { useDeployerState } from "state/deploy/deployer.store";
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
+import { Avatar, AvatarImage } from "@components/ui/avatar";
 
 const TokenSummary = () => {
-  const [{ tokenName, tokenDescription, tokenSymbol, tokenDecimals, tokenTotalSupply }] = useDeployerState("tokenInfo");
+  const [
+    {
+      tokenName,
+      tokenDescription,
+      tokenSymbol,
+      tokenDecimals,
+      tokenTotalSupply,
+      tokenImmutable,
+      tokenRevokeFreeze,
+      tokenRevokeMint,
+      tokenBurnPercentage,
+    },
+  ] = useDeployerState("tokenInfo");
   const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
 
   return (
-    <dl className="mb-8 mt-8 divide-y divide-gray-600 text-sm lg:col-span-7 lg:mt-0 lg:pr-8">
+    <dl className="mb-8 mt-12 divide-y divide-gray-600 rounded-xl bg-zinc-600/20 text-sm lg:col-span-7 lg:px-8 lg:py-2">
       <div className="flex items-center justify-between p-4">
         <dt className="text-gray-400">Token name</dt>
         <dd className="font-medium text-gray-200">{tokenName}</dd>
       </div>
 
-      <div className="flex items-center justify-between p-4">
-        <dt className="text-gray-400">Token image</dt>
-        <dd className="font-medium text-gray-200">
-          <Avatar className="ring ring-zinc-900">
-            <AvatarImage src={tokenImageDisplayUrl} width={500} height={500} alt="Token image" />
-          </Avatar>
-        </dd>
-      </div>
+      {tokenImageDisplayUrl && (
+        <div className="flex items-center justify-between p-4">
+          <dt className="text-gray-400">Token image</dt>
+          <dd className="font-medium text-gray-200">
+            <Avatar className="ring ring-zinc-900">
+              <AvatarImage src={tokenImageDisplayUrl} width={500} height={500} alt="Token image" />
+            </Avatar>
+          </dd>
+        </div>
+      )}
 
       <div className="flex items-center justify-between p-4">
         <dt className="text-gray-400">Token symbol</dt>
@@ -31,7 +46,7 @@ const TokenSummary = () => {
         <dd className="font-medium text-gray-200">{tokenDecimals}</dd>
       </div>
       <div className="flex items-center justify-between p-4">
-        <dt className=" text-gray-400">Total supply</dt>
+        <dt className=" text-gray-400">Amount of tokens</dt>
         <dd className="font-medium text-gray-200">
           {numberWithCommas(Number(tokenTotalSupply))} {tokenSymbol}
         </dd>
@@ -43,6 +58,26 @@ const TokenSummary = () => {
           <dd className="font-medium text-gray-200">{tokenDescription}</dd>
         </div>
       )}
+
+      <div className="flex items-center justify-between p-4">
+        <dt className="text-gray-400">Token is immutable</dt>
+        <dd className="font-medium text-gray-200">{tokenImmutable ? <Check /> : <Cross />}</dd>
+      </div>
+
+      <div className="flex items-center justify-between p-4">
+        <dt className="text-gray-400">Token can revoke freeze</dt>
+        <dd className="font-medium text-gray-200">{tokenRevokeFreeze ? <Check /> : <Cross />}</dd>
+      </div>
+
+      <div className="flex items-center justify-between p-4">
+        <dt className="text-gray-400">Token can revoke mint</dt>
+        <dd className="font-medium text-gray-200">{tokenRevokeMint ? <Check /> : <Cross />}</dd>
+      </div>
+
+      <div className="flex items-center justify-between p-4">
+        <dt className="text-gray-400">Token burn percentage</dt>
+        <dd className="font-medium text-gray-200">{tokenBurnPercentage}%</dd>
+      </div>
     </dl>
   );
 };

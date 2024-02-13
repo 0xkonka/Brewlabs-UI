@@ -16,4 +16,8 @@ export const tokenDeployerSchema = z.object({
     .max(77, { message: "You can't have more than 77 decimals." }),
   tokenTotalSupply: z.coerce.number().min(100, { message: "You must make more than 100 tokens." }),
   tokenDescription: z.string().max(1000, { message: "The description is too long." }),
+  tokenImmutable: z.boolean(),
+  tokenRevokeFreeze: z.boolean(),
+  tokenRevokeMint: z.boolean(),
+  tokenBurnPercentage: z.string(),
 });

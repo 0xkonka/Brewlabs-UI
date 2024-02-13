@@ -21,6 +21,10 @@ const deployerStore = {
     tokenDecimals: 18,
     tokenTotalSupply: 0,
     tokenDescription: "",
+    tokenImmutable: false,
+    tokenRevokeFreeze: false,
+    tokenRevokeMint: false,
+    tokenBurnPercentage: "0",
   },
 } as DeployerStore;
 
