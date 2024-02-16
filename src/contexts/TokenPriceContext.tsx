@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { API_URL } from "config/constants";
+import { API_URL, GURU_API_KEY } from "config/constants";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
@@ -30,9 +30,9 @@ const TokenPriceContextProvider = ({ children }: any) => {
     const to = Math.floor(Date.now() / 1000);
     axios
       .get(
-        `https://api.dex.guru/v1/tradingview/history?symbol=0x6aac56305825f712fd44599e59f2ede51d42c3e7-bsc_USD&resolution=10&from=${
+        `https://api.dev.dex.guru/v1/tradingview/history?symbol=0x6aac56305825f712fd44599e59f2ede51d42c3e7-bsc_USD&resolution=10&from=${
           to - 3600 * 24
-        }&to=${to}`
+        }&to=${to}&api-key=${GURU_API_KEY}`
       )
       .then((result) => setPrices({ brewlabs: { usd: result.data.c[result.data.c.length - 1] } }))
       .catch((e) => console.log(e));
@@ -67,9 +67,9 @@ const TokenPriceContextProvider = ({ children }: any) => {
     const to = Math.floor(Date.now() / 1000);
     axios
       .get(
-        `https://api.dex.guru/v1/tradingview/history?symbol=${WETH_ADDR[chainId]}-${
+        `https://api.dev.dex.guru/v1/tradingview/history?symbol=${WETH_ADDR[chainId]}-${
           chainId === 56 ? "bsc" : "eth"
-        }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
+        }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}&api-key=${GURU_API_KEY}`
       )
       .then((result) => setETHPrice(result.data.c[result.data.c.length - 1]))
       .catch((e) => console.log(e));
