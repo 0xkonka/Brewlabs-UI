@@ -16,9 +16,9 @@ const useTotalStakedHistory = (data) => {
   async function fetchPrice(address, chainId) {
     const to = Math.floor(Date.now() / 1000);
     const result = await axios.get(
-      `https://api.dev.dex.guru/v1/tradingview/history?symbol=${
+      `https://api.nodes-brewlabs.info/guru?symbol=${
         address === ethers.constants.AddressZero ? WNATIVE[chainId].address : address
-      }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}&api-key=${GURU_API_KEY}`
+      }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
     );
     return result.data.c[result.data.c.length - 1];
   }

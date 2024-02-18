@@ -137,14 +137,14 @@ export const fetchIndexPerformance = async (pool) => {
   let tokenPrices = [];
   try {
     for (let i = 0; i < pool.numTokens; i++) {
-      const tokenYearUrl = `https://api.dev.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${keys[pool.chainId]
-        }_USD&resolution=720&from=${startTime < to - 3600 * 24 * 365 ? startTime : to - 3600 * 24 * 365}&to=${to}&api-key=${GURU_API_KEY}`;
+      const tokenYearUrl = `https://api.nodes-brewlabs.info/guru?symbol=${pool.tokens[i].address}-${keys[pool.chainId]
+        }_USD&resolution=720&from=${startTime < to - 3600 * 24 * 365 ? startTime : to - 3600 * 24 * 365}&to=${to}`;
 
       let priceResult = await axios.get(tokenYearUrl);
       const yearlyPrice = priceResult.data;
 
-      const tokenDayUrl = `https://api.dev.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${keys[pool.chainId]
-        }_USD&resolution=60&from=${to - 3600 * 24}&to=${to}&api-key=${GURU_API_KEY}`;
+      const tokenDayUrl = `https://api.nodes-brewlabs.info/guru?symbol=${pool.tokens[i].address}-${keys[pool.chainId]
+        }_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
 
       priceResult = await axios.get(tokenDayUrl);
       const dailyPrice = priceResult.data;
