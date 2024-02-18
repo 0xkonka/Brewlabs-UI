@@ -30,9 +30,9 @@ const TokenPriceContextProvider = ({ children }: any) => {
     const to = Math.floor(Date.now() / 1000);
     axios
       .get(
-        `https://api.dev.dex.guru/v1/tradingview/history?symbol=0x6aac56305825f712fd44599e59f2ede51d42c3e7-bsc_USD&resolution=10&from=${
+        `https://api.nodes-brewlabs.info/guru?symbol=0x6aac56305825f712fd44599e59f2ede51d42c3e7-bsc_USD&resolution=10&from=${
           to - 3600 * 24
-        }&to=${to}&api-key=${GURU_API_KEY}`
+        }&to=${to}`
       )
       .then((result) => setPrices({ brewlabs: { usd: result.data.c[result.data.c.length - 1] } }))
       .catch((e) => console.log(e));
@@ -67,9 +67,9 @@ const TokenPriceContextProvider = ({ children }: any) => {
     const to = Math.floor(Date.now() / 1000);
     axios
       .get(
-        `https://api.dev.dex.guru/v1/tradingview/history?symbol=${WETH_ADDR[chainId]}-${
+        `https://api.nodes-brewlabs.info/guru?symbol=${WETH_ADDR[chainId]}-${
           chainId === 56 ? "bsc" : "eth"
-        }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}&api-key=${GURU_API_KEY}`
+        }_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
       )
       .then((result) => setETHPrice(result.data.c[result.data.c.length - 1]))
       .catch((e) => console.log(e));

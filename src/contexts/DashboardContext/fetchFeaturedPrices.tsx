@@ -31,9 +31,9 @@ export const fetchTokenBaseInfo = async (
 
 export async function fetchPrice(address: any, chainId: number, resolution: number, period = 86400) {
   const to = Math.floor(Date.now() / 1000);
-  const url = `https://api.dev.dex.guru/v1/tradingview/history?symbol=${
+  const url = `https://api.nodes-brewlabs.info/guru?symbol=${
     address === DEX_GURU_WETH_ADDR || !address ? WNATIVE[chainId].address : address
-  }-${DEX_GURU_CHAIN_NAME[chainId]}_USD&resolution=${resolution}&from=${to - period}&to=${to}&api-key=${GURU_API_KEY}`;
+  }-${DEX_GURU_CHAIN_NAME[chainId]}_USD&resolution=${resolution}&from=${to - period}&to=${to}`;
   let result: any = await axios.get(url);
   return result;
 }
