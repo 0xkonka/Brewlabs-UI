@@ -2,6 +2,7 @@ import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
+import FarmDeployer from "components/productDeployer/FarmDeployer";
 
 export default function DeployToken() {
   return (
@@ -25,7 +26,9 @@ export default function DeployToken() {
         </p>
       </PageHeader>
 
-      <Container className="pb-4 font-brand">Coming</Container>
+      <Container className="animate__animated animate__fadeIn animate__faster pb-4 font-brand">
+        <FarmDeployer />
+      </Container>
     </PageWrapper>
   );
 }
