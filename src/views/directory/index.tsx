@@ -30,10 +30,8 @@ import { filterPoolsByStatus } from "utils";
 import { getFarmApr } from "utils/apr";
 import getCurrencyId from "utils/getCurrencyId";
 
-import Banner from "./Banner";
 import PoolList from "./PoolList";
 import SelectionPanel from "./SelectionPanel";
-import DeployerModal from "./DeployerModal";
 
 import IndexDetail from "./IndexDetail";
 import FarmingDetail from "./FarmingDetail";
@@ -290,7 +288,6 @@ const Directory = ({ page }: { page: number }) => {
                 <div className="text-lg leading-[1.2] text-primary">{content.header}</div>
                 <div className="mt-1.5 max-w-[1000px] text-sm leading-[1.2]">{content.body}</div>
               </div>
-              <Banner setSelectPoolDetail={setSelectPoolDetail} setCurPool={setCurPool} allPools={allPools} />
               {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
                 <div className="-mb-4 -mt-4 flex justify-end">
                   <Link
