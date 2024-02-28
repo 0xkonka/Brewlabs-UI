@@ -3,34 +3,33 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Upload } from "lucide-react";
+
 import ChainSelect from "views/swap/components/ChainSelect";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Textarea } from "@components/ui/textarea";
+import { Checkbox } from "components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
-
-import { Checkbox } from "components/ui/checkbox";
 
 import { tokenDeployerSchema } from "config/schemas/tokenDeployerSchema";
 import { useDeployerState, setTokenInfo, setTokenImageDisplayUrl, setDeployerStep } from "state/deploy/deployer.store";
 
 const DeployDetails = () => {
   const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
-  const [{
-    tokenName,
-    tokenImage,
-    tokenDescription,
-    tokenSymbol,
-    tokenDecimals,
-    tokenTotalSupply,
-    tokenImmutable,
-    tokenRevokeFreeze,
-    tokenRevokeMint,
-    tokenBurnPercentage
-  }] = useDeployerState("tokenInfo");
+  const [
+    {
+      tokenName,
+      tokenImage,
+      tokenDescription,
+      tokenSymbol,
+      tokenDecimals,
+      tokenTotalSupply,
+      tokenImmutable,
+      tokenRevokeFreeze,
+      tokenRevokeMint,
+    },
+  ] = useDeployerState("tokenInfo");
 
   const form = useForm<z.infer<typeof tokenDeployerSchema>>({
     resolver: zodResolver(tokenDeployerSchema),
@@ -40,11 +39,10 @@ const DeployDetails = () => {
       tokenDecimals: tokenDecimals ?? 9,
       tokenTotalSupply: tokenTotalSupply ?? 1000,
       tokenImage: tokenImage ?? undefined,
-      tokenDescription: tokenDescription ?? "token Description",
+      tokenDescription: tokenDescription,
       tokenImmutable: tokenImmutable ?? false,
       tokenRevokeFreeze: tokenRevokeFreeze ?? false,
       tokenRevokeMint: tokenRevokeMint ?? false,
-      tokenBurnPercentage: tokenBurnPercentage ?? "0",
     },
   });
 
@@ -193,32 +191,6 @@ const DeployDetails = () => {
         <div className="divider" />
 
         <h4 className="mb-6 text-xl">Advanced options</h4>
-
-        {/* <FormField
-          control={form.control}
-          name="tokenBurnPercentage"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Token burn percentage</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an optional burn rate on token swaps" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="0">0% burn</SelectItem>
-                  <SelectItem value="1">1% burn</SelectItem>
-                  <SelectItem value="2">2% burn</SelectItem>
-                  <SelectItem value="3">3% burn</SelectItem>
-                  <SelectItem value="4">4% burn</SelectItem>
-                  <SelectItem value="5">5% burn</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
 
         <FormField
           control={form.control}

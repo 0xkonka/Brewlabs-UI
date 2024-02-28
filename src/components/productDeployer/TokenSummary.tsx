@@ -14,7 +14,6 @@ const TokenSummary = () => {
       tokenImmutable,
       tokenRevokeFreeze,
       tokenRevokeMint,
-      tokenBurnPercentage,
     },
   ] = useDeployerState("tokenInfo");
   const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
@@ -72,11 +71,6 @@ const TokenSummary = () => {
       <div className="flex items-center justify-between p-4">
         <dt className="text-gray-400">Token can revoke mint</dt>
         <dd className="font-medium text-gray-200">{tokenRevokeMint ? <Check /> : <X />}</dd>
-      </div>
-
-      <div className="flex items-center justify-between p-4">
-        <dt className="text-gray-400">Token burn percentage</dt>
-        <dd className="font-medium text-gray-200">{tokenBurnPercentage}%</dd>
       </div>
     </dl>
   );
