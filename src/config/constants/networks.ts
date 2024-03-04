@@ -222,7 +222,7 @@ export const NETWORKS = {
     rpcUrls: [
       "https://bsc-dataseed1.defibit.io",
       "https://bsc-dataseed1.ninicoin.io",
-      "https://bsc-dataseed.binance.org",
+      "https://bsc-dataseed.bnbchain.org",
     ],
     blockExplorerUrls: ["https://bscscan.com"],
   },
