@@ -61,7 +61,7 @@ export const useActiveChainId = (): { chainId: AugmentedChainId; isWrongNetwork:
 
   if (localChainId == undefined && queryChainId <= 0)
     return {
-      chainId: queryChainId,
+      chainId: 56,
       isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
       // isWrongNetwork: isNotMatched,
       isNotMatched,
