@@ -31,8 +31,8 @@ const DeployConfirmation = () => {
 
         {
           chainId === (900 as ChainId) ?
-            <TokenDeploySolana /> :
-            <TokenDeployEVM />
+            <TokenDeploySolana setIsDeploying={setIsDeploying} /> :
+            <TokenDeployEVM setIsDeploying={setIsDeploying}/>
         }
       </>
       }
