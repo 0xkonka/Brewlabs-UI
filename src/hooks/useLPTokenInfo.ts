@@ -7,12 +7,35 @@ import multicall from "utils/multicall";
 
 import { useSlowRefreshEffect } from "./useRefreshEffect";
 
-function useLPTokenInfo(address: string, chainId: number) {
+type PairDataType = {
+  address: string;
+  chainId: number;
+  factory: string;
+  token0: {
+    address: string;
+    decimals: number;
+    symbol: string;
+    name: string;
+  };
+  token1: {
+    address: string;
+    decimals: number;
+    symbol: string;
+    name: string;
+  };
+} | null;
+
+export type LpInfoType = {
+  pending: boolean;
+  pair: PairDataType;
+};
+
+function useLPTokenInfo(address: string, chainId: number): { pair: PairDataType; pending: boolean } {
   const [pair, setPair] = useState(null);
-  const [pending, setPending] = useState(false)
+  const [pending, setPending] = useState(false);
 
   async function fetchInfo() {
-    setPending(true)
+    setPending(true);
     try {
       const calls = [
         {
@@ -88,7 +111,7 @@ function useLPTokenInfo(address: string, chainId: number) {
       setPair(null);
       console.log(e);
     }
-    setPending(false)
+    setPending(false);
   }
 
   useSlowRefreshEffect(() => {
@@ -98,7 +121,7 @@ function useLPTokenInfo(address: string, chainId: number) {
     }
     fetchInfo();
   }, [address]);
-  return {pair, pending};
+  return { pair, pending };
 }
 
 export default useLPTokenInfo;
