@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Token } from "@brewlabs/sdk";
 import { getAddress } from "@ethersproject/address";
 
@@ -7,8 +7,9 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useGlobalState } from "state";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+
 import CurrencySelector from "components/CurrencySelector";
-import { DrawSVG } from "components/dashboard/assets/svgs";
 import TokenLogo from "@components/logo/TokenLogo";
 import { isAddress } from "utils";
 import { useTokenList } from "state/home/hooks";
@@ -17,7 +18,6 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const { chainId } = useActiveChainId();
   const supportedTokens = useTokenList(chainId);
 
-  const dropdownRef: any = useRef();
   const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
 
@@ -35,9 +35,10 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   }
 
   return (
-    <div className="relative z-20" ref={dropdownRef}>
-      <div
-        className={`primary-shadow flex h-[36px] cursor-pointer items-center justify-between overflow-hidden rounded-md bg-[#B9B8B81A] pl-3.5`}
+    <div className="mb-4 rounded-full border border-gray-600 bg-opacity-60 py-2 pl-2 pr-4 font-brand  text-white focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60">
+      <button
+        type="button"
+        className=" flex w-full items-center justify-between"
         onClick={() => {
           setIsOpen(isOpen === 1 ? 1 : 2);
           setSidebarContent(
@@ -53,22 +54,21 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
         }}
       >
         {selectedCurrency ? (
-          <div className="flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap">
+          <div className="flex flex-1 items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <TokenLogo
               src={getTokenLogoURL(selectedCurrency.address, chainId, selectedCurrency.logo)}
               classNames="h-6 w-6"
             />
-            <div className="mx-4 w-[100px] xsm:w-[140px]">
-              <div className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[#FFFFFFBF]">
-                {selectedCurrency.symbol}
-              </div>
-            </div>
+
+            <span className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-200">
+              {selectedCurrency.symbol}
+            </span>
           </div>
         ) : (
-          <div className="flex-1 text-sm font-medium">Select Token...</div>
+          <span className="flex-1 text-sm font-medium">Select Token...</span>
         )}
-        <div className="flex h-full w-10 items-center justify-center bg-[rgb(35,40,52)] text-primary">{DrawSVG}</div>
-      </div>
+        <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
+      </button>
     </div>
   );
 };
