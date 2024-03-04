@@ -133,12 +133,12 @@ const CurrencyRow = ({
             <p className="text-start text-lg">{currency?.symbol}</p>
             <p className="flex items-center justify-start gap-1 text-sm">
               {priceChange24h > 0 ? (
-                <span className="flex items-center text-green">
+                <span className="text-green flex items-center">
                   {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
                 </span>
               ) : (
-                <span className="flex items-center text-danger">
-                  {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
+                <span className="text-danger flex items-center">
+                  {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="dark:text-danger h-3 w-3" />
                 </span>
               )}
               <span className="text-primary">24HR</span>
