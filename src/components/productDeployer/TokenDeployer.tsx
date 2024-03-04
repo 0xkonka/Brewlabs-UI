@@ -2,8 +2,8 @@ import { Card, CardContent } from "@components/ui/card";
 
 import { useDeployerState } from "state/deploy/deployer.store";
 
-import DeployDetails from "@components/productDeployer/DeployDetails";
-import DeployConfirmation from "@components/productDeployer/DeployConfirmation";
+import TokenDetails from "@components/productDeployer/TokenDetails";
+import TokenDeployConfirm from "@components/productDeployer/TokenDeployConfirm";
 import SuccessfulDeploy from "@components/productDeployer/SuccessfulDeploy";
 
 const TokenDeployer = () => {
@@ -12,8 +12,8 @@ const TokenDeployer = () => {
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerStep === "details" && <DeployDetails />}
-        {deployerStep === "confirm" && <DeployConfirmation />}
+        {deployerStep === "details" && <TokenDetails />}
+        {deployerStep === "confirm" && <TokenDeployConfirm />}
         {deployerStep === "success" && <SuccessfulDeploy />}
       </CardContent>
     </Card>

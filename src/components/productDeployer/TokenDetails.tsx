@@ -9,15 +9,12 @@ import { Button } from "@components/ui/button";
 import { Textarea } from "@components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
-
 import { Checkbox } from "components/ui/checkbox";
 
 import { tokenDeployerSchema } from "config/schemas/tokenDeployerSchema";
 import { useDeployerState, setTokenInfo, setTokenImageDisplayUrl, setDeployerStep } from "state/deploy/deployer.store";
 
-const DeployDetails = () => {
+const TokenDetails = () => {
   const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
 
   const form = useForm<z.infer<typeof tokenDeployerSchema>>({
@@ -32,7 +29,6 @@ const DeployDetails = () => {
       tokenImmutable: false,
       tokenRevokeFreeze: false,
       tokenRevokeMint: false,
-      tokenBurnPercentage: "0",
     },
   });
 
@@ -184,32 +180,6 @@ const DeployDetails = () => {
 
         <FormField
           control={form.control}
-          name="tokenBurnPercentage"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Token burn percentage</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an optional burn rate on token swaps" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="0">0% burn</SelectItem>
-                  <SelectItem value="1">1% burn</SelectItem>
-                  <SelectItem value="2">2% burn</SelectItem>
-                  <SelectItem value="3">3% burn</SelectItem>
-                  <SelectItem value="4">4% burn</SelectItem>
-                  <SelectItem value="5">5% burn</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="tokenImmutable"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
@@ -267,4 +237,4 @@ const DeployDetails = () => {
   );
 };
 
-export default DeployDetails;
+export default TokenDetails;

@@ -14,7 +14,7 @@ import TokenFactoryAbi from "config/abi/token/factory.json";
 import { useDeployerState, setDeployedAddress, setDeployerStep } from "state/deploy/deployer.store";
 import TokenSummary from "components/productDeployer/TokenSummary";
 
-const DeployConfirmation = () => {
+const TokenDeployConfirm = () => {
   // const { chain } = useNetwork();
 
   const { chainId } = useActiveChainId();
@@ -94,4 +94,4 @@ const DeployConfirmation = () => {
   );
 };
 
-export default DeployConfirmation;
+export default TokenDeployConfirm;
