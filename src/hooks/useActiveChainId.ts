@@ -8,7 +8,6 @@ import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useGlobalState } from "state";
 import { isChainSupported } from "utils/wagmi";
 import { useReplaceQueryParams } from "./useReplaceQueryParams";
-import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
 
 export const useQueryChainId = () => {
   const router = useRouter();
@@ -40,39 +39,23 @@ export function useLocalNetworkChain() {
   const chainId = +(sessionChainId || queryChainId);
   if (isChainSupported(chainId)) {
     return chainId;
-  } else if (chainId === 900 || chainId === 901) return chainId;
+  }
 
   return undefined;
 }
 
-export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isNotMatched: any; isLoading: any } => {
+export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isNotMatched: any } => {
   const { chain } = useNetwork();
+
   const localChainId = useLocalNetworkChain();
   const queryChainId = useQueryChainId();
-  const isNotMatched = useMemo(() => chain && localChainId && chain.id !== localChainId, [chain, localChainId]);
-  // const isNotMatched = false;
-  const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
-  useEffect(() => {
-    if (queryChainId === 900 || queryChainId === 901) setIsSolanaNetwork(true);
-    else setIsSolanaNetwork(false);
-  }, [queryChainId, setIsSolanaNetwork]);
 
-  if (localChainId == undefined && queryChainId <= 0)
-    return {
-      chainId: queryChainId,
-      isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
-      // isWrongNetwork: isNotMatched,
-      isNotMatched,
-      isLoading: true,
-    };
-  // const chainId = localChainId ?? chain?.id ?? (queryChainId <= 0 ? bsc.id : queryChainId);
-  const chainId = localChainId ?? (queryChainId <= 0 ? 901 : queryChainId);
+  const chainId = localChainId ?? chain?.id ?? (queryChainId <= 0 ? bsc.id : queryChainId);
+  const isNotMatched = useMemo(() => chain && localChainId && chain.id !== localChainId, [chain, localChainId]);
 
   return {
     chainId,
     isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
-    // isWrongNetwork: isNotMatched,
     isNotMatched,
-    isLoading: false,
   };
 };
