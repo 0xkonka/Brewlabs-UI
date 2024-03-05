@@ -1,66 +1,113 @@
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
+import { Loader2 } from "lucide-react";
 
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
 import FarmFactoryAbi from "config/abi/farm/factory.json";
 
 import { BLOCKS_PER_DAY } from "config/constants";
-import { DashboardContext } from "contexts/DashboardContext";
 import { useCurrency } from "hooks/Tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useTokenApprove } from "hooks/useApprove";
 import useTotalSupply from "hooks/useTotalSupply";
-import { getExplorerLink, getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
-import { calculateGasMargin, isAddress } from "utils";
+import { calculateGasMargin } from "utils";
 import { getContract } from "utils/contractHelpers";
-import { getDexLogo, getEmptyTokenLogo, getExplorerLogo, numberWithCommas } from "utils/functions";
+import { getDexLogo, getEmptyTokenLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { useSigner } from "utils/wagmi";
 
 import TokenLogo from "components/logo/TokenLogo";
-
 import { useFactory } from "views/directory/DeployerModal/FarmDeployer/hooks";
-
 import { useUserTokenData } from "state/wallet/hooks";
-import { useAccount } from "wagmi";
-
-import { formatEther } from "viem";
-
-import { Info, Loader2, Pen } from "lucide-react";
-
+import { NETWORKS } from "config/constants/networks";
 import { Button } from "components/ui/button";
-
-import { useTokenFactory } from "state/deploy/hooks";
-
-import { useDeployerFarmState, setDeployerFarmStep } from "state/deploy/deployerFarm.store";
-
-import type { LpInfoType } from "@hooks/useLPTokenInfo";
+import { useDeployerFarmState, setDeployerFarmStep, setDeployedFarmAddress } from "state/deploy/deployerFarm.store";
 import type { Token } from "@brewlabs/sdk";
+import { SkeletonComponent } from "@components/SkeletonComponent";
 
-const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType }) => {
+// const deploySteps = [
+//   {
+//     step: "pre-submit",
+//     description: "Not yet deployed",
+//   },
+//   {
+//     step: "waiting",
+//     description: "Waiting to deploy",
+//   },
+//   {
+//     step: "deploying",
+//     description: "Deploying yield farm contract",
+//   },
+//   {
+//     step: "rewards",
+//     description: "Adding yield farm rewards",
+//   },
+//   {
+//     step: "starting",
+//     description: "Starting yield farm",
+//   },
+//   {
+//     step: "complete",
+//     description: "Complete",
+//   },
+// ] as { step: DeployStepType; description: string }[];
+
+const deploySteps = {
+  preSubmit: {
+    step: "pre-submit",
+    description: "Not yet deployed",
+  },
+  waiting: {
+    step: "waiting",
+    description: "Waiting to deploy",
+  },
+  deploying: {
+    step: "deploying",
+    description: "Deploying yield farm contract",
+  },
+  rewards: {
+    step: "rewards",
+    description: "Adding yield farm rewards",
+  },
+  starting: {
+    step: "starting",
+    description: "Starting yield farm",
+  },
+  complete: {
+    step: "complete",
+    description: "Complete",
+  },
+};
+
+const FarmConfirmDeploy = () => {
+  const dispatch = useAppDispatch();
+  const { data: signer } = useSigner();
   const { chainId } = useActiveChainId();
   const { address: account } = useAccount();
-  const [{ farmDuration, rewardToken, initialSupply, depositFee, withdrawFee }] = useDeployerFarmState("farmInfo");
-
-  const {
-    pair: { token0, token1, address: lpAddress },
-  } = lpInfo;
+  const [{ farmDuration, rewardToken, initialSupply, depositFee, withdrawFee, lpAddress, lpInfo, router }] =
+    useDeployerFarmState("farmInfo");
 
   const tokens = useUserTokenData(chainId, account);
-  const [isDeploying, setIsDeploying] = useState(false);
+  const [insufficientRewards, setInsufficientRewards] = useState(false);
+  const [deployStep, setDeployStep] = useState(deploySteps.preSubmit);
 
   const factory = useFarmFactory(chainId);
-  console.log(factory);
   const { onCreate } = useFactory(chainId, factory?.payingToken.isNative ? factory?.serviceFee : "0");
   const { onApprove } = useTokenApprove();
 
   const rewardCurrency = useCurrency(rewardToken?.address);
   const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
   const rewardTokenBalance = tokens.find((t) => t.address === rewardCurrency?.address.toLowerCase())?.balance ?? 0;
+
+  useEffect(() => {
+    setInsufficientRewards(rewardTokenBalance < (+totalSupply.toFixed(2) * initialSupply) / 100);
+  }, [rewardTokenBalance, totalSupply, initialSupply]);
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
@@ -76,7 +123,8 @@ const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType
       return;
     }
 
-    setIsDeploying(true);
+    // Set deploying phase
+    setDeployStep(deploySteps.deploying);
 
     try {
       let rewardPerBlock = ethers.utils.parseUnits(
@@ -90,12 +138,12 @@ const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType
       const hasDividend = false;
       const dividendToken = ethers.constants.AddressZero;
 
-      // approve paying token for deployment
+      // Approve paying token for deployment
       if (factory.payingToken.isToken && +factory.serviceFee > 0) {
         await onApprove(factory.payingToken.address, factory.address);
       }
 
-      // deploy farm contract
+      // Deploy farm contract
       const tx = await onCreate(
         lpAddress,
         rewardCurrency.address,
@@ -114,35 +162,82 @@ const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType
           const log = iface.parseLog(tx.logs[i]);
           if (log.name === "FarmCreated") {
             farm = log.args.farm;
-            // setFarmAddr(log.args.farm);
+            setDeployedFarmAddress(log.args.farm);
             break;
           }
         } catch (e) {}
       }
 
-      // handleTransferRewards(farm);
+      handleTransferRewards(farm);
     } catch (e) {
-      // console.log(e);
       handleWalletError(e, showError, getNativeSymbol(chainId));
-      // setStep(2);
+      // Set deploying phase
+      setDeployStep(deploySteps.preSubmit);
     }
-    setIsDeploying(false);
+  };
+
+  const handleTransferRewards = async (farm) => {
+    setDeployStep(deploySteps.rewards);
+
+    try {
+      const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
+
+      // approve reward token
+      await onApprove(rewardCurrency.address, farm);
+
+      // calls depositRewards method
+      let amount = await farmContract.insufficientRewards();
+      let gasLimit = await farmContract.estimateGas.depositRewards(amount);
+      gasLimit = calculateGasMargin(gasLimit);
+
+      const tx = await farmContract.depositRewards(amount, { gasLimit });
+      await tx.wait();
+
+      handleStartFarming(farm);
+    } catch (e) {
+      handleWalletError(e, showError, getNativeSymbol(chainId));
+    }
+  };
+
+  const handleStartFarming = async (farm) => {
+    setDeployStep(deploySteps.starting);
+
+    try {
+      const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
+
+      // Calls startRewards
+      let gasLimit = await farmContract.estimateGas.startReward();
+      gasLimit = calculateGasMargin(gasLimit);
+
+      const tx = await farmContract.startReward({ gasLimit });
+      await tx.wait();
+
+      setDeployStep(deploySteps.complete);
+      dispatch(fetchFarmsPublicDataFromApiAsync());
+      setTimeout(() => {
+        setDeployerFarmStep("success");
+        setDeployStep(deploySteps.preSubmit);
+      }, 1000);
+    } catch (e) {
+      handleWalletError(e, showError, getNativeSymbol(chainId));
+    }
   };
 
   return (
-    <div className={`mx-auto my-8 max-w-2xl ${isDeploying && "animate-pulse"}`}>
-      {isDeploying && (
-        <div className="absolute inset-0 flex h-full w-full items-center justify-between rounded-3xl bg-zinc-900/40">
+    <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
+      {deployStep.step !== "pre-submit" && (
+        <div className="absolute inset-0 z-10 flex h-full w-full flex-col items-center justify-center rounded-3xl bg-zinc-900/90">
           <Loader2 className="mx-auto h-12 w-12 animate-spin" />
+          <h4 className="mt-6 animate-pulse text-xl">{deployStep.description}</h4>
         </div>
       )}
 
       <h4 className="mb-6 text-xl">Confirm and deploy yield farm</h4>
-
-      <p className="my-2 text-gray-400">You are about to deploy a new yield farm on the {chainId} network.</p>
-      <p className="my-2 text-gray-400">Please finalise the details.</p>
-
-      <dl className="mb-8 mt-12 divide-y divide-gray-600 rounded-xl bg-zinc-600/20 text-sm lg:col-span-7 lg:px-8 lg:py-2">
+      <p className="my-2 text-gray-400">
+        You are about to deploy a new yield farm on the {NETWORKS[chainId].chainName} network.
+      </p>
+      <p className="my-2 text-gray-400">Please confirm the details.</p>
+      <dl className="mb-8 mt-12 divide-y divide-gray-600 rounded-xl bg-zinc-600/10 text-sm lg:col-span-7 lg:px-8 lg:py-2">
         <div className="flex items-center justify-between p-4">
           <dt className="text-gray-400">Router</dt>
           <dd className="flex items-center gap-2 font-medium text-gray-200">
@@ -160,35 +255,41 @@ const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType
         <div className="flex items-center justify-between p-4">
           <dt className="text-gray-400">Pair</dt>
           <dd className="flex items-center gap-2 font-medium text-gray-200">
-            <div className="ml-4 flex items-center">
-              <TokenLogo
-                src={getTokenLogoURL(token0.address, chainId)}
-                alt={token0.name}
-                classNames="h-8 w-8 rounded-full"
-                onError={(e) => {
-                  e.currentTarget.src = getEmptyTokenLogo(chainId);
-                }}
-              />
+            {lpInfo.pending ? (
+              <SkeletonComponent className="h-6 w-52 rounded-full" />
+            ) : (
+              <>
+                <div className="ml-4 flex items-center">
+                  <TokenLogo
+                    src={getTokenLogoURL(lpInfo?.pair?.token0.address, chainId)}
+                    alt={lpInfo?.pair?.token0.name}
+                    classNames="h-8 w-8 rounded-full"
+                    onError={(e) => {
+                      e.currentTarget.src = getEmptyTokenLogo(chainId);
+                    }}
+                  />
 
-              <div className="-ml-2 mr-2">
-                <TokenLogo
-                  src={getTokenLogoURL(token1.address, chainId)}
-                  alt={token1.name}
-                  classNames="h-8 w-8 rounded-full"
-                  onError={(e) => {
-                    e.currentTarget.src = getEmptyTokenLogo(chainId);
-                  }}
-                />
-              </div>
-            </div>
+                  <div className="-ml-2 mr-2">
+                    <TokenLogo
+                      src={getTokenLogoURL(lpInfo?.pair?.token1.address, chainId)}
+                      alt={lpInfo?.pair?.token1.name}
+                      classNames="h-8 w-8 rounded-full"
+                      onError={(e) => {
+                        e.currentTarget.src = getEmptyTokenLogo(chainId);
+                      }}
+                    />
+                  </div>
+                </div>
 
-            <a
-              target="_blank"
-              className="ml-2 text-xs underline"
-              href={`https://v2.info.uniswap.org/pair/${lpAddress}`}
-            >
-              {token0.symbol}-{token1.symbol}
-            </a>
+                <a
+                  target="_blank"
+                  className="ml-2 text-xs underline"
+                  href={`https://v2.info.uniswap.org/pair/${lpAddress}`}
+                >
+                  {lpInfo?.pair?.token0.symbol}-{lpInfo?.pair?.token1.symbol}
+                </a>
+              </>
+            )}
           </dd>
         </div>
 
@@ -240,106 +341,6 @@ const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType
         </div>
       </dl>
 
-      {/* 
-      <div className="mb-5 mt-4 flex items-center justify-between text-[#FFFFFF80]">
-        {step === 2 ? (
-          <div className="text-sm  text-[#FFFFFF40]">Waiting for deploy...</div>
-        ) : step === 3 ? (
-          <div className="text-sm  text-[#2FD35DBF]">
-            <LoadingText text={"Deploying yield farm contract"} />
-          </div>
-        ) : step === 4 ? (
-          <div className="text-sm  text-[#2FD35DBF]">
-            <LoadingText text={"Adding yield farm rewards"} />
-          </div>
-        ) : step === 5 ? (
-          <div className="text-sm  text-[#2FD35DBF]">
-            <LoadingText text={"Starting yield farm"} />
-          </div>
-        ) : step === 6 ? (
-          <div className="text-sm  text-[#2FD35DBF]">Complete</div>
-        ) : (
-          ""
-        )}
-        <div className="flex items-center">
-          <div className={step > 3 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
-          <div className="h-[1px] w-5 bg-[#B9B8B8]" />
-          <div className={step > 4 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
-          <div className="h-[1px] w-5 bg-[#B9B8B8]" />
-          <div className={step > 5 ? "text-[#2FD35DBF]" : "text-[#B9B8B8]"}>{checkCircleSVG}</div>
-        </div>
-      </div>
-
-      {step === 6 ? (
-        <div className="mb-5 rounded-[30px] border border-[#FFFFFF80] px-8 py-4 font-brand text-sm  text-[#FFFFFF80]">
-          <div className="text-[#FFFFFFBF]">Summary</div>
-          <div className="mt-4 flex flex-col items-center justify-between xsm:mt-2 xsm:flex-row ">
-            <div>Yield farm contract address</div>
-            <div className="flex w-full max-w-[140px] items-center">
-              <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
-              <a href={getExplorerLink(chainId, "address", farmAddr)} target="_blank" rel="noreferrer">
-                {farmAddr.slice(0, 12)}....
-              </a>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
-            <div>Liquidity token address</div>
-            <div className="flex w-full  max-w-[140px] items-center">
-              <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
-              <a href={getExplorerLink(chainId, "address", lpInfo.address)} target="_blank" rel="noreferrer">
-                {lpInfo.address.slice(0, 12)}....
-              </a>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-col items-center justify-between xsm:mt-1 xsm:flex-row xsm:items-start">
-            <div>Yield farm reward start</div>
-            <div className=" w-full max-w-[140px] pl-7">After 100 blocks</div>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
-
-      {step !== 6 ? <div className="mb-5 h-[1px] w-full bg-[#FFFFFF80]" /> : ""}
-      <div className="mx-auto h-12 max-w-[500px]">
-        {step === 2 ? (
-          <StyledButton
-            type="primary"
-            onClick={handleDeploy}
-            disabled={
-              pending ||
-              !rewardToken ||
-              initialSupply === 0 ||
-              rewardTokenBalance < (+totalSupply.toFixed(2) * initialSupply) / 100
-            }
-          >
-            {rewardTokenBalance < (+totalSupply.toFixed(2) * initialSupply) / 100 ? `Insufficent rewards` : `Deploy`}
-          </StyledButton>
-        ) : step === 4 ? (
-          <StyledButton
-            type="primary"
-            onClick={() => handleTransferRewards(farmAddr)}
-            disabled={pending || !rewardToken || farmAddr === ""}
-          >
-            Transfer yield farm rewards
-          </StyledButton>
-        ) : step === 5 ? (
-          <StyledButton
-            type="primary"
-            onClick={() => handleStartFarming(farmAddr)}
-            disabled={pending || !rewardToken || farmAddr === ""}
-          >
-            Start yield farm
-          </StyledButton>
-        ) : step === 6 ? (
-          <StyledButton type="deployer" onClick={() => setOpen(false)}>
-            Close window
-          </StyledButton>
-        ) : (
-          <StyledButton type="deployer">Do not close this window</StyledButton>
-        )}
-      </div> */}
-
       <div className="mt-4 flex gap-2">
         <Button
           type="button"
@@ -350,8 +351,14 @@ const FarmConfirmDeploy = ({ router, lpInfo }: { router: any; lpInfo: LpInfoType
           Cancel
         </Button>
 
-        <Button type="button" onClick={() => handleDeploy()} variant="brand" className="w-full">
-          Deploy
+        <Button
+          type="button"
+          disabled={!rewardToken || initialSupply === 0 || insufficientRewards}
+          variant="brand"
+          className="w-full"
+          onClick={() => handleDeploy()}
+        >
+          {insufficientRewards ? `Insufficient rewards` : `Deploy`}
         </Button>
       </div>
     </div>

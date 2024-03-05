@@ -1,31 +1,31 @@
 import { createGlobalState } from "react-hooks-global-state";
-
 import type { LpInfoType } from "@hooks/useLPTokenInfo";
 import type { Token, TokenAmount } from "@brewlabs/sdk";
 
-// farmInfo: {
-//   chain: {
-//     id: number;
-//     name: string;
-//   };
-//   routerInfo: {
-//     address: string;
-//     factory: string;
-//     name: string;
-//   };
-//   lpInfo: LpInfoType;
-// }
+export type FarmDuration = "365" | "180" | "90" | "60";
+
+type Router = {
+  key: string;
+  id: string;
+  name: string;
+  address: `0x${string}`;
+  factory: `0x${string}`;
+};
 
 interface DeployerFarmStore {
   deployerFarmStep: "details" | "confirm" | "success";
   farmInfo: {
+    router: Router;
+    lpInfo: LpInfoType;
+    lpAddress: string;
     depositFee: number;
     withdrawFee: number;
     initialSupply: number;
     totalSupply: TokenAmount | 0;
     rewardToken: Token | undefined;
     rewardTokenAddress: string;
-    farmDuration: "365" | "180" | "90" | "60";
+    farmDuration: FarmDuration;
+    deployedFarmAddress: string;
   };
 }
 
@@ -33,6 +33,9 @@ interface DeployerFarmStore {
 const deployerFarmStore = {
   deployerFarmStep: "details",
   farmInfo: {
+    router: {},
+    lpInfo: {} as LpInfoType,
+    lpAddress: "",
     depositFee: 0,
     withdrawFee: 0,
     initialSupply: 1,
@@ -40,10 +43,23 @@ const deployerFarmStore = {
     rewardToken: undefined,
     rewardTokenAddress: "",
     farmDuration: "90",
+    deployedFarmAddress: "",
   },
 } as DeployerFarmStore;
 
 const { useGlobalState: useDeployerFarmState, setGlobalState } = createGlobalState(deployerFarmStore);
+
+export const setRouter = (router: Router) => {
+  setGlobalState("farmInfo", (v) => ({ ...v, router }));
+};
+
+export const setLpInfo = (lpInfo: LpInfoType) => {
+  setGlobalState("farmInfo", (v) => ({ ...v, lpInfo }));
+};
+
+export const setLpAddress = (lpAddress: string) => {
+  setGlobalState("farmInfo", (v) => ({ ...v, lpAddress }));
+};
 
 export const setDepositFee = (depositFee: number) => {
   setGlobalState("farmInfo", (v) => ({ ...v, depositFee }));
@@ -71,6 +87,10 @@ export const setRewardTokenAddress = (rewardTokenAddress: string) => {
 
 export const setFarmDuration = (farmDuration: "365" | "180" | "90" | "60") => {
   setGlobalState("farmInfo", (v) => ({ ...v, farmDuration }));
+};
+
+export const setDeployedFarmAddress = (deployedFarmAddress: string) => {
+  setGlobalState("farmInfo", (v) => ({ ...v, deployedFarmAddress }));
 };
 
 export const setDeployerFarmStep = (step: DeployerFarmStore["deployerFarmStep"]) => {

@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction, use } from "react";
 
 import { Check, X, PlusIcon, MinusIcon, CalendarClock, Info, AlertCircle } from "lucide-react";
 import { useActiveChainId } from "@hooks/useActiveChainId";
@@ -20,48 +20,63 @@ import { Alert, AlertTitle } from "@components/ui/alert";
 import useTotalSupply from "hooks/useTotalSupply";
 import { useCurrency } from "hooks/Tokens";
 import type { Token } from "@brewlabs/sdk";
-import type { FarmDuration } from "components/productDeployer/FarmDeployer";
-import { setDeployerFarmStep } from "state/deploy/deployerFarm.store";
+
+import type { FarmDuration } from "state/deploy/deployerFarm.store";
+
+import useLPTokenInfo from "@hooks/useLPTokenInfo";
 
 import { RadioGroup, RadioGroupItem } from "components/ui/radio-group";
 import { Label } from "@components/ui/label";
 import { LpInfoType } from "@hooks/useLPTokenInfo";
 
 import {
+  setRouter,
   useDeployerFarmState,
+  setDeployerFarmStep,
   setInitialSupply,
   setDepositFee,
   setWithdrawFee,
   setFarmDuration,
   setRewardToken,
+  setLpAddress,
 } from "state/deploy/deployerFarm.store";
 
-type FarmDetailsProps = {
-  router: any;
-  lpAddress: string;
-  lpInfo: LpInfoType;
-  setRouter: Dispatch<SetStateAction<any>>;
-  setLpAddress: Dispatch<SetStateAction<string>>;
-};
+// type FarmDetailsProps = {
+//   router: any;
+//   setRouter: Dispatch<SetStateAction<any>>;
+// };
 
 const DURATIONS = ["365", "180", "90", "60"];
 
-const FarmDetails = ({ router, lpAddress, lpInfo, setRouter, setLpAddress }: FarmDetailsProps) => {
+const FarmDetails = () => {
   const { chainId } = useActiveChainId();
   const supportedTokens = useTokenList(chainId);
-  const [{ initialSupply, depositFee, withdrawFee, rewardToken, farmDuration }] = useDeployerFarmState("farmInfo");
+  const [unsupported, setUnsupported] = useState(false);
+  const [{ lpInfo, router, initialSupply, depositFee, withdrawFee, rewardToken, farmDuration, lpAddress }] =
+    useDeployerFarmState("farmInfo");
 
-  const token0Address = isAddress(lpInfo?.pair?.token0.address);
-  const token1Address = isAddress(lpInfo?.pair?.token1.address);
-  const notSupported =
-    router?.factory?.toLowerCase() !== lpInfo?.pair?.factory?.toLowerCase() ||
-    supportedTokens
-      .filter((t) => t.chainId === chainId && t.address)
-      .filter(
-        (t) =>
-          t.address.toLowerCase() === token0Address?.toLowerCase() ||
-          t.address.toLowerCase() === token1Address?.toLowerCase()
-      ).length < 2;
+  // Sets the LP token in global state
+  useLPTokenInfo(lpAddress, chainId);
+
+  // Set unsupported if the LP token is not supported
+  useEffect(() => {
+    if (!lpInfo?.pair) return;
+
+    const token0Address = isAddress(lpInfo?.pair?.token0.address);
+    const token1Address = isAddress(lpInfo?.pair?.token1.address);
+
+    const notSupported =
+      router?.factory?.toLowerCase() !== lpInfo?.pair?.factory?.toLowerCase() ||
+      supportedTokens
+        .filter((t) => t.chainId === chainId && t.address)
+        .filter(
+          (t) =>
+            t.address.toLowerCase() === token0Address?.toLowerCase() ||
+            t.address.toLowerCase() === token1Address?.toLowerCase()
+        ).length < 2;
+
+    setUnsupported(notSupported);
+  }, [chainId, lpInfo, router?.factory, supportedTokens]);
 
   const rewardCurrency = useCurrency(rewardToken?.address);
   const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
@@ -72,7 +87,7 @@ const FarmDetails = ({ router, lpAddress, lpInfo, setRouter, setLpAddress }: Far
         e.preventDefault();
         setDeployerFarmStep("confirm");
       }}
-      className="mb-8 space-y-8"
+      className="slide-out-from-left mb-8 space-y-8 animate-out"
     >
       <div>
         <h4 className="mb-4 text-xl">Choose a network and router</h4>
@@ -87,14 +102,14 @@ const FarmDetails = ({ router, lpAddress, lpInfo, setRouter, setLpAddress }: Far
       <div>
         <header className="mb-4 flex w-full items-center justify-between">
           <h4 className="whitespace-nowrap text-xl">Select LP token pair</h4>
-          {lpInfo.pair && (
+          {lpInfo?.pair && (
             <div className="text-sm text-white">
-              <h5>{notSupported && "Provided LP token is not supported"}</h5>
-              {!notSupported && (
+              <h5>{unsupported && "Provided LP token is not supported"}</h5>
+              {!unsupported && (
                 <div className="flex items-center">
-                  <div className="relative flex w-fit items-center overflow-hidden text-ellipsis whitespace-nowrap sm:flex sm:overflow-visible">
+                  <div className="relative flex w-fit items-center overflow-hidden whitespace-nowrap animate-in slide-in-from-top sm:flex sm:overflow-visible">
                     <TokenLogo
-                      src={getTokenLogoURL(token0Address, chainId)}
+                      src={getTokenLogoURL(lpInfo.pair.token0.address, chainId)}
                       alt={lpInfo.pair.token0.name}
                       classNames="h-7 w-7 rounded-full"
                       onError={(e) => {
@@ -102,7 +117,7 @@ const FarmDetails = ({ router, lpAddress, lpInfo, setRouter, setLpAddress }: Far
                       }}
                     />
                     <TokenLogo
-                      src={getTokenLogoURL(token1Address, chainId)}
+                      src={getTokenLogoURL(lpInfo.pair.token1.address, chainId)}
                       alt={lpInfo.pair.token0.name}
                       classNames="-ml-3 h-7 w-7 rounded-full"
                       onError={(e) => {
@@ -133,9 +148,9 @@ const FarmDetails = ({ router, lpAddress, lpInfo, setRouter, setLpAddress }: Far
           />
 
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            {lpAddress.length > 2 && lpInfo.pending && <span className="loading loading-spinner loading-md"></span>}
-            {lpAddress.length > 2 && !lpInfo.pending && !lpInfo.pair && <X className="text-red-600" />}
-            {lpAddress.length > 10 && !lpInfo.pending && lpInfo.pair && <Check className="text-green-600" />}
+            {lpAddress.length > 2 && lpInfo?.pending && <span className="loading loading-spinner loading-md"></span>}
+            {lpAddress.length > 2 && !lpInfo?.pending && !lpInfo?.pair && <X className="text-red-600" />}
+            {lpAddress.length > 10 && !lpInfo?.pending && lpInfo?.pair && <Check className="text-green-600" />}
           </div>
         </div>
       </div>
@@ -264,7 +279,12 @@ const FarmDetails = ({ router, lpAddress, lpInfo, setRouter, setLpAddress }: Far
         </ul>
       </div>
 
-      <Button disabled={!lpInfo?.pair || notSupported} variant="brand" type="submit" className="mt-6 w-full">
+      <Button
+        type="submit"
+        variant="brand"
+        className="mt-6 w-full"
+        disabled={!lpInfo?.pair || unsupported || !rewardToken}
+      >
         Confirm and finalise
       </Button>
     </form>

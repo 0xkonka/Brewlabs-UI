@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ethers } from "ethers";
 
 import erc20Abi from "config/abi/erc20.json";
 import lpTokenAbi from "config/abi/lpToken.json";
 import multicall from "utils/multicall";
 
-import { useSlowRefreshEffect } from "./useRefreshEffect";
+import { setLpInfo } from "state/deploy/deployerFarm.store";
+
+import { useBigSlowRefreshEffect } from "./useRefreshEffect";
 
 type PairDataType = {
-  address: string;
   chainId: number;
+  address: string;
   factory: string;
   token0: {
     address: string;
@@ -105,22 +107,28 @@ function useLPTokenInfo(address: string, chainId: number): { pair: PairDataType;
         },
         totalSupply: result[2][0] / Math.pow(10, 18),
         factory: result[3][0],
-      };
+      } as PairDataType;
+
       setPair(data);
     } catch (e) {
       setPair(null);
-      console.log(e);
     }
     setPending(false);
   }
 
-  useSlowRefreshEffect(() => {
+  useBigSlowRefreshEffect(() => {
     if (!ethers.utils.isAddress(address)) {
       setPair(null);
       return;
     }
     fetchInfo();
   }, [address]);
+
+  // Set global state store
+  useMemo(() => {
+    setLpInfo({ pair, pending });
+  }, [pair, pending]);
+
   return { pair, pending };
 }
 
