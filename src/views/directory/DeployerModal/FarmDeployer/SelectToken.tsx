@@ -37,7 +37,7 @@ const SelectToken = ({ setStep, router, setRouter, lpAddress, setLpAddress, lpIn
         </div>
         <div>
           <div className="mb-1 text-white">2. Select router:</div>
-          <RouterSelect router={router} setRouter={setRouter} type={"deploy"} />
+          <RouterSelect id="router-select" router={router} setRouter={setRouter} type={"deploy"} />
         </div>
       </div>
 
