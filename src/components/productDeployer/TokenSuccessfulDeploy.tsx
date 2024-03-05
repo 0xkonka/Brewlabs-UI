@@ -13,7 +13,7 @@ import { BridgeToken } from "config/constants/types";
 import { useDeployerState } from "state/deploy/deployer.store";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 
-const SuccessfulDeploy = () => {
+const TokenSuccessfulDeploy = () => {
   const { connector, address } = useAccount();
   const { chainId } = useActiveChainId();
   const [isCopied, setIsCopied] = useState(false);
@@ -91,4 +91,4 @@ const SuccessfulDeploy = () => {
   );
 };
 
-export default SuccessfulDeploy;
+export default TokenSuccessfulDeploy;
