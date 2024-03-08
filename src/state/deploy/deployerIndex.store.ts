@@ -3,19 +3,7 @@ import { toast } from "react-toastify";
 import { WNATIVE } from "@brewlabs/sdk";
 import type { Token } from "@brewlabs/sdk";
 import { createGlobalState } from "react-hooks-global-state";
-
 import { indexDeployerSchema } from "config/schemas/indexDeployerSchema";
-
-// type Token = {
-//   chainId: number;
-//   decimals: number;
-//   symbol: string;
-//   name: string;
-//   isNative: boolean;
-//   isToken: boolean;
-//   address: string;
-//   logo: string;
-// };
 
 const getWrappedNativeToken = (token: Token) => (token.isNative ? WNATIVE[token.chainId] : token);
 
