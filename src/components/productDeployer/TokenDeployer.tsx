@@ -1,13 +1,13 @@
 import { Card, CardContent } from "@components/ui/card";
 
-import { useDeployerState } from "state/deploy/deployer.store";
+import { useDeployerTokenState } from "state/deploy/deployerToken.store";
 
 import TokenDetails from "@components/productDeployer/TokenDetails";
 import TokenDeployConfirm from "@components/productDeployer/TokenDeployConfirm";
 import TokenSuccessfulDeploy from "@components/productDeployer/TokenSuccessfulDeploy";
 
 const TokenDeployer = () => {
-  const [deployerStep] = useDeployerState("deployerStep");
+  const [deployerStep] = useDeployerTokenState("deployerStep");
 
   return (
     <Card className="max-w-3xl">

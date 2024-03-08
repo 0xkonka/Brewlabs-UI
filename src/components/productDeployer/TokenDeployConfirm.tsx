@@ -11,7 +11,8 @@ import { useTokenFactory } from "state/deploy/hooks";
 import { useFactory } from "hooks/useFactory";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import TokenFactoryAbi from "config/abi/token/factory.json";
-import { useDeployerState, setDeployedAddress, setDeployerStep } from "state/deploy/deployer.store";
+import { NETWORKS } from "config/constants/networks";
+import { useDeployerTokenState, setDeployedAddress, setDeployerStep } from "state/deploy/deployerToken.store";
 import TokenSummary from "components/productDeployer/TokenSummary";
 
 const TokenDeployConfirm = () => {
@@ -22,7 +23,7 @@ const TokenDeployConfirm = () => {
 
   const [isDeploying, setIsDeploying] = useState(false);
   const [{ tokenName, tokenImage, tokenDescription, tokenSymbol, tokenDecimals, tokenTotalSupply }] =
-    useDeployerState("tokenInfo");
+    useDeployerTokenState("tokenInfo");
 
   // const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
 
@@ -69,7 +70,8 @@ const TokenDeployConfirm = () => {
 
       <h4 className="mb-6 text-xl">Summary</h4>
 
-      <p className="my-2">You are about to deploy a new token contract on the __insert name__ network.</p>
+      <p className="my-2">You are about to deploy a new token on the {NETWORKS[chainId].chainName} network.</p>
+
       <p className="my-2">Please confirm the details.</p>
 
       <TokenSummary />

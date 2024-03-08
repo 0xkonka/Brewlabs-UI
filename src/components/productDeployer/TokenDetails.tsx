@@ -3,19 +3,24 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Upload } from "lucide-react";
-import ChainSelect from "views/swap/components/ChainSelect";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Textarea } from "@components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 import { Checkbox } from "components/ui/checkbox";
+import ChainSelect from "views/swap/components/ChainSelect";
 
 import { tokenDeployerSchema } from "config/schemas/tokenDeployerSchema";
-import { useDeployerState, setTokenInfo, setTokenImageDisplayUrl, setDeployerStep } from "state/deploy/deployer.store";
+import {
+  useDeployerTokenState,
+  setTokenInfo,
+  setTokenImageDisplayUrl,
+  setDeployerStep,
+} from "state/deploy/deployerToken.store";
 
 const TokenDetails = () => {
-  const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
+  const [tokenImageDisplayUrl] = useDeployerTokenState("tokenImageDisplayUrl");
 
   const form = useForm<z.infer<typeof tokenDeployerSchema>>({
     resolver: zodResolver(tokenDeployerSchema),
