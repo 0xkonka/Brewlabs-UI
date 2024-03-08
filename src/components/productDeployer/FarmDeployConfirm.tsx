@@ -31,33 +31,6 @@ import { useDeployerFarmState, setDeployerFarmStep, setDeployedFarmAddress } fro
 import type { Token } from "@brewlabs/sdk";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 
-// const deploySteps = [
-//   {
-//     step: "pre-submit",
-//     description: "Not yet deployed",
-//   },
-//   {
-//     step: "waiting",
-//     description: "Waiting to deploy",
-//   },
-//   {
-//     step: "deploying",
-//     description: "Deploying yield farm contract",
-//   },
-//   {
-//     step: "rewards",
-//     description: "Adding yield farm rewards",
-//   },
-//   {
-//     step: "starting",
-//     description: "Starting yield farm",
-//   },
-//   {
-//     step: "complete",
-//     description: "Complete",
-//   },
-// ] as { step: DeployStepType; description: string }[];
-
 const deploySteps = {
   preSubmit: {
     step: "pre-submit",
@@ -243,7 +216,7 @@ const FarmConfirmDeploy = () => {
           <dd className="flex items-center gap-2 font-medium text-gray-200">
             <img
               src={getDexLogo(router?.id)}
-              alt={""}
+              alt={router?.name}
               className="h-8 w-8 rounded-full shadow-[0px_0px_10px_rgba(255,255,255,0.5)]"
               onError={(e) => {
                 e.currentTarget.src = getEmptyTokenLogo(chainId);

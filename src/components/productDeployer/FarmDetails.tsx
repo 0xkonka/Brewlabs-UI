@@ -1,7 +1,6 @@
-import { useEffect, useState, type Dispatch, type SetStateAction, use } from "react";
-
+import { useEffect, useState } from "react";
 import { Check, X, PlusIcon, MinusIcon, CalendarClock, Info, AlertCircle } from "lucide-react";
-import { useActiveChainId } from "@hooks/useActiveChainId";
+
 import { isAddress } from "utils";
 import { getEmptyTokenLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -10,24 +9,23 @@ import ChainSelect from "views/swap/components/ChainSelect";
 import TokenSelect from "views/directory/DeployerModal/TokenSelect";
 
 import RouterSelect from "views/directory/DeployerModal/RouterSelect";
-import TokenLogo from "@components/logo/TokenLogo";
-import { useTokenList } from "state/home/hooks";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Alert, AlertTitle } from "@components/ui/alert";
 
+import { useActiveChainId } from "@hooks/useActiveChainId";
 import useTotalSupply from "hooks/useTotalSupply";
 import { useCurrency } from "hooks/Tokens";
-import type { Token } from "@brewlabs/sdk";
+import useLPTokenInfo from "@hooks/useLPTokenInfo";
+import { useTokenList } from "state/home/hooks";
 
+import type { Token } from "@brewlabs/sdk";
 import type { FarmDuration } from "state/deploy/deployerFarm.store";
 
-import useLPTokenInfo from "@hooks/useLPTokenInfo";
-
+import TokenLogo from "@components/logo/TokenLogo";
 import { RadioGroup, RadioGroupItem } from "components/ui/radio-group";
 import { Label } from "@components/ui/label";
-import { LpInfoType } from "@hooks/useLPTokenInfo";
 
 import {
   setRouter,
@@ -40,11 +38,6 @@ import {
   setRewardToken,
   setLpAddress,
 } from "state/deploy/deployerFarm.store";
-
-// type FarmDetailsProps = {
-//   router: any;
-//   setRouter: Dispatch<SetStateAction<any>>;
-// };
 
 const DURATIONS = ["365", "180", "90", "60"];
 
