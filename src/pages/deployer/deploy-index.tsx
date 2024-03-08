@@ -2,6 +2,7 @@ import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import WordHighlight from "components/text/WordHighlight";
+import DeployerIndex from "components/productDeployer/IndexDeployer";
 
 export default function DeployToken() {
   return (
@@ -25,7 +26,9 @@ export default function DeployToken() {
         </p>
       </PageHeader>
 
-      <Container className="pb-4 font-brand">Coming</Container>
+      <Container className="pb-4 font-brand">
+        <DeployerIndex />
+      </Container>
     </PageWrapper>
   );
 }
