@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 import { Token } from "@brewlabs/sdk";
 import { getAddress } from "@ethersproject/address";
@@ -26,7 +25,7 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
       supportedTokens
         .filter((t) => isAddress(t.address) && t.chainId === chainId && t.address)
         .map((t) => new Token(chainId, getAddress(t.address), t.decimals, t.symbol, t.name, undefined, t.logoURI)),
-    [supportedTokens.length]
+    [chainId, supportedTokens]
   );
 
   function onUserInput(input, currency) {}
@@ -65,7 +64,7 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
             </span>
           </div>
         ) : (
-          <span className="flex-1 text-sm font-medium">Select Token...</span>
+          <span className="pl-4 pr-1 text-gray-500">Select a token...</span>
         )}
         <ChevronDownIcon className="ml-2 h-5 w-5 dark:text-brand" />
       </button>
