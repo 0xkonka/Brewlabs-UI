@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, X, PlusIcon, MinusIcon, CalendarClock, Info, AlertCircle } from "lucide-react";
+import { Check, X, CalendarClock, Info, AlertCircle } from "lucide-react";
 
 import { isAddress } from "utils";
 import { getEmptyTokenLogo, numberWithCommas } from "utils/functions";
@@ -26,6 +26,7 @@ import type { FarmDuration } from "state/deploy/deployerFarm.store";
 import TokenLogo from "@components/logo/TokenLogo";
 import { RadioGroup, RadioGroupItem } from "components/ui/radio-group";
 import { Label } from "@components/ui/label";
+import { IncrementorInput } from "@components/ui/IncrementorInput";
 
 import {
   setRouter,
@@ -93,7 +94,7 @@ const FarmDetails = () => {
       <div className="divider" />
 
       <div>
-        <header className="mb-4 flex w-full items-center justify-between">
+        <header className="mb-4 flex w-full flex-wrap items-center justify-between">
           <h4 className="whitespace-nowrap text-xl">Select LP token pair</h4>
           {lpInfo?.pair && (
             <div className="text-sm text-white">
@@ -157,7 +158,7 @@ const FarmDetails = () => {
           defaultChecked={true}
           defaultValue={farmDuration}
           aria-labelledby="farm-duration-label"
-          className="grid gap-4 md:grid-cols-4"
+          className="grid gap-4 sm:grid-cols-4"
           onValueChange={(value) => setFarmDuration(value as FarmDuration)}
         >
           {DURATIONS.map((d) => (
@@ -182,26 +183,20 @@ const FarmDetails = () => {
           <h4 className="mb-4 text-base">Select the token reward for the yield farm</h4>
           <TokenSelect selectedCurrency={rewardToken} setSelectedCurrency={setRewardToken} />
         </div>
-        <div className="flex justify-between">
-          <div>Reward supply for {farmDuration} Days</div>
-          <div className="flex items-center">
-            <button
-              type="button"
-              className="rounded-full p-1 ring-1 ring-gray-200/10 transition-all hover:bg-gray-500/30 hover:text-gray-200"
-              onClick={() => setInitialSupply(+Math.min(3, initialSupply + 0.1).toFixed(2))}
-            >
-              <PlusIcon className="h-auto w-4" />
-            </button>
-            <div className="mx-2">{initialSupply.toFixed(2)}%</div>
-            <button
-              type="button"
-              className="rounded-full p-1 ring-1 ring-gray-200/10 transition-all hover:bg-gray-500/30 hover:text-gray-200"
-              onClick={() => setInitialSupply(+Math.max(0, initialSupply - 0.1).toFixed(2))}
-            >
-              <MinusIcon className="h-auto w-4" />
-            </button>
-          </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="initial-supply">Reward supply for {farmDuration} Days</Label>
+          <IncrementorInput
+            min={0}
+            max={1}
+            symbol="%"
+            step={0.01}
+            id="initial-supply"
+            defaultValue={initialSupply}
+            onChange={(e) => setInitialSupply(+e.target.value)}
+          />
         </div>
+
         {rewardToken && (
           <Alert className="my-8">
             <AlertCircle className="h-4 w-4" />
@@ -220,54 +215,38 @@ const FarmDetails = () => {
 
         <ul className="space-y-6">
           <li className="flex items-center justify-between">
-            <div className="flex gap-2">
+            <Label htmlFor="deposit-fee">
               Deposit fee
               <div className="tooltip -mt-2" data-tip="Deposit fees are sent to deployer address.">
                 <Info className="w-4" />
               </div>
-            </div>
-            <div className="flex items-center">
-              <button
-                type="button"
-                className="rounded-full p-1 ring-1 ring-gray-200/10 transition-all hover:bg-gray-500/30 hover:text-gray-200"
-                onClick={() => setDepositFee(+Math.min(2, depositFee + 0.1).toFixed(2))}
-              >
-                <PlusIcon className="h-auto w-4" />
-              </button>
-              <div className="mx-2">{depositFee.toFixed(2)}%</div>
-              <button
-                type="button"
-                className="rounded-full p-1 ring-1 ring-gray-200/10 transition-all hover:bg-gray-500/30 hover:text-gray-200"
-                onClick={() => setDepositFee(+Math.max(0, depositFee - 0.1).toFixed(2))}
-              >
-                <MinusIcon className="h-auto w-4" />
-              </button>
-            </div>
+            </Label>
+            <IncrementorInput
+              min={0}
+              max={2}
+              symbol="%"
+              step={0.01}
+              id="deposit-fee"
+              defaultValue={depositFee}
+              onChange={(e) => setDepositFee(+e.target.value)}
+            />
           </li>
           <li className="flex items-center justify-between">
-            <div className="flex gap-2">
+            <Label htmlFor="withdraw-fee">
               Withdrawal fee
               <div className="tooltip -mt-2" data-tip="Withdraw fees are sent to deployer address.">
                 <Info className="w-4" />
               </div>
-            </div>
-            <div className="flex items-center">
-              <button
-                type="button"
-                className="rounded-full p-1 ring-1 ring-gray-200/10 transition-all hover:bg-gray-500/30 hover:text-gray-200"
-                onClick={() => setWithdrawFee(+Math.min(2, withdrawFee + 0.1).toFixed(2))}
-              >
-                <PlusIcon className="h-auto w-4" />
-              </button>
-              <div className="mx-2">{withdrawFee.toFixed(2)}%</div>
-              <button
-                type="button"
-                className="rounded-full p-1 ring-1 ring-gray-200/10 transition-all hover:bg-gray-500/30 hover:text-gray-200"
-                onClick={() => setWithdrawFee(+Math.max(0, withdrawFee - 0.1).toFixed(2))}
-              >
-                <MinusIcon className="h-auto w-4" />
-              </button>
-            </div>
+            </Label>
+            <IncrementorInput
+              min={0}
+              max={3}
+              symbol="%"
+              step={0.01}
+              id="withdraw-fee"
+              defaultValue={withdrawFee}
+              onChange={(e) => setWithdrawFee(+e.target.value)}
+            />
           </li>
         </ul>
       </div>
