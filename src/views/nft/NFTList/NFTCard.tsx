@@ -37,7 +37,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const pool = data.find((p) => p.chainId === nft.chainId);
   const flaskNft = flaskNfts.find((p) => p.chainId === nft.chainId);
 
-  const { onStake, onUnstakeNft, onClaim } = useNftStaking(pool?.performanceFee ?? "0");
+  const { onStake, onClaim, onUnstake } = useNftStaking(pool?.performanceFee ?? "0");
 
   const [pending, setPending] = useState(false);
   const ethPrice = useTokenPrice(
@@ -52,9 +52,9 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const apr =
     flaskNft.mintFee && pool?.totalStaked
       ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
-        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
-          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
-          (pool?.totalStaked ?? 0))
+      ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
+        +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+        (pool?.totalStaked ?? 0))
       : 0;
 
   const stakingDate = new Date(1696118400000); // Oct 01 2023 00:00:00 GMT
@@ -100,7 +100,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
 
     setPending(true);
     try {
-      await onUnstakeNft(nft.tokenId);
+      await onUnstake(1);
 
       dispatch(fetchNftUserDataAsync(chainId, account));
       toast.success(`Brewlabs Flask NFT was unstaked and Brewlabs Mirror NFT was burned.`);
