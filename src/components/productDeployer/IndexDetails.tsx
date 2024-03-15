@@ -187,8 +187,12 @@ const IndexDetails = () => {
           type="submit"
           variant="brand"
           className="w-full"
-          disabled={!isSupportedNetwork || tokens.length == 0 || tokens.filter((t) => !t).length > 0}
+          disabled={
+            !commissionWallet || !isSupportedNetwork || tokens.length == 0 || tokens.filter((t) => !t).length > 0
+          }
         >
+          {!isSupportedNetwork && "Unsupported network"}
+          {!commissionWallet && "Connect wallet to continue"}
           Confirm and finalise
         </Button>
       </form>

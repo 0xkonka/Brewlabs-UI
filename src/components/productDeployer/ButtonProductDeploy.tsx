@@ -24,12 +24,16 @@ const productDeployLinks = [
     value: "/deployer/deploy-index",
     label: "Index",
   },
+  {
+    value: "/deployer/deploy-pool",
+    label: "Staking Pool",
+  },
 ];
 
 const ButtonProductDeploy = () => {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

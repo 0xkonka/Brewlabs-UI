@@ -180,7 +180,7 @@ const FarmDetails = () => {
       <div>
         <h3 className="mb-4 text-xl">Rewards</h3>
         <div className="my-6">
-          <h4 className="mb-4 text-base">Select the token reward for the yield farm</h4>
+          <h4 className="mb-4 text-base">Select the reward token for the yield farm</h4>
           <TokenSelect selectedCurrency={rewardToken} setSelectedCurrency={setRewardToken} />
         </div>
 
