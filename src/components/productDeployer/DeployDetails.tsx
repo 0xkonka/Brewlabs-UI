@@ -3,33 +3,34 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Upload } from "lucide-react";
-
 import ChainSelect from "views/swap/components/ChainSelect";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Textarea } from "@components/ui/textarea";
-import { Checkbox } from "components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
+
+import { Checkbox } from "components/ui/checkbox";
 
 import { tokenDeployerSchema } from "config/schemas/tokenDeployerSchema";
 import { useDeployerState, setTokenInfo, setTokenImageDisplayUrl, setDeployerStep } from "state/deploy/deployer.store";
 
 const DeployDetails = () => {
   const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
-  const [
-    {
-      tokenName,
-      tokenImage,
-      tokenDescription,
-      tokenSymbol,
-      tokenDecimals,
-      tokenTotalSupply,
-      tokenImmutable,
-      tokenRevokeFreeze,
-      tokenRevokeMint,
-    },
-  ] = useDeployerState("tokenInfo");
+  const [{
+    tokenName,
+    tokenImage,
+    tokenDescription,
+    tokenSymbol,
+    tokenDecimals,
+    tokenTotalSupply,
+    tokenImmutable,
+    tokenRevokeFreeze,
+    tokenRevokeMint,
+    // tokenBurnPercentage
+  }] = useDeployerState("tokenInfo");
 
   const form = useForm<z.infer<typeof tokenDeployerSchema>>({
     resolver: zodResolver(tokenDeployerSchema),
@@ -39,10 +40,11 @@ const DeployDetails = () => {
       tokenDecimals: tokenDecimals ?? 9,
       tokenTotalSupply: tokenTotalSupply ?? 1000,
       tokenImage: tokenImage ?? undefined,
-      tokenDescription: tokenDescription,
+      tokenDescription: tokenDescription ?? "token Description",
       tokenImmutable: tokenImmutable ?? false,
       tokenRevokeFreeze: tokenRevokeFreeze ?? false,
       tokenRevokeMint: tokenRevokeMint ?? false,
+      // tokenBurnPercentage: tokenBurnPercentage ?? "0",
     },
   });
 

@@ -152,7 +152,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
   }, [router.events]);
 
   /// Solana
-  const solNetwork = WalletAdapterNetwork.Devnet;
+  const solNetwork = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(solNetwork), [solNetwork]);
   // initialise all the wallets you want to use
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new TorusWalletAdapter(), new LedgerWalletAdapter()], []);
