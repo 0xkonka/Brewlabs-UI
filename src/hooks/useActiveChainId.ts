@@ -1,8 +1,7 @@
-import { AugmentedChainId } from './../config/constants/networks';
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
-import { useNetwork } from "wagmi";
+import { Chain, useNetwork } from "wagmi";
 
 import { bsc } from "contexts/wagmi";
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
@@ -46,7 +45,7 @@ export function useLocalNetworkChain() {
   return undefined;
 }
 
-export const useActiveChainId = (): { chainId: AugmentedChainId; isWrongNetwork: any; isNotMatched: any; isLoading: any } => {
+export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isNotMatched: any; isLoading: any } => {
   const { chain } = useNetwork();
   const localChainId = useLocalNetworkChain();
   const queryChainId = useQueryChainId();

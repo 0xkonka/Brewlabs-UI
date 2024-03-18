@@ -27,7 +27,7 @@ export const BigNumberFormat = (str: any, decimals: number = 2) => {
 export function getBlockExplorerLink(
   data: string | number,
   type: "transaction" | "token" | "address" | "block" | "countdown",
-  chainId: ChainId | AugmentedChainId = ChainId.ETHEREUM
+  chainId: AugmentedChainId = ChainId.ETHEREUM
 ): string {
   switch (type) {
     case "transaction": {
@@ -48,7 +48,7 @@ export function getBlockExplorerLink(
   }
 }
 
-export const getBlockExplorerLogo = (chainId: ChainId | AugmentedChainId = ChainId.ETHEREUM) => {
+export const getBlockExplorerLogo = (chainId: AugmentedChainId = ChainId.ETHEREUM) => {
   return `/images/explorer/${EXPLORER_NAMES[chainId].toLowerCase()}.png`;
 };
 
