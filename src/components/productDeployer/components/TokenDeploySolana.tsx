@@ -66,6 +66,16 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
     []
   );
 
+  console.log('tokenName', tokenName)
+  console.log('tokenImage', tokenImage)
+  console.log('tokenDescription', tokenDescription)
+  console.log('tokenSymbol', tokenSymbol)
+  console.log('tokenDecimals', tokenDecimals)
+  console.log('tokenTotalSupply', tokenTotalSupply)
+  console.log('tokenImmutable', tokenImmutable)
+  console.log('tokenRevokeFreeze', tokenRevokeFreeze)
+  console.log('tokenRevokeMint', tokenRevokeMint)
+
   const handleTokenDeploySolana = useCallback(async () => {
     // Generate new keypair for Mint Account
     const mintKeypair = Keypair.generate();
