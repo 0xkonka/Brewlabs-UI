@@ -62,7 +62,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
   ] = useDeployerState("tokenInfo");
 
   const umi = useMemo(
-    () => createUmi(clusterApiUrl("devnet")).use(nftStorageUploader({ token: NFT_STORAGE_TOKEN })),
+    () => createUmi(clusterApiUrl("mainnet-beta")).use(nftStorageUploader({ token: NFT_STORAGE_TOKEN })),
     []
   );
 
@@ -234,9 +234,18 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
 
       const signature = await sendTransaction(transaction, connection, { signers: [mintKeypair] });
 
-      toast.success(
-        `Transaction: https://solana.fm/tx/${signature}?cluster=devnet-solana\nMint Account: https://solana.fm/address/${mint}?cluster=devnet-solana`
+      const ToastLink = () => (
+        <a
+          href={`https://solana.fm/tx/${signature}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-center rounded-md bg-dark px-4 py-2 font-brand text-base font-bold tracking-wider text-brand shadow-sm outline-none transition hover:bg-brand hover:text-dark"
+        >
+          {`https://solana.fm/tx/${signature}`}
+        </a>
       );
+
+      toast.success(ToastLink);
       setIsDeploying(false);
       setDeployedAddress(mint.toString());
       setDeployerStep("success");
