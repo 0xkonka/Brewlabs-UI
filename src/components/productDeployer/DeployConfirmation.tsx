@@ -14,9 +14,6 @@ const DeployConfirmation = () => {
 
   const { isSolanaNetwork } = useSolanaNetwork();
 
-  console.log('chainId', chainId)
-  console.log('isSolanaNetwork', isSolanaNetwork)
-
   return (
     <div className={`mx-auto my-8 max-w-xl ${isDeploying && "animate-pulse"}`}>
       {isDeploying && isSolanaNetwork ? (
@@ -33,7 +30,7 @@ const DeployConfirmation = () => {
         <TokenSummary />
 
         {
-          chainId === (900 as ChainId) ?
+          isSolanaNetwork === true ?
             <TokenDeploySolana setIsDeploying={setIsDeploying} /> :
             <TokenDeployEVM setIsDeploying={setIsDeploying}/>
         }
