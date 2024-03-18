@@ -12,7 +12,11 @@ const DeployConfirmation = () => {
 
   const [isDeploying, setIsDeploying] = useState(false);
 
-  const { isSolanaNetwork } = useSolanaNetwork();
+  const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
+
+  if (chainId === (900 as ChainId)) {
+    setIsSolanaNetwork(true);
+  } else setIsSolanaNetwork(false);
 
   console.log('chainId', chainId)
   console.log('isSolanaNetwork', isSolanaNetwork)
