@@ -90,7 +90,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
                 <p className="text-sm font-medium text-gray-100">{network.name}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-500">
                   Current price: {` $`}
-                  {network.id == (900 as ChainId) || network.id == (901 as ChainId)
+                  {network.id == (900 as ChainId)
                     ? "Solana token value"
                     : tokenPrices[
                         getCurrencyId(

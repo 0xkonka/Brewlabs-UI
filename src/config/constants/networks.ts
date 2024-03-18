@@ -23,7 +23,7 @@ export type AugmentedChainId = ChainId | ExtendedChainId;
 
 export const SupportedChains = [bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli];
 
-const customChainIds = [900, 901]; // New custom chain IDs to be added
+const customChainIds = [900]; // New custom chain IDs to be added
 
 export const SUPPORTED_CHAIN_IDS = [
   ...SupportedChains.map((chain) => chain.id),
@@ -139,7 +139,7 @@ export const CHAIN_LABLES = {
   [ChainId.BSC_TESTNET]: "BSC Testnet",
 
   900: "Solana",
-  901: "Solana Devnet",
+  // 901: "Solana Devnet",
 };
 
 export const CHAIN_ICONS = {
@@ -158,7 +158,7 @@ export const CHAIN_ICONS = {
   324: "/images/networks/zksync.png",
 
   900: "/images/networks/Solana_logo.png",
-  901: "/images/networks/solana.png",
+  // 901: "/images/networks/solana.png",
 };
 
 export const EXPLORER_LOGO = {

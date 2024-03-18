@@ -40,7 +40,7 @@ export function useLocalNetworkChain() {
   const chainId = +(sessionChainId || queryChainId);
   if (isChainSupported(chainId)) {
     return chainId;
-  } else if (chainId === 900 || chainId === 901) return chainId;
+  } else if (chainId === 900 ) return chainId;
 
   return undefined;
 }
@@ -54,7 +54,7 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
 
   const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
   useEffect(() => {
-    if (queryChainId === 900 || queryChainId === 901) setIsSolanaNetwork(true);
+    if (queryChainId === 900) setIsSolanaNetwork(true);
     else setIsSolanaNetwork(false);
   }, [queryChainId, setIsSolanaNetwork]);
 
