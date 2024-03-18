@@ -66,6 +66,8 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
     []
   );
 
+  console.log('umi', umi)
+
   console.log('tokenName', tokenName)
   console.log('tokenImage', tokenImage)
   console.log('tokenDescription', tokenDescription)
@@ -78,6 +80,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
 
   const handleTokenDeploySolana = useCallback(async () => {
     // Generate new keypair for Mint Account
+    console.log("handleTokenDeploySolanaStart")
     const mintKeypair = Keypair.generate();
     // Address for Mint Account
     const mint = mintKeypair.publicKey;
@@ -243,6 +246,8 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
       // transaction.recentBlockhash = blockhash;
 
       const signature = await sendTransaction(transaction, connection, { signers: [mintKeypair] });
+
+      console.log("handleTokenDeploySolanaEND")
 
       const ToastLink = () => (
         <a

@@ -67,7 +67,7 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
       isLoading: true,
     };
   // const chainId = localChainId ?? chain?.id ?? (queryChainId <= 0 ? bsc.id : queryChainId);
-  const chainId = localChainId ?? (queryChainId <= 0 ? 901 : queryChainId);
+  const chainId = localChainId ?? (queryChainId <= 0 ? 900 : queryChainId);
 
   return {
     chainId,
