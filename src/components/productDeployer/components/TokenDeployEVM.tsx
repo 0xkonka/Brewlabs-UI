@@ -17,7 +17,11 @@ interface TokenDeployEVMProps {
 
 const TokenDeployEVM = ({ setIsDeploying }: TokenDeployEVMProps) => {
   const { chain: EVMChain } = useNetwork();
-  const { chainId, isLoading } = useActiveChainId();
+  const { chainId } = useActiveChainId();
+
+  console.log("TOkendeployEVM")
+  console.log("EVMChain", EVMChain.id);
+  console.log("chainId", chainId);
 
   const [
     {

@@ -37,7 +37,7 @@ const DeployConfirmation = () => {
         <TokenSummary />
 
         {
-          isSolanaNetwork === true ?
+          (chainId === (900 as ChainId)) ?
             <TokenDeploySolana setIsDeploying={setIsDeploying} /> :
             <TokenDeployEVM setIsDeploying={setIsDeploying}/>
         }
