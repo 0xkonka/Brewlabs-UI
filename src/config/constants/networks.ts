@@ -54,13 +54,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  deployer: [
-    ChainId.ETHEREUM,
-    ChainId.BSC_MAINNET,
-    ChainId.POLYGON,
-    ChainId.ARBITRUM,
-    ExtendedChainId.SOLANA,
-  ],
+  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.ARBITRUM, ExtendedChainId.SOLANA],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
@@ -107,6 +101,7 @@ export const EXPLORER_URLS = {
   [ChainId.BSC_MAINNET]: "https://bscscan.com",
   [ChainId.POLYGON]: "https://polygonscan.com",
   [ChainId.FANTOM]: "https://ftmscan.com",
+  [ExtendedChainId.SOLANA]: "https://solscan.io",
 };
 
 export const EXPLORER_API_URLS = {

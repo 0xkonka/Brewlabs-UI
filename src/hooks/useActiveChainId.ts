@@ -40,7 +40,7 @@ export function useLocalNetworkChain() {
   const chainId = +(sessionChainId || queryChainId);
   if (isChainSupported(chainId)) {
     return chainId;
-  } else if (chainId === 900 ) return chainId;
+  } else if (chainId === 900) return chainId;
 
   return undefined;
 }
@@ -52,11 +52,16 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
   const isNotMatched = useMemo(() => chain && localChainId && chain.id !== localChainId, [chain, localChainId]);
   // const isNotMatched = false;
 
-  const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
+  const { setIsSolanaNetwork } = useSolanaNetwork();
   useEffect(() => {
     if (queryChainId === 900) setIsSolanaNetwork(true);
     else setIsSolanaNetwork(false);
   }, [queryChainId, setIsSolanaNetwork]);
+
+  const chainId = useMemo(() => {
+    const chainId = localChainId ?? (queryChainId <= 0 ? 900 : queryChainId);
+    return chainId;
+  }, [localChainId, queryChainId]);
 
   if (localChainId == undefined && queryChainId <= 0)
     return {
@@ -67,7 +72,6 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
       isLoading: true,
     };
   // const chainId = localChainId ?? chain?.id ?? (queryChainId <= 0 ? bsc.id : queryChainId);
-  const chainId = localChainId ?? (queryChainId <= 0 ? 900 : queryChainId);
 
   return {
     chainId,
