@@ -61,8 +61,10 @@ const DeployDetails = () => {
   };
 
   const onSubmit = (data: z.infer<typeof tokenDeployerSchema>) => {
+    console.log('data', data)
     // Store the form data in deployer store
     setTokenInfo(data);
+    console.log("asdf")
     // Progress to the confirm step
     setDeployerStep("confirm");
   };
