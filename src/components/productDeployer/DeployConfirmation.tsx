@@ -14,6 +14,9 @@ const DeployConfirmation = () => {
 
   const { isSolanaNetwork } = useSolanaNetwork();
 
+  console.log('chainId', chainId)
+  console.log('isSolanaNetwork', isSolanaNetwork)
+
   return (
     <div className={`mx-auto my-8 max-w-xl ${isDeploying && "animate-pulse"}`}>
       {isDeploying && isSolanaNetwork ? (

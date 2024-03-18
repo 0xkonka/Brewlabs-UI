@@ -31,9 +31,7 @@ const deployerStore = {
 const { useGlobalState: useDeployerState, setGlobalState } = createGlobalState(deployerStore);
 
 export const setTokenInfo = (tokenInfo: z.infer<typeof tokenDeployerSchema>) => {
-  console.log("qwqweq")
   setGlobalState("tokenInfo", () => tokenInfo);
-  console.log("qwqweq1")
 };
 
 export const setDeployerStep = (step: DeployerStore["deployerStep"]) => {
