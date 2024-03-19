@@ -13,6 +13,7 @@ const DeployConfirmation = () => {
   const { isSolanaNetwork } = useSolanaNetwork();
 
   const queryChainId = useQueryChainId();
+  
 
   return (
     <div className={`mx-auto my-8 max-w-xl ${isDeploying && "animate-pulse"}`}>
