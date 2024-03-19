@@ -152,7 +152,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
   }, [router.events]);
 
   /// Solana
-  // const solNetwork = WalletAdapterNetwork.Mainnet;
+  // const solNetwork = WalletAdapterNetwork.Devnet;
   const solNetwork =
     "https://neat-attentive-wave.solana-mainnet.quiknode.pro/185b6652ba12a8dc5c2eba6b41d38fdafbe938d2/";
   const solNetworkwss =
