@@ -6,7 +6,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useDeployerState, setDeployedAddress, setDeployerStep } from "state/deploy/deployer.store";
 ///Solana
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Keypair, Transaction, SystemProgram, clusterApiUrl } from "@solana/web3.js";
+import { Keypair, Transaction, SystemProgram, clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
@@ -34,7 +34,7 @@ import {
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { nftStorageUploader } from "@metaplex-foundation/umi-uploader-nft-storage";
 import { createGenericFileFromBrowserFile } from "@metaplex-foundation/umi";
-import { NFT_STORAGE_TOKEN } from "config/constants";
+import { NFT_STORAGE_TOKEN, TREASURY_ADDRESS_SOLANA } from "config/constants";
 
 interface TokenDeploySolanaProps {
   setIsDeploying: (args: boolean) => void;
@@ -67,6 +67,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
   );
 
   console.log('ToeknDeploy Solana')
+  const DEPLOY_FEE = 0.5 // SOL
 
   const handleTokenDeploySolana = useCallback(async () => {
     // Generate new keypair for Mint Account
@@ -214,6 +215,12 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
         TOKEN_2022_PROGRAM_ID // program id
       );
 
+      // Transfer deploy fee to trasury
+      const transferFeeInstruction = SystemProgram.transfer({
+        fromPubkey: walletPublicKey,
+        toPubkey: new PublicKey(TREASURY_ADDRESS_SOLANA),
+        lamports: DEPLOY_FEE * LAMPORTS_PER_SOL,
+      })
       // Add instructions to new transaction
       const transaction = new Transaction().add(
         createAccountInstruction,
@@ -224,7 +231,8 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
         initializeMetadataInstruction,
         updateFieldInstruction,
         associatedTokenAccountInstruction,
-        mintToInstruction
+        mintToInstruction,
+        transferFeeInstruction
       );
       if (tokenRevokeMint == true) transaction.add(setAuthorityInstruction);
 
@@ -237,6 +245,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
 
       const signature = await sendTransaction(transaction, connection, { signers: [mintKeypair] });
 
+      TREASURY_ADDRESS_SOLANA
       console.log("handleTokenDeploySolanaEND")
 
       const ToastLink = () => (
@@ -279,7 +288,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
     <>
       <div className="flex items-center justify-between p-4">
         <div className="font-bold text-gray-200">Total fee</div>
-        <div className="font-bold text-brand">1 SOL</div>
+        <div className="font-bold text-brand">{DEPLOY_FEE} SOL</div>
       </div>
 
       <div className="mt-4 flex gap-2">
