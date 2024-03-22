@@ -1,11 +1,9 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AlertTriangle, CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
 
-import { Label } from "@components/ui/label";
 import { Button } from "@components/ui/button";
 import { IncrementorInput } from "@components/ui/IncrementorInput";
 import { RadioGroup } from "@components/ui/radio-group";
@@ -131,21 +129,20 @@ const PoolDetails = () => {
   });
 
   const watchPoolType = form.watch("poolType");
-  const watchPoolToken = form.watch("poolToken");
   const watchPoolDuration = form.watch("poolDuration");
+  const watchPoolRewardToken = form.watch("poolRewardToken");
 
   const isSupportedNetwork = Object.keys(contracts.indexFactory).includes(chainId.toString());
   const supportedNetworks = NetworkOptions.filter((network) => network.id === 56 || network.id === 137);
 
   const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
     // Set the form data to the global state
-    // setIndexInfo(data);
-    // setPoolInfo(data);
+    setPoolInfo(data);
     // Progress to the confirm step
-    // setDeployerPoolStep("confirm");
-    console.log(data);
+    setDeployerPoolStep("confirm");
   };
 
+  // By setting this state we can show/hide the conditional fields based on the pool type
   useEffect(() => {
     if (watchPoolType === "standard") {
       setShowConditionalField([]);
@@ -157,14 +154,6 @@ const PoolDetails = () => {
       setShowConditionalField(["poolRewardToken", "poolReflectionToken"]);
     }
   }, [watchPoolType]);
-
-  // Cheeky way to get the Form to update for custom inputs
-  // type FormKeys = keyof z.infer<typeof poolDeployerSchema>;
-
-  // const updater = (key: FormKeys, value: string) => {
-  //   form.setValue(key, value);
-  //   form.trigger(key);
-  // };
 
   return (
     <Form {...form}>
@@ -304,7 +293,7 @@ const PoolDetails = () => {
                 name="poolRewardToken"
                 render={({ field }) => (
                   <FormItem className="space-y-4">
-                    <FormLabel className="text-xl">Select the reflections token for the staking pool</FormLabel>
+                    <FormLabel>Select the reward token for the staking pool</FormLabel>
                     <FormControl>
                       <TokenSelect
                         selectedCurrency={field.value}
@@ -319,26 +308,34 @@ const PoolDetails = () => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="poolInitialRewardSupply"
-                render={({ field }) => (
-                  <FormItem className="mt-4 flex items-center justify-between">
-                    <FormLabel>Initial reward supply for {watchPoolDuration} Days</FormLabel>
-                    <FormControl>
-                      <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               {poolRewardToken && (
-                <Alert className="my-8">
-                  <AlertCircleIcon className="h-4 w-4" />
-                  <AlertTitle>
-                    Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}
-                  </AlertTitle>
-                </Alert>
+                <>
+                  <FormField
+                    control={form.control}
+                    name="poolInitialRewardSupply"
+                    render={({ field }) => (
+                      <FormItem className="mt-4 flex items-center justify-between">
+                        <FormLabel>Set the initial reward supply for {watchPoolDuration} Days</FormLabel>
+                        <FormControl>
+                          <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Alert className="my-8">
+                    <AlertCircleIcon className="h-4 w-4" />
+                    <AlertTitle className="space-y-2">
+                      <p>
+                        Total {watchPoolRewardToken.name} token supply: {numberWithCommas(totalSupply)}
+                      </p>
+                      <p>
+                        Tokens required:{" "}
+                        {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}
+                      </p>
+                    </AlertTitle>
+                  </Alert>
+                </>
               )}
             </AccordionContent>
           </AccordionItem>
@@ -349,7 +346,7 @@ const PoolDetails = () => {
                 name="poolReflectionToken"
                 render={({ field }) => (
                   <FormItem className="space-y-4">
-                    <FormLabel className="text-xl">Select the reward token for the staking pool</FormLabel>
+                    <FormLabel>Select the reflections token for the staking pool</FormLabel>
                     <FormControl>
                       <TokenSelect
                         selectedCurrency={field.value}
