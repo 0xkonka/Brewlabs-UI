@@ -105,7 +105,10 @@ const PoolDeployConfirm = () => {
       });
     }, 6000);
 
-    setIsDeploying(false);
+    setTimeout(() => {
+      setDeployerPoolStep("success");
+    }, 9000);
+
     // When all steps are complete the success step will be shown
     // See the onSuccess prop in the DeployProgress component for more details
   };
