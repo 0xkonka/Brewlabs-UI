@@ -1,28 +1,39 @@
+import { useState, useEffect, use } from "react";
 import { z } from "zod";
-import { useAccount } from "wagmi";
-import { Token } from "@brewlabs/sdk";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { PlusCircle, AlertTriangle, CalendarClock, LockIcon, UnlockIcon } from "lucide-react";
+import { AlertTriangle, CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
 
-import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
 import { Button } from "@components/ui/button";
-import { Switch } from "@components/ui/switch";
 import { IncrementorInput } from "@components/ui/IncrementorInput";
-import { RadioGroup, RadioGroupItem } from "@components/ui/radio-group";
+import { RadioGroup } from "@components/ui/radio-group";
 import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
 import ChainSelect from "views/swap/components/ChainSelect";
-import TokenSelect from "views/directory/DeployerModal/TokenSelect";
+import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
+
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
+
+import { RadioButton } from "@components/ui/radio-button";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
+import { numberWithCommas } from "utils/functions";
 
 import contracts from "config/constants/contracts";
 import { NetworkOptions } from "config/constants/networks";
 import { poolDeployerSchema } from "config/schemas/poolDeployerSchema";
-import { setPoolInfo, useDeployerPoolState, setPoolToken, setPoolRewardToken } from "state/deploy/deployerPool.store";
+import {
+  setPoolInfo,
+  useDeployerPoolState,
+  setPoolToken,
+  setPoolRewardToken,
+  setDeployerPoolStep,
+  setPoolReflectionToken,
+} from "state/deploy/deployerPool.store";
+import { set } from "lodash";
 
 const poolTypes = [
   {
@@ -86,17 +97,32 @@ const poolLockPeriods = [
 
 const PoolDetails = () => {
   const { chainId } = useActiveChainId();
-  // const { address: commissionWallet } = useAccount();
-  const [{ poolType, poolDuration, poolLockPeriod, poolToken, poolCommissionFee, poolDepositFee, poolRewardToken }] =
-    useDeployerPoolState("poolInfo");
+  const [totalSupply] = useState(1000000); // TODO: Get total supply from the token
+  const [initialSupply, setInitialSupply] = useState(0.5); // TODO: Get initial supply from the token
+  const [
+    {
+      poolType,
+      poolDuration,
+      poolLockPeriod,
+      poolToken,
+      poolCommissionFee,
+      poolDepositFee,
+      poolRewardToken,
+      poolReflectionToken,
+    },
+  ] = useDeployerPoolState("poolInfo");
+
+  const [showConditionalField, setShowConditionalField] = useState([]);
 
   const form = useForm<z.infer<typeof poolDeployerSchema>>({
     resolver: zodResolver(poolDeployerSchema),
     defaultValues: {
       poolDeployChainId: 56,
       poolToken,
-      poolRewardToken,
       poolType: "standard",
+      poolRewardToken,
+      poolReflectionToken,
+      poolInitialRewardSupply: initialSupply,
       poolDuration: poolDuration || "90",
       poolLockPeriod: poolLockPeriod || "0",
       poolCommissionFee: poolCommissionFee || 0.05,
@@ -104,15 +130,41 @@ const PoolDetails = () => {
     },
   });
 
+  const watchPoolType = form.watch("poolType");
+  const watchPoolToken = form.watch("poolToken");
+  const watchPoolDuration = form.watch("poolDuration");
+
   const isSupportedNetwork = Object.keys(contracts.indexFactory).includes(chainId.toString());
   const supportedNetworks = NetworkOptions.filter((network) => network.id === 56 || network.id === 137);
 
   const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
     // Set the form data to the global state
     // setIndexInfo(data);
+    // setPoolInfo(data);
     // Progress to the confirm step
     // setDeployerPoolStep("confirm");
+    console.log(data);
   };
+
+  useEffect(() => {
+    if (watchPoolType === "standard") {
+      setShowConditionalField([]);
+    }
+    if (watchPoolType === "earner") {
+      setShowConditionalField(["poolRewardToken"]);
+    }
+    if (watchPoolType === "supercharged") {
+      setShowConditionalField(["poolRewardToken", "poolReflectionToken"]);
+    }
+  }, [watchPoolType]);
+
+  // Cheeky way to get the Form to update for custom inputs
+  // type FormKeys = keyof z.infer<typeof poolDeployerSchema>;
+
+  // const updater = (key: FormKeys, value: string) => {
+  //   form.setValue(key, value);
+  //   form.trigger(key);
+  // };
 
   return (
     <Form {...form}>
@@ -139,6 +191,29 @@ const PoolDetails = () => {
 
         <FormField
           control={form.control}
+          name="poolToken"
+          render={({ field }) => (
+            <FormItem className="space-y-4">
+              <FormLabel className="text-xl">Select the reward token for the staking pool</FormLabel>
+              <FormControl>
+                <TokenSelect
+                  selectedCurrency={field.value}
+                  setSelectedCurrency={(token) => {
+                    setPoolToken(token);
+                    form.setValue("poolToken", token);
+                    form.trigger("poolToken");
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="divider" />
+
+        <FormField
+          control={form.control}
           name="poolDuration"
           render={({ field }) => (
             <FormItem className="space-y-4">
@@ -150,15 +225,10 @@ const PoolDetails = () => {
                   className="grid gap-4 sm:grid-cols-4"
                 >
                   {poolDurations.map((type) => (
-                    <FormItem key={type.id} className="rounded-lg border border-gray-700 p-4 shadow">
-                      <FormControl>
-                        <RadioGroupItem value={type.id} className="peer sr-only" />
-                      </FormControl>
-                      <FormLabel className="!m-0 flex flex-col items-center gap-2 font-normal text-gray-500 peer-aria-checked:text-yellow-200">
-                        <CalendarClock className="h-6 w-6 peer-aria-checked:text-white" />
-                        {type.label}
-                      </FormLabel>
-                    </FormItem>
+                    <RadioButton key={type.id} value={type.id}>
+                      <CalendarClock className="h-6 w-6 peer-aria-checked:text-white" />
+                      {type.label}
+                    </RadioButton>
                   ))}
                 </RadioGroup>
               </FormControl>
@@ -182,20 +252,14 @@ const PoolDetails = () => {
                   className="grid gap-4 sm:grid-cols-5"
                 >
                   {poolLockPeriods.map((type) => (
-                    <FormItem key={type.id} className="rounded-lg border border-gray-700 p-4 shadow">
-                      <FormControl>
-                        <RadioGroupItem value={type.id} className="peer sr-only" />
-                      </FormControl>
-                      <FormLabel className="!m-0 flex flex-col items-center gap-2 font-normal text-gray-500 peer-aria-checked:text-yellow-200">
-                        {type.id === "0" ? (
-                          <UnlockIcon className="h-6 w-6 peer-aria-checked:text-white" />
-                        ) : (
-                          <LockIcon className="h-6 w-6 peer-aria-checked:text-white" />
-                        )}
-
-                        {type.label}
-                      </FormLabel>
-                    </FormItem>
+                    <RadioButton key={type.id} value={type.id}>
+                      {type.id === "0" ? (
+                        <UnlockIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                      ) : (
+                        <LockIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                      )}
+                      {type.label}
+                    </RadioButton>
                   ))}
                 </RadioGroup>
               </FormControl>
@@ -219,18 +283,10 @@ const PoolDetails = () => {
                   className="flex flex-col space-y-1"
                 >
                   {poolTypes.map((type) => (
-                    <FormItem
-                      key={type.id}
-                      className="flex items-center space-x-3 space-y-4 rounded-md border border-gray-700 p-4 shadow"
-                    >
-                      <FormControl>
-                        <RadioGroupItem value={type.id} className="peer sr-only" />
-                      </FormControl>
-                      <FormLabel className="!mt-0 font-normal peer-aria-checked:text-brand">
-                        {type.label}
-                        <FormDescription>{type.definition}</FormDescription>
-                      </FormLabel>
-                    </FormItem>
+                    <RadioButton key={type.id} value={type.id} contentAlign="left">
+                      {type.label}
+                      <FormDescription>{type.definition}</FormDescription>
+                    </RadioButton>
                   ))}
                 </RadioGroup>
               </FormControl>
@@ -239,19 +295,78 @@ const PoolDetails = () => {
           )}
         />
 
-        <div className="divider" />
-
-        <div className="my-6">
-          <h4 className="mb-4 text-xl">Select the reward token for the staking pool</h4>
-          <TokenSelect selectedCurrency={poolToken} setSelectedCurrency={setPoolToken} />
-        </div>
-
-        <div className="divider" />
-
-        <div className="my-6">
-          <h4 className="mb-4 text-xl">Select the reflections token for the staking pool</h4>
-          <TokenSelect selectedCurrency={poolRewardToken} setSelectedCurrency={setPoolRewardToken} />
-        </div>
+        <Accordion type="multiple" value={showConditionalField} className="w-full">
+          <AccordionItem value="poolRewardToken" className="border-b-0">
+            <AccordionContent>
+              <h3 className="mb-4 text-xl">Rewards</h3>
+              <FormField
+                control={form.control}
+                name="poolRewardToken"
+                render={({ field }) => (
+                  <FormItem className="space-y-4">
+                    <FormLabel className="text-xl">Select the reflections token for the staking pool</FormLabel>
+                    <FormControl>
+                      <TokenSelect
+                        selectedCurrency={field.value}
+                        setSelectedCurrency={(token) => {
+                          setPoolRewardToken(token);
+                          form.trigger("poolRewardToken");
+                          form.setValue("poolRewardToken", token);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="poolInitialRewardSupply"
+                render={({ field }) => (
+                  <FormItem className="mt-4 flex items-center justify-between">
+                    <FormLabel>Initial reward supply for {watchPoolDuration} Days</FormLabel>
+                    <FormControl>
+                      <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {poolRewardToken && (
+                <Alert className="my-8">
+                  <AlertCircleIcon className="h-4 w-4" />
+                  <AlertTitle>
+                    Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}
+                  </AlertTitle>
+                </Alert>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="poolReflectionToken" className="border-b-0">
+            <AccordionContent>
+              <FormField
+                control={form.control}
+                name="poolReflectionToken"
+                render={({ field }) => (
+                  <FormItem className="space-y-4">
+                    <FormLabel className="text-xl">Select the reward token for the staking pool</FormLabel>
+                    <FormControl>
+                      <TokenSelect
+                        selectedCurrency={field.value}
+                        setSelectedCurrency={(token) => {
+                          setPoolReflectionToken(token);
+                          form.trigger("poolReflectionToken");
+                          form.setValue("poolReflectionToken", token);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <div className="divider" />
 
