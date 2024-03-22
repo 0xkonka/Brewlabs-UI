@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createGlobalState } from "react-hooks-global-state";
-import { Token } from "@brewlabs/sdk";
-import { poolDeployerSchema } from "config/schemas/poolDeployerSchema";
+import { poolDeployerSchema, tokenSchema } from "config/schemas/poolDeployerSchema";
 
 interface DeployerPoolStore {
   poolInfo: z.infer<typeof poolDeployerSchema>;
@@ -20,12 +19,20 @@ export const setPoolInfo = (poolInfo: z.infer<typeof poolDeployerSchema>) => {
   setGlobalState("poolInfo", () => poolInfo);
 };
 
-export const setPoolToken = (poolToken: Token) => {
+export const setPoolToken = (poolToken: z.infer<typeof tokenSchema>) => {
   setGlobalState("poolInfo", (v) => ({ ...v, poolToken: poolToken }));
 };
 
-export const setPoolRewardToken = (poolRewardToken: Token) => {
+export const setPoolRewardToken = (poolRewardToken: z.infer<typeof tokenSchema>) => {
   setGlobalState("poolInfo", (v) => ({ ...v, poolRewardToken: poolRewardToken }));
+};
+
+export const setPoolReflectionToken = (poolReflectionToken: z.infer<typeof tokenSchema>) => {
+  setGlobalState("poolInfo", (v) => ({ ...v, poolReflectionToken: poolReflectionToken }));
+};
+
+export const setDeployerPoolStep = (deployerPoolStep: DeployerPoolStore["deployerPoolStep"]) => {
+  setGlobalState("deployerPoolStep", deployerPoolStep);
 };
 
 export { useDeployerPoolState };
