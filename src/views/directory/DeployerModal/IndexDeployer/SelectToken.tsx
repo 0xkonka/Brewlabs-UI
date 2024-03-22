@@ -9,7 +9,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 
 import StyledButton from "../../StyledButton";
 import ChainSelect from "../ChainSelect";
-import TokenSelect from "../TokenSelect";
+import { TokenSelect } from "../TokenSelect";
 import { NetworkOptions } from "config/constants/networks";
 
 const SelectToken = ({ setStep, tokens, setTokens }) => {

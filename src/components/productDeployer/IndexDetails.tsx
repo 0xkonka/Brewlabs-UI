@@ -13,7 +13,7 @@ import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
 import ChainSelect from "views/swap/components/ChainSelect";
-import TokenSelect from "views/directory/DeployerModal/TokenSelect";
+import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
 import { getIndexName } from "utils/functions";
 import { useActiveChainId } from "hooks/useActiveChainId";
