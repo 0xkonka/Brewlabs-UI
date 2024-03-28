@@ -61,7 +61,7 @@ const NFTStakingInfo = () => {
         title: "What happens when I stake my NFT?",
         detail: [
           "When your NFT is staked you will earn the native currency of the network where you have staked (BNB / ETH / MATIC).",
-          "Users can only stake one NFT at a time.",
+          "Stake your NFT's each season.",
           "Unstake at anytime.",
         ],
       },
