@@ -8,7 +8,7 @@ import { PlusCircle, AlertTriangle } from "lucide-react";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Switch } from "@components/ui/switch";
-import { IncrementorInput } from "@components/ui/IncrementorInput";
+import { IncrementorInput } from "@components/ui/incrementorInput";
 import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
