@@ -31,7 +31,7 @@ import { useDeployerFarmState, setDeployerFarmStep, setDeployedFarmAddress } fro
 import type { Token } from "@brewlabs/sdk";
 import { SkeletonComponent } from "@components/SkeletonComponent";
 
-const deploySteps = {
+const initialDeploySteps = {
   preSubmit: {
     step: "pre-submit",
     description: "Not yet deployed",
@@ -68,7 +68,7 @@ const FarmConfirmDeploy = () => {
 
   const tokens = useUserTokenData(chainId, account);
   const [insufficientRewards, setInsufficientRewards] = useState(false);
-  const [deployStep, setDeployStep] = useState(deploySteps.preSubmit);
+  const [deployStep, setDeployStep] = useState(initialDeploySteps.preSubmit);
 
   const factory = useFarmFactory(chainId);
   const { onCreate } = useFactory(chainId, factory?.payingToken.isNative ? factory?.serviceFee : "0");
@@ -97,7 +97,7 @@ const FarmConfirmDeploy = () => {
     }
 
     // Set deploying phase
-    setDeployStep(deploySteps.deploying);
+    setDeployStep(initialDeploySteps.deploying);
 
     try {
       let rewardPerBlock = ethers.utils.parseUnits(
@@ -145,12 +145,12 @@ const FarmConfirmDeploy = () => {
     } catch (e) {
       handleWalletError(e, showError, getNativeSymbol(chainId));
       // Set deploying phase
-      setDeployStep(deploySteps.preSubmit);
+      setDeployStep(initialDeploySteps.preSubmit);
     }
   };
 
   const handleTransferRewards = async (farm) => {
-    setDeployStep(deploySteps.rewards);
+    setDeployStep(initialDeploySteps.rewards);
 
     try {
       const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
@@ -173,7 +173,7 @@ const FarmConfirmDeploy = () => {
   };
 
   const handleStartFarming = async (farm) => {
-    setDeployStep(deploySteps.starting);
+    setDeployStep(initialDeploySteps.starting);
 
     try {
       const farmContract = getContract(chainId, farm, FarmImplAbi, signer);
@@ -185,11 +185,11 @@ const FarmConfirmDeploy = () => {
       const tx = await farmContract.startReward({ gasLimit });
       await tx.wait();
 
-      setDeployStep(deploySteps.complete);
+      setDeployStep(initialDeploySteps.complete);
       dispatch(fetchFarmsPublicDataFromApiAsync());
       setTimeout(() => {
         setDeployerFarmStep("success");
-        setDeployStep(deploySteps.preSubmit);
+        setDeployStep(initialDeploySteps.preSubmit);
       }, 1000);
     } catch (e) {
       handleWalletError(e, showError, getNativeSymbol(chainId));
