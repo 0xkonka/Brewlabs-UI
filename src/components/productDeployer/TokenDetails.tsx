@@ -2,38 +2,59 @@ import { ChangeEvent } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Upload } from "lucide-react";
+import { Upload, AlertTriangle } from "lucide-react";
+
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Textarea } from "@components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 import { Checkbox } from "components/ui/checkbox";
+import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import ChainSelect from "views/swap/components/ChainSelect";
 
-import { tokenDeployerSchema } from "config/schemas/tokenDeployerSchema";
+// import { ErrorMessage } from "@hookform";
+
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { tokenDeployerSchema, supportedNetworks } from "config/schemas/tokenDeployerSchema";
 import {
   useDeployerTokenState,
   setTokenInfo,
   setTokenImageDisplayUrl,
-  setDeployerStep,
+  setDeployerTokenStep,
 } from "state/deploy/deployerToken.store";
 
 const TokenDetails = () => {
+  const { chainId } = useActiveChainId();
   const [tokenImageDisplayUrl] = useDeployerTokenState("tokenImageDisplayUrl");
+  const [
+    {
+      tokenName,
+      tokenSymbol,
+      tokenDecimals,
+      tokenTotalSupply,
+      tokenImage,
+      tokenDescription,
+      tokenImmutable,
+      tokenRevokeFreeze,
+      tokenRevokeMint,
+    },
+  ] = useDeployerTokenState("tokenInfo");
+  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
 
   const form = useForm<z.infer<typeof tokenDeployerSchema>>({
     resolver: zodResolver(tokenDeployerSchema),
     defaultValues: {
-      tokenName: "",
-      tokenSymbol: "",
-      tokenDecimals: 18,
-      tokenTotalSupply: 0,
-      tokenImage: undefined,
-      tokenDescription: "",
-      tokenImmutable: false,
-      tokenRevokeFreeze: false,
-      tokenRevokeMint: false,
+      tokenDeployChainId: chainId,
+      tokenName,
+      tokenSymbol,
+      tokenDecimals,
+      tokenTotalSupply,
+      tokenImage,
+      tokenDescription,
+      tokenImmutable,
+      tokenRevokeFreeze,
+      tokenRevokeMint,
     },
   });
 
@@ -53,16 +74,41 @@ const TokenDetails = () => {
     // Store the form data in deployer store
     setTokenInfo(data);
     // Progress to the confirm step
-    setDeployerStep("confirm");
+    setDeployerTokenStep("confirm");
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
         <div className="my-8">
-          <h4 className="mb-6 text-xl">Choose a network to deploy on</h4>
-          <ChainSelect id="chain-select" />
+          {!isSupportedNetwork && (
+            <Alert variant="destructive" className="my-4 bg-red-500/10 text-red-100">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Unsupported network</AlertTitle>
+              <AlertDescription className="text-balance">
+                The current network is not supported for deploying an index. Please switch to a supported network to
+                continue.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
+
+        <FormField
+          control={form.control}
+          name="tokenDeployChainId"
+          render={() => (
+            <FormItem className="space-y-4">
+              <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
+              <FormControl>
+                <>
+                  <ChainSelect id="chain-select" networks={supportedNetworks} />
+                  <input type="hidden" value={chainId} />
+                </>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="divider" />
 

@@ -7,14 +7,14 @@ import TokenDeployConfirm from "@components/productDeployer/TokenDeployConfirm";
 import TokenSuccessfulDeploy from "@components/productDeployer/TokenSuccessfulDeploy";
 
 const TokenDeployer = () => {
-  const [deployerStep] = useDeployerTokenState("deployerStep");
+  const [deployerTokenStep] = useDeployerTokenState("deployerTokenStep");
 
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerStep === "details" && <TokenDetails />}
-        {deployerStep === "confirm" && <TokenDeployConfirm />}
-        {deployerStep === "success" && <TokenSuccessfulDeploy />}
+        {deployerTokenStep === "details" && <TokenDetails />}
+        {deployerTokenStep === "confirm" && <TokenDeployConfirm />}
+        {deployerTokenStep === "success" && <TokenSuccessfulDeploy />}
       </CardContent>
     </Card>
   );

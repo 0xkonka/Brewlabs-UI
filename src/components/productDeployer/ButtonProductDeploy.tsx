@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/solid";
 
 import { cn } from "lib/utils";
-import { setDeployerStep } from "state/deploy/deployerToken.store";
 
 import { Button } from "@components/ui/button";
 import { Command, CommandGroup, CommandItem } from "@components/ui/command";
@@ -52,7 +51,6 @@ const ButtonProductDeploy = () => {
                 value={item.value}
                 onSelect={() => {
                   router.push(item.value);
-                  setDeployerStep("details");
                   setOpen(false);
                 }}
               >

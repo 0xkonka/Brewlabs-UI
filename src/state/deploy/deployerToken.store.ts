@@ -5,14 +5,14 @@ import { createGlobalState } from "react-hooks-global-state";
 interface DeployerTokenStore {
   deployedAddress: string;
   tokenImageDisplayUrl: string;
-  deployerStep: "details" | "confirm" | "success";
+  deployerTokenStep: "details" | "confirm" | "success";
   tokenInfo: z.infer<typeof tokenDeployerSchema>;
 }
 
 // Create a single global state object
 const deployerTokenStore = {
   deployedAddress: "",
-  deployerStep: "details",
+  deployerTokenStep: "details",
   tokenImageDisplayUrl: "",
   tokenInfo: {
     tokenName: "",
@@ -34,8 +34,8 @@ export const setTokenInfo = (tokenInfo: z.infer<typeof tokenDeployerSchema>) => 
   setGlobalState("tokenInfo", () => tokenInfo);
 };
 
-export const setDeployerStep = (step: DeployerTokenStore["deployerStep"]) => {
-  setGlobalState("deployerStep", () => step);
+export const setDeployerTokenStep = (step: DeployerTokenStore["deployerTokenStep"]) => {
+  setGlobalState("deployerTokenStep", () => step);
 };
 
 export const setDeployedAddress = (deployedAddress: string) => {
