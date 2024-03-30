@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+
+export const supportedNetworks = NetworkOptions.filter((network) =>
+  PAGE_SUPPORTED_CHAINS.deployer.includes(network.id)
+);
 
 export const tokenDeployerSchema = z.object({
   tokenName: z
@@ -19,5 +24,7 @@ export const tokenDeployerSchema = z.object({
   tokenImmutable: z.boolean(),
   tokenRevokeFreeze: z.boolean(),
   tokenRevokeMint: z.boolean(),
-  tokenBurnPercentage: z.string(),
+  tokenDeployChainId: z.coerce
+    .number()
+    .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
 });
