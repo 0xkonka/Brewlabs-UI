@@ -26,7 +26,7 @@ import type { FarmDuration } from "state/deploy/deployerFarm.store";
 import TokenLogo from "@components/logo/TokenLogo";
 import { RadioGroup, RadioGroupItem } from "components/ui/radio-group";
 import { Label } from "@components/ui/label";
-import { IncrementorInput } from "@components/ui/incrementorInputx";
+import { IncrementorInput } from "@components/ui/incrementorInput";
 
 import {
   setRouter,

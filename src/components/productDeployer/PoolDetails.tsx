@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { AlertTriangle, CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
 
 import { Button } from "@components/ui/button";
-import { IncrementorInput } from "@components/ui/incrementorInputx";
+import { IncrementorInput } from "@components/ui/incrementorInput";
 import { RadioGroup } from "@components/ui/radio-group";
 import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
