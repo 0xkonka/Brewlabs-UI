@@ -169,13 +169,13 @@ const PoolDetails = () => {
         <FormField
           control={form.control}
           name="poolDeployChainId"
-          render={() => (
+          render={(field) => (
             <FormItem className="space-y-4">
               <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
               <FormControl>
                 <>
                   <ChainSelect id="chain-select" networks={supportedNetworks} />
-                  <input type="hidden" value={chainId} />
+                  <input type="hidden" {...field} value={chainId} />
                 </>
               </FormControl>
               <FormMessage />
