@@ -59,8 +59,6 @@ const PoolDeployConfirm = () => {
   };
 
   const handleDeploy = async () => {
-    console.log("Deploying pool");
-
     if (chainId !== poolDeployChainId) {
       toast.error("Connected chain is not the same as the selected deploy chain");
       return;

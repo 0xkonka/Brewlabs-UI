@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { AlertTriangle, CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
 
 import { Button } from "@components/ui/button";
-import { IncrementorInput } from "@components/ui/IncrementorInput";
+import { IncrementorInput } from "@components/ui/incrementorInput";
 import { RadioGroup } from "@components/ui/radio-group";
 import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
@@ -13,16 +13,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
 
 import { RadioButton } from "@components/ui/radio-button";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { numberWithCommas } from "utils/functions";
-
-import contracts from "config/constants/contracts";
-import { NetworkOptions } from "config/constants/networks";
-import { poolDeployerSchema } from "config/schemas/poolDeployerSchema";
+import { poolDeployerSchema, supportedNetworks } from "config/schemas/poolDeployerSchema";
 import {
   setPoolInfo,
   useDeployerPoolState,
@@ -31,7 +28,6 @@ import {
   setDeployerPoolStep,
   setPoolReflectionToken,
 } from "state/deploy/deployerPool.store";
-import { set } from "lodash";
 
 const poolTypes = [
   {
@@ -115,7 +111,7 @@ const PoolDetails = () => {
   const form = useForm<z.infer<typeof poolDeployerSchema>>({
     resolver: zodResolver(poolDeployerSchema),
     defaultValues: {
-      poolDeployChainId: 56,
+      poolDeployChainId: chainId,
       poolToken,
       poolType: "standard",
       poolRewardToken,
@@ -132,8 +128,7 @@ const PoolDetails = () => {
   const watchPoolDuration = form.watch("poolDuration");
   const watchPoolRewardToken = form.watch("poolRewardToken");
 
-  const isSupportedNetwork = Object.keys(contracts.indexFactory).includes(chainId.toString());
-  const supportedNetworks = NetworkOptions.filter((network) => network.id === 56 || network.id === 137);
+  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
 
   const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
     // Set the form data to the global state
@@ -159,8 +154,6 @@ const PoolDetails = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-8">
         <div className="my-8">
-          <h4 className="mb-6 text-xl">Choose a network to deploy on</h4>
-
           {!isSupportedNetwork && (
             <Alert variant="destructive" className="my-4 bg-red-500/10 text-red-100">
               <AlertTriangle className="h-4 w-4" />
@@ -171,10 +164,24 @@ const PoolDetails = () => {
               </AlertDescription>
             </Alert>
           )}
-
-          <ChainSelect id="chain-select" networks={supportedNetworks} />
-          <input type="hidden" {...form.register("poolDeployChainId")} value={chainId} />
         </div>
+
+        <FormField
+          control={form.control}
+          name="poolDeployChainId"
+          render={() => (
+            <FormItem className="space-y-4">
+              <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
+              <FormControl>
+                <>
+                  <ChainSelect id="chain-select" networks={supportedNetworks} />
+                  <input type="hidden" value={chainId} />
+                </>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="divider" />
 

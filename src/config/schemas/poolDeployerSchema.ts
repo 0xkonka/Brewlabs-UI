@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { isAddress } from "viem";
+import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+
+export const supportedNetworks = NetworkOptions.filter((network) =>
+  PAGE_SUPPORTED_CHAINS.deployer.includes(network.id)
+);
 
 export const tokenSchema = z.object({
   chainId: z.coerce.number(),
@@ -22,7 +27,9 @@ export const poolDeployerSchema = z.object({
   poolLockPeriod: z.enum(["0", "3", "6", "9", "12"], {
     required_error: "You need to select lock period.",
   }),
-  poolDeployChainId: z.coerce.number().refine((v) => v === 56 || v === 137, { message: "Invalid chain" }),
+  poolDeployChainId: z.coerce
+    .number()
+    .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   poolToken: tokenSchema,
   poolRewardToken: tokenSchema.optional(),
   poolReflectionToken: tokenSchema.optional(),
