@@ -1,8 +1,6 @@
 import * as React from "react";
-
-import { cn } from "lib/utils";
-
 import { PlusCircle, MinusCircle } from "lucide-react";
+import { cn } from "lib/utils";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   symbol?: string;
@@ -32,7 +30,7 @@ const IncrementorInput = React.forwardRef<HTMLInputElement, InputProps>(({ symbo
   };
 
   return (
-    <div className="flex items-center rounded-lg border p-1.5">
+    <div className="flex w-fit items-center rounded-lg border p-1.5">
       <button
         type="button"
         className="group text-gray-500 disabled:cursor-not-allowed disabled:opacity-50"

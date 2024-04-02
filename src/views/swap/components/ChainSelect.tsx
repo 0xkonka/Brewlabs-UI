@@ -35,7 +35,7 @@ const ChainSelect = ({ id, networks }: ChainSelectProps) => {
 
   return (
     <>
-      <div className="mb-4 rounded-full border border-gray-600 bg-opacity-60 py-2 pl-2 pr-4 font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white">
+      <div className="mb-4 h-10 rounded-full border border-gray-600 bg-opacity-60 py-2 pl-2 pr-4 font-brand text-gray-400 focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60 dark:text-white">
         <button
           type="button"
           className="flex w-full items-center justify-between"

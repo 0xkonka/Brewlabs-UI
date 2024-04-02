@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { twMerge } from "tailwind-merge";
-import { CheckCircle, CircleEqual, Loader2, XCircle } from "lucide-react";
+import { CheckCircle, CircleEqual, Loader2, RefreshCcw, XCircle } from "lucide-react";
 import { Button } from "@components/ui/button";
 
 export type DeployStep = {
@@ -47,7 +47,7 @@ const DeployStep = ({ step, onError, isLastItem }: DeployStepProps) => {
   return (
     <div
       className={twMerge(
-        status === "upcoming" && "hidden",
+        status === "upcoming" && "opacity-50",
         status === "failed" && "text-red-500",
         status === "complete" && "text-teal-300"
       )}
@@ -87,7 +87,7 @@ const DeployStep = ({ step, onError, isLastItem }: DeployStepProps) => {
       </div>
       {status === "failed" && (
         <Button size="sm" variant="secondary" className="mt-4" onClick={onError}>
-          Failed, please try again.
+          Failed, please try again. <RefreshCcw className="ml-2 h-4 w-4" />
         </Button>
       )}
     </div>
@@ -118,7 +118,7 @@ const DeployProgress = ({ onError, onSuccess, deploySteps }: DeployProgressProps
   return (
     <div aria-label="Progress" className="mx-auto w-fit max-w-sm">
       <h2 className="my-4 text-center text-3xl">{isComplete ? "Deployed!" : "Deploying..."}</h2>
-      <ol role="list" className="overflow-hidden p-6">
+      <ol role="list" className=" p-6">
         {deploySteps.map((step, stepIdx) => (
           <li key={step.name} className={twMerge(stepIdx !== deploySteps.length - 1 ? "pb-10" : "", "relative")}>
             <DeployStep step={step} onError={onError} isLastItem={stepIdx === deploySteps.length - 1} />
