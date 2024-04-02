@@ -36,7 +36,7 @@ const RouterSelect = ({ id, router, setRouter, dexId = undefined, type = "liquid
         factory: FACTORY_ADDRESS_MAP[supportedRouters[0]?.key]?.[chainId],
       });
     }
-  }, [supportedRouters, dexId, setRouter, chainId]);
+  }, [chainId, dexId, setRouter, supportedRouters]);
 
   const handleRouterSelected = (index) => {
     setRouter({

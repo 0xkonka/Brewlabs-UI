@@ -1,5 +1,6 @@
 import { ChainId } from "@brewlabs/sdk";
 import { bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
+import { chain } from "lodash";
 
 // Extend ChainId enum with new chain ids
 enum ExtendedChainId {
@@ -32,8 +33,8 @@ export const SUPPORTED_CHAIN_IDS = [
 ];
 // export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 
-export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
-  // export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
+// export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
+export const PAGE_SUPPORTED_CHAINS = {
   chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   farms: [
     ChainId.ETHEREUM,
@@ -54,10 +55,19 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  deployer: [
+  deployerIndex: [ChainId.POLYGON, ChainId.BSC_MAINNET],
+  deployerFarm: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  deployerToken: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
-    ChainId.POLYGON,
+    ChainId.ARBITRUM,
+    ChainId.BASE,
+    ExtendedChainId.SOLANA_MAINNET,
+    ExtendedChainId.SOLANA_DEVNET,
+  ],
+  deployerPool: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
     ChainId.ARBITRUM,
     ExtendedChainId.SOLANA_MAINNET,
     ExtendedChainId.SOLANA_DEVNET,

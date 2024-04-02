@@ -11,7 +11,7 @@ import { fetchFarmFactoryDataAsync, fetchIndexFactoryDataAsync, fetchTokenFactor
 export const usePollTokenFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerToken.filter((chainId) =>
     Object.keys(contracts.tokenFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -25,7 +25,7 @@ export const usePollTokenFactoryData = () => {
 export const usePollFarmFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerFarm.filter((chainId) =>
     Object.keys(contracts.farmFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -39,7 +39,7 @@ export const usePollFarmFactoryData = () => {
 export const usePollIndexFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerIndex.filter((chainId) =>
     Object.keys(contracts.indexFactory)
       .map((c) => +c)
       .includes(chainId)
