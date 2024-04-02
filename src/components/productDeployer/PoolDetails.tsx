@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AlertTriangle, CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
+import { CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
 
 import { Button } from "@components/ui/button";
 import { IncrementorInput } from "@components/ui/incrementorInput";
 import { RadioGroup } from "@components/ui/radio-group";
-import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
+import { Alert, AlertTitle } from "@components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
+import AlertConnection from "components/AlertConnection";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
@@ -154,16 +155,7 @@ const PoolDetails = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-8">
         <div className="my-8">
-          {!isSupportedNetwork && (
-            <Alert variant="destructive" className="my-4 bg-red-500/10 text-red-100">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Unsupported network</AlertTitle>
-              <AlertDescription className="text-balance">
-                The current network is not supported for deploying an index. Please switch to a supported network to
-                continue.
-              </AlertDescription>
-            </Alert>
-          )}
+          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
         </div>
 
         <FormField

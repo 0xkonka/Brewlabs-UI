@@ -2,7 +2,7 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Upload, AlertTriangle } from "lucide-react";
+import { Upload } from "lucide-react";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
@@ -10,9 +10,9 @@ import { Textarea } from "@components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 import { Checkbox } from "components/ui/checkbox";
-import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
 import ChainSelect from "views/swap/components/ChainSelect";
+import AlertConnection from "components/AlertConnection";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { tokenDeployerSchema, supportedNetworks } from "config/schemas/tokenDeployerSchema";
@@ -81,8 +81,6 @@ const TokenDetails = () => {
 
   // By setting this state we can show/hide the conditional fields based on the pool type
   useEffect(() => {
-    console.log(watchTokenDeployChainId);
-
     if (watchTokenDeployChainId === 900) {
       setShowConditionalField(["tokenImage", "tokenDescription"]);
     }
@@ -95,16 +93,7 @@ const TokenDetails = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
         <div className="my-8">
-          {!isSupportedNetwork && (
-            <Alert variant="destructive" className="my-4 bg-red-500/10 text-red-100">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Unsupported network</AlertTitle>
-              <AlertDescription className="text-balance">
-                The current network is not supported for deploying an index. Please switch to a supported network to
-                continue.
-              </AlertDescription>
-            </Alert>
-          )}
+          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
         </div>
 
         <FormField

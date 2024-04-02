@@ -3,14 +3,15 @@ import { useAccount } from "wagmi";
 import { Token } from "@brewlabs/sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { PlusCircle, AlertTriangle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Switch } from "@components/ui/switch";
 import { IncrementorInput } from "@components/ui/incrementorInput";
-import { Alert, AlertTitle, AlertDescription } from "@components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
+
+import AlertConnection from "components/AlertConnection";
 
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
@@ -18,9 +19,7 @@ import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 import { getIndexName } from "utils/functions";
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-import contracts from "config/constants/contracts";
-import { NetworkOptions } from "config/constants/networks";
-import { indexDeployerSchema } from "config/schemas/indexDeployerSchema";
+import { indexDeployerSchema, supportedNetworks } from "config/schemas/indexDeployerSchema";
 import {
   setIndexInfo,
   setIndexName,
@@ -43,11 +42,11 @@ const IndexDetails = () => {
       isPrivate: false,
       depositFee: 0.05,
       commissionFee: 0.05,
+      indexDeployChainId: chainId,
     },
   });
 
-  const isSupportedNetwork = Object.keys(contracts.indexFactory).includes(chainId.toString());
-  const supportedNetworks = NetworkOptions.filter((network) => network.id === 56 || network.id === 137);
+  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
 
   const onSubmit = (data: z.infer<typeof indexDeployerSchema>) => {
     // Set the form data to the global state
@@ -60,22 +59,25 @@ const IndexDetails = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
         <div className="my-8">
-          <h4 className="mb-6 text-xl">Choose a network to deploy on</h4>
-
-          {!isSupportedNetwork && (
-            <Alert variant="destructive" className="my-4 bg-red-500/10 text-red-100">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Unsupported network</AlertTitle>
-              <AlertDescription className="text-balance">
-                The current network is not supported for deploying an index. Please switch to a supported network to
-                continue.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <ChainSelect id="chain-select" networks={supportedNetworks} />
-          <input type="hidden" {...form.register("indexDeployChainId")} value={chainId} />
+          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
         </div>
+
+        <FormField
+          control={form.control}
+          name="indexDeployChainId"
+          render={(field) => (
+            <FormItem className="space-y-4">
+              <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
+              <FormControl>
+                <>
+                  <ChainSelect id="chain-select" networks={supportedNetworks} />
+                  <input type="hidden" {...field} value={chainId} />
+                </>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="divider" />
 
@@ -187,12 +189,8 @@ const IndexDetails = () => {
           type="submit"
           variant="brand"
           className="w-full"
-          disabled={
-            !commissionWallet || !isSupportedNetwork || tokens.length == 0 || tokens.filter((t) => !t).length > 0
-          }
+          disabled={tokens.length == 0 || tokens.filter((t) => !t).length > 0}
         >
-          {!isSupportedNetwork && "Unsupported network"}
-          {!commissionWallet && "Connect wallet to continue"}
           Confirm and finalise
         </Button>
       </form>
