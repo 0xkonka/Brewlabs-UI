@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createGlobalState } from "react-hooks-global-state";
-import { poolDeployerSchema, tokenSchema } from "config/schemas/poolDeployerSchema";
+import { tokenSchema } from "config/schemas/tokenSchema";
+import { poolDeployerSchema } from "config/schemas/poolDeployerSchema";
 
 interface DeployerPoolStore {
   poolInfo: z.infer<typeof poolDeployerSchema>;

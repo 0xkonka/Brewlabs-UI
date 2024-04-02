@@ -2,7 +2,7 @@ import { z } from "zod";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
-  PAGE_SUPPORTED_CHAINS.deployer.includes(network.id)
+  PAGE_SUPPORTED_CHAINS["deployerToken"].includes(network.id)
 );
 
 export const tokenDeployerSchema = z.object({

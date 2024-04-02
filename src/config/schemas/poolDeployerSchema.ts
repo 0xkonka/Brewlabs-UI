@@ -1,21 +1,10 @@
 import { z } from "zod";
-import { isAddress } from "viem";
+import { tokenSchema } from "config/schemas/tokenSchema";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
-  PAGE_SUPPORTED_CHAINS.deployer.includes(network.id)
+  PAGE_SUPPORTED_CHAINS["deployerPool"].includes(network.id)
 );
-
-export const tokenSchema = z.object({
-  chainId: z.coerce.number(),
-  decimals: z.coerce.number(),
-  symbol: z.string().min(2, { message: "Symbol must be at least 2 characters." }),
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  isNative: z.boolean(),
-  isToken: z.boolean(),
-  address: z.string().refine(isAddress, { message: "Invalid address" }),
-  logo: z.string(),
-});
 
 export const poolDeployerSchema = z.object({
   poolType: z.enum(["standard", "earner", "supercharged"], {
@@ -33,7 +22,7 @@ export const poolDeployerSchema = z.object({
   poolToken: tokenSchema,
   poolRewardToken: tokenSchema.optional(),
   poolReflectionToken: tokenSchema.optional(),
-  poolCommissionFee: z.number().min(0, { message: "Commission fee must be greater than 0." }),
-  poolDepositFee: z.number().min(0, { message: "Deposit fee must be greater than 0." }),
-  poolInitialRewardSupply: z.number().min(0, { message: "Initial supply must be greater than 0." }),
+  poolCommissionFee: z.coerce.number().min(0, { message: "Commission fee must be greater than 0." }),
+  poolDepositFee: z.coerce.number().min(0, { message: "Deposit fee must be greater than 0." }),
+  poolInitialRewardSupply: z.coerce.number().min(0, { message: "Initial supply must be greater than 0." }),
 });
