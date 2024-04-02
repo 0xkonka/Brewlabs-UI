@@ -1,265 +1,358 @@
-import { useEffect, useState } from "react";
-import { Check, X, CalendarClock, Info, AlertCircle } from "lucide-react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Check, X, CalendarClock, AlertCircle } from "lucide-react";
 
-import { isAddress } from "utils";
 import { getEmptyTokenLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
-import RouterSelect from "views/directory/DeployerModal/RouterSelect";
+import AlertConnection from "components/AlertConnection";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Alert, AlertTitle } from "@components/ui/alert";
+import { RadioButton } from "@components/ui/radio-button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import useTotalSupply from "hooks/useTotalSupply";
 import { useCurrency } from "hooks/Tokens";
 import useLPTokenInfo from "@hooks/useLPTokenInfo";
-import { useTokenList } from "state/home/hooks";
 
 import type { Token } from "@brewlabs/sdk";
-import type { FarmDuration } from "state/deploy/deployerFarm.store";
+
+import { getDexLogo } from "utils/functions";
 
 import TokenLogo from "@components/logo/TokenLogo";
-import { RadioGroup, RadioGroupItem } from "components/ui/radio-group";
-import { Label } from "@components/ui/label";
+import { RadioGroup } from "components/ui/radio-group";
 import { IncrementorInput } from "@components/ui/incrementorInput";
 
-import {
-  setRouter,
-  useDeployerFarmState,
-  setDeployerFarmStep,
-  setInitialSupply,
-  setDepositFee,
-  setWithdrawFee,
-  setFarmDuration,
-  setRewardToken,
-  setLpAddress,
-} from "state/deploy/deployerFarm.store";
+import { farmDeployerSchema, supportedNetworks } from "config/schemas/farmDeployerSchema";
+import { setFarmInfo, useDeployerFarmState, setDeployerFarmStep } from "state/deploy/deployerFarm.store";
 
-const DURATIONS = ["365", "180", "90", "60"];
+const farmDurations = [
+  {
+    id: "60",
+    label: "60 Days",
+  },
+  {
+    id: "90",
+    label: "90 Days",
+  },
+  {
+    id: "180",
+    label: "180 Days",
+  },
+  {
+    id: "365",
+    label: "365 Days",
+  },
+];
+
+const farmRouters = {
+  56: {
+    key: "pcs-v2",
+    id: "pcs-v2",
+    name: "Pancakeswap V2",
+    address: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    factory: "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+  },
+  1: {
+    key: "uniswap-v2",
+    id: "uniswap-v2",
+    name: "Uniswap V2",
+    address: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    factory: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+  },
+};
 
 const FarmDetails = () => {
   const { chainId } = useActiveChainId();
-  const supportedTokens = useTokenList(chainId);
-  const [unsupported, setUnsupported] = useState(false);
-  const [{ lpInfo, router, initialSupply, depositFee, withdrawFee, rewardToken, farmDuration, lpAddress }] =
+
+  const [{ farmLpAddress, farmDuration, farmRewardToken, farmDepositFee, farmInitialSupply, farmWithdrawFee }] =
     useDeployerFarmState("farmInfo");
 
-  // Sets the LP token in global state
-  useLPTokenInfo(lpAddress, chainId);
+  const form = useForm<z.infer<typeof farmDeployerSchema>>({
+    resolver: zodResolver(farmDeployerSchema),
+    defaultValues: {
+      farmDeployChainId: chainId,
+      farmLpAddress: farmLpAddress,
+      farmRouter: farmRouters[chainId],
+      farmDepositFee: farmDepositFee || 0.05,
+      farmWithdrawFee: farmWithdrawFee || 0.05,
+      farmInitialSupply: farmInitialSupply || 1,
+      farmDuration: farmDuration || "90",
+      farmRewardToken: farmRewardToken,
+    },
+  });
 
-  // Set unsupported if the LP token is not supported
-  useEffect(() => {
-    if (!lpInfo?.pair) return;
+  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
 
-    const token0Address = isAddress(lpInfo?.pair?.token0.address);
-    const token1Address = isAddress(lpInfo?.pair?.token1.address);
+  const onSubmit = (data: z.infer<typeof farmDeployerSchema>) => {
+    // Set the form data to the global state
+    setFarmInfo(data);
+    // Progress to the confirm step
+    setDeployerFarmStep("confirm");
+  };
 
-    const notSupported =
-      router?.factory?.toLowerCase() !== lpInfo?.pair?.factory?.toLowerCase() ||
-      supportedTokens
-        .filter((t) => t.chainId === chainId && t.address)
-        .filter(
-          (t) =>
-            t.address.toLowerCase() === token0Address?.toLowerCase() ||
-            t.address.toLowerCase() === token1Address?.toLowerCase()
-        ).length < 2;
+  const watchDuration = form.watch("farmDuration");
+  const watchLpAddress = form.watch("farmLpAddress");
+  const watchRewardToken = form.watch("farmRewardToken");
+  const watchInitialSupply = form.watch("farmInitialSupply");
 
-    setUnsupported(notSupported);
-  }, [chainId, lpInfo, router?.factory, supportedTokens]);
+  // Gets and sets the LP token sate
+  const lpInfo = useLPTokenInfo(watchLpAddress, chainId, farmRouters[chainId].factory);
 
-  const rewardCurrency = useCurrency(rewardToken?.address);
+  const rewardCurrency = useCurrency(watchRewardToken?.address);
   const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setDeployerFarmStep("confirm");
-      }}
-      className="slide-out-from-left mb-8 space-y-8 animate-out"
-    >
-      <div>
-        <h4 className="mb-4 text-xl">Choose a network and router</h4>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <ChainSelect id="chain-select" />
-          <RouterSelect id="router-select" router={router} setRouter={setRouter} type="deploy" />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-8">
+        <div className="my-8">
+          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
         </div>
-      </div>
 
-      <div className="divider" />
-
-      <div>
-        <header className="mb-4 flex w-full flex-wrap items-center justify-between">
-          <h4 className="whitespace-nowrap text-xl">Select LP token pair</h4>
-          {lpInfo?.pair && (
-            <div className="text-sm text-white">
-              <h5>{unsupported && "Provided LP token is not supported"}</h5>
-              {!unsupported && (
-                <div className="flex items-center">
-                  <div className="relative flex w-fit items-center overflow-hidden whitespace-nowrap animate-in slide-in-from-top sm:flex sm:overflow-visible">
-                    <TokenLogo
-                      src={getTokenLogoURL(lpInfo.pair.token0.address, chainId)}
-                      alt={lpInfo.pair.token0.name}
-                      classNames="h-7 w-7 rounded-full"
-                      onError={(e) => {
-                        e.target.src = getEmptyTokenLogo(chainId);
-                      }}
-                    />
-                    <TokenLogo
-                      src={getTokenLogoURL(lpInfo.pair.token1.address, chainId)}
-                      alt={lpInfo.pair.token0.name}
-                      classNames="-ml-3 h-7 w-7 rounded-full"
-                      onError={(e) => {
-                        e.target.src = getEmptyTokenLogo(chainId);
-                      }}
-                    />
-
-                    <a
-                      target="_blank"
-                      className="ml-2 text-xs underline"
-                      href={`https://v2.info.uniswap.org/pair/${lpInfo.pair.address}`}
-                    >
-                      {lpInfo.pair.token0.symbol}-{lpInfo.pair.token1.symbol}
-                    </a>
-                  </div>
-                </div>
+        <div>
+          <h4 className="mb-4 text-xl">Choose a network and router</h4>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="farmDeployChainId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">Choose a network to deploy on</FormLabel>
+                  <FormControl>
+                    <>
+                      <ChainSelect id="chain-select" networks={supportedNetworks} />
+                      <input type="hidden" {...field} value={chainId} />
+                    </>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
-          )}
-        </header>
-        <div className="relative">
-          <Input
-            placeholder="Search by contract address..."
-            value={lpAddress}
-            onChange={(e) => {
-              setLpAddress(e.target.value);
-            }}
-          />
+            />
 
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            {lpAddress.length > 2 && lpInfo?.pending && <span className="loading loading-spinner loading-md"></span>}
-            {lpAddress.length > 2 && !lpInfo?.pending && !lpInfo?.pair && <X className="text-red-600" />}
-            {lpAddress.length > 10 && !lpInfo?.pending && lpInfo?.pair && <Check className="text-green-600" />}
+            <FormField
+              control={form.control}
+              name="farmRouter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">Choose a router</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input className="rounded-3xl pl-10" value={farmRouters[chainId].name} />
+                      <div
+                        className="absolute inset-y-0 left-2 my-auto h-6 w-6 overflow-hidden rounded-full bg-slate-800 bg-cover bg-no-repeat"
+                        style={{
+                          backgroundImage: `url(${getDexLogo(farmRouters[chainId].id)})`,
+                        }}
+                      ></div>
+                      <input type="hidden" {...field} value={JSON.stringify(field.value)} />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
-      </div>
 
-      <div className="divider" />
+        <div className="divider" />
 
-      <div>
-        <h4 className="mb-4 text-xl">Yield farm duration</h4>
+        <div className="relative">
+          <FormField
+            control={form.control}
+            name="farmLpAddress"
+            render={({ field }) => (
+              <FormItem className="space-y-4">
+                <div className="mb-4 flex w-full flex-wrap items-center justify-between">
+                  <FormLabel className="text-xl">Input LP token pair</FormLabel>
 
-        <RadioGroup
-          defaultChecked={true}
-          defaultValue={farmDuration}
-          aria-labelledby="farm-duration-label"
-          className="grid gap-4 sm:grid-cols-4"
-          onValueChange={(value) => setFarmDuration(value as FarmDuration)}
-        >
-          {DURATIONS.map((d) => (
-            <Label
-              key={d}
-              htmlFor={d}
-              className="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border border-gray-700 p-6 text-gray-500 hover:bg-gray-500/10"
-            >
-              <RadioGroupItem className="peer sr-only" id={d} value={d} />
-              <CalendarClock className="h-8 w-8 peer-aria-checked:text-white" />
-              <span className="peer-aria-checked:text-white">{d} Days</span>
-            </Label>
-          ))}
-        </RadioGroup>
-      </div>
+                  {lpInfo.errorMessage}
 
-      <div className="divider" />
+                  {!lpInfo.pending && lpInfo.pair && (
+                    <div className="text-sm text-white">
+                      <div className="flex items-center">
+                        <div className="relative flex w-fit items-center overflow-hidden whitespace-nowrap animate-in slide-in-from-top sm:flex sm:overflow-visible">
+                          <TokenLogo
+                            src={getTokenLogoURL(lpInfo.pair.token0.address, chainId)}
+                            alt={lpInfo.pair.token0.name}
+                            classNames="h-7 w-7 rounded-full"
+                            onError={(e) => {
+                              e.target.src = getEmptyTokenLogo(chainId);
+                            }}
+                          />
+                          <TokenLogo
+                            src={getTokenLogoURL(lpInfo.pair.token1.address, chainId)}
+                            alt={lpInfo.pair.token0.name}
+                            classNames="-ml-3 h-7 w-7 rounded-full"
+                            onError={(e) => {
+                              e.target.src = getEmptyTokenLogo(chainId);
+                            }}
+                          />
 
-      <div>
-        <h3 className="mb-4 text-xl">Rewards</h3>
-        <div className="my-6">
-          <h4 className="mb-4 text-base">Select the reward token for the yield farm</h4>
-          <TokenSelect selectedCurrency={rewardToken} setSelectedCurrency={setRewardToken} />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="initial-supply">Reward supply for {farmDuration} Days</Label>
-          <IncrementorInput
-            min={0}
-            max={1}
-            symbol="%"
-            step={0.01}
-            id="initial-supply"
-            defaultValue={initialSupply}
-            onChange={(e) => setInitialSupply(+e.target.value)}
+                          <a
+                            target="_blank"
+                            className="ml-2 text-xs underline"
+                            href={`https://v2.info.uniswap.org/pair/${lpInfo.pair.address}`}
+                          >
+                            {lpInfo.pair.token0.symbol}-{lpInfo.pair.token1.symbol}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <FormControl>
+                  <div className="relative">
+                    <Input placeholder="Search by contract address..." {...field} />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      {watchLpAddress?.length > 2 && lpInfo?.pending && (
+                        <span className="loading loading-spinner loading-md"></span>
+                      )}
+                      {watchLpAddress?.length > 2 && !lpInfo?.pending && !lpInfo?.pair && (
+                        <X className="text-red-600" />
+                      )}
+                      {watchLpAddress?.length > 10 && !lpInfo?.pending && lpInfo?.pair && (
+                        <Check className="text-green-600" />
+                      )}
+                    </div>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 
-        {rewardToken && (
-          <Alert className="my-8">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>
-              Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}
-            </AlertTitle>
-          </Alert>
-        )}
-      </div>
+        <div className="divider" />
 
-      <div className="divider" />
+        <FormField
+          control={form.control}
+          name="farmDuration"
+          render={({ field }) => (
+            <FormItem className="space-y-4">
+              <FormLabel className="text-xl">Select the duration of the yield farm</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="grid gap-4 sm:grid-cols-4"
+                >
+                  {farmDurations.map((type) => (
+                    <RadioButton key={type.id} value={type.id}>
+                      <CalendarClock className="h-6 w-6 peer-aria-checked:text-white" />
+                      {type.label}
+                    </RadioButton>
+                  ))}
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <div>
-        <h3 className="text-xl">Fees</h3>
-        <p className="mb-4 text-sm text-gray-500">Set fees for your users</p>
+        <div className="divider" />
 
-        <ul className="space-y-6">
-          <li className="flex items-center justify-between">
-            <Label htmlFor="deposit-fee">
-              Deposit fee
-              <div className="tooltip -mt-2" data-tip="Deposit fees are sent to deployer address.">
-                <Info className="w-4" />
-              </div>
-            </Label>
-            <IncrementorInput
-              min={0}
-              max={2}
-              symbol="%"
-              step={0.01}
-              id="deposit-fee"
-              defaultValue={depositFee}
-              onChange={(e) => setDepositFee(+e.target.value)}
-            />
-          </li>
-          <li className="flex items-center justify-between">
-            <Label htmlFor="withdraw-fee">
-              Withdrawal fee
-              <div className="tooltip -mt-2" data-tip="Withdraw fees are sent to deployer address.">
-                <Info className="w-4" />
-              </div>
-            </Label>
-            <IncrementorInput
-              min={0}
-              max={3}
-              symbol="%"
-              step={0.01}
-              id="withdraw-fee"
-              defaultValue={withdrawFee}
-              onChange={(e) => setWithdrawFee(+e.target.value)}
-            />
-          </li>
-        </ul>
-      </div>
+        <div>
+          <h3 className="mb-4 text-xl">Rewards</h3>
 
-      <Button
-        type="submit"
-        variant="brand"
-        className="mt-6 w-full"
-        disabled={!lpInfo?.pair || unsupported || !rewardToken}
-      >
-        Confirm and finalise
-      </Button>
-    </form>
+          <FormField
+            control={form.control}
+            name="farmRewardToken"
+            render={({ field }) => (
+              <FormItem className="space-y-4">
+                <FormLabel className="text-xl">Select the reward token for the yield farm</FormLabel>
+                <FormControl>
+                  <TokenSelect
+                    selectedCurrency={field.value}
+                    setSelectedCurrency={(token) => {
+                      form.setValue("farmRewardToken", token);
+                      form.trigger("farmRewardToken");
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="farmInitialSupply"
+            render={({ field }) => (
+              <FormItem className="my-4 flex items-center justify-between">
+                <FormLabel>Reward supply for {watchDuration} Days</FormLabel>
+                <FormControl>
+                  <IncrementorInput step={0.01} min={0.1} max={10} symbol="%" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {watchRewardToken && (
+            <Alert className="my-8">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>
+                Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * watchInitialSupply) / 100).toFixed(2))}
+              </AlertTitle>
+            </Alert>
+          )}
+        </div>
+
+        <div className="divider" />
+
+        <div>
+          <h3 className="text-xl">Fees</h3>
+          <p className="mb-4 text-sm text-gray-500">Set fees for your users</p>
+
+          <FormField
+            control={form.control}
+            name="farmDepositFee"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel className="flex flex-col gap-1">
+                  Deposit fee
+                  <small className="text-gray-500">Deposit fees are sent to deployer address.</small>
+                </FormLabel>
+                <FormControl>
+                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="farmWithdrawFee"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel className="flex flex-col gap-1">
+                  Withdraw fee
+                  <small className="text-gray-500">Withdraw fees are sent to deployer address.</small>
+                </FormLabel>
+                <FormControl>
+                  <div className="flex flex-col items-end">
+                    <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    <FormMessage />
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Button type="submit" variant="brand" className="w-full" disabled={lpInfo.errorMessage !== ""}>
+          Confirm and finalise
+        </Button>
+      </form>
+    </Form>
   );
 };
 
