@@ -6,7 +6,8 @@ import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
 const FarmSuccessfulDeploy = () => {
   const { chainId } = useActiveChainId();
-  const [{ deployedFarmAddress, lpAddress }] = useDeployerFarmState("farmInfo");
+  const [{ farmLpAddress }] = useDeployerFarmState("farmInfo");
+  const [deployedFarmAddress] = useDeployerFarmState("deployedFarmAddress");
 
   return (
     <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
@@ -35,8 +36,8 @@ const FarmSuccessfulDeploy = () => {
                 <dt className="text-sm font-medium leading-6 text-white">Liquidity token address</dt>
                 <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
                   <img src={getExplorerLogo(chainId)} className="mr-1 h-4 w-4" alt="explorer" />
-                  <a href={getBlockExplorerLink(lpAddress, "address", chainId)} target="_blank" rel="noreferrer">
-                    {lpAddress.slice(0, 12)}....
+                  <a href={getBlockExplorerLink(farmLpAddress, "address", chainId)} target="_blank" rel="noreferrer">
+                    {farmLpAddress.slice(0, 12)}....
                   </a>
                 </dd>
               </div>
