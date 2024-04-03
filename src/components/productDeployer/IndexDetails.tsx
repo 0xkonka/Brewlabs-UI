@@ -148,9 +148,11 @@ const IndexDetails = () => {
             <FormItem className="flex items-center justify-between">
               <FormLabel>Deposit fee</FormLabel>
               <FormControl>
-                <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                <div className="flex flex-col items-end">
+                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                  <FormMessage />
+                </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -162,9 +164,11 @@ const IndexDetails = () => {
             <FormItem className="flex items-center justify-between">
               <FormLabel>Commission fee</FormLabel>
               <FormControl>
-                <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                <div className="flex flex-col items-end">
+                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                  <FormMessage />
+                </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />

@@ -21,14 +21,7 @@ import { RadioButton } from "@components/ui/radio-button";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { numberWithCommas } from "utils/functions";
 import { poolDeployerSchema, supportedNetworks } from "config/schemas/poolDeployerSchema";
-import {
-  setPoolInfo,
-  useDeployerPoolState,
-  setPoolToken,
-  setPoolRewardToken,
-  setDeployerPoolStep,
-  setPoolReflectionToken,
-} from "state/deploy/deployerPool.store";
+import { setPoolInfo, setDeployerPoolStep, useDeployerPoolState } from "state/deploy/deployerPool.store";
 
 const poolTypes = [
   {
@@ -114,7 +107,7 @@ const PoolDetails = () => {
     defaultValues: {
       poolDeployChainId: chainId,
       poolToken,
-      poolType: "standard",
+      poolType: poolType || "standard",
       poolRewardToken,
       poolReflectionToken,
       poolInitialRewardSupply: initialSupply,
@@ -187,7 +180,6 @@ const PoolDetails = () => {
                 <TokenSelect
                   selectedCurrency={field.value}
                   setSelectedCurrency={(token) => {
-                    setPoolToken(token);
                     form.setValue("poolToken", token);
                     form.trigger("poolToken");
                   }}
@@ -297,7 +289,6 @@ const PoolDetails = () => {
                       <TokenSelect
                         selectedCurrency={field.value}
                         setSelectedCurrency={(token) => {
-                          setPoolRewardToken(token);
                           form.trigger("poolRewardToken");
                           form.setValue("poolRewardToken", token);
                         }}
@@ -316,9 +307,11 @@ const PoolDetails = () => {
                       <FormItem className="mt-4 flex items-center justify-between">
                         <FormLabel>Set the initial reward supply for {watchPoolDuration} Days</FormLabel>
                         <FormControl>
-                          <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                          <div className="flex flex-col items-end">
+                            <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                            <FormMessage />
+                          </div>
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -350,7 +343,6 @@ const PoolDetails = () => {
                       <TokenSelect
                         selectedCurrency={field.value}
                         setSelectedCurrency={(token) => {
-                          setPoolReflectionToken(token);
                           form.trigger("poolReflectionToken");
                           form.setValue("poolReflectionToken", token);
                         }}
@@ -377,9 +369,11 @@ const PoolDetails = () => {
               <FormItem className="flex items-center justify-between">
                 <FormLabel>Commission fee</FormLabel>
                 <FormControl>
-                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                  <div className="flex flex-col items-end">
+                    <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    <FormMessage />
+                  </div>
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -391,9 +385,11 @@ const PoolDetails = () => {
               <FormItem className="flex items-center justify-between">
                 <FormLabel>Deposit fee</FormLabel>
                 <FormControl>
-                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                  <div className="flex flex-col items-end">
+                    <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    <FormMessage />
+                  </div>
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />

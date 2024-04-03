@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Check, X, CalendarClock, AlertCircle } from "lucide-react";
+import type { Token } from "@brewlabs/sdk";
 
 import { getEmptyTokenLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -10,26 +11,21 @@ import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
 import AlertConnection from "components/AlertConnection";
-
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Alert, AlertTitle } from "@components/ui/alert";
 import { RadioButton } from "@components/ui/radio-button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
-
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import useTotalSupply from "hooks/useTotalSupply";
-import { useCurrency } from "hooks/Tokens";
-import useLPTokenInfo from "@hooks/useLPTokenInfo";
-
-import type { Token } from "@brewlabs/sdk";
-
-import { getDexLogo } from "utils/functions";
-
 import TokenLogo from "@components/logo/TokenLogo";
 import { RadioGroup } from "components/ui/radio-group";
 import { IncrementorInput } from "@components/ui/incrementorInput";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 
+import { useCurrency } from "hooks/Tokens";
+import useTotalSupply from "hooks/useTotalSupply";
+import useLPTokenInfo from "hooks/useLPTokenInfo";
+import { useActiveChainId } from "hooks/useActiveChainId";
+
+import { getDexLogo } from "utils/functions";
 import { farmDeployerSchema, supportedNetworks } from "config/schemas/farmDeployerSchema";
 import { setFarmInfo, useDeployerFarmState, setDeployerFarmStep } from "state/deploy/deployerFarm.store";
 
@@ -288,9 +284,11 @@ const FarmDetails = () => {
               <FormItem className="my-4 flex items-center justify-between">
                 <FormLabel>Reward supply for {watchDuration} Days</FormLabel>
                 <FormControl>
-                  <IncrementorInput step={0.01} min={0.1} max={10} symbol="%" {...field} />
+                  <div className="flex flex-col items-end">
+                    <IncrementorInput step={0.01} min={0.1} max={10} symbol="%" {...field} />
+                    <FormMessage />
+                  </div>
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -321,9 +319,11 @@ const FarmDetails = () => {
                   <small className="text-gray-500">Deposit fees are sent to deployer address.</small>
                 </FormLabel>
                 <FormControl>
-                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                  <div className="flex flex-col items-end">
+                    <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    <FormMessage />
+                  </div>
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
