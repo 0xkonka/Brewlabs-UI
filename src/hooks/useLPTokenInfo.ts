@@ -143,6 +143,8 @@ function useLPTokenInfo(address: string, chainId: number, routerFactory: `0x${st
       setPending(false);
     }
 
+    if (!address) return;
+
     if (!isAddress(address)) {
       setPair(null);
       setErrorMessage("Invalid address");
