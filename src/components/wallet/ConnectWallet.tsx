@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import clsx from "clsx";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -12,6 +12,13 @@ import { useGlobalState } from "state";
 
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
+
+//Solana
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
+import useUserSOLBalanceStore from "../../store/useUserSOLBalanceStore";
+import { ChainId } from "@brewlabs/sdk";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -32,6 +39,13 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
   const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
+  // Solana
+  const { connected } = useWallet();
+  const wallet = useWallet();
+  const { connection } = useConnection();
+  const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
+  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const { getUserSOLBalance } = useUserSOLBalanceStore();
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -43,8 +57,23 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
     }
   }, [isConnected, connector, disconnect]);
 
-  if (!mounted) return null;
+  useEffect(() => {
+    if (chainId === (900 as ChainId) || chainId === (901 as ChainId)) {
+      setIsSolanaNetwork(true);
+    } else setIsSolanaNetwork(false);
+  }, [chainId, setIsSolanaNetwork]);
 
+  useEffect(() => {
+    if (wallet.publicKey) {
+      console.log(wallet.publicKey.toBase58());
+      getUserSOLBalance(wallet.publicKey, connection);
+    }
+  }, [wallet.publicKey, connection, getUserSOLBalance]);
+
+  const truncatedAddress = (address: `0x${string}`) =>
+    `${address.substring(0, 10)}...${address.substring(address.length - 4)}`;
+
+  if (!mounted) return null;
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
       <SwitchNetworkModal
@@ -52,12 +81,35 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         networks={supportedNetworks}
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
-      <WrongNetworkModal
+      {(isConnected || connected) && (
+        <div
+          onClick={(e) => {
+            if (supportedNetworks.length > 1 && !allowDisconnect) {
+              e.stopPropagation();
+              setOpenSwitchNetworkModal(true);
+              // open({view: "Networks"})
+            }
+          }}
+          className="rounded-full border-2"
+        >
+          <div
+            className="h-12 w-12 cursor-pointer overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
+            style={{
+              backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
+            }}
+          />
+        </div>
+      )}
+      {/* <WrongNetworkModal
         open={!!isWrongNetwork || !supportedNetworks.map((network) => network.id).includes(chainId)}
         currentChain={supportedNetworks.find((network) => network.id === chainId) ?? supportedNetworks[0]}
-      />
-
-      {!isConnected ? (
+      /> */}
+      {isSolanaNetwork ? (
+        <div className="flex flex-col">
+          <WalletMultiButton />
+          {wallet && <p>SOL Balance: {(balance || 0).toLocaleString()}</p>}
+        </div>
+      ) : !isConnected ? (
         <button
           onClick={() => {
             open({ view: "Connect" });
@@ -79,24 +131,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
       ) : (
         <div className="group block w-full flex-shrink-0">
           <div className="flex items-center">
-            <div
-              onClick={(e) => {
-                if (supportedNetworks.length > 1 && !allowDisconnect) {
-                  e.stopPropagation();
-                  setOpenSwitchNetworkModal(true);
-                  // open({view: "Networks"})
-                }
-              }}
-              className="rounded-full border-2"
-            >
-              <div
-                className="h-12 w-12 cursor-pointer overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
-                style={{
-                  backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
-                }}
-              />
-            </div>
-
             <button
               className="ml-3 overflow-hidden"
               onClick={() => {
@@ -104,8 +138,8 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 setUserSidebarContent(<UserDashboard />);
               }}
             >
-              <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
-                {isLoading ? "..." : address}
+              <p className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
+                {isLoading ? "..." : truncatedAddress(address)}
               </p>
               <p className="text-left text-sm font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>

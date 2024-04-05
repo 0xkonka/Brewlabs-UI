@@ -11,7 +11,7 @@ import { fetchFarmFactoryDataAsync, fetchIndexFactoryDataAsync, fetchTokenFactor
 export const usePollTokenFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerToken.filter((chainId) =>
     Object.keys(contracts.tokenFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -19,13 +19,13 @@ export const usePollTokenFactoryData = () => {
 
   useEffect(() => {
     supportedChains.forEach((chainId) => dispatch(fetchTokenFactoryDataAsync(chainId)));
-  }, [dispatch]);
+  }, [dispatch, supportedChains]);
 };
 
 export const usePollFarmFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerFarm.filter((chainId) =>
     Object.keys(contracts.farmFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -33,13 +33,13 @@ export const usePollFarmFactoryData = () => {
 
   useEffect(() => {
     supportedChains.forEach((chainId) => dispatch(fetchFarmFactoryDataAsync(chainId)));
-  }, [dispatch]);
+  }, [dispatch, supportedChains]);
 };
 
 export const usePollIndexFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS["deployer"].filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerIndex.filter((chainId) =>
     Object.keys(contracts.indexFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -47,7 +47,7 @@ export const usePollIndexFactoryData = () => {
 
   useEffect(() => {
     supportedChains.forEach((chainId) => dispatch(fetchIndexFactoryDataAsync(chainId)));
-  }, [dispatch]);
+  }, [dispatch, supportedChains]);
 };
 
 export const useFarmFactory = (chainId) =>

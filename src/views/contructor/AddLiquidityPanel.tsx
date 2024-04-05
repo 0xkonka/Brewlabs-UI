@@ -351,7 +351,7 @@ export default function AddLiquidityPanel({
         <ChainSelect />
       </div>
       <div className="-mt-2">
-        <RouterSelect router={dexrouter} setRouter={setDexRouter} dexId={selecedDexId} />
+        <RouterSelect id="dex-router" router={dexrouter} setRouter={setDexRouter} dexId={selecedDexId} />
       </div>
       <div className="my-2 rounded-[30px] border border-[#FFFFFF80]">
         <CurrencyInputPanel
