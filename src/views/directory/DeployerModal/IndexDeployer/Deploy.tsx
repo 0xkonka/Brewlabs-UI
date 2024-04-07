@@ -20,7 +20,7 @@ import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
 
-import { useFactory } from "./hooks";
+import { useDeployIndex } from "hooks/deploy/useDeployIndex";
 import StyledInput from "@components/StyledInput";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
@@ -29,7 +29,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const factory = useIndexFactory(chainId);
-  const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const { onCreate } = useDeployIndex(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
   const { onApprove } = useTokenApprove();
 
   const [name, setName] = useState("");

@@ -69,6 +69,9 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
     }
   }, [wallet.publicKey, connection, getUserSOLBalance]);
 
+  const truncatedAddress = (address: `0x${string}`) =>
+    `${address.substring(0, 10)}...${address.substring(address.length - 4)}`;
+
   if (!mounted) return null;
   return (
     <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
@@ -134,8 +137,8 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
                 setUserSidebarContent(<UserDashboard />);
               }}
             >
-              <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
-                {isLoading ? "..." : address}
+              <p className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
+                {isLoading ? "..." : truncatedAddress(address)}
               </p>
               <p className="text-left text-sm font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>

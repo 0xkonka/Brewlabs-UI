@@ -1,20 +1,20 @@
 import { Card, CardContent } from "@components/ui/card";
 
-import { useDeployerState } from "state/deploy/deployer.store";
+import { useDeployerTokenState } from "state/deploy/deployerToken.store";
 
-import DeployDetails from "@components/productDeployer/DeployDetails";
-import DeployConfirmation from "@components/productDeployer/DeployConfirmation";
-import SuccessfulDeploy from "@components/productDeployer/SuccessfulDeploy";
+import TokenDetails from "@components/productDeployer/TokenDetails";
+import TokenDeployConfirm from "@components/productDeployer/TokenDeployConfirm";
+import TokenSuccessfulDeploy from "@components/productDeployer/TokenSuccessfulDeploy";
 
 const TokenDeployer = () => {
-  const [deployerStep] = useDeployerState("deployerStep");
+  const [deployerTokenStep] = useDeployerTokenState("deployerTokenStep");
 
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerStep === "details" && <DeployDetails />}
-        {deployerStep === "confirm" && <DeployConfirmation />}
-        {deployerStep === "success" && <SuccessfulDeploy />}
+        {deployerTokenStep === "details" && <TokenDetails />}
+        {deployerTokenStep === "confirm" && <TokenDeployConfirm />}
+        {deployerTokenStep === "success" && <TokenSuccessfulDeploy />}
       </CardContent>
     </Card>
   );

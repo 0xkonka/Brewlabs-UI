@@ -1,9 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
-import { Chain, useNetwork } from "wagmi";
+import { useNetwork } from "wagmi";
 
-import { bsc } from "contexts/wagmi";
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useGlobalState } from "state";
 import { isChainSupported } from "utils/wagmi";
@@ -40,17 +39,19 @@ export function useLocalNetworkChain() {
   const chainId = +(sessionChainId || queryChainId);
   if (isChainSupported(chainId)) {
     return chainId;
-  } else if (chainId === 900) return chainId;
+  } else if (chainId === 900) {
+    return chainId;
+  }
 
   return undefined;
 }
 
-export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isNotMatched: any; isLoading: any } => {
+export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isNotMatched: any } => {
   const { chain } = useNetwork();
+
   const localChainId = useLocalNetworkChain();
   const queryChainId = useQueryChainId();
   const isNotMatched = useMemo(() => chain && localChainId && chain.id !== localChainId, [chain, localChainId]);
-  // const isNotMatched = false;
 
   const { setIsSolanaNetwork } = useSolanaNetwork();
   useEffect(() => {
@@ -63,7 +64,7 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
     return chainId;
   }, [localChainId, queryChainId]);
 
-  if (localChainId == undefined && queryChainId <= 0)
+  if (localChainId == undefined && queryChainId <= 0) {
     return {
       chainId: 56,
       isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
@@ -71,13 +72,11 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
       isNotMatched,
       isLoading: true,
     };
-  // const chainId = localChainId ?? chain?.id ?? (queryChainId <= 0 ? bsc.id : queryChainId);
+  }
 
   return {
     chainId,
     isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
-    // isWrongNetwork: isNotMatched,
     isNotMatched,
-    isLoading: false,
   };
 };

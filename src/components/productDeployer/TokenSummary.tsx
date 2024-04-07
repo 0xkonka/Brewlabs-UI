@@ -1,6 +1,6 @@
 import { Check, X } from "lucide-react";
 import { numberWithCommas } from "utils/functions";
-import { useDeployerState } from "state/deploy/deployer.store";
+import { useDeployerTokenState } from "state/deploy/deployerToken.store";
 import { Avatar, AvatarImage } from "@components/ui/avatar";
 
 const TokenSummary = () => {
@@ -14,10 +14,9 @@ const TokenSummary = () => {
       tokenImmutable,
       tokenRevokeFreeze,
       tokenRevokeMint,
-      // tokenBurnPercentage,
     },
-  ] = useDeployerState("tokenInfo");
-  const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
+  ] = useDeployerTokenState("tokenInfo");
+  const [tokenImageDisplayUrl] = useDeployerTokenState("tokenImageDisplayUrl");
 
   return (
     <dl className="mb-8 mt-12 divide-y divide-gray-600 rounded-xl bg-zinc-600/20 text-sm lg:col-span-7 lg:px-8 lg:py-2">
@@ -73,11 +72,6 @@ const TokenSummary = () => {
         <dt className="text-gray-400">Token can revoke mint</dt>
         <dd className="font-medium text-gray-200">{tokenRevokeMint ? <Check /> : <X />}</dd>
       </div>
-{/* 
-      <div className="flex items-center justify-between p-4">
-        <dt className="text-gray-400">Token burn percentage</dt>
-        <dd className="font-medium text-gray-200">{tokenBurnPercentage}%</dd>
-      </div> */}
     </dl>
   );
 };

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/solid";
 
 import { cn } from "lib/utils";
-import { setDeployerStep } from "state/deploy/deployer.store";
 
 import { Button } from "@components/ui/button";
 import { Command, CommandGroup, CommandItem } from "@components/ui/command";
@@ -24,12 +23,16 @@ const productDeployLinks = [
     value: "/deployer/deploy-index",
     label: "Index",
   },
+  {
+    value: "/deployer/deploy-pool",
+    label: "Staking Pool",
+  },
 ];
 
 const ButtonProductDeploy = () => {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -48,7 +51,6 @@ const ButtonProductDeploy = () => {
                 value={item.value}
                 onSelect={() => {
                   router.push(item.value);
-                  setDeployerStep("details");
                   setOpen(false);
                 }}
               >

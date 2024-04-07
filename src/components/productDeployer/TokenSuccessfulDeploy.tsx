@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { ExternalLink, UserCheck2 } from "lucide-react";
+import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 
 import TokenSummary from "@components/productDeployer/TokenSummary";
 
@@ -10,20 +11,17 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { addTokenToMetamask } from "lib/bridge/helpers";
 import { BridgeToken } from "config/constants/types";
 
-import { useDeployerState } from "state/deploy/deployer.store";
-import { ShieldCheckIcon } from "@heroicons/react/24/outline";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
+import { useDeployerTokenState } from "state/deploy/deployerToken.store";
 
-const SuccessfulDeploy = () => {
+const TokenSuccessfulDeploy = () => {
   const { connector, address } = useAccount();
   const { chainId } = useActiveChainId();
   const { publicKey: walletPublicKey } = useWallet();
   const { isSolanaNetwork } = useSolanaNetwork();
 
   const [isCopied, setIsCopied] = useState(false);
-  const [deployedAddress] = useDeployerState("deployedAddress");
-  const [{ tokenSymbol, tokenDecimals }] = useDeployerState("tokenInfo");
+  const [deployedAddress] = useDeployerTokenState("deployedAddress");
+  const [{ tokenSymbol, tokenDecimals }] = useDeployerTokenState("tokenInfo");
 
   const onCopyAddress = () => {
     setIsCopied(true);
@@ -98,4 +96,4 @@ const SuccessfulDeploy = () => {
   );
 };
 
-export default SuccessfulDeploy;
+export default TokenSuccessfulDeploy;

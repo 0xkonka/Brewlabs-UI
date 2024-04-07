@@ -32,7 +32,7 @@ export const SUPPORTED_CHAIN_IDS = [
 // export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 
 export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
-  // export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
+  //export const PAGE_SUPPORTED_CHAINS = {
   chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   farms: [
     ChainId.ETHEREUM,
@@ -54,7 +54,23 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  deployer: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.ARBITRUM, ExtendedChainId.SOLANA],
+  deployerIndex: [ChainId.POLYGON, ChainId.BSC_MAINNET],
+  deployerFarm: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  deployerToken: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.ARBITRUM,
+    ChainId.BASE,
+    ExtendedChainId.SOLANA_MAINNET,
+    ExtendedChainId.SOLANA_DEVNET,
+  ],
+  deployerPool: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.ARBITRUM,
+    ExtendedChainId.SOLANA_MAINNET,
+    ExtendedChainId.SOLANA_DEVNET,
+  ],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],

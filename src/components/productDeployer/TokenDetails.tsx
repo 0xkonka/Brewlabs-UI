@@ -1,52 +1,64 @@
-import { ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Upload } from "lucide-react";
-import ChainSelect from "views/swap/components/ChainSelect";
+
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Textarea } from "@components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
-
 import { Checkbox } from "components/ui/checkbox";
+import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
+import ChainSelect from "views/swap/components/ChainSelect";
+import AlertConnection from "components/AlertConnection";
 
-import { tokenDeployerSchema } from "config/schemas/tokenDeployerSchema";
-import { useDeployerState, setTokenInfo, setTokenImageDisplayUrl, setDeployerStep } from "state/deploy/deployer.store";
+import { useActiveChainId } from "hooks/useActiveChainId";
+import { tokenDeployerSchema, supportedNetworks } from "config/schemas/tokenDeployerSchema";
+import {
+  setTokenInfo,
+  setDeployerTokenStep,
+  setTokenImageDisplayUrl,
+  useDeployerTokenState,
+} from "state/deploy/deployerToken.store";
 
-const DeployDetails = () => {
-  const [tokenImageDisplayUrl] = useDeployerState("tokenImageDisplayUrl");
-  const [{
-    tokenName,
-    tokenImage,
-    tokenDescription,
-    tokenSymbol,
-    tokenDecimals,
-    tokenTotalSupply,
-    tokenImmutable,
-    tokenRevokeFreeze,
-    tokenRevokeMint,
-    // tokenBurnPercentage
-  }] = useDeployerState("tokenInfo");
+const TokenDetails = () => {
+  const { chainId } = useActiveChainId();
+  const [showConditionalField, setShowConditionalField] = useState([]);
+  const [tokenImageDisplayUrl] = useDeployerTokenState("tokenImageDisplayUrl");
+  const [
+    {
+      tokenName,
+      tokenSymbol,
+      tokenDecimals,
+      tokenTotalSupply,
+      tokenImage,
+      tokenDescription,
+      tokenImmutable,
+      tokenRevokeFreeze,
+      tokenRevokeMint,
+    },
+  ] = useDeployerTokenState("tokenInfo");
 
   const form = useForm<z.infer<typeof tokenDeployerSchema>>({
     resolver: zodResolver(tokenDeployerSchema),
     defaultValues: {
-      tokenName: tokenName ?? "",
-      tokenSymbol: tokenSymbol ?? "",
-      tokenDecimals: tokenDecimals ?? 9,
-      tokenTotalSupply: tokenTotalSupply ?? 1000,
-      tokenImage: tokenImage ?? undefined,
-      tokenDescription: tokenDescription ?? "token Description",
-      tokenImmutable: tokenImmutable ?? false,
-      tokenRevokeFreeze: tokenRevokeFreeze ?? false,
-      tokenRevokeMint: tokenRevokeMint ?? false,
-      // tokenBurnPercentage: tokenBurnPercentage ?? "0",
+      tokenDeployChainId: chainId,
+      tokenName,
+      tokenSymbol,
+      tokenDecimals,
+      tokenTotalSupply,
+      tokenImage,
+      tokenDescription,
+      tokenImmutable,
+      tokenRevokeFreeze,
+      tokenRevokeMint,
     },
   });
+
+  const watchTokenDeployChainId = form.watch("tokenDeployChainId");
+  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
 
   const getImageData = (event: ChangeEvent<HTMLInputElement>) => {
     // FileList is immutable, so we need to create a new one
@@ -64,16 +76,42 @@ const DeployDetails = () => {
     // Store the form data in deployer store
     setTokenInfo(data);
     // Progress to the confirm step
-    setDeployerStep("confirm");
+    setDeployerTokenStep("confirm");
   };
+
+  // By setting this state we can show/hide the conditional fields based on the pool type
+  useEffect(() => {
+    if (watchTokenDeployChainId === 900) {
+      setShowConditionalField(["tokenImage", "tokenDescription"]);
+    }
+    if (watchTokenDeployChainId !== 900) {
+      setShowConditionalField([]);
+    }
+  }, [watchTokenDeployChainId]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
         <div className="my-8">
-          <h4 className="mb-6 text-xl">Choose a network to deploy on</h4>
-          <ChainSelect id="chain-select" />
+          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
         </div>
+
+        <FormField
+          control={form.control}
+          name="tokenDeployChainId"
+          render={({ field }) => (
+            <FormItem className="space-y-4">
+              <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
+              <FormControl>
+                <>
+                  <ChainSelect id="chain-select" networks={supportedNetworks} />
+                  <input type="hidden" {...field} value={chainId} />
+                </>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="divider" />
 
@@ -105,39 +143,6 @@ const DeployDetails = () => {
                     <FormControl>
                       <Input placeholder="ie: BNB" {...field} />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="tokenImage"
-                render={({ field: { onChange, value, ...rest } }) => (
-                  <FormItem className="relative">
-                    <FormLabel>Token icon</FormLabel>
-                    <div className="absolute left-0 top-6">
-                      <Avatar className="ring ring-zinc-900">
-                        <AvatarImage src={tokenImageDisplayUrl} width={500} height={500} alt="Token image" />
-                        <AvatarFallback>
-                          <Upload className="h-auto w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        className="pl-12"
-                        {...rest}
-                        onChange={(e) => {
-                          const { files, displayUrl } = getImageData(e);
-                          setTokenImageDisplayUrl(displayUrl);
-                          onChange(files);
-                        }}
-                        accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml"
-                      />
-                    </FormControl>
-                    <small className="text-gray-400">Recommended size: 500x500px</small>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -174,21 +179,64 @@ const DeployDetails = () => {
               />
             </div>
           </div>
-
-          <FormField
-            control={form.control}
-            name="tokenDescription"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Token description</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
+
+        <Accordion type="multiple" value={showConditionalField} className="w-full">
+          <AccordionItem value="tokenImage" className="border-b-0">
+            <AccordionContent>
+              <FormField
+                control={form.control}
+                name="tokenImage"
+                render={({ field: { onChange, value, ...rest } }) => (
+                  <FormItem className="relative">
+                    <FormLabel>Token icon</FormLabel>
+                    <div className="absolute left-0 top-6">
+                      <Avatar className="ring ring-zinc-900">
+                        <AvatarImage src={tokenImageDisplayUrl} width={500} height={500} alt="Token image" />
+                        <AvatarFallback>
+                          <Upload className="h-auto w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        className="pl-12"
+                        {...rest}
+                        onChange={(e) => {
+                          const { files, displayUrl } = getImageData(e);
+                          setTokenImageDisplayUrl(displayUrl);
+                          onChange(files);
+                        }}
+                        accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml"
+                      />
+                    </FormControl>
+                    <small className="text-gray-400">Recommended size: 500x500px</small>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="tokenDescription" className="border-b-0">
+            <AccordionContent>
+              <FormField
+                control={form.control}
+                name="tokenDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Token description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <div className="divider" />
 
@@ -253,4 +301,4 @@ const DeployDetails = () => {
   );
 };
 
-export default DeployDetails;
+export default TokenDetails;

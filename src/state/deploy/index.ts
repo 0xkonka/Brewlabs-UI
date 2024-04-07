@@ -7,55 +7,62 @@ import { getFarmFactoryAddress, getIndexFactoryAddress, getTokenFactoryAddress }
 import { fetchFarmFactoryData } from "./fetchFactory";
 import { fetchIndexFactoryData } from "./fetchIndex";
 import { fetchTokenFactoryData } from "./fetchToken";
-import { Chain } from "viem";
 
 const initialState = {
-  token: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => {
-    if (chainId == 900 ) {
-      return null; // Skip mapping for chainId 900 or 901
-    }
-    return {
-      chainId,
-      address: getTokenFactoryAddress(chainId as ChainId),
-      payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
-      serviceFee: "0",
-    };
-  }).filter(Boolean), // Filter out null values
-  farm: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => {
-    if (chainId == 900 ) {
-      return null; // Skip mapping for chainId 900 or 901
-    }
-    return {
-      chainId,
-      address: getFarmFactoryAddress(chainId as ChainId),
-      payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
-      serviceFee: "0",
-    };
-  }).filter(Boolean), // Filter out null values 
-  pool: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => {
-    if (chainId === 900 ) {
-      return null; // Skip mapping for chainId 900 or 901
-    }
-    return {
-      chainId,
-      address: getFarmFactoryAddress(chainId as ChainId),
-      payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
-      serviceFee: "0",
-    };
-  }).filter(Boolean), // Filter out null values
-  indexes: PAGE_SUPPORTED_CHAINS["deployer"].map((chainId) => {
-    if (chainId === 900 ) {
-      return null; // Skip mapping for chainId 900 or 901
-    }
-    return {
-      chainId,
-      address: getIndexFactoryAddress(chainId as ChainId),
-      payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
-      serviceFee: "0",
-      depositFeeLimit: 0.25,
-      commissionFeeLimit: 1,
-    };
-  }).filter(Boolean), // Filter out null values
+  token: PAGE_SUPPORTED_CHAINS.deployerToken
+    .map((chainId) => {
+      if (chainId == 900) {
+        return null; // Skip mapping for chainId 900 or 901
+      }
+      return {
+        chainId,
+        address: getTokenFactoryAddress(chainId as ChainId),
+        payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
+        serviceFee: "0",
+      };
+    })
+    .filter(Boolean), // Filter out null values
+  farm: PAGE_SUPPORTED_CHAINS.deployerFarm
+    .map((chainId) => {
+      // if (chainId == 900 || chainId == 901) {
+      //   return null; // Skip mapping for chainId 900 or 901
+      // }
+      return {
+        chainId,
+        address: getFarmFactoryAddress(chainId as ChainId),
+        payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
+        serviceFee: "0",
+      };
+    })
+    .filter(Boolean), // Filter out null values
+  pool: PAGE_SUPPORTED_CHAINS.deployerPool
+    .map((chainId) => {
+      if (chainId === 900) {
+        return null; // Skip mapping for chainId 900 or 901
+      }
+      return {
+        chainId,
+        address: getFarmFactoryAddress(chainId as ChainId),
+        payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
+        serviceFee: "0",
+      };
+    })
+    .filter(Boolean), // Filter out null values
+  indexes: PAGE_SUPPORTED_CHAINS.deployerIndex
+    .map((chainId) => {
+      // if (chainId === 900 || chainId === 901) {
+      //   return null; // Skip mapping for chainId 900 or 901
+      // }
+      return {
+        chainId,
+        address: getIndexFactoryAddress(chainId as ChainId),
+        payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
+        serviceFee: "0",
+        depositFeeLimit: 0.25,
+        commissionFeeLimit: 1,
+      };
+    })
+    .filter(Boolean), // Filter out null values
 };
 
 export const fetchTokenFactoryDataAsync = (chainId) => async (dispatch) => {
