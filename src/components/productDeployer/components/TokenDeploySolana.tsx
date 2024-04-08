@@ -1,20 +1,17 @@
-import { useState, useMemo, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { Pen } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button } from "components/ui/button";
-import { useActiveChainId } from "hooks/useActiveChainId";
-import { useDeployerState, setDeployedAddress, setDeployerStep } from "state/deploy/deployer.store";
+import { useDeployerTokenState, setDeployerTokenStep, setDeployedAddress } from "state/deploy/deployerToken.store";
 ///Solana
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, Transaction, SystemProgram, clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import {
-  TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
   TYPE_SIZE,
   LENGTH_SIZE,
   ExtensionType,
   AuthorityType,
-  createInitializeMintInstruction,
   createInitializeMint2Instruction,
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountInstruction,
@@ -59,19 +56,18 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
       tokenRevokeFreeze,
       tokenRevokeMint,
     },
-  ] = useDeployerState("tokenInfo");
+  ] = useDeployerTokenState("tokenInfo");
 
   const umi = useMemo(
     () => createUmi(clusterApiUrl("mainnet-beta")).use(nftStorageUploader({ token: NFT_STORAGE_TOKEN })),
     []
   );
 
-  console.log('ToeknDeploy Solana')
-  const DEPLOY_FEE = 0.5 // SOL
+  const DEPLOY_FEE = 0.5; // SOL
 
   const handleTokenDeploySolana = useCallback(async () => {
     // Generate new keypair for Mint Account
-    console.log("handleTokenDeploySolanaStart")
+    console.log("handleTokenDeploySolanaStart");
     const mintKeypair = Keypair.generate();
     // Address for Mint Account
     const mint = mintKeypair.publicKey;
@@ -220,7 +216,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
         fromPubkey: walletPublicKey,
         toPubkey: new PublicKey(TREASURY_ADDRESS_SOLANA),
         lamports: DEPLOY_FEE * LAMPORTS_PER_SOL,
-      })
+      });
       // Add instructions to new transaction
       const transaction = new Transaction().add(
         createAccountInstruction,
@@ -245,8 +241,8 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
 
       const signature = await sendTransaction(transaction, connection, { signers: [mintKeypair] });
 
-      TREASURY_ADDRESS_SOLANA
-      console.log("handleTokenDeploySolanaEND")
+      TREASURY_ADDRESS_SOLANA;
+      console.log("handleTokenDeploySolanaEND");
 
       const ToastLink = () => (
         <a
@@ -262,7 +258,7 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
       toast.success(ToastLink);
       setIsDeploying(false);
       setDeployedAddress(mint.toString());
-      setDeployerStep("success");
+      setDeployerTokenStep("success");
     } catch (err) {
       console.log("err", err);
       setIsDeploying(false);
@@ -292,7 +288,11 @@ const TokenDeploySolana = ({ setIsDeploying }: TokenDeploySolanaProps) => {
       </div>
 
       <div className="mt-4 flex gap-2">
-        <Button type="button" onClick={() => setDeployerStep("details")} className="flex w-full items-center gap-2">
+        <Button
+          type="button"
+          onClick={() => setDeployerTokenStep("details")}
+          className="flex w-full items-center gap-2"
+        >
           Edit <Pen className="h-4 w-4" />
         </Button>
 

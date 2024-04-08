@@ -24,7 +24,6 @@ const deployerTokenStore = {
     tokenImmutable: false,
     tokenRevokeFreeze: false,
     tokenRevokeMint: false,
-    // tokenBurnPercentage: "0",
   },
 } as DeployerTokenStore;
 

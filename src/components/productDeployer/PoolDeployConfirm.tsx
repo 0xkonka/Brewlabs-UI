@@ -47,7 +47,7 @@ const PoolDeployConfirm = () => {
       poolDeployChainId,
       poolDuration,
       poolDepositFee,
-      poolCommissionFee,
+      poolWithdrawFee,
       poolLockPeriod,
       poolReflectionToken,
       poolRewardToken,
@@ -196,9 +196,9 @@ const PoolDeployConfirm = () => {
               </div>
 
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt className="text-sm font-medium leading-6 text-white">Commission fee</dt>
+                <dt className="text-sm font-medium leading-6 text-white">Withdraw fee</dt>
                 <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                  {poolCommissionFee}%
+                  {poolWithdrawFee}%
                 </dd>
               </div>
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

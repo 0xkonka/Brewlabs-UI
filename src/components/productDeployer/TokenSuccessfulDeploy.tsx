@@ -11,6 +11,9 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import { addTokenToMetamask } from "lib/bridge/helpers";
 import { BridgeToken } from "config/constants/types";
 
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
+
 import { useDeployerTokenState } from "state/deploy/deployerToken.store";
 
 const TokenSuccessfulDeploy = () => {

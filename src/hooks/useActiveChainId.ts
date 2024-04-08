@@ -68,9 +68,7 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: any; isN
     return {
       chainId: 56,
       isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
-      // isWrongNetwork: isNotMatched,
       isNotMatched,
-      isLoading: true,
     };
   }
 

@@ -7,7 +7,8 @@ import { Button } from "components/ui/button";
 import { useTokenFactory } from "state/deploy/hooks";
 import { useFactory } from "hooks/useFactory";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useDeployerState, setDeployedAddress, setDeployerStep } from "state/deploy/deployer.store";
+import { useDeployerTokenState, setDeployerTokenStep, setDeployedAddress } from "state/deploy/deployerToken.store";
+
 import { getNativeSymbol } from "lib/bridge/helpers";
 import TokenFactoryAbi from "config/abi/token/factory.json";
 
@@ -17,21 +18,9 @@ interface TokenDeployEVMProps {
 
 const TokenDeployEVM = ({ setIsDeploying }: TokenDeployEVMProps) => {
   const { chain: EVMChain } = useNetwork();
-  const { chainId, isLoading } = useActiveChainId();
+  const { chainId } = useActiveChainId();
 
-  const [
-    {
-      tokenName,
-      tokenImage,
-      tokenDescription,
-      tokenSymbol,
-      tokenDecimals,
-      tokenTotalSupply,
-      tokenImmutable,
-      tokenRevokeFreeze,
-      tokenRevokeMint,
-    },
-  ] = useDeployerState("tokenInfo");
+  const [{ tokenName, tokenSymbol, tokenDecimals, tokenTotalSupply }] = useDeployerTokenState("tokenInfo");
 
   const factory = useTokenFactory(EVMChain.id);
   const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
@@ -49,7 +38,7 @@ const TokenDeployEVM = ({ setIsDeploying }: TokenDeployEVMProps) => {
           if (log.name === "StandardTokenCreated") {
             const token = log.args.token;
             setDeployedAddress(token);
-            setDeployerStep("success");
+            setDeployerTokenStep("success");
             break;
           }
         } catch (e) {}
@@ -71,7 +60,11 @@ const TokenDeployEVM = ({ setIsDeploying }: TokenDeployEVMProps) => {
       </div>
 
       <div className="mt-4 flex gap-2">
-        <Button type="button" onClick={() => setDeployerStep("details")} className="flex w-full items-center gap-2">
+        <Button
+          type="button"
+          onClick={() => setDeployerTokenStep("details")}
+          className="flex w-full items-center gap-2"
+        >
           Edit <Pen className="h-4 w-4" />
         </Button>
 

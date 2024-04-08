@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
