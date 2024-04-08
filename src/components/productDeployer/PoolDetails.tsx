@@ -1,22 +1,22 @@
+import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarClock, LockIcon, UnlockIcon, AlertCircleIcon } from "lucide-react";
 
+import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { IncrementorInput } from "@components/ui/incrementorInput";
 import { RadioGroup } from "@components/ui/radio-group";
 import { Alert, AlertTitle } from "@components/ui/alert";
+import { RadioButton } from "@components/ui/radio-button";
+import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
 import AlertConnection from "components/AlertConnection";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
-
-import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
-
-import { RadioButton } from "@components/ui/radio-button";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { numberWithCommas } from "utils/functions";
@@ -84,6 +84,7 @@ const poolLockPeriods = [
 ];
 
 const PoolDetails = () => {
+  const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const [totalSupply] = useState(1000000); // TODO: Get total supply from the token
   const [initialSupply, setInitialSupply] = useState(0.5); // TODO: Get initial supply from the token
@@ -93,10 +94,11 @@ const PoolDetails = () => {
       poolDuration,
       poolLockPeriod,
       poolToken,
-      poolCommissionFee,
+      poolWithdrawFee,
       poolDepositFee,
       poolRewardToken,
       poolReflectionToken,
+      poolFeeAddress,
     },
   ] = useDeployerPoolState("poolInfo");
 
@@ -113,8 +115,9 @@ const PoolDetails = () => {
       poolInitialRewardSupply: initialSupply,
       poolDuration: poolDuration || "90",
       poolLockPeriod: poolLockPeriod || "0",
-      poolCommissionFee: poolCommissionFee || 0.05,
+      poolWithdrawFee: poolWithdrawFee || 0.05,
       poolDepositFee: poolDepositFee || 0.05,
+      poolFeeAddress: poolFeeAddress || address,
     },
   });
 
@@ -275,62 +278,56 @@ const PoolDetails = () => {
           )}
         />
 
+        <h3 className="mb-4 text-xl">Rewards</h3>
+
+        <FormField
+          control={form.control}
+          name="poolRewardToken"
+          render={({ field }) => (
+            <FormItem className="space-y-4">
+              <FormLabel>Select the reward token for the staking pool</FormLabel>
+              <FormControl>
+                <TokenSelect
+                  selectedCurrency={field.value}
+                  setSelectedCurrency={(token) => {
+                    form.trigger("poolRewardToken");
+                    form.setValue("poolRewardToken", token);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="poolInitialRewardSupply"
+          render={({ field }) => (
+            <FormItem className="mt-4 flex items-center justify-between">
+              <FormLabel>Set the initial reward supply for {watchPoolDuration} Days</FormLabel>
+              <FormControl>
+                <div className="flex flex-col items-end">
+                  <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                  <FormMessage />
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        {watchPoolRewardToken && (
+          <Alert className="my-8">
+            <AlertCircleIcon className="h-4 w-4" />
+            <AlertTitle className="space-y-2 text-sm">
+              <p>
+                Total {watchPoolRewardToken.name} token supply: {numberWithCommas(totalSupply)}
+              </p>
+              <p>Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}</p>
+            </AlertTitle>
+          </Alert>
+        )}
+
         <Accordion type="multiple" value={showConditionalField} className="w-full">
-          <AccordionItem value="poolRewardToken" className="border-b-0">
-            <AccordionContent>
-              <h3 className="mb-4 text-xl">Rewards</h3>
-              <FormField
-                control={form.control}
-                name="poolRewardToken"
-                render={({ field }) => (
-                  <FormItem className="space-y-4">
-                    <FormLabel>Select the reward token for the staking pool</FormLabel>
-                    <FormControl>
-                      <TokenSelect
-                        selectedCurrency={field.value}
-                        setSelectedCurrency={(token) => {
-                          form.trigger("poolRewardToken");
-                          form.setValue("poolRewardToken", token);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {poolRewardToken && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="poolInitialRewardSupply"
-                    render={({ field }) => (
-                      <FormItem className="mt-4 flex items-center justify-between">
-                        <FormLabel>Set the initial reward supply for {watchPoolDuration} Days</FormLabel>
-                        <FormControl>
-                          <div className="flex flex-col items-end">
-                            <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
-                            <FormMessage />
-                          </div>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Alert className="my-8">
-                    <AlertCircleIcon className="h-4 w-4" />
-                    <AlertTitle className="space-y-2">
-                      <p>
-                        Total {watchPoolRewardToken.name} token supply: {numberWithCommas(totalSupply)}
-                      </p>
-                      <p>
-                        Tokens required:{" "}
-                        {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}
-                      </p>
-                    </AlertTitle>
-                  </Alert>
-                </>
-              )}
-            </AccordionContent>
-          </AccordionItem>
           <AccordionItem value="poolReflectionToken" className="border-b-0">
             <AccordionContent>
               <FormField
@@ -364,13 +361,13 @@ const PoolDetails = () => {
 
           <FormField
             control={form.control}
-            name="poolCommissionFee"
+            name="poolFeeAddress"
             render={({ field }) => (
-              <FormItem className="flex items-center justify-between">
-                <FormLabel>Commission fee</FormLabel>
+              <FormItem>
+                <FormLabel>Set deposit and withdraw fee wallet address (defaults to connected wallet)</FormLabel>
                 <FormControl>
                   <div className="flex flex-col items-end">
-                    <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    <Input {...field} />
                     <FormMessage />
                   </div>
                 </FormControl>
@@ -384,6 +381,22 @@ const PoolDetails = () => {
             render={({ field }) => (
               <FormItem className="flex items-center justify-between">
                 <FormLabel>Deposit fee</FormLabel>
+                <FormControl>
+                  <div className="flex flex-col items-end">
+                    <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />
+                    <FormMessage />
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="poolWithdrawFee"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel>Withdraw fee</FormLabel>
                 <FormControl>
                   <div className="flex flex-col items-end">
                     <IncrementorInput step={0.01} min={0} max={10} symbol="%" {...field} />

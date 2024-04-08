@@ -296,7 +296,7 @@ const FarmDetails = () => {
           {watchRewardToken && (
             <Alert className="my-8">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>
+              <AlertTitle className="text-sm">
                 Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * watchInitialSupply) / 100).toFixed(2))}
               </AlertTitle>
             </Alert>
