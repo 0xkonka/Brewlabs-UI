@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { useContext } from "react";
 import { useAccount } from "wagmi";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { Badge } from "@components/ui/badge";
 
 import LogoIcon from "components/LogoIcon";
 import ConnectWallet from "components/wallet/ConnectWallet";
@@ -13,9 +15,6 @@ import { useFarms } from "state/farms/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { useFarms as useZaps } from "state/zap/hooks";
 import { CommunityContext } from "contexts/CommunityContext";
-
-// UI
-import { Badge } from "@components/ui/badge";
 
 const Navigation = () => {
   const pathname = usePathname();
@@ -43,7 +42,7 @@ const Navigation = () => {
 
   return (
     <div className="group flex min-h-0 w-full flex-1 flex-col border-r border-gray-800 bg-zinc-950 shadow-lg shadow-zinc-950">
-      <div className="flex w-16 flex-1 flex-col pb-4 pt-5 transition-width duration-500 ease-in-out group-hover:w-52">
+      <div className="flex w-full flex-1 flex-col pb-4 pt-5 transition-width duration-500 ease-in-out lg:w-16 lg:group-hover:w-52">
         <div className="flex flex-shrink-0 items-center px-4">
           <LogoIcon classNames="w-8 text-brand" />
         </div>
@@ -53,19 +52,13 @@ const Navigation = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-4 px-5 py-3 transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
+                className={`relative flex items-center gap-4 px-5 py-3 transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
                   pathname === item.href && "active"
                 }`}
               >
                 <div className="relative">
                   {item.count > 0 && (
-                    <div className="absolute -left-4 -top-2 h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out" />
-                  )}
-
-                  {item.new && (
-                    <div className="absolute -right-8 -top-2 rounded bg-zinc-800 px-1 py-px text-[9px] text-yellow-200 ring-1 ring-yellow-200 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out">
-                      New
-                    </div>
+                    <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
                   )}
 
                   <DynamicHeroIcon
@@ -73,7 +66,7 @@ const Navigation = () => {
                     className="w-5 text-gray-300 group-hover:text-gray-400 active:text-brand"
                   />
                 </div>
-                <div className="relative animate-out fade-out fill-mode-forwards group-hover:animate-in group-hover:fade-in">
+                <div className="relative fill-mode-forwards group-hover:animate-in group-hover:fade-in lg:animate-out lg:fade-out">
                   {item.count > 0 && (
                     <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
                       {item.count}
@@ -82,10 +75,15 @@ const Navigation = () => {
 
                   <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">{item.name}</span>
                 </div>
+                {item.new && (
+                  <div className="-right-4 top-2 rounded bg-zinc-800 px-1 py-px text-[9px] text-yellow-200 ring-1 ring-yellow-200 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:absolute">
+                    New
+                  </div>
+                )}
               </Link>
             ))}
           </div>
-          <div className="flex flex-col gap-4 overflow-hidden">
+          <div className="flex flex-col gap-4 lg:overflow-hidden">
             <div>
               {navigationExtraData.map((item) => (
                 <Link
@@ -97,7 +95,7 @@ const Navigation = () => {
                     icon={item.icon as IconName}
                     className="w-5 text-gray-500 group-hover:text-gray-400"
                   />
-                  <span className="whitespace-nowrap text-sm text-gray-500 opacity-0 group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-1000">
+                  <span className="whitespace-nowrap text-sm text-gray-500 group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-1000 lg:opacity-0">
                     {item.name}
                   </span>
                 </Link>
