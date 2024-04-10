@@ -3,7 +3,7 @@ const Notification = ({ count, className }: { count: number; className?: string 
     <div
       className={`primary-shadow absolute -right-2 -top-1.5 h-fit rounded bg-primary px-1.5 py-0.5 font-brand text-[10px] font-bold leading-none text-[#0E2130] ${className}`}
     >
-      +{count}
+      {count}
     </div>
   ) : (
     <div></div>

@@ -1,37 +1,34 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/router";
-import clsx from "clsx";
 import Link from "next/link";
-import { useMediaQuery } from "react-responsive";
+import { useContext } from "react";
+import { useAccount } from "wagmi";
+import { usePathname } from "next/navigation";
 
-import { CommunityContext } from "contexts/CommunityContext";
+import { Badge } from "@components/ui/badge";
+
+import LogoIcon from "components/LogoIcon";
+import ConnectWallet from "components/wallet/ConnectWallet";
+import DynamicHeroIcon, { IconName } from "components/DynamicHeroIcon";
 import { navigationData, navigationExtraData } from "config/constants/navigation";
-import { setGlobalState } from "state";
 
-import Notification from "@components/Notification";
-import Soon from "@components/Soon";
-
-import LogoIcon from "../LogoIcon";
-import DynamicHeroIcon, { IconName } from "../DynamicHeroIcon";
-import ConnectWallet from "../wallet/ConnectWallet";
 import { usePools } from "state/pools/hooks";
 import { useFarms } from "state/farms/hooks";
-import { useFarms as useZaps } from "state/zap/hooks";
-import { useAccount } from "wagmi";
 import { useIndexes } from "state/indexes/hooks";
+import { useFarms as useZaps } from "state/zap/hooks";
+import { CommunityContext } from "contexts/CommunityContext";
 
-const Navigation = ({ slim }: { slim?: boolean }) => {
-  const router = useRouter();
+const Navigation = () => {
+  const pathname = usePathname();
+  const { address } = useAccount();
 
+  // Get the related counts
+  // NOTE: pretty sure this doesn't work - look into later
   const { newProposalCount }: any = useContext(CommunityContext);
-  const { address: account } = useAccount();
+  navigationData.find((item) => item.name === "Communities")!.count = newProposalCount;
 
   const { pools } = usePools();
-  const { data: farms } = useFarms();
-  const { data: zaps } = useZaps(account);
   const { indexes } = useIndexes();
+  const { data: farms } = useFarms();
+  const { data: zaps } = useZaps(address);
 
   const indexCount = indexes
     .filter((data) => data.visible)
@@ -40,117 +37,75 @@ const Navigation = ({ slim }: { slim?: boolean }) => {
   const allPools = [...pools.filter((p) => p.visible), ...farms.filter((p) => p.visible), ...zaps];
   const investCount = allPools.filter((data) => data.userData?.stakedBalance.gt(0)).length;
 
-  // Close the mobile navigation when navigating
-  useEffect(() => {
-    router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
-  }, [router.events]);
-
-  const isMd = useMediaQuery({ query: "(max-height: 768px)" });
+  navigationData.find((item) => item.name === "Invest")!.count = investCount;
+  navigationData.find((item) => item.name === "Indexes")!.count = indexCount;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-zinc-900">
-      <div className={`flex flex-1 flex-col pb-4 pt-5 ${!slim ? "overflow-hidden" : ""}`}>
-        <div className={`flex flex-shrink-0 items-center px-4`}>
-          <LogoIcon classNames="w-12 text-dark dark:text-brand" />
+    <div className="group flex min-h-0 w-full flex-1 flex-col border-r border-gray-800 bg-zinc-950 shadow-lg shadow-zinc-950">
+      <div className="flex w-full flex-1 flex-col pb-4 pt-5 transition-width duration-500 ease-in-out lg:w-16 lg:group-hover:w-52">
+        <div className="flex flex-shrink-0 items-center px-4">
+          <LogoIcon classNames="w-8 text-brand" />
         </div>
-        <nav
-          className={`mt-5 flex flex-1 flex-col justify-between ${!slim ? "overflow-hidden" : ""}`}
-          aria-label="Sidebar"
-        >
-          <div className={`flex-1 space-y-1 px-2 font-brand tracking-wider ${!slim ? "overflow-y-scroll" : ""}`}>
+        <nav className="mt-6 flex flex-1 flex-col justify-between" aria-label="Sidebar">
+          <div className="flex flex-col">
             {navigationData.map((item) => (
-              <Link href={item.href} passHref key={item.name} className="flex flex-col">
-                <motion.div
-                  layout="position"
-                  whileTap={{ scale: 0.9 }}
-                  whileHover={{ scale: 1.05 }}
-                  data-tip={item.name}
-                  className={clsx(
-                    item.href === router.pathname
-                      ? "bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-gray-400"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-500 dark:hover:bg-gray-800",
-                    "group tooltip tooltip-right flex items-center rounded-md px-2 py-2 text-sm font-medium"
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`relative flex items-center gap-4 px-5 py-3 transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
+                  pathname === item.href && "active"
+                }`}
+              >
+                <div className="relative">
+                  {item.count > 0 && (
+                    <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
                   )}
-                >
-                  {item.svg ? (
-                    <div
-                      className={clsx(
-                        slim
-                          ? "flex h-5 w-5 scale-[85%] items-center justify-center text-gray-500 dark:text-gray-400"
-                          : "mr-3 flex h-7 w-7 items-center justify-center text-gray-600 group-hover:text-gray-500 dark:text-gray-500 [&>*:first-child]:!h-[22px] [&>*:first-child]:!w-[22px]"
-                      )}
-                    >
-                      {item.svg}
-                    </div>
-                  ) : (
-                    <DynamicHeroIcon
-                      icon={item.icon as IconName}
-                      className={clsx(
-                        slim
-                          ? "h-5 w-5 text-gray-500 dark:text-gray-400"
-                          : "mr-3 h-7 w-7 text-gray-600 group-hover:text-gray-500 dark:text-gray-500"
-                      )}
-                    />
-                  )}
-                  <span className={`${clsx(slim ? "sr-only" : "relative")}`}>
-                    {item.name}
-                    {item.isBeta ? (
-                      <Soon text={"Beta"} className="!-right-12 !-top-3 !rounded !px-0.5 !py-0.5 !text-[10px]" />
-                    ) : item.isNew ? (
-                      <Soon text={"New"} className="!-right-12 !-top-3 !rounded !px-0.5 !py-0.5 !text-[10px]" />
-                    ) : (
-                      ""
-                    )}
-                    {item.name === "Communities" ? (
-                      <Notification count={newProposalCount} className="-right-7 -top-1" />
-                    ) : (
-                      ""
-                    )}
 
-                    {item.name === "Invest" ? <Notification count={investCount} className="-right-8 -top-1" /> : ""}
-                    {item.name === "Indexes" ? <Notification count={indexCount} className="-right-8 -top-1" /> : ""}
-                  </span>
-                </motion.div>
+                  <DynamicHeroIcon
+                    icon={item.icon as IconName}
+                    className="w-5 text-gray-300 group-hover:text-gray-400 active:text-brand"
+                  />
+                </div>
+                <div className="relative fill-mode-forwards group-hover:animate-in group-hover:fade-in lg:animate-out lg:fade-out">
+                  {item.count > 0 && (
+                    <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
+                      {item.count}
+                    </Badge>
+                  )}
+
+                  <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">{item.name}</span>
+                </div>
+                {item.new && (
+                  <div className="-right-4 top-2 rounded bg-zinc-800 px-1 py-px text-[9px] text-yellow-200 ring-1 ring-yellow-200 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:absolute">
+                    New
+                  </div>
+                )}
               </Link>
             ))}
           </div>
-          <div
-            className={clsx(
-              slim ? "items-center p-2" : "px-5",
-              `flex ${isMd && !slim ? "mx-auto w-full max-w-[200px] justify-between" : "flex-col justify-end"}`
-            )}
-          >
-            {navigationExtraData.map((item) => (
-              <a
-                className="mb-2 flex items-center gap-2 text-sm"
-                href={item.href}
-                target={"_blank"}
-                rel={"noreferrer"}
-                key={item.name}
-              >
-                <div>
-                  {item.svg ? (
-                    <div
-                      className={`flex h-5 w-5 flex-shrink-0 scale-[90%] items-center justify-center text-gray-600 hover:text-primary`}
-                    >
-                      {item.svg}
-                    </div>
-                  ) : (
-                    <DynamicHeroIcon icon={item.icon} className={`h-5 w-5  flex-shrink-0 hover:text-primary`} />
-                  )}
-                </div>
-                <span className={isMd ? "hidden" : clsx(slim && "sr-only")}>
-                  Visit&nbsp;
-                  <span className="dark:text-primary">{item.name}</span>
-                </span>
-              </a>
-            ))}
+          <div className="flex flex-col gap-4 lg:overflow-hidden">
+            <div>
+              {navigationExtraData.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="flex items-center gap-4 px-5 py-2 transition-colors duration-500 ease-out hover:bg-gray-800/60"
+                >
+                  <DynamicHeroIcon
+                    icon={item.icon as IconName}
+                    className="w-5 text-gray-500 group-hover:text-gray-400"
+                  />
+                  <span className="whitespace-nowrap text-sm text-gray-500 group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-1000 lg:opacity-0">
+                    {item.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            <ConnectWallet />
           </div>
         </nav>
       </div>
-
-      {/* {!slim && <ThemeSwitcher />} */}
-      {!slim && <ConnectWallet />}
     </div>
   );
 };

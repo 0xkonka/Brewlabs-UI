@@ -5,7 +5,6 @@ import Container from "@components/layout/Container";
 import { NETWORKS } from "config/constants/networks";
 import { useEffect, useState } from "react";
 import { getChainLogo } from "utils/functions";
-import StyledButton from "views/directory/StyledButton";
 
 const FindProject = () => {
   const networks = [
@@ -177,7 +176,7 @@ const FindProject = () => {
       name: "Charting tools",
       link: "https://earn.brewlabs.info/chart",
       detail:
-        "BrewCharts allow simple cryptocurrency charting for users including of orderboook, community information and score, swap and advdance charting tools for users.",
+        "BrewCharts allow simple cryptocurrency charting for users including of orderbook, community information and score, swap and advance charting tools for users.",
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
       isSoon: [],
     },
@@ -189,8 +188,8 @@ const FindProject = () => {
         <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
           Find a product
         </h2>
-        <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Product and tool suite</p>
-        <p className="mt-4 text-base leading-7 text-gray-600">
+        <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-200">Product and tool suite</p>
+        <p className="mt-4 text-base leading-7 text-gray-400">
           Each listed product or tool generates income for the Brewlabs ecosystem.
         </p>
       </div>
@@ -251,38 +250,38 @@ const FindProject = () => {
                   )}
                 </div>
 
-                {selectedItem === i ? (
+                {selectedItem === i && (
                   <div className="primary-shadow my-4 flex h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:hidden">
                     <div className="text-2xl text-primary">{items[selectedItem].name}</div>
                     <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
                     <div className="flex w-full flex-1 items-end justify-end">
                       <a
                         target="_blank"
+                        className="btn"
                         href={
                           selectedItem === 14
                             ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
                             : items[selectedItem].link
                         }
                       >
-                        <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
+                        Go to tool
                       </a>
                     </div>
                   </div>
-                ) : (
-                  ""
                 )}
               </div>
             );
           })}
         </div>
 
-        {selectedItem !== -1 ? (
+        {selectedItem !== -1 && (
           <div className="primary-shadow hidden h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:flex lg:w-96 ">
             <h4 className="text-2xl font-bold text-primary">{items[selectedItem].name}</h4>
             <p className="mt-4 text-xs tracking-wider text-white">{items[selectedItem].detail}</p>
             <div className="flex w-full flex-1 items-end justify-end">
               <a
                 target="_blank"
+                className="btn"
                 href={
                   selectedItem === 0
                     ? items[selectedItem].link + airdropSubLinks[parseInt(networks[selectedNetwork].chainId)]
@@ -291,12 +290,10 @@ const FindProject = () => {
                     : items[selectedItem].link
                 }
               >
-                <button className="btn-secondary btn mt-4">Go to tool</button>
+                Go to tool
               </a>
             </div>
           </div>
-        ) : (
-          ""
         )}
       </div>
     </Container>

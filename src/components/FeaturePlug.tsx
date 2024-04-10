@@ -49,7 +49,7 @@ const FeaturePlug = () => {
           <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
             Everything you need
           </h2>
-          <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">All-in-one platform</p>
+          <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-200">All-in-one platform</p>
           <p className="mt-6 text-base leading-7 text-gray-600">
             Brewlabs offers a range of decentralised on chain products for users and teams to utilise individually or as
             a team.
@@ -73,7 +73,7 @@ const FeaturePlug = () => {
                       className="absolute mt-1 h-6 w-6 text-dark transition-all duration-300 group-hover:scale-110 dark:text-brand"
                       aria-hidden="true"
                     />
-                    <p className="ml-10 text-lg font-semibold leading-8 text-gray-900">{feature.name}</p>
+                    <p className="ml-10 text-lg font-semibold leading-8 text-gray-200">{feature.name}</p>
                   </dt>
                   <dd className="ml-10 mt-2 text-base leading-7 text-gray-600 dark:text-gray-400">
                     {feature.description}

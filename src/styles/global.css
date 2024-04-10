@@ -8,11 +8,6 @@
   display: none !important;
 }
 
-html.dark a,
-html.dark h3 {
-  color: #d1d5db; /* gray-300 */
-}
-
 .wave1 use {
   animation: move-forever1 20s linear infinite;
   animation-delay: -2s;
