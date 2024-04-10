@@ -89,10 +89,18 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "animate-width": {
+          "0%": { width: "4rem" },
+          "100%": { width: "100%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "animate-width": "animate-width 1s ease-out",
+      },
+      transitionProperty: {
+        width: "width",
       },
     },
   },
@@ -102,6 +110,7 @@ module.exports = {
     require("@tailwindcss/forms"),
     plugin(function ({ addVariant }) {
       addVariant("home", ".home &");
+      addVariant("active", ".active &");
     }),
   ],
   daisyui: {

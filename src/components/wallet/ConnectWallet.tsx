@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { BeakerIcon } from "@heroicons/react/24/outline";
+import { WalletIcon } from "lucide-react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
 
@@ -65,7 +65,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   useEffect(() => {
     if (wallet.publicKey) {
-      console.log(wallet.publicKey.toBase58());
       getUserSOLBalance(wallet.publicKey, connection);
     }
   }, [wallet.publicKey, connection, getUserSOLBalance]);
@@ -75,7 +74,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   if (!mounted) return null;
   return (
-    <div className="flex flex-shrink-0 border-t border-gray-200 p-4 dark:border-gray-800">
+    <div className="flex flex-shrink-0 gap-3 border-t border-gray-200 p-4 dark:border-gray-800">
       <SwitchNetworkModal
         open={openSwitchNetworkModal}
         networks={supportedNetworks}
@@ -90,20 +89,16 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               // open({view: "Networks"})
             }
           }}
-          className="rounded-full border-2"
+          className="rounded-full"
         >
           <div
-            className="h-12 w-12 cursor-pointer overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
+            className="h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-cover bg-no-repeat ring ring-gray-200/20"
             style={{
               backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
             }}
           />
         </div>
       )}
-      {/* <WrongNetworkModal
-        open={!!isWrongNetwork || !supportedNetworks.map((network) => network.id).includes(chainId)}
-        currentChain={supportedNetworks.find((network) => network.id === chainId) ?? supportedNetworks[0]}
-      /> */}
       {isSolanaNetwork ? (
         <div className="flex flex-col">
           <WalletMultiButton />
@@ -116,15 +111,19 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
           }}
           className="group block w-full flex-shrink-0"
         >
-          <div className="flex animate-pulse items-center">
-            <div className="rounded-full border-2 border-dark p-2">
-              <BeakerIcon className="inline-block h-6 w-6 rounded-full" />
+          <div className="flex items-center">
+            <div className="relative shrink-0 p-2">
+              <div className="absolute inset-0 m-auto h-8 w-8 animate-ping rounded-full border-2 border-brand"></div>
+              <WalletIcon className="inline-block h-6 w-6 rounded-full text-yellow-200" />
             </div>
+
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700 group-hover:text-gray-500">
+              <p className="whitespace-nowrap text-sm font-medium text-gray-700 group-hover:text-gray-500">
                 {isConnecting ? `Connecting wallet` : `Connect wallet`}
               </p>
-              <p className="text-sm font-medium text-gray-500 group-hover:text-gray-400">Connect to interact</p>
+              <p className="whitespace-nowrap text-sm font-medium text-gray-500 group-hover:text-gray-400">
+                Connect to interact
+              </p>
             </div>
           </div>
         </button>
@@ -141,7 +140,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               <p className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : truncatedAddress(address)}
               </p>
-              <p className="text-left text-sm font-medium">
+              <p className="whitespace-nowrap text-left text-sm font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
               </p>
             </button>
