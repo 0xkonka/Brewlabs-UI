@@ -20,7 +20,7 @@ const VideoSection = () => {
             <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
               Smart tech for smart people
             </h2>
-            <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Investment suite</p>
+            <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-200">Investment suite</p>
 
             <p className="mt-4 dark:text-gray-300">
               All of our staking and farming contracts are audited by a third party vendor, Certik. Safety and security
@@ -33,7 +33,7 @@ const VideoSection = () => {
             </p>
 
             <a
-              className="btn-primary btn-sm btn mt-4"
+              className="btn-neutral btn btn-sm mt-4"
               href="https://skynet.certik.com/projects/brewlabs"
               target="_blank"
             >

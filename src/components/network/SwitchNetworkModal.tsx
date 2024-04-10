@@ -41,7 +41,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
     <Modal open={open} onClose={onDismiss}>
       <div className="p-8">
         <div className="mt-3 text-center sm:mt-5">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">Switch Network</h3>
+          <h3 className="text-lg font-medium leading-6 text-gray-200">Switch Network</h3>
           <div className="mx-auto mt-2 max-w-sm">
             <p className="text-sm text-gray-500">Select a network</p>
           </div>
