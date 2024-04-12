@@ -2,13 +2,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork, useSwitchNetwork as useSwitchNetworkWallet } from "wagmi";
+import { useAccount, useSwitchNetwork as useSwitchNetworkWallet } from "wagmi";
 
 import { ConnectorNames } from "config/constants/wallets";
 import replaceBrowserHistory from "utils/replaceBrowserHistory";
 import { setGlobalState } from "state";
-
-import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
 
 export function useSwitchNetworkLocal() {
   const { query } = useRouter();
@@ -22,14 +20,6 @@ export function useSwitchNetworkLocal() {
   }, []);
 }
 
-export function useSwitchNetworkSolana() {
-  return useCallback((chainId: number) => {
-    setGlobalState("sessionChainId", chainId);
-    replaceBrowserHistory("chainId", chainId);
-    window.location.reload();
-  }, []);
-}
-
 export function useSwitchNetwork() {
   const [loading, setLoading] = useState(false);
   const {
@@ -39,16 +29,14 @@ export function useSwitchNetwork() {
     ...switchNetworkArgs
   } = useSwitchNetworkWallet();
 
-  const { isConnected: isEVMConnected, connector } = useAccount();
-  const { chain: EVMChain } = useNetwork();
+  const { isConnected, connector } = useAccount();
 
   const switchNetworkLocal = useSwitchNetworkLocal();
-  const switchNetworkSolana = useSwitchNetworkSolana();
   const isLoading = _isLoading || loading;
 
   const switchNetworkAsync = useCallback(
     async (chainId: number) => {
-      if (isEVMConnected && typeof _switchNetworkAsync === "function") {
+      if (isConnected && typeof _switchNetworkAsync === "function") {
         if (isLoading) return;
         setLoading(true);
         return _switchNetworkAsync(chainId)
@@ -70,34 +58,22 @@ export function useSwitchNetwork() {
         switchNetworkLocal(chainId);
       });
     },
-    [isEVMConnected, _switchNetworkAsync, isLoading, setLoading, switchNetworkLocal]
+    [isConnected, _switchNetworkAsync, isLoading, setLoading, switchNetworkLocal]
   );
 
-  const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
   const switchNetwork = useCallback(
     (chainId: number) => {
-      if (chainId === 900 || chainId === 901) {
-        setIsSolanaNetwork(true);
-        switchNetworkSolana(chainId);
-        return;
-      } else {
-        setIsSolanaNetwork(false);
-        if (chainId === EVMChain.id) {
-          setGlobalState("sessionChainId", chainId);
-          replaceBrowserHistory("chainId", chainId);
-        }
-        else if (isEVMConnected && typeof _switchNetwork === "function") {
-          return _switchNetwork(chainId);
-        }
-        return switchNetworkLocal(chainId);
+      if (isConnected && typeof _switchNetwork === "function") {
+        return _switchNetwork(chainId);
       }
+      return switchNetworkLocal(chainId);
     },
-    [_switchNetwork, isEVMConnected, switchNetworkLocal, setIsSolanaNetwork, switchNetworkSolana, EVMChain]
+    [_switchNetwork, isConnected, switchNetworkLocal]
   );
 
   const canSwitch = useMemo(
     () =>
-      isEVMConnected
+      isConnected
         ? !!_switchNetworkAsync &&
           connector?.id !== ConnectorNames.WalletConnect &&
           !(
@@ -106,7 +82,7 @@ export function useSwitchNetwork() {
             (window.ethereum?.isSafePal || window.ethereum?.isMathWallet)
           )
         : true,
-    [_switchNetworkAsync, isEVMConnected, connector]
+    [_switchNetworkAsync, isConnected, connector]
   );
 
   return {

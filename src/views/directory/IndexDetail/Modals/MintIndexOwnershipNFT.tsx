@@ -12,7 +12,7 @@ import IndexImplAbi from "config/abi/indexes/indexImpl.json";
 import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { DashboardContext } from "contexts/DashboardContext";
-import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { setIndexesPublicData } from "state/indexes";
 import { DeserializedIndex } from "state/indexes/types";
@@ -53,7 +53,7 @@ const MintIndexOwnershipNFT = ({ open, setOpen, data }: { open: boolean; setOpen
       setOpen(false);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSymbol(data.chainId));
+      handleWalletError(e, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };

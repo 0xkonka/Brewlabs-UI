@@ -4,7 +4,7 @@ import { useIndexFactoryContract } from "@hooks/useContract";
 import { calculateGasMargin } from "utils";
 import { getNetworkGasPrice } from "utils/getGasPrice";
 
-export const useDeployIndex = (chainId, performanceFee) => {
+export const useFactory = (chainId, performanceFee) => {
   const { library } = useActiveWeb3React();
   const factoryContract = useIndexFactoryContract(chainId);
 

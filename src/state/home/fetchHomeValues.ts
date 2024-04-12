@@ -145,7 +145,7 @@ async function getChangedBalances(tokens, addresses) {
                 addresses[chainId][j]
               }&page=1&offset=50&sort=desc&apikey=${EXPLORER_API_KEYS[chainId]}`
             );
-            if (result.data.message !== "OK") return 0;
+            if (result.status !== 200) return 0;
             const txs = result.data.result.filter(
               (tx) => tx.timeStamp / 1 >= Date.now() / 1000 - 24 * 3600 && tx.to === addresses[chainId][j].toLowerCase()
             );

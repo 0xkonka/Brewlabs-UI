@@ -1,13 +1,21 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment } from "react";
+import { useEffect, Fragment } from "react";
+import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-import { useGlobalState, setGlobalState } from "../../state";
-import Navigation from "./Navigation";
+import { useGlobalState, setGlobalState } from "state";
+import Navigation from "components/navigation/Navigation";
 
 const NavigationMobile = () => {
+  const router = useRouter();
   const [isOpen] = useGlobalState("mobileNavOpen");
+
+  // Close the mobile navigation when the route changes
+  useEffect(() => {
+    router.events.on("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
+    return () => router.events.off("routeChangeStart", () => setGlobalState("mobileNavOpen", false));
+  }, [router.events]);
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-40" onClose={() => setGlobalState("mobileNavOpen", false)}>

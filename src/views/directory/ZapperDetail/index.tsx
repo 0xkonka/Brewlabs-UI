@@ -22,7 +22,7 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { getNativeSymbol, getNetworkLabel } from "lib/bridge/helpers";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
 import { useLpTokenPrices } from "state/prices/hooks";
@@ -269,7 +269,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           Peformance Fee {performanceFee
                             ? ethers.utils.formatEther(performanceFee.toString())
                             : "0.00"}{" "}
-                          {getNativeSymbol(data.chainId)}
+                          {getNativeSybmol(data.chainId)}
                         </div>
                         <div className="absolute bottom-2 right-2">
                           {data ? (

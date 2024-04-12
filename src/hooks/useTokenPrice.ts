@@ -27,9 +27,14 @@ export async function fetchDexGuruPrice(chainId: number, address: string) {
   try {
     if (!isAddress(address)) return 0;
 
-    const { data: response } = await axios.post(`${API_URL}/chart/getDexData`, {
+    const { status, data: response } = await axios.post(`${API_URL}/chart/getDexData`, {
       url: `https://api.dextools.io/v1/token?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${address}&page=1&pageSize=5`,
     });
+
+    if (status !== 200) return 0;
+
+    if (response.success === false) return 0;
+
     return response.result.data.reprPair.price;
   } catch (e) {
     console.log(e, address, chainId);

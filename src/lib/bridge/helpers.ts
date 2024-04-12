@@ -48,7 +48,7 @@ export const getNetworkLabel = (chainId: ChainId) => {
   return CHAIN_LABLES[chainId] ?? "No Network Selected";
 };
 
-export const getNativeSymbol = (chainId: ChainId) => {
+export const getNativeSybmol = (chainId: ChainId) => {
   return SupportedChains.find((n) => n.id === chainId) ? NATIVE_CURRENCIES[chainId].symbol : bsc.nativeCurrency.symbol;
 };
 
