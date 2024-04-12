@@ -1,7 +1,6 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import clsx from "clsx";
-import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
@@ -170,7 +169,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
                                   </Suspense>
 
                                   <img
-                                    className="home:z-10 fixed -right-44 top-0 hidden dark:opacity-50 sm:block"
+                                    className="fixed -right-44 top-0 hidden home:z-10 dark:opacity-50 sm:block"
                                     src="/images/blur-indigo.png"
                                     alt=""
                                     width={567}
@@ -184,11 +183,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
                                     <div className="relative flex flex-1 flex-col overflow-hidden">
                                       <HeaderMobile />
-                                      <LazyMotion features={domAnimation}>
-                                        <AnimatePresence exitBeforeEnter>
-                                          <App {...props} />
-                                        </AnimatePresence>
-                                      </LazyMotion>
+                                      <App {...props} />
                                       {loading ? <LoadingPage /> : ""}
                                     </div>
                                   </div>
