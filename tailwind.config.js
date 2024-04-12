@@ -97,7 +97,7 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "animate-width": "animate-width 1s ease-out",
+        "animate-width": "animate-width 0.33s ease-out",
       },
       transitionProperty: {
         width: "width",
