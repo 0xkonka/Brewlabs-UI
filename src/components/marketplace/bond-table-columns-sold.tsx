@@ -3,17 +3,52 @@
 import { Button } from "@components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { sharedColumns } from "@components/marketplace/bond-table-columns";
-import type { BondRowShared } from "@components/marketplace/bond-table-columns";
-
-export type BondRowSold = {
+export type BondColumnsSold = {
+  name: string;
+  type: "nft" | "index" | "token";
+  marketPrice: number;
+  bondPrice: number;
+  variance: {
+    amount: number;
+    direction: "up" | "down";
+  };
+  vesting: string;
   sold: string;
   actions: string;
 };
 
-export type BondColumnsSold = BondRowShared & BondRowSold;
+export const soldTableColumns: ColumnDef<BondColumnsSold>[] = [
+  {
+    accessorKey: "name",
+    header: "Bond title",
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+  },
+  {
+    accessorKey: "marketPrice",
+    header: "Market price",
+  },
+  {
+    accessorKey: "bondPrice",
+    header: "Bond price",
+  },
+  {
+    accessorKey: "variance",
+    header: "Variance",
 
-const columnsSold: ColumnDef<BondColumnsSold>[] = [
+    id: "variance",
+    cell: ({ row }) => {
+      const bond = row.original;
+
+      return <span>{bond.variance.amount}</span>;
+    },
+  },
+  {
+    accessorKey: "vesting",
+    header: "Vesting",
+  },
   {
     accessorKey: "sold",
     header: "Sold",
@@ -31,5 +66,3 @@ const columnsSold: ColumnDef<BondColumnsSold>[] = [
     },
   },
 ];
-
-export const soldTableColumns = [...sharedColumns, ...columnsSold];

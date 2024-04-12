@@ -3,17 +3,52 @@
 import { Button } from "@components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { sharedColumns } from "@components/marketplace/bond-table-columns";
-import type { BondRowShared } from "@components/marketplace/bond-table-columns";
-
-export type BondRowPurchased = {
+export type BondColumnsPurchased = {
+  name: string;
+  type: "nft" | "index" | "token";
+  marketPrice: number;
+  bondPrice: number;
+  variance: {
+    amount: number;
+    direction: "up" | "down";
+  };
+  vesting: string;
   claimable: string;
   actions: string;
 };
 
-export type BondColumnsPurchased = BondRowShared & BondRowPurchased;
+export const purchasedTableColumns: ColumnDef<BondColumnsPurchased>[] = [
+  {
+    accessorKey: "name",
+    header: "Bond title",
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+  },
+  {
+    accessorKey: "marketPrice",
+    header: "Market price",
+  },
+  {
+    accessorKey: "bondPrice",
+    header: "Bond price",
+  },
+  {
+    accessorKey: "variance",
+    header: "Variance",
 
-const columnsPurchased: ColumnDef<BondColumnsPurchased>[] = [
+    id: "variance",
+    cell: ({ row }) => {
+      const bond = row.original;
+
+      return <span>{bond.variance.amount}</span>;
+    },
+  },
+  {
+    accessorKey: "vesting",
+    header: "Vesting",
+  },
   {
     accessorKey: "claimable",
     header: "Claimable",
@@ -31,5 +66,3 @@ const columnsPurchased: ColumnDef<BondColumnsPurchased>[] = [
     },
   },
 ];
-
-export const purchasedTableColumns = [...sharedColumns, ...columnsPurchased];

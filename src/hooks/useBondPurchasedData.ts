@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import type { BondColumnsInvest } from "@components/marketplace/bond-table-columns-invest";
 
-export const useBondInvestData = (dataId: string) => {
+import type { BondColumnsPurchased } from "@components/marketplace/bond-table-columns-purchased";
+
+export const useBondPurchasedData = (dataId: string) => {
+  const [data, setData] = useState<BondColumnsPurchased[]>([]);
   const [isError, setIsError] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [data, setData] = useState<BondColumnsInvest[]>([]);
 
   const fetchBondInvestData = async () => {
     // Fetch data from your API here.
@@ -19,12 +20,12 @@ export const useBondInvestData = (dataId: string) => {
           direction: "up",
         },
         vesting: "Vesting",
-        remaining: "99/100",
+        claimable: "100/1000",
         actions: "Actions",
       },
       {
         name: "Bond title",
-        type: "nft",
+        type: "token",
         marketPrice: 0.254,
         bondPrice: 0.546345,
         variance: {
@@ -32,10 +33,10 @@ export const useBondInvestData = (dataId: string) => {
           direction: "down",
         },
         vesting: "Vesting",
-        remaining: "2/997",
+        claimable: "84/900",
         actions: "Actions",
       },
-    ] as BondColumnsInvest[];
+    ] as BondColumnsPurchased[];
 
     setTimeout(() => {
       setData(returnedData);
@@ -44,7 +45,7 @@ export const useBondInvestData = (dataId: string) => {
   };
 
   useEffect(() => {
-    if (!dataId && dataId !== "invest") {
+    if (!dataId && dataId !== "purchased") {
       return;
     }
     setIsFetching(true);
@@ -54,4 +55,4 @@ export const useBondInvestData = (dataId: string) => {
   return { data, isError, isFetching };
 };
 
-export default useBondInvestData;
+export default useBondPurchasedData;
