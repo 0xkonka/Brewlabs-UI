@@ -14,16 +14,10 @@ import { usePools } from "state/pools/hooks";
 import { useFarms } from "state/farms/hooks";
 import { useIndexes } from "state/indexes/hooks";
 import { useFarms as useZaps } from "state/zap/hooks";
-import { CommunityContext } from "contexts/CommunityContext";
 
 const Navigation = () => {
   const pathname = usePathname();
   const { address } = useAccount();
-
-  // Get the related counts
-  // NOTE: pretty sure this doesn't work - look into later
-  const { newProposalCount }: any = useContext(CommunityContext);
-  navigationData.find((item) => item.name === "Communities")!.count = newProposalCount;
 
   const { pools } = usePools();
   const { indexes } = useIndexes();
@@ -66,7 +60,7 @@ const Navigation = () => {
                     className="w-5 text-gray-300 group-hover:text-gray-400 active:text-brand"
                   />
                 </div>
-                <div className="relative fill-mode-forwards group-hover:animate-in group-hover:fade-in lg:animate-out lg:fade-out">
+                <div className="relative group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-500 lg:opacity-0">
                   {item.count > 0 && (
                     <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
                       {item.count}

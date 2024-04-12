@@ -18,12 +18,6 @@ export const navigationData = [
     icon: "HomeIcon",
   },
   {
-    name: "Chart",
-    href: "/chart/bsc/0xc9cc6515a1df94aaed156f3bd6efe86a100308fa",
-    external: false,
-    icon: "PresentationChartLineIcon",
-  },
-  {
     name: "Invest",
     href: "/staking",
     external: false,
@@ -67,12 +61,6 @@ export const navigationData = [
     href: "/nft",
     external: false,
     icon: "MapIcon",
-  },
-  {
-    name: "Communities",
-    href: "/communities",
-    external: false,
-    icon: "FlagIcon",
   },
 ] as NavigationItem[];
 

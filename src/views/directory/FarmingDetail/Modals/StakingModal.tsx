@@ -13,7 +13,7 @@ import { chevronLeftSVG } from "components/dashboard/assets/svgs";
 
 import { Version } from "config/constants/types";
 import { DashboardContext } from "contexts/DashboardContext";
-import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import useTokenPrice from "hooks/useTokenPrice";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
@@ -86,7 +86,7 @@ const StakingModal = ({
       dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(data.chainId));
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -111,7 +111,7 @@ const StakingModal = ({
       dispatch(fetchFarmUserDataAsync({ account: address, chainId: data.chainId, pids: [data.pid] }));
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(data.chainId));
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };

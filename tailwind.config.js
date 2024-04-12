@@ -103,6 +103,11 @@ module.exports = {
         width: "width",
       },
     },
+    fontFamily: {
+      brand: ['"Questrial"'],
+      roboto: ['"Roboto"'],
+      dash: ['"Roboto"'],
+    },
   },
   plugins: [
     require("tailwindcss-animate"),
