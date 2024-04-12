@@ -20,7 +20,7 @@ export function DataTable<TData, TValue>({ columns, data, isLoading }: DataTable
 
   return (
     <div className="relative mx-auto mb-4 flex w-full flex-col gap-1 rounded-3xl border-t border-slate-600 bg-zinc-900 px-3 pb-10 pt-4 shadow-xl shadow-amber-500/10 sm:px-10 md:mx-0">
-      <Table>
+      <Table className="overflow-hidden">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -41,7 +41,7 @@ export function DataTable<TData, TValue>({ columns, data, isLoading }: DataTable
                 <TableRow key={index}>
                   {columns.map((col) => (
                     <TableCell key={col.id}>
-                      <Skeleton key={col.size} className="my-3 flex w-3/4 rounded-md py-3" />
+                      <Skeleton className="my-3 flex w-3/4 rounded-md py-3" />
                     </TableCell>
                   ))}
                 </TableRow>
