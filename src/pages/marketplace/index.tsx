@@ -3,6 +3,7 @@ import PageHero from "@components/layout/PageHero";
 
 import Container from "@components/layout/Container";
 import BondTable from "@components/marketplace/bond-table";
+import InvestModal from "@components/marketplace/invest-modal";
 
 // Better mock data and UI
 // Images, colours
@@ -46,6 +47,8 @@ export default function Page() {
           <BondTable />
         </Container>
       </main>
+
+      <InvestModal />
     </PageWrapper>
   );
 }
