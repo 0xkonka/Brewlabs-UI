@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useContext } from "react";
 import { useAccount } from "wagmi";
 import { usePathname } from "next/navigation";
 

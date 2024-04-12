@@ -45,6 +45,9 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   if (!mounted) return null;
 
+  const truncatedAddress = (address: `0x${string}`) =>
+    `${address.substring(0, 10)}...${address.substring(address.length - 4)}`;
+
   return (
     <div className="flex flex-shrink-0 gap-3 border-t border-gray-200 p-4 dark:border-gray-800">
       <SwitchNetworkModal
@@ -108,7 +111,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               }}
             >
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
-                {isLoading ? "..." : address}
+                {isLoading ? "..." : truncatedAddress(address)}
               </p>
               <p className="whitespace-nowrap text-left text-sm font-medium">
                 <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
