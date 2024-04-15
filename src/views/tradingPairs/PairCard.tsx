@@ -1,43 +1,42 @@
-import { Currency } from "@brewlabs/sdk";
-import { SkeletonComponent } from "@components/SkeletonComponent";
-import StyledPrice from "@components/StyledPrice";
-import { ChevronRightVG } from "@components/dashboard/assets/svgs";
-import TokenLogo from "@components/logo/TokenLogo";
-import { BASE_URL, DEXSCREENER_CHAINNAME, DEXTOOLS_CHAINNAME } from "config";
 import Link from "next/link";
+import { Currency } from "@brewlabs/sdk";
+import { useRouter } from "next/navigation";
+import { DEXTOOLS_CHAINNAME } from "config";
 import { useTradingPair } from "state/pair/hooks";
 import { SerializedTradingPair } from "state/types";
 import { getAddLiquidityUrl, getChainLogo, getRemoveLiquidityUrl, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
-import DropDown from "views/directory/IndexDetail/Dropdowns/Dropdown";
+
+import TokenLogo from "@components/logo/TokenLogo";
+import StyledPrice from "@components/StyledPrice";
+import { SkeletonComponent } from "@components/SkeletonComponent";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/ui/select";
 
 export default function PairCard({ pair, setSelectedPair }) {
+  const router = useRouter();
   const width = ["w-14", "w-[200px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[80px]", "w-[108px]", "w-[90px]"];
   const { data }: { data: SerializedTradingPair } = useTradingPair(pair.chainId, pair.address);
 
   const isLoading = !data.baseToken;
 
-  const actions = ["Visit", "Swap", "Add LP", "Remove LP", "Chart"];
-
-  const actionHref = [
-    "#",
-    `/swap?iputCurrency=${data.quoteToken?.address}&outputCurrency=${data.baseToken?.address}`,
-    getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId),
-    getRemoveLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId),
-    `/chart/${DEXSCREENER_CHAINNAME[data?.chainId]}/${data?.address}`,
+  const actions = [
+    {
+      label: "Swap",
+      href: `/swap?iputCurrency=${data.quoteToken?.address}&outputCurrency=${data.baseToken?.address}`,
+    },
+    {
+      label: "Add LP",
+      href: getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId),
+    },
+    {
+      label: "Remove LP",
+      href: getRemoveLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId),
+    },
   ];
 
   return (
     <>
-      <div
-        className="mt-2 hidden h-[54px] cursor-pointer items-center justify-between rounded-md border border-transparent bg-[#29292C] px-4 font-brand text-white transition duration-300 xl:flex"
-        // onClick={() => !isLoading && setSelectedPair(pair)}
-        // href={
-        //   isLoading
-        //     ? "#"
-        //     : getAddLiquidityUrl("brewlabs", data.quoteToken as Currency, data.baseToken as Currency, data.chainId)
-        // }
-      >
+      <div className="mt-2 hidden h-[54px] cursor-pointer items-center justify-between rounded-md border border-transparent bg-[#29292C] px-4 font-brand text-white transition duration-300 xl:flex">
         <div className={`${width[0]}`}>
           {isLoading ? (
             <SkeletonComponent />
@@ -90,20 +89,18 @@ export default function PairCard({ pair, setSelectedPair }) {
           )}
         </div>
         <div className={`${width[7]}`}>
-          <DropDown
-            defaultValue={"What type of token are you seeking to deploy?"}
-            value={0}
-            setValue={(i) => {
-              if (i > 0) window.open(actionHref[i], "_blank");
-            }}
-            data={actions}
-            height={"40px"}
-            rounded={"10px"}
-            className="!bg-[#18181A] !pl-2 !pr-[10px] !text-sm !text-white"
-            bodyClassName="!bg-none !bg-[#121214]"
-            itemClassName={`hover:!bg-[#28282b] !justify-start !px-2`}
-            chevronClassName={"!text-brand [&>svg]:!h-3.5 [&>svg]:!w-3.5"}
-          />
+          <Select onValueChange={(value) => router.push(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Actions" />
+            </SelectTrigger>
+            <SelectContent>
+              {actions.map((action, i) => (
+                <SelectItem key={i} value={action.href}>
+                  <Link href={action.href}>{action.label}</Link>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -167,21 +164,19 @@ export default function PairCard({ pair, setSelectedPair }) {
             )}
           </div>
         </div>
-        <div className="w-[120px] mt-2">
-          <DropDown
-            defaultValue={"What type of token are you seeking to deploy?"}
-            value={0}
-            setValue={(i) => {
-              if (i > 0) window.open(actionHref[i], "_blank");
-            }}
-            data={actions}
-            height={"40px"}
-            rounded={"10px"}
-            className="!bg-[#18181A] !pl-2 !pr-[10px] !text-sm !text-white"
-            bodyClassName="!bg-none !bg-[#121214]"
-            itemClassName={`hover:!bg-[#28282b] !justify-start !px-2`}
-            chevronClassName={"!text-brand [&>svg]:!h-3.5 [&>svg]:!w-3.5"}
-          />
+        <div className="mt-2 w-[120px]">
+          <Select onValueChange={(value) => router.push(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Actions" />
+            </SelectTrigger>
+            <SelectContent>
+              {actions.map((action, i) => (
+                <SelectItem key={i} value={action.href}>
+                  <Link href={action.href}>{action.label}</Link>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </>

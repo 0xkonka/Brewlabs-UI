@@ -58,16 +58,12 @@ export default function Constructor() {
   return (
     <PageWrapper>
       <PageHeader
-        title={
-          <>
-            Manage various <WordHighlight content="liquidity" /> positions with the Brewlabs Constructor.
-          </>
-        }
+        title="Manage various liquidity positions with the Brewlabs Constructor"
         summary={
           <>
-            Brewlabs consturctor allows users to manage liquidity positions from various decentralised exchanges.
-            The constructor convienetanly collates all liquidity pool tokens held in your connected wallet. Make 
-            and unmake liquidity pool tokens with the construtor tool.
+            Brewlabs consturctor allows users to manage liquidity positions from various decentralised exchanges. The
+            constructor convienetanly collates all liquidity pool tokens held in your connected wallet. Make and unmake
+            liquidity pool tokens with the construtor tool.
           </>
         }
       >

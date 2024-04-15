@@ -30,7 +30,7 @@ const Navigation = () => {
   const allPools = [...pools.filter((p) => p.visible), ...farms.filter((p) => p.visible), ...zaps];
   const investCount = allPools.filter((data) => data.userData?.stakedBalance.gt(0)).length;
 
-  navigationData.find((item) => item.name === "Invest")!.count = investCount;
+  navigationData.find((item) => item.name === "Earn")!.count = investCount;
   navigationData.find((item) => item.name === "Indexes")!.count = indexCount;
 
   return (

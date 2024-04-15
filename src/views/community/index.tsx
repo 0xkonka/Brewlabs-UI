@@ -24,7 +24,7 @@ const Community = () => {
           exit={{ opacity: 0, scale: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto">
             <PageHeader
               title={
                 <div className="text-[40px]">

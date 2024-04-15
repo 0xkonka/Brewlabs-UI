@@ -251,8 +251,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
-            {address && data ? (
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto pb-[150px]">
+            {address && data && (
               <StakingModal
                 open={stakingModalOpen}
                 setOpen={setStakingModalOpen}
@@ -260,8 +260,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 data={data}
                 defaultAmount={populatedAmount}
               />
-            ) : (
-              ""
             )}
             {data.enableEmergencyWithdraw && (
               <EmergencyModal open={emergencyOpen} setOpen={setEmergencyOpen} data={data} />
@@ -356,17 +354,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             </StyledButton>
                           </a>
                         )}
-                        <Link
-                          className="mr-5 h-[32px]"
-                          target="_blank"
-                          href={`/chart/${DEXSCREENER_CHAINNAME[stakingToken.chainId]}/${stakingToken.address}`}
-                          rel="noreferrer"
-                        >
-                          <StyledButton className="!w-fit">
-                            <div>Chart</div>
-                            <div className="ml-1 -scale-100">{chevronLeftSVG}</div>
-                          </StyledButton>
-                        </Link>
+
                         <a
                           className="h-[32px]"
                           target="_blank"

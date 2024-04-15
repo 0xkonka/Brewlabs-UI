@@ -72,7 +72,7 @@ const SelectionPanel = ({
 
   return (
     <div className="flex flex-row items-end md:flex-col md:items-start">
-      <div className="mb-0 block flex w-full flex-1 items-center justify-between md:mb-3 xl:hidden">
+      <div className="mb-0 flex w-full flex-1 items-center justify-between md:mb-3 xl:hidden">
         <div className="max-w-[500px] flex-1">
           <SearchInput placeholder="Search token..." value={criteria} onChange={(e) => setCriteria(e.target.value)} />
         </div>
