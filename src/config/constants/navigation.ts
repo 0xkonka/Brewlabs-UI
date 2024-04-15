@@ -18,7 +18,7 @@ export const navigationData = [
     icon: "HomeIcon",
   },
   {
-    name: "Invest",
+    name: "Earn",
     href: "/staking",
     external: false,
     icon: "ClockIcon",
