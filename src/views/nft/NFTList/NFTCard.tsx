@@ -52,9 +52,9 @@ const NFTCard = ({ nft }: { nft: any }) => {
   const apr =
     flaskNft.mintFee && pool?.totalStaked
       ? (((+formatEther(pool?.rewardPerBlock ?? "0") * ethPrice * SECONDS_PER_YEAR) / BLOCK_TIMES[nft.chainId]) * 100) /
-      ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
-        +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
-        (pool?.totalStaked ?? 0))
+        ((+formatUnits(flaskNft.mintFee.stable, flaskNft.stableTokens[0].decimals) +
+          +formatUnits(flaskNft.mintFee.brews, flaskNft.brewsToken.decimals) * brewsPrice) *
+          (pool?.totalStaked ?? 0))
       : 0;
 
   const stakingDate = new Date(1696118400000); // Oct 01 2023 00:00:00 GMT
@@ -156,8 +156,8 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <div className="w-[116px]">
               {isPending || date > 0 ? (
                 <Link href={"/nft/nftstakinginfo"}>
-                  <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                    <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+                  <StyledButton className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal  enabled:hover:!opacity-100 [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite]">
+                    <div className="absolute -right-[15px] animate-none text-white transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
                       {CircleRightSVG}
                     </div>
                     NFT Staking Info
@@ -165,11 +165,11 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 </Link>
               ) : (
                 <StyledButton
-                  className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow"
+                  className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal  enabled:hover:!opacity-100"
                   onClick={nft.isStaked ? handleUnStake : handleStake}
                   disabled={pending}
                 >
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+                  <div className="absolute -right-[15px] animate-none text-white transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
                     {nft.isStaked ? CircleMinusSVG : CirclePlusSVG}
                   </div>
                   {nft.isStaked ? "Unstake NFT" : "Stake NFT"}
@@ -197,29 +197,16 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <div className="w-[84px]">
               {!isPending && nft.isStaked && (
                 <StyledButton
-                  className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:text-yellow"
+                  className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal  enabled:hover:!opacity-100"
                   onClick={handleClaim}
                   disabled={pending || earnings == 0}
                 >
-                  <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+                  <div className="absolute -right-[15px] animate-none text-white transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
                     {CirclePlusSVG}
                   </div>
                   Harvest
                 </StyledButton>
               )}
-            </div>
-            <div className="w-[104px]">
-              <Link
-                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
-                target="_blank"
-              >
-                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
-                    {CircleRightSVG}
-                  </div>
-                  Marketplace
-                </StyledButton>
-              </Link>
             </div>
           </>
         ) : (
@@ -228,19 +215,6 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <div className="w-[80px]" />
             <div className="w-[80px]" />
             <div className="w-[84px]" />
-            <div className="w-[104px]">
-              <Link
-                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
-                target="_blank"
-              >
-                <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
-                    {CircleRightSVG}
-                  </div>
-                  Marketplace
-                </StyledButton>
-              </Link>
-            </div>
           </>
         )}
       </div>
@@ -260,7 +234,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <NFTRarityText rarity={nft.rarity - 1}>{NFT_RARITY_NAME[nft.rarity - 1]}</NFTRarityText>
           </div>
         </div>
-        {nft.rarity - 1 > NFT_RARITY.UNCOMMON ? (
+        {nft.rarity - 1 > NFT_RARITY.UNCOMMON && (
           <>
             <div className="mt-2 flex items-center justify-between">
               <div className="w-fit text-white">
@@ -288,8 +262,8 @@ const NFTCard = ({ nft }: { nft: any }) => {
               <div className="relative">
                 {isPending ? (
                   <Link href={"/nft/nftstakinginfo"}>
-                    <StyledButton className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                      <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+                    <StyledButton className="[&>*:first-child]:enabled:hover:text-yellow mb-2 !w-full p-[5px_12px] !text-xs !font-normal  enabled:hover:!opacity-100 xsm:mb-0 xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite]">
+                      <div className="absolute -right-[15px] animate-none text-white transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
                         {CircleRightSVG}
                       </div>
                       NFT Staking Info
@@ -297,11 +271,11 @@ const NFTCard = ({ nft }: { nft: any }) => {
                   </Link>
                 ) : (
                   <StyledButton
-                    className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mt-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
+                    className="[&>*:first-child]:enabled:hover:text-yellow mb-2 !w-full p-[5px_12px] !text-xs !font-normal  enabled:hover:!opacity-100 xsm:mt-0 xsm:!w-fit"
                     onClick={nft.isStaked ? handleUnStake : handleStake}
                     disabled={pending}
                   >
-                    <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+                    <div className="absolute -right-[15px] animate-none text-white transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
                       {nft.isStaked ? CircleMinusSVG : CirclePlusSVG}
                     </div>
                     {nft.isStaked ? "Unstake NFT" : "Stake NFT"}
@@ -311,46 +285,19 @@ const NFTCard = ({ nft }: { nft: any }) => {
               <div className="relative">
                 {!isPending && nft.isStaked && (
                   <StyledButton
-                    className="mb-2 !w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:mt-0 xsm:!w-fit [&>*:first-child]:enabled:hover:text-yellow"
+                    className="[&>*:first-child]:enabled:hover:text-yellow mb-2 !w-full p-[5px_12px] !text-xs !font-normal  enabled:hover:!opacity-100 xsm:mt-0 xsm:!w-fit"
                     onClick={handleClaim}
                     disabled={pending || earnings == 0}
                   >
-                    <div className="absolute -right-[15px] animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+                    <div className="absolute -right-[15px] animate-none text-white transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
                       {CirclePlusSVG}
                     </div>
                     Harvest
                   </StyledButton>
                 )}
               </div>
-              <Link
-                href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
-                target="_blank"
-                className="relative"
-              >
-                <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                  <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
-                    {CircleRightSVG}
-                  </div>
-                  Marketplace
-                </StyledButton>
-              </Link>
             </div>
           </>
-        ) : (
-          <div className="mt-6 flex flex-col justify-end xsm:flex-row">
-            <Link
-              href={`https://opensea.io/collection/brewlabs-flask-nft-${getNativeSybmol(nft.chainId).toLowerCase()}`}
-              target="_blank"
-              className="relative"
-            >
-              <StyledButton className="!w-full p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100  xsm:!w-fit [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow">
-                <div className="absolute -right-4 animate-none text-tailwind transition-all duration-300 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
-                  {CircleRightSVG}
-                </div>
-                Marketplace
-              </StyledButton>
-            </Link>
-          </div>
         )}
       </div>
     </div>
