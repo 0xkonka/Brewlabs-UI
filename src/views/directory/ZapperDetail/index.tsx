@@ -150,7 +150,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto pb-[150px]">
               <PageHeader
                 title={
                   <div className="text-[40px]">

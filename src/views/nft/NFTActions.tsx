@@ -29,6 +29,7 @@ import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
 import NFTRarityText from "@components/NFTRarityText";
 import { useActiveNFT } from "./hooks/useActiveNFT";
+import Card from "@components/cards/Card";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -187,14 +188,15 @@ const NFTActions = () => {
   ];
 
   return (
-    <div className="mx-auto flex w-full  max-w-[260px] flex-wrap items-center justify-between px-4 sm:max-w-[600px] xl:sm:max-w-full xl:flex-none">
+    <div className="mx-auto flex w-full max-w-[260px] flex-wrap items-center justify-between px-4 sm:max-w-[600px] xl:sm:max-w-full xl:flex-none">
       <MintNFTModal open={mintOpen} setOpen={setMintOpen} />
       <UpgradeNFTModal open={upgradeOpen} setOpen={setUpgradeOpen} />
+
       {actions.map((data, i) => {
         return (
           <>
             <div key={i} className="relative mb-[164px] w-[220px]">
-              <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
+              <div className=" flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
                 <div>
                   <NFTRarityText rarity={activeRarity}>{data.rarity}</NFTRarityText>
@@ -250,11 +252,11 @@ const NFTActions = () => {
                       return (
                         <div className="relative" key={i}>
                           <StyledButton
-                            className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite] [&>*:first-child]:enabled:hover:text-yellow"
+                            className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite]"
                             disabled={!data.active}
                             onClick={() => data.action()}
                           >
-                            <div className="absolute -right-3.5 animate-none text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
+                            <div className="absolute -right-3.5 animate-none text-white transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
                               {data.info ? InfoSVG : CircleRightSVG}
                             </div>
                             {data.text}

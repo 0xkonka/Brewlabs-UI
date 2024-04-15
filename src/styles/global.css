@@ -8,11 +8,6 @@
   display: none !important;
 }
 
-html.dark a,
-html.dark h3 {
-  color: #d1d5db; /* gray-300 */
-}
-
 .wave1 use {
   animation: move-forever1 20s linear infinite;
   animation-delay: -2s;
@@ -64,14 +59,14 @@ html.dark h3 {
   scrollbar-width: none;
 }
 
-input[type=number].no-steps::-webkit-outer-spin-button,
-input[type=number].no-steps::-webkit-inner-spin-button {
+input[type="number"].no-steps::-webkit-outer-spin-button,
+input[type="number"].no-steps::-webkit-inner-spin-button {
   margin: 0;
   -webkit-appearance: none;
 }
 
 /* Firefox */
-input[type=number].no-steps  {
+input[type="number"].no-steps {
   -moz-appearance: textfield;
 }
 
@@ -257,7 +252,6 @@ input[type=number].no-steps  {
   .line-grow {
     animation: grow-line 1s linear;
   }
-  
   @keyframes grow-line {
     0% {
       height: 0;
@@ -268,12 +262,13 @@ input[type=number].no-steps  {
   }
 }
 
-.wallet-adapter-dropdown-list, .wallet-adapter-dropdown-list-active {
+.wallet-adapter-dropdown-list,
+.wallet-adapter-dropdown-list-active {
   transform: translateY(-220px) !important;
 }
 
 .wallet-adapter-button {
-  height: 40px !important
+  height: 40px !important;
 }
 
 .Toastify__toast {

@@ -43,7 +43,7 @@ const StyledButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`border border-[#FFFFFF80] bg-[#B9B8B81A] font-medium enabled:hover:border-green enabled:hover:shadow-[0_1px_4px_rgba(47,211,93,0.75)] disabled:opacity-70 ${base} ${className}`}
+      className={`enabled:hover:border-green border border-[#FFFFFF80] bg-[#B9B8B81A] font-medium enabled:hover:shadow-[0_1px_4px_rgba(47,211,93,0.75)] disabled:opacity-70 ${base} ${className}`}
     >
       {children}
       {pending ? renderLoading() : ""}
@@ -120,7 +120,7 @@ const StyledButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`bg-primary font-semibold text-black enabled:hover:opacity-70 disabled:bg-[#2F2F31] disabled:text-black ${base} ${className}`}
+      className={`bg-brand font-semibold text-black enabled:hover:opacity-70 disabled:bg-[#2F2F31] disabled:text-black ${base} ${className}`}
     >
       {children}
       {pending ? renderLoading() : ""}

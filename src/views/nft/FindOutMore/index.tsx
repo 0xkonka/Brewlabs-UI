@@ -62,7 +62,7 @@ const FindOutMore = () => {
           exit={{ opacity: 0, scale: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll">
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto">
             <Container className="pb-10 pt-20">
               <header className="flex items-center justify-between font-brand sm:pr-0">
                 <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">
