@@ -62,6 +62,8 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
       {!isConnected ? (
         <button
+          id="wallet-connect-button"
+          type="button"
           onClick={() => {
             open({ view: "Connect" });
           }}
