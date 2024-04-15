@@ -275,35 +275,19 @@ const Directory = ({ page }: { page: number }) => {
           </PageHeader>
 
           <Container className="font-brand xl:mt-32">
-            {curFilter === Category.FARM || curFilter === Category.INDEXES ? (
-              <div className="-mb-4 -mt-4 flex justify-end">
-                <Link
-                  href={`${
-                    curFilter === Category.FARM
-                      ? "/deployer/farm"
-                      : curFilter === Category.INDEXES
-                      ? "/deployer/index"
-                      : ""
-                  }`}
-                >
-                  <StyledButton className="!w-fit p-[6px_12px] !text-sm">
-                    {curFilter === Category.FARM ? "Create Farm" : curFilter === Category.INDEXES ? "Create Index" : ""}
-                  </StyledButton>
+            <div className="flex items-center justify-end">
+              {curFilter === Category.FARM && (
+                <Link className="btn btn-sm  bg-brand text-gray-800" href="/deployer/farm">
+                  Create Farm
                 </Link>
-              </div>
-            ) : curFilter === Category.POOL ? (
-              <div className="-mt-[44px] flex w-full justify-end">
-                <a
-                  href={"https://t.me/MaverickBL"}
-                  target="_blank"
-                  className="text-sm !text-[#FFFFFF80] hover:!text-white"
-                >
-                  Advertise with us
-                </a>
-              </div>
-            ) : (
-              ""
-            )}
+              )}
+              {curFilter === Category.INDEXES && (
+                <Link className="btn btn-sm bg-brand text-gray-800" href="/deployer/index">
+                  Create Index
+                </Link>
+              )}
+            </div>
+
             <div className="mt-8">
               <SelectionPanel
                 pools={allPools}
