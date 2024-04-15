@@ -3,7 +3,10 @@ import PageHero from "@components/layout/PageHero";
 
 import Container from "@components/layout/Container";
 import BondTable from "@components/marketplace/bond-table";
-import InvestModal from "@components/marketplace/invest-modal";
+import CreateModal from "@components/marketplace/modal-create";
+import InvestModal from "@components/marketplace/modal-invest";
+
+import ButtonLaunchCreateModal from "@components/marketplace/button-launch-create-modal";
 
 // Better mock data and UI
 // Images, colours
@@ -17,6 +20,7 @@ import InvestModal from "@components/marketplace/invest-modal";
 export default function Page() {
   return (
     <PageWrapper>
+      <ButtonLaunchCreateModal />
       <section className="relative flex flex-col justify-center overflow-hidden pt-32 md:justify-end lg:pt-32">
         <Container>
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
@@ -49,6 +53,7 @@ export default function Page() {
       </main>
 
       <InvestModal />
+      <CreateModal />
     </PageWrapper>
   );
 }
