@@ -3,6 +3,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { useBalance, useAccount } from "wagmi";
+
 import { capitalize } from "lodash";
 
 import { Badge } from "@components/ui/badge";
@@ -16,7 +18,7 @@ import TokenLogo from "components/logo/TokenLogo";
 import { getEmptyTokenLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-const InvestModal = () => {
+const BondInvest = () => {
   const [investModalOpen] = useMarketplaceStore("investModalOpen");
   const [investmentBond] = useMarketplaceStore("investmentBond");
 
@@ -35,6 +37,17 @@ const InvestModal = () => {
     },
   });
 
+  const { address } = useAccount();
+
+  const result = useBalance({
+    address,
+    token: "0x55d398326f99059fF775485246999027B3197955",
+  });
+
+  // investmentBond.bondPair.token1.address;
+
+  console.log(result);
+
   if (!investmentBond) return null;
 
   return (
@@ -48,8 +61,8 @@ const InvestModal = () => {
         <div className="flex items-start gap-2">
           <div className="mt-1 flex items-center">
             <TokenLogo
-              src={getTokenLogoURL(investmentBond.bondPair.token0.address, 56)}
-              alt={investmentBond.bondPair.token0.name}
+              src={getTokenLogoURL(investmentBond.bondToken.address, 56)}
+              alt={investmentBond.bondToken.name}
               classNames="h-8 w-8 rounded-full"
               onError={(e) => {
                 e.currentTarget.src = getEmptyTokenLogo(56);
@@ -58,8 +71,8 @@ const InvestModal = () => {
 
             <div className="-ml-2 mr-2">
               <TokenLogo
-                src={getTokenLogoURL(investmentBond.bondPair.token1.address, 56)}
-                alt={investmentBond.bondPair.token1.name}
+                src={getTokenLogoURL(investmentBond.bondSaleToken.address, 56)}
+                alt={investmentBond.bondSaleToken.name}
                 classNames="h-8 w-8 rounded-full"
                 onError={(e) => {
                   e.currentTarget.src = getEmptyTokenLogo(56);
@@ -69,7 +82,7 @@ const InvestModal = () => {
           </div>
 
           <div className="flex flex-col items-start gap-2">
-            <h1 className="text-3xl text-gray-200">{investmentBond.bondPair.name}</h1>
+            <h1 className="text-3xl text-gray-200">{investmentBond.bondName}</h1>
 
             {/* <dl className="space-y-1 text-sm">
               <div className="flex gap-2">
@@ -91,7 +104,7 @@ const InvestModal = () => {
 
           <div className="ml-auto">
             <p className="text-3xl">
-              {investmentBond.remaining.remaining}/{investmentBond.remaining.total}
+              {investmentBond.bondRemaining.remaining}/{investmentBond.bondRemaining.total}
             </p>
             <p className="text-start text-sm text-gray-400">Remaining</p>
           </div>
@@ -139,12 +152,12 @@ const InvestModal = () => {
 
               <div className="col-span-1 flex flex-col items-center justify-center gap-2 space-y-2 rounded-md ring ring-white/10">
                 <p className="text-sm font-medium leading-none">Cost: 100 USDC</p>
-                <Button variant="outline">Buy all remaining {investmentBond?.remaining.remaining}</Button>
+                <Button variant="outline">Buy all remaining {investmentBond.bondRemaining.remaining}</Button>
               </div>
             </div>
 
             <Button type="submit" variant="brand" className="w-full">
-              Invest in {investmentBond?.bondPair.name}
+              Invest in {investmentBond.bondName}
             </Button>
           </form>
         </Form>
@@ -153,4 +166,4 @@ const InvestModal = () => {
   );
 };
 
-export default InvestModal;
+export default BondInvest;

@@ -13,6 +13,7 @@ import { purchasedTableColumns } from "@components/marketplace/bond-table-column
 import { useBondSoldData } from "@hooks/useBondSoldData";
 import { useBondInvestData } from "@hooks/useBondInvestData";
 import { useBondPurchasedData } from "@hooks/useBondPurchasedData";
+import { Badge } from "@components/ui/badge";
 
 const BondTable = () => {
   const { address } = useAccount();
@@ -29,7 +30,12 @@ const BondTable = () => {
         {address && (
           <TabsList className="grid w-3/4 grid-cols-3">
             <TabsTrigger value="invest">Invest</TabsTrigger>
-            <TabsTrigger value="purchased">My purchased bonds</TabsTrigger>
+            <TabsTrigger className="relative" value="purchased">
+              My purchased bonds
+              <div className="absolute -top-4 right-4 rounded bg-zinc-800 px-2 py-px text-[9px] text-yellow-200 ring-1 ring-yellow-200 animate-in zoom-in fill-mode-forwards">
+                3
+              </div>
+            </TabsTrigger>
             <TabsTrigger value="sold">My sold bonds</TabsTrigger>
           </TabsList>
         )}

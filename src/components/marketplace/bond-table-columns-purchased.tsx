@@ -1,54 +1,17 @@
 "use client";
 
-import { Button } from "@components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
+import { z } from "zod";
+import type { ColumnDef } from "@tanstack/react-table";
 
-export type BondColumnsPurchased = {
-  name: string;
-  type: "nft" | "index" | "token";
-  marketPrice: number;
-  bondPrice: number;
-  variance: {
-    amount: number;
-    direction: "up" | "down";
-  };
-  vesting: string;
-  claimable: string;
-  actions: string;
-};
+import { Button } from "@components/ui/button";
+import { commonTableColumns } from "@components/marketplace/bond-table-columns-common";
+import { bondCreateSchema, bondPurchasedSchema } from "config/schemas/bondCreateSchema";
+
+// Define a type alias that is the shared bond schema + the bond invest schema
+export type BondColumnsPurchased = z.infer<typeof bondCreateSchema> & z.infer<typeof bondPurchasedSchema>;
 
 export const purchasedTableColumns: ColumnDef<BondColumnsPurchased>[] = [
-  {
-    accessorKey: "name",
-    header: "Bond title",
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
-  {
-    accessorKey: "marketPrice",
-    header: "Market price",
-  },
-  {
-    accessorKey: "bondPrice",
-    header: "Bond price",
-  },
-  {
-    accessorKey: "variance",
-    header: "Variance",
-
-    id: "variance",
-    cell: ({ row }) => {
-      const bond = row.original;
-
-      return <span>{bond.variance.amount}</span>;
-    },
-  },
-  {
-    accessorKey: "vesting",
-    header: "Vesting",
-  },
+  ...commonTableColumns,
   {
     accessorKey: "claimable",
     header: "Claimable",

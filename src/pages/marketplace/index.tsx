@@ -1,26 +1,26 @@
+import Link from "next/link";
+import { ZapIcon } from "lucide-react";
 import PageWrapper from "@components/layout/PageWrapper";
-import PageHero from "@components/layout/PageHero";
+
+import { Button } from "@components/ui/button";
 
 import Container from "@components/layout/Container";
 import BondTable from "@components/marketplace/bond-table";
-import CreateModal from "@components/marketplace/modal-create";
-import InvestModal from "@components/marketplace/modal-invest";
 
-import ButtonLaunchCreateModal from "@components/marketplace/button-launch-create-modal";
-
-// Better mock data and UI
-// Images, colours
-
-// modal opening
-
-// Data fetching
-
-// column sorting - type at least
+import BondInvest from "@components/marketplace/bond-invest";
 
 export default function Page() {
   return (
     <PageWrapper>
-      <ButtonLaunchCreateModal />
+      <Button
+        asChild
+        variant="outline"
+        className="absolute right-4 top-4 z-10 animate-in slide-in-from-right-60 fill-mode-both"
+      >
+        <Link href="/marketplace/create-bond">
+          Create a new bond <ZapIcon className="ml-2 h-4 w-4" />
+        </Link>
+      </Button>
       <section className="relative flex flex-col justify-center overflow-hidden pt-32 md:justify-end lg:pt-32">
         <Container>
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
@@ -52,8 +52,7 @@ export default function Page() {
         </Container>
       </main>
 
-      <InvestModal />
-      <CreateModal />
+      <BondInvest />
     </PageWrapper>
   );
 }
