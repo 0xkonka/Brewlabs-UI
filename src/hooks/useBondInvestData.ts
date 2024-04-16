@@ -7,72 +7,38 @@ export const useBondInvestData = (dataId: string) => {
   const [data, setData] = useState<BondColumnsInvest[]>([]);
 
   const fetchBondInvestData = async () => {
-    // Fetch data from your API here.
-    const returnedData = [
+    const mockData = [
       {
-        bondPair: {
-          token0: {
-            address: "0x123",
-            name: "Token 1",
-            icon: "icon",
-            symbol: "BREW",
-          },
-          token1: {
-            address: "0x456",
-            name: "Token 2",
-            icon: "icon",
-            symbol: "USDC",
-          },
-          name: "Brewlabs/USDC",
+        bondType: "token",
+        bondToken: {
+          address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
+          name: "Brewlabs",
+          symbol: "BREWLABS",
+          decimals: 18,
         },
-        type: "token",
-        marketPrice: 0.0035467,
-        bondPrice: 0.005676,
-        variance: {
+        bondSaleToken: {
+          address: "0x55d398326f99059fF775485246999027B3197955",
+          name: "USDT",
+          symbol: "USDT",
+          decimals: 18,
+        },
+        bondSalePrice: 0.005676,
+        bondMarketPrice: 0.0035467,
+        bondVariance: {
           amount: 12.5,
           direction: "up",
         },
-        vesting: "7 days",
-        remaining: {
+        bondVestingPeriod: new Date(1714368861),
+        bondName: "BREWLABS/USDC",
+        bondRemaining: {
           total: 1000,
           remaining: 998,
         },
-        actions: "Actions",
-      },
-      {
-        bondPair: {
-          token0: {
-            address: "0x123",
-            name: "Token 1",
-            icon: "icon",
-            symbol: "BREW",
-          },
-          token1: {
-            address: "0x456",
-            name: "Token 2",
-            icon: "icon",
-            symbol: "USDC",
-          },
-          name: "Brewlabs/USDC",
-        },
-        type: "nft",
-        marketPrice: 0.254,
-        bondPrice: 0.546345,
-        variance: {
-          amount: 8.3,
-          direction: "down",
-        },
-        vesting: "Instant",
-        remaining: {
-          total: 1000,
-          remaining: 998,
-        },
-        actions: "Actions",
       },
     ] as BondColumnsInvest[];
 
     setTimeout(() => {
-      setData(returnedData);
+      setData(mockData);
       setIsFetching(false);
     }, 1000);
   };

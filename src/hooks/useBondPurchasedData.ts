@@ -9,37 +9,39 @@ export const useBondPurchasedData = (dataId: string) => {
 
   const fetchBondInvestData = async () => {
     // Fetch data from your API here.
-    const returnedData = [
+
+    const mockData = [
       {
-        name: "Bond title",
-        type: "token",
-        marketPrice: 0.0035467,
-        bondPrice: 0.005676,
-        variance: {
+        bondType: "token",
+        bondToken: {
+          address: "0x1",
+          name: "Token 1",
+          symbol: "T1",
+          decimals: 18,
+        },
+        bondSaleToken: {
+          address: "0x2",
+          name: "Token 2",
+          symbol: "T2",
+          decimals: 18,
+        },
+        bondSalePrice: 0.005676,
+        bondMarketPrice: 0.0035467,
+        bondVariance: {
           amount: 12.5,
           direction: "up",
         },
-        vesting: "Vesting",
-        claimable: "100/1000",
-        actions: "Actions",
-      },
-      {
-        name: "Bond title",
-        type: "token",
-        marketPrice: 0.254,
-        bondPrice: 0.546345,
-        variance: {
-          amount: 8.3,
-          direction: "down",
+        bondVestingPeriod: new Date(1714368861),
+        bondName: "DOGE/USDC",
+        bondClaimable: {
+          total: 1000,
+          remaining: 998,
         },
-        vesting: "Vesting",
-        claimable: "84/900",
-        actions: "Actions",
       },
     ] as BondColumnsPurchased[];
 
     setTimeout(() => {
-      setData(returnedData);
+      setData(mockData);
       setIsFetching(false);
     }, 1000);
   };
