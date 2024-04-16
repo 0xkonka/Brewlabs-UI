@@ -51,7 +51,7 @@ const IncrementorInput = React.forwardRef<HTMLInputElement, InputProps>(({ symbo
           ref={incrementInput}
           {...props}
         />
-        {symbol && <span className="absolute right-2 top-0 w-fit">{symbol}</span>}
+        {symbol && <span className="absolute right-2 top-0 w-fit text-gray-500">{symbol}</span>}
       </div>
 
       <button

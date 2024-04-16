@@ -40,7 +40,7 @@ export function DataTable<TData, TValue>({ columns, data, isLoading }: DataTable
               {new Array(2).fill(null).map((_, index) => (
                 <TableRow key={index}>
                   {columns.map((col) => (
-                    <TableCell key={col.id}>
+                    <TableCell key={`${index}-${col.id}`}>
                       <Skeleton className="my-3 flex w-3/4 rounded-md py-3" />
                     </TableCell>
                   ))}
