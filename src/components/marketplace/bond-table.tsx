@@ -13,15 +13,18 @@ import { purchasedTableColumns } from "@components/marketplace/bond-table-column
 import { useBondSoldData } from "@hooks/useBondSoldData";
 import { useBondInvestData } from "@hooks/useBondInvestData";
 import { useBondPurchasedData } from "@hooks/useBondPurchasedData";
-import { Badge } from "@components/ui/badge";
 
 const BondTable = () => {
   const { address } = useAccount();
   const [tab, setTab] = useState("invest");
+  const [showHistoric, setShowHistoric] = useState(false);
 
   // Only get the necessary data for the table
   const soldData = useBondSoldData(tab);
-  const investData = useBondInvestData(tab);
+
+  const getInvestData = useBondInvestData(tab);
+  const investData = showHistoric ? getInvestData.historicData : getInvestData.data;
+
   const purchasedData = useBondPurchasedData(tab);
 
   return (
@@ -40,13 +43,13 @@ const BondTable = () => {
           </TabsList>
         )}
         <div className="ml-auto flex items-center space-x-2">
-          <Switch id="airplane-mode" />
-          <Label htmlFor="airplane-mode">Show historic</Label>
+          <Switch id="show-historic" onCheckedChange={() => setShowHistoric(!showHistoric)} />
+          <Label htmlFor="show-historic">Show historic</Label>
         </div>
       </div>
 
       <TabsContent value="invest">
-        <DataTable columns={investTableColumns} data={investData.data} isLoading={investData.isFetching} />
+        <DataTable columns={investTableColumns} data={investData} isLoading={getInvestData.isFetching} />
       </TabsContent>
       <TabsContent value="purchased">
         <DataTable columns={purchasedTableColumns} data={purchasedData.data} isLoading={purchasedData.isFetching} />
