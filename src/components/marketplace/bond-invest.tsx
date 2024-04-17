@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form";
 
 import { useBalance, useAccount } from "wagmi";
 
-import { capitalize } from "lodash";
-
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
 import { IncrementorInput } from "@components/ui/incrementor-input";
@@ -19,11 +17,15 @@ import { getEmptyTokenLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 const BondInvest = () => {
-  const [investModalOpen] = useMarketplaceStore("investModalOpen");
+  const { address } = useAccount();
+
   const [investmentBond] = useMarketplaceStore("investmentBond");
+  const [investModalOpen] = useMarketplaceStore("investModalOpen");
+  const { bondName, bondType, bondToken, bondSaleToken, bondVestingPeriod, bondSalePrice, bondRemaining } =
+    investmentBond;
 
   const formSchema = z.object({
-    investmentAmount: z.coerce.number().min(1).max(10).optional(),
+    investmentAmount: z.coerce.number().min(1).max(10),
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -37,16 +39,10 @@ const BondInvest = () => {
     },
   });
 
-  const { address } = useAccount();
-
-  const result = useBalance({
+  const usersBalance = useBalance({
     address,
-    token: "0x55d398326f99059fF775485246999027B3197955",
+    token: bondSaleToken?.address,
   });
-
-  // investmentBond.bondPair.token1.address;
-
-  console.log(result);
 
   if (!investmentBond) return null;
 
@@ -61,8 +57,8 @@ const BondInvest = () => {
         <div className="flex items-start gap-2">
           <div className="mt-1 flex items-center">
             <TokenLogo
-              src={getTokenLogoURL(investmentBond.bondToken.address, 56)}
-              alt={investmentBond.bondToken.name}
+              src={getTokenLogoURL(bondToken?.address, 56)}
+              alt={bondToken?.name}
               classNames="h-8 w-8 rounded-full"
               onError={(e) => {
                 e.currentTarget.src = getEmptyTokenLogo(56);
@@ -71,8 +67,8 @@ const BondInvest = () => {
 
             <div className="-ml-2 mr-2">
               <TokenLogo
-                src={getTokenLogoURL(investmentBond.bondSaleToken.address, 56)}
-                alt={investmentBond.bondSaleToken.name}
+                src={getTokenLogoURL(bondSaleToken?.address, 56)}
+                alt={bondSaleToken?.name}
                 classNames="h-8 w-8 rounded-full"
                 onError={(e) => {
                   e.currentTarget.src = getEmptyTokenLogo(56);
@@ -82,29 +78,29 @@ const BondInvest = () => {
           </div>
 
           <div className="flex flex-col items-start gap-2">
-            <h1 className="text-3xl text-gray-200">{investmentBond.bondName}</h1>
+            <h1 className="text-3xl text-gray-200">{bondName}</h1>
 
-            {/* <dl className="space-y-1 text-sm">
+            <dl className="space-y-1 text-sm">
               <div className="flex gap-2">
                 <dt className="font-medium text-gray-400">Type:</dt>
                 <dd>
-                  {investmentBond.type === "nft" && "NFT"} {investmentBond.type === "token" && "ERC20 Token"}
+                  {bondType === "nft" && "NFT"} {bondType === "token" && "ERC20 Token"}
                 </dd>
               </div>
               <div className="flex gap-2">
                 <dt className="font-medium text-gray-400">Vesting period:</dt>
-                <dd>{investmentBond.vesting}</dd>
+                <dd>{bondVestingPeriod} days</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="font-medium text-gray-400">Sold for:</dt>
-                <dd>{investmentBond.bondPair.token1.symbol}</dd>
+                <dd>{bondSaleToken?.symbol}</dd>
               </div>
-            </dl> */}
+            </dl>
           </div>
 
           <div className="ml-auto">
             <p className="text-3xl">
-              {investmentBond.bondRemaining.remaining}/{investmentBond.bondRemaining.total}
+              {bondRemaining?.remaining}/{bondRemaining?.total}
             </p>
             <p className="text-start text-sm text-gray-400">Remaining</p>
           </div>
@@ -136,10 +132,13 @@ const BondInvest = () => {
                   name="investmentAmount"
                   render={({ field }) => (
                     <FormItem className="my-4 flex flex-col items-center gap-2">
-                      <FormLabel>Enter investment amount in units</FormLabel>
+                      <FormLabel className="flex flex-col gap-1">
+                        Enter investment amount in units
+                        <span className="text-gray-400"> {bondSalePrice?.toFixed(4)} per unit</span>
+                      </FormLabel>
                       <FormControl className="w-fit">
                         <div className="flex flex-col items-end">
-                          <IncrementorInput step={1} min={1} max={10} symbol="%" {...field} />
+                          <IncrementorInput step={1} min={1} max={10} {...field} />
                           <FormMessage />
                         </div>
                       </FormControl>
@@ -151,13 +150,15 @@ const BondInvest = () => {
               <Badge className="absolute inset-0 m-auto h-fit w-fit">OR</Badge>
 
               <div className="col-span-1 flex flex-col items-center justify-center gap-2 space-y-2 rounded-md ring ring-white/10">
-                <p className="text-sm font-medium leading-none">Cost: 100 USDC</p>
-                <Button variant="outline">Buy all remaining {investmentBond.bondRemaining.remaining}</Button>
+                <p className="text-sm font-medium leading-none">
+                  Cost: ~{(bondSalePrice * bondRemaining?.remaining).toFixed(2)} USDC
+                </p>
+                <Button variant="outline">Buy all remaining {bondRemaining?.remaining}</Button>
               </div>
             </div>
 
             <Button type="submit" variant="brand" className="w-full">
-              Invest in {investmentBond.bondName}
+              Invest in {bondName}
             </Button>
           </form>
         </Form>

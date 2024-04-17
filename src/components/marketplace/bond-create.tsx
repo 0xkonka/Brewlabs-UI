@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CoinsIcon, HourglassIcon, ImagesIcon } from "lucide-react";
+import { ZapIcon, HourglassIcon, ImagesIcon } from "lucide-react";
 
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
@@ -34,7 +34,7 @@ const BondCreate = () => {
       bondType: "token",
       bondToken: null,
       bondSaleToken: null,
-      bondVestingPeriod: Date.now() + 86400000,
+      bondVestingPeriod: 1,
       bondSalePrice: 1,
     },
   });
@@ -88,21 +88,21 @@ const BondCreate = () => {
                       className="grid gap-4 text-center sm:grid-cols-3"
                     >
                       <RadioButton value="token">
-                        <CoinsIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                        <ZapIcon className="mb-3 h-12 w-12 " />
                         Token instant
-                        <span className="mt-4 text-xs">ERC20 token with instant sale.</span>
+                        <span className="text-xs">ERC20 token with instant sale.</span>
                       </RadioButton>
 
                       <RadioButton value="tokenVested">
-                        <HourglassIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                        <HourglassIcon className="mb-3 h-12 w-12 " />
                         Token vested
-                        <span className="mt-4 text-xs">ERC20 token with vested period, up to 10 days.</span>
+                        <span className="text-xs">ERC20 token with vested period, up to 10 days.</span>
                       </RadioButton>
 
                       <RadioButton value="nft">
-                        <ImagesIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                        <ImagesIcon className="mb-3 h-12 w-12 " />
                         NFT (always instant)
-                        <span className="mt-4 text-xs">NFT bonds have no vesting period.</span>
+                        <span className="text-xs">NFT bonds have no vesting period.</span>
                       </RadioButton>
                     </RadioGroup>
                   </FormControl>
@@ -171,7 +171,7 @@ const BondCreate = () => {
                       <FormItem className="mt-4 flex items-center justify-between">
                         <FormLabel className="flex flex-col items-start gap-1">
                           Set the vesting period in days
-                          <span className="text-xs text-gray-500">Period starts from bond creation</span>
+                          <span className="text-xs text-gray-500">How long people need to wait to claim</span>
                         </FormLabel>
                         <FormControl>
                           <div className="flex flex-col items-end">
