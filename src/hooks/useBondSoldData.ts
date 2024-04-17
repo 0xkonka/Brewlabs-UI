@@ -9,34 +9,7 @@ export const useBondSoldData = (dataId: string) => {
 
   const fetchBondSoldData = async () => {
     // Fetch data from your API here.
-    const returnedData = [
-      {
-        name: "Bond title",
-        type: "token",
-        marketPrice: 0.0035467,
-        bondPrice: 0.005676,
-        variance: {
-          amount: 12.5,
-          direction: "up",
-        },
-        vesting: "Vesting",
-        sold: "100/1000",
-        actions: "Actions",
-      },
-      {
-        name: "Bond title",
-        type: "token",
-        marketPrice: 0.254,
-        bondPrice: 0.546345,
-        variance: {
-          amount: 8.3,
-          direction: "down",
-        },
-        vesting: "Vesting",
-        sold: "84/900",
-        actions: "Actions",
-      },
-    ] as BondColumnsSold[];
+    const returnedData = [] as BondColumnsSold[];
 
     setTimeout(() => {
       setData(returnedData);

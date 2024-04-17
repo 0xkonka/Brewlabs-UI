@@ -31,7 +31,7 @@ export const useBondPurchasedData = (dataId: string) => {
           amount: 12.5,
           direction: "up",
         },
-        bondVestingPeriod: new Date(1714368861),
+        bondVestingCountdown: 10, // Would be a date in real data
         bondName: "DOGE/USDC",
         bondClaimable: {
           total: 1000,

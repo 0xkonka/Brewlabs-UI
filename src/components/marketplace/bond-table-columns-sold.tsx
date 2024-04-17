@@ -1,53 +1,25 @@
 "use client";
 
-import { Button } from "@components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
+import { z } from "zod";
+import type { ColumnDef } from "@tanstack/react-table";
 
-export type BondColumnsSold = {
-  name: string;
-  type: "nft" | "index" | "token";
-  marketPrice: number;
-  bondPrice: number;
-  variance: {
-    amount: number;
-    direction: "up" | "down";
-  };
-  vesting: string;
-  sold: string;
-  actions: string;
-};
+import { Button } from "@components/ui/button";
+import { commonTableColumns } from "@components/marketplace/bond-table-columns-common";
+import { bondCommonSchema, bondSoldSchema } from "config/schemas/bondCreateSchema";
+
+// Define a type alias that is the shared bond schema + the bond invest schema
+export type BondColumnsSold = z.infer<typeof bondCommonSchema> & z.infer<typeof bondSoldSchema>;
 
 export const soldTableColumns: ColumnDef<BondColumnsSold>[] = [
+  ...commonTableColumns,
   {
-    accessorKey: "name",
-    header: "Bond title",
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
-  {
-    accessorKey: "marketPrice",
-    header: "Market price",
-  },
-  {
-    accessorKey: "bondPrice",
-    header: "Bond price",
-  },
-  {
-    accessorKey: "variance",
-    header: "Variance",
-
-    id: "variance",
+    accessorKey: "vestingCountdown",
+    header: "Vesting",
+    id: "vestingCountdown",
     cell: ({ row }) => {
       const bond = row.original;
-
-      return <span>{bond.variance.amount}</span>;
+      return <span>{bond.bondVestingCountdown}</span>;
     },
-  },
-  {
-    accessorKey: "vesting",
-    header: "Vesting",
   },
   {
     accessorKey: "sold",

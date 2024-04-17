@@ -11,9 +11,9 @@ import TokenLogo from "components/logo/TokenLogo";
 import { getEmptyTokenLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
-import { bondCreateSchema } from "config/schemas/bondCreateSchema";
+import { bondCommonSchema } from "config/schemas/bondCreateSchema";
 
-export const commonTableColumns: ColumnDef<z.infer<typeof bondCreateSchema>>[] = [
+export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] = [
   {
     accessorKey: "bondPair",
     header: "Bond title",
@@ -100,15 +100,6 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCreateSchema>>[] =
           )}
         </>
       );
-    },
-  },
-  {
-    accessorKey: "vesting",
-    header: "Vesting",
-    id: "vesting",
-    cell: ({ row }) => {
-      const bond = row.original;
-      return <span>{Date.now() - bond.bondVestingPeriod.getTime()}</span>;
     },
   },
 ];

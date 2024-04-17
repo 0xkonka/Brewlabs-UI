@@ -5,6 +5,7 @@ export const useBondInvestData = (dataId: string) => {
   const [isError, setIsError] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [data, setData] = useState<BondColumnsInvest[]>([]);
+  const [historicData, setHistoricData] = useState<BondColumnsInvest[]>([]);
 
   const fetchBondInvestData = async () => {
     const mockData = [
@@ -28,17 +29,45 @@ export const useBondInvestData = (dataId: string) => {
           amount: 12.5,
           direction: "up",
         },
-        bondVestingPeriod: new Date(1714368861),
+        bondVestingPeriod: 10,
         bondName: "BREWLABS/USDC",
         bondRemaining: {
           total: 1000,
           remaining: 998,
         },
       },
+      {
+        bondType: "nft",
+        bondToken: {
+          address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
+          name: "Brewlabs",
+          symbol: "BREWLABS",
+          decimals: 18,
+        },
+        bondSaleToken: {
+          address: "0x55d398326f99059fF775485246999027B3197955",
+          name: "USDT",
+          symbol: "USDT",
+          decimals: 18,
+        },
+        bondSalePrice: 0.005676,
+        bondMarketPrice: 0.0035467,
+        bondVariance: {
+          amount: 12.5,
+          direction: "up",
+        },
+        bondVestingPeriod: 0,
+        bondName: "BREWLABS/USDC",
+        bondRemaining: {
+          total: 1000,
+          remaining: 1000,
+        },
+      },
     ] as BondColumnsInvest[];
 
     setTimeout(() => {
-      setData(mockData);
+      setData(mockData.filter((item) => item.bondRemaining.remaining < item.bondRemaining.total));
+      setHistoricData(mockData.filter((item) => item.bondRemaining.remaining === item.bondRemaining.total));
       setIsFetching(false);
     }, 1000);
   };
@@ -51,7 +80,7 @@ export const useBondInvestData = (dataId: string) => {
     fetchBondInvestData();
   }, [dataId]);
 
-  return { data, isError, isFetching };
+  return { data, historicData, isError, isFetching };
 };
 
 export default useBondInvestData;
