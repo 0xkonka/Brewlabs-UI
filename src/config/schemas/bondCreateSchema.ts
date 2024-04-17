@@ -13,10 +13,27 @@ export const bondCreateSchema = z.object({
   bondType: z.enum(["token", "nft", "tokenVested"], {
     required_error: "You need to select duration.",
   }),
+
+  bondToken: tokenSchema,
+  bondSaleToken: tokenSchema,
+  bondSalePrice: z.number(),
+  bondVestingPeriod: z.coerce.number().optional(),
+  bondName: z.string(),
+});
+
+// Bond invest Schema
+// Schemas for table columns
+
+export const bondCommonSchema = z.object({
+  bondChainId: z.coerce
+    .number()
+    .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
+  bondType: z.enum(["token", "nft", "tokenVested"], {
+    required_error: "You need to select duration.",
+  }),
   bondMarketPrice: z.coerce.number(),
   bondToken: tokenSchema,
   bondSaleToken: tokenSchema,
-  bondVestingPeriod: z.date().optional(),
   bondSalePrice: z.number(),
   bondName: z.string(),
   bondVariance: z.object({
@@ -25,10 +42,8 @@ export const bondCreateSchema = z.object({
   }),
 });
 
-// Bond invest Schema
-// Consider making this a schema
-
 export const bondInvestSchema = z.object({
+  bondVestingPeriod: z.coerce.number().optional(),
   bondRemaining: z.object({
     total: z.number(),
     remaining: z.number(),
@@ -37,7 +52,17 @@ export const bondInvestSchema = z.object({
 });
 
 export const bondPurchasedSchema = z.object({
+  bondVestingCountdown: z.coerce.number().optional(),
   bondClaimable: z.object({
+    total: z.number(),
+    remaining: z.number(),
+  }),
+  actions: z.string(),
+});
+
+export const bondSoldSchema = z.object({
+  bondVestingCountdown: z.coerce.number().optional(),
+  bondSold: z.object({
     total: z.number(),
     remaining: z.number(),
   }),
