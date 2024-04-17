@@ -3,10 +3,11 @@ import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { serializeToken } from "state/user/hooks/helpers";
-import { getFarmFactoryAddress, getIndexFactoryAddress, getTokenFactoryAddress } from "utils/addressHelpers";
+import { getFarmFactoryAddress, getIndexFactoryAddress, getPoolFactoryAddress, getTokenFactoryAddress } from "utils/addressHelpers";
 import { fetchFarmFactoryData } from "./fetchFactory";
 import { fetchIndexFactoryData } from "./fetchIndex";
 import { fetchTokenFactoryData } from "./fetchToken";
+import { fetchPoolFactoryData } from "./fetchPoolFactory";
 
 const initialState = {
   token: PAGE_SUPPORTED_CHAINS.deployerToken
@@ -63,6 +64,19 @@ const initialState = {
       };
     })
     .filter(Boolean), // Filter out null values
+  poolFactory: PAGE_SUPPORTED_CHAINS.deployerPoolFactory
+    .map((chainId) => {
+      if (chainId === 900) {
+        return null; // Skip mapping for chainId 900 or 901
+      }
+      return {
+        chainId,
+        address: getPoolFactoryAddress(chainId as ChainId),
+        payingToken: serializeToken(NATIVE_CURRENCIES[chainId]),
+        serviceFee: "0",
+      };
+    })
+    .filter(Boolean), // Filter out null values
 };
 
 export const fetchTokenFactoryDataAsync = (chainId) => async (dispatch) => {
@@ -75,6 +89,12 @@ export const fetchFarmFactoryDataAsync = (chainId) => async (dispatch) => {
   const result = await fetchFarmFactoryData(chainId);
 
   dispatch(setDeployPublicData({ type: "farm", data: result }));
+};
+
+export const fetchPoolFactoryDataAsync = (chainId) => async (dispatch) => {
+  const result = await fetchPoolFactoryData(chainId);
+
+  dispatch(setDeployPublicData({ type: "poolFactory", data: result }));
 };
 
 export const fetchIndexFactoryDataAsync = (chainId) => async (dispatch) => {

@@ -58,6 +58,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
   deployerFarm: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   deployerToken: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.BASE, ExtendedChainId.SOLANA],
   deployerPool: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ExtendedChainId.SOLANA],
+  deployerPoolFactory: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.BASE],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
   add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
   remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
