@@ -5,7 +5,7 @@ import type { BondColumnsInvest } from "@components/marketplace/bond-table-colum
 interface MarketplaceStore {
   investModalOpen: boolean;
   createModalOpen: boolean;
-  investmentBond: BondColumnsInvest | null;
+  investmentBond: BondColumnsInvest;
 }
 
 // Consider splitting this into several stores
@@ -14,7 +14,7 @@ interface MarketplaceStore {
 const marketplaceStore = {
   investModalOpen: false,
   createModalOpen: false,
-  investmentBond: null,
+  investmentBond: {},
 } as MarketplaceStore;
 
 const { useGlobalState: useMarketplaceStore, setGlobalState } = createGlobalState(marketplaceStore);
