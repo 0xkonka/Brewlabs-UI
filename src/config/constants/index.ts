@@ -249,6 +249,14 @@ export const BLOCKS_PER_DAY = {
   [ChainId.POLYGON]: 40000,
 };
 
+export const BLOCKS_PER_DAY2 = {
+  [ChainId.ETHEREUM]: 7120,
+  [ChainId.BSC_MAINNET]: 28800,
+  [ChainId.POLYGON]: 40000,
+  [ChainId.ARBITRUM]: 7120,
+  [ChainId.BASE]: 7120,
+};
+
 export const BANANA_PER_BLOCK = new BigNumber(10);
 export const BLOCKS_PER_YEAR = new BigNumber(10512000);
 export const BANANA_PER_YEAR = BANANA_PER_BLOCK.times(BLOCKS_PER_YEAR);

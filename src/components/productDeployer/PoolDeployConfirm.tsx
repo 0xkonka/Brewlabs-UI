@@ -21,7 +21,7 @@ import { usePoolFactoryState } from "state/deploy/hooks";
 import { usePoolFactory } from "@hooks/deploy/useDeployPool";
 import { useTokenApprove } from "@hooks/useApprove";
 import { ethers } from "ethers";
-import { BLOCKS_PER_DAY } from "config/constants";
+import { BLOCKS_PER_DAY2 } from "config/constants";
 import { useCurrency } from "@hooks/Tokens";
 import useTotalSupply from "@hooks/useTotalSupply";
 import { Token } from "@brewlabs/sdk";
@@ -52,7 +52,7 @@ const PoolDeployConfirm = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySteps, setDeploySteps] = useState(initialDeploySteps);
   const factoryState = usePoolFactoryState(chainId);
-  const { onCreateSinglePool } = usePoolFactory(chainId, factoryState.serviceFee);
+  const { onCreateSinglePool, onCreateLockupPool, onCreateLockupPoolWithPenalty } = usePoolFactory(chainId, factoryState.serviceFee);
   const { onApprove } = useTokenApprove();
   const [
     {
@@ -64,7 +64,7 @@ const PoolDeployConfirm = () => {
       poolLockPeriod,
       poolReflectionToken,
       poolRewardToken,
-      poolInitialRewardSupply
+      poolInitialRewardSupply,
     },
   ] = useDeployerPoolState("poolInfo");
 
@@ -93,7 +93,7 @@ const PoolDeployConfirm = () => {
       );
       rewardPerBlock = rewardPerBlock
         .div(ethers.BigNumber.from(Number(poolDuration)))
-        .div(ethers.BigNumber.from(BLOCKS_PER_DAY[chainId]));
+        .div(ethers.BigNumber.from(BLOCKS_PER_DAY2[chainId]));
 
       const hasDividend = false;
       const dividendToken = ethers.constants.AddressZero;
@@ -117,17 +117,32 @@ const PoolDeployConfirm = () => {
       }
 
       // Deploy farm contract
-      const tx = await onCreateSinglePool(
-        poolToken.address,
-        poolRewardToken.address,
-        dividendToken,
-        Number(poolDuration),
-        rewardPerBlock.toString(),
-        (poolDepositFee * 100).toFixed(0),
-        (poolWithdrawFee * 100).toFixed(0),
-        hasDividend
-      );
-
+      let tx;
+      console.log(poolDuration, poolLockPeriod);
+      if (Number(poolLockPeriod) > 0) {
+        tx = await onCreateLockupPool(
+          poolToken.address,
+          poolRewardToken.address,
+          dividendToken,
+          Number(poolDuration),
+          [Number(poolLockPeriod)],
+          [rewardPerBlock.toString()],
+          [(poolDepositFee * 100).toFixed(0)],
+          [(poolWithdrawFee * 100).toFixed(0)],
+        );
+      }
+      else {
+        tx = await onCreateSinglePool(
+          poolToken.address,
+          poolRewardToken.address,
+          dividendToken,
+          Number(poolDuration),
+          rewardPerBlock.toString(),
+          (poolDepositFee * 100).toFixed(0),
+          (poolWithdrawFee * 100).toFixed(0),
+          hasDividend
+        );
+      }
       let pool = "";
       const iface = new ethers.utils.Interface(PoolFactoryAbi);
       for (let i = 0; i < tx.logs.length; i++) {
