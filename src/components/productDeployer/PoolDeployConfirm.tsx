@@ -33,12 +33,12 @@ const initialDeploySteps = [
   {
     name: "Waiting",
     status: "current",
-    description: "Approve transaction to deploy index",
+    description: "Approve transaction to deploy staking pool",
   },
   {
     name: "Deploying",
     status: "upcoming",
-    description: "Deploying index",
+    description: "Deploying staking pool",
   },
   {
     name: "Completed",

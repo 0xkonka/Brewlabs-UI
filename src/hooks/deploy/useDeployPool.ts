@@ -28,7 +28,6 @@ export const usePoolFactory = (chainId, performanceFee) => {
         rewardPerBlock,
         depositFee,
         withdrawFee,
-        duration,
         hasDividend,
         { value: performanceFee, gasPrice }
       );
