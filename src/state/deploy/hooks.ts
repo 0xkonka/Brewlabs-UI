@@ -6,7 +6,12 @@ import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useAppDispatch } from "state";
 import { State } from "state/types";
 
-import { fetchFarmFactoryDataAsync, fetchIndexFactoryDataAsync, fetchTokenFactoryDataAsync } from ".";
+import {
+  fetchFarmFactoryDataAsync,
+  fetchIndexFactoryDataAsync,
+  fetchPoolFactoryDataAsync,
+  fetchTokenFactoryDataAsync,
+} from ".";
 
 export const usePollTokenFactoryData = () => {
   const dispatch = useAppDispatch();
@@ -36,6 +41,20 @@ export const usePollFarmFactoryData = () => {
   }, [dispatch, supportedChains]);
 };
 
+export const usePollPoolFactoryData = () => {
+  const dispatch = useAppDispatch();
+
+  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerPoolFactory.filter((chainId) =>
+    Object.keys(contracts.poolFactory)
+      .map((c) => +c)
+      .includes(chainId)
+  );
+
+  useEffect(() => {
+    supportedChains.forEach((chainId) => dispatch(fetchPoolFactoryDataAsync(chainId)));
+  }, [dispatch, supportedChains]);
+};
+
 export const usePollIndexFactoryData = () => {
   const dispatch = useAppDispatch();
 
@@ -52,6 +71,9 @@ export const usePollIndexFactoryData = () => {
 
 export const useFarmFactory = (chainId) =>
   useSelector((state: State) => state.deploy.farm.find((data) => data.chainId === chainId));
+
+export const usePoolFactoryState = (chainId) =>
+  useSelector((state: State) => state.deploy.poolFactory.find((data) => data.chainId === chainId));
 
 export const useIndexFactory = (chainId) =>
   useSelector((state: State) => state.deploy.indexes.find((data) => data.chainId === chainId));

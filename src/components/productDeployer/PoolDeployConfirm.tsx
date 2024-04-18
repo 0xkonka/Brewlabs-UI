@@ -16,18 +16,29 @@ import { Button } from "components/ui/button";
 import type { DeployStep } from "@components/DeployProgress";
 import DeployProgress, { updateDeployStatus } from "@components/DeployProgress";
 
-import { useDeployerPoolState, setDeployerPoolStep } from "state/deploy/deployerPool.store";
+import { useDeployerPoolState, setDeployerPoolStep, setDeployedPoolAddress } from "state/deploy/deployerPool.store";
+import { usePoolFactoryState } from "state/deploy/hooks";
+import { usePoolFactory } from "@hooks/deploy/useDeployPool";
+import { useTokenApprove } from "@hooks/useApprove";
+import { ethers } from "ethers";
+import { BLOCKS_PER_DAY2 } from "config/constants";
+import { useCurrency } from "@hooks/Tokens";
+import useTotalSupply from "@hooks/useTotalSupply";
+import { Token } from "@brewlabs/sdk";
+import PoolFactoryAbi from "config/abi/staking/brewlabsPoolFactory.json";
+import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+
 
 const initialDeploySteps = [
   {
     name: "Waiting",
     status: "current",
-    description: "Approve transaction to deploy index",
+    description: "Approve transaction to deploy staking pool",
   },
   {
     name: "Deploying",
     status: "upcoming",
-    description: "Deploying index",
+    description: "Deploying staking pool",
   },
   {
     name: "Completed",
@@ -40,7 +51,9 @@ const PoolDeployConfirm = () => {
   const { chainId } = useActiveChainId();
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySteps, setDeploySteps] = useState(initialDeploySteps);
-
+  const factoryState = usePoolFactoryState(chainId);
+  const { onCreateSinglePool, onCreateLockupPool, onCreateLockupPoolWithPenalty } = usePoolFactory(chainId, factoryState.serviceFee);
+  const { onApprove } = useTokenApprove();
   const [
     {
       poolToken,
@@ -51,8 +64,13 @@ const PoolDeployConfirm = () => {
       poolLockPeriod,
       poolReflectionToken,
       poolRewardToken,
+      poolInitialRewardSupply,
     },
   ] = useDeployerPoolState("poolInfo");
+
+
+  const rewardCurrency = useCurrency(poolRewardToken?.address);
+  const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
 
   const showError = (errorMsg: string) => {
     if (errorMsg) toast.error(errorMsg);
@@ -68,26 +86,76 @@ const PoolDeployConfirm = () => {
     setDeploySteps(initialDeploySteps);
     // Shows initial the deployment progress
     setIsDeploying(true);
+    try {
+      let rewardPerBlock = ethers.utils.parseUnits(
+        ((+totalSupply.toFixed(2) * poolInitialRewardSupply) / 100).toFixed(poolRewardToken.decimals),
+        poolRewardToken.decimals
+      );
+      rewardPerBlock = rewardPerBlock
+        .div(ethers.BigNumber.from(Number(poolDuration)))
+        .div(ethers.BigNumber.from(BLOCKS_PER_DAY2[chainId]));
 
-    setTimeout(() => {
-      updateDeployStatus({
-        setStepsFn: setDeploySteps,
-        targetStep: "Waiting",
-        updatedStatus: "complete",
-        updatedDescription: "Approved transaction to deploy pool",
-      });
-    }, 2000);
+      const hasDividend = false;
+      const dividendToken = ethers.constants.AddressZero;
 
-    setTimeout(() => {
-      updateDeployStatus({
-        setStepsFn: setDeploySteps,
-        targetStep: "Deploying",
-        updatedStatus: "current",
-        updatedDescription: "Deployment in progress",
-      });
-    }, 4000);
+      // Approve paying token for deployment
+      if (factoryState.payingToken.isToken && +factoryState.serviceFee > 0) {
+        await onApprove(factoryState.payingToken.address, factoryState.address);
+        updateDeployStatus({
+          setStepsFn: setDeploySteps,
+          targetStep: "Waiting",
+          updatedStatus: "complete",
+          updatedDescription: "Approved transaction to deploy pool",
+        });
 
-    setTimeout(() => {
+        updateDeployStatus({
+          setStepsFn: setDeploySteps,
+          targetStep: "Deploying",
+          updatedStatus: "current",
+          updatedDescription: "Deployment in progress",
+        });
+      }
+
+      // Deploy farm contract
+      let tx;
+      console.log(poolDuration, poolLockPeriod);
+      if (Number(poolLockPeriod) > 0) {
+        tx = await onCreateLockupPool(
+          poolToken.address,
+          poolRewardToken.address,
+          dividendToken,
+          Number(poolDuration),
+          [Number(poolLockPeriod)],
+          [rewardPerBlock.toString()],
+          [(poolDepositFee * 100).toFixed(0)],
+          [(poolWithdrawFee * 100).toFixed(0)],
+        );
+      }
+      else {
+        tx = await onCreateSinglePool(
+          poolToken.address,
+          poolRewardToken.address,
+          dividendToken,
+          Number(poolDuration),
+          rewardPerBlock.toString(),
+          (poolDepositFee * 100).toFixed(0),
+          (poolWithdrawFee * 100).toFixed(0),
+          hasDividend
+        );
+      }
+      let pool = "";
+      const iface = new ethers.utils.Interface(PoolFactoryAbi);
+      for (let i = 0; i < tx.logs.length; i++) {
+        try {
+          const log = iface.parseLog(tx.logs[i]);
+          if (log.name === "SinglePoolCreated") {
+            pool = log.args.pool;
+            setDeployedPoolAddress(log.args.pool);
+            break;
+          }
+        } catch (e) { }
+      }
+
       updateDeployStatus({
         setStepsFn: setDeploySteps,
         targetStep: "Deploying",
@@ -95,17 +163,54 @@ const PoolDeployConfirm = () => {
         updatedDescription: "Deployment done",
       });
 
+    } catch (e) {
+      handleWalletError(e, showError, getNativeSymbol(chainId));
+      // Error deploying farm contract
       updateDeployStatus({
         setStepsFn: setDeploySteps,
-        targetStep: "Completed",
-        updatedStatus: "complete",
-        updatedDescription: "Deployment done",
+        targetStep: "Deploying",
+        updatedStatus: "failed",
+        updatedDescription: "Deployment failed",
       });
-    }, 6000);
+    }
 
-    setTimeout(() => {
-      setDeployerPoolStep("success");
-    }, 9000);
+    // setTimeout(() => {
+    //   updateDeployStatus({
+    //     setStepsFn: setDeploySteps,
+    //     targetStep: "Waiting",
+    //     updatedStatus: "complete",
+    //     updatedDescription: "Approved transaction to deploy pool",
+    //   });
+    // }, 2000);
+
+    // setTimeout(() => {
+    //   updateDeployStatus({
+    //     setStepsFn: setDeploySteps,
+    //     targetStep: "Deploying",
+    //     updatedStatus: "current",
+    //     updatedDescription: "Deployment in progress",
+    //   });
+    // }, 4000);
+
+    // setTimeout(() => {
+    //   updateDeployStatus({
+    //     setStepsFn: setDeploySteps,
+    //     targetStep: "Deploying",
+    //     updatedStatus: "complete",
+    //     updatedDescription: "Deployment done",
+    //   });
+
+    //   updateDeployStatus({
+    //     setStepsFn: setDeploySteps,
+    //     targetStep: "Completed",
+    //     updatedStatus: "complete",
+    //     updatedDescription: "Deployment done",
+    //   });
+    // }, 6000);
+
+    // setTimeout(() => {
+    //   setDeployerPoolStep("success");
+    // }, 9000);
 
     // When all steps are complete the success step will be shown
     // See the onSuccess prop in the DeployProgress component for more details

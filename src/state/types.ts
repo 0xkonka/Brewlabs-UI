@@ -67,6 +67,7 @@ export interface DeployState {
   pool: DeployConfig[];
   indexes: DeployConfig[];
   token: DeployConfig[];
+  poolFactory: DeployConfig[];
 }
 
 export interface NftState {

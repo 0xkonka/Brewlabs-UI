@@ -31,6 +31,7 @@ import IndexImplV2Abi from "config/abi/indexes/indexImpl_v2.json";
 import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
 import FarmFactoryAbi from "config/abi/farm/factory.json";
+import PoolFactoryAbi from "config/abi/staking/brewlabsPoolFactory.json";
 import FlaskNftAbi from "config/abi/nfts/flaskNft.json";
 import MirrorNftAbi from "config/abi/nfts/mirrorNft.json";
 import NftStakingAbi from "config/abi/nfts/nftStaking.json";
@@ -49,6 +50,7 @@ import {
   getBrewlabsAggregationRouterAddress,
   getBrewlabsFeeManagerAddress,
   getFarmFactoryAddress,
+  getPoolFactoryAddress,
   getIndexFactoryAddress,
   getFlaskNftAddress,
   getMirrorNftAddress,
@@ -173,6 +175,10 @@ export const getTokenFactoryContract = (chainId: ChainId, signer?: ethers.Signer
 
 export const getFarmFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, getFarmFactoryAddress(chainId), FarmFactoryAbi, signer);
+};
+
+export const getPoolFactoryContract = (chainId: ChainId, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, getPoolFactoryAddress(chainId), PoolFactoryAbi, signer);
 };
 
 export const getFarmImplContract = (

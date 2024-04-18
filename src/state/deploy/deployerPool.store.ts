@@ -5,6 +5,7 @@ import { poolDeployerSchema } from "config/schemas/poolDeployerSchema";
 interface DeployerPoolStore {
   poolInfo: z.infer<typeof poolDeployerSchema>;
   deployerPoolStep: "details" | "confirm" | "success";
+  deployedPoolAddress: `0x${string}`;
 }
 
 // Create a single global state object
@@ -21,6 +22,10 @@ export const setPoolInfo = (poolInfo: z.infer<typeof poolDeployerSchema>) => {
 
 export const setDeployerPoolStep = (deployerPoolStep: DeployerPoolStore["deployerPoolStep"]) => {
   setGlobalState("deployerPoolStep", deployerPoolStep);
+};
+
+export const setDeployedPoolAddress = (deployedPoolAddress: DeployerPoolStore["deployedPoolAddress"]) => {
+  setGlobalState("deployedPoolAddress", deployedPoolAddress);
 };
 
 export { useDeployerPoolState };

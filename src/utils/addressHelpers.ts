@@ -22,6 +22,9 @@ export const getTokenFactoryAddress = (chainId: ChainId) => {
 export const getFarmFactoryAddress = (chainId: ChainId) => {
   return getAddress(addresses.farmFactory, chainId);
 };
+export const getPoolFactoryAddress = (chainId: ChainId) => {
+  return getAddress(addresses.poolFactory, chainId);
+};
 export const getIndexFactoryAddress = (chainId: ChainId) => {
   return getAddress(addresses.indexFactory, chainId);
 };
