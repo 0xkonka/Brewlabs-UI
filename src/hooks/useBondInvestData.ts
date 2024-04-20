@@ -29,8 +29,34 @@ export const useBondInvestData = (dataId: string) => {
           amount: 12.5,
           direction: "up",
         },
+        bondName: "BREWLABS/USDT",
+        bondRemaining: {
+          total: 1000,
+          remaining: 998,
+        },
+      },
+      {
+        bondType: "tokenVested",
+        bondToken: {
+          address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
+          name: "Brewlabs",
+          symbol: "BREWLABS",
+          decimals: 18,
+        },
+        bondSaleToken: {
+          address: "0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86",
+          name: "OSDT",
+          symbol: "OSDT",
+          decimals: 18,
+        },
+        bondSalePrice: 0.005676,
+        bondMarketPrice: 0.0035467,
+        bondVariance: {
+          amount: 2,
+          direction: "down",
+        },
         bondVestingPeriod: 10,
-        bondName: "BREWLABS/USDC",
+        bondName: "BREWLABS/OUSD",
         bondRemaining: {
           total: 1000,
           remaining: 998,

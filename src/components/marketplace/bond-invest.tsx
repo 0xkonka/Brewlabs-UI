@@ -84,13 +84,18 @@ const BondInvest = () => {
               <div className="flex gap-2">
                 <dt className="font-medium text-gray-400">Type:</dt>
                 <dd>
-                  {bondType === "nft" && "NFT"} {bondType === "token" && "ERC20 Token"}
+                  {bondType === "nft" && "NFT"}
+                  {bondType === "token" && "Token no vesting period"}
+                  {bondType === "tokenVested" && "Token with vesting period"}
                 </dd>
               </div>
-              <div className="flex gap-2">
-                <dt className="font-medium text-gray-400">Vesting period:</dt>
-                <dd>{bondVestingPeriod} days</dd>
-              </div>
+              {bondType === "tokenVested" && (
+                <div className="flex gap-2">
+                  <dt className="font-medium text-gray-400">Vesting period:</dt>
+                  <dd>{bondVestingPeriod} days</dd>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <dt className="font-medium text-gray-400">Sold for:</dt>
                 <dd>{bondSaleToken?.symbol}</dd>
@@ -151,7 +156,7 @@ const BondInvest = () => {
 
               <div className="col-span-1 flex flex-col items-center justify-center gap-2 space-y-2 rounded-md ring ring-white/10">
                 <p className="text-sm font-medium leading-none">
-                  Cost: ~{(bondSalePrice * bondRemaining?.remaining).toFixed(2)} USDC
+                  Cost: ~{(bondSalePrice * bondRemaining?.remaining).toFixed(2)} {bondSaleToken?.symbol}
                 </p>
                 <Button variant="outline">Buy all remaining {bondRemaining?.remaining}</Button>
               </div>

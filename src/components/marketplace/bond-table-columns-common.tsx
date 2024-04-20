@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { capitalize } from "lodash";
-import { TrendingUpIcon, TrendingDownIcon } from "lucide-react";
+import { TrendingUpIcon, TrendingDownIcon, HourglassIcon } from "lucide-react";
 
 import { Badge } from "@components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -56,6 +56,7 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
         <>
           {bond.bondType === "nft" && <Badge variant="purple">{bond.bondType.toUpperCase()}</Badge>}
           {bond.bondType === "token" && <Badge variant="amber">{capitalize(bond.bondType)}</Badge>}
+          {bond.bondType === "tokenVested" && <Badge variant="amber">Token</Badge>}
         </>
       );
     },
