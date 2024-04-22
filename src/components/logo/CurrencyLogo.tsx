@@ -4,7 +4,6 @@ import { AppId } from "config/constants/types";
 import useHttpLocations from "../../hooks/useHttpLocations";
 import { WrappedTokenInfo } from "../../state/lists/hooks";
 import getTokenLogoURL from "../../utils/getTokenLogoURL";
-import Logo from "./Logo";
 import TokenLogo from "./TokenLogo";
 
 export default function CurrencyLogo({
