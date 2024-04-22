@@ -13,6 +13,7 @@ import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
 import { LinkSVG } from "./assets/svgs";
 import StyledButton from "./StyledButton";
+import { Button } from "@components/ui/button";
 
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
@@ -109,19 +110,18 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
             </button>
           </div>
           <div>
-            <div className={"h-[24px] w-[120px]"}>
-              <StyledButton
-                onClick={() => {
-                  disconnect();
-                  setUserSidebarOpen(0);
-                }}
-              >
-                <div className={"flex items-center"}>
-                  {LinkSVG}
-                  <div className={"ml-0.5"}>Disconnect</div>
-                </div>
-              </StyledButton>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => {
+                disconnect();
+                setUserSidebarOpen(0);
+              }}
+            >
+              {LinkSVG}
+              Disconnect
+            </Button>
           </div>
         </div>
       )}
