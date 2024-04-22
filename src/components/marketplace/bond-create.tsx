@@ -14,10 +14,11 @@ import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accor
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 
 import ChainSelect from "views/swap/components/ChainSelect";
-import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
+import { CurrencySelectorInput } from "@components/currencySelector/CurrencySelectorInput";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { bondCreateSchema, supportedNetworks } from "config/schemas/bondCreateSchema";
+import { supportedBondListingTokens, supportedBondSaleTokens } from "config/constants/bond-tokens";
 
 const BondCreate = () => {
   const { chainId } = useActiveChainId();
@@ -25,6 +26,7 @@ const BondCreate = () => {
 
   const onSubmit = (data: z.infer<typeof bondCreateSchema>) => {
     console.log(data);
+    // Throw in local storage for now
   };
 
   const form = useForm<z.infer<typeof bondCreateSchema>>({
@@ -40,8 +42,10 @@ const BondCreate = () => {
   });
 
   const watchBondType = form.watch("bondType");
+  const watchBondToken = form.watch("bondToken");
+  const watchBondSaleToken = form.watch("bondSaleToken");
 
-  // By setting this state we can show/hide the conditional fields based on the pool type
+  // By setting this state we can show/hide the conditional fields
   useEffect(() => {
     if (watchBondType === "token" || watchBondType === "nft") {
       setShowConditionalField([]);
@@ -50,6 +54,15 @@ const BondCreate = () => {
       setShowConditionalField(["bondVestingPeriod"]);
     }
   }, [watchBondType]);
+
+  // Set the bond name based on the selected token
+  useEffect(() => {
+    if (watchBondToken || watchBondSaleToken) {
+      form.setValue("bondName", `${watchBondToken?.name}/${watchBondSaleToken?.name}`);
+    }
+  }, [watchBondToken, watchBondSaleToken, form]);
+
+  console.log(form.formState.errors);
 
   return (
     <Card className="max-w-3xl">
@@ -121,12 +134,13 @@ const BondCreate = () => {
                   <FormItem className="space-y-4">
                     <FormLabel className="text-xl">Select a token to sell</FormLabel>
                     <FormControl>
-                      <TokenSelect
+                      <CurrencySelectorInput
                         selectedCurrency={field.value}
-                        setSelectedCurrency={(token) => {
-                          form.setValue("bondToken", token);
+                        setSelectCurrency={(currency) => {
+                          form.setValue("bondToken", currency);
                           form.trigger("bondToken");
                         }}
+                        supportedTokens={supportedBondListingTokens.filter((t) => t.chainId === chainId)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -145,12 +159,13 @@ const BondCreate = () => {
                   <FormItem className="space-y-4">
                     <FormLabel className="text-xl">Select a sale token</FormLabel>
                     <FormControl>
-                      <TokenSelect
+                      <CurrencySelectorInput
                         selectedCurrency={field.value}
-                        setSelectedCurrency={(token) => {
-                          form.setValue("bondSaleToken", token);
+                        setSelectCurrency={(currency) => {
+                          form.setValue("bondSaleToken", currency);
                           form.trigger("bondSaleToken");
                         }}
+                        supportedTokens={supportedBondSaleTokens.filter((t) => t.chainId === chainId)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -193,11 +208,11 @@ const BondCreate = () => {
                 <FormItem className="mt-4 flex items-center justify-between">
                   <FormLabel className="flex flex-col items-start gap-1">
                     Set the sale price
-                    <span className="text-xs text-gray-500">A percentage of....</span>
+                    <span className="text-xs text-gray-500">A percentage of the current market price</span>
                   </FormLabel>
                   <FormControl>
                     <div className="flex flex-col items-end">
-                      <IncrementorInput step={1} min={0} max={10} symbol="%" {...field} />
+                      <IncrementorInput step={1} min={1} max={1000} symbol="%" {...field} />
                       <FormMessage />
                     </div>
                   </FormControl>
