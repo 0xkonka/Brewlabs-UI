@@ -4,7 +4,7 @@ import { formatUnits } from "viem";
 import { Token } from "@brewlabs/sdk";
 import { useEvmWalletTokenBalances } from "@moralisweb3/next";
 import { Erc20Value } from "@moralisweb3/common-evm-utils";
-import { CircleAlertIcon, CircleSlashIcon } from "lucide-react";
+import { BananaIcon, CircleAlertIcon, CircleSlashIcon } from "lucide-react";
 
 import { useGlobalState } from "state";
 import { useTokenMarketChart } from "state/prices/hooks";
@@ -17,6 +17,7 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import MarketPrice24h from "components/MarketPrice24h";
 import CurrencySelectorNative from "components/currencySelector/CurrencySelectorNative";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
 type SupportedToken = {
   chainId: number;
@@ -27,7 +28,7 @@ type SupportedToken = {
 
 type CurrencySelectorFromWalletProps = {
   supportedTokens?: SupportedToken[];
-  onCurrencySelect: (token: Token) => void;
+  onCurrencySelect: (token: Token, tokenPrice: number) => void;
 };
 
 const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
@@ -36,17 +37,15 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
+  // This get's a insane amount of data - look for alternatives
   const tokenMarketData = useTokenMarketChart(chainId);
 
-  // Look to cache this somehow
-  // Better off making using v2 since it has verified?
   const { data: walletTokens, isFetching } = useEvmWalletTokenBalances({ address, chain: chainId });
 
   const filteredWalletTokens = useMemo(() => {
     // Remove spam tokens and zero values
     const removedSpam =
       walletTokens?.filter((i) => !i.token.possibleSpam && Number(i.amount) > 0 && i.token.logo) || [];
-
     // Remove wallet tokens from supported tokens to avoid duplicates
     const supportedTokensNotInWallet = supportedTokens.filter((t) => {
       return !removedSpam?.some((i) => i.token.contractAddress.lowercase.toString() === t.address.toLowerCase());
@@ -58,10 +57,16 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
     };
   }, [supportedTokens, walletTokens]);
 
-  const handleCurrencySelection = (currency: Erc20Value["token"]) => {
+  // Check if there are any supported tokens
+  const hasSupportedTokens = useMemo(() => {
+    return filteredWalletTokens.validTokens.some((t) =>
+      supportedTokens.some((s) => s.address.toLowerCase() === t.token.contractAddress.lowercase.toString())
+    );
+  }, [filteredWalletTokens.validTokens, supportedTokens]);
+
+  const handleCurrencySelection = (currency: Erc20Value["token"], tokenPrice) => {
     // Close the side panel
     setUserSidebarOpen(0);
-
     // Convert currency type to token type
     const token = new Token(
       chainId,
@@ -73,7 +78,7 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
       currency.logo
     );
 
-    onCurrencySelect(token);
+    onCurrencySelect(token, tokenPrice);
   };
 
   return (
@@ -85,7 +90,13 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
         </div>
       </div>
 
-      <input type="text" className="input-bordered input w-full" placeholder="Search by contract address or by name" />
+      {!hasSupportedTokens && (
+        <Alert className="my-4 border-brand bg-yellow-100/10 text-brand">
+          <BananaIcon className="h-4 w-4 !text-brand" />
+          <AlertTitle>Slip up!</AlertTitle>
+          <AlertDescription>You do not own any supported tokens.</AlertDescription>
+        </Alert>
+      )}
 
       <div className="mt-3 h-[75svh] w-full overflow-y-auto px-2">
         <CurrencySelectorNative supportedTokens={supportedTokens} />
@@ -112,7 +123,7 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
                 type="button"
                 key={addressAsString}
                 disabled={notSupported}
-                onClick={() => handleCurrencySelection(token.token)}
+                onClick={() => handleCurrencySelection(token.token, tokenPrice)}
                 className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start animate-in fade-in enabled:hover:bg-gradient-to-r"
               >
                 <div className="flex w-full items-center justify-between p-5 pl-0">
