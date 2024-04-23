@@ -14,7 +14,7 @@ import CurrencySelectorFromWallet from "components/currencySelector/CurrencySele
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   selectedCurrency: any;
   supportedTokens?: any[];
-  setSelectCurrency: (currency) => void;
+  setSelectCurrency: (currency, tokenPrice) => void;
 }
 
 const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
@@ -34,7 +34,7 @@ const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
               setUserSidebarContent(
                 <CurrencySelectorFromWallet
                   supportedTokens={supportedTokens}
-                  onCurrencySelect={(currency) => setSelectCurrency(currency)}
+                  onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
                 />
               ),
           ])

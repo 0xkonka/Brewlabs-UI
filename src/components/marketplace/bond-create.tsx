@@ -2,15 +2,17 @@ import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ZapIcon, HourglassIcon, ImagesIcon } from "lucide-react";
+import { ZapIcon, HourglassIcon, ImagesIcon, PlusCircleIcon, MinusCircleIcon } from "lucide-react";
 
 import { Badge } from "@components/ui/badge";
+import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { RadioGroup } from "@components/ui/radio-group";
 import { RadioButton } from "@components/ui/radio-button";
 import { IncrementorInput } from "@components/ui/incrementor-input";
 import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@components/ui/tooltip";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 
 import ChainSelect from "views/swap/components/ChainSelect";
@@ -22,6 +24,7 @@ import { supportedBondListingTokens, supportedBondSaleTokens } from "config/cons
 
 const BondCreate = () => {
   const { chainId } = useActiveChainId();
+  const [initialMarketPrice, setInitialMarketPrice] = useState(100);
   const [showConditionalField, setShowConditionalField] = useState([]);
 
   const onSubmit = (data: z.infer<typeof bondCreateSchema>) => {
@@ -37,13 +40,14 @@ const BondCreate = () => {
       bondToken: null,
       bondSaleToken: null,
       bondVestingPeriod: 1,
-      bondSalePrice: 1,
+      bondSalePrice: 0,
     },
   });
 
   const watchBondType = form.watch("bondType");
   const watchBondToken = form.watch("bondToken");
   const watchBondSaleToken = form.watch("bondSaleToken");
+  const watchBondSalePrice = form.watch("bondSalePrice");
 
   // By setting this state we can show/hide the conditional fields
   useEffect(() => {
@@ -62,7 +66,13 @@ const BondCreate = () => {
     }
   }, [watchBondToken, watchBondSaleToken, form]);
 
-  console.log(form.formState.errors);
+  // Increase by 1 percent
+  const increase = () => {
+    form.setValue("bondSalePrice", watchBondSalePrice + initialMarketPrice / 100);
+  };
+  const decrease = () => {
+    form.setValue("bondSalePrice", watchBondSalePrice - initialMarketPrice / 100);
+  };
 
   return (
     <Card className="max-w-3xl">
@@ -136,7 +146,9 @@ const BondCreate = () => {
                     <FormControl>
                       <CurrencySelectorInput
                         selectedCurrency={field.value}
-                        setSelectCurrency={(currency) => {
+                        setSelectCurrency={(currency, tokenPrice) => {
+                          setInitialMarketPrice(tokenPrice);
+                          form.setValue("bondSalePrice", tokenPrice);
                           form.setValue("bondToken", currency);
                           form.trigger("bondToken");
                         }}
@@ -208,11 +220,51 @@ const BondCreate = () => {
                 <FormItem className="mt-4 flex items-center justify-between">
                   <FormLabel className="flex flex-col items-start gap-1">
                     Set the sale price
-                    <span className="text-xs text-gray-500">A percentage of the current market price</span>
+                    {watchBondToken && (
+                      <>
+                        <p className="text-xs text-gray-500">
+                          Current market price for {watchBondToken?.symbol} is {initialMarketPrice}.
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Set sale price is{" "}
+                          <span className="text-white">
+                            {((watchBondSalePrice / initialMarketPrice) * 100).toFixed(0)}%
+                          </span>{" "}
+                          of the current market price.
+                        </p>
+                      </>
+                    )}
                   </FormLabel>
                   <FormControl>
                     <div className="flex flex-col items-end">
-                      <IncrementorInput step={1} min={1} max={1000} symbol="%" {...field} />
+                      <div className="flex gap-2">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button type="button" variant="ghost" size="icon" onClick={() => decrease()}>
+                                <MinusCircleIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="left">
+                              <p>Decrease by 1%</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <Input {...field} className="w-24" />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button type="button" variant="ghost" size="icon" onClick={() => increase()}>
+                                <PlusCircleIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">
+                              <p>Increase by 1%</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
                       <FormMessage />
                     </div>
                   </FormControl>
