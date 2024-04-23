@@ -11,7 +11,7 @@ export const bondCreateSchema = z.object({
     .number()
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   bondType: z.enum(["token", "nft", "tokenVested"], {
-    required_error: "You need to select duration.",
+    required_error: "You need to select a bond type.",
   }),
 
   bondToken: tokenSchema,
@@ -29,7 +29,7 @@ export const bondCommonSchema = z.object({
     .number()
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   bondType: z.enum(["token", "nft", "tokenVested"], {
-    required_error: "You need to select duration.",
+    required_error: "You need to select a bond type.",
   }),
   bondMarketPrice: z.coerce.number(),
   bondToken: tokenSchema,
