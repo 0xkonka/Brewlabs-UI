@@ -7,7 +7,14 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import MarketPrice24h from "components/MarketPrice24h";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
 
-const CurrencySelectorNative = ({ supportedTokens }) => {
+import { WalletTokensFromMoralis } from "./CurrencySelectorFromWallet";
+
+type CurrencySelectorNativeProps = {
+  supportedTokens: any[];
+  handleCurrencySelection: (token: WalletTokensFromMoralis, tokenPrice: number) => void;
+};
+
+const CurrencySelectorNative = ({ supportedTokens, handleCurrencySelection }: CurrencySelectorNativeProps) => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
@@ -24,7 +31,11 @@ const CurrencySelectorNative = ({ supportedTokens }) => {
 
   // Get the native token balance
   // Using Wagmi, Moralis was unreliable
-  const { data: nativeBalance, isError } = useBalance({
+  const {
+    data: nativeBalance,
+    isError,
+    isLoading,
+  } = useBalance({
     address,
     chainId,
   });
@@ -50,7 +61,7 @@ const CurrencySelectorNative = ({ supportedTokens }) => {
       type="button"
       key={nativeTokenPrice.tokenAddress}
       disabled={notSupported}
-      // onClick={() => handleCurrencySelection(token.token)}
+      onClick={() => handleCurrencySelection(nativeToken, nativeTokenPrice.usdPrice)}
       className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start enabled:hover:bg-gradient-to-r"
     >
       <div className="flex w-full items-center justify-between p-5 pl-0">
@@ -67,14 +78,14 @@ const CurrencySelectorNative = ({ supportedTokens }) => {
           </div>
           <div>
             <h3 className="mb-1 text-lg font-semibold">{nativeToken.name}</h3>
-
-            <MarketPrice24h
-              marketData={{
-                usd: nativeTokenPrice.usdPrice,
-                usd_24h_change: Number(nativeTokenPrice["24hrPercentChange"]),
-              }}
-              symbol={nativeToken.symbol}
-            />
+            {!isLoading ||
+              (!isError && (
+                <MarketPrice24h
+                  usdPrice={nativeTokenPrice.usdPrice}
+                  usd24hChange={Number(nativeTokenPrice["24hrPercentChange"])}
+                  symbol={nativeToken.symbol}
+                />
+              ))}
           </div>
         </div>
 

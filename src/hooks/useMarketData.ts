@@ -17,7 +17,7 @@ export const useMarketData = ({ chain, address }: { chain: number; address: stri
   // Make the data more usable
   const transReturnData = (data: MarketDataFromCoinGecko) => data[address.toLowerCase()];
 
-  const { data, isFetching, isError } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     // Data is cached based on the address
     queryKey: [`marketData_${address}`],
     queryFn: (): Promise<MarketDataFromCoinGecko> =>
@@ -31,5 +31,5 @@ export const useMarketData = ({ chain, address }: { chain: number; address: stri
     refetchInterval: 5 * 60 * 1000,
   });
 
-  return { data, isFetching, isError };
+  return { data, isLoading, isFetching, isError };
 };

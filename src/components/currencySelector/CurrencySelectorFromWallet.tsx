@@ -1,20 +1,15 @@
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
-import { formatUnits } from "viem";
+
 import { Token } from "@brewlabs/sdk";
-import { useEvmWalletTokenBalances } from "@moralisweb3/next";
-import { Erc20Value } from "@moralisweb3/common-evm-utils";
-import { BananaIcon, CircleAlertIcon, CircleSlashIcon } from "lucide-react";
+import { BananaIcon } from "lucide-react";
 
 import { useGlobalState } from "state";
-import { useTokenMarketChart } from "state/prices/hooks";
-import { defaultMarketData } from "state/prices/types";
+
+import CurrencySelectorItem from "./CurrencySelectorItem";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
 
-import getTokenLogoURL from "utils/getTokenLogoURL";
-
-import MarketPrice24h from "components/MarketPrice24h";
 import CurrencySelectorNative from "components/currencySelector/CurrencySelectorNative";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
@@ -26,10 +21,40 @@ type SupportedToken = {
   address: string;
 };
 
+export type WalletTokensFromMoralis = {
+  balance: string;
+  decimals: number;
+  logo: string | null;
+  name: string;
+  percentage_relative_to_total_supply: number;
+  possible_spam: boolean;
+  symbol: string;
+  thumbnail: string | null;
+  token_address: string;
+  total_supply: string;
+  total_supply_formatted: string;
+  verified_contract: boolean;
+};
+
 type CurrencySelectorFromWalletProps = {
   supportedTokens?: SupportedToken[];
   onCurrencySelect: (token: Token, tokenPrice: number) => void;
 };
+
+// TODO: fix url
+const fetchWalletTokens = async ({ address, chain }) => {
+  const res = await fetch("/api/moralis/evmApi/getWalletTokenBalances", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ address, chain }),
+  });
+
+  return res.json();
+};
+
+import { useQuery } from "@tanstack/react-query";
 
 const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
@@ -37,40 +62,33 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
-  // This get's a insane amount of data - look for alternatives
-  const tokenMarketData = useTokenMarketChart(chainId);
+  // Filter the wallet data
+  const filterWalletTokens = (walletTokens: WalletTokensFromMoralis[]) =>
+    walletTokens.filter((i) => !i.possible_spam && Number(i.balance) > 0 && i.verified_contract);
 
-  const { data: walletTokens, isFetching } = useEvmWalletTokenBalances({ address, chain: chainId });
+  // Get the wallet tokens from Moralis + React Query
+  const { isLoading, data: walletTokens } = useQuery({
+    queryKey: [`userWalletTokens_${address}`],
+    queryFn: (): Promise<WalletTokensFromMoralis[]> => fetchWalletTokens({ address, chain: chainId }),
+    select: filterWalletTokens,
+    refetchOnWindowFocus: false,
+  });
 
-  const filteredWalletTokens = useMemo(() => {
-    // Remove spam tokens and zero values
-    const removedSpam =
-      walletTokens?.filter((i) => !i.token.possibleSpam && Number(i.amount) > 0 && i.token.logo) || [];
-    // Remove wallet tokens from supported tokens to avoid duplicates
-    const supportedTokensNotInWallet = supportedTokens.filter((t) => {
-      return !removedSpam?.some((i) => i.token.contractAddress.lowercase.toString() === t.address.toLowerCase());
+  const hasSupportedTokens = useMemo(() => {
+    if (supportedTokens.length === 0) return false;
+
+    return walletTokens?.some((token) => {
+      return supportedTokens.some((t) => t.address.toLowerCase() === token.token_address);
     });
-
-    return {
-      validTokens: removedSpam.reverse(),
-      supportedTokens: supportedTokensNotInWallet,
-    };
   }, [supportedTokens, walletTokens]);
 
-  // Check if there are any supported tokens
-  const hasSupportedTokens = useMemo(() => {
-    return filteredWalletTokens.validTokens.some((t) =>
-      supportedTokens.some((s) => s.address.toLowerCase() === t.token.contractAddress.lowercase.toString())
-    );
-  }, [filteredWalletTokens.validTokens, supportedTokens]);
-
-  const handleCurrencySelection = (currency: Erc20Value["token"], tokenPrice) => {
+  const handleCurrencySelection = (currency: WalletTokensFromMoralis, tokenPrice) => {
     // Close the side panel
     setUserSidebarOpen(0);
     // Convert currency type to token type
     const token = new Token(
       chainId,
-      currency.contractAddress.lowercase.toString(),
+      currency.token_address,
       currency.decimals,
       currency.symbol,
       currency.name,
@@ -99,98 +117,27 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
       )}
 
       <div className="mt-3 h-[75svh] w-full overflow-y-auto px-2">
-        <CurrencySelectorNative supportedTokens={supportedTokens} />
+        <CurrencySelectorNative supportedTokens={supportedTokens} handleCurrencySelection={handleCurrencySelection} />
 
-        {isFetching && <CurrencySelectorSkeleton count={6} />}
+        {isLoading && <CurrencySelectorSkeleton count={6} />}
 
-        {!isFetching &&
-          filteredWalletTokens.validTokens.map((token) => {
-            const { name, logo, symbol, contractAddress } = token.token;
-
-            const amountAsBigInt = BigInt(Number(token.amount));
-            const addressAsString = contractAddress.lowercase.toString();
-
-            const tokenPrice = tokenMarketData[addressAsString]?.usd || 0;
-            const balance = Number(formatUnits(amountAsBigInt, token.decimals));
-
-            const notSupported =
+        {walletTokens &&
+          walletTokens.map((token) => {
+            const isSupported =
               supportedTokens.length > 0
-                ? !supportedTokens.some((t) => t.address.toLowerCase() === addressAsString)
+                ? supportedTokens.some((t) => t.address.toLowerCase() === token.token_address)
                 : false;
 
             return (
-              <button
-                type="button"
-                key={addressAsString}
-                disabled={notSupported}
-                onClick={() => handleCurrencySelection(token.token, tokenPrice)}
-                className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start animate-in fade-in enabled:hover:bg-gradient-to-r"
-              >
-                <div className="flex w-full items-center justify-between p-5 pl-0">
-                  <div className="flex gap-3">
-                    <div className="relative">
-                      {notSupported && (
-                        <CircleAlertIcon className="absolute -left-2 -top-2 h-6 w-6 rounded-full bg-gray-800 text-red-500" />
-                      )}
-
-                      <img
-                        className="mt-1 h-10 w-10 rounded-full bg-slate-500 "
-                        src={getTokenLogoURL(addressAsString, chainId, logo)[0]}
-                        alt={name}
-                      />
-                    </div>
-                    <div>
-                      <h3 className="mb-1 text-lg font-semibold">{name}</h3>
-
-                      <MarketPrice24h
-                        marketData={tokenMarketData[addressAsString] || defaultMarketData}
-                        symbol={symbol}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="text-end">
-                    {notSupported && <p className="text-red-500">Not supported</p>}
-                    <p>
-                      {balance.toFixed(2)} {symbol}
-                    </p>
-                    <p className="text-sm opacity-40">{(balance * tokenPrice).toFixed(4)} USD</p>
-                  </div>
-                </div>
-              </button>
+              <CurrencySelectorItem
+                key={token.token_address}
+                token={token}
+                chainId={chainId}
+                isSupported={isSupported}
+                handleCurrencySelection={handleCurrencySelection}
+              />
             );
           })}
-        {!isFetching &&
-          filteredWalletTokens.supportedTokens.map((token) => (
-            <div key={token.address} className="flex w-full justify-between border-b border-gray-600 text-start">
-              <div className="flex w-full items-center justify-between p-5 pl-0">
-                <div className="flex gap-3">
-                  <div className="relative">
-                    <CircleSlashIcon className="absolute -left-2 -top-2 h-6 w-6 rounded-full bg-gray-800 text-red-500" />
-                    <img
-                      className="mt-1 h-10 w-10 rounded-full bg-slate-500"
-                      src={getTokenLogoURL(token.address, chainId)[0]}
-                      alt={token.name}
-                    />
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-semibold">{token.name}</h3>
-
-                    <MarketPrice24h
-                      marketData={tokenMarketData[token.address] || defaultMarketData}
-                      symbol={token.symbol}
-                    />
-                  </div>
-                </div>
-
-                <div className="text-end">
-                  <p className="text-red-500">Supported but not owned</p>
-                  <p>0 {token.symbol}</p>
-                  <p className="text-sm opacity-40">0 USD</p>
-                </div>
-              </div>
-            </div>
-          ))}
       </div>
     </div>
   );
