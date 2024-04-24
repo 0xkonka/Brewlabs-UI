@@ -8,6 +8,7 @@ export const useBondInvestData = (dataId: string) => {
   const [historicData, setHistoricData] = useState<BondColumnsInvest[]>([]);
 
   const fetchBondInvestData = async () => {
+    // Would get data from contract
     const mockData = [
       {
         bondType: "token",
@@ -16,12 +17,14 @@ export const useBondInvestData = (dataId: string) => {
           name: "Brewlabs",
           symbol: "BREWLABS",
           decimals: 18,
+          chainId: 56,
         },
         bondSaleToken: {
           address: "0x55d398326f99059fF775485246999027B3197955",
           name: "USDT",
           symbol: "USDT",
           decimals: 18,
+          chainId: 56,
         },
         bondSalePrice: 0.005676,
         bondMarketPrice: 0.0035467,
@@ -38,25 +41,27 @@ export const useBondInvestData = (dataId: string) => {
       {
         bondType: "tokenVested",
         bondToken: {
-          address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
-          name: "Brewlabs",
-          symbol: "BREWLABS",
+          address: "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+          name: "Bitcoin BEP2",
+          symbol: "WBTC",
           decimals: 18,
+          chainId: 56,
         },
         bondSaleToken: {
           address: "0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86",
           name: "OSDT",
           symbol: "OSDT",
           decimals: 18,
+          chainId: 56,
         },
-        bondSalePrice: 0.005676,
-        bondMarketPrice: 0.0035467,
+        bondSalePrice: 1.6,
+        bondMarketPrice: 0.135467,
         bondVariance: {
-          amount: 2,
+          value: 2,
           direction: "down",
         },
         bondVestingPeriod: 10,
-        bondName: "BREWLABS/OUSD",
+        bondName: "WBTC/OUSD",
         bondRemaining: {
           total: 1000,
           remaining: 998,
@@ -79,7 +84,7 @@ export const useBondInvestData = (dataId: string) => {
         bondSalePrice: 0.005676,
         bondMarketPrice: 0.0035467,
         bondVariance: {
-          amount: 12.5,
+          value: 12.5,
           direction: "up",
         },
         bondVestingPeriod: 0,

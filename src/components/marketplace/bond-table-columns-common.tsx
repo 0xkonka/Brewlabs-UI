@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 import { capitalize } from "lodash";
-import { TrendingUpIcon, TrendingDownIcon, HourglassIcon } from "lucide-react";
 
 import { Badge } from "@components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -12,6 +11,9 @@ import { getEmptyTokenLogo } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { bondCommonSchema } from "config/schemas/bondCreateSchema";
+
+import BondVariance from "@components/marketplace/bond-variance";
+import BondMarketPrice from "@components/marketplace/bond-market-price";
 
 export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] = [
   {
@@ -23,21 +25,21 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
       return (
         <div className="flex items-center">
           <TokenLogo
-            src={getTokenLogoURL(bond.bondToken.address, 56)}
+            src={getTokenLogoURL(bond.bondToken.address, bond.bondToken.chainId)}
             alt={bond.bondToken.name}
             classNames="h-8 w-8 rounded-full"
             onError={(e) => {
-              e.currentTarget.src = getEmptyTokenLogo(56);
+              e.currentTarget.src = getEmptyTokenLogo(bond.bondToken.chainId);
             }}
           />
 
           <div className="-ml-2 mr-2">
             <TokenLogo
-              src={getTokenLogoURL(bond.bondSaleToken.address, 56)}
+              src={getTokenLogoURL(bond.bondSaleToken.address, bond.bondToken.chainId)}
               alt={bond.bondSaleToken.name}
               classNames="h-8 w-8 rounded-full"
               onError={(e) => {
-                e.currentTarget.src = getEmptyTokenLogo(56);
+                e.currentTarget.src = getEmptyTokenLogo(bond.bondToken.chainId);
               }}
             />
           </div>
@@ -67,7 +69,7 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     id: "marketPrice",
     cell: ({ row }) => {
       const bond = row.original;
-      return <span>${bond.bondMarketPrice.toFixed(3)}</span>;
+      return <BondMarketPrice address={bond.bondToken.address} chain={bond.bondToken.chainId} />;
     },
   },
   {
@@ -86,20 +88,11 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     cell: ({ row }) => {
       const bond = row.original;
       return (
-        <>
-          {bond.bondVariance.direction === "up" && (
-            <span className="flex items-center gap-2 text-green-500">
-              <TrendingUpIcon />
-              {bond.bondVariance.amount}%
-            </span>
-          )}
-          {bond.bondVariance.direction === "down" && (
-            <span className="flex items-center gap-2 text-red-500">
-              <TrendingDownIcon />
-              {bond.bondVariance.amount}%
-            </span>
-          )}
-        </>
+        <BondVariance
+          address={bond.bondToken.address}
+          chain={bond.bondToken.chainId}
+          bondSalePrice={bond.bondSalePrice}
+        />
       );
     },
   },

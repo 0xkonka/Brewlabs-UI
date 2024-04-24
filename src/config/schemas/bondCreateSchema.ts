@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { tokenSchema } from "config/schemas/tokenSchema";
+import { bondVarianceSchema } from "config/schemas/bondVarianceSchema";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
@@ -36,10 +37,7 @@ export const bondCommonSchema = z.object({
   bondSaleToken: tokenSchema,
   bondSalePrice: z.number(),
   bondName: z.string(),
-  bondVariance: z.object({
-    amount: z.number(),
-    direction: z.enum(["up", "down"]),
-  }),
+  bondVariance: bondVarianceSchema,
 });
 
 export const bondInvestSchema = z.object({
