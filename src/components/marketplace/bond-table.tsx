@@ -19,13 +19,17 @@ const BondTable = () => {
   const [tab, setTab] = useState("invest");
   const [showHistoric, setShowHistoric] = useState(false);
 
-  // Only get the necessary data for the table
+  // Sold Split data into current and historic
   const soldData = useBondSoldData(tab);
+  // TODO: Add a filter for the sold data
 
+  // Invest: Split data into current and historic
   const getInvestData = useBondInvestData(tab);
   const investData = showHistoric ? getInvestData.historicData : getInvestData.data;
 
+  // Purchased: Split data into current and historic
   const purchasedData = useBondPurchasedData(tab);
+  // TODO: Add a filter for the purchased data
 
   return (
     <Tabs value={tab} onValueChange={(value) => setTab(value)}>

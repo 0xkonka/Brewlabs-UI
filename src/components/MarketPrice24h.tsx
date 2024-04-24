@@ -20,7 +20,7 @@ const MarketPrice24h = ({ marketData, symbol }: MarketDataProps) => {
           </span>
         ) : (
           <span className="flex items-center text-red-500">
-            {Math.abs(priceChange24h).toFixed(3)}% <TrendingDownIcon className=" h-3 w-3" />
+            {priceChange24h.toFixed(3)}% <TrendingDownIcon className=" h-3 w-3" />
           </span>
         )}
         <span className="text-gray-400">24HR</span>
