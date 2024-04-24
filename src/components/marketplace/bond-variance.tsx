@@ -1,4 +1,4 @@
-import { TrendingUpIcon, TrendingDownIcon, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Skeleton } from "@components/ui/skeleton";
 import { useMarketData } from "@hooks/useMarketData";
 import type { BondVariance } from "config/schemas/bondVarianceSchema";
@@ -15,11 +15,12 @@ const BondVariance = ({ chain, address, bondSalePrice }: { chain: number; addres
       </div>
     );
 
+  const variance = ((bondSalePrice - data.usd) / bondSalePrice) * 100;
+
   return (
     <div className="flex items-center gap-1">
-      {((bondSalePrice - data.usd) / bondSalePrice).toFixed(4)}%
-      {(bondSalePrice - data.usd) / bondSalePrice > 0 && <TrendingUpIcon className="h-4 w-4 text-green-500" />}
-      {(bondSalePrice - data.usd) / bondSalePrice < 0 && <TrendingDownIcon className="h-4 w-4 text-red-500" />}
+      {bondSalePrice < data.usd && <span className="text-red-500">-{Math.abs(variance).toFixed(2)}%</span>}
+      {bondSalePrice > data.usd && <span className="text-green-500">+{Math.abs(variance).toFixed(2)}%</span>}
     </div>
   );
 };
