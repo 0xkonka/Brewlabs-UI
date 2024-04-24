@@ -1,4 +1,5 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "@brewlabs/sdk";
 import clsx from "clsx";
 import { NextPage } from "next";
@@ -98,6 +99,9 @@ function GlobalHooks() {
   return null;
 }
 
+// Create a client for Tanstack's React Query
+const queryClient = new QueryClient();
+
 // TODO: Better name MyApp
 function MyApp(props: AppProps<{ initialReduxState: any }>) {
   const { pageProps } = props;
@@ -144,61 +148,63 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
       <WagmiProvider>
         <Provider store={store}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <TokenPriceContextProvider>
-              <UserContextProvider>
-                <DashboardContextProvider>
-                  <SwapContextProvider>
-                    <ChartContextProvider>
-                      <CommunityContextProvider>
-                        <LanguageProvider>
-                          <BridgeProvider>
-                            <SWRConfig>
-                              {mounted && <GlobalHooks />}
-                              <PersistGate loading={null} persistor={persistor}>
-                                <DefaultSeo {...SEO} />
-                                <Updaters />
+            {/* <TokenPriceContextProvider> */}
+            <UserContextProvider>
+              <DashboardContextProvider>
+                <SwapContextProvider>
+                  {/* <ChartContextProvider> */}
+                  {/* <CommunityContextProvider> */}
+                  {/* <LanguageProvider> */}
+                  <QueryClientProvider client={queryClient}>
+                    <BridgeProvider>
+                      <SWRConfig>
+                        {/* {mounted && <GlobalHooks />} */}
+                        <PersistGate loading={null} persistor={persistor}>
+                          <DefaultSeo {...SEO} />
+                          <Updaters />
 
-                                <div
-                                  className={clsx(
-                                    router?.pathname === "/" && "home",
-                                    "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
-                                  )}
-                                >
-                                  <Suspense>
-                                    <Bubbles />
-                                  </Suspense>
+                          <div
+                            className={clsx(
+                              router?.pathname === "/" && "home",
+                              "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
+                            )}
+                          >
+                            <Suspense>
+                              <Bubbles />
+                            </Suspense>
 
-                                  <img
-                                    className="fixed -right-44 top-0 hidden home:z-10 dark:opacity-50 sm:block"
-                                    src="/images/blur-indigo.png"
-                                    alt=""
-                                    width={567}
-                                    height={567}
-                                  />
+                            <img
+                              className="fixed -right-44 top-0 hidden home:z-10 dark:opacity-50 sm:block"
+                              src="/images/blur-indigo.png"
+                              alt=""
+                              width={567}
+                              height={567}
+                            />
 
-                                  <div className="relative z-10 flex h-full">
-                                    <NavigationDesktop />
-                                    <NavigationMobile />
-                                    <UserSidebar />
+                            <div className="relative z-10 flex h-full">
+                              <NavigationDesktop />
+                              <NavigationMobile />
+                              <UserSidebar />
 
-                                    <div className="relative flex flex-1 flex-col overflow-hidden">
-                                      <HeaderMobile />
-                                      <App {...props} />
-                                      {loading ? <LoadingPage /> : ""}
-                                    </div>
-                                  </div>
-                                  <ToastContainer />
-                                </div>
-                              </PersistGate>
-                            </SWRConfig>
-                          </BridgeProvider>
-                        </LanguageProvider>
-                      </CommunityContextProvider>
-                    </ChartContextProvider>
-                  </SwapContextProvider>
-                </DashboardContextProvider>
-              </UserContextProvider>
-            </TokenPriceContextProvider>
+                              <div className="relative flex flex-1 flex-col overflow-hidden">
+                                <HeaderMobile />
+                                <App {...props} />
+                                {loading ? <LoadingPage /> : ""}
+                              </div>
+                            </div>
+                            <ToastContainer />
+                          </div>
+                        </PersistGate>
+                      </SWRConfig>
+                    </BridgeProvider>
+                  </QueryClientProvider>
+                  {/* </LanguageProvider> */}
+                  {/* </CommunityContextProvider> */}
+                  {/* </ChartContextProvider> */}
+                </SwapContextProvider>
+              </DashboardContextProvider>
+            </UserContextProvider>
+            {/* </TokenPriceContextProvider> */}
           </ThemeProvider>
         </Provider>
       </WagmiProvider>
