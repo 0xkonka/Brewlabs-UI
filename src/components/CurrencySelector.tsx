@@ -16,7 +16,7 @@ import { useGlobalState } from "state";
 import { Field } from "state/swap/actions";
 import { Field as LiquidityField } from "state/mint/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
-import { isVerified, useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
+import { useCurrencyBalance, useNativeBalances } from "state/wallet/hooks";
 import { isAddress } from "utils";
 
 import { CurrencyLogo } from "components/logo";
@@ -27,7 +27,7 @@ import UserDashboard from "components/dashboard/UserDashboard";
 import NavButton from "./dashboard/NavButton";
 import WarningModal from "./warningModal";
 import DropDown from "./dashboard/TokenList/Dropdown";
-import { useFetchMarketData, useTokenMarketChart } from "state/prices/hooks";
+import { useTokenMarketChart } from "state/prices/hooks";
 import { defaultMarketData } from "state/prices/types";
 
 interface CurrencySelectorProps {
@@ -133,17 +133,17 @@ const CurrencyRow = ({
             <p className="text-start text-lg">{currency?.symbol}</p>
             <p className="flex items-center justify-start gap-1 text-sm">
               {priceChange24h > 0 ? (
-                <span className="flex items-center text-green">
+                <span className="flex items-center text-green-400">
                   {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
                 </span>
               ) : (
-                <span className="flex items-center text-danger">
-                  {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
+                <span className="flex items-center text-red-400">
+                  {Math.abs(priceChange24h).toFixed(3)}% <ArrowTrendingDownIcon className="text-danger-400 h-3 w-3" />
                 </span>
               )}
               <span className="text-primary">24HR</span>
             </p>
-            <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-danger"} text-[10px]`}>
+            <p className={`${priceChange24h > 0 ? "text-green-400" : "text-danger-400"} text-[10px]`}>
               {tokenPrice} USD = 1.00 {currency?.symbol}
             </p>
           </div>

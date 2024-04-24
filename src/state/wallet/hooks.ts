@@ -153,16 +153,6 @@ export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | u
   return balances ?? {};
 }
 
-export async function isVerified(curreny?: any) {
-  if (curreny?.isNative) return true;
-  const result = await axios.get(
-    `${EXPLORER_API_URLS[curreny.chainId]}?module=contract&action=getabi&address=${curreny.address}&apikey=${
-      EXPLORER_API_KEYS[curreny.chainId]
-    }`
-  );
-  return result.data.message === "OK";
-}
-
 export const useFetchNFTBalance = (account, chainIds: ChainId[]) => {
   const dispatch = useAppDispatch();
 
