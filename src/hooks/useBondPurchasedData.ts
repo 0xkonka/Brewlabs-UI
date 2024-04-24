@@ -28,7 +28,7 @@ export const useBondPurchasedData = (dataId: string) => {
         bondSalePrice: 0.005676,
         bondMarketPrice: 0.0035467,
         bondVariance: {
-          amount: 12.5,
+          value: 12.5,
           direction: "up",
         },
         bondVestingCountdown: 10, // Would be a date in real data
