@@ -1,15 +1,14 @@
 import { useDisconnect } from "wagmi";
-import { useGlobalState } from "../../state";
+import { setUserSidebarOpen } from "state";
 
 const DisconnectWalletButton = () => {
   const { disconnect } = useDisconnect();
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
 
   return (
     <button
       className="btn"
       onClick={() => {
-        disconnect(), setIsOpen(0);
+        disconnect(), setUserSidebarOpen(false);
       }}
     >
       Disconnect wallet

@@ -54,7 +54,7 @@ export const useBondInvestData = (dataId: string) => {
           decimals: 18,
           chainId: 56,
         },
-        bondSalePrice: 1.6,
+        bondSalePrice: 23000,
         bondMarketPrice: 0.135467,
         bondVariance: {
           value: 2,

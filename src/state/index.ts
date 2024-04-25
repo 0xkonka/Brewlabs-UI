@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import { createGlobalState } from "react-hooks-global-state";
@@ -159,11 +159,20 @@ const initialState = {
   ...userState,
   modalIsOpen: false,
   mobileNavOpen: false,
-  userSidebarOpen: 0,
+  userSidebarOpen: false,
   userSidebarContent: null,
   sessionChainId: undefined as any,
 };
 
 const { useGlobalState, setGlobalState } = createGlobalState(initialState);
+
+// Actions
+export const setUserSidebarOpen = (userSidebarOpen: boolean) => {
+  setGlobalState("userSidebarOpen", userSidebarOpen);
+};
+
+export const setUserSidebarContent = (userSidebarContent: ReactNode) => {
+  setGlobalState("userSidebarContent", userSidebarContent);
+};
 
 export { useGlobalState, setGlobalState };

@@ -4,7 +4,7 @@ import { Token } from "@brewlabs/sdk";
 import { getAddress } from "@ethersproject/address";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useGlobalState } from "state";
+import { setUserSidebarOpen, setUserSidebarContent } from "state";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import CurrencySelector from "components/CurrencySelector";
@@ -18,8 +18,6 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
   const supportedTokens = useTokenList(chainId);
 
   const dropdownRef: any = useRef();
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
-  const [, setSidebarContent] = useGlobalState("userSidebarContent");
 
   const filteredTokenList = useMemo(
     () =>
@@ -39,8 +37,8 @@ const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
       <div
         className={`primary-shadow flex h-[36px] cursor-pointer items-center justify-between overflow-hidden rounded-md bg-[#B9B8B81A] pl-3.5`}
         onClick={() => {
-          setIsOpen(isOpen === 1 ? 1 : 2);
-          setSidebarContent(
+          setUserSidebarOpen(true);
+          setUserSidebarContent(
             <CurrencySelector
               inputType={"input"}
               selectedCurrency={null}

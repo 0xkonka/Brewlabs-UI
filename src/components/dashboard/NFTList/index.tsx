@@ -105,12 +105,12 @@ const NFTList = () => {
                     <div className="flex h-[135px] items-center justify-center overflow-hidden">
                       <img
                         src={data.logo}
-                        alt={""}
+                        alt="logo"
                         className="h-full max-w-fit cursor-pointer"
                         onClick={(e: any) => {
-                          if (isOpen === 2) {
+                          if (!isOpen) {
                             changeAvatar(selectedDeployer, e.target.src);
-                            setIsOpen(0);
+                            setIsOpen(true);
                           }
                         }}
                         onError={(e: any) =>
@@ -129,7 +129,7 @@ const NFTList = () => {
                       </div>
                     </div>
                     <a className="w-full" href={"https://truenft.io/inventory"} target={"_blank"}>
-                      <div className="flex items-center justify-between bg-[#0E2130] p-1.5 text-yellow">
+                      <div className="text-yellow flex items-center justify-between bg-[#0E2130] p-1.5">
                         <div>Visit on TrueNFT</div>
                         <div>{LinkSVG}</div>
                       </div>

@@ -49,7 +49,7 @@ export const SearchInput = () => {
             <div
               className="z-10 !h-full flex-1  cursor-pointer bg-transparent font-brand !text-base !shadow-none focus:!shadow-none focus:!ring-0"
               onClick={() => {
-                setIsOpen(3);
+                setIsOpen(true);
                 setSidebarContent(<CurrencySelector />);
               }}
             />
@@ -85,7 +85,7 @@ export const SearchInput = () => {
         <div
           className="flex h-full w-[44px] cursor-pointer items-center justify-center rounded-r bg-[#B9B8B80D] text-primary"
           onClick={() => {
-            setIsOpen(3);
+            setIsOpen(true);
             setSidebarContent(<CurrencySelector />);
           }}
         >

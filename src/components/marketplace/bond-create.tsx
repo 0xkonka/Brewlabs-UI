@@ -218,7 +218,7 @@ const BondCreate = () => {
               name="bondSalePrice"
               render={({ field }) => (
                 <FormItem className="mt-4 flex items-center justify-between">
-                  <FormLabel className="flex flex-col items-start gap-1">
+                  <FormLabel className="flex flex-col items-start gap-1 text-xl">
                     Set the sale price
                     {watchBondToken && (
                       <>

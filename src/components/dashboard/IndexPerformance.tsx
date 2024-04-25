@@ -62,7 +62,7 @@ const IndexPerformance = () => {
 
   return (
     <StyledContainer className="-mt-2 w-full">
-      <div className="relative  ml-4 text-yellow xsm:ml-0">
+      <div className="text-yellow  relative ml-4 xsm:ml-0">
         Index Performance
         <div className="absolute -left-4 top-1.5 [&>*:first-child]:!opacity-100" id={"Top9"}>
           {InfoSVG}
@@ -91,7 +91,7 @@ const IndexPerformance = () => {
                         className="flex cursor-pointer items-center justify-between rounded p-[12px_4px_12px_8px] transition hover:bg-[rgba(50,50,50,0.4)] sm:p-[12px_12px_12px_24px] "
                         onClick={() => {
                           router.push(`/indexes/${data.chainId}/${data.pid}`);
-                          setIsOpen(0);
+                          setIsOpen(false);
                         }}
                       >
                         <div className="flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap">

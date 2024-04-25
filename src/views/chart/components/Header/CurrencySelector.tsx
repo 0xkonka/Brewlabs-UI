@@ -2,7 +2,7 @@ import React, { useState, useMemo, useContext, useEffect, useRef } from "react";
 import { ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
-import { useGlobalState } from "state";
+import { setUserSidebarOpen } from "state";
 import { isAddress } from "utils";
 
 import { PrimaryOutlinedButton } from "components/button/index";
@@ -66,14 +66,14 @@ const tabs = [
 
 const CurrencyRow = ({ pair }: { pair: any }) => {
   const router = useRouter();
-  const [, setIsOpen] = useGlobalState("userSidebarOpen");
+
   return (
     <>
       <button
         className="flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent px-4 py-4 hover:bg-gradient-to-r"
         onClick={() => {
           router.push(`/chart/${DEXSCREENER_CHAINNAME[pair.chainId]}/${pair.address}`);
-          setIsOpen(0);
+          setUserSidebarOpen(true);
         }}
       >
         <div className="flex items-center justify-between gap-12">
@@ -89,13 +89,13 @@ const CurrencyRow = ({ pair }: { pair: any }) => {
               </p>
               <p className="flex items-center justify-start gap-1 text-sm">
                 {pair.priceChange.h24 > 0 ? (
-                  <span className="flex items-center text-green">
+                  <span className="text-green flex items-center">
                     {pair.priceChange.h24.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
                   </span>
                 ) : (
-                  <span className="flex items-center text-danger">
+                  <span className="text-danger flex items-center">
                     {Math.abs(pair.priceChange.h24 ?? 0).toFixed(3)}%{" "}
-                    <ArrowTrendingDownIcon className="h-3 w-3 dark:text-danger" />
+                    <ArrowTrendingDownIcon className="dark:text-danger h-3 w-3" />
                   </span>
                 )}
                 <span className="text-primary">24HR</span>
@@ -234,7 +234,7 @@ const CurrencySelector = () => {
         ))}
       </nav>
 
-      <nav className="mb-4 block sm:hidden relative z-10" aria-label="Tabs">
+      <nav className="relative z-10 mb-4 block sm:hidden" aria-label="Tabs">
         <DropDown
           width="w-full"
           value={activeTab + 1}

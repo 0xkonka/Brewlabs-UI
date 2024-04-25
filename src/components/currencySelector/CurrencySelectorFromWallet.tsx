@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
 
 import { Token } from "@brewlabs/sdk";
 import { BananaIcon } from "lucide-react";
 
-import { useGlobalState } from "state";
+import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
 import CurrencySelectorItem from "./CurrencySelectorItem";
 
@@ -41,7 +42,6 @@ type CurrencySelectorFromWalletProps = {
   onCurrencySelect: (token: Token, tokenPrice: number) => void;
 };
 
-// TODO: fix url
 const fetchWalletTokens = async ({ address, chain }) => {
   const res = await fetch("/api/moralis/evmApi/getWalletTokenBalances", {
     method: "POST",
@@ -54,11 +54,7 @@ const fetchWalletTokens = async ({ address, chain }) => {
   return res.json();
 };
 
-import { useQuery } from "@tanstack/react-query";
-
 const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
-  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
-
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
@@ -84,7 +80,7 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
 
   const handleCurrencySelection = (currency: WalletTokensFromMoralis, tokenPrice) => {
     // Close the side panel
-    setUserSidebarOpen(0);
+    setUserSidebarOpen(false);
     // Convert currency type to token type
     const token = new Token(
       chainId,

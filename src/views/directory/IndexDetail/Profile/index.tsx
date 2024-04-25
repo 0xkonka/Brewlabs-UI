@@ -257,7 +257,7 @@ const Profile = ({ deployer }: { deployer: string }) => {
                       className="absolute bottom-0 right-0 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-primary bg-[#5D616A] text-primary transition hover:opacity-80"
                       onClick={() => {
                         setViewType(2);
-                        setIsOpen(2);
+                        setIsOpen(false);
                         setSelectedDeployer(deployer);
                       }}
                     >

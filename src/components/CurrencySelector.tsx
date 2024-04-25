@@ -12,7 +12,7 @@ import useDebounce from "hooks/useDebounce";
 import { useAllTokens, useToken, useFoundOnInactiveList } from "hooks/Tokens";
 import useTokenComparator from "hooks/useTokenComparator";
 import useWalletTokens from "hooks/useWalletTokens";
-import { useGlobalState } from "state";
+import { useGlobalState, setUserSidebarContent } from "state";
 import { Field } from "state/swap/actions";
 import { Field as LiquidityField } from "state/mint/actions";
 import { useSwapActionHandlers } from "state/swap/hooks";
@@ -80,7 +80,6 @@ const CurrencyRow = ({
   const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
   const { onCurrencySelection } = useSwapActionHandlers();
-  const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const [warningOpen, setWarningOpen] = useState(false);
@@ -104,12 +103,12 @@ const CurrencyRow = ({
       if (onCurrencySelect) onCurrencySelect(input, currency);
       onCurrencySelection(input, currency);
     }
-    if (userSidebarOpen === 2) {
-      setUserSidebarOpen(0);
+    if (userSidebarOpen) {
+      setUserSidebarOpen(true);
       // setSidebarContent(<UserDashboard />);
       return;
     }
-    setSidebarContent(<UserDashboard />);
+    setUserSidebarContent(<UserDashboard />);
   };
 
   return (
@@ -175,7 +174,6 @@ const CurrencySelector = ({
 
   const [invertSearchOrder] = useState<boolean>(false);
   const { setViewType }: any = useContext(DashboardContext);
-  const [, setSidebarContent] = useGlobalState("userSidebarContent");
   const [userSidebarOpen] = useGlobalState("userSidebarOpen");
 
   const allTokens = useAllTokens();
@@ -303,7 +301,7 @@ const CurrencySelector = ({
 
   const onSelect = (i: number) => {
     setViewType(i);
-    setSidebarContent(<UserDashboard />);
+    setUserSidebarContent(<UserDashboard />);
     setViewSelect(i);
   };
 
@@ -313,7 +311,7 @@ const CurrencySelector = ({
         <div className="font-brand">
           <h2 className="text-3xl">Select token</h2>
         </div>
-        {userSidebarOpen === 1 ? <NavButton value={viewSelect} setValue={onSelect} /> : ""}
+        {userSidebarOpen && <NavButton value={viewSelect} setValue={onSelect} />}
       </div>
 
       <nav className="mb-4 hidden space-x-4 sm:flex" aria-label="Tabs">

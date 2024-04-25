@@ -99,7 +99,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
             <button
               className="ml-3 overflow-hidden"
-              onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect ? 1 : 0)}
+              onClick={() => setGlobalState("userSidebarOpen", !allowDisconnect ? true : false)}
             >
               <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
                 {isLoading ? "..." : address}
@@ -116,7 +116,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               className="flex items-center gap-2"
               onClick={() => {
                 disconnect();
-                setUserSidebarOpen(0);
+                setUserSidebarOpen(false);
               }}
             >
               {LinkSVG}

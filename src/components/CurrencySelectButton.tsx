@@ -1,12 +1,10 @@
-import { Currency } from "@brewlabs/sdk";
 import CurrencySelector from "./CurrencySelector";
 import { CurrencyLogo } from "./logo";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
-import { useGlobalState } from "state";
+import { setUserSidebarOpen, setUserSidebarContent } from "state";
 import { Field } from "state/swap/actions";
 import { Field as LiquidityField } from "state/mint/actions";
-import { useDerivedSwapInfo } from "state/swap/hooks";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
@@ -26,9 +24,6 @@ const CurrencySelectButton = ({
   size?: string;
 }) => {
   const [inputValue, setInputValue] = useState(null);
-  const [isOpen, setIsOpen] = useGlobalState("userSidebarOpen");
-  const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
-
   const isSM = useMediaQuery({ query: "(max-width: 640px)" });
 
   useEffect(() => {
@@ -47,8 +42,8 @@ const CurrencySelectButton = ({
   return (
     <button
       onClick={() => {
-        setIsOpen(isOpen === 1 ? 1 : 2);
-        setSidebarContent(
+        setUserSidebarOpen(true);
+        setUserSidebarContent(
           <CurrencySelector
             inputType={inputCurrencySelect ? "input" : "output"}
             selectedCurrency={inputValue}

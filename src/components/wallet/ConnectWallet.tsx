@@ -8,7 +8,7 @@ import UserDashboard from "components/dashboard/UserDashboard";
 import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { useGlobalState } from "state";
+import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
@@ -29,9 +29,6 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   const [mounted, setMounted] = useState(false);
   const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
-
-  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
-  const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -108,7 +105,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
             <button
               className="ml-3 overflow-hidden"
               onClick={() => {
-                setUserSidebarOpen(!allowDisconnect ? 1 : 0);
+                setUserSidebarOpen(!allowDisconnect ? true : false);
                 setUserSidebarContent(<UserDashboard />);
               }}
             >

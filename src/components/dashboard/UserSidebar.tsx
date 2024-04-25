@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Fragment } from "react";
 import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
@@ -14,8 +13,8 @@ const UserSidebar = () => {
   const [sidebarContent, setSidebarContent] = useGlobalState("userSidebarContent");
 
   return (
-    <Transition.Root show={isOpen > 0} as={Fragment}>
-      <Dialog as="div" onClose={() => setIsOpen(0)} className="relative z-10">
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog as="div" onClose={() => setIsOpen(false)} className="relative z-10">
         <Transition.Child
           as={Fragment}
           enter="transition-opacity ease-linear duration-300"
@@ -48,7 +47,7 @@ const UserSidebar = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setIsOpen(0);
+                    setIsOpen(false);
                   }}
                   className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-inset focus:ring-white sm:focus:ring-2"
                 >
@@ -59,7 +58,7 @@ const UserSidebar = () => {
               <div className="relative flex h-full w-full flex-1 flex-col items-center px-2 py-6 xsm:px-6">
                 {sidebarContent ?? <UserDashboard />}
               </div>
-              {isOpen !== 3 ? <ConnectWallet /> : ""}
+              <ConnectWallet />
             </Dialog.Panel>
           </Transition.Child>
         </div>

@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-import { useGlobalState } from "state";
+import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { mustBeConnected } from "utils/mustBeConnected";
@@ -19,8 +19,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
   ({ selectedCurrency, setSelectCurrency, supportedTokens, ...props }, ref) => {
-    const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
-    const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
+    // const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
+    // const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
 
     return (
       <Button
@@ -29,7 +29,7 @@ const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
         className="w-full rounded-3xl px-4"
         onClick={() =>
           mustBeConnected([
-            () => setUserSidebarOpen(1),
+            () => setUserSidebarOpen(true),
             () =>
               setUserSidebarContent(
                 <CurrencySelectorFromWallet
