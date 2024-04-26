@@ -1,3 +1,8 @@
+/**
+ * DEPRECATION NOTICE
+ * USE THIS INSTEAD - src\hooks\useMoralisWalletTokens.ts
+ */
+
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
