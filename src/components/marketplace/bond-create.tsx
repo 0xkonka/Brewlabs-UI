@@ -70,6 +70,7 @@ const BondCreate = () => {
   const increase = () => {
     form.setValue("bondSalePrice", watchBondSalePrice + initialMarketPrice / 100);
   };
+  // Decrease by 1 percent
   const decrease = () => {
     form.setValue("bondSalePrice", watchBondSalePrice - initialMarketPrice / 100);
   };
@@ -137,7 +138,7 @@ const BondCreate = () => {
             <div className="divider" />
 
             <div>
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="bondToken"
                 render={({ field }) => (
@@ -145,6 +146,30 @@ const BondCreate = () => {
                     <FormLabel className="text-xl">Select a token to sell</FormLabel>
                     <FormControl>
                       <CurrencySelectorInput
+                        selectedCurrency={field.value}
+                        setSelectCurrency={(currency, tokenPrice) => {
+                          setInitialMarketPrice(tokenPrice);
+                          form.setValue("bondSalePrice", tokenPrice);
+                          form.setValue("bondToken", currency);
+                          form.trigger("bondToken");
+                        }}
+                        supportedTokens={supportedBondListingTokens.filter((t) => t.chainId === chainId)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+
+              <FormField
+                control={form.control}
+                name="bondToken"
+                render={({ field }) => (
+                  <FormItem className="space-y-4">
+                    <FormLabel className="text-xl">Select a NFT token to sell</FormLabel>
+                    <FormControl>
+                      <CurrencySelectorInput
+                        walletTokenType="nft"
                         selectedCurrency={field.value}
                         setSelectCurrency={(currency, tokenPrice) => {
                           setInitialMarketPrice(tokenPrice);

@@ -9,36 +9,37 @@ import { mustBeConnected } from "utils/mustBeConnected";
 import { Button } from "@components/ui/button";
 
 import TokenLogo from "components/logo/TokenLogo";
+
+import CurrencySelectorNFTs from "components/currencySelector/currency-selector-nfts";
 import CurrencySelectorFromWallet from "components/currencySelector/CurrencySelectorFromWallet";
 
+// TODO: type this
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   selectedCurrency: any;
   supportedTokens?: any[];
+  walletTokenType?: "token" | "nft";
   setSelectCurrency: (currency, tokenPrice) => void;
 }
 
 const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ selectedCurrency, setSelectCurrency, supportedTokens, ...props }, ref) => {
-    // const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
-    // const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
+  ({ selectedCurrency, setSelectCurrency, supportedTokens, walletTokenType = "token", ...props }, ref) => {
+    // Determine the currency panel to display
+    const currencyPanel =
+      walletTokenType === "token" ? (
+        <CurrencySelectorFromWallet
+          supportedTokens={supportedTokens}
+          onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
+        />
+      ) : (
+        <CurrencySelectorNFTs onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)} />
+      );
 
     return (
       <Button
         type="button"
         variant="outline"
         className="w-full rounded-3xl px-4"
-        onClick={() =>
-          mustBeConnected([
-            () => setUserSidebarOpen(true),
-            () =>
-              setUserSidebarContent(
-                <CurrencySelectorFromWallet
-                  supportedTokens={supportedTokens}
-                  onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
-                />
-              ),
-          ])
-        }
+        onClick={() => mustBeConnected([() => setUserSidebarOpen(true), () => setUserSidebarContent(currencyPanel)])}
       >
         {selectedCurrency ? (
           <div className="flex flex-1 items-center gap-2 text-ellipsis whitespace-nowrap">

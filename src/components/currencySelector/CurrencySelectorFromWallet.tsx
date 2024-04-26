@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
 
 import { Token } from "@brewlabs/sdk";
 import { BananaIcon } from "lucide-react";
@@ -10,6 +9,7 @@ import { setUserSidebarOpen, setUserSidebarContent } from "state";
 import CurrencySelectorItem from "./CurrencySelectorItem";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
+import { useMoralisWalletTokens } from "@hooks/useMoralisWalletTokens";
 
 import CurrencySelectorNative from "components/currencySelector/CurrencySelectorNative";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
@@ -22,53 +22,16 @@ type SupportedToken = {
   address: string;
 };
 
-export type WalletTokensFromMoralis = {
-  balance: string;
-  decimals: number;
-  logo: string | null;
-  name: string;
-  percentage_relative_to_total_supply: number;
-  possible_spam: boolean;
-  symbol: string;
-  thumbnail: string | null;
-  token_address: string;
-  total_supply: string;
-  total_supply_formatted: string;
-  verified_contract: boolean;
-};
-
 type CurrencySelectorFromWalletProps = {
   supportedTokens?: SupportedToken[];
   onCurrencySelect: (token: Token, tokenPrice: number) => void;
-};
-
-const fetchWalletTokens = async ({ address, chain }) => {
-  const res = await fetch("/api/moralis/evmApi/getWalletTokenBalances", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ address, chain }),
-  });
-
-  return res.json();
 };
 
 const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
-  // Filter the wallet data
-  const filterWalletTokens = (walletTokens: WalletTokensFromMoralis[]) =>
-    walletTokens.filter((i) => !i.possible_spam && Number(i.balance) > 0 && i.verified_contract);
-
-  // Get the wallet tokens from Moralis + React Query
-  const { isLoading, data: walletTokens } = useQuery({
-    queryKey: [`userWalletTokens_${address}`],
-    queryFn: (): Promise<WalletTokensFromMoralis[]> => fetchWalletTokens({ address, chain: chainId }),
-    select: filterWalletTokens,
-    refetchOnWindowFocus: false,
-  });
+  const { walletTokens, isLoading } = useMoralisWalletTokens({ walletAddress: address, chainId });
 
   const hasSupportedTokens = useMemo(() => {
     if (supportedTokens.length === 0) return false;
@@ -78,7 +41,8 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
     });
   }, [supportedTokens, walletTokens]);
 
-  const handleCurrencySelection = (currency: WalletTokensFromMoralis, tokenPrice) => {
+  // TODO: type this
+  const handleCurrencySelection = (currency, tokenPrice) => {
     // Close the side panel
     setUserSidebarOpen(false);
     // Convert currency type to token type
