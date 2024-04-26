@@ -4,7 +4,7 @@ import { addressSchema } from "config/schemas/addressSchema";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
-  PAGE_SUPPORTED_CHAINS["deployerPool"].includes(network.id)
+  PAGE_SUPPORTED_CHAINS["deploy-pool"].includes(network.id)
 );
 
 export const poolDeployerSchema = z.object({

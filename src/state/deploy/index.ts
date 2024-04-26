@@ -3,14 +3,19 @@ import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { serializeToken } from "state/user/hooks/helpers";
-import { getFarmFactoryAddress, getIndexFactoryAddress, getPoolFactoryAddress, getTokenFactoryAddress } from "utils/addressHelpers";
+import {
+  getFarmFactoryAddress,
+  getIndexFactoryAddress,
+  getPoolFactoryAddress,
+  getTokenFactoryAddress,
+} from "utils/addressHelpers";
 import { fetchFarmFactoryData } from "./fetchFactory";
 import { fetchIndexFactoryData } from "./fetchIndex";
 import { fetchTokenFactoryData } from "./fetchToken";
 import { fetchPoolFactoryData } from "./fetchPoolFactory";
 
 const initialState = {
-  token: PAGE_SUPPORTED_CHAINS.deployerToken
+  token: PAGE_SUPPORTED_CHAINS["deploy-token"]
     .map((chainId) => {
       if (chainId == 900) {
         return null; // Skip mapping for chainId 900 or 901
@@ -23,11 +28,8 @@ const initialState = {
       };
     })
     .filter(Boolean), // Filter out null values
-  farm: PAGE_SUPPORTED_CHAINS.deployerFarm
+  farm: PAGE_SUPPORTED_CHAINS["deploy-farm"]
     .map((chainId) => {
-      // if (chainId == 900 || chainId == 901) {
-      //   return null; // Skip mapping for chainId 900 or 901
-      // }
       return {
         chainId,
         address: getFarmFactoryAddress(chainId as ChainId),
@@ -36,7 +38,7 @@ const initialState = {
       };
     })
     .filter(Boolean), // Filter out null values
-  pool: PAGE_SUPPORTED_CHAINS.deployerPool
+  pool: PAGE_SUPPORTED_CHAINS["deploy-pool"]
     .map((chainId) => {
       if (chainId === 900) {
         return null; // Skip mapping for chainId 900 or 901
@@ -49,11 +51,8 @@ const initialState = {
       };
     })
     .filter(Boolean), // Filter out null values
-  indexes: PAGE_SUPPORTED_CHAINS.deployerIndex
+  indexes: PAGE_SUPPORTED_CHAINS["deploy-index"]
     .map((chainId) => {
-      // if (chainId === 900 || chainId === 901) {
-      //   return null; // Skip mapping for chainId 900 or 901
-      // }
       return {
         chainId,
         address: getIndexFactoryAddress(chainId as ChainId),
@@ -66,9 +65,6 @@ const initialState = {
     .filter(Boolean), // Filter out null values
   poolFactory: PAGE_SUPPORTED_CHAINS.deployerPoolFactory
     .map((chainId) => {
-      if (chainId === 900) {
-        return null; // Skip mapping for chainId 900 or 901
-      }
       return {
         chainId,
         address: getPoolFactoryAddress(chainId as ChainId),

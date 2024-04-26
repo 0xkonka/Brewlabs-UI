@@ -29,10 +29,8 @@ export const SUPPORTED_CHAIN_IDS = [
   ...SupportedChains.map((chain) => chain.id),
   ...customChainIds, // Append the custom chain IDs to the array
 ];
-// export const SUPPORTED_CHAIN_IDS = SupportedChains.map((chain) => chain.id);
 
-export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
-  //export const PAGE_SUPPORTED_CHAINS = {
+export const PAGE_SUPPORTED_CHAINS = {
   chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   farms: [
     ChainId.ETHEREUM,
@@ -54,10 +52,9 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: AugmentedChainId[] } = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  deployerIndex: [ChainId.POLYGON, ChainId.BSC_MAINNET],
-  deployerFarm: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-  deployerToken: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.BASE, ExtendedChainId.SOLANA],
-  deployerPool: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ExtendedChainId.SOLANA],
+  ["deploy-index"]: [ChainId.POLYGON, ChainId.BSC_MAINNET],
+  ["deploy-farm"]: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
+  ["deploy-token"]: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.BASE, ExtendedChainId.SOLANA],
   ["deploy-pool"]: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ExtendedChainId.SOLANA],
   deployerPoolFactory: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.BASE],
   swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
