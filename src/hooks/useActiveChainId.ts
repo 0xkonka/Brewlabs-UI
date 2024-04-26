@@ -1,28 +1,47 @@
-import { useEffect } from "react";
-import { useNetwork } from "wagmi";
-import { ChainId } from "@brewlabs/sdk";
+import { useEffect, useState } from "react";
+import { useAccount, useNetwork } from "wagmi";
 import { useSearchParams } from "next/navigation";
-import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+
+import { ChainId } from "@brewlabs/sdk";
+
+import { useRouter } from "next/router";
+import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean } => {
   const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
+  const { status } = useAccount();
+
+  const [isWrongNetwork, setIsWrongNetwork] = useState(false);
 
   const chainId = chain?.id;
+
+  const { pathname } = useRouter();
+  const page = pathname.split("/").slice(-1)[0];
 
   // Get URL chainId
   const searchParams = useSearchParams();
   const chainIdFromUrl = Number(searchParams.get("chainId"));
 
   useEffect(() => {
-    if (chainIdFromUrl && chainIdFromUrl !== chainId) {
-      // Set the chainId from the URL
-      switchNetwork(chainIdFromUrl);
+    const pageSupportedChains = PAGE_SUPPORTED_CHAINS[page] || [];
+    const isWrongNetwork = !pageSupportedChains.includes(chainId);
+    const urlDoesNotMatchChain = chainIdFromUrl !== undefined && chainIdFromUrl !== chainId && chainIdFromUrl !== 0;
+
+    if (status === "connected") {
+      if (urlDoesNotMatchChain && pageSupportedChains.includes(chainIdFromUrl)) {
+        setIsWrongNetwork(true);
+      }
+      if (isWrongNetwork) {
+        setIsWrongNetwork(true);
+      }
+      if (!isWrongNetwork && !urlDoesNotMatchChain) {
+        setIsWrongNetwork(false);
+      }
     }
-  }, [chainId, chainIdFromUrl, switchNetwork]);
+  }, [chainId, chainIdFromUrl, isWrongNetwork, page, status]);
 
   return {
     chainId,
-    isWrongNetwork: false,
+    isWrongNetwork,
   };
 };

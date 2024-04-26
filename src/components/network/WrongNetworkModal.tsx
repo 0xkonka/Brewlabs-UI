@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 
 import { toast } from "react-toastify";
 import { BananaIcon } from "lucide-react";
 
-import { useSwitchNetwork } from "hooks/useSwitchNetwork";
+import { useSwitchNetwork } from "wagmi";
 import { PAGE_SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from "config/constants/networks";
 
 import Modal from "components/Modal";
@@ -15,11 +16,15 @@ type WrongNetworkModalProps = {
 };
 
 const WrongNetworkModal = ({ open }: WrongNetworkModalProps) => {
-  const { canSwitch, switchNetwork, error } = useSwitchNetwork();
+  const { switchNetwork, error } = useSwitchNetwork();
 
   const { pathname } = useRouter();
   const page = pathname.split("/").slice(-1)[0];
   const pageSupportedChains = PAGE_SUPPORTED_CHAINS[page] || [];
+
+  // Get URL chainId
+  const searchParams = useSearchParams();
+  const chainIdFromUrl = Number(searchParams.get("chainId"));
 
   useEffect(() => {
     if (error) {
@@ -41,30 +46,25 @@ const WrongNetworkModal = ({ open }: WrongNetworkModalProps) => {
 
         <div className="mt-5 text-center sm:mt-6 sm:grid">
           <div className="flex justify-center">
-            {canSwitch ? (
-              <Select onValueChange={(value) => switchNetwork(Number(value))}>
-                <SelectTrigger className=" mx-auto w-52 text-center">
-                  <SelectValue placeholder="Select a network" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {pageSupportedChains.map((chain) => (
-                      <SelectItem key={chain} value={chain.toString()}>
-                        <img src={CHAIN_ICONS[chain]} alt="network icon" className="mr-2 inline-block h-5 w-5" />
-                        {CHAIN_LABELS[chain]}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div
-                className="relative mt-2 rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-red-600"
-                role="alert"
-              >
-                <strong className="font-bold">Unable to switch network. Please try it on your wallet</strong>
-              </div>
-            )}
+            <Select onValueChange={(value) => switchNetwork?.(Number(value))}>
+              <SelectTrigger className="mx-auto w-52 text-center">
+                <SelectValue placeholder="Select a network" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {pageSupportedChains.map((chain) => (
+                    <SelectItem
+                      key={chain}
+                      value={chain.toString()}
+                      className={chainIdFromUrl === chain && "bg-gray-800 text-white"}
+                    >
+                      <img src={CHAIN_ICONS[chain]} alt="network icon" className="mr-2 inline-block h-5 w-5" />
+                      {CHAIN_LABELS[chain]}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
