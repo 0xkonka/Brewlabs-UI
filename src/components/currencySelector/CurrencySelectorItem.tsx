@@ -7,7 +7,8 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { Skeleton } from "@components/ui/skeleton";
 
-import { WalletTokensFromMoralis } from "./CurrencySelectorFromWallet";
+// TODO: Better placement of type def
+import { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
 
 type CurrencySelectorItemProps = {
   token: WalletTokensFromMoralis;

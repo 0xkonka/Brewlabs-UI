@@ -76,6 +76,7 @@ type MarketNFTDataFromCoinGecko = {
     name: string;
     link: string;
   }[];
+  error?: string;
 };
 
 // https://deep-index.moralis.io/api/v2.2/nft/:address/lowestprice

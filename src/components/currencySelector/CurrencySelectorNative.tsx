@@ -7,7 +7,7 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import MarketPrice24h from "components/MarketPrice24h";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
 
-import { WalletTokensFromMoralis } from "./CurrencySelectorFromWallet";
+import { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
 
 type CurrencySelectorNativeProps = {
   supportedTokens: any[];

@@ -10,7 +10,7 @@ const BondColMarketPrice = ({ chain, address }: { chain: number; address: string
 
   if (isLoading) return <Skeleton className="h-4 w-20" />;
 
-  if ((!isLoading && isError) || (!isSuccess && !data) || data?.error)
+  if ((!isLoading && isError) || (!isSuccess && !data) || data.error)
     return (
       <div className="flex items-center gap-2 text-xs">
         <AlertTriangleIcon className="h-4 w-4 text-red-500" /> NA
