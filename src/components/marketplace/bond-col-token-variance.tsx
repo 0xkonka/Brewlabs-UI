@@ -1,9 +1,16 @@
 import { AlertTriangle } from "lucide-react";
 import { Skeleton } from "@components/ui/skeleton";
 import { useMarketData } from "@hooks/useMarketData";
-import type { BondVariance } from "config/schemas/bondVarianceSchema";
 
-const BondVariance = ({ chain, address, bondSalePrice }: { chain: number; address: string; bondSalePrice: number }) => {
+const BondColTokenVariance = ({
+  chain,
+  address,
+  bondSalePrice,
+}: {
+  chain: number;
+  address: string;
+  bondSalePrice: number;
+}) => {
   const { data, isFetching, isError } = useMarketData({ chain, address });
 
   if (!isFetching && !data) return <Skeleton className="h-4 w-20" />;
@@ -25,4 +32,4 @@ const BondVariance = ({ chain, address, bondSalePrice }: { chain: number; addres
   );
 };
 
-export default BondVariance;
+export default BondColTokenVariance;

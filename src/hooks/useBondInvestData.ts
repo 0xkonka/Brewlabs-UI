@@ -39,6 +39,34 @@ export const useBondInvestData = (dataId: string) => {
         },
       },
       {
+        bondType: "nft",
+        bondToken: {
+          address: "0xBd3531dA5CF5857e7CfAA92426877b022e612cf8",
+          name: "PUDGEY PENGUINS NFT",
+          symbol: "PPG",
+          decimals: 18,
+          chainId: 1,
+        },
+        bondSaleToken: {
+          address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          name: "USDT",
+          symbol: "USDT",
+          decimals: 18,
+          chainId: 1,
+        },
+        bondSalePrice: 1000,
+        bondMarketPrice: 0,
+        bondVariance: {
+          amount: 12.5,
+          direction: "up",
+        },
+        bondName: "PPG/USDT",
+        bondRemaining: {
+          total: 1,
+          remaining: 1,
+        },
+      },
+      {
         bondType: "tokenVested",
         bondToken: {
           address: "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
@@ -91,14 +119,14 @@ export const useBondInvestData = (dataId: string) => {
         bondName: "BREWLABS/USDC",
         bondRemaining: {
           total: 1000,
-          remaining: 1000,
+          remaining: 0,
         },
       },
     ] as BondColumnsInvest[];
 
     setTimeout(() => {
-      setData(mockData.filter((item) => item.bondRemaining.remaining < item.bondRemaining.total));
-      setHistoricData(mockData.filter((item) => item.bondRemaining.remaining === item.bondRemaining.total));
+      setData(mockData.filter((item) => item.bondRemaining.remaining > 0));
+      setHistoricData(mockData.filter((item) => item.bondRemaining.remaining === 0));
       setIsFetching(false);
     }, 1000);
   };

@@ -14,3 +14,5 @@ export const tokenSchema = z.object(
   },
   { invalid_type_error: "Invalid token type." }
 );
+
+export type Token = z.infer<typeof tokenSchema>;

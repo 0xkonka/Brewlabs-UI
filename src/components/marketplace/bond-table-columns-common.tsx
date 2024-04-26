@@ -6,14 +6,15 @@ import { capitalize } from "lodash";
 import { Badge } from "@components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import TokenLogo from "components/logo/TokenLogo";
-import { getEmptyTokenLogo } from "utils/functions";
-import getTokenLogoURL from "utils/getTokenLogoURL";
-
 import { bondCommonSchema } from "config/schemas/bondCreateSchema";
 
-import BondVariance from "@components/marketplace/bond-variance";
-import BondMarketPrice from "@components/marketplace/bond-market-price";
+import BondColTokenName from "@components/marketplace/bond-col-token-name";
+import BondColTokenVariance from "@components/marketplace/bond-col-token-variance";
+import BondColTokenMarketPrice from "@components/marketplace/bond-col-token-market-price";
+
+import BondColNFTName from "@components/marketplace/bond-col-nft-name";
+import BondColNFTVariance from "@components/marketplace/bond-col-nft-variance";
+import BondColNFTMarketPrice from "@components/marketplace/bond-col-nft-market-price";
 
 export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] = [
   {
@@ -23,28 +24,14 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     cell: ({ row }) => {
       const bond = row.original;
       return (
-        <div className="flex items-center">
-          <TokenLogo
-            src={getTokenLogoURL(bond.bondToken.address, bond.bondToken.chainId)}
-            alt={bond.bondToken.name}
-            classNames="h-8 w-8 rounded-full"
-            onError={(e) => {
-              e.currentTarget.src = getEmptyTokenLogo(bond.bondToken.chainId);
-            }}
-          />
-
-          <div className="-ml-2 mr-2">
-            <TokenLogo
-              src={getTokenLogoURL(bond.bondSaleToken.address, bond.bondToken.chainId)}
-              alt={bond.bondSaleToken.name}
-              classNames="h-8 w-8 rounded-full"
-              onError={(e) => {
-                e.currentTarget.src = getEmptyTokenLogo(bond.bondToken.chainId);
-              }}
-            />
-          </div>
-          <span className="ml-4">{bond.bondName}</span>
-        </div>
+        <>
+          {bond.bondType === "nft" && (
+            <BondColNFTName bondName={bond.bondName} bondToken={bond.bondToken} bondSaleToken={bond.bondSaleToken} />
+          )}
+          {bond.bondType !== "nft" && (
+            <BondColTokenName bondName={bond.bondName} bondToken={bond.bondToken} bondSaleToken={bond.bondSaleToken} />
+          )}
+        </>
       );
     },
   },
@@ -69,7 +56,16 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     id: "marketPrice",
     cell: ({ row }) => {
       const bond = row.original;
-      return <BondMarketPrice address={bond.bondToken.address} chain={bond.bondToken.chainId} />;
+      return (
+        <>
+          {bond.bondType === "nft" && (
+            <BondColNFTMarketPrice address={bond.bondToken.address} chain={bond.bondToken.chainId} />
+          )}
+          {bond.bondType !== "nft" && (
+            <BondColTokenMarketPrice address={bond.bondToken.address} chain={bond.bondToken.chainId} />
+          )}
+        </>
+      );
     },
   },
   {
@@ -78,7 +74,7 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     id: "bondPrice",
     cell: ({ row }) => {
       const bond = row.original;
-      return <span>${bond.bondSalePrice.toFixed(3)}</span>;
+      return <span>${Number(bond.bondSalePrice.toFixed(3))}</span>;
     },
   },
   {
@@ -88,11 +84,22 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     cell: ({ row }) => {
       const bond = row.original;
       return (
-        <BondVariance
-          address={bond.bondToken.address}
-          chain={bond.bondToken.chainId}
-          bondSalePrice={bond.bondSalePrice}
-        />
+        <>
+          {bond.bondType === "nft" && (
+            <BondColNFTVariance
+              address={bond.bondToken.address}
+              chain={bond.bondToken.chainId}
+              bondSalePrice={bond.bondSalePrice}
+            />
+          )}
+          {bond.bondType !== "nft" && (
+            <BondColTokenVariance
+              address={bond.bondToken.address}
+              chain={bond.bondToken.chainId}
+              bondSalePrice={bond.bondSalePrice}
+            />
+          )}
+        </>
       );
     },
   },

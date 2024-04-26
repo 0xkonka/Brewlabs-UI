@@ -19,7 +19,7 @@ export const useMarketData = ({ chain, address }: { chain: number; address: stri
 
   const { data, isLoading, isFetching, isError } = useQuery({
     // Data is cached based on the address
-    queryKey: [`marketData_${address}`],
+    queryKey: [`marketData_${address}_${chain}`],
     queryFn: (): Promise<MarketDataFromCoinGecko> =>
       fetchFromCoinGecko(
         `simple/token_price/${platformName}?contract_addresses=${address}&vs_currencies=usd&include_24hr_change=true`
