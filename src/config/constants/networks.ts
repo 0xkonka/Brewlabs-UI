@@ -91,7 +91,7 @@ export const EXPLORER_API_KEYS = {
   [ChainId.FANTOM]: "BFCVDJ6EW9GQHGNDEUMDSM3HU6KACMWPPC",
 };
 
-export const CHAIN_LABLES = {
+export const CHAIN_LABELS = {
   [ChainId.ETHEREUM]: "Ethereum",
   [ChainId.ARBITRUM]: "Arbitrum",
   [ChainId.BSC_MAINNET]: "BNB Smart Chain",
@@ -151,7 +151,7 @@ export const EMPTY_TOKEN_LOGO = {
 
 export const NetworkOptions = SUPPORTED_CHAIN_IDS.map((chainId: ChainId) => ({
   id: chainId,
-  name: CHAIN_LABLES[chainId],
+  name: CHAIN_LABELS[chainId],
   image: CHAIN_ICONS[chainId],
 }));
 
