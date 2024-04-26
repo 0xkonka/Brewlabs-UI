@@ -6,7 +6,7 @@ import type { LpInfoType } from "@hooks/useLPTokenInfo";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
-  PAGE_SUPPORTED_CHAINS.deployerFarm.includes(network.id)
+  PAGE_SUPPORTED_CHAINS["deploy-farm"].includes(network.id)
 );
 
 const LpInfoTypeSchema = z.custom<LpInfoType>;

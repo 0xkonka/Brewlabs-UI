@@ -3,7 +3,7 @@ import { isAddress } from "viem";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
-  PAGE_SUPPORTED_CHAINS["deployerIndex"].includes(network.id)
+  PAGE_SUPPORTED_CHAINS["deploy-index"].includes(network.id)
 );
 
 export const indexDeployerSchema = z.object({

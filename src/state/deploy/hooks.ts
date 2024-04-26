@@ -16,7 +16,7 @@ import {
 export const usePollTokenFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerToken.filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS["deploy-token"].filter((chainId) =>
     Object.keys(contracts.tokenFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -30,7 +30,7 @@ export const usePollTokenFactoryData = () => {
 export const usePollFarmFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerFarm.filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS["deploy-farm"].filter((chainId) =>
     Object.keys(contracts.farmFactory)
       .map((c) => +c)
       .includes(chainId)
@@ -58,7 +58,7 @@ export const usePollPoolFactoryData = () => {
 export const usePollIndexFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerIndex.filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS["deploy-index"].filter((chainId) =>
     Object.keys(contracts.indexFactory)
       .map((c) => +c)
       .includes(chainId)
