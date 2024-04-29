@@ -100,7 +100,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
               key={i}
               href={data.link}
               target="_blank"
-              className="mr-2 !text-tailwind transition hover:!text-white [&>*:first-child]:!h-6 [&>*:first-child]:!w-6"
+              className="mr-2 !text-white transition hover:!text-white [&>*:first-child]:!h-6 [&>*:first-child]:!w-6"
             >
               {data.icon}
             </a>
@@ -112,7 +112,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
         {infos.map((data, i) => {
           return (
             <div key={i} className="mt-4 flex w-[240px] items-center sm:w-[300px]">
-              <div className="mr-1.5 text-tailwind [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">{data.icon}</div>
+              <div className="mr-1.5 text-white [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">{data.icon}</div>
               <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[#FFFFFFBF]">
                 {data.data}
               </div>
@@ -122,7 +122,7 @@ const InfoPanel = ({ community, circulatingSupply }: { community: any; circulati
       </div>
       <div className="mt-7 flex">
         <div
-          className="mr-2.5 mt-1.5 cursor-pointer text-tailwind transition hover:text-white"
+          className="mr-2.5 mt-1.5 cursor-pointer text-white transition hover:text-white"
           id={"No Brewlabs NFTs Found"}
         >
           {NFTSVG}

@@ -129,7 +129,7 @@ const ProposalModal = ({ open, setOpen, community }) => {
                   <div className="relative mr-3">
                     Fee to vote?
                     <div
-                      className="absolute -left-5 top-0.5 cursor-pointer text-tailwind transition hover:text-white [&>*:first-child]:!h-3.5 [&>*:first-child]:!w-3.5"
+                      className="absolute -left-5 top-0.5 cursor-pointer text-white transition hover:text-white [&>*:first-child]:!h-3.5 [&>*:first-child]:!w-3.5"
                       id="A small fee is charged on each user wallet vote sent to project nominated address."
                     >
                       {InfoSVG}

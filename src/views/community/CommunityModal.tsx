@@ -288,7 +288,7 @@ const CommunityModal = ({ open, setOpen }) => {
               <div className="mt-[22px] flex flex-col items-start justify-between md:flex-row">
                 <div className="flex items-center">
                   <div
-                    className="mr-2.5 mt-[18px] cursor-pointer text-tailwind hover:text-white [&>svg]:!h-6 [&>svg]:!w-6"
+                    className="mr-2.5 mt-[18px] cursor-pointer text-white hover:text-white [&>svg]:!h-6 [&>svg]:!w-6"
                     id={"A fee for proposal is recommended to avoid proposal spam."}
                   >
                     {InfoSVG}
@@ -338,7 +338,7 @@ const CommunityModal = ({ open, setOpen }) => {
               <div className="mt-3 flex flex-col items-start justify-between md:flex-row">
                 <div className="flex items-center">
                   <div
-                    className="mr-2.5 mt-[18px] cursor-pointer text-tailwind hover:text-white [&>svg]:!h-6 [&>svg]:!w-6"
+                    className="mr-2.5 mt-[18px] cursor-pointer text-white hover:text-white [&>svg]:!h-6 [&>svg]:!w-6"
                     id={"A fee for proposal is recommended to avoid proposal spam."}
                   >
                     {InfoSVG}
@@ -454,7 +454,7 @@ const CommunityModal = ({ open, setOpen }) => {
 
               <div className="mt-1.5">
                 <div className="mt-9 flex items-center">
-                  <div className="text-tailwind [&>svg]:!h-6 [&>svg]:!w-6">{WebSiteSVG}</div>
+                  <div className="text-white [&>svg]:!h-6 [&>svg]:!w-6">{WebSiteSVG}</div>
                   <div className="relative ml-2.5 flex-1">
                     <StyledInput
                       value={website}
@@ -467,7 +467,7 @@ const CommunityModal = ({ open, setOpen }) => {
                 </div>
 
                 <div className="mt-7 flex items-center">
-                  <div className="text-tailwind [&>svg]:!h-6 [&>svg]:!w-6">{TelegramSVG}</div>
+                  <div className="text-white [&>svg]:!h-6 [&>svg]:!w-6">{TelegramSVG}</div>
                   <div className="relative ml-2.5 flex-1">
                     <StyledInput
                       value={telegram}
@@ -480,7 +480,7 @@ const CommunityModal = ({ open, setOpen }) => {
                 </div>
 
                 <div className="mt-7 flex items-center">
-                  <div className="text-tailwind [&>svg]:!h-6 [&>svg]:!w-6">{TwitterSVG}</div>
+                  <div className="text-white [&>svg]:!h-6 [&>svg]:!w-6">{TwitterSVG}</div>
                   <div className="relative ml-2.5 flex-1">
                     <StyledInput
                       value={twitter}

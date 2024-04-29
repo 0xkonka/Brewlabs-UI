@@ -451,7 +451,6 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
   const isChanged = referralFee !== dynamicFees[0] || stakingFee !== dynamicFees[1] || tokenOwnerFee !== dynamicFees[2];
   const isUpdatable = isChanged && isReferralFeeUpdatable && isStakingFeeUpdatable && isOwnerFeeUpdatable;
 
-
   return (
     <>
       <WarningModal
@@ -595,7 +594,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
                   <div className="ml-5 flex">
                     {(txHash || (pair && !txHash)) && isOwner ? (
                       <div
-                        className={`${!dynamicFees[i] ? "text-tailwind" : "text-[#32FFB5]"} ${
+                        className={`${!dynamicFees[i] ? "text-white" : "text-[#32FFB5]"} ${
                           i === 3 ? "opacity-0" : ""
                         } mr-2 mt-[3px] [&>svg]:h-3.5 [&>svg]:w-3.5`}
                       >
@@ -606,7 +605,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
                     )}
                     <div className={!dynamicFees[i] ? "" : "text-white"}>{item.key}</div>
                   </div>
-                  <div className="ml-2 flex items-center text-tailwind">
+                  <div className="ml-2 flex items-center text-white">
                     {i !== 3 && isOwner && (txHash || (pair && !txHash)) ? (
                       <div
                         className="mr-2 cursor-pointer hover:text-white"
@@ -664,7 +663,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
               onClick={setFeeDistribution}
             >
               <div className="mx-auto flex w-fit items-center">
-                Update dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+                Update dynamic pool fees <div className="ml-2 scale-75 text-white">{PoolFeeSVG}</div>
               </div>
             </SolidButton>
           ) : (
@@ -738,7 +737,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
                 onClick={setFeeDistribution}
               >
                 <div className="mx-auto flex w-fit items-center">
-                  Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+                  Set dynamic pool fees <div className="ml-2 scale-75 text-white">{PoolFeeSVG}</div>
                 </div>
               </SolidButton>
               <div className="mt-3 flex flex-col justify-between sm:flex-row">
@@ -754,7 +753,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
                       <div className="flex-1">
                         Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                       </div>
-                      <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
+                      <div className="-mt-0.5 ml-1 scale-75 text-white">{LockFillSVG}</div>
                     </div>
                   </SolidButton>
                 </a>
@@ -768,7 +767,7 @@ export default function BasicLiquidity({ currencyA: currencyA_ = undefined, curr
                     <div className="flex-1">
                       Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                     </div>
-                    <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
+                    <div className="-mt-0.5 ml-1 scale-75 text-white">{BurnSVG}</div>
                   </div>
                 </SolidButton>
               </div>
