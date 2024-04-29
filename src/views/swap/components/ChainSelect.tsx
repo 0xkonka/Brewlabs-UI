@@ -11,6 +11,11 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 
 type ChainSelectProps = {
   id: string;
+  networks?: {
+    id: number;
+    name: string;
+    image: string;
+  }[];
 };
 
 const ChainSelect = ({ id }: ChainSelectProps) => {
