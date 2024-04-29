@@ -124,7 +124,6 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [navigationWidth, setNavigationWidth] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -156,7 +155,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
     };
   }, [router.events]);
 
-  /// Solana
+  // Solana
   // const solNetwork = WalletAdapterNetwork.Devnet;
   const solNetwork =
     "https://neat-attentive-wave.solana-mainnet.quiknode.pro/185b6652ba12a8dc5c2eba6b41d38fdafbe938d2/";
