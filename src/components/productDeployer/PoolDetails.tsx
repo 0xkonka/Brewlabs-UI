@@ -21,6 +21,9 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { numberWithCommas } from "utils/functions";
 import { poolDeployerSchema, supportedNetworks } from "config/schemas/poolDeployerSchema";
 import { setPoolInfo, setDeployerPoolStep, useDeployerPoolState } from "state/deploy/deployerPool.store";
+import { Token } from "@brewlabs/sdk";
+import { useCurrency } from "@hooks/Tokens";
+import useTotalSupply from "@hooks/useTotalSupply";
 
 const poolTypes = [
   {
@@ -85,8 +88,7 @@ const poolLockPeriods = [
 const PoolDetails = () => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
-  const [totalSupply] = useState(1000000); // TODO: Get total supply from the token
-  const [initialSupply, setInitialSupply] = useState(0.5); // TODO: Get initial supply from the token
+  
   const [
     {
       poolType,
@@ -111,7 +113,7 @@ const PoolDetails = () => {
       poolType: poolType || "standard",
       poolRewardToken: poolRewardToken,
       poolReflectionToken: poolReflectionToken,
-      poolInitialRewardSupply: initialSupply,
+      poolInitialRewardSupply: 0.5,
       poolDuration: poolDuration || "90",
       poolLockPeriod: poolLockPeriod || "0",
       poolWithdrawFee: poolWithdrawFee || 0.05,
@@ -124,6 +126,10 @@ const PoolDetails = () => {
   const watchPoolDuration = form.watch("poolDuration");
   const watchPoolRewardToken = form.watch("poolRewardToken");
   const watchPoolDeployChainId = form.watch("poolDeployChainId");
+  const watchPoolInitialRewardSupply = form.watch("poolInitialRewardSupply");
+
+  const rewardCurrency = useCurrency(watchPoolRewardToken?.address);
+  const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
 
   const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
     // Set the form data to the global state
@@ -319,9 +325,9 @@ const PoolDetails = () => {
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle className="space-y-2 text-sm">
               <p>
-                Total {watchPoolRewardToken.name} token supply: {numberWithCommas(totalSupply)}
+                Total {watchPoolRewardToken.name} token supply: {numberWithCommas(totalSupply.toFixed(2))}
               </p>
-              <p>Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * initialSupply) / 100).toFixed(2))}</p>
+              <p>Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * watchPoolInitialRewardSupply) / 100).toFixed(2))}</p>
             </AlertTitle>
           </Alert>
         )}
