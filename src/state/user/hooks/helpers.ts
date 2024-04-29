@@ -3,6 +3,7 @@ import { SerializedToken } from "config/constants/types";
 import { parseUnits } from "ethers/lib/utils";
 
 export function serializeToken(token: Currency | any): SerializedToken {
+  if (!token) return null;
   return {
     chainId: token.chainId,
     isNative: token.isNative,
@@ -12,7 +13,7 @@ export function serializeToken(token: Currency | any): SerializedToken {
     symbol: token.symbol,
     name: token.name,
     projectLink: token.projectLink,
-    logo: token.logo
+    logo: token.logo,
   };
 }
 
