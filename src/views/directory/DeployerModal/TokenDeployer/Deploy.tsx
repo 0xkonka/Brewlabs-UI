@@ -11,7 +11,7 @@ import { useContext } from "react";
 import { DashboardContext } from "contexts/DashboardContext";
 import { ethers } from "ethers";
 import TokenFactoryAbi from "config/abi/token/factory.json";
-import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 
 const Deploy = ({ setOpen, step, setStep, values }) => {
   const { name, symbol, decimals, totalSupply, setName, setSymbol, setDecimals, setTotalSupply, setDeployedAddress } =
@@ -55,7 +55,7 @@ const Deploy = ({ setOpen, step, setStep, values }) => {
       }
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(chainId));
+      handleWalletError(e, showError, getNativeSymbol(chainId));
       setStep(2);
     }
     setPending(false);
@@ -127,7 +127,7 @@ const Deploy = ({ setOpen, step, setStep, values }) => {
         <div className="flex justify-between">
           <div>Fee</div>
           <div className="text-[#FFFFFF40]">
-            {ethers.utils.formatEther(factory.serviceFee)} {getNativeSybmol(chainId)}
+            {ethers.utils.formatEther(factory.serviceFee)} {getNativeSymbol(chainId)}
           </div>
         </div>
       </div>

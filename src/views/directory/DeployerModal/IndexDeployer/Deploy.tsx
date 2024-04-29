@@ -13,7 +13,7 @@ import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenApprove } from "@hooks/useApprove";
-import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 import { useIndexFactory } from "state/deploy/hooks";
 import { getBep20Contract } from "utils/contractHelpers";
 import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
@@ -100,7 +100,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       setStep(4);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(chainId));
+      handleWalletError(e, showError, getNativeSymbol(chainId));
       setStep(2);
     }
 
