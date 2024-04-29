@@ -14,7 +14,6 @@ import { RadioButton } from "@components/ui/radio-button";
 import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
-import AlertConnection from "components/AlertConnection";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
@@ -126,8 +125,6 @@ const PoolDetails = () => {
   const watchPoolRewardToken = form.watch("poolRewardToken");
   const watchPoolDeployChainId = form.watch("poolDeployChainId");
 
-  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
-
   const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
     // Set the form data to the global state
     setPoolInfo(data);
@@ -151,10 +148,6 @@ const PoolDetails = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-8">
-        <div className="my-8">
-          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
-        </div>
-
         <FormField
           control={form.control}
           name="poolDeployChainId"

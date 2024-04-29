@@ -10,7 +10,6 @@ import { Switch } from "@components/ui/switch";
 import { IncrementorInput } from "@components/ui/incrementorInput";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
-import AlertConnection from "components/AlertConnection";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
@@ -24,9 +23,6 @@ import {
   setDeployerIndexStep,
   useDeployerIndexState,
 } from "state/deploy/deployerIndex.store";
-
-// import type { Token } from "config/schemas/tokenSchema";
-import Token from "@brewlabs/sdk";
 
 const IndexDetails = () => {
   const { chainId } = useActiveChainId();
@@ -46,8 +42,6 @@ const IndexDetails = () => {
     },
   });
 
-  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
-
   const onSubmit = (data: z.infer<typeof indexDeployerSchema>) => {
     // Set the form data to the global state
     setIndexInfo(data);
@@ -58,10 +52,6 @@ const IndexDetails = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
-        <div className="my-8">
-          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
-        </div>
-
         <FormField
           control={form.control}
           name="indexDeployChainId"

@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Checkbox } from "components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
 import ChainSelect from "views/swap/components/ChainSelect";
-import AlertConnection from "components/AlertConnection";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { tokenDeployerSchema, supportedNetworks } from "config/schemas/tokenDeployerSchema";
@@ -58,7 +57,6 @@ const TokenDetails = () => {
   });
 
   const watchTokenDeployChainId = form.watch("tokenDeployChainId");
-  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
 
   const getImageData = (event: ChangeEvent<HTMLInputElement>) => {
     // FileList is immutable, so we need to create a new one
@@ -92,10 +90,6 @@ const TokenDetails = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
-        <div className="my-8">
-          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
-        </div>
-
         <FormField
           control={form.control}
           name="tokenDeployChainId"
