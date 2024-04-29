@@ -1,6 +1,13 @@
 import { ChainId, Currency, NATIVE_CURRENCIES, Token, WNATIVE } from "@brewlabs/sdk";
 import { ethers } from "ethers";
-import { AugmentedChainId, CHAIN_ICONS, EMPTY_TOKEN_LOGO, EXPLORER_LOGO, EXPLORER_NAMES, EXPLORER_URLS } from "config/constants/networks";
+import {
+  AugmentedChainId,
+  CHAIN_ICONS,
+  EMPTY_TOKEN_LOGO,
+  EXPLORER_LOGO,
+  EXPLORER_NAMES,
+  EXPLORER_URLS,
+} from "config/constants/networks";
 import { getNativeSymbol } from "lib/bridge/helpers";
 import { DEX_LOGOS } from "config/constants/swap";
 import { toast } from "react-toastify";
@@ -90,12 +97,13 @@ export const getExplorerLogo = (chainId) => EXPLORER_LOGO[chainId] ?? "/images/n
 export const getDexLogo = (exchange) => DEX_LOGOS[exchange];
 
 export const getIndexName = (tokens) => {
-  // Strip undefined tokens
-  tokens = tokens.filter((t) => t?.symbol !== undefined && t.symbol !== null && t.symbol !== "");
-
+  // if (tokens.length === 2)
   return tokens
-    .map((t) => t?.symbol.replace(WNATIVE[t.chainId].symbol, getNativeSymbol(t.chainId)).toUpperCase())
+    .map((t) => t.symbol.replace(WNATIVE[t.chainId].symbol, getNativeSymbol(t.chainId)).toUpperCase())
     .join("-");
+  // return tokens
+  // .map((t, index) => (index > 0 ? t.symbol.substring(0, 1) : t.symbol.replace("WBNB", "BNB").replace("WETH", "ETH")))
+  // .join("-");
 };
 
 export const formatIPFSString = (url) => {

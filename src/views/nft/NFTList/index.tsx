@@ -58,9 +58,8 @@ const NFTList = () => {
         setCriteria={setCriteria}
         nfts={allNfts}
       />
-      <div className="mt-0.5" />
+
       <NFTPanel nfts={filteredNFTs} />
-      <div className="mt-[84px]" />
     </div>
   );
 };

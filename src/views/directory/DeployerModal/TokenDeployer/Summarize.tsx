@@ -51,7 +51,7 @@ const Summarize = ({ setOpen, values }) => {
               <div className="mx-2.5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-center font-roboto text-sm font-bold text-white">
                 {deployedAddress}
               </div>
-              <div className="text-tailwind">{LinkSVG}</div>
+              <div className="text-white">{LinkSVG}</div>
             </a>
             <div className="absolute -bottom-6 right-0 flex text-xs text-[#FFFFFF80]">
               <div className="cursor-pointer hover:text-white" onClick={() => onCopyAddress()}>

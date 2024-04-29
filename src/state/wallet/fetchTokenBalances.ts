@@ -7,7 +7,7 @@ import dividendTrackerAbi from "config/abi/dividendTracker.json";
 import { COVALENT_API_KEYS, COVALENT_CHAIN_NAME } from "config";
 import { API_URL, DEX_GURU_WETH_ADDR } from "config/constants";
 import { fetchTokenBaseInfo } from "contexts/DashboardContext/fetchFeaturedPrices";
-import { getNativeSymbol } from "lib/bridge/helpers";
+import { getNativeSybmol } from "lib/bridge/helpers";
 import { defaultMarketData } from "state/prices/types";
 import { isAddress } from "utils";
 import { getDividendTrackerContract, getMulticallContract } from "utils/contractHelpers";
@@ -139,8 +139,8 @@ const fetchTokenInfo = async (token: any, chainId: number, address: string, sign
       } catch (e) {
         rewardToken = {
           address: "0x0",
-          name: getNativeSymbol(chainId),
-          symbol: getNativeSymbol(chainId),
+          name: getNativeSybmol(chainId),
+          symbol: getNativeSybmol(chainId),
           decimals: 18,
         };
       }

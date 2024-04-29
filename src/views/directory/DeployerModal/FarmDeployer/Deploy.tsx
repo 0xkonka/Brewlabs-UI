@@ -12,7 +12,7 @@ import { useCurrency } from "hooks/Tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useTokenApprove } from "hooks/useApprove";
 import useTotalSupply from "hooks/useTotalSupply";
-import { getExplorerLink, getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
@@ -28,7 +28,7 @@ import LoadingText from "components/LoadingText";
 import TokenLogo from "components/logo/TokenLogo";
 
 import StyledButton from "../../StyledButton";
-import { TokenSelect } from "../TokenSelect";
+import TokenSelect from "../TokenSelect";
 import { useFactory } from "./hooks";
 import { useUserTokenData } from "state/wallet/hooks";
 import { useAccount } from "wagmi";
@@ -127,7 +127,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       handleTransferRewards(farm);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSymbol(chainId));
+      handleWalletError(e, showError, getNativeSybmol(chainId));
       setStep(2);
     }
     setPending(false);
@@ -154,7 +154,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       handleStartFarming(farm);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSymbol(chainId));
+      handleWalletError(e, showError, getNativeSybmol(chainId));
     }
     setPending(false);
   };
@@ -177,7 +177,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       dispatch(fetchFarmsPublicDataFromApiAsync());
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSymbol(chainId));
+      handleWalletError(e, showError, getNativeSybmol(chainId));
     }
     setPending(false);
   };
@@ -262,14 +262,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <div>Reward supply for {DURATIONS[duration]} Days</div>
           <div className="flex items-center">
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(+Math.min(3, initialSupply + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{initialSupply.toFixed(2)}%</div>
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(+Math.max(0, initialSupply - 0.1).toFixed(2))}
             >
               {MinusSVG}
@@ -288,14 +288,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           </div>
           <div className="flex items-center">
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(+Math.min(2, depositFee + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{depositFee.toFixed(2)}%</div>
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(+Math.max(0, depositFee - 0.1).toFixed(2))}
             >
               {MinusSVG}
@@ -309,14 +309,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           </div>
           <div className="flex items-center">
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(+Math.min(2, withdrawFee + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{withdrawFee.toFixed(2)}%</div>
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(+Math.max(0, withdrawFee - 0.1).toFixed(2))}
             >
               {MinusSVG}

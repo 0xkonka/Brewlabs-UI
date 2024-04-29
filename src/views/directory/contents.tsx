@@ -3,7 +3,8 @@ import Link from "next/link";
 const contents = {
   indexes: {
     link: "https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-brewlabs-indexes",
-    header: "Brewlabs Indexes - Cryptocurrency ETF’s.",
+    header: "Brewlabs Indexes",
+    tagline: "Cryptocurrency ETF’s.",
     body: (
       <div>
         Brewlabs token indexes allow users to create baskets of tokens to trade, share, profit and dilute risk. Users
@@ -18,6 +19,7 @@ const contents = {
   invest: {
     link: "https://app.gitbook.com/o/1FzuyucQ4vBCbx7UCqdf/s/GDV23RNtyJTrZnDeUSD9/brewlabs-defi-products/brewlabs-2022/live-brewlabs-staking",
     header: "Stake, farm, zap and earn",
+    tagline: "",
     body: (
       <div>
         Brewlabs offers and layers a variety of decentralisd finance products for teams and users. Take advantage of

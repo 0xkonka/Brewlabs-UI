@@ -19,7 +19,7 @@ import { NFT_RARITY_NAME, rarities } from "config/constants/nft";
 import { DashboardContext } from "contexts/DashboardContext";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useTokenApprove } from "@hooks/useApprove";
-import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
@@ -29,6 +29,7 @@ import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
 import NFTRarityText from "@components/NFTRarityText";
 import { useActiveNFT } from "./hooks/useActiveNFT";
+import Card from "@components/cards/Card";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -75,7 +76,7 @@ const NFTActions = () => {
       toast.success("Brewlabs was approved");
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(chainId));
+      handleWalletError(error, showError, getNativeSybmol(chainId));
     }
     setPending(false);
   };
@@ -187,14 +188,15 @@ const NFTActions = () => {
   ];
 
   return (
-    <div className="mx-auto flex w-full  max-w-[260px] flex-wrap items-center justify-between px-4 sm:max-w-[600px] xl:sm:max-w-full xl:flex-none">
+    <div className="mx-auto flex w-full max-w-[260px] flex-wrap items-center justify-between px-4 sm:max-w-[600px] xl:sm:max-w-full xl:flex-none">
       <MintNFTModal open={mintOpen} setOpen={setMintOpen} />
       <UpgradeNFTModal open={upgradeOpen} setOpen={setUpgradeOpen} />
+
       {actions.map((data, i) => {
         return (
           <>
-            <div key={i} className="relative mb-[164px] w-[220px]">
-              <div className="absolute -top-7 left-0  flex w-full justify-between font-brand text-lg font-bold text-white">
+            <div key={data.name} className="relative mb-[164px] w-[220px]">
+              <div className=" flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
                 <div>
                   <NFTRarityText rarity={activeRarity}>{data.rarity}</NFTRarityText>
@@ -206,7 +208,7 @@ const NFTActions = () => {
                 ) : (
                   <div
                     className={`mb-4 flex h-[90px] items-center justify-center ${
-                      (i < 2 && isApproved) || (i === 2 && activeRarity !== -1) ? "text-primary" : "text-tailwind"
+                      (i < 2 && isApproved) || (i === 2 && activeRarity !== -1) ? "text-primary" : "text-white"
                     } [&>*:first-child]:!h-20 [&>*:first-child]:!w-20`}
                   >
                     {data.icon}
@@ -248,13 +250,13 @@ const NFTActions = () => {
                   <div className={`mt-2.5 flex w-full ${data.essential.align}`}>
                     {data.essential.datas.map((data: any, i: number) => {
                       return (
-                        <div className="relative" key={i}>
+                        <div className="relative" key={data.info}>
                           <StyledButton
                             className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite]"
                             disabled={!data.active}
                             onClick={() => data.action()}
                           >
-                            <div className="text-tailwind absolute -right-3.5 animate-none transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
+                            <div className="absolute -right-3.5 animate-none text-white transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5 [&>*:first-child]:!opacity-100">
                               {data.info ? InfoSVG : CircleRightSVG}
                             </div>
                             {data.text}

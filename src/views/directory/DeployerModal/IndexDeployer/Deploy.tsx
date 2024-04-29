@@ -13,14 +13,14 @@ import IndexFactoryAbi from "config/abi/indexes/factory.json";
 import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useTokenApprove } from "@hooks/useApprove";
-import { getExplorerLink, getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
 import { useIndexFactory } from "state/deploy/hooks";
 import { getBep20Contract } from "utils/contractHelpers";
 import { getChainLogo, getExplorerLogo, getIndexName } from "utils/functions";
 
 import StyledButton from "../../StyledButton";
 
-import { useDeployIndex } from "hooks/deploy/useDeployIndex";
+import { useFactory } from "./hooks";
 import StyledInput from "@components/StyledInput";
 
 const Deploy = ({ step, setStep, setOpen, tokens }) => {
@@ -29,7 +29,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const factory = useIndexFactory(chainId);
-  const { onCreate } = useDeployIndex(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
+  const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
   const { onApprove } = useTokenApprove();
 
   const [name, setName] = useState("");
@@ -100,7 +100,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
       setStep(4);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSymbol(chainId));
+      handleWalletError(e, showError, getNativeSybmol(chainId));
       setStep(2);
     }
 
@@ -170,7 +170,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               </div>
               <div className="flex items-center">
                 <div
-                  className="text-tailwind mx-2 scale-150 cursor-pointer hover:text-[#87878a]"
+                  className="mx-2 scale-150 cursor-pointer text-white hover:text-[#87878a]"
                   onClick={() =>
                     setDepositFee(+Math.min(factory ? factory.depositFeeLimit : 0.25, depositFee + 0.01).toFixed(2))
                   }
@@ -179,7 +179,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 </div>
                 <div>{depositFee.toFixed(2)}%</div>
                 <div
-                  className="text-tailwind ml-2 scale-150 cursor-pointer hover:text-[#87878a]"
+                  className="ml-2 scale-150 cursor-pointer text-white hover:text-[#87878a]"
                   onClick={() => setDepositFee(+Math.max(0, depositFee - 0.01).toFixed(2))}
                 >
                   {MinusSVG}
@@ -198,7 +198,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
               </div>
               <div className="flex items-center">
                 <div
-                  className="text-tailwind mx-2 scale-150 cursor-pointer hover:text-[#87878a]"
+                  className="mx-2 scale-150 cursor-pointer text-white hover:text-[#87878a]"
                   onClick={() =>
                     setCommissionFee(
                       +Math.min(factory ? factory.commissionFeeLimit : 1, commissionFee + 0.01).toFixed(2)
@@ -209,7 +209,7 @@ const Deploy = ({ step, setStep, setOpen, tokens }) => {
                 </div>
                 <div>{commissionFee.toFixed(2)}%</div>
                 <div
-                  className="text-tailwind ml-2 scale-150 cursor-pointer hover:text-[#87878a]"
+                  className="ml-2 scale-150 cursor-pointer text-white hover:text-[#87878a]"
                   onClick={() => setCommissionFee(+Math.max(0, commissionFee - 0.01).toFixed(2))}
                 >
                   {MinusSVG}

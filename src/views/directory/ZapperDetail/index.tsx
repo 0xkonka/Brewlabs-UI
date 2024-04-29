@@ -22,7 +22,7 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
-import { getNativeSymbol, getNetworkLabel } from "lib/bridge/helpers";
+import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFarmUserDataAsync } from "state/farms";
 import { useLpTokenPrices } from "state/prices/hooks";
@@ -150,7 +150,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
+            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto pb-[150px]">
               <PageHeader
                 title={
                   <div className="text-[40px]">
@@ -269,7 +269,7 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
                           Peformance Fee {performanceFee
                             ? ethers.utils.formatEther(performanceFee.toString())
                             : "0.00"}{" "}
-                          {getNativeSymbol(data.chainId)}
+                          {getNativeSybmol(data.chainId)}
                         </div>
                         <div className="absolute bottom-2 right-2">
                           {data ? (

@@ -33,7 +33,7 @@ const CommunityDetail = ({ community }: { community: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll ">
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto">
             <Container className="pb-[150px] pt-20  font-brand">
               <header className="flex items-center justify-between font-brand sm:pr-0">
                 <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">

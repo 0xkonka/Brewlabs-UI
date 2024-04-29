@@ -19,7 +19,7 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice, { useTokenPrices } from "hooks/useTokenPrice";
-import { getExplorerLink, getNativeSymbol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
 import {
@@ -179,7 +179,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       }
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(data.chainId));
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -194,7 +194,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       }
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(data.chainId));
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -209,7 +209,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       }
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(data.chainId));
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -224,7 +224,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
       }
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSymbol(data.chainId));
+      handleWalletError(error, showError, getNativeSybmol(data.chainId));
     }
     setPending(false);
   };
@@ -251,8 +251,8 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
           exit={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-scroll pb-[150px]">
-            {address && data ? (
+          <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto pb-[150px]">
+            {address && data && (
               <StakingModal
                 open={stakingModalOpen}
                 setOpen={setStakingModalOpen}
@@ -260,8 +260,6 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                 data={data}
                 defaultAmount={populatedAmount}
               />
-            ) : (
-              ""
             )}
             {data.enableEmergencyWithdraw && (
               <EmergencyModal open={emergencyOpen} setOpen={setEmergencyOpen} data={data} />
@@ -356,17 +354,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                             </StyledButton>
                           </a>
                         )}
-                        <Link
-                          className="mr-5 h-[32px]"
-                          target="_blank"
-                          href={`/chart/${DEXSCREENER_CHAINNAME[stakingToken.chainId]}/${stakingToken.address}`}
-                          rel="noreferrer"
-                        >
-                          <StyledButton className="!w-fit">
-                            <div>Chart</div>
-                            <div className="ml-1 -scale-100">{chevronLeftSVG}</div>
-                          </StyledButton>
-                        </Link>
+
                         <a
                           className="h-[32px]"
                           target="_blank"
@@ -471,7 +459,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                               <SkeletonComponent />
                             </div>
                           )}{" "}
-                          {getNativeSymbol(data.chainId)}&nbsp;
+                          {getNativeSybmol(data.chainId)}&nbsp;
                           <div
                             className="tooltip"
                             data-tip="Performance fee is charged per transaction to the Brewlabs Treasury (Brewlabs holders)."
@@ -585,7 +573,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                     <TotalStakedChart
                       data={graphData()}
                       symbol={
-                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSymbol(data.chainId)
+                        curGraph === 4 ? "" : curGraph !== 3 ? data.stakingToken.symbol : getNativeSybmol(data.chainId)
                       }
                       price={curGraph === 4 ? 1 : curGraph !== 3 ? tokenPrice : nativeTokenPrice}
                       curGraph={curGraph}
@@ -645,7 +633,7 @@ const StakingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         )}
                         &nbsp;
                         <span className={`${curGraph === 3 ? "text-black" : "text-primary"}`}>
-                          {getNativeSymbol(data.chainId)}
+                          {getNativeSybmol(data.chainId)}
                         </span>
                       </div>
                     </div>

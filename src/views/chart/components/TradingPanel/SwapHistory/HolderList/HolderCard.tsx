@@ -85,7 +85,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
                 }
               }}
             >
-              <div className="mr-5 text-tailwind [&>svg]:h-4 [&>svg]:w-4" id={"walletType" + i}>
+              <div className="mr-5 text-white [&>svg]:h-4 [&>svg]:w-4" id={"walletType" + i}>
                 {typeSvgs[type]}
               </div>
               <div
@@ -95,11 +95,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
               >
                 {type}
               </div>
-              {type === "Wallet" ? (
-                <div className="ml-3 text-tailwind [&>svg]:h-3 [&>svg]:w-3">{ChevronDownSVG}</div>
-              ) : (
-                ""
-              )}
+              {type === "Wallet" ? <div className="ml-3 text-white [&>svg]:h-3 [&>svg]:w-3">{ChevronDownSVG}</div> : ""}
             </div>
             <div className="mr-10 flex max-w-[360px] flex-1 items-center" id={"heldAmount" + i}>
               <div className="h-2 w-full overflow-hidden rounded-lg bg-[#ffffff33]">
@@ -121,7 +117,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
               <div className="w-12">{list.ownerShip.toFixed(2)}%</div>
               <div
                 className={`ml-2 [&>div>svg]:h-3.5 [&>div>svg]:w-3.5 ${
-                  list.ownerShipStatus === "Draw" ? "text-tailwind" : ""
+                  list.ownerShipStatus === "Draw" ? "text-white" : ""
                 }`}
               >
                 {list.ownerShipStatus === "Up" ? (
@@ -167,7 +163,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
                 }
               }}
             >
-              <div className="mr-2 text-tailwind [&>svg]:h-4 [&>svg]:w-4" id={"walletType1" + i}>
+              <div className="mr-2 text-white [&>svg]:h-4 [&>svg]:w-4" id={"walletType1" + i}>
                 {typeSvgs[type]}
               </div>
               <div
@@ -177,11 +173,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
               >
                 {type}
               </div>
-              {type === "Wallet" ? (
-                <div className="ml-3 text-tailwind [&>svg]:h-3 [&>svg]:w-3">{ChevronDownSVG}</div>
-              ) : (
-                ""
-              )}
+              {type === "Wallet" ? <div className="ml-3 text-white [&>svg]:h-3 [&>svg]:w-3">{ChevronDownSVG}</div> : ""}
             </div>
           </div>
 
@@ -210,7 +202,7 @@ export default function HolderCard({ list, i, selectedPair, setCriteria, setShow
                 <div className="w-12">{list.ownerShip.toFixed(2)}%</div>
                 <div
                   className={`[&>div>svg]:h-3.5 [&>div>svg]:w-3.5 ${
-                    list.ownerShipStatus === "Draw" ? "text-tailwind" : ""
+                    list.ownerShipStatus === "Draw" ? "text-white" : ""
                   }`}
                 >
                   {list.ownerShipStatus === "Up" ? (

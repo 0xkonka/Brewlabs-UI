@@ -21,7 +21,7 @@ const NFTRarityText = ({
     case 5:
       return <span className={`text-[#F3985F] ${className}`}>{children}</span>;
     default:
-      return <span className={`text-tailwind ${className}`}>{children}</span>;
+      return <span className={`text-white ${className}`}>{children}</span>;
   }
 };
 

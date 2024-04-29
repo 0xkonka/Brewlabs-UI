@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 
 import IndexAbi from "config/abi/indexes/indexImpl.json";
 
-import { API_URL, MULTICALL_FETCH_LIMIT } from "config/constants";
+import { API_URL, GURU_API_KEY, MULTICALL_FETCH_LIMIT } from "config/constants";
 import multicall from "utils/multicall";
 import { sumOfArray } from "utils/functions";
 
@@ -137,16 +137,14 @@ export const fetchIndexPerformance = async (pool) => {
   let tokenPrices = [];
   try {
     for (let i = 0; i < pool.numTokens; i++) {
-      const tokenYearUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${
-        keys[pool.chainId]
-      }_USD&resolution=720&from=${startTime < to - 3600 * 24 * 365 ? startTime : to - 3600 * 24 * 365}&to=${to}`;
+      const tokenYearUrl = `https://api.nodes-brewlabs.info/guru?symbol=${pool.tokens[i].address}-${keys[pool.chainId]
+        }_USD&resolution=720&from=${startTime < to - 3600 * 24 * 365 ? startTime : to - 3600 * 24 * 365}&to=${to}`;
 
       let priceResult = await axios.get(tokenYearUrl);
       const yearlyPrice = priceResult.data;
 
-      const tokenDayUrl = `https://api.dex.guru/v1/tradingview/history?symbol=${pool.tokens[i].address}-${
-        keys[pool.chainId]
-      }_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
+      const tokenDayUrl = `https://api.nodes-brewlabs.info/guru?symbol=${pool.tokens[i].address}-${keys[pool.chainId]
+        }_USD&resolution=60&from=${to - 3600 * 24}&to=${to}`;
 
       priceResult = await axios.get(tokenDayUrl);
       const dailyPrice = priceResult.data;
@@ -197,7 +195,7 @@ export const fetchIndexFeeHistories = async (pool) => {
   let res;
   try {
     res = await axios.post(`${API_URL}/fee/single`, { type: "index", id: pool.pid });
-  } catch (e) {}
+  } catch (e) { }
   if (!res?.data) {
     return { performanceFees: [] };
   }
