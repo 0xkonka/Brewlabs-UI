@@ -35,9 +35,26 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   nft: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   tradingPairs: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
-  "": [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  "": [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.POLYGON,
+    ChainId.FANTOM,
+    ChainId.AVALANCHE,
+    ChainId.CRONOS,
+    ChainId.BRISE,
+  ],
   draw: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   communities: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET, ChainId.POLYGON],
+  default: [
+    ChainId.ETHEREUM,
+    ChainId.BSC_MAINNET,
+    ChainId.POLYGON,
+    ChainId.FANTOM,
+    ChainId.AVALANCHE,
+    ChainId.CRONOS,
+    ChainId.BRISE,
+  ],
 };
 
 export const CHAIN_KEYS = {
