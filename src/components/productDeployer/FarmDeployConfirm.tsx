@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import { Loader2 } from "lucide-react";
 
 import FarmImplAbi from "config/abi/farm/farmImpl.json";
 import FarmFactoryAbi from "config/abi/farm/factory.json";

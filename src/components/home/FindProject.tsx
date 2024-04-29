@@ -3,7 +3,8 @@ import Soon from "@components/Soon";
 
 import Container from "@components/layout/Container";
 import { NETWORKS } from "config/constants/networks";
-import { CircleCheckIcon, CircleXIcon } from "lucide-react";
+
+import { CheckCircle2, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getChainLogo } from "utils/functions";
 
@@ -218,9 +219,9 @@ const FindProject = () => {
                   >
                     <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
                       {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) ? (
-                        <CircleCheckIcon />
+                        <CheckCircle2 />
                       ) : (
-                        <CircleXIcon />
+                        <XCircle />
                       )}
                     </div>
                     <div>{item.name}</div>
