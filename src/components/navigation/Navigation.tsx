@@ -42,38 +42,71 @@ const Navigation = () => {
         <nav className="mt-6 flex flex-1 flex-col justify-between" aria-label="Sidebar">
           <div className="flex flex-col">
             {navigationData.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`relative flex items-center gap-4 px-5 py-3 transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
-                  pathname === item.href && "active"
-                }`}
-              >
-                <div className="relative">
-                  {item.count > 0 && (
-                    <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
-                  )}
+              <>
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`relative flex items-center gap-4 px-5 py-3 transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
+                    pathname === item.href && "active"
+                  }`}
+                >
+                  <div className="relative">
+                    {item.count > 0 && (
+                      <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
+                    )}
 
-                  <DynamicHeroIcon
-                    icon={item.icon as IconName}
-                    className="w-5 text-gray-300 group-hover:text-gray-400 active:text-brand"
-                  />
-                </div>
-                <div className="relative group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-500 lg:opacity-0">
-                  {item.count > 0 && (
-                    <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
-                      {item.count}
-                    </Badge>
-                  )}
+                    <DynamicHeroIcon
+                      icon={item.icon as IconName}
+                      className="w-5 text-gray-300 group-hover:text-gray-400 active:text-brand"
+                    />
+                  </div>
+                  <div className="relative group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-500 lg:opacity-0">
+                    {item.count > 0 && (
+                      <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
+                        {item.count}
+                      </Badge>
+                    )}
 
-                  <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">{item.name}</span>
-                </div>
-                {item.new && (
-                  <div className="-right-4 top-2 rounded bg-zinc-800 px-1 py-px text-[9px] text-yellow-200 ring-1 ring-yellow-200 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:absolute">
-                    New
+                    <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">{item.name}</span>
+                  </div>
+                  {item.new && (
+                    <div className="-right-4 top-2 rounded bg-zinc-800 px-1 py-px text-[9px] text-yellow-200 ring-1 ring-yellow-200 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:absolute">
+                      New
+                    </div>
+                  )}
+                </Link>
+
+                {item.children && (
+                  <div className="h-0 animate-in fade-in group-hover:h-auto">
+                    {item.children.map((child) => (
+                      <Link
+                        key={child.name}
+                        href={child.href}
+                        className={`relative flex items-center gap-4 py-2 pl-10 pr-5 text-xs transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
+                          pathname === child.href && "active"
+                        }`}
+                      >
+                        <div className="relative">
+                          {child.count > 0 && (
+                            <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
+                          )}
+                        </div>
+                        <div className="relative group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-500 lg:opacity-0">
+                          {child.count > 0 && (
+                            <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
+                              {child.count}
+                            </Badge>
+                          )}
+
+                          <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">
+                            {child.name}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
                 )}
-              </Link>
+              </>
             ))}
           </div>
           <div className="flex flex-col gap-4 lg:overflow-hidden">
