@@ -178,7 +178,7 @@ const PoolDetails = () => {
           name="poolToken"
           render={({ field }) => (
             <FormItem className="space-y-4">
-              <FormLabel className="text-xl">Select the reward token for the staking pool</FormLabel>
+              <FormLabel className="text-xl">Select the staking token for the staking pool</FormLabel>
               <FormControl>
                 <TokenSelect
                   selectedCurrency={field.value}
