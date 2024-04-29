@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import PoolCard from "./PoolCard";
 import { PlusSVG } from "@components/dashboard/assets/svgs";
-import DeployerModal from "views/directory/DeployerModal";
 import { useState } from "react";
 import { Category } from "config/constants/types";
 
@@ -34,14 +33,6 @@ const PoolList = ({
 }) => {
   return (
     <StyledContainer>
-      <DeployerModal
-        open={deployerOpen}
-        setOpen={setDeployerOpen}
-        step={step}
-        setStep={setStep}
-        deployType={deployType}
-        setDeployType={setDeployType}
-      />
       <PoolHeader>
         <div className="min-w-[80px] cursor-pointer" onClick={() => setSortOrder("chainId")}>
           Network
