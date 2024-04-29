@@ -1,6 +1,7 @@
 import { Fragment, lazy, Suspense, useEffect, useState } from "react";
 import { ChainId } from "@brewlabs/sdk";
 import clsx from "clsx";
+import { AnimatePresence, domAnimation, LazyMotion } from "framer-motion";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
@@ -50,7 +51,6 @@ import { useSigner } from "utils/wagmi";
 import "animate.css";
 import "../styles/global.css";
 import "../styles/animations.scss";
-import "../styles/Toast.custom.scss";
 import SEO from "../../next-seo.config.mjs";
 
 import UserSidebar from "components/dashboard/UserSidebar";
@@ -64,7 +64,7 @@ import { useDexPairs } from "state/chart/hooks";
 import { getMulticallContract } from "utils/contractHelpers";
 import { useFetchTokenLists } from "state/home/hooks";
 
-// Solana
+///Solana
 import { useMemo } from "react";
 import { clusterApiUrl } from "@solana/web3.js";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
@@ -156,7 +156,7 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
     };
   }, [router.events]);
 
-  // Solana
+  /// Solana
   // const solNetwork = WalletAdapterNetwork.Devnet;
   const solNetwork =
     "https://neat-attentive-wave.solana-mainnet.quiknode.pro/185b6652ba12a8dc5c2eba6b41d38fdafbe938d2/";
@@ -168,67 +168,79 @@ function MyApp(props: AppProps<{ initialReduxState: any }>) {
 
   return (
     <>
-      <WagmiProvider>
-        <Provider store={store}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <TokenPriceContextProvider>
-              <UserContextProvider>
-                <DashboardContextProvider>
-                  <SwapContextProvider>
-                    <ChartContextProvider>
-                      <CommunityContextProvider>
-                        <LanguageProvider>
-                          <BridgeProvider>
-                            <SWRConfig>
-                              {mounted && <GlobalHooks />}
-                              <PersistGate loading={null} persistor={persistor}>
-                                <DefaultSeo {...SEO} />
-                                <Updaters />
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={wallets}>
+          <WalletModalProvider>
+            <WagmiProvider>
+              <Provider store={store}>
+                <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+                  <TokenPriceContextProvider>
+                    <UserContextProvider>
+                      <DashboardContextProvider>
+                        <SwapContextProvider>
+                          <ChartContextProvider>
+                            <CommunityContextProvider>
+                              <LanguageProvider>
+                                <BridgeProvider>
+                                  <SolanaNetworkProvider>
+                                    <SWRConfig>
+                                      {mounted && <GlobalHooks />}
+                                      <PersistGate loading={null} persistor={persistor}>
+                                        <DefaultSeo {...SEO} />
+                                        <Updaters />
 
-                                <div
-                                  className={clsx(
-                                    router?.pathname === "/" && "home",
-                                    "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
-                                  )}
-                                >
-                                  <Suspense>
-                                    <Bubbles />
-                                  </Suspense>
+                                        <div
+                                          className={clsx(
+                                            router?.pathname === "/" && "home",
+                                            "relative min-h-screen bg-gray-100 dark:bg-zinc-900"
+                                          )}
+                                        >
+                                          <Suspense>
+                                            <Bubbles />
+                                          </Suspense>
 
-                                  <img
-                                    className="fixed -right-44 top-0 hidden home:z-10 dark:opacity-50 sm:block"
-                                    src="/images/blur-indigo.png"
-                                    alt=""
-                                    width={567}
-                                    height={567}
-                                  />
+                                          <img
+                                            className="fixed -right-44 top-0 hidden home:z-10 dark:opacity-50 sm:block"
+                                            src="/images/blur-indigo.png"
+                                            alt=""
+                                            width={567}
+                                            height={567}
+                                          />
 
-                                  <div className="relative z-10 flex h-full">
-                                    <NavigationDesktop />
-                                    <NavigationMobile />
-                                    <UserSidebar />
+                                          <div className="relative z-10 flex h-full">
+                                            <NavigationDesktop />
+                                            <NavigationMobile />
+                                            <UserSidebar />
 
-                                    <div className="relative flex flex-1 flex-col overflow-hidden">
-                                      <HeaderMobile />
-                                      <App {...props} />
-                                      {loading ? <LoadingPage /> : ""}
-                                    </div>
-                                  </div>
-                                  <ToastContainer />
-                                </div>
-                              </PersistGate>
-                            </SWRConfig>
-                          </BridgeProvider>
-                        </LanguageProvider>
-                      </CommunityContextProvider>
-                    </ChartContextProvider>
-                  </SwapContextProvider>
-                </DashboardContextProvider>
-              </UserContextProvider>
-            </TokenPriceContextProvider>
-          </ThemeProvider>
-        </Provider>
-      </WagmiProvider>
+                                            <div className="relative flex flex-1 flex-col overflow-hidden">
+                                              <HeaderMobile />
+                                              <LazyMotion features={domAnimation}>
+                                                <AnimatePresence exitBeforeEnter>
+                                                  <App {...props} />
+                                                </AnimatePresence>
+                                              </LazyMotion>
+                                              {loading ? <LoadingPage /> : ""}
+                                            </div>
+                                          </div>
+                                          <ToastContainer theme="dark" />
+                                        </div>
+                                      </PersistGate>
+                                    </SWRConfig>
+                                  </SolanaNetworkProvider>
+                                </BridgeProvider>
+                              </LanguageProvider>
+                            </CommunityContextProvider>
+                          </ChartContextProvider>
+                        </SwapContextProvider>
+                      </DashboardContextProvider>
+                    </UserContextProvider>
+                  </TokenPriceContextProvider>
+                </ThemeProvider>
+              </Provider>
+            </WagmiProvider>
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
 
       <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=G-4YPVGE70E1`} />
       <Script
