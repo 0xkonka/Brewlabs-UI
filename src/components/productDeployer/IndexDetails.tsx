@@ -65,7 +65,7 @@ const IndexDetails = () => {
         <FormField
           control={form.control}
           name="indexDeployChainId"
-          render={(field) => (
+          render={({ field }) => (
             <FormItem className="space-y-4">
               <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
               <FormControl>
