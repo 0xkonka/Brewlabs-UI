@@ -168,7 +168,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
     const profitChanged = (profit ? profit / +userData.stakedUsdAmount : 0) * 100;
     if (!userData?.stakedBalances?.length || !priceHistories?.length)
       return (
-        <span className="mr-1 text-green">
+        <span className="text-green mr-1">
           $0.00 <span className="text-[#FFFFFF80]">earned</span>
           {isProfit ? (
             <>
@@ -360,7 +360,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         </StyledButton>
                       </div>
                       <div
-                        className="mr-10 hidden cursor-pointer text-tailwind transition hover:text-white xl:block [&>*:first-child]:!h-5"
+                        className="mr-10 hidden cursor-pointer text-white transition hover:text-white xl:block [&>*:first-child]:!h-5"
                         id={"BrewlabsNFT"}
                       >
                         {NFTSVG}
@@ -374,7 +374,6 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                           <div className="mr-1.5">{isCopied ? "Copied" : "Share Index"}</div> {LinkSVG}
                         </div>
                       </StyledButton>
-                      
                     </div>
                   </div>
                 </div>
@@ -409,7 +408,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                   <div className="relative">
                     <IndexLogo tokens={tokens} />
                     <div
-                      className="absolute -right-6 bottom-0 block cursor-pointer text-tailwind transition hover:text-white xl:hidden [&>*:first-child]:!h-5"
+                      className="absolute -right-6 bottom-0 block cursor-pointer text-white transition hover:text-white xl:hidden [&>*:first-child]:!h-5"
                       id={"BrewlabsNFT"}
                     >
                       {NFTSVG}

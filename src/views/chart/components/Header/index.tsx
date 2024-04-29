@@ -21,7 +21,7 @@ export default function Header({ showReverse, setShowReverse }) {
 
   return (
     <>
-      <div className="relative z-[101] mt-10 flex sm:flex-row flex-col">
+      <div className="relative z-[101] mt-10 flex flex-col sm:flex-row">
         <div className="flex flex-1">
           <div className="relative flex-1">
             <SearchInput />
@@ -36,7 +36,7 @@ export default function Header({ showReverse, setShowReverse }) {
         </div>
 
         <div
-          className={`ml-4 flex w-fit items-center justify-between text-tailwind sm:mt-0 mt-4 ${
+          className={`ml-4 mt-4 flex w-fit items-center justify-between text-white sm:mt-0 ${
             showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
           }`}
         >

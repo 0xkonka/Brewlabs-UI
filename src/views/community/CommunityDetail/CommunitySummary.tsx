@@ -115,7 +115,7 @@ const CommunitySummary = ({ community }: { community: any }) => {
               <div>
                 <span className="font-black">Share</span> {community.name} Commuinty
               </div>
-              <div className="ml-2.5 text-tailwind">{LinkSVG}</div>
+              <div className="ml-2.5 text-white">{LinkSVG}</div>
             </div>
           )}
         </StyledButton>

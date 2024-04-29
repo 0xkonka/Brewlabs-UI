@@ -139,7 +139,7 @@ const ViewPollModal = ({ open, setOpen, community, poll, setIsVoted }) => {
                     </div>
                     <div
                       className={`mt-2 ${
-                        selectedOption === i ? "text-primary" : "text-tailwind"
+                        selectedOption === i ? "text-primary" : "text-white"
                       } [&>svg]:!h-4 [&>svg]:!w-4`}
                     >
                       {checkCircleSVG}

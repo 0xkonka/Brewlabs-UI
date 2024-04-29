@@ -34,7 +34,7 @@ const HeroImageParallax = () => {
         height={815}
         src="/images/brewlabs-hero-phone-back.png"
         alt="Brewlabs Swap interface"
-        className={`${styles.parallax_phone_back} z-10 ml-2 mt-12 w-auto sm:ml-16 `}
+        className={`${styles.parallax_phone_back} z-10 ml-2 mt-12 h-96 w-auto sm:ml-16 `}
       />
 
       <Image
@@ -43,7 +43,7 @@ const HeroImageParallax = () => {
         height={815}
         src="/images/brewlabs-hero-phone-front.png"
         alt="Brewlabs Swap interface"
-        className={`${styles.parallax_phone_front} z-10 ml-24 mt-28 w-auto sm:ml-60`}
+        className={`${styles.parallax_phone_front} z-10 ml-24 mt-28 h-[400px] w-auto sm:ml-60`}
       />
 
       <Image

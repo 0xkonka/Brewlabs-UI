@@ -13,7 +13,7 @@ export default function SlippageInfo({ selectedPair }) {
             {buyTaxes === null ? <SkeletonComponent /> : `${buyTaxes.toFixed(2)}%`}
           </div>
         </div>
-        <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{RefreshSVG}</div>
+        <div className="text-white [&>svg]:!h-5 [&>svg]:!w-5">{RefreshSVG}</div>
         <div className="text-center 2xl:text-right">
           <div className="text-white">Sell slippage</div>
           <div className="mt-2 font-bold text-[#DC4545]">

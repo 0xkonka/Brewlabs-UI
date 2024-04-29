@@ -246,14 +246,14 @@ const InfoCarousel = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-primary">{data.name}</div>
-                  <div className="text-tailwind [&>svg]:!h-4 [&>svg]:!w-4">{data.icon}</div>
+                  <div className="text-white [&>svg]:!h-4 [&>svg]:!w-4">{data.icon}</div>
                 </div>
                 <div className="flex h-[30px] items-center justify-between text-xl text-white">
                   <div className="flex items-end">
                     {data.value}&nbsp;<span className="text-base text-sm text-[#FFFFFF80]">{data.suffix}</span>
                   </div>
                   <div
-                    className="mt-1 cursor-pointer text-tailwind transition hover:text-[#FFFFFF80] [&>svg]:!h-4 [&>svg]:!w-4 [&>svg]:!opacity-100 "
+                    className="mt-1 cursor-pointer text-white transition hover:text-[#FFFFFF80] [&>svg]:!h-4 [&>svg]:!w-4 [&>svg]:!opacity-100 "
                     data-tooltip-id={"my-tooltip"}
                     data-tooltip-content={data.tooltip}
                     data-tooltip-place="top"

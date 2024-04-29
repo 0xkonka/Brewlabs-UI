@@ -282,7 +282,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
             </div>
 
             <div className="flex flex-col items-center">
-              <div className="mt-2.5 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-tailwind">
+              <div className="mt-2.5 flex h-[200px] w-[200px] items-center justify-center overflow-hidden rounded bg-[#B9B8B80D] text-white">
                 {isMinted ? (
                   <ReactPlayer
                     className="!h-full !w-full"

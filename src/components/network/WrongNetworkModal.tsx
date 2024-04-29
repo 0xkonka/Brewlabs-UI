@@ -20,7 +20,8 @@ const WrongNetworkModal = ({ open }: WrongNetworkModalProps) => {
 
   const { pathname } = useRouter();
   const page = pathname.split("/").slice(-1)[0];
-  const pageSupportedChains = PAGE_SUPPORTED_CHAINS[page] || [];
+  const pageValid = Object.keys(PAGE_SUPPORTED_CHAINS).includes(page) ? page : "default";
+  const pageSupportedChains = PAGE_SUPPORTED_CHAINS[pageValid] || [];
 
   // Get URL chainId
   const searchParams = useSearchParams();

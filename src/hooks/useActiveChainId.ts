@@ -23,8 +23,10 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean 
   const chainIdFromUrl = Number(searchParams.get("chainId"));
 
   useEffect(() => {
-    const pageSupportedChains = PAGE_SUPPORTED_CHAINS[page] || [];
+    const pageValid = Object.keys(PAGE_SUPPORTED_CHAINS).includes(page) ? page : "default";
+    const pageSupportedChains = PAGE_SUPPORTED_CHAINS[pageValid] || [];
     const isWrongNetwork = !pageSupportedChains.includes(chainId);
+
     const urlDoesNotMatchChain = chainIdFromUrl !== undefined && chainIdFromUrl !== chainId && chainIdFromUrl !== 0;
 
     if (status === "connected") {

@@ -73,7 +73,7 @@ export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
                         favourite.address === selectedPair.address && favourite.chainId === selectedPair.chainId
                     )
                       ? "text-primary"
-                      : "text-tailwind"
+                      : "text-white"
                   }`}
                 />
               </div>
@@ -107,7 +107,7 @@ export default function TokenInfo({ selectedPair, showReverse, marketInfos }) {
           {infos.map((data, i) => {
             return (
               <div key={i} className="my-1 mr-1.5 flex items-center rounded-[5px] bg-[#FFFFFF0D] p-[4px_10px]">
-                <div className="mr-0.5 text-tailwind">{data.icon}</div>
+                <div className="mr-0.5 text-white">{data.icon}</div>
                 <div className="ml-1.5 text-xs font-[500] text-white">{data.value}</div>
               </div>
             );
