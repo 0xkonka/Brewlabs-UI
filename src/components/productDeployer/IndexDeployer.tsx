@@ -12,10 +12,14 @@ const IndexDeployer = () => {
   const { chainId } = useActiveChainId();
   const [deployerIndexStep] = useDeployerIndexState("deployerIndexStep");
 
+  if (chainId === undefined) {
+    return <AlertConnection />;
+  }
+
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerIndexStep === "details" && chainId === undefined ? <AlertConnection /> : <IndexDetails />}
+        {deployerIndexStep === "details" && <IndexDetails />}
         {deployerIndexStep === "confirm" && <IndexDeployConfirm />}
         {deployerIndexStep === "success" && <IndexSuccessfulDeploy />}
       </CardContent>

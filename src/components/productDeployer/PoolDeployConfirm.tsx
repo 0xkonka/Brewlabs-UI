@@ -28,7 +28,6 @@ import { Token } from "@brewlabs/sdk";
 import PoolFactoryAbi from "config/abi/staking/brewlabsPoolFactory.json";
 import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 
-
 const initialDeploySteps = [
   {
     name: "Waiting",
@@ -52,7 +51,10 @@ const PoolDeployConfirm = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySteps, setDeploySteps] = useState(initialDeploySteps);
   const factoryState = usePoolFactoryState(chainId);
-  const { onCreateSinglePool, onCreateLockupPool, onCreateLockupPoolWithPenalty } = usePoolFactory(chainId, factoryState.serviceFee);
+  const { onCreateSinglePool, onCreateLockupPool, onCreateLockupPoolWithPenalty } = usePoolFactory(
+    chainId,
+    factoryState.serviceFee
+  );
   const { onApprove } = useTokenApprove();
   const [
     {
@@ -67,7 +69,6 @@ const PoolDeployConfirm = () => {
       poolInitialRewardSupply,
     },
   ] = useDeployerPoolState("poolInfo");
-
 
   const rewardCurrency = useCurrency(poolRewardToken?.address);
   const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
@@ -128,10 +129,9 @@ const PoolDeployConfirm = () => {
           [Number(poolLockPeriod)],
           [rewardPerBlock.toString()],
           [(poolDepositFee * 100).toFixed(0)],
-          [(poolWithdrawFee * 100).toFixed(0)],
+          [(poolWithdrawFee * 100).toFixed(0)]
         );
-      }
-      else {
+      } else {
         tx = await onCreateSinglePool(
           poolToken.address,
           poolRewardToken.address,
@@ -153,7 +153,7 @@ const PoolDeployConfirm = () => {
             setDeployedPoolAddress(log.args.pool);
             break;
           }
-        } catch (e) { }
+        } catch (e) {}
       }
 
       updateDeployStatus({
@@ -162,7 +162,6 @@ const PoolDeployConfirm = () => {
         updatedStatus: "complete",
         updatedDescription: "Deployment done",
       });
-
     } catch (e) {
       handleWalletError(e, showError, getNativeSymbol(chainId));
       // Error deploying farm contract
@@ -258,17 +257,26 @@ const PoolDeployConfirm = () => {
                 </dd>
               </div>
               {poolRewardToken && (
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-white">Reward token</dt>
-                  <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                    <TokenLogo
-                      alt={poolRewardToken.name}
-                      classNames="h-7 w-7"
-                      src={getTokenLogoURL(poolRewardToken.address, poolRewardToken.chainId, poolRewardToken.logo)}
-                    />
-                    {poolRewardToken.name} - {poolRewardToken.symbol}
-                  </dd>
-                </div>
+                <>
+                  <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <dt className="text-sm font-medium leading-6 text-white">Reward token</dt>
+                    <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+                      <TokenLogo
+                        alt={poolRewardToken.name}
+                        classNames="h-7 w-7"
+                        src={getTokenLogoURL(poolRewardToken.address, poolRewardToken.chainId, poolRewardToken.logo)}
+                      />
+                      {poolRewardToken.name} - {poolRewardToken.symbol}
+                    </dd>
+                  </div>
+                  <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <dt className="text-sm font-medium leading-6 text-white">Reward tokens</dt>
+                    <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+                      {poolInitialRewardSupply}% of total supply
+                      {/* TODO: add the amount of tokens required */}
+                    </dd>
+                  </div>
+                </>
               )}
               {poolReflectionToken && (
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

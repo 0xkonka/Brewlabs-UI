@@ -12,10 +12,14 @@ const FarmDeployer = () => {
   const { chainId } = useActiveChainId();
   const [deployerFarmStep] = useDeployerFarmState("deployerFarmStep");
 
+  if (chainId === undefined) {
+    return <AlertConnection />;
+  }
+
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerFarmStep === "details" && chainId === undefined ? <AlertConnection /> : <FarmDetails />}
+        {deployerFarmStep === "details" && <FarmDetails />}
         {deployerFarmStep === "confirm" && <FarmDeployConfirm />}
         {deployerFarmStep === "success" && <FarmSuccessfulDeploy />}
       </CardContent>

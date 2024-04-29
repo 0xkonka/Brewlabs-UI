@@ -7,7 +7,7 @@ const AlertConnection = () => {
 
   if (status === "disconnected" && !address) {
     return (
-      <Alert className="my-4 border-yellow-400 bg-yellow-200/10 text-yellow-100 animate-in fade-in">
+      <Alert className="my-4 max-w-lg border-yellow-400 bg-yellow-200/10 text-yellow-100 animate-in slide-in-from-bottom">
         <WalletIcon className="mx-auto !text-yellow-500" />
 
         <div className="ml-4 py-1">

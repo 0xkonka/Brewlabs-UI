@@ -12,10 +12,14 @@ const PoolDeployer = () => {
   const { chainId } = useActiveChainId();
   const [deployerPoolStep] = useDeployerPoolState("deployerPoolStep");
 
+  if (chainId === undefined) {
+    return <AlertConnection />;
+  }
+
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerPoolStep === "details" && chainId === undefined ? <AlertConnection /> : <PoolDetails />}
+        {deployerPoolStep === "details" && <PoolDetails />}
         {deployerPoolStep === "confirm" && <PoolDeployConfirm />}
         {deployerPoolStep === "success" && <PoolSuccessfulDeploy />}
       </CardContent>

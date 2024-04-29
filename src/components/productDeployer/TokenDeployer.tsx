@@ -12,10 +12,14 @@ const TokenDeployer = () => {
   const { chainId } = useActiveChainId();
   const [deployerTokenStep] = useDeployerTokenState("deployerTokenStep");
 
+  if (chainId === undefined) {
+    return <AlertConnection />;
+  }
+
   return (
     <Card className="max-w-3xl">
       <CardContent className="pt-6">
-        {deployerTokenStep === "details" && chainId === undefined ? <AlertConnection /> : <TokenDetails />}
+        {deployerTokenStep === "details" && <TokenDetails />}
         {deployerTokenStep === "confirm" && <TokenDeployConfirm />}
         {deployerTokenStep === "success" && <TokenSuccessfulDeploy />}
       </CardContent>
