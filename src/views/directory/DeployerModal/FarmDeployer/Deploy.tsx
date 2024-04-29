@@ -28,7 +28,7 @@ import LoadingText from "components/LoadingText";
 import TokenLogo from "components/logo/TokenLogo";
 
 import StyledButton from "../../StyledButton";
-import TokenSelect from "../TokenSelect";
+import { TokenSelect } from "../TokenSelect";
 import { useFactory } from "./hooks";
 import { useUserTokenData } from "state/wallet/hooks";
 import { useAccount } from "wagmi";

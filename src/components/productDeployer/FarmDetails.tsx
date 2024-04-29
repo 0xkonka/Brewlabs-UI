@@ -8,7 +8,7 @@ import { getEmptyTokenLogo, numberWithCommas } from "utils/functions";
 import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import ChainSelect from "views/swap/components/ChainSelect";
-import TokenSelect from "views/directory/DeployerModal/TokenSelect";
+import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
 import AlertConnection from "components/AlertConnection";
 import { Input } from "@components/ui/input";
