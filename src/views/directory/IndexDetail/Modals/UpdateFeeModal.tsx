@@ -11,7 +11,7 @@ import styled from "styled-components";
 import { chevronLeftSVG, warningCircleSVG } from "components/dashboard/assets/svgs";
 import LogoIcon from "components/LogoIcon";
 import { DashboardContext } from "contexts/DashboardContext";
-import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { setIndexesPublicData } from "state/indexes";
 import { DeserializedIndex } from "state/indexes/types";
@@ -48,7 +48,7 @@ const UpdateFeeModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
       setOpen(false);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+      handleWalletError(e, showError, getNativeSymbol(data.chainId));
     }
     setPending(false);
   };

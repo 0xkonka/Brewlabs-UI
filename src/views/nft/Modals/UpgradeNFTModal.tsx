@@ -20,7 +20,7 @@ import { DashboardContext } from "contexts/DashboardContext";
 import { useTokenApprove } from "@hooks/useApprove";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useFlaskNftContract } from "@hooks/useContract";
-import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSymbol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
@@ -104,7 +104,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
       toast.success(`${selectedCurrency.symbol} was approved`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -123,7 +123,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
       toast.success(`BREWLABS was approved`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -145,7 +145,7 @@ const UpgradeNFTModal = ({ open, setOpen }) => {
       setIsMinted(true);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
