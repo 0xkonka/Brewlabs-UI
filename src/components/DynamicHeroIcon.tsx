@@ -11,7 +11,7 @@ interface IconProps {
 const DynamicHeroIcon = ({ icon, className }: IconProps): JSX.Element => {
   const SingleIcon = HeroIcons[icon];
 
-  return <SingleIcon className={`flex-shrink-0 text-gray-600 ${className}`} aria-hidden="true" />;
+  return <SingleIcon className={`flex-shrink-0 ${className}`} aria-hidden="true" />;
 };
 
 export default DynamicHeroIcon;

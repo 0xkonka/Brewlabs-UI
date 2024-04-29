@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import { EXPLORER_API_URLS, EXPLORER_API_KEYS } from "config/constants/networks";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { getExternalMasterChefAddress } from "utils/addressHelpers";
+import { GURU_API_KEY } from "config/constants";
 
 const useTotalStakedHistory = (data) => {
   const [history, setHistory] = useState([]);
@@ -15,7 +16,7 @@ const useTotalStakedHistory = (data) => {
   async function fetchPrice(address, chainId) {
     const to = Math.floor(Date.now() / 1000);
     const result = await axios.get(
-      `https://api.dex.guru/v1/tradingview/history?symbol=${
+      `https://api.nodes-brewlabs.info/guru?symbol=${
         address === ethers.constants.AddressZero ? WNATIVE[chainId].address : address
       }-${chainId === 56 ? "bsc" : "eth"}_USD&resolution=10&from=${to - 3600 * 24}&to=${to}`
     );

@@ -8,18 +8,22 @@ import { buttonVariants } from "components/ui/button";
 type PageHeaderProps = {
   children?: ReactNode;
   title: string | ReactNode;
+  tagline?: string;
   summary?: string | ReactNode;
   infoLink?: string;
 };
 
 // TIP: If you want words to be highlighted use JSX in the prop
 // and wrap the word in <mark> tags
-const PageHeader = ({ title, summary, infoLink, children }: PageHeaderProps) => (
+const PageHeader = ({ title, tagline, summary, infoLink, children }: PageHeaderProps) => (
   <section>
     <Container className="pb-16 pt-20">
       <header className="font-brand sm:pr-0">
-        <div className="relative max-w-md ">
-          <h1 className="text-3xl text-slate-700 dark:text-slate-400 sm:text-4xl">{title}</h1>
+        <div className="relative max-w-md">
+          {tagline && <p className="text-amber-200">{tagline}</p>}
+          <h1 className="bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-4xl text-transparent [text-wrap:balance] lg:text-5xl">
+            {title}
+          </h1>
 
           {infoLink && (
             <div className="absolute -right-6 -top-6 sm:-top-2">

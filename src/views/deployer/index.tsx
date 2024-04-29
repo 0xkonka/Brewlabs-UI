@@ -1,17 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import orderBy from "lodash/orderBy";
 import { useAccount } from "wagmi";
 
-import { buttonVariants } from "components/ui/button";
-import Link from "next/link";
-
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
-import WordHighlight from "components/text/WordHighlight";
 import ButtonProductDeploy from "components/productDeployer/ButtonProductDeploy";
 
 import { Category } from "config/constants/types";
@@ -56,6 +51,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const { data: farms } = useFarms();
   const { indexes } = useIndexes();
   const { address: account } = useAccount();
+  // const account = "0x53Ff4a10A30DEB6D412F9B47CaEEc28Af7F8e799";
 
   const { tokenPrices, lpPrices } = useContext(TokenPriceContext);
   const currentBlocks = useChainCurrentBlocks();
@@ -82,7 +78,6 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
   const allPools = totalPools.filter(
     (data) => data.deployer && account && data.deployer.toLowerCase() === account.toLowerCase()
   );
-
   const sortPools = (poolsToSort) => {
     switch (sortOrder) {
       case "apr":
@@ -199,55 +194,54 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
             exit={{ opacity: 0, scale: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <PageHeader
-              title={
-                <>
-                  Automatically <WordHighlight content="deploy smart contracts" />
-                </>
-              }
-              summary={
-                <>
-                  The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
-                  deployment of smart contracts across a range of networks. No matter if you are a novice or an expert
-                  in the industry, this simple deployment tool enables teams to create tokens, supporting utility smart
-                  contract, staking and yield farming and more. All contracts that are deployed by our deployer tools
-                  are safe, transparent and verified to ensure user security.
-                </>
-              }
-              infoLink="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
-            >
-              <ButtonProductDeploy />
-            </PageHeader>
+            <div className="absolute left-0 top-0 max-h-screen w-full overflow-y-auto">
+              <PageHeader
+                title="Product Deployer"
+                tagline="Deploy smart contracts"
+                summary={
+                  <>
+                    The Brewlabs product deployer is a simple tool that uses a step-by-step wizard to assist in the
+                    deployment of smart contracts across a range of networks. No matter if you are a novice or an expert
+                    in the industry, this simple deployment tool enables teams to create tokens, supporting utility
+                    smart contract, staking and yield farming and more. All contracts that are deployed by our deployer
+                    tools are safe, transparent and verified to ensure user security.
+                  </>
+                }
+                infoLink="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
+              >
+                <ButtonProductDeploy />
+              </PageHeader>
 
-            <Container className="pb-4 font-brand">
-              <div className="mt-8">
-                <SelectionPanel
-                  pools={allPools}
-                  curFilter={curFilter}
-                  setCurFilter={setCurFilter}
-                  criteria={criteria}
-                  setCriteria={setCriteria}
-                  activity={status}
-                  setActivity={setStatus}
-                />
-              </div>
-              <div className="mb-24 mt-5">
-                <PoolList
-                  pools={chosenPools}
-                  setSelectPoolDetail={setSelectPoolDetail}
-                  setCurPool={setCurPool}
-                  setSortOrder={setSortOrder}
-                  loading={dataFetched}
-                  deployerOpen={deployerOpen}
-                  setDeployerOpen={setDeployerOpen}
-                  step={step}
-                  setStep={setStep}
-                  deployType={deployType}
-                  setDeployType={setDeployType}
-                  curFilter={curFilter}
-                />
-              </div>
-            </Container>
+              <Container className="pd-4 font-brand">
+                <div className="mt-8">
+                  <SelectionPanel
+                    pools={allPools}
+                    curFilter={curFilter}
+                    setCurFilter={setCurFilter}
+                    criteria={criteria}
+                    setCriteria={setCriteria}
+                    activity={status}
+                    setActivity={setStatus}
+                  />
+                </div>
+                <div className="mb-24 mt-5">
+                  <PoolList
+                    pools={chosenPools}
+                    setSelectPoolDetail={setSelectPoolDetail}
+                    setCurPool={setCurPool}
+                    setSortOrder={setSortOrder}
+                    loading={dataFetched}
+                    deployerOpen={deployerOpen}
+                    setDeployerOpen={setDeployerOpen}
+                    step={step}
+                    setStep={setStep}
+                    deployType={deployType}
+                    setDeployType={setDeployType}
+                    curFilter={curFilter}
+                  />
+                </div>
+              </Container>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

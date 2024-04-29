@@ -360,7 +360,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         </StyledButton>
                       </div>
                       <div
-                        className="text-tailwind mr-10 hidden cursor-pointer transition hover:text-white xl:block [&>*:first-child]:!h-5"
+                        className="mr-10 hidden cursor-pointer text-white transition hover:text-white xl:block [&>*:first-child]:!h-5"
                         id={"BrewlabsNFT"}
                       >
                         {NFTSVG}
@@ -408,7 +408,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                   <div className="relative">
                     <IndexLogo tokens={tokens} />
                     <div
-                      className="text-tailwind absolute -right-6 bottom-0 block cursor-pointer transition hover:text-white xl:hidden [&>*:first-child]:!h-5"
+                      className="absolute -right-6 bottom-0 block cursor-pointer text-white transition hover:text-white xl:hidden [&>*:first-child]:!h-5"
                       id={"BrewlabsNFT"}
                     >
                       {NFTSVG}

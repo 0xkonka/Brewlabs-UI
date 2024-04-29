@@ -12,15 +12,15 @@ import CurrencySelector from "components/CurrencySelector";
 import TokenLogo from "@components/logo/TokenLogo";
 import { isAddress } from "utils";
 import { useTokenList } from "state/home/hooks";
+import type { Token as TokenType } from "config/schemas/tokenSchema";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  selectedCurrency?: any;
-  setSelectedCurrency?: any;
+  selectedCurrency?: TokenType;
+  setSelectedCurrency?: (currency: TokenType) => void;
 }
 
 const TokenSelect = forwardRef<HTMLInputElement, InputProps>(
   ({ selectedCurrency, setSelectedCurrency, ...props }, ref) => {
-    // const TokenSelect = ({ selectedCurrency, setSelectedCurrency }) => {
     const { chainId } = useActiveChainId();
     const supportedTokens = useTokenList(chainId);
 
@@ -36,9 +36,6 @@ const TokenSelect = forwardRef<HTMLInputElement, InputProps>(
     );
 
     function onUserInput(input, currency) {}
-    function onCurrencySelect(input, currency) {
-      setSelectedCurrency(currency);
-    }
 
     return (
       <div className="mb-4 rounded-full border border-gray-600 bg-opacity-60 py-2 pl-2 pr-4 font-brand  text-white focus-within:border-amber-300 hover:border-amber-300 dark:bg-zinc-900 dark:bg-opacity-60">
@@ -53,7 +50,7 @@ const TokenSelect = forwardRef<HTMLInputElement, InputProps>(
                 selectedCurrency={null}
                 onUserInput={onUserInput}
                 type={""}
-                onCurrencySelect={onCurrencySelect}
+                onCurrencySelect={(input, currency) => setSelectedCurrency(currency)}
                 filteredCurrencies={filteredTokenList}
               />
             );

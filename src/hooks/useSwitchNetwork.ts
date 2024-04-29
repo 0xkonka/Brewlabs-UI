@@ -76,18 +76,16 @@ export function useSwitchNetwork() {
   const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
   const switchNetwork = useCallback(
     (chainId: number) => {
-      if (chainId === 900 ) {
+      if (chainId === 900) {
         setIsSolanaNetwork(true);
         return switchNetworkSolana(chainId);
       } else {
         setIsSolanaNetwork(false);
-        if (!isEVMConnected)
-          return switchNetworkLocal(chainId);
+        if (!isEVMConnected) return switchNetworkLocal(chainId);
         else if (chainId === EVMChain.id) {
           setGlobalState("sessionChainId", chainId);
           replaceBrowserHistory("chainId", chainId);
-        }
-        else if (isEVMConnected && typeof _switchNetwork === "function") {
+        } else if (isEVMConnected && typeof _switchNetwork === "function") {
           return _switchNetwork(chainId);
         }
         return switchNetworkLocal(chainId);
@@ -100,12 +98,12 @@ export function useSwitchNetwork() {
     () =>
       isEVMConnected
         ? !!_switchNetworkAsync &&
-        connector?.id !== ConnectorNames.WalletConnect &&
-        !(
-          typeof window !== "undefined" &&
-          // @ts-ignore // TODO: add type later
-          (window.ethereum?.isSafePal || window.ethereum?.isMathWallet)
-        )
+          connector?.id !== ConnectorNames.WalletConnect &&
+          !(
+            typeof window !== "undefined" &&
+            // @ts-ignore // TODO: add type later
+            (window.ethereum?.isSafePal || window.ethereum?.isMathWallet)
+          )
         : true,
     [_switchNetworkAsync, isEVMConnected, connector]
   );

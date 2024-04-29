@@ -14,7 +14,6 @@ import { RadioButton } from "@components/ui/radio-button";
 import { Accordion, AccordionContent, AccordionItem } from "@components/ui/accordion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
-import AlertConnection from "components/AlertConnection";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
@@ -108,10 +107,10 @@ const PoolDetails = () => {
     resolver: zodResolver(poolDeployerSchema),
     defaultValues: {
       poolDeployChainId: chainId,
-      poolToken,
+      poolToken: poolToken,
       poolType: poolType || "standard",
-      poolRewardToken,
-      poolReflectionToken,
+      poolRewardToken: poolRewardToken,
+      poolReflectionToken: poolReflectionToken,
       poolInitialRewardSupply: initialSupply,
       poolDuration: poolDuration || "90",
       poolLockPeriod: poolLockPeriod || "0",
@@ -124,8 +123,7 @@ const PoolDetails = () => {
   const watchPoolType = form.watch("poolType");
   const watchPoolDuration = form.watch("poolDuration");
   const watchPoolRewardToken = form.watch("poolRewardToken");
-
-  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
+  const watchPoolDeployChainId = form.watch("poolDeployChainId");
 
   const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
     // Set the form data to the global state
@@ -150,14 +148,10 @@ const PoolDetails = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-8">
-        <div className="my-8">
-          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
-        </div>
-
         <FormField
           control={form.control}
           name="poolDeployChainId"
-          render={(field) => (
+          render={({ field }) => (
             <FormItem className="space-y-4">
               <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
               <FormControl>
@@ -183,6 +177,7 @@ const PoolDetails = () => {
                 <TokenSelect
                   selectedCurrency={field.value}
                   setSelectedCurrency={(token) => {
+                    // The order here is important, we need to set then trigger
                     form.setValue("poolToken", token);
                     form.trigger("poolToken");
                   }}
@@ -222,36 +217,39 @@ const PoolDetails = () => {
 
         <div className="divider" />
 
-        <FormField
-          control={form.control}
-          name="poolLockPeriod"
-          render={({ field }) => (
-            <FormItem className="space-y-4">
-              <FormLabel className="text-xl">Select the lock period for the staking pool</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="grid gap-4 sm:grid-cols-5"
-                >
-                  {poolLockPeriods.map((type) => (
-                    <RadioButton key={type.id} value={type.id}>
-                      {type.id === "0" ? (
-                        <UnlockIcon className="h-6 w-6 peer-aria-checked:text-white" />
-                      ) : (
-                        <LockIcon className="h-6 w-6 peer-aria-checked:text-white" />
-                      )}
-                      {type.label}
-                    </RadioButton>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="divider" />
+        {watchPoolDeployChainId !== 42161 && (
+          <>
+            <FormField
+              control={form.control}
+              name="poolLockPeriod"
+              render={({ field }) => (
+                <FormItem className="space-y-4">
+                  <FormLabel className="text-xl">Select the lock period for the staking pool</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid gap-4 sm:grid-cols-5"
+                    >
+                      {poolLockPeriods.map((type) => (
+                        <RadioButton key={type.id} value={type.id}>
+                          {type.id === "0" ? (
+                            <UnlockIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                          ) : (
+                            <LockIcon className="h-6 w-6 peer-aria-checked:text-white" />
+                          )}
+                          {type.label}
+                        </RadioButton>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="divider" />
+          </>
+        )}
 
         <FormField
           control={form.control}
@@ -290,8 +288,9 @@ const PoolDetails = () => {
                 <TokenSelect
                   selectedCurrency={field.value}
                   setSelectedCurrency={(token) => {
-                    form.trigger("poolRewardToken");
+                    // The order here is important, we need to set then trigger
                     form.setValue("poolRewardToken", token);
+                    form.trigger("poolRewardToken");
                   }}
                 />
               </FormControl>
@@ -340,8 +339,9 @@ const PoolDetails = () => {
                       <TokenSelect
                         selectedCurrency={field.value}
                         setSelectedCurrency={(token) => {
-                          form.trigger("poolReflectionToken");
+                          // The order here is important, we need to set then trigger
                           form.setValue("poolReflectionToken", token);
+                          form.trigger("poolReflectionToken");
                         }}
                       />
                     </FormControl>

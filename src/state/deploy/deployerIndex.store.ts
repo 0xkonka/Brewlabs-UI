@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { toast } from "react-toastify";
 import { WNATIVE } from "@brewlabs/sdk";
-import type { Token } from "@brewlabs/sdk";
+import type { Token } from "config/schemas/tokenSchema";
 import { createGlobalState } from "react-hooks-global-state";
 import { indexDeployerSchema } from "config/schemas/indexDeployerSchema";
 

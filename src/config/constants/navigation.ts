@@ -1,4 +1,3 @@
-import { DeployerSVG, CommunitySVG, NFTSVG } from "@components/dashboard/assets/svgs";
 import { IconName } from "@components/DynamicHeroIcon";
 
 type NavigationItem = {
@@ -7,9 +6,9 @@ type NavigationItem = {
   external: boolean;
   icon: IconName;
   isBeta?: boolean;
-  isNew?: boolean;
-  svg?: boolean;
-  newItem?: number;
+  count?: number;
+  new?: boolean;
+  children?: NavigationItem[];
 };
 
 export const navigationData = [
@@ -20,13 +19,7 @@ export const navigationData = [
     icon: "HomeIcon",
   },
   {
-    name: "Chart",
-    href: "/chart/bsc/0xc9cc6515a1df94aaed156f3bd6efe86a100308fa",
-    external: false,
-    icon: "PresentationChartLineIcon",
-  },
-  {
-    name: "Invest",
+    name: "Earn",
     href: "/staking",
     external: false,
     icon: "ClockIcon",
@@ -44,7 +37,6 @@ export const navigationData = [
     external: false,
     icon: "ArrowsRightLeftIcon",
   },
-
   {
     name: "Swap",
     href: "/swap",
@@ -61,35 +53,40 @@ export const navigationData = [
     name: "Product deployer",
     href: "/deployer",
     external: false,
-    icon: "ArrowDownOnSquareIcon",
-    svg: DeployerSVG,
-    isNew: true,
+    icon: "BeakerIcon",
+    new: true,
+    children: [
+      {
+        name: "Yield Farm",
+        href: "/deployer/deploy-farm",
+        external: false,
+      },
+      {
+        name: "Index",
+        href: "/deployer/deploy-index",
+        external: false,
+      },
+      {
+        name: "Token",
+        href: "/deployer/deploy-token",
+        external: false,
+      },
+      {
+        name: "Staking Pool",
+        href: "/deployer/deploy-pool",
+        external: false,
+      },
+    ],
   },
   {
     name: "Brewlabs NFT",
     href: "/nft",
     external: false,
-    icon: "ShoppingBagIcon",
-    svg: NFTSVG,
-  },
-  {
-    name: "Communities",
-    href: "/communities",
-    external: false,
-    icon: "ShoppingBagIcon",
-    svg: CommunitySVG,
-    newItem: 5,
+    icon: "MapIcon",
   },
 ] as NavigationItem[];
 
 export const navigationExtraData = [
-  // {
-  //   name: "TrueNFT",
-  //   href: "https://truenft.io",
-  //   external: true,
-  //   icon: "PaperAirplaneIcon",
-  //   svg: NFTSVG,
-  // },
   {
     name: "Airdrop tools",
     href: "https://brewlabs-airdrop.tools/bsc",

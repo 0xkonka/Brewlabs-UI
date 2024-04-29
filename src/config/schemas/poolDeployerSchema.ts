@@ -14,9 +14,7 @@ export const poolDeployerSchema = z.object({
   poolDuration: z.enum(["30", "60", "90", "180", "365"], {
     required_error: "You need to select duration.",
   }),
-  poolLockPeriod: z.enum(["0", "3", "6", "9", "12"], {
-    required_error: "You need to select lock period.",
-  }),
+  poolLockPeriod: z.enum(["0", "3", "6", "9", "12"]).optional(),
   poolDeployChainId: z.coerce
     .number()
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),

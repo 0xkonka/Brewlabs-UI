@@ -67,14 +67,14 @@ const Deploy = ({ step, setStep, setOpen }) => {
           <div>Stakig pool duration</div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setStakingDuration(Math.min(12, stakingDuration + 1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{stakingDuration} Months</div>
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setStakingDuration(Math.max(1, stakingDuration - 1))}
             >
               {MinusSVG}
@@ -85,14 +85,14 @@ const Deploy = ({ step, setStep, setOpen }) => {
           <div>Initial reward supply for 12 months</div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(Math.min(3, initialSupply + 0.1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{initialSupply.toFixed(2)}%</div>
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(Math.max(0, initialSupply - 0.1))}
             >
               {MinusSVG}
@@ -110,14 +110,14 @@ const Deploy = ({ step, setStep, setOpen }) => {
           </div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(Math.min(2, withdrawFee + 0.1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{withdrawFee.toFixed(2)}%</div>
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(Math.max(0, withdrawFee - 0.1))}
             >
               {MinusSVG}
@@ -131,14 +131,14 @@ const Deploy = ({ step, setStep, setOpen }) => {
           </div>
           <div className="flex items-center">
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(Math.min(2, depositFee + 0.1))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{depositFee.toFixed(2)}%</div>
             <div
-              className="cursor-pointer text-tailwind transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(Math.max(0, depositFee - 0.1))}
             >
               {MinusSVG}

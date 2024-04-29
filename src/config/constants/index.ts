@@ -14,6 +14,7 @@ export const SECOND_INTERVAL = 1000;
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
 export const TREASURY_ADDRESS_SOLANA = process.env.NEXT_PUBLIC_TREASURY_ADDRESS_SOLANA;
+export const GURU_API_KEY = process.env.NEXT_PUBLIC_GURU_API_KEY;
 // export const API_URL = "http://localhost:5050/api";
 export const MULTICALL_FETCH_LIMIT = 120;
 

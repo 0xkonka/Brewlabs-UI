@@ -22,7 +22,6 @@ import PageWrapper from "components/layout/PageWrapper";
 import ChainSelector from "components/ChainSelector";
 import CryptoCard from "components/cards/CryptoCard";
 import InputNumber from "components/inputs/InputNumber";
-import WordHighlight from "components/text/WordHighlight";
 import { useGlobalState, setGlobalState } from "state";
 
 import BridgeDragButton from "components/bridge/BridgeDragButton";
@@ -230,17 +229,13 @@ const Bridge: NextPage = () => {
   };
 
   return (
-     <PageWrapper>
+    <PageWrapper>
       <PageHeader
-        title={
-          <>
-           Transfer your tokens between various networks with the <WordHighlight content="Brewlabs Bridge" />.
-          </>
-        }
+        title="Transfer your tokens between various networks with the Brewlabs Bridge"
         summary={
           <>
             The Brewlabs Bridge allows the transfer of Brewlabs tokens across multiple networks. Users can use this
-            briding tool to bridge between BNB Chain, Polygon Network and Ethereum Network. Bridging only takes a few
+            bridging tool to bridge between BNB Chain, Polygon Network and Ethereum Network. Bridging only takes a few
             minutes between your wallets.
           </>
         }

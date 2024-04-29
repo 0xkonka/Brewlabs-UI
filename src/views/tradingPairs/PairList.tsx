@@ -52,11 +52,11 @@ export default function PairList({ selectedPair, setSelectedPair }) {
           value={criteria}
           onChange={(e) => setCriteria(e.target.value)}
         />
-        <div className="flex w-14 cursor-pointer items-center justify-center rounded-r bg-[#202023] text-primary [&>svg]:h-[18px] [&>svg]:w-[18px]">
+        <div className="flex w-14 cursor-pointer items-center justify-center rounded-r bg-[#202023] text-brand [&>svg]:h-[18px] [&>svg]:w-[18px]">
           {SearchCircleSVG}
         </div>
       </div>
-      <div className="primary-shadow mb-10 mt-5 rounded-md bg-[#18181B] p-[10px_0px_24px_0px] xsm:p-[10px_16px_24px_16px]">
+      <div className="xms:py-6 mb-10 mt-5 rounded-md  px-2 xsm:px-4">
         <div className="font-brand text-xl font-bold text-white">Brewswap Pools</div>
         <div className="mt-2 hidden justify-between px-4 font-brand text-sm text-[#ffffff75] lg:flex">
           {headers.map((data, i) => {

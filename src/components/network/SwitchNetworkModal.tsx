@@ -41,7 +41,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
     <Modal open={open} onClose={onDismiss}>
       <div className="p-8">
         <div className="mt-3 text-center sm:mt-5">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">Switch Network</h3>
+          <h3 className="text-lg font-medium leading-6 text-gray-200">Switch Network</h3>
           <div className="mx-auto mt-2 max-w-sm">
             <p className="text-sm text-gray-500">Select a network</p>
           </div>
@@ -79,14 +79,14 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
                     <button
                       onClick={() => network.id !== chainId && switchNetwork(network.id)}
                       disabled={isLoading || !canSwitch}
-                      className="flex w-full items-center from-zinc-900 via-zinc-800 to-zinc-900 py-4 outline-none hover:bg-gradient-to-r"
+                      className="flex w-full items-center py-4 outline-none hover:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900"
                     >
                       <img className="h-10 w-10 rounded-full" src={network.image} alt="" />
                       <div className="ml-4 flex-col text-left">
                         <p className="text-sm font-medium text-gray-200">{network.name}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-600 dark:text-gray-500">
                           Current price: {` $`}
-                          {network.id == (900 as ChainId) 
+                          {network.id == (900 as ChainId)
                             ? "Solana token value"
                             : tokenPrices[
                                 getCurrencyId(

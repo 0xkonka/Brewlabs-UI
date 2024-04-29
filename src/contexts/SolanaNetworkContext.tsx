@@ -1,4 +1,4 @@
-import React, { ReactNode, createContext, useContext, useState } from 'react';
+import React, { ReactNode, createContext, useContext, useState } from "react";
 
 // Define a type for the context value
 interface SolanaNetworkContextType {
@@ -7,13 +7,13 @@ interface SolanaNetworkContextType {
 }
 
 interface SolanaNetworkProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 // Create a default context value
 const defaultSolanaNetworkContext: SolanaNetworkContextType = {
   isSolanaNetwork: false,
-  setIsSolanaNetwork: () => { }
+  setIsSolanaNetwork: () => {},
 };
 
 // Create the context
@@ -22,7 +22,7 @@ const SolanaNetworkContext = createContext<SolanaNetworkContextType>(defaultSola
 // Custom hook to consume the context
 const useSolanaNetwork = () => useContext(SolanaNetworkContext);
 
-const SolanaNetworkProvider: React.FC<SolanaNetworkProviderProps> = ({ children } : SolanaNetworkProviderProps) => {
+const SolanaNetworkProvider: React.FC<SolanaNetworkProviderProps> = ({ children }: SolanaNetworkProviderProps) => {
   const [isSolanaNetwork, setIsSolanaNetwork] = useState<boolean>(false);
 
   return (

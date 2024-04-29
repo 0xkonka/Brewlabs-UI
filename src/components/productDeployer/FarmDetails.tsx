@@ -10,7 +10,6 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
-import AlertConnection from "components/AlertConnection";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Alert, AlertTitle } from "@components/ui/alert";
@@ -85,8 +84,6 @@ const FarmDetails = () => {
     },
   });
 
-  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
-
   const onSubmit = (data: z.infer<typeof farmDeployerSchema>) => {
     // Set the form data to the global state
     setFarmInfo(data);
@@ -100,7 +97,7 @@ const FarmDetails = () => {
   const watchInitialSupply = form.watch("farmInitialSupply");
 
   // Gets and sets the LP token sate
-  const lpInfo = useLPTokenInfo(watchLpAddress, chainId, farmRouters[chainId].factory);
+  const lpInfo = useLPTokenInfo(watchLpAddress, chainId, farmRouters[chainId]?.factory);
 
   const rewardCurrency = useCurrency(watchRewardToken?.address);
   const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
@@ -108,10 +105,6 @@ const FarmDetails = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-8">
-        <div className="my-8">
-          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
-        </div>
-
         <div>
           <h4 className="mb-4 text-xl">Choose a network and router</h4>
           <div className="grid gap-6 sm:grid-cols-2">

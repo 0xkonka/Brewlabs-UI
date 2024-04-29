@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { useAccount } from "wagmi";
-import { Token } from "@brewlabs/sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { PlusCircle } from "lucide-react";
@@ -11,14 +10,11 @@ import { Switch } from "@components/ui/switch";
 import { IncrementorInput } from "@components/ui/incrementorInput";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@components/ui/form";
 
-import AlertConnection from "components/AlertConnection";
-
 import ChainSelect from "views/swap/components/ChainSelect";
 import { TokenSelect } from "views/directory/DeployerModal/TokenSelect";
 
 import { getIndexName } from "utils/functions";
 import { useActiveChainId } from "hooks/useActiveChainId";
-
 import { indexDeployerSchema, supportedNetworks } from "config/schemas/indexDeployerSchema";
 import {
   setIndexInfo,
@@ -46,8 +42,6 @@ const IndexDetails = () => {
     },
   });
 
-  const isSupportedNetwork = supportedNetworks.some((network) => network.id === chainId);
-
   const onSubmit = (data: z.infer<typeof indexDeployerSchema>) => {
     // Set the form data to the global state
     setIndexInfo(data);
@@ -58,14 +52,10 @@ const IndexDetails = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8 space-y-4">
-        <div className="my-8">
-          <AlertConnection isSupportedNetwork={isSupportedNetwork} />
-        </div>
-
         <FormField
           control={form.control}
           name="indexDeployChainId"
-          render={(field) => (
+          render={({ field }) => (
             <FormItem className="space-y-4">
               <FormLabel className="text-xl">Choose a network to deploy on</FormLabel>
               <FormControl>
@@ -85,7 +75,7 @@ const IndexDetails = () => {
           <h4 className="text-xl">Select at least two tokens</h4>
           <p className="mb-4 text-sm text-gray-500">A maximum of 5 tokens can be selected</p>
 
-          {tokens.map((token: Token, index) => (
+          {tokens.map((token, index) => (
             <div className="my-2" key={index}>
               <TokenSelect
                 selectedCurrency={token}

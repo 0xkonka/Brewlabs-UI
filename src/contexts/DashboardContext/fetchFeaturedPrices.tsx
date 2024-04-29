@@ -2,7 +2,7 @@ import { WNATIVE } from "@brewlabs/sdk";
 import axios from "axios";
 import { DEX_GURU_CHAIN_NAME } from "config";
 import { ERC20_ABI } from "config/abi/erc20";
-import { DEX_GURU_WETH_ADDR } from "config/constants";
+import { DEX_GURU_WETH_ADDR, GURU_API_KEY } from "config/constants";
 import prices from "config/constants/prices";
 import multicall from "utils/multicall";
 
@@ -31,7 +31,7 @@ export const fetchTokenBaseInfo = async (
 
 export async function fetchPrice(address: any, chainId: number, resolution: number, period = 86400) {
   const to = Math.floor(Date.now() / 1000);
-  const url = `https://api.dex.guru/v1/tradingview/history?symbol=${
+  const url = `https://api.nodes-brewlabs.info/guru?symbol=${
     address === DEX_GURU_WETH_ADDR || !address ? WNATIVE[chainId].address : address
   }-${DEX_GURU_CHAIN_NAME[chainId]}_USD&resolution=${resolution}&from=${to - period}&to=${to}`;
   let result: any = await axios.get(url);

@@ -52,10 +52,10 @@ const UserDashboard = () => {
   return (
     <>
       <StyledContainer className="relative mr-1.5 flex w-full  flex-col  pb-3">
-        <div className="border-yellow flex w-full justify-between border-b pb-4">
+        <div className="flex w-full justify-between border-b border-yellow pb-4">
           <div className="flex items-center ">
             <LogoIcon classNames="w-14 text-dark dark:text-brand" />
-            <div className={"text-yellow ml-5 text-2xl font-semibold"}>Dashboard</div>
+            <div className={"ml-5 text-2xl font-semibold text-yellow"}>Dashboard</div>
           </div>
           <NavButton value={viewType} setValue={setViewType} />
         </div>

@@ -1,11 +1,12 @@
 import { ChainId } from "@brewlabs/sdk";
 import Soon from "@components/Soon";
-import { XMarkSVG, checkCircleSVG } from "@components/dashboard/assets/svgs";
+
 import Container from "@components/layout/Container";
 import { NETWORKS } from "config/constants/networks";
+
+import { CheckCircle2, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getChainLogo } from "utils/functions";
-import StyledButton from "views/directory/StyledButton";
 
 const FindProject = () => {
   const networks = [
@@ -18,8 +19,8 @@ const FindProject = () => {
     NETWORKS[ChainId.ARBITRUM],
   ];
 
-  const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedItem, setSelectedItem] = useState(0);
+  const [selectedNetwork, setSelectedNetwork] = useState(0);
 
   useEffect(() => {
     setSelectedItem(0);
@@ -118,14 +119,6 @@ const FindProject = () => {
       isSoon: [],
     },
     {
-      name: "Communities",
-      link: "https://earn.brewlabs.info/communities",
-      detail:
-        "A tool allowing teams and token holders to freely or with a fee to post proposals, polls, important community decisions, bounties and noteworthy news. ",
-      activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-      isSoon: [],
-    },
-    {
       name: "Constructor",
       link: "https://earn.brewlabs.info/constructor",
       detail:
@@ -173,133 +166,125 @@ const FindProject = () => {
       activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
       isSoon: [],
     },
-    {
-      name: "Charting tools",
-      link: "https://earn.brewlabs.info/chart",
-      detail:
-        "BrewCharts allow simple cryptocurrency charting for users including of orderboook, community information and score, swap and advdance charting tools for users.",
-      activeNetwork: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
-      isSoon: [],
-    },
   ];
 
   return (
-    <Container>
-      <div>
-        <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
-          Find a product
-        </h2>
-        <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-900">Product and tool suite</p>
-        <p className="mt-4 text-base leading-7 text-gray-600">
-          Each listed product or tool generates income for the Brewlabs ecosystem.
-        </p>
-      </div>
-
-      <div className="mt-10 flex flex-wrap justify-between gap-y-12">
+    <section className="bg-gradient-to-b from-zinc-800 to-zinc-900 pb-16 pt-20">
+      <Container>
         <div>
-          {networks.map((network, i) => {
-            return (
-              <div
-                className={`${
-                  selectedNetwork === i ? "bg-[#4B5563] text-white" : "bg-[#4B556340] text-[#FFFFFF40] hover:opacity-70"
-                } primary-shadow mb-2.5 flex w-[200px] cursor-pointer items-center rounded-[12px] p-[6px_16px] font-roboto font-bold transition`}
-                key={i}
-                onClick={() => setSelectedNetwork(i)}
-              >
-                <img
-                  src={getChainLogo(parseInt(network.chainId))}
-                  alt={""}
-                  className="mr-4 h-[18px] w-[18px] rounded-full"
-                />
-                <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">{network.chainName}</div>
-              </div>
-            );
-          })}
+          <h2 className="font-brand text-lg font-semibold leading-8 tracking-widest text-dark dark:text-brand">
+            Find a product
+          </h2>
+          <p className="mt-2 font-brand text-4xl font-bold tracking-widest text-gray-200">Product and tool suite</p>
+          <p className="mt-4 text-base leading-7 text-gray-400">
+            Each listed product or tool generates income for the Brewlabs ecosystem.
+          </p>
         </div>
 
-        <div className="flex flex-col flex-wrap gap-x-12 text-sm sm:max-h-72">
-          {items.map((item: any, i) => {
-            return (
-              <div key={i}>
+        <div className="mt-10 flex flex-wrap justify-between gap-y-12">
+          <div>
+            {networks.map((network, i) => {
+              return (
                 <div
                   className={`${
-                    selectedItem === i
-                      ? "text-primary"
-                      : item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
-                      ? "text-white hover:opacity-70"
-                      : "text-tailwind"
-                  } my-1.5 mr-8 flex cursor-pointer items-center font-roboto font-bold`}
-                  onClick={() =>
-                    item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
-                  }
+                    selectedNetwork === i
+                      ? "bg-[#4B5563] text-white"
+                      : "bg-[#4B556340] text-[#FFFFFF40] hover:opacity-70"
+                  } mb-2.5 flex w-[200px] cursor-pointer items-center rounded-[12px] p-[6px_16px] font-roboto font-bold transition`}
+                  key={i}
+                  onClick={() => setSelectedNetwork(i)}
                 >
-                  <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
-                    {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
-                      ? checkCircleSVG
-                      : XMarkSVG}
+                  <img src={getChainLogo(parseInt(network.chainId))} alt={""} className="mr-4 h-5 w-5 rounded-full" />
+                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">{network.chainName}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col flex-wrap gap-x-12 text-sm sm:max-h-72">
+            {items.map((item: any, i) => {
+              return (
+                <div key={i}>
+                  <div
+                    className={`${
+                      selectedItem === i
+                        ? "text-yellow-300 underline"
+                        : item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId))
+                        ? "text-yellow-300 hover:opacity-70"
+                        : "text-white"
+                    } my-1.5 mr-8 flex cursor-pointer items-center font-roboto font-bold`}
+                    onClick={() =>
+                      item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) && setSelectedItem(i)
+                    }
+                  >
+                    <div className="mr-1.5 [&>svg]:h-4 [&>svg]:w-4">
+                      {item.activeNetwork.includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                        <CheckCircle2 />
+                      ) : (
+                        <XCircle />
+                      )}
+                    </div>
+                    <div>{item.name}</div>
+                    {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                      <Soon className="!relative !top-0 !text-[10px]" />
+                    ) : (
+                      ""
+                    )}
+                    {(item?.isBeta ?? []).includes(parseInt(networks[selectedNetwork].chainId)) ? (
+                      <Soon className="!relative !top-0 !text-[10px]" text={"Beta"} />
+                    ) : (
+                      ""
+                    )}
                   </div>
-                  <div>{item.name}</div>
-                  {item.isSoon.includes(parseInt(networks[selectedNetwork].chainId)) ? (
-                    <Soon className="!relative !top-0 !text-[10px]" />
-                  ) : (
-                    ""
-                  )}
-                  {(item?.isBeta ?? []).includes(parseInt(networks[selectedNetwork].chainId)) ? (
-                    <Soon className="!relative !top-0 !text-[10px]" text={"Beta"} />
-                  ) : (
-                    ""
+
+                  {selectedItem === i && (
+                    <div className="my-4 flex h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:hidden">
+                      <div className="text-2xl text-brand">{items[selectedItem].name}</div>
+                      <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
+                      <div className="flex w-full flex-1 items-end justify-end">
+                        <a
+                          target="_blank"
+                          className="btn"
+                          href={
+                            selectedItem === 14
+                              ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
+                              : items[selectedItem].link
+                          }
+                        >
+                          Go to tool
+                        </a>
+                      </div>
+                    </div>
                   )}
                 </div>
-
-                {selectedItem === i ? (
-                  <div className="primary-shadow my-4 flex h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:hidden">
-                    <div className="text-2xl text-primary">{items[selectedItem].name}</div>
-                    <div className="mt-4 text-xs text-white">{items[selectedItem].detail}</div>
-                    <div className="flex w-full flex-1 items-end justify-end">
-                      <a
-                        target="_blank"
-                        href={
-                          selectedItem === 14
-                            ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
-                            : items[selectedItem].link
-                        }
-                      >
-                        <StyledButton className="!h-fit !w-fit p-[8px_12px]">Go to tool</StyledButton>
-                      </a>
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {selectedItem !== -1 ? (
-          <div className="primary-shadow hidden h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:flex lg:w-96 ">
-            <h4 className="text-2xl font-bold text-primary">{items[selectedItem].name}</h4>
-            <p className="mt-4 text-xs tracking-wider text-white">{items[selectedItem].detail}</p>
-            <div className="flex w-full flex-1 items-end justify-end">
-              <a
-                target="_blank"
-                href={
-                  selectedItem === 0
-                    ? items[selectedItem].link + airdropSubLinks[parseInt(networks[selectedNetwork].chainId)]
-                    : selectedItem === 14
-                    ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
-                    : items[selectedItem].link
-                }
-              >
-                <button className="btn-secondary btn mt-4">Go to tool</button>
-              </a>
-            </div>
+              );
+            })}
           </div>
-        ) : (
-          ""
-        )}
-      </div>
-    </Container>
+
+          {selectedItem !== -1 && (
+            <div className="hidden h-fit w-full flex-col rounded-2xl bg-zinc-800 p-6 font-brand xsm:flex lg:w-96 ">
+              <h4 className="text-2xl font-bold text-brand">{items[selectedItem].name}</h4>
+              <p className="mt-4 text-xs tracking-wider text-white">{items[selectedItem].detail}</p>
+              <div className="flex w-full flex-1 items-end justify-end">
+                <a
+                  target="_blank"
+                  className="btn"
+                  href={
+                    selectedItem === 0
+                      ? items[selectedItem].link + airdropSubLinks[parseInt(networks[selectedNetwork].chainId)]
+                      : selectedItem === 14
+                      ? items[selectedItem].link[parseInt(networks[selectedNetwork].chainId)]
+                      : items[selectedItem].link
+                  }
+                >
+                  Go to tool
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      </Container>
+    </section>
   );
 };
 

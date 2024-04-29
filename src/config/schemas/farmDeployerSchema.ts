@@ -2,14 +2,11 @@ import { z } from "zod";
 import { tokenSchema } from "config/schemas/tokenSchema";
 import { addressSchema } from "config/schemas/addressSchema";
 
-import type { LpInfoType } from "@hooks/useLPTokenInfo";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
   PAGE_SUPPORTED_CHAINS["deploy-farm"].includes(network.id)
 );
-
-const LpInfoTypeSchema = z.custom<LpInfoType>;
 
 type Router = {
   key: string;
@@ -27,7 +24,6 @@ export const farmDeployerSchema = z.object({
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   farmLpAddress: addressSchema,
   farmRouter: RouterSchema(),
-  // farmLpInfo: LpInfoTypeSchema(),
   farmDepositFee: z.coerce.number().min(0, { message: "Deposit fee must be greater than 0." }),
   farmWithdrawFee: z.coerce.number().min(0, { message: "Withdraw fee must be greater than 0." }),
   farmInitialSupply: z.coerce.number().min(0, { message: "Initial supply must be greater than 0." }),

@@ -5,7 +5,7 @@ import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 
-import Modal from "components/MotionModal";
+import Modal from "components/Modal";
 import ChainSelector from "components/ChainSelector";
 
 type ChainSelectProps = {
@@ -58,7 +58,7 @@ const ChainSelect = ({ id, networks }: ChainSelectProps) => {
         </button>
       </div>
       {selected && (
-        <Modal open={selected} closeFn={closeSelected} layoutId={id} disableAutoCloseOnClick={true}>
+        <Modal open={selected} onClose={closeSelected}>
           <ChainSelector
             bSwitchChain
             networks={listedNetworks}

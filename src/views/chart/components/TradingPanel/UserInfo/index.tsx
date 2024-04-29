@@ -91,7 +91,7 @@ export default function UserInfo({ selectedPair, active, account, setShowType, s
             <div className="flex-1 !text-white">
               {account ? (isXs ? getEllipsis(account, 20, 0) : account) : "No wallet connected"}
             </div>
-            <div className="ml-1 text-tailwind hover:text-white [&>svg]:h-3 [&>svg]:w-3">{LinkSVG}</div>
+            <div className="ml-1 text-white hover:text-white [&>svg]:h-3 [&>svg]:w-3">{LinkSVG}</div>
           </a>
           <div>{name?.loading ? <br /> : name?.ENSName ?? <br />}</div>
           <div className="relative text-[11px] uppercase text-[#FFFFFF80]">
