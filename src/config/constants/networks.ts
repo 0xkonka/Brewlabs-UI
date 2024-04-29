@@ -84,6 +84,7 @@ export const PAGE_SUPPORTED_CHAINS = {
     ChainId.AVALANCHE,
     ChainId.CRONOS,
     ChainId.BRISE,
+    ChainId.ARBITRUM,
   ],
 };
 
