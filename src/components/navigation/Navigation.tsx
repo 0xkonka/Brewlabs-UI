@@ -35,7 +35,7 @@ const Navigation = () => {
   navigationData.find((item) => item.name === "Indexes")!.count = indexCount;
 
   return (
-    <div className="group flex min-h-0 w-full flex-1 flex-col border-r border-gray-800 bg-zinc-950 shadow-lg shadow-zinc-950">
+    <div className="min-h-svh group flex min-h-0 w-full flex-1 flex-col overflow-y-auto border-r border-gray-800 bg-gray-950 shadow-lg shadow-zinc-950 lg:overflow-y-visible">
       <div className="flex w-full flex-1 flex-col pb-4 pt-5 transition-width duration-500 ease-in-out lg:w-16 lg:group-hover:w-52">
         <div className="flex flex-shrink-0 items-center px-4">
           <LogoIcon classNames="w-8 text-brand" />
@@ -77,7 +77,7 @@ const Navigation = () => {
                 </Link>
 
                 {item.children && (
-                  <ul className="relative max-h-0 transition-all fill-mode-forwards group-hover:max-h-[20rem]">
+                  <ul className="relative transition-all fill-mode-forwards lg:max-h-0 lg:group-hover:max-h-[20rem]">
                     <div className="absolute left-7 top-0 h-full w-0.5 bg-gray-800/60" />
 
                     {item.children.map((child) => (
