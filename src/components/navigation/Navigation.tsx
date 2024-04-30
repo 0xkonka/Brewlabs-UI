@@ -77,34 +77,37 @@ const Navigation = () => {
                 </Link>
 
                 {item.children && (
-                  <div className="h-0 animate-in fade-in group-hover:h-auto">
-                    {item.children.map((child) => (
-                      <Link
-                        key={`sub-${child.name}`}
-                        href={child.href}
-                        className={`relative flex items-center gap-4 py-2 pl-10 pr-5 text-xs transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
-                          pathname === child.href && "active"
-                        }`}
-                      >
-                        <div className="relative">
-                          {child.count > 0 && (
-                            <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
-                          )}
-                        </div>
-                        <div className="relative group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-500 lg:opacity-0">
-                          {child.count > 0 && (
-                            <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
-                              {child.count}
-                            </Badge>
-                          )}
+                  <ul className="relative max-h-0 transition-all fill-mode-forwards group-hover:max-h-[20rem]">
+                    <div className="absolute left-7 top-0 h-full w-0.5 bg-gray-800/60" />
 
-                          <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">
-                            {child.name}
-                          </span>
-                        </div>
-                      </Link>
+                    {item.children.map((child) => (
+                      <li key={`sub-${child.name}`}>
+                        <Link
+                          href={child.href}
+                          className={`relative flex items-center gap-4 py-2 pl-10 pr-5 text-xs transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
+                            pathname === child.href && "active"
+                          }`}
+                        >
+                          <div className="relative">
+                            {child.count > 0 && (
+                              <div className="absolute -left-4 -top-2 hidden h-2 w-2 rounded-full bg-amber-300 animate-in zoom-in fill-mode-forwards group-hover:animate-out group-hover:zoom-out lg:block" />
+                            )}
+                          </div>
+                          <div className="relative group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-500 lg:opacity-0">
+                            {child.count > 0 && (
+                              <Badge variant="secondary" className="absolute -right-12 top-0 text-xs">
+                                {child.count}
+                              </Badge>
+                            )}
+
+                            <span className="whitespace-nowrap text-sm text-gray-500 active:text-brand">
+                              {child.name}
+                            </span>
+                          </div>
+                        </Link>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 )}
               </Fragment>
             ))}
