@@ -16,7 +16,6 @@ import {
   fetchSushiFarmsPublicDataAsync,
 } from "state/zap";
 import BigNumber from "bignumber.js";
-import { useTranslation } from "contexts/localization";
 import { formatBigNumber, getFullDisplayBalance } from "utils/formatBalance";
 import { toast } from "react-toastify";
 import { useBananaPrice, useFarmLpAprs, useFarmUser } from "state/zap/hooks";
@@ -33,7 +32,6 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
   const { lpAddress, pid, earningToken, chef, appId } = data;
   const [val, setVal] = useState("");
   const [pendingTx, setPendingTx] = useState(false);
-  const { t } = useTranslation();
   const { stakedBalance } = useFarmUser(pid, appId);
 
   const fullBalance = useMemo(() => {
@@ -159,7 +157,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                       setPending(true);
                       try {
                         await handleUnstake(fullBalance);
-                        toast.success(t("Your earnings have also been harvested to your wallet"));
+                        toast.success("Your earnings have also been harvested to your wallet");
                       } catch (e: any) {
                         toast.error(e.message.split("(")[0]);
                         console.error(e);
@@ -194,7 +192,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                       setPending(true);
                       try {
                         await handleUnstake(val);
-                        toast.success(t("Your earnings have also been harvested to your wallet"));
+                        toast.success("Your earnings have also been harvested to your wallet");
                       } catch (e: any) {
                         toast.error(e.message.split("(")[0]);
                         console.error(e);
@@ -203,7 +201,7 @@ const ZapOutModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; dat
                       }
                     }}
                   >
-                    {pending ? t("Confirming") : t("Confirm")}
+                    {pending ? "Confirming" : "Confirm"}
                   </StyledButton>
                 </div>
               </div>

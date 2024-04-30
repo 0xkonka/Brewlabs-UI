@@ -19,7 +19,6 @@ import { AppId, Chef, ZAPPER_DEXIDS } from "config/constants/types";
 import { CHAIN_ICONS } from "config/constants/networks";
 import { earningTokens, quoteTokens, tokens } from "config/constants/tokens";
 import { DashboardContext } from "contexts/DashboardContext";
-import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { getNativeSybmol, getNetworkLabel } from "lib/bridge/helpers";
@@ -64,7 +63,6 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
   const [zapOutModalOpen, setZapOutModalOpen] = useState(false);
   const [curGraph, setCurGraph] = useState(0);
 
-  const { t } = useTranslation();
   const { address: account } = useAccount();
   const { chainId: activeChainId } = useActiveChainId();
   const { canSwitch, switchNetwork } = useSwitchNetwork();
@@ -101,18 +99,11 @@ const ZapperDetail = ({ detailDatas }: { detailDatas: any }) => {
     try {
       await onReward(rewardType);
 
-      toast.success(
-        t(
-          rewardType === RewardType.EARNING_TOKEN
-            ? `Your %symbol% earnings have been sent to your wallet!`
-            : rewardType === RewardType.QUOTE_TOKEN
-            ? `Your %symbol% earnings have been converted and sent to your wallet!`
-            : `Your %symbol% earnings have been re-invested!`,
-          {
-            symbol: earningTokens[appId].symbol,
-          }
-        )
-      );
+      rewardType === RewardType.EARNING_TOKEN &&
+        toast.success(`Your ${earningTokens[appId].symbol} earnings have been sent to your wallet!`);
+      rewardType === RewardType.QUOTE_TOKEN
+        ? toast.success(`Your ${earningTokens[appId].symbol} earnings have been converted and sent to your wallet!`)
+        : toast.success(`Your ${earningTokens[appId].symbol} earnings have been re-invested!`);
     } catch (e: any) {
       toast.error(e.message.split("(")[0]);
       console.error(e);

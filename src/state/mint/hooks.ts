@@ -16,7 +16,6 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { PairState, usePair } from "hooks/usePairs";
 import useTotalSupply from "hooks/useTotalSupply";
 
-import { useTranslation } from "contexts/localization";
 import { wrappedCurrency, wrappedCurrencyAmount } from "utils/wrappedCurrency";
 import { AppDispatch, AppState } from "../index";
 import { tryParseAmount } from "../swap/hooks";
@@ -87,7 +86,6 @@ export function useDerivedMintInfo(
   error?: string;
 } {
   const { chainId, account } = useActiveWeb3React();
-  const { t } = useTranslation();
 
   const {
     independentField,
@@ -216,25 +214,25 @@ export function useDerivedMintInfo(
 
   let error: string | undefined;
   if (!account) {
-    error = t("Connect Wallet");
+    error = "Connect Wallet";
   }
 
   if (pairState === PairState.INVALID) {
-    error = error ?? t("Invalid pair");
+    error = error ?? "Invalid pair";
   }
 
   if (!parsedAmounts[Field.CURRENCY_A] || !parsedAmounts[Field.CURRENCY_B]) {
-    error = error ?? t("Enter an amount");
+    error = error ?? "Enter an amount";
   }
 
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts;
 
   if (currencyAAmount && currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)) {
-    error = t("Insufficient %symbol% balance", { symbol: currencies[Field.CURRENCY_A]?.symbol });
+    (error = "Insufficient %symbol% balance"), { symbol: currencies[Field.CURRENCY_A]?.symbol };
   }
 
   if (currencyBAmount && currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)) {
-    error = t("Insufficient %symbol% balance", { symbol: currencies[Field.CURRENCY_B]?.symbol });
+    (error = "Insufficient %symbol% balance"), { symbol: currencies[Field.CURRENCY_B]?.symbol };
   }
 
   return {

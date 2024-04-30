@@ -25,7 +25,6 @@ import BigNumber from "bignumber.js";
 import { useLpTokenPrices } from "state/prices/hooks";
 import { useBananaPrice, useFarmLpAprs, useLpTokenPrice } from "state/zap/hooks";
 import { tryParseAmount } from "state/swap/hooks";
-import { useTranslation } from "contexts/localization";
 import { getFullDisplayBalance } from "utils/formatBalance";
 import { useCurrencyBalance } from "state/wallet/hooks";
 import { BIG_ONE, BIG_ZERO } from "utils/bigNumber";
@@ -53,7 +52,6 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
   const farmLpAprs = useFarmLpAprs();
   const parsedAmount = tryParseAmount(amount, currency);
   const masterChefAddress = getExternalMasterChefAddress(appId);
-  const { t } = useTranslation();
   const { pending, setPending }: any = useContext(DashboardContext);
 
   const { onStake } = useStakeFarms(chef ?? Chef.MASTERCHEF, lpAddress, pid, earningToken.address, performanceFee);
@@ -84,11 +82,11 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
   const fullBalanceNumber = new BigNumber(fullBalance);
   let inputError: string | undefined;
   if (!parsedAmount) {
-    inputError = t("Enter an amount");
+    inputError = "Enter an amount";
   }
 
   if (tokensToStake.gt(fullBalanceNumber)) {
-    inputError = t("Insufficient %symbol% balance", { symbol: currency.symbol });
+    inputError = `Insufficient ${currency.symbol} balance`;
   }
 
   const handleStake = async (currency: Currency, amount: string) => {
@@ -215,10 +213,10 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
               <div className="mx-auto flex w-full max-w-[400px] flex-col items-end text-sm">
                 <div className="h-12 w-full">
                   {inputError ? (
-                    <StyledButton disabled>{t(inputError)}</StyledButton>
+                    <StyledButton disabled>inputError</StyledButton>
                   ) : approval <= ApprovalState.PENDING ? (
                     <StyledButton onClick={onApproveCallback}>
-                      {approval === ApprovalState.PENDING ? t("Approving") : t("Approve")}
+                      {approval === ApprovalState.PENDING ? "Approving" : "Approve"}
                     </StyledButton>
                   ) : (
                     <StyledButton
@@ -227,7 +225,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                         setPending(true);
                         try {
                           await handleStake(currency, amount);
-                          toast.success(t("Your funds have been staked in the farm"));
+                          toast.success("Your funds have been staked in the farm");
                         } catch (e: any) {
                           toast.error(e.message.split("(")[0]);
                           console.error(e);
@@ -236,7 +234,7 @@ const ZapInModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; data
                         }
                       }}
                     >
-                      {pending ? t("Confirming") : t("Zap")} {lpSymbol}
+                      {pending ? "Confirming" : "Zap"} {lpSymbol}
                     </StyledButton>
                   )}
                 </div>

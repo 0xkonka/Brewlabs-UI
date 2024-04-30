@@ -336,17 +336,6 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </StyledButton>
                         </a>
                       )}
-                      <Link
-                        className="ml-0 mt-2 h-[32px] w-[140px] xl:ml-5 xl:mt-0"
-                        target="_blank"
-                        href={`/chart/${DEXSCREENER_CHAINNAME[token.chainId]}/${data.lpAddress}`}
-                        rel="noreferrer"
-                      >
-                        <StyledButton>
-                          <div>Chart</div>
-                          <div className="absolute right-2 top-[7px] -scale-100">{chevronLeftSVG}</div>
-                        </StyledButton>
-                      </Link>
                       <a
                         href={getAddLiquidityUrl(data.lpManager, quoteToken, token, data.chainId)}
                         target="_blank"

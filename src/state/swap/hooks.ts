@@ -3,12 +3,10 @@ import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, Trade } from "@brew
 import { ParsedQs } from "qs";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useENS from "hooks/ENS/useENS";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useCurrency } from "hooks/Tokens";
 import { useTradeExactIn, useTradeExactOut } from "hooks/Trades";
 import useParsedQueryString from "hooks/useParsedQueryString";
-import { useTranslation } from "contexts/localization";
 import { isAddress } from "utils";
 import { computeSlippageAdjustedAmounts } from "utils/prices";
 import { AppDispatch, AppState } from "../index";
@@ -114,7 +112,6 @@ export function useDerivedSwapInfo(): {
   inputError?: string;
 } {
   const { account } = useActiveWeb3React();
-  const { t } = useTranslation();
   const { isSwapAndTransfer }: { isSwapAndTransfer: boolean } = useContext(SwapContext);
 
   const {
@@ -155,26 +152,26 @@ export function useDerivedSwapInfo(): {
 
   let inputError: string | undefined;
   if (!account) {
-    inputError = t("Connect Wallet");
+    inputError = "Connect Wallet";
   }
 
   if (!parsedAmount) {
-    inputError = inputError ?? t("Enter an amount");
+    inputError = inputError ?? "Enter an amount";
   }
 
   if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
-    inputError = inputError ?? t("Select a token");
+    inputError = inputError ?? "Select a token";
   }
 
   const formattedTo = isAddress(to);
   if (!to || !formattedTo) {
-    inputError = inputError ?? t("Enter a valid recipient");
+    inputError = inputError ?? "Enter a valid recipient";
   } else if (
     BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
     (bestTradeExactIn && involvesAddress(bestTradeExactIn, formattedTo)) ||
     (bestTradeExactOut && involvesAddress(bestTradeExactOut, formattedTo))
   ) {
-    inputError = inputError ?? t("Invalid recipient");
+    inputError = inputError ?? "Invalid recipient";
   }
 
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -189,7 +186,7 @@ export function useDerivedSwapInfo(): {
   ];
 
   if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
-    inputError = t("Insufficient %symbol% balance", { symbol: amountIn.currency.symbol });
+    (inputError = "Insufficient %symbol% balance"), { symbol: amountIn.currency.symbol };
   }
 
   return {

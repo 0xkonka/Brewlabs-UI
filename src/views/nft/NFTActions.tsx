@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Oval } from "react-loader-spinner";
@@ -29,7 +29,6 @@ import MintNFTModal from "./Modals/MintNFTModal";
 import UpgradeNFTModal from "./Modals/UpgradeNFTModal";
 import NFTRarityText from "@components/NFTRarityText";
 import { useActiveNFT } from "./hooks/useActiveNFT";
-import Card from "@components/cards/Card";
 
 const NFTActions = () => {
   const dispatch = useAppDispatch();
@@ -194,8 +193,8 @@ const NFTActions = () => {
 
       {actions.map((data, i) => {
         return (
-          <>
-            <div key={data.name} className="relative mb-[164px] w-[220px]">
+          <Fragment key={data.name}>
+            <div className="relative mb-[164px] w-[220px]">
               <div className=" flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
                 <div>
@@ -282,7 +281,7 @@ const NFTActions = () => {
             ) : (
               ""
             )}
-          </>
+          </Fragment>
         );
       })}
     </div>

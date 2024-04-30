@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { API_URL, GURU_API_KEY } from "config/constants";
+import { API_URL } from "config/constants";
 import { useSlowRefreshEffect } from "hooks/useRefreshEffect";
 import { useActiveChainId } from "hooks/useActiveChainId";
 

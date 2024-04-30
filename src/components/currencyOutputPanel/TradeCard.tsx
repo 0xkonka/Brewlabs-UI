@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { useTranslation } from "contexts/localization";
 import { formatDecimals } from "utils/formatBalance";
 import { Adapters } from "config/constants/aggregator";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
@@ -17,7 +16,6 @@ interface TradeCardProps {
 
 const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, sellTax, noLiquidity, size }) => {
   const { chainId } = useActiveWeb3React();
-  const { t } = useTranslation();
 
   const [priceInverted, setPriceInverted] = useState<boolean>(false);
   const [tradePanelToggled, setTradePanelToggled] = useState<boolean>(undefined);
@@ -81,7 +79,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                 <>
                   {adapters.length > 1 && (
                     <button
-                      className={`btn-protocol-shadow mr-2 hidden rounded rounded-2xl bg-primary px-1.5 ${
+                      className={`btn-protocol-shadow mr-2 hidden rounded-2xl bg-primary px-1.5 ${
                         size === "sm" ? "" : "sm:px-3 sm:text-xs"
                       } text-[10px] text-black sm:block`}
                     >
@@ -100,7 +98,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ data, slippage, price, buyTax, se
                   ))}
                 </>
               ) : (
-                <img className={`h-6 w-6 rounded-full`} src={"/images/brewlabs.png"} alt={"brewlabs"} />
+                <img className="h-6 w-6 rounded-full" src="/images/brewlabs.png" alt="brewlabs" />
               )}
             </div>
           </div>

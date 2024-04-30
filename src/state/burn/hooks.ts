@@ -2,7 +2,6 @@ import { Currency, CurrencyAmount, JSBI, Pair, Percent, TokenAmount } from "@bre
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { useTranslation } from "contexts/localization";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { usePair } from "hooks/usePairs";
 import useTotalSupply from "hooks/useTotalSupply";
@@ -33,8 +32,6 @@ export function useDerivedBurnInfo(
 } {
   const { chainId, account } = useActiveWeb3React();
   const { independentField, typedValue } = useBurnState();
-
-  const { t } = useTranslation();
 
   // pair + totalsupply
   const [, pair] = usePair(currencyA, currencyB, false, dexId);
@@ -125,11 +122,11 @@ export function useDerivedBurnInfo(
 
   let error: string | undefined;
   if (!account) {
-    error = t("Connect Wallet");
+    error = "Connect Wallet";
   }
 
   if (!parsedAmounts[Field.LIQUIDITY] || !parsedAmounts[Field.CURRENCY_A] || !parsedAmounts[Field.CURRENCY_B]) {
-    error = error ?? t("Enter an amount");
+    error = error ?? "Enter an amount";
   }
 
   return { pair, parsedAmounts, error };

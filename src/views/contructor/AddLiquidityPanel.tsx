@@ -9,7 +9,6 @@ import { useAccount } from "wagmi";
 
 import { ONE_BIPS } from "config/constants";
 import { DashboardContext } from "contexts/DashboardContext";
-import { useTranslation } from "contexts/localization";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallback } from "hooks/useApproveCallback";
@@ -89,7 +88,6 @@ export default function AddLiquidityPanel({
   );
 
   const { onFieldAInput, onFieldBInput, onCurrencySelection } = useMintActionHandlers(noLiquidity);
-  const { t } = useTranslation();
 
   const formattedAmounts = {
     [independentField]: typedValue,
@@ -355,7 +353,7 @@ export default function AddLiquidityPanel({
       </div>
       <div className="my-2 rounded-[30px] border border-[#FFFFFF80]">
         <CurrencyInputPanel
-          label={t("TokenA")}
+          label="TokenA"
           value={formattedAmounts[Field.CURRENCY_A]}
           onUserInput={onFieldAInput}
           onMax={() => {
@@ -378,7 +376,7 @@ export default function AddLiquidityPanel({
       </div>
       <div className="my-2 rounded-[30px] border border-dashed border-[#FFFFFF80]">
         <CurrencyInputPanel
-          label={t("TokenB")}
+          label="TokenB"
           value={formattedAmounts[Field.CURRENCY_B]}
           onUserInput={onFieldBInput}
           onMax={() => {
@@ -460,8 +458,8 @@ export default function AddLiquidityPanel({
                   className={`${approvalB !== ApprovalState.APPROVED ? "w-[48%]" : "w-full"}`}
                 >
                   {approvalA === ApprovalState.PENDING
-                    ? t("Enabling %asset%", { asset: currencies[Field.CURRENCY_A]?.symbol })
-                    : t("Enable %asset%", { asset: currencies[Field.CURRENCY_A]?.symbol })}
+                    ? `Enabling ${currencies[Field.CURRENCY_A]?.symbol}`
+                    : `Enable ${currencies[Field.CURRENCY_A]?.symbol}`}
                 </SolidButton>
               )}
               {approvalB !== ApprovalState.APPROVED && (
@@ -471,8 +469,8 @@ export default function AddLiquidityPanel({
                   className={`${approvalA !== ApprovalState.APPROVED ? "w-[48%]" : "w-full"}`}
                 >
                   {approvalB === ApprovalState.PENDING
-                    ? t("Enabling %asset%", { asset: currencies[Field.CURRENCY_B]?.symbol })
-                    : t("Enable %asset%", { asset: currencies[Field.CURRENCY_B]?.symbol })}
+                    ? `Enabling ${currencies[Field.CURRENCY_B]?.symbol}`
+                    : `Enable ${currencies[Field.CURRENCY_B]?.symbol}`}
                 </SolidButton>
               )}
             </div>
@@ -506,7 +504,7 @@ export default function AddLiquidityPanel({
               error !== "Connect Wallet"
             }
           >
-            {error ?? t("Supply")}
+            {error ?? "Supply"}
             {pending && (
               <div className="absolute right-2 top-0 flex h-full items-center">
                 <Oval

@@ -8,7 +8,6 @@ import { useConnect } from "wagmi";
 import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN, ALLOWED_PRICE_IMPACT_HIGH } from "config/constants";
 import contracts from "config/constants/contracts";
 import { NETWORKS } from "config/constants/networks";
-import { useTranslation } from "contexts/localization";
 import { SwapContext } from "contexts/SwapContext";
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { ApprovalState, useApproveCallbackFromTrade } from "hooks/useApproveCallback";
@@ -34,7 +33,6 @@ import StyledButton from "views/directory/StyledButton";
 import History from "./components/History";
 import SwitchIconButton from "./components/SwitchIconButton";
 import ConfirmationModal from "./components/modal/ConfirmationModal";
-import StyledInput from "@components/StyledInput";
 import { handleWalletError } from "lib/bridge/helpers";
 import { showError } from "utils/functions";
 
@@ -52,7 +50,6 @@ export default function SwapPanel({
 }) {
   const { account, chainId } = useActiveWeb3React();
 
-  const { t } = useTranslation();
   const { isLoading } = useConnect();
   const { open } = useWeb3Modal();
 
@@ -329,7 +326,7 @@ export default function SwapPanel({
 
       <div className="rounded-2xl border border-gray-600">
         <CurrencyInputPanel
-          label={t("Sell")}
+          label="Sell"
           value={formattedAmounts[Field.INPUT]}
           onUserInput={handleTypeInput}
           onMax={handleMaxInput}
@@ -350,7 +347,7 @@ export default function SwapPanel({
 
       <div className="mb-1 rounded-2xl border border-dashed border-gray-600">
         <CurrencyOutputPanel
-          label={t("Buy")}
+          label="Buy"
           value={formattedAmounts[Field.OUTPUT]}
           onUserInput={handleTypeOutput}
           currency={currencies[Field.OUTPUT]}
@@ -386,11 +383,11 @@ export default function SwapPanel({
               )}
               {inputError ? (
                 <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
-                  {t(inputError)}
+                  inputError
                 </button>
               ) : currencyBalances[Field.INPUT] === undefined ? (
                 <button className="primary-shadow h-12 rounded font-brand text-[#FFFFFF50]" disabled={true}>
-                  {t("Loading")}
+                  Loading
                 </button>
               ) : showWrap ? (
                 <PrimarySolidButton disabled={Boolean(wrapInputError)} onClick={onWrap}>
@@ -407,9 +404,9 @@ export default function SwapPanel({
                     disabled={attemptingTxn}
                   >
                     {attemptingTxn ? (
-                      <span>{t("Approving %asset%...", { asset: currencies[Field.INPUT]?.symbol })}</span>
+                      <span>{`Approving ${currencies[Field.INPUT]?.symbol}`}</span>
                     ) : (
-                      t("Approve %asset%", { asset: currencies[Field.INPUT]?.symbol })
+                      `Approve ${currencies[Field.INPUT]?.symbol}`
                     )}
                   </PrimarySolidButton>
                 </>
@@ -457,7 +454,7 @@ export default function SwapPanel({
               )}
             </>
           ) : (
-            <Button disabled={!0}>{t("Coming Soon")}</Button>
+            <Button disabled={!0}>Coming Soon</Button>
           )
         ) : (
           <StyledButton
