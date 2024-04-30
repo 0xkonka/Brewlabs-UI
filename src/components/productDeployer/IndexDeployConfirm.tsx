@@ -137,9 +137,10 @@ const IndexDeployConfirm = () => {
     } catch (e) {
       handleWalletError(e, showError, getNativeSymbol(chainId));
       // Error deploying farm contract
+      const currentStep = deploySteps.find((step) => step.status === "current");
       updateDeployStatus({
         setStepsFn: setDeploySteps,
-        targetStep: "Deploying",
+        targetStep: currentStep?.name,
         updatedStatus: "failed",
         updatedDescription: "Deployment failed",
       });
