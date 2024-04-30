@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { usePathname } from "next/navigation";
@@ -42,9 +43,8 @@ const Navigation = () => {
         <nav className="mt-6 flex flex-1 flex-col justify-between" aria-label="Sidebar">
           <div className="flex flex-col">
             {navigationData.map((item) => (
-              <>
+              <Fragment key={item.name}>
                 <Link
-                  key={item.name}
                   href={item.href}
                   className={`relative flex items-center gap-4 px-5 py-3 transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
                     pathname === item.href && "active"
@@ -80,7 +80,7 @@ const Navigation = () => {
                   <div className="h-0 animate-in fade-in group-hover:h-auto">
                     {item.children.map((child) => (
                       <Link
-                        key={child.name}
+                        key={`sub-${child.name}`}
                         href={child.href}
                         className={`relative flex items-center gap-4 py-2 pl-10 pr-5 text-xs transition-colors duration-500 ease-out hover:bg-gray-700/60 active:bg-gray-800/60 ${
                           pathname === child.href && "active"
@@ -106,7 +106,7 @@ const Navigation = () => {
                     ))}
                   </div>
                 )}
-              </>
+              </Fragment>
             ))}
           </div>
           <div className="flex flex-col gap-4 lg:overflow-hidden">
