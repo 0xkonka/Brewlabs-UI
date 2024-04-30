@@ -97,13 +97,12 @@ export const getExplorerLogo = (chainId) => EXPLORER_LOGO[chainId] ?? "/images/n
 export const getDexLogo = (exchange) => DEX_LOGOS[exchange];
 
 export const getIndexName = (tokens) => {
-  // if (tokens.length === 2)
-  return tokens
+  // Remove undefined tokens
+  const tokensFiltered = tokens.filter((t) => t !== undefined);
+
+  return tokensFiltered
     .map((t) => t.symbol.replace(WNATIVE[t.chainId].symbol, getNativeSymbol(t.chainId)).toUpperCase())
     .join("-");
-  // return tokens
-  // .map((t, index) => (index > 0 ? t.symbol.substring(0, 1) : t.symbol.replace("WBNB", "BNB").replace("WETH", "ETH")))
-  // .join("-");
 };
 
 export const formatIPFSString = (url) => {
