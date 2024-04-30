@@ -100,6 +100,7 @@ const PoolDetails = () => {
       poolRewardToken,
       poolReflectionToken,
       poolFeeAddress,
+      poolDeployChainId,
     },
   ] = useDeployerPoolState("poolInfo");
 
@@ -108,7 +109,7 @@ const PoolDetails = () => {
   const form = useForm<z.infer<typeof poolDeployerSchema>>({
     resolver: zodResolver(poolDeployerSchema),
     defaultValues: {
-      poolDeployChainId: chainId,
+      poolDeployChainId: poolDeployChainId || chainId,
       poolToken: poolToken,
       poolType: poolType || "standard",
       poolRewardToken: poolRewardToken,
@@ -125,7 +126,6 @@ const PoolDetails = () => {
   const watchPoolType = form.watch("poolType");
   const watchPoolDuration = form.watch("poolDuration");
   const watchPoolRewardToken = form.watch("poolRewardToken");
-  const watchPoolDeployChainId = form.watch("poolDeployChainId");
   const watchPoolInitialRewardSupply = form.watch("poolInitialRewardSupply");
 
   const rewardCurrency = useCurrency(watchPoolRewardToken?.address);
@@ -223,7 +223,7 @@ const PoolDetails = () => {
 
         <div className="divider" />
 
-        {watchPoolDeployChainId !== 42161 && (
+        {chainId !== 42161 && (
           <>
             <FormField
               control={form.control}
