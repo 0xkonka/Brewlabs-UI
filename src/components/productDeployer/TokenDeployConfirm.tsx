@@ -40,8 +40,7 @@ const TokenDeployConfirm = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySteps, setDeploySteps] = useState(initialDeploySteps);
 
-  const [{ tokenName, tokenImage, tokenDescription, tokenSymbol, tokenDecimals, tokenTotalSupply }] =
-    useDeployerTokenState("tokenInfo");
+  const [{ tokenName, tokenSymbol, tokenDecimals, tokenTotalSupply }] = useDeployerTokenState("tokenInfo");
 
   const { onCreate } = useFactory(chainId, factory.payingToken.isNative ? factory.serviceFee : "0");
 
