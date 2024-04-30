@@ -12,6 +12,7 @@ interface DeployerPoolStore {
 const deployerPoolStore = {
   poolInfo: {},
   deployerPoolStep: "details",
+  deployedPoolAddress: "" as DeployerPoolStore["deployedPoolAddress"],
 } as DeployerPoolStore;
 
 const { useGlobalState: useDeployerPoolState, setGlobalState } = createGlobalState(deployerPoolStore);
