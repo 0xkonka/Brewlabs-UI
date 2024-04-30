@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { ethers } from "ethers";
 import { toast } from "react-toastify";
 
 import { NETWORKS } from "config/constants/networks";
 
 import { getChainLogo } from "utils/functions";
+import { numberWithCommas } from "utils/functions";
+import getTokenLogoURL from "utils/getTokenLogoURL";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 
-import getTokenLogoURL from "utils/getTokenLogoURL";
-
 import TokenLogo from "@components/logo/TokenLogo";
 import { Button } from "components/ui/button";
-
 import type { DeployStep } from "@components/DeployProgress";
 import DeployProgress, { updateDeployStatus } from "@components/DeployProgress";
 
@@ -20,7 +19,6 @@ import { useDeployerPoolState, setDeployerPoolStep, setDeployedPoolAddress } fro
 import { usePoolFactoryState } from "state/deploy/hooks";
 import { usePoolFactory } from "@hooks/deploy/useDeployPool";
 import { useTokenApprove } from "@hooks/useApprove";
-import { ethers } from "ethers";
 import { BLOCKS_PER_DAY2 } from "config/constants";
 import { useCurrency } from "@hooks/Tokens";
 import useTotalSupply from "@hooks/useTotalSupply";
@@ -30,19 +28,29 @@ import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 
 const initialDeploySteps = [
   {
-    name: "Waiting",
+    name: "Deploy pool",
     status: "current",
-    description: "Approve transaction to deploy staking pool",
+    description: "Confirm in wallet to deploy pool",
   },
   {
-    name: "Deploying",
+    name: "Add token reward",
     status: "upcoming",
     description: "Deploying staking pool",
   },
   {
-    name: "Completed",
+    name: "Approve transaction",
     status: "upcoming",
-    description: "Index successfully deployed",
+    description: "Deploying staking pool",
+  },
+  {
+    name: "Send reward tokens",
+    status: "upcoming",
+    description: "Sending reward tokens to staking pool",
+  },
+  {
+    name: "Starting pool",
+    status: "upcoming",
+    description: "Firing up pool",
   },
 ] as DeployStep[];
 
@@ -104,9 +112,9 @@ const PoolDeployConfirm = () => {
         await onApprove(factoryState.payingToken.address, factoryState.address);
         updateDeployStatus({
           setStepsFn: setDeploySteps,
-          targetStep: "Waiting",
+          targetStep: "Deploy pool",
           updatedStatus: "complete",
-          updatedDescription: "Approved transaction to deploy pool",
+          updatedDescription: "Pool deployed",
         });
 
         updateDeployStatus({
@@ -156,6 +164,8 @@ const PoolDeployConfirm = () => {
         } catch (e) {}
       }
 
+      // When all steps are complete the success step will be shown
+      // See the onSuccess prop in the DeployProgress component for more details
       updateDeployStatus({
         setStepsFn: setDeploySteps,
         targetStep: "Deploying",
@@ -165,54 +175,14 @@ const PoolDeployConfirm = () => {
     } catch (e) {
       handleWalletError(e, showError, getNativeSymbol(chainId));
       // Error deploying farm contract
+      const currentStep = deploySteps.find((step) => step.status === "current");
       updateDeployStatus({
         setStepsFn: setDeploySteps,
-        targetStep: "Deploying",
+        targetStep: currentStep.name,
         updatedStatus: "failed",
         updatedDescription: "Deployment failed",
       });
     }
-
-    // setTimeout(() => {
-    //   updateDeployStatus({
-    //     setStepsFn: setDeploySteps,
-    //     targetStep: "Waiting",
-    //     updatedStatus: "complete",
-    //     updatedDescription: "Approved transaction to deploy pool",
-    //   });
-    // }, 2000);
-
-    // setTimeout(() => {
-    //   updateDeployStatus({
-    //     setStepsFn: setDeploySteps,
-    //     targetStep: "Deploying",
-    //     updatedStatus: "current",
-    //     updatedDescription: "Deployment in progress",
-    //   });
-    // }, 4000);
-
-    // setTimeout(() => {
-    //   updateDeployStatus({
-    //     setStepsFn: setDeploySteps,
-    //     targetStep: "Deploying",
-    //     updatedStatus: "complete",
-    //     updatedDescription: "Deployment done",
-    //   });
-
-    //   updateDeployStatus({
-    //     setStepsFn: setDeploySteps,
-    //     targetStep: "Completed",
-    //     updatedStatus: "complete",
-    //     updatedDescription: "Deployment done",
-    //   });
-    // }, 6000);
-
-    // setTimeout(() => {
-    //   setDeployerPoolStep("success");
-    // }, 9000);
-
-    // When all steps are complete the success step will be shown
-    // See the onSuccess prop in the DeployProgress component for more details
   };
 
   return (
@@ -270,10 +240,16 @@ const PoolDeployConfirm = () => {
                     </dd>
                   </div>
                   <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                    <dt className="text-sm font-medium leading-6 text-white">Reward tokens</dt>
-                    <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                      {poolInitialRewardSupply}% of total supply
-                      {/* TODO: add the amount of tokens required */}
+                    <dt className="text-sm font-medium leading-6 text-white">Reward tokens required</dt>
+                    <dd className="mt-1 flex flex-col justify-start gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+                      <p className=" text-gray-200 underline">
+                        {numberWithCommas(((+totalSupply.toFixed(2) * poolInitialRewardSupply) / 100).toFixed(2))}{" "}
+                        {poolRewardToken.name}
+                      </p>
+                      <p className="text-xs">
+                        Total {poolRewardToken.name} token supply: {numberWithCommas(totalSupply.toFixed(2))} *{" "}
+                        {poolInitialRewardSupply}%
+                      </p>
                     </dd>
                   </div>
                 </>

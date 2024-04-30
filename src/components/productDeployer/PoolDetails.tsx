@@ -88,7 +88,7 @@ const poolLockPeriods = [
 const PoolDetails = () => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
-  
+
   const [
     {
       poolType,
@@ -327,7 +327,10 @@ const PoolDetails = () => {
               <p>
                 Total {watchPoolRewardToken.name} token supply: {numberWithCommas(totalSupply.toFixed(2))}
               </p>
-              <p>Tokens required: {numberWithCommas(((+totalSupply.toFixed(2) * watchPoolInitialRewardSupply) / 100).toFixed(2))}</p>
+              <p>
+                Tokens required:{" "}
+                {numberWithCommas(((+totalSupply.toFixed(2) * watchPoolInitialRewardSupply) / 100).toFixed(2))}
+              </p>
             </AlertTitle>
           </Alert>
         )}
