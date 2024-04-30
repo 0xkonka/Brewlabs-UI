@@ -269,7 +269,7 @@ const FarmConfirmDeploy = () => {
         updatedDescription: "All done!",
       });
       dispatch(fetchFarmsPublicDataFromApiAsync());
-      setIsDeploying(false);
+
       // When all steps are complete the success step will be shown
       // See the onSuccess prop in the DeployProgress component for more details
     } catch (e) {
@@ -289,7 +289,10 @@ const FarmConfirmDeploy = () => {
         <DeployProgress
           deploySteps={deploySteps}
           onError={() => setIsDeploying(false)}
-          onSuccess={() => setDeployerFarmStep("success")}
+          onSuccess={() => {
+            setIsDeploying(false);
+            setDeployerFarmStep("success");
+          }}
         />
       )}
 

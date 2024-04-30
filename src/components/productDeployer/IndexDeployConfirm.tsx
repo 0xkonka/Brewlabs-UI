@@ -129,6 +129,8 @@ const IndexDeployConfirm = () => {
         updatedStatus: "complete",
         updatedDescription: "Deployment done",
       });
+      // When all steps are complete the success step will be shown
+      // See the onSuccess prop in the DeployProgress component for more details
       updateDeployStatus({
         setStepsFn: setDeploySteps,
         targetStep: "Completed",
@@ -145,10 +147,6 @@ const IndexDeployConfirm = () => {
         updatedDescription: "Deployment failed",
       });
     }
-
-    setIsDeploying(false);
-    // When all steps are complete the success step will be shown
-    // See the onSuccess prop in the DeployProgress component for more details
   };
 
   return (
@@ -157,7 +155,10 @@ const IndexDeployConfirm = () => {
         <DeployProgress
           deploySteps={deploySteps}
           onError={() => setIsDeploying(false)}
-          onSuccess={() => setDeployerIndexStep("success")}
+          onSuccess={() => {
+            setIsDeploying(false);
+            setDeployerIndexStep("success");
+          }}
         />
       )}
 

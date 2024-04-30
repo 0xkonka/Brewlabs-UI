@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { formatEther } from "viem";
-import { Pen } from "lucide-react";
 import { ethers } from "ethers";
-import { toast } from "react-toastify";
 import { Button } from "components/ui/button";
 
 import { getNativeSymbol } from "lib/bridge/helpers";
@@ -56,6 +54,18 @@ const TokenDeployConfirm = () => {
     try {
       // Deploy farm contract
       const tx = await onCreate(tokenName, tokenSymbol, tokenDecimals, tokenTotalSupply.toString());
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Waiting",
+        updatedStatus: "complete",
+        updatedDescription: "Transaction approved",
+      });
+
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Deploying",
+        updatedStatus: "current",
+      });
 
       const iface = new ethers.utils.Interface(TokenFactoryAbi);
 
@@ -65,29 +75,50 @@ const TokenDeployConfirm = () => {
           if (log.name === "StandardTokenCreated") {
             const token = log.args.token;
             setDeployedAddress(token);
+
             updateDeployStatus({
               setStepsFn: setDeploySteps,
-              targetStep: "Waiting",
+              targetStep: "Deploying",
               updatedStatus: "complete",
-              updatedDescription: "Transaction approved",
+            });
+
+            updateDeployStatus({
+              setStepsFn: setDeploySteps,
+              targetStep: "Completed",
+              updatedStatus: "current",
+            });
+
+            updateDeployStatus({
+              setStepsFn: setDeploySteps,
+              targetStep: "Completed",
+              updatedStatus: "complete",
             });
             break;
           }
         } catch (e) {}
       }
     } catch (e) {
-      toast.error("Error deploying token contract");
+      // Error deploying farm contract
+      const currentStep = deploySteps.find((step) => step.status === "current");
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: currentStep.name,
+        updatedStatus: "failed",
+        updatedDescription: "Deployment failed",
+      });
     }
-    setIsDeploying(false);
   };
 
   return (
-    <div className={`mx-auto my-8 max-w-xl ${isDeploying && "animate-pulse"}`}>
+    <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
       {isDeploying && (
         <DeployProgress
           deploySteps={deploySteps}
           onError={() => setIsDeploying(false)}
-          onSuccess={() => setDeployerTokenStep("success")}
+          onSuccess={() => {
+            setIsDeploying(false);
+            setDeployerTokenStep("success");
+          }}
         />
       )}
 
@@ -109,10 +140,11 @@ const TokenDeployConfirm = () => {
           <div className="mt-4 flex gap-2">
             <Button
               type="button"
-              onClick={() => setDeployerTokenStep("details")}
+              variant="outline"
               className="flex w-full items-center gap-2"
+              onClick={() => setDeployerTokenStep("details")}
             >
-              Edit <Pen className="h-4 w-4" />
+              Edit
             </Button>
 
             <Button type="button" onClick={() => handleDeploy()} variant="brand" className="w-full">

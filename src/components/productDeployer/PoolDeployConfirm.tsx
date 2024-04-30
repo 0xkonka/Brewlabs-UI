@@ -191,7 +191,10 @@ const PoolDeployConfirm = () => {
         <DeployProgress
           deploySteps={deploySteps}
           onError={() => setIsDeploying(false)}
-          onSuccess={() => setDeployerPoolStep("success")}
+          onSuccess={() => {
+            setIsDeploying(false);
+            setDeployerPoolStep("success");
+          }}
         />
       )}
 
