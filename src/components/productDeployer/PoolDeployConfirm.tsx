@@ -28,29 +28,24 @@ import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 
 const initialDeploySteps = [
   {
-    name: "Deploy pool",
+    name: "Deploy staking pool",
     status: "current",
-    description: "Confirm in wallet to deploy pool",
+    description: "Confirm contract creation in your wallet",
   },
   {
-    name: "Add token reward",
+    name: "Approve reward tokens",
     status: "upcoming",
-    description: "Deploying staking pool",
+    description: "Approve reward token in your wallet",
   },
   {
-    name: "Approve transaction",
+    name: "Supply reward tokens",
     status: "upcoming",
-    description: "Deploying staking pool",
-  },
-  {
-    name: "Send reward tokens",
-    status: "upcoming",
-    description: "Sending reward tokens to staking pool",
+    description: "Transfer of designated reward token amount ",
   },
   {
     name: "Starting pool",
     status: "upcoming",
-    description: "Firing up pool",
+    description: "Launching the pool",
   },
 ] as DeployStep[];
 
@@ -110,18 +105,17 @@ const PoolDeployConfirm = () => {
       // Approve paying token for deployment
       if (factoryState.payingToken.isToken && +factoryState.serviceFee > 0) {
         await onApprove(factoryState.payingToken.address, factoryState.address);
+        // Complete 1st step
         updateDeployStatus({
           setStepsFn: setDeploySteps,
-          targetStep: "Deploy pool",
+          targetStep: "Deploy staking pool",
           updatedStatus: "complete",
-          updatedDescription: "Pool deployed",
         });
-
+        // Change status of 2nd step
         updateDeployStatus({
           setStepsFn: setDeploySteps,
-          targetStep: "Deploying",
+          targetStep: "Approve reward tokens",
           updatedStatus: "current",
-          updatedDescription: "Deployment in progress",
         });
       }
 
@@ -139,6 +133,18 @@ const PoolDeployConfirm = () => {
           [(poolDepositFee * 100).toFixed(0)],
           [(poolWithdrawFee * 100).toFixed(0)]
         );
+        // Complete 2nd step
+        updateDeployStatus({
+          setStepsFn: setDeploySteps,
+          targetStep: "Approve reward tokens",
+          updatedStatus: "complete",
+        });
+        // Change status of 3rd step
+        updateDeployStatus({
+          setStepsFn: setDeploySteps,
+          targetStep: "Supply reward tokens",
+          updatedStatus: "current",
+        });
       } else {
         tx = await onCreateSinglePool(
           poolToken.address,
@@ -150,27 +156,53 @@ const PoolDeployConfirm = () => {
           (poolWithdrawFee * 100).toFixed(0),
           hasDividend
         );
+        // Complete 2nd step
+        updateDeployStatus({
+          setStepsFn: setDeploySteps,
+          targetStep: "Approve reward tokens",
+          updatedStatus: "complete",
+        });
+        // Change status of 3rd step
+        updateDeployStatus({
+          setStepsFn: setDeploySteps,
+          targetStep: "Supply reward tokens",
+          updatedStatus: "current",
+        });
       }
-      let pool = "";
+
+      // Complete 3rd step
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Supply reward tokens",
+        updatedStatus: "complete",
+      });
+      // Change status of 4th step
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Starting pool",
+        updatedStatus: "current",
+      });
+
+      // let pool = "";
       const iface = new ethers.utils.Interface(PoolFactoryAbi);
       for (let i = 0; i < tx.logs.length; i++) {
         try {
           const log = iface.parseLog(tx.logs[i]);
           if (log.name === "SinglePoolCreated") {
-            pool = log.args.pool;
+            // pool = log.args.pool;
             setDeployedPoolAddress(log.args.pool);
             break;
           }
         } catch (e) {}
       }
-
       // When all steps are complete the success step will be shown
       // See the onSuccess prop in the DeployProgress component for more details
+
+      // Complete 4th step
       updateDeployStatus({
         setStepsFn: setDeploySteps,
-        targetStep: "Deploying",
+        targetStep: "Starting pool",
         updatedStatus: "complete",
-        updatedDescription: "Deployment done",
       });
     } catch (e) {
       handleWalletError(e, showError, getNativeSymbol(chainId));
