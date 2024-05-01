@@ -1,11 +1,10 @@
+import { ChevronsRightIcon } from "lucide-react";
+
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
 import TokenDeployer from "components/productDeployer/TokenDeployer";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@components/ui/hover-card";
-
-import { ArrowRight } from "@radix-ui/react-icons";
-import { ChevronsRightIcon } from "lucide-react";
 
 export default function DeployToken() {
   return (
