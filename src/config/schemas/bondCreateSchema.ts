@@ -7,14 +7,15 @@ export const supportedNetworks = NetworkOptions.filter((network) =>
   PAGE_SUPPORTED_CHAINS["bonds"].includes(network.id)
 );
 
+export const bondTypeSchema = z.enum(["token", "nft", "tokenVested"], {
+  required_error: "You need to select a bond type.",
+});
+
 export const bondCreateSchema = z.object({
   bondChainId: z.coerce
     .number()
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
-  bondType: z.enum(["token", "nft", "tokenVested"], {
-    required_error: "You need to select a bond type.",
-  }),
-
+  bondType: bondTypeSchema,
   bondToken: tokenSchema,
   bondSaleToken: tokenSchema,
   bondSalePrice: z.number(),
@@ -29,9 +30,7 @@ export const bondCommonSchema = z.object({
   bondChainId: z.coerce
     .number()
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
-  bondType: z.enum(["token", "nft", "tokenVested"], {
-    required_error: "You need to select a bond type.",
-  }),
+  bondType: bondTypeSchema,
   bondMarketPrice: z.coerce.number(),
   bondToken: tokenSchema,
   bondSaleToken: tokenSchema,

@@ -1,9 +1,6 @@
 "use client";
 
 import { z } from "zod";
-import { capitalize } from "lodash";
-
-import { Badge } from "@components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { bondCommonSchema } from "config/schemas/bondCreateSchema";
@@ -12,6 +9,7 @@ import BondColTokenName from "@components/marketplace/bond-col-token-name";
 import BondColTokenVariance from "@components/marketplace/bond-col-token-variance";
 import BondColTokenMarketPrice from "@components/marketplace/bond-col-token-market-price";
 
+import BondColType from "@components/marketplace/bond-col-type";
 import BondColNFTName from "@components/marketplace/bond-col-nft-name";
 import BondColNFTVariance from "@components/marketplace/bond-col-nft-variance";
 import BondColNFTMarketPrice from "@components/marketplace/bond-col-nft-market-price";
@@ -41,13 +39,7 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     id: "type",
     cell: ({ row }) => {
       const bond = row.original;
-      return (
-        <>
-          {bond.bondType === "nft" && <Badge variant="purple">{bond.bondType.toUpperCase()}</Badge>}
-          {bond.bondType === "token" && <Badge variant="amber">{capitalize(bond.bondType)}</Badge>}
-          {bond.bondType === "tokenVested" && <Badge variant="amber">Token</Badge>}
-        </>
-      );
+      return <BondColType type={bond.bondType} />;
     },
   },
   {

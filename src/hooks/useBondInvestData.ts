@@ -9,6 +9,7 @@ export const useBondInvestData = (dataId: string) => {
 
   const fetchBondInvestData = async () => {
     // Would get data from contract
+    // Ideally we can use TanStack Query here too
     const mockData = [
       {
         bondType: "token",
@@ -42,7 +43,7 @@ export const useBondInvestData = (dataId: string) => {
         bondType: "nft",
         bondToken: {
           address: "0xBd3531dA5CF5857e7CfAA92426877b022e612cf8",
-          name: "PUDGEY PENGUINS NFT",
+          name: "PUDGEY PENGUINS",
           symbol: "PPG",
           decimals: 18,
           chainId: 1,
@@ -124,6 +125,7 @@ export const useBondInvestData = (dataId: string) => {
       },
     ] as BondColumnsInvest[];
 
+    // This timeout is mock to simulate fetching data
     setTimeout(() => {
       setData(mockData.filter((item) => item.bondRemaining.remaining > 0));
       setHistoricData(mockData.filter((item) => item.bondRemaining.remaining === 0));

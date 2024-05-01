@@ -17,6 +17,10 @@ const BondColNFTName = ({ bondName, bondToken, bondSaleToken }: BondColNFTNamePr
     address: bondToken.address,
   });
 
+  if (isLoading || isError || !isSuccess || !data) {
+    return null;
+  }
+
   return (
     <div className="flex items-center">
       <TokenLogo

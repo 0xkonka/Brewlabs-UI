@@ -89,6 +89,7 @@ export const useMarketNFTCollectionData = ({ chain, address }: { chain: number; 
     // Data is cached based on the address
     queryKey: [`marketCollectionData_${address}_${chain}`],
     queryFn: (): Promise<MarketNFTDataFromCoinGecko> => fetchFromCoinGecko(`nfts/${platformName}/contract/${address}`),
+    refetchOnWindowFocus: false,
 
     // Get new data every 5 minutes
     refetchInterval: 5 * 60 * 1000,
