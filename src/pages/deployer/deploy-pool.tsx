@@ -1,3 +1,5 @@
+import { ChevronsRightIcon } from "lucide-react";
+
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
@@ -19,21 +21,29 @@ export default function DeployToken() {
         <div className="mt-8">
           <HoverCard>
             <HoverCardTrigger asChild>
-              <img src="/images/certik-logo-white.svg" alt="Certik logo" className="h-auto w-24" />
+              <div className="flex w-fit cursor-pointer items-center gap-2">
+                <span className="text-xs font-thin tracking-[0.25rem]">VERIFIED BY - </span>
+                <img src="/images/certik-logo-white.svg" alt="Certik logo" className="h-auto w-24" />
+              </div>
             </HoverCardTrigger>
             <HoverCardContent className="w-80">
               <div className="flex justify-between space-x-4">
-                <div className="space-y-1">
+                <div className="space-y-4">
                   <h4 className="text-sm font-semibold">All our deploy contracts are CertiK verified</h4>
                   <p className="my-6 text-sm text-gray-400">
-                    We take security seriously, all our deploy contracts are verified by CertiK. This means you can be
-                    confident that the contract you are deploying is secure and safe.
-                  </p>
-                  <div className="flex items-center pt-2">
-                    <a href="#" target="_blank" className="text-xs text-muted-foreground">
-                      View audit here
+                    We take security seriously, all our deploy contracts are verified by{" "}
+                    <a href="https://www.certik.com/" target="_blank">
+                      CertiK
                     </a>
-                  </div>
+                    . This means you can be confident that the contract you are deploying is secure and safe.
+                  </p>
+                  <a
+                    href="#"
+                    target="_blank"
+                    className="flex items-end gap-1 pt-2 text-xs text-muted-foreground underline"
+                  >
+                    View audit here <ChevronsRightIcon className="h-4 w-4" />
+                  </a>
                 </div>
               </div>
             </HoverCardContent>

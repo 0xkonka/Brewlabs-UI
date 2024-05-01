@@ -1,18 +1,13 @@
 import Container from "components/layout/Container";
 import PageWrapper from "components/layout/PageWrapper";
 import PageHeader from "components/layout/PageHeader";
-import WordHighlight from "components/text/WordHighlight";
 import FarmDeployer from "components/productDeployer/FarmDeployer";
 
 export default function DeployToken() {
   return (
     <PageWrapper>
       <PageHeader
-        title={
-          <>
-            <WordHighlight content="Deploy" /> a new farm
-          </>
-        }
+        title="Deploy a new farm"
         summary={
           <>
             Welcome to the Brewlabs product deployer wizard.<br></br> Using this wizard will allow you to deploy a range
