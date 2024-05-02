@@ -7,32 +7,31 @@ export const useBondPurchasedData = (dataId: string) => {
   const [isError, setIsError] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
-  const fetchBondInvestData = async () => {
+  const fetchBondPurchaseData = async () => {
     // Fetch data from your API here.
 
     const mockData = [
       {
         bondType: "token",
         bondToken: {
-          address: "0x1",
-          name: "Token 1",
-          symbol: "T1",
+          address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
+          name: "Brewlabs",
+          symbol: "BREWLABS",
           decimals: 18,
+          chainId: 56,
         },
         bondSaleToken: {
-          address: "0x2",
-          name: "Token 2",
-          symbol: "T2",
+          address: "0x55d398326f99059fF775485246999027B3197955",
+          name: "USDT",
+          symbol: "USDT",
           decimals: 18,
+          chainId: 56,
         },
         bondSalePrice: 0.005676,
+        bondPurchaseDate: 1714560003255,
         bondMarketPrice: 0.0035467,
-        bondVariance: {
-          value: 12.5,
-          direction: "up",
-        },
-        bondVestingCountdown: 10, // Would be a date in real data
-        bondName: "DOGE/USDC",
+
+        bondName: "BREWLABS/USDT",
         bondClaimable: {
           total: 1000,
           remaining: 998,
@@ -51,7 +50,7 @@ export const useBondPurchasedData = (dataId: string) => {
       return;
     }
     setIsFetching(true);
-    fetchBondInvestData();
+    fetchBondPurchaseData();
   }, [dataId]);
 
   return { data, isError, isFetching };

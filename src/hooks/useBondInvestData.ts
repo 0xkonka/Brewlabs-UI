@@ -30,7 +30,7 @@ export const useBondInvestData = (dataId: string) => {
         bondSalePrice: 0.005676,
         bondMarketPrice: 0.0035467,
         bondVariance: {
-          amount: 12.5,
+          value: 12.5,
           direction: "up",
         },
         bondName: "BREWLABS/USDT",
@@ -58,7 +58,7 @@ export const useBondInvestData = (dataId: string) => {
         bondSalePrice: 1000,
         bondMarketPrice: 0,
         bondVariance: {
-          amount: 12.5,
+          value: 12.5,
           direction: "up",
         },
         bondName: "PPG/USDT",

@@ -37,10 +37,10 @@ export const bondCommonSchema = z.object({
   bondSalePrice: z.number(),
   bondName: z.string(),
   bondVariance: bondVarianceSchema,
+  bondVestingPeriod: z.coerce.number().optional(),
 });
 
 export const bondInvestSchema = z.object({
-  bondVestingPeriod: z.coerce.number().optional(),
   bondRemaining: z.object({
     total: z.number(),
     remaining: z.number(),
@@ -49,7 +49,7 @@ export const bondInvestSchema = z.object({
 });
 
 export const bondPurchasedSchema = z.object({
-  bondVestingCountdown: z.coerce.number().optional(),
+  bondPurchaseDate: z.coerce.number(),
   bondClaimable: z.object({
     total: z.number(),
     remaining: z.number(),
@@ -58,7 +58,6 @@ export const bondPurchasedSchema = z.object({
 });
 
 export const bondSoldSchema = z.object({
-  bondVestingCountdown: z.coerce.number().optional(),
   bondSold: z.object({
     total: z.number(),
     remaining: z.number(),

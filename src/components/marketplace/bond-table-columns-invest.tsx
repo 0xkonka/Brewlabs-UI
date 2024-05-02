@@ -23,7 +23,6 @@ export const investTableColumns: ColumnDef<BondColumnsInvest>[] = [
     id: "vesting",
     cell: ({ row }) => {
       const bond = row.original;
-
       return <BondColVesting type={bond.bondType} vestingPeriod={bond.bondVestingPeriod} />;
     },
   },

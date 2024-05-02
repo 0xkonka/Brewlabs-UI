@@ -58,10 +58,7 @@ const BondInvest = () => {
     chainId: bondSaleToken?.chainId,
   });
 
-  if (!investmentBond) return null;
-
-  console.log(Number(usersBalance.formatted));
-  console.log(bondSalePrice);
+  if (!investmentBond || Object.entries(investmentBond).length === 0) return null;
 
   return (
     <Modal
@@ -83,8 +80,7 @@ const BondInvest = () => {
             </>
             <h2 className="text-4xl font-bold">Invest in bond</h2>
             <p>
-              {investmentBond.bondToken.name} {investmentBond.bondType === "nft" ? "NFT" : "token"} sold for{" "}
-              {investmentBond.bondSaleToken.name}
+              {bondToken.name} {bondType === "nft" ? "NFT" : "token"} sold for {bondSaleToken.name}
             </p>
 
             <dl className="space-y-1 text-sm">
