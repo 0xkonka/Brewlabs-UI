@@ -27,9 +27,7 @@ export const bondCreateSchema = z.object({
 // Schemas for table columns
 
 export const bondCommonSchema = z.object({
-  bondChainId: z.coerce
-    .number()
-    .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
+  bondChainId: z.coerce.number(),
   bondType: bondTypeSchema,
   bondMarketPrice: z.coerce.number(),
   bondToken: tokenSchema,
@@ -58,6 +56,7 @@ export const bondPurchasedSchema = z.object({
 });
 
 export const bondSoldSchema = z.object({
+  bondSoldDate: z.coerce.number(),
   bondSold: z.object({
     total: z.number(),
     remaining: z.number(),

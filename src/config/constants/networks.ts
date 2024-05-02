@@ -115,7 +115,6 @@ export const CHAIN_ICONS = {
   [ChainId.AVALANCHE]: "/images/networks/avalanche.svg",
   [ChainId.CRONOS]: "/images/networks/cronos.png",
   [ChainId.BRISE]: "/images/networks/bitgert.png",
-
   [ChainId.GOERLI]: "/images/networks/eth.svg",
   [ChainId.BSC_TESTNET]: "/images/networks/bsc.png",
   8453: "/images/networks/base.png",

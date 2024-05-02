@@ -4,7 +4,9 @@ import { z } from "zod";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@components/ui/button";
-import { commonTableColumns } from "@components/marketplace/bond-table-columns-common";
+import { commonTableColumns } from "components/marketplace/bond-table-columns-common";
+import BondColVestingCountdown from "components/marketplace/bond-col-vesting-countdown";
+
 import { bondCommonSchema, bondSoldSchema } from "config/schemas/bondCreateSchema";
 
 // Define a type alias that is the shared bond schema + the bond invest schema
@@ -18,7 +20,13 @@ export const soldTableColumns: ColumnDef<BondColumnsSold>[] = [
     id: "vestingCountdown",
     cell: ({ row }) => {
       const bond = row.original;
-      return <span>{bond.bondVestingCountdown}</span>;
+      return (
+        <BondColVestingCountdown
+          type={bond.bondType}
+          purchaseDate={bond.bondSoldDate}
+          vestingPeriod={bond.bondVestingPeriod}
+        />
+      );
     },
   },
   {
