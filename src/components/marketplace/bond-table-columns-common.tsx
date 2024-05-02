@@ -2,7 +2,11 @@
 
 import { z } from "zod";
 import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 
+import { Button } from "@components/ui/button";
+
+import { NETWORKS, CHAIN_ICONS } from "config/constants/networks";
 import { bondCommonSchema } from "config/schemas/bondCreateSchema";
 
 import BondColTokenName from "@components/marketplace/bond-col-token-name";
@@ -15,6 +19,33 @@ import BondColNFTVariance from "@components/marketplace/bond-col-nft-variance";
 import BondColNFTMarketPrice from "@components/marketplace/bond-col-nft-market-price";
 
 export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] = [
+  {
+    accessorKey: "bondChain",
+    id: "bondChain",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            // TODO: This doesn't work
+            column.toggleSorting(column.getIsSorted() === "asc");
+          }}
+        >
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      );
+    },
+
+    cell: ({ row }) => {
+      const bond = row.original;
+      return (
+        <div>
+          <img src={CHAIN_ICONS[bond.bondChainId]} alt="chain logo" width={24} height={24} />
+          <span className="sr-only">{bond.bondChainId}</span>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "bondPair",
     header: "Bond title",

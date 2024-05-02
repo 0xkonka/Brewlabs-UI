@@ -12,6 +12,7 @@ export const useBondInvestData = (dataId: string) => {
     // Ideally we can use TanStack Query here too
     const mockData = [
       {
+        bondChainId: 56,
         bondType: "token",
         bondToken: {
           address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
@@ -40,6 +41,7 @@ export const useBondInvestData = (dataId: string) => {
         },
       },
       {
+        bondChainId: 1,
         bondType: "nft",
         bondToken: {
           address: "0xBd3531dA5CF5857e7CfAA92426877b022e612cf8",
@@ -68,6 +70,7 @@ export const useBondInvestData = (dataId: string) => {
         },
       },
       {
+        bondChainId: 56,
         bondType: "tokenVested",
         bondToken: {
           address: "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",

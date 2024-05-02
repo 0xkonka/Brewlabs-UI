@@ -12,6 +12,7 @@ export const useBondPurchasedData = (dataId: string) => {
 
     const mockData = [
       {
+        bondChainId: 56,
         bondType: "token",
         bondToken: {
           address: "0x6aac56305825f712fd44599e59f2ede51d42c3e7",
