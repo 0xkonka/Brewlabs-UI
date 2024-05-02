@@ -5,6 +5,7 @@ import { WalletIcon } from "lucide-react";
 import { useBalance, useAccount } from "wagmi";
 
 import { NETWORKS } from "config/constants/networks";
+import { asPrice } from "utils/prices";
 
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
@@ -80,7 +81,7 @@ const BondInvest = () => {
             </>
             <h2 className="text-4xl font-bold">Invest in bond</h2>
             <p>
-              {bondToken.name} {bondType === "nft" ? "NFT" : "token"} sold for {bondSaleToken.name}
+              {bondToken.symbol} {bondType === "nft" ? "NFT" : "token"} sold for {bondSaleToken.symbol}
             </p>
 
             <dl className="space-y-1 text-sm">
@@ -113,7 +114,7 @@ const BondInvest = () => {
 
           <div className="px-4">
             <h2 className="text-gray-400">Listing price</h2>
-            <span>${Number(bondSalePrice.toFixed(3))}</span>
+            <span>{asPrice(bondSalePrice, 3)}</span>
           </div>
 
           <div className="px-4">
@@ -148,7 +149,9 @@ const BondInvest = () => {
                     <FormItem className="my-4 flex flex-col items-center gap-2">
                       <FormLabel className="flex flex-col gap-1">
                         Enter investment amount in units
-                        <span className="text-gray-400"> {bondSalePrice?.toFixed(4)} per unit</span>
+                        <span className="text-gray-400">
+                          {asPrice(bondSalePrice, 3)} {bondSaleToken?.symbol} per unit
+                        </span>
                       </FormLabel>
                       <FormControl className="w-fit">
                         <div className="flex flex-col items-end">
@@ -174,9 +177,10 @@ const BondInvest = () => {
             {!balanceError && !balanceLoading && usersBalance && (
               <Alert className="text-left">
                 <WalletIcon className="h-4 w-4" />
-                <AlertDescription>
-                  You have {usersBalance.formatted} {usersBalance.symbol} in your wallet on{" "}
-                  {NETWORKS[bondSaleToken.chainId].chainName}.
+                <AlertDescription className="text-gray-400">
+                  You have{" "}
+                  <span className="font-bold text-gray-100 underline">{Number(usersBalance.formatted).toFixed(2)}</span>{" "}
+                  {usersBalance.symbol} in your wallet on {NETWORKS[bondSaleToken.chainId].chainName}.
                   {Number(usersBalance.formatted) < bondSalePrice && (
                     <div className="w-full text-red-500"> You do not have enough funds to invest in this bond.</div>
                   )}

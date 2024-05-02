@@ -1,5 +1,6 @@
 import { TrendingUpIcon, TrendingDownIcon, AlertTriangleIcon } from "lucide-react";
 
+import { asPrice } from "utils/prices";
 import { useMarketData } from "@hooks/useMarketData";
 
 import { Skeleton } from "@components/ui/skeleton";
@@ -22,13 +23,13 @@ const BondColTokenMarketPrice = ({ chain, address }: { chain: number; address: s
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-1">
-            ${Number(data.usd.toFixed(4))}
+            {asPrice(data.usd, 4)}
             {data.usd_24h_change > 0 && <TrendingUpIcon className="h-4 w-4 text-green-500" />}
             {data.usd_24h_change < 0 && <TrendingDownIcon className="h-4 w-4 text-red-500" />}
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{Number(data.usd_24h_change.toFixed(2))}%</p>
+          <p>{asPrice(data.usd_24h_change)}%</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
