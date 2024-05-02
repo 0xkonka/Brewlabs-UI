@@ -26,8 +26,8 @@ const BondColTokenVariance = ({
 
   return (
     <div className="flex items-center gap-1">
-      {bondSalePrice < data.usd && <span className="text-red-500">-{Math.abs(variance).toFixed(2)}%</span>}
-      {bondSalePrice > data.usd && <span className="text-green-500">+{Math.abs(variance).toFixed(2)}%</span>}
+      {bondSalePrice > data.usd && <span className="text-red-500">-{Math.abs(variance).toFixed(2)}%</span>}
+      {bondSalePrice < data.usd && <span className="text-green-500">+{Math.abs(variance).toFixed(2)}%</span>}
     </div>
   );
 };
