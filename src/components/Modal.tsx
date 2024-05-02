@@ -21,19 +21,21 @@ const Modal = ({ open, children, onClose, className }: ModalProps): ReactElement
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <BackgroundGradient className="rounded-[22px] bg-zinc-900 ">
               <div className="relative w-full md:min-w-[600px] md:max-w-xl">
-                <Dialog.Panel>
-                  {children}
+                {open && (
+                  <Dialog.Panel>
+                    {children}
 
-                  {onClose && (
-                    <button
-                      onClick={onClose}
-                      className="absolute right-4 top-4 rounded-full bg-zinc-900 p-2 ring ring-yellow-200 sm:-right-4 sm:-top-4"
-                    >
-                      <span className="sr-only">Close</span>
-                      <XMarkIcon className="h-6 w-6 text-yellow-200" />
-                    </button>
-                  )}
-                </Dialog.Panel>
+                    {onClose && (
+                      <button
+                        onClick={onClose}
+                        className="absolute right-4 top-4 rounded-full bg-zinc-900 p-2 ring ring-yellow-200 sm:-right-4 sm:-top-4"
+                      >
+                        <span className="sr-only">Close</span>
+                        <XMarkIcon className="h-6 w-6 text-yellow-200" />
+                      </button>
+                    )}
+                  </Dialog.Panel>
+                )}
               </div>
             </BackgroundGradient>
           </div>
