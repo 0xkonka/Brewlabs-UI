@@ -11,7 +11,7 @@ import { Button } from "@components/ui/button";
 import TokenLogo from "components/logo/TokenLogo";
 
 import CurrencySelectorNFTs from "components/currencySelector/currency-selector-nfts";
-import CurrencySelectorFromWallet from "components/currencySelector/CurrencySelectorFromWallet";
+import CurrencySelectorTokens from "@components/currencySelector/currency-selector-tokens";
 
 // TODO: type this
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -26,7 +26,7 @@ const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
     // Determine the currency panel to display
     const currencyPanel =
       walletTokenType === "token" ? (
-        <CurrencySelectorFromWallet
+        <CurrencySelectorTokens
           supportedTokens={supportedTokens}
           onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
         />

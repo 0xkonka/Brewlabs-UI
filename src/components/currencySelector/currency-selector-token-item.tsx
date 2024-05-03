@@ -1,6 +1,8 @@
 import { formatUnits } from "viem";
 import { CircleAlertIcon } from "lucide-react";
 
+import { Token } from "@brewlabs/sdk";
+
 import { useMarketData } from "@hooks/useMarketData";
 import MarketPrice24h from "components/MarketPrice24h";
 import getTokenLogoURL from "utils/getTokenLogoURL";
@@ -8,13 +10,13 @@ import getTokenLogoURL from "utils/getTokenLogoURL";
 import { Skeleton } from "@components/ui/skeleton";
 
 // TODO: Better placement of type def
-import { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
+import type { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
 
 type CurrencySelectorItemProps = {
   token: WalletTokensFromMoralis;
   chainId: number;
   isSupported: boolean;
-  handleCurrencySelection: (token: WalletTokensFromMoralis, tokenPrice: number) => void;
+  handleCurrencySelection: (token: Token, tokenPrice: number) => void;
 };
 
 const CurrencySelectorItem = ({ token, chainId, isSupported, handleCurrencySelection }: CurrencySelectorItemProps) => {
@@ -25,11 +27,24 @@ const CurrencySelectorItem = ({ token, chainId, isSupported, handleCurrencySelec
   // Will retrieve cached value if available
   const { data: tokenPrice, isLoading, isError } = useMarketData({ chain: chainId, address: token.token_address });
 
+  // Convert WalletTokensFromMoralis to Token
+  const asToken = (currency: WalletTokensFromMoralis): Token => {
+    return new Token(
+      chainId,
+      currency.token_address,
+      currency.decimals,
+      currency.symbol,
+      currency.name,
+      undefined,
+      currency.logo
+    );
+  };
+
   return (
     <button
       type="button"
       disabled={!isSupported}
-      onClick={() => handleCurrencySelection(token, tokenPrice.usd)}
+      onClick={() => handleCurrencySelection(asToken(token), tokenPrice.usd)}
       className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start animate-in fade-in enabled:hover:bg-gradient-to-r"
     >
       <div className="flex w-full items-center justify-between p-5 pl-0">

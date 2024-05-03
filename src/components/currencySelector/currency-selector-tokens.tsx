@@ -6,12 +6,12 @@ import { BananaIcon } from "lucide-react";
 
 import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
-import CurrencySelectorItem from "./CurrencySelectorItem";
+import CurrencySelectorItem from "./currency-selector-token-item";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useMoralisWalletTokens } from "@hooks/useMoralisWalletTokens";
 
-import CurrencySelectorNative from "components/currencySelector/CurrencySelectorNative";
+import CurrencySelectorNative from "@components/currencySelector/currency-selector-native";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
@@ -27,7 +27,7 @@ type CurrencySelectorFromWalletProps = {
   onCurrencySelect: (token: Token, tokenPrice: number) => void;
 };
 
-const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
+const CurrencySelectorTokens = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
@@ -41,21 +41,9 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
     });
   }, [supportedTokens, walletTokens]);
 
-  // TODO: type this
-  const handleCurrencySelection = (currency, tokenPrice) => {
+  const handleCurrencySelection = (token: Token, tokenPrice: number) => {
     // Close the side panel
     setUserSidebarOpen(false);
-    // Convert currency type to token type
-    const token = new Token(
-      chainId,
-      currency.token_address,
-      currency.decimals,
-      currency.symbol,
-      currency.name,
-      undefined,
-      currency.logo
-    );
-
     onCurrencySelect(token, tokenPrice);
   };
 
@@ -67,14 +55,6 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
           <h3 className="text-xl">Only supported tokens are selectable</h3>
         </div>
       </div>
-
-      {!hasSupportedTokens && (
-        <Alert className="my-4 border-brand bg-yellow-100/10 text-brand">
-          <BananaIcon className="h-4 w-4 !text-brand" />
-          <AlertTitle>Slip up!</AlertTitle>
-          <AlertDescription>You do not own any supported tokens.</AlertDescription>
-        </Alert>
-      )}
 
       <div className="mt-3 h-[75svh] w-full overflow-y-auto px-2">
         <CurrencySelectorNative supportedTokens={supportedTokens} handleCurrencySelection={handleCurrencySelection} />
@@ -98,9 +78,17 @@ const CurrencySelectorFromWallet = ({ onCurrencySelect, supportedTokens = [] }: 
               />
             );
           })}
+
+        {!hasSupportedTokens && (
+          <Alert className="my-4 border-brand bg-yellow-100/10 text-brand">
+            <BananaIcon className="h-4 w-4 !text-brand" />
+            <AlertTitle>Slip up!</AlertTitle>
+            <AlertDescription>You do not own any supported tokens.</AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
   );
 };
 
-export default CurrencySelectorFromWallet;
+export default CurrencySelectorTokens;

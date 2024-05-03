@@ -4,10 +4,13 @@ import { Token } from "@brewlabs/sdk";
 
 import { setUserSidebarOpen } from "state";
 
+import { NETWORKS } from "config/constants/networks";
+
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useMoralisWalletNFTs } from "@hooks/useMoralisWalletNFTs";
 
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
+import CurrencySelectorNFTItem from "./currency-selector-nft-item";
 
 type SupportedToken = {
   chainId: number;
@@ -58,26 +61,14 @@ const CurrencySelectorNFTs = ({ onCurrencySelect, supportedNFTs = [] }: Currency
       <div className="mt-3 h-[75svh] w-full overflow-y-auto px-2">
         {isLoading && <CurrencySelectorSkeleton count={6} />}
 
-        {walletNFTs?.map((nft) => (
-          <button
-            type="button"
-            key={nft.name}
-            className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start animate-in fade-in enabled:hover:bg-gradient-to-r"
-          >
-            <div className="flex w-full items-center justify-between p-5 pl-0">
-              <div className="flex items-center gap-2">
-                <object data="https://stackoverflow.com/does-not-exist.png" type="image/png">
-                  <img src={nft.metadata?.image} className="mt-1 h-20 w-20 rounded-xl bg-slate-500 " alt={nft.name} />
-                </object>
+        {!isLoading && walletNFTs.length === 0 && (
+          <div className="rounded border-2 border-dashed border-gray-500 p-4 text-center">
+            <p className="text-xl">There are no NFTs in this wallet on {NETWORKS[chainId].chainName}</p>
+          </div>
+        )}
 
-                <div>
-                  <p className="text-xl">{nft.name}</p>
-                  <p className="text-xs">{nft.metadata?.name}</p>
-                  <p className="text-xs">{nft.symbol}</p>
-                </div>
-              </div>
-            </div>
-          </button>
+        {walletNFTs?.map((nft) => (
+          <CurrencySelectorNFTItem key={nft.tokenHash} chainId={chainId} nft={nft} />
         ))}
       </div>
     </div>

@@ -20,7 +20,6 @@ export const purchasedTableColumns: ColumnDef<BondColumnsPurchased>[] = [
     id: "vestingCountdown",
     cell: ({ row }) => {
       const bond = row.original;
-
       return (
         <BondColVestingCountdown
           type={bond.bondType}

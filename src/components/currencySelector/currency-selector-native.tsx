@@ -1,5 +1,5 @@
 import { useAccount, useBalance } from "wagmi";
-import { useEvmTokenPrice } from "@moralisweb3/next";
+
 import { NATIVE_CURRENCIES } from "@brewlabs/sdk";
 import { CircleAlertIcon } from "lucide-react";
 
@@ -7,27 +7,33 @@ import { useActiveChainId } from "@hooks/useActiveChainId";
 import MarketPrice24h from "components/MarketPrice24h";
 import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
 
-import { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
+import { Skeleton } from "@components/ui/skeleton";
+
+import { Token } from "@brewlabs/sdk";
+
+import getTokenLogoURL from "utils/getTokenLogoURL";
+
+import { useMarketData } from "@hooks/useMarketData";
 
 type CurrencySelectorNativeProps = {
   supportedTokens: any[];
-  handleCurrencySelection: (token: WalletTokensFromMoralis, tokenPrice: number) => void;
+  handleCurrencySelection: (token: Token, tokenPrice: number) => void;
 };
 
 const CurrencySelectorNative = ({ supportedTokens, handleCurrencySelection }: CurrencySelectorNativeProps) => {
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
 
-  // Using Moralis: Get the native token price
+  const nativeToken = NATIVE_CURRENCIES[chainId];
+  const nativeTokenAddress = NATIVE_CURRENCIES[chainId].wrapped.address;
+
+  // Get the token price
+  // Will retrieve cached value if available
   const {
-    error,
-    isFetching,
     data: nativeTokenPrice,
-  } = useEvmTokenPrice({
-    chain: chainId,
-    include: "percent_change",
-    address: NATIVE_CURRENCIES[chainId].wrapped.address,
-  });
+    isError: isErrorTokenPrice,
+    isLoading: isLoadingTokenPrice,
+  } = useMarketData({ chain: chainId, address: nativeTokenAddress });
 
   // Get the native token balance
   // Using Wagmi, Moralis was unreliable
@@ -40,15 +46,10 @@ const CurrencySelectorNative = ({ supportedTokens, handleCurrencySelection }: Cu
     chainId,
   });
 
-  if (error) {
-    return <div>Error</div>;
-  }
-
-  if (isFetching) {
+  if (isLoading) {
     return <CurrencySelectorSkeleton count={1} />;
   }
 
-  const nativeToken = NATIVE_CURRENCIES[chainId];
   const balanceAsNumber = Number(nativeBalance.formatted);
 
   const notSupported =
@@ -56,12 +57,25 @@ const CurrencySelectorNative = ({ supportedTokens, handleCurrencySelection }: Cu
       ? !supportedTokens.some((t) => t.address.toLowerCase() === NATIVE_CURRENCIES[chainId].wrapped.address)
       : false;
 
+  // Convert Native Token to Token
+  const asToken = (currency): Token => {
+    return new Token(
+      chainId,
+      nativeTokenAddress,
+      currency.decimals,
+      currency.symbol,
+      currency.name,
+      undefined,
+      getTokenLogoURL(nativeTokenAddress, chainId)[0]
+    );
+  };
+
   return (
     <button
       type="button"
-      key={nativeTokenPrice.tokenAddress}
+      key={nativeTokenAddress}
       disabled={notSupported}
-      onClick={() => handleCurrencySelection(nativeToken, nativeTokenPrice.usdPrice)}
+      onClick={() => handleCurrencySelection(asToken(nativeToken), nativeTokenPrice.usd)}
       className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start enabled:hover:bg-gradient-to-r"
     >
       <div className="flex w-full items-center justify-between p-5 pl-0">
@@ -72,20 +86,19 @@ const CurrencySelectorNative = ({ supportedTokens, handleCurrencySelection }: Cu
             )}
             <img
               className="mt-1 h-10 w-10 rounded-full bg-slate-500 "
-              src={nativeTokenPrice.tokenLogo}
+              src={getTokenLogoURL(nativeTokenAddress, chainId)[0]}
               alt={nativeToken.name}
             />
           </div>
           <div>
             <h3 className="mb-1 text-lg font-semibold">{nativeToken.name}</h3>
-            {!isLoading ||
-              (!isError && (
-                <MarketPrice24h
-                  usdPrice={nativeTokenPrice.usdPrice}
-                  usd24hChange={Number(nativeTokenPrice["24hrPercentChange"])}
-                  symbol={nativeToken.symbol}
-                />
-              ))}
+            {nativeTokenPrice && (
+              <MarketPrice24h
+                usdPrice={nativeTokenPrice.usd}
+                usd24hChange={nativeTokenPrice.usd_24h_change}
+                symbol={nativeToken.symbol}
+              />
+            )}
           </div>
         </div>
 
@@ -94,7 +107,11 @@ const CurrencySelectorNative = ({ supportedTokens, handleCurrencySelection }: Cu
           <p>
             {balanceAsNumber.toFixed(2)} {nativeToken.symbol}
           </p>
-          <p className="text-sm opacity-40">{(balanceAsNumber * nativeTokenPrice.usdPrice).toFixed(4)} USD</p>
+          {isLoading ? (
+            <Skeleton className="h-4 w-20" />
+          ) : (
+            <p className="text-sm opacity-40">{(balanceAsNumber * nativeTokenPrice?.usd || 0).toFixed(4)} USD</p>
+          )}
         </div>
       </div>
     </button>
