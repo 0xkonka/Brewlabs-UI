@@ -86,6 +86,15 @@ const CurrencySelectorTokens = ({ onCurrencySelect, supportedTokens = [] }: Curr
             <AlertDescription>You do not own any supported tokens.</AlertDescription>
           </Alert>
         )}
+
+        {supportedTokens.length !== 0 && !isLoading && (
+          <div className="rounded border">
+            <h3>Supported tokens</h3>
+            {supportedTokens.map((token) => (
+              <div key={token.address}>{token.name}</div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
