@@ -138,38 +138,17 @@ const BondCreate = () => {
             <div className="divider" />
 
             <div>
-              {/* <FormField
-                control={form.control}
-                name="bondToken"
-                render={({ field }) => (
-                  <FormItem className="space-y-4">
-                    <FormLabel className="text-xl">Select a token to sell</FormLabel>
-                    <FormControl>
-                      <CurrencySelectorInput
-                        selectedCurrency={field.value}
-                        setSelectCurrency={(currency, tokenPrice) => {
-                          setInitialMarketPrice(tokenPrice);
-                          form.setValue("bondSalePrice", tokenPrice);
-                          form.setValue("bondToken", currency);
-                          form.trigger("bondToken");
-                        }}
-                        supportedTokens={supportedBondListingTokens.filter((t) => t.chainId === chainId)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-
               <FormField
                 control={form.control}
                 name="bondToken"
                 render={({ field }) => (
                   <FormItem className="space-y-4">
-                    <FormLabel className="text-xl">Select a NFT token to sell</FormLabel>
+                    <FormLabel className="text-xl">
+                      Select a {watchBondType === "nft" ? "NFT" : "token"} to sell
+                    </FormLabel>
                     <FormControl>
                       <CurrencySelectorInput
-                        walletTokenType="nft"
+                        walletTokenType={watchBondType === "nft" ? "nft" : "token"}
                         selectedCurrency={field.value}
                         setSelectCurrency={(currency, tokenPrice) => {
                           setInitialMarketPrice(tokenPrice);
