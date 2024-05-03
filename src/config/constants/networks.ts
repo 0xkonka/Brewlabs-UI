@@ -30,6 +30,10 @@ export const SUPPORTED_CHAIN_IDS = [
   ...customChainIds, // Append the custom chain IDs to the array
 ];
 
+// For testing purposes
+// Make sure this is not included in production
+const TEST_NETWORKS = [ChainId.GOERLI, ChainId.BSC_TESTNET];
+
 export const PAGE_SUPPORTED_CHAINS = {
   chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
   farms: [
@@ -52,28 +56,22 @@ export const PAGE_SUPPORTED_CHAINS = {
     ChainId.BRISE,
   ],
   indexes: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  ["deploy-index"]: [ChainId.POLYGON, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET],
-  ["deploy-farm"]: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET],
+  ["deploy-index"]: [ChainId.POLYGON, ChainId.BSC_MAINNET, ...TEST_NETWORKS],
+  ["deploy-farm"]: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ...TEST_NETWORKS],
   ["deploy-token"]: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
     ChainId.ARBITRUM,
     ChainId.BASE,
     ExtendedChainId.SOLANA,
-    ChainId.BSC_TESTNET,
+    ...TEST_NETWORKS,
   ],
-  ["deploy-pool"]: [
-    ChainId.ETHEREUM,
-    ChainId.BSC_MAINNET,
-    ChainId.ARBITRUM,
-    ExtendedChainId.SOLANA,
-    ChainId.BSC_TESTNET,
-  ],
+  ["deploy-pool"]: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ExtendedChainId.SOLANA, ...TEST_NETWORKS],
   deployerPoolFactory: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.BASE],
-  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM, ChainId.BSC_TESTNET],
-  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
-  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
-  constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON, ChainId.BSC_TESTNET],
+  swap: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.ARBITRUM, ChainId.POLYGON, ChainId.FANTOM],
+  add: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  remove: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
+  constructor: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   zapper: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   bridge: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
   nft: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
@@ -88,7 +86,6 @@ export const PAGE_SUPPORTED_CHAINS = {
     ChainId.BRISE,
   ],
   draw: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.POLYGON],
-  communities: [ChainId.ETHEREUM, ChainId.BSC_MAINNET, ChainId.BSC_TESTNET, ChainId.POLYGON],
   default: [
     ChainId.ETHEREUM,
     ChainId.BSC_MAINNET,
