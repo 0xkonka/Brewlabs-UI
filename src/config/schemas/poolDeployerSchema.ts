@@ -16,7 +16,7 @@ export const poolDeployerSchema = z.object({
   }),
   poolLockPeriod: z.enum(["0", "3", "6", "9", "12"]).optional(),
   poolDeployChainId: z.coerce
-    .number()
+    .number({ invalid_type_error: "Unsupported chain selected" })
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   poolToken: tokenSchema,
   poolRewardToken: tokenSchema,
