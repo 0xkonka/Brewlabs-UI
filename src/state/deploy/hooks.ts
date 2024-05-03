@@ -44,7 +44,7 @@ export const usePollFarmFactoryData = () => {
 export const usePollPoolFactoryData = () => {
   const dispatch = useAppDispatch();
 
-  const supportedChains = PAGE_SUPPORTED_CHAINS.deployerPoolFactory.filter((chainId) =>
+  const supportedChains = PAGE_SUPPORTED_CHAINS["deploy-pool"].filter((chainId) =>
     Object.keys(contracts.poolFactory)
       .map((c) => +c)
       .includes(chainId)
