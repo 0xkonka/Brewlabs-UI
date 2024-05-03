@@ -20,7 +20,7 @@ const RouterSchema = z.custom<Router>;
 
 export const farmDeployerSchema = z.object({
   farmDeployChainId: z.coerce
-    .number()
+    .number({ invalid_type_error: "Chain id must be a number." })
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   farmLpAddress: addressSchema,
   farmRouter: RouterSchema(),
