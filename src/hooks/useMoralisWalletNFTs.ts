@@ -7,13 +7,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEvmWalletNFTs } from "@moralisweb3/next";
 
-// import type { FetcherPaginatedResponse } from "moralis/common-core/src/types";
-import type { EvmNft } from "moralis/common-evm-utils";
-
 export const useMoralisWalletNFTs = ({ walletAddress, chainId }) => {
   const { fetch: fetchNFTBalances } = useEvmWalletNFTs();
-
-  // FetcherPaginatedResponse
 
   const filterNFTs = (nfts) => nfts.data.filter((nft) => nft.possibleSpam === false);
 
