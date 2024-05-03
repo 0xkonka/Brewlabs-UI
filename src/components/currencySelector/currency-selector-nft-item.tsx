@@ -15,6 +15,11 @@ import { useMoralisNFTPrice } from "hooks/useMoralisNFTPrice";
 // TODO: Better placement of type def
 import { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
 
+type EvmNftMetadata = {
+  name: string;
+  image: string;
+};
+
 type CurrencySelectorItemProps = {
   nft: EvmNft;
   chainId: number;
@@ -55,7 +60,7 @@ const CurrencySelectorNFTItem = ({ nft, chainId, handleCurrencySelection }: Curr
     nftAddress: nft.tokenAddress.lowercase,
   });
 
-  console.log(data);
+  const nftName = (nft.metadata && "name" in nft.metadata) || nft.name;
 
   return (
     <button
@@ -72,13 +77,17 @@ const CurrencySelectorNFTItem = ({ nft, chainId, handleCurrencySelection }: Curr
             )} */}
 
             <div className="overflow-hidden rounded-md border border-gray-600">
-              <img
-                src={createIPFSURL(nft.tokenUri, nft.metadata?.image)}
-                className=" w-40 bg-slate-500 object-cover "
-                alt={nft.name}
-              />
+              {nft.metadata && "image" in nft.metadata && (
+                <img
+                  src={createIPFSURL(nft.tokenUri, nft.metadata.image)}
+                  className="w-40 bg-slate-500 object-cover "
+                  alt={nft.name}
+                  width={160}
+                  height={160}
+                />
+              )}
               <div className="px-2 py-2">
-                <p className="text-xs">{nft.metadata?.name}</p>
+                <p className="text-xs">{nftName}</p>
                 <p className="text-xs">{nft.symbol}</p>
               </div>
             </div>
@@ -86,7 +95,7 @@ const CurrencySelectorNFTItem = ({ nft, chainId, handleCurrencySelection }: Curr
           <div>
             <h3 className="mb-1 text-lg font-semibold">{nft.name}</h3>
 
-            <p className="text-xs">{nft.metadata?.name}</p>
+            <p className="text-xs">{nftName}</p>
             <p className="text-xs">{nft.symbol}</p>
             {/* {tokenPrice && (
               <MarketPrice24h
