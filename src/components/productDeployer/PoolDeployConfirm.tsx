@@ -56,8 +56,9 @@ const PoolDeployConfirm = () => {
   const factoryState = usePoolFactoryState(chainId);
   const { onCreateSinglePool, onCreateLockupPool, onCreateLockupPoolWithPenalty } = usePoolFactory(
     chainId,
-    factoryState.serviceFee
+    factoryState?.serviceFee
   );
+
   const { onApprove } = useTokenApprove();
   const [
     {
