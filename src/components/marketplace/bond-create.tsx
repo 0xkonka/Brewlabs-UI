@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { z } from "zod";
+import { useRouter } from "next/router";
 import { useBalance, useAccount } from "wagmi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,31 +18,32 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@compo
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 
 import ChainSelect from "views/swap/components/ChainSelect";
-import { CurrencySelectorInput } from "@components/currencySelector/CurrencySelectorInput";
+import { CurrencySelectorInput } from "@components/currency-selector/currency-selector-input";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { bondCreateSchema, supportedNetworks } from "config/schemas/bondCreateSchema";
 import { supportedBondListingTokens, supportedBondSaleTokens } from "config/constants/bond-tokens";
 
 const BondCreate = () => {
+  const router = useRouter();
   const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const [initialMarketPrice, setInitialMarketPrice] = useState(100);
   const [showConditionalField, setShowConditionalField] = useState([]);
 
   const onSubmit = (data: z.infer<typeof bondCreateSchema>) => {
-    // console.log(data);
     // Throw in local storage for now
-
     // Get from local storage
-    const bondData = localStorage.getItem("bondCreateData");
+    const bondData = localStorage.getItem("bondDataInvest");
     // Merge the data
     if (bondData) {
-      const mergedData = { ...JSON.parse(bondData), ...data };
-      localStorage.setItem("bondDataInvest", JSON.stringify(mergedData));
+      const mergedData = { ...JSON.parse(bondData).push(data) };
+      localStorage.setItem("bondDataInvest", JSON.stringify([mergedData]));
     } else {
       localStorage.setItem("bondDataInvest", JSON.stringify([data]));
     }
+    // TODO: Add some confirmation message
+    router.push("/marketplace");
   };
 
   const form = useForm<z.infer<typeof bondCreateSchema>>({
