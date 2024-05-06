@@ -10,7 +10,8 @@ import { useEvmWalletNFTs } from "@moralisweb3/next";
 export const useMoralisWalletNFTs = ({ walletAddress, chainId }) => {
   const { fetch: fetchNFTBalances } = useEvmWalletNFTs();
 
-  const filterNFTs = (nfts) => nfts.data.filter((nft) => nft.possibleSpam === false);
+  // Remove spam + mBLF from the list of NFTs (brewlabs mirror token)
+  const filterNFTs = (nfts) => nfts.data.filter((nft) => nft.possibleSpam === false && nft.symbol !== "mBLF");
 
   const {
     data: walletNFTs,
