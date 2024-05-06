@@ -61,7 +61,7 @@ export default function Socials({ selectedPair, marketInfos }) {
               <a
                 key={i}
                 className={`mr-1.5 cursor-pointer ${
-                  social.href ? "!text-white hover:scale-[1.1]" : social.isActive ? "!text-green" : "!text-tailwind"
+                  social.href ? "!text-white hover:scale-[1.1]" : social.isActive ? "!text-green" : "!text-white"
                 } primary-shadow transition [&>svg]:!h-[18px] [&>svg]:!w-[18px]`}
                 target="_blank"
                 href={social.href}
@@ -79,11 +79,11 @@ export default function Socials({ selectedPair, marketInfos }) {
           className="mr-2.5 flex cursor-pointer items-center text-xs hover:text-white"
           target="_blank"
         >
-          <div className="-mt-1 mr-1 text-tailwind">{PlusSVG}</div>
+          <div className="-mt-1 mr-1 text-white">{PlusSVG}</div>
           <div>UPDATE DETAILS</div>
         </a>
         <Link href={"/communities"} className="flex cursor-pointer items-center text-xs hover:text-white">
-          <div className="-mt-1 mr-1 text-tailwind">{PlusSVG}</div>
+          <div className="-mt-1 mr-1 text-white">{PlusSVG}</div>
           <div>ADD COMMUNITY</div>
         </Link>
       </div>

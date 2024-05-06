@@ -129,7 +129,7 @@ const PollCard = ({ poll, community, index }: { poll: any; community: any; index
               <div className="mt-3 flex items-center text-sm">
                 <div
                   className={`[>svg]:!w-[22px] ${
-                    totalVotePercent < community.quoroumReq ? "text-tailwind" : "text-green"
+                    totalVotePercent < community.quoroumReq ? "text-white" : "text-green"
                   } [&>svg]:!h-5 [&>svg]:!w-5`}
                 >
                   {RequirementSVG}
@@ -141,7 +141,7 @@ const PollCard = ({ poll, community, index }: { poll: any; community: any; index
                 </div>
               </div>
               <div className="mt-3 flex items-center text-sm">
-                <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
+                <div className="text-white [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
                 <div className="ml-2.5 text-[#FFFFFFBF]">
                   {poll.createdTime + poll.duration >= Date.now() ? (
                     <CountDown time={poll.createdTime + poll.duration} />

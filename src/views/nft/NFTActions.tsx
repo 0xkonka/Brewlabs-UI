@@ -195,7 +195,7 @@ const NFTActions = () => {
       {actions.map((data, i) => {
         return (
           <>
-            <div key={i} className="relative mb-[164px] w-[220px]">
+            <div key={data.name} className="relative mb-[164px] w-[220px]">
               <div className=" flex w-full justify-between font-brand text-lg font-bold text-white">
                 <div>{data.name}</div>
                 <div>
@@ -208,7 +208,7 @@ const NFTActions = () => {
                 ) : (
                   <div
                     className={`mb-4 flex h-[90px] items-center justify-center ${
-                      (i < 2 && isApproved) || (i === 2 && activeRarity !== -1) ? "text-primary" : "text-tailwind"
+                      (i < 2 && isApproved) || (i === 2 && activeRarity !== -1) ? "text-primary" : "text-white"
                     } [&>*:first-child]:!h-20 [&>*:first-child]:!w-20`}
                   >
                     {data.icon}
@@ -250,7 +250,7 @@ const NFTActions = () => {
                   <div className={`mt-2.5 flex w-full ${data.essential.align}`}>
                     {data.essential.datas.map((data: any, i: number) => {
                       return (
-                        <div className="relative" key={i}>
+                        <div className="relative" key={data.info}>
                           <StyledButton
                             className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:animate-[rightBounce_0.8s_infinite]"
                             disabled={!data.active}

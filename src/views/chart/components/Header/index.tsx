@@ -36,7 +36,7 @@ export default function Header({ showReverse, setShowReverse }) {
         </div>
 
         <div
-          className={`text-tailwind ml-4 mt-4 flex w-fit items-center justify-between sm:mt-0 ${
+          className={`ml-4 mt-4 flex w-fit items-center justify-between text-white sm:mt-0 ${
             showReverse ? "2xl:w-[320px]" : "2xl:w-[292px]"
           }`}
         >

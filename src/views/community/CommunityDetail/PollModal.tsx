@@ -138,7 +138,7 @@ const PollModal = ({ open, setOpen, community }) => {
                   <div className="relative mr-3">
                     Fee to vote?
                     <div
-                      className="absolute -left-5 top-0.5 cursor-pointer text-tailwind transition hover:text-white [&>*:first-child]:!h-3.5 [&>*:first-child]:!w-3.5"
+                      className="absolute -left-5 top-0.5 cursor-pointer text-white transition hover:text-white [&>*:first-child]:!h-3.5 [&>*:first-child]:!w-3.5"
                       id="A small fee is charged on each user wallet vote sent to project nominated address."
                     >
                       {InfoSVG}
@@ -244,7 +244,7 @@ const PollModal = ({ open, setOpen, community }) => {
                     </div>
                     <div
                       className={`mt-2 ${
-                        options[i] ? (options[i].length > 50 ? "text-[#DC4545]" : "text-white") : "text-tailwind"
+                        options[i] ? (options[i].length > 50 ? "text-[#DC4545]" : "text-white") : "text-white"
                       } [&>svg]:!h-4 [&>svg]:!w-4`}
                     >
                       {checkCircleSVG}

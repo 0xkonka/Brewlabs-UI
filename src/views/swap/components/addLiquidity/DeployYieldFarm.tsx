@@ -232,7 +232,7 @@ export default function DeployYieldFarm({
         <div className="mb-4">
           <SolidButton className="w-full">
             <div className="mx-auto flex w-fit items-center">
-              Set dynamic pool fees <div className="ml-2 scale-75 text-tailwind">{PoolFeeSVG}</div>
+              Set dynamic pool fees <div className="ml-2 scale-75 text-white">{PoolFeeSVG}</div>
             </div>
           </SolidButton>
           <div className="mt-3 flex flex-col justify-between sm:flex-row">
@@ -247,7 +247,7 @@ export default function DeployYieldFarm({
                   <div className="flex-1">
                     Lock liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                   </div>
-                  <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{LockFillSVG}</div>
+                  <div className="-mt-0.5 ml-1 scale-75 text-white">{LockFillSVG}</div>
                 </div>
               </SolidButton>
             </a>
@@ -261,7 +261,7 @@ export default function DeployYieldFarm({
                 <div className="flex-1">
                   Burn liquidity for {getName(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])}
                 </div>
-                <div className="-mt-0.5 ml-1 scale-75 text-tailwind">{BurnSVG}</div>
+                <div className="-mt-0.5 ml-1 scale-75 text-white">{BurnSVG}</div>
               </div>
             </SolidButton>
           </div>

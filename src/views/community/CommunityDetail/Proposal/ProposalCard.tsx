@@ -118,7 +118,7 @@ const ProposalCard = ({ proposal, community, index }: { proposal: any; community
             <div className="mt-3 flex items-center text-sm">
               <div
                 className={`[>svg]:!w-[22px] ${
-                  totalVotePercent < community.quoroumReq ? "text-tailwind" : "text-green"
+                  totalVotePercent < community.quoroumReq ? "text-white" : "text-green"
                 } [&>svg]:!h-5 [&>svg]:!w-5`}
               >
                 {RequirementSVG}
@@ -128,7 +128,7 @@ const ProposalCard = ({ proposal, community, index }: { proposal: any; community
               </div>
             </div>
             <div className="mt-3 flex items-center text-sm">
-              <div className="text-tailwind [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
+              <div className="text-white [&>svg]:!h-5 [&>svg]:!w-5">{BellSVG}</div>
               <div className="ml-2.5 text-[#FFFFFFBF]">
                 {proposal.createdTime + proposal.duration >= Date.now() ? (
                   <CountDown time={proposal.createdTime + proposal.duration} />
@@ -208,7 +208,7 @@ const ProposalCard = ({ proposal, community, index }: { proposal: any; community
                     <div className="w-[50px] text-right text-sm  leading-none">Against</div>
                     <div className="mx-2 h-1.5 w-20">
                       <div
-                        className="h-full bg-danger"
+                        className="bg-danger h-full"
                         style={{ width: (totalBalance ? noBalance / totalBalance : 0) * 80 + "px" }}
                       />
                     </div>

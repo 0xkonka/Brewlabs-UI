@@ -114,7 +114,7 @@ const UpdateFeeModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                       className="tooltip"
                       data-tip="Fee percentage charged to users on deposit sent to your nominated address."
                     >
-                      <div className="mr-2 scale-125 cursor-pointer text-tailwind">{warningCircleSVG}</div>
+                      <div className="mr-2 scale-125 cursor-pointer text-white">{warningCircleSVG}</div>
                     </div>
                     <div>Deposit Fee {data.depositFee ?? 0.25}%</div>
                   </div>
@@ -123,7 +123,7 @@ const UpdateFeeModal = ({ open, setOpen, data }: { open: boolean; setOpen: any; 
                       className="tooltip"
                       data-tip="Fee percentage charged to users on withdrawal in profit sent to your nominated address."
                     >
-                      <div className="mr-2 scale-125 cursor-pointer text-tailwind">{warningCircleSVG}</div>
+                      <div className="mr-2 scale-125 cursor-pointer text-white">{warningCircleSVG}</div>
                     </div>
                     <div>Commission Fee {data.commissionFee ?? 1}%</div>
                   </div>

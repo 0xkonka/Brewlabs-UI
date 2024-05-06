@@ -19,7 +19,7 @@ const RarityCard = ({ rarity }) => {
           ""
         )}
       </div>
-      <div className="mx-auto mt-2 flex h-[240px] w-[240px] items-center justify-center overflow-hidden rounded text-tailwind md:w-full xl:h-[180px]">
+      <div className="mx-auto mt-2 flex h-[240px] w-[240px] items-center justify-center overflow-hidden rounded text-white md:w-full xl:h-[180px]">
         <ReactPlayer
           className="!w-full"
           url={rarity.logo}
@@ -40,8 +40,8 @@ const RarityCard = ({ rarity }) => {
         </ul>
       </div>
       {rarity.isUpgradeable ? (
-        <StyledButton className="!w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80] [&>*:first-child]:enabled:hover:text-yellow">
-          <div className="absolute -right-[13px] text-tailwind transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
+        <StyledButton className="[&>*:first-child]:enabled:hover:text-yellow !w-fit p-[5px_12px] !text-xs !font-normal enabled:hover:!opacity-100 disabled:!bg-[#202023] disabled:!text-[#FFFFFF80]">
+          <div className="absolute -right-[13px] text-white transition-all duration-500 [&>*:first-child]:!h-5 [&>*:first-child]:!w-5">
             {LighteningSVG}
           </div>
           Upgradeable

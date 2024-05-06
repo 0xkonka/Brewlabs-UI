@@ -262,14 +262,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           <div>Reward supply for {DURATIONS[duration]} Days</div>
           <div className="flex items-center">
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(+Math.min(3, initialSupply + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{initialSupply.toFixed(2)}%</div>
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setInitialSupply(+Math.max(0, initialSupply - 0.1).toFixed(2))}
             >
               {MinusSVG}
@@ -288,14 +288,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           </div>
           <div className="flex items-center">
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(+Math.min(2, depositFee + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{depositFee.toFixed(2)}%</div>
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setDepositFee(+Math.max(0, depositFee - 0.1).toFixed(2))}
             >
               {MinusSVG}
@@ -309,14 +309,14 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
           </div>
           <div className="flex items-center">
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(+Math.min(2, withdrawFee + 0.1).toFixed(2))}
             >
               {PlusSVG}
             </div>
             <div className="mx-2">{withdrawFee.toFixed(2)}%</div>
             <div
-              className="text-tailwind cursor-pointer transition-all hover:text-[#87878a]"
+              className="cursor-pointer text-white transition-all hover:text-[#87878a]"
               onClick={() => setWithdrawFee(+Math.max(0, withdrawFee - 0.1).toFixed(2))}
             >
               {MinusSVG}

@@ -58,7 +58,7 @@ export default function BalanceInfo({ selectedPair, balances, price, lpPrice }) 
       </div>
       <div
         className={`cursor-pointer ${
-          isCopied ? "!text-[#FFFFFFBF]" : "text-tailwind"
+          isCopied ? "!text-[#FFFFFFBF]" : "text-white"
         } text-sm hover:text-white [&>svg]:!h-4 [&>svg]:!w-4`}
         onClick={() => onCopyAddress()}
       >

@@ -1,5 +1,10 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import clsx from "clsx";
+
+import { camelCase } from "lodash";
+import { cva, type VariantProps } from "class-variance-authority";
 import { WalletIcon } from "lucide-react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
@@ -8,7 +13,11 @@ import UserDashboard from "components/dashboard/UserDashboard";
 import { NetworkOptions } from "config/constants/networks";
 import { useSupportedNetworks } from "hooks/useSupportedNetworks";
 import { useActiveChainId } from "hooks/useActiveChainId";
-import { setUserSidebarOpen, setUserSidebarContent } from "state";
+import { useGlobalState } from "state";
+
+import { useSearchParams } from "next/navigation";
+
+import { cn } from "lib/utils";
 
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
@@ -16,6 +25,27 @@ import WrongNetworkModal from "../network/WrongNetworkModal";
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
 }
+
+const networkIconVariants = cva(
+  "h-8 w-8 cursor-pointer overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 ",
+  {
+    variants: {
+      chain: {
+        bnbSmartChain: "border-brand",
+        ethereum: "border-indigo-500",
+        fantom: "border-blue-400",
+        polygon: "border-purple-500",
+        avalanche: "border-blue-500",
+        cronos: "border-yellow-500",
+        brise: "border-yellow-500",
+        arbitrum: "border-blue-500",
+      },
+    },
+    defaultVariants: {
+      chain: "bnbSmartChain",
+    },
+  }
+);
 
 const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
   const { address, isConnected, isConnecting, connector } = useAccount();
@@ -29,6 +59,13 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   const [mounted, setMounted] = useState(false);
   const [openSwitchNetworkModal, setOpenSwitchNetworkModal] = useState(false);
+
+  const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
+  const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
+
+  // Get URL chainId
+  const searchParams = useSearchParams();
+  const chainIdFromUrl = Number(searchParams.get("chainId"));
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -52,10 +89,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         networks={supportedNetworks}
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
-      <WrongNetworkModal
-        open={!!isWrongNetwork || !supportedNetworks.map((network) => network.id).includes(chainId)}
-        currentChain={supportedNetworks.find((network) => network.id === chainId) ?? supportedNetworks[0]}
-      />
+      <WrongNetworkModal open={isWrongNetwork} />
 
       {!isConnected ? (
         <button
@@ -95,7 +129,11 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
               className="rounded-full border-2"
             >
               <div
-                className="h-8 w-8 cursor-pointer overflow-hidden rounded-full border-2 border-dark bg-cover bg-no-repeat p-2 dark:border-brand"
+                className={cn(
+                  networkIconVariants({
+                    chain: camelCase(chain?.name.toLowerCase()) as VariantProps<typeof networkIconVariants>["chain"],
+                  })
+                )}
                 style={{
                   backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
                 }}
