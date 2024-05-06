@@ -5,7 +5,7 @@ import { CircleAlertIcon } from "lucide-react";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import MarketPrice24h from "components/MarketPrice24h";
-import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
+import CurrencySelectorSkeleton from "@components/currency-selector/currency-selector-skeleton";
 
 import { Skeleton } from "@components/ui/skeleton";
 

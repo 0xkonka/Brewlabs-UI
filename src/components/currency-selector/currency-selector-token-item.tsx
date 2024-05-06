@@ -16,10 +16,15 @@ type CurrencySelectorItemProps = {
   token: WalletTokensFromMoralis;
   chainId: number;
   isSupported: boolean;
-  handleCurrencySelection: (token: Token, tokenPrice: number) => void;
+  handleCurrencySelection?: (token: Token, tokenPrice: number) => void;
 };
 
-const CurrencySelectorItem = ({ token, chainId, isSupported, handleCurrencySelection }: CurrencySelectorItemProps) => {
+const CurrencySelectorTokenItem = ({
+  token,
+  chainId,
+  isSupported,
+  handleCurrencySelection,
+}: CurrencySelectorItemProps) => {
   const amountAsBigInt = BigInt(Number(token.balance));
   const balance = Number(formatUnits(amountAsBigInt, token.decimals));
 
@@ -88,4 +93,4 @@ const CurrencySelectorItem = ({ token, chainId, isSupported, handleCurrencySelec
   );
 };
 
-export default CurrencySelectorItem;
+export default CurrencySelectorTokenItem;

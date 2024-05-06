@@ -10,8 +10,8 @@ import { Button } from "@components/ui/button";
 
 import TokenLogo from "components/logo/TokenLogo";
 
-import CurrencySelectorNFTs from "components/currencySelector/currency-selector-nfts";
-import CurrencySelectorWrapper from "@components/currencySelector/currency-selector-wrapper";
+import CurrencySelectorNFTs from "@components/currency-selector/currency-selector-nfts";
+import CurrencySelectorWrapper from "@components/currency-selector/currency-selector-wrapper";
 
 // TODO: type this
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {

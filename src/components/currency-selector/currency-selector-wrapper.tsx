@@ -1,16 +1,13 @@
-import { useMemo } from "react";
-import { useAccount } from "wagmi";
-
 import { Token } from "@brewlabs/sdk";
 
-import { setUserSidebarOpen, setUserSidebarContent } from "state";
-
-import { useActiveChainId } from "@hooks/useActiveChainId";
-import { useMoralisWalletTokens } from "@hooks/useMoralisWalletTokens";
+import { setUserSidebarOpen } from "state";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
 
-import CurrencySelectorTokens from "./currency-selector-tokens";
+import { useMoralisTokenMeta } from "@hooks/useMoralisTokenMeta";
+
+import CurrencySelectorTokens from "components/currency-selector/currency-selector-tokens";
+import CurrencySelectorSupportedTokens from "components/currency-selector/currency-selector-supported-tokens";
 
 type SupportedToken = {
   chainId: number;
@@ -25,24 +22,19 @@ type CurrencySelectorFromWalletProps = {
 };
 
 const CurrencySelectorWrapper = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
-  const { address } = useAccount();
-  const { chainId } = useActiveChainId();
-
-  const { walletTokens, isLoading } = useMoralisWalletTokens({ walletAddress: address, chainId });
-
-  const hasSupportedTokens = useMemo(() => {
-    if (supportedTokens.length === 0) return false;
-
-    return walletTokens?.some((token) => {
-      return supportedTokens.some((t) => t.address.toLowerCase() === token.token_address);
-    });
-  }, [supportedTokens, walletTokens]);
-
   const handleCurrencySelection = (token: Token, tokenPrice: number) => {
     // Close the side panel
     setUserSidebarOpen(false);
     onCurrencySelect(token, tokenPrice);
   };
+
+  const supportedTokenAddresses = supportedTokens.map((token) => token.address);
+
+  const {
+    data: supportedTokensData,
+    isError,
+    isLoading,
+  } = useMoralisTokenMeta({ tokenAddress: supportedTokenAddresses, chainId: 1 });
 
   return (
     <div className="relative w-full">
@@ -63,14 +55,9 @@ const CurrencySelectorWrapper = ({ onCurrencySelect, supportedTokens = [] }: Cur
             <CurrencySelectorTokens supportedTokens={supportedTokens} onCurrencySelect={handleCurrencySelection} />
           </TabsContent>
           <TabsContent value="supported">
-            {supportedTokens.length !== 0 && !isLoading && (
-              <div className="rounded border">
-                <h3>Supported tokens</h3>
-                {supportedTokens.map((token) => (
-                  <div key={token.address}>{token.name}</div>
-                ))}
-              </div>
-            )}
+            {!isLoading &&
+              !isError &&
+              supportedTokensData.map((token, index) => <CurrencySelectorSupportedTokens key={index} token={token} />)}
           </TabsContent>
         </Tabs>
       </div>

@@ -9,7 +9,7 @@ import { NETWORKS } from "config/constants/networks";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useMoralisWalletNFTs } from "@hooks/useMoralisWalletNFTs";
 
-import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
+import CurrencySelectorSkeleton from "@components/currency-selector/currency-selector-skeleton";
 import CurrencySelectorNFTItem from "./currency-selector-nft-item";
 
 type SupportedToken = {
@@ -30,24 +30,12 @@ const CurrencySelectorNFTs = ({ onCurrencySelect, supportedNFTs = [] }: Currency
 
   const { walletNFTs, isLoading } = useMoralisWalletNFTs({ walletAddress: address, chainId });
 
-  const handleCurrencySelection = (currency, tokenPrice) => {
+  const handleCurrencySelection = (token) => {
     // Close the side panel
     setUserSidebarOpen(false);
     // Convert currency type to token type
-    const token = new Token(
-      chainId,
-      currency.token_address,
-      currency.decimals,
-      currency.symbol,
-      currency.name,
-      undefined,
-      currency.logo
-    );
-
-    onCurrencySelect(token, tokenPrice);
+    onCurrencySelect(token, 0);
   };
-
-  console.log(walletNFTs);
 
   return (
     <div className="relative w-full">
@@ -68,7 +56,12 @@ const CurrencySelectorNFTs = ({ onCurrencySelect, supportedNFTs = [] }: Currency
         )}
 
         {walletNFTs?.map((nft) => (
-          <CurrencySelectorNFTItem key={nft.tokenHash} chainId={chainId} nft={nft} />
+          <CurrencySelectorNFTItem
+            key={nft.tokenHash}
+            chainId={chainId}
+            nft={nft}
+            onCurrencySelect={handleCurrencySelection}
+          />
         ))}
       </div>
     </div>

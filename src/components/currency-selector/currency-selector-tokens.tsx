@@ -11,10 +11,8 @@ import CurrencySelectorItem from "./currency-selector-token-item";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useMoralisWalletTokens } from "@hooks/useMoralisWalletTokens";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
-
-import CurrencySelectorNative from "@components/currencySelector/currency-selector-native";
-import CurrencySelectorSkeleton from "components/currencySelector/CurrencySelectorSkeleton";
+import CurrencySelectorNative from "@components/currency-selector/currency-selector-native";
+import CurrencySelectorSkeleton from "@components/currency-selector/currency-selector-skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
 type SupportedToken = {
