@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { z } from "zod";
+import { useBalance, useAccount } from "wagmi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ZapIcon, HourglassIcon, ImagesIcon, PlusCircleIcon, MinusCircleIcon } from "lucide-react";
@@ -23,12 +24,13 @@ import { bondCreateSchema, supportedNetworks } from "config/schemas/bondCreateSc
 import { supportedBondListingTokens, supportedBondSaleTokens } from "config/constants/bond-tokens";
 
 const BondCreate = () => {
+  const { address } = useAccount();
   const { chainId } = useActiveChainId();
   const [initialMarketPrice, setInitialMarketPrice] = useState(100);
   const [showConditionalField, setShowConditionalField] = useState([]);
 
   const onSubmit = (data: z.infer<typeof bondCreateSchema>) => {
-    console.log(data);
+    // console.log(data);
     // Throw in local storage for now
 
     // Get from local storage
@@ -37,6 +39,8 @@ const BondCreate = () => {
     if (bondData) {
       const mergedData = { ...JSON.parse(bondData), ...data };
       localStorage.setItem("bondDataInvest", JSON.stringify(mergedData));
+    } else {
+      localStorage.setItem("bondDataInvest", JSON.stringify([data]));
     }
   };
 
@@ -46,19 +50,36 @@ const BondCreate = () => {
       bondChainId: chainId,
       bondType: "token",
       bondToken: null,
+      bondRemaining: {
+        total: 10,
+        remaining: 10,
+      },
       bondSaleToken: null,
       bondVestingPeriod: 1,
       bondSalePrice: 0,
     },
   });
 
-  console.log(form.formState.errors);
-  console.log(supportedNetworks);
+  // console.log(supportedNetworks);
+  // console.log(form.formState.errors);
+  // console.log(chainId);
 
   const watchBondType = form.watch("bondType");
   const watchBondToken = form.watch("bondToken");
   const watchBondSaleToken = form.watch("bondSaleToken");
   const watchBondSalePrice = form.watch("bondSalePrice");
+  const watchBondTokenQuantity = form.watch("bondRemaining.total");
+
+  // Get the user's balance of the selected token
+  const {
+    data: balance,
+    isError,
+    isLoading,
+  } = useBalance({
+    address,
+    chainId,
+    token: watchBondToken?.address.toLowerCase() as `0x${string}`,
+  });
 
   // By setting this state we can show/hide the conditional fields
   useEffect(() => {
@@ -68,7 +89,16 @@ const BondCreate = () => {
     if (watchBondType === "tokenVested") {
       setShowConditionalField(["bondVestingPeriod"]);
     }
-  }, [watchBondType]);
+    if (watchBondType === "nft") {
+      form.setValue("bondRemaining.total", 1);
+      form.setValue("bondVestingPeriod", null);
+    }
+
+    // Clear token inputs
+    form.setValue("bondToken", null);
+    form.setValue("bondSalePrice", 0);
+    form.setValue("bondSaleToken", null);
+  }, [form, watchBondType]);
 
   // Set the bond name based on the selected token
   useEffect(() => {
@@ -76,6 +106,16 @@ const BondCreate = () => {
       form.setValue("bondName", `${watchBondToken?.name}/${watchBondSaleToken?.name}`);
     }
   }, [watchBondToken, watchBondSaleToken, form]);
+
+  // Set the remaining bond quantity to the total bond quantity
+  useEffect(() => {
+    form.setValue("bondRemaining.remaining", watchBondTokenQuantity);
+  }, [watchBondTokenQuantity, form]);
+
+  // Update chain id when the user changes the network
+  useEffect(() => {
+    form.setValue("bondChainId", chainId);
+  }, [chainId, form]);
 
   // Increase by 1 percent
   const increase = () => {
@@ -100,7 +140,7 @@ const BondCreate = () => {
                   <FormControl>
                     <>
                       <ChainSelect id="chain-select" networks={supportedNetworks} />
-                      <input type="hiddenx" {...field} />
+                      <input type="hidden" {...field} />
                     </>
                   </FormControl>
                   <FormMessage />
@@ -175,8 +215,52 @@ const BondCreate = () => {
                 )}
               />
 
-              <div className="mt-4 flex w-full justify-center">
-                <Badge>FOR</Badge>
+              <FormField
+                control={form.control}
+                name="bondRemaining.total"
+                render={({ field }) => (
+                  <FormItem className="mt-4 flex items-center justify-between">
+                    <FormLabel className="flex flex-col items-start gap-1">
+                      How many {watchBondToken?.symbol} would you like to sell?
+                      <span className="text-xs text-gray-500">Bonds are sold per unit</span>
+                    </FormLabel>
+                    <FormControl>
+                      <div className="flex flex-col items-end">
+                        <div className="flex w-full flex-wrap justify-end gap-2">
+                          <IncrementorInput
+                            step={1}
+                            min={1}
+                            max={Math.trunc(Number(balance?.formatted)) || 1000000}
+                            {...field}
+                          />
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={isLoading || isError || !watchBondToken}
+                            onClick={() => form.setValue("bondRemaining.total", Math.trunc(Number(balance.formatted)))}
+                          >
+                            MAX
+                          </Button>
+
+                          {!isLoading &&
+                            !isError &&
+                            watchBondToken &&
+                            Number(balance.formatted) <= watchBondTokenQuantity && (
+                              <p className="text-xs text-red-500">You have insufficient {watchBondToken?.symbol}.</p>
+                            )}
+                        </div>
+
+                        <FormMessage />
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="relative my-8 flex w-full justify-center">
+                <Badge className="px-4 py-2">FOR</Badge>
+                <div className="absolute inset-0 top-4 mx-auto h-0.5 w-1/2 bg-white/10"></div>
               </div>
 
               <FormField
@@ -199,6 +283,65 @@ const BondCreate = () => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="bondSalePrice"
+                render={({ field }) => (
+                  <FormItem className="mt-4 flex items-center justify-between">
+                    <FormLabel className="flex flex-col items-start gap-1">
+                      Set the sale price
+                      {watchBondToken && (
+                        <>
+                          <p className="text-xs text-gray-500">
+                            Current market price for {watchBondToken?.symbol} is {initialMarketPrice}.
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Set sale price is{" "}
+                            <span className="text-white">
+                              {((watchBondSalePrice / initialMarketPrice) * 100).toFixed(0)}%
+                            </span>{" "}
+                            of the current market price.
+                          </p>
+                        </>
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <div className="flex flex-col items-end">
+                        <div className="flex gap-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => decrease()}>
+                                  <MinusCircleIcon className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="left">
+                                <p>Decrease by 1%</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <Input {...field} className="w-24" />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => increase()}>
+                                  <PlusCircleIcon className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="right">
+                                <p>Increase by 1%</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+
+                        <FormMessage />
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="divider" />
@@ -211,7 +354,7 @@ const BondCreate = () => {
                     name="bondVestingPeriod"
                     render={({ field }) => (
                       <FormItem className="mt-4 flex items-center justify-between">
-                        <FormLabel className="flex flex-col items-start gap-1">
+                        <FormLabel className="flex flex-col items-start gap-1 text-xl">
                           Set the vesting period in days
                           <span className="text-xs text-gray-500">How long people need to wait to claim</span>
                         </FormLabel>
@@ -224,70 +367,10 @@ const BondCreate = () => {
                       </FormItem>
                     )}
                   />
+                  <div className="divider mt-12" />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-
-            <FormField
-              control={form.control}
-              name="bondSalePrice"
-              render={({ field }) => (
-                <FormItem className="mt-4 flex items-center justify-between">
-                  <FormLabel className="flex flex-col items-start gap-1 text-xl">
-                    Set the sale price
-                    {watchBondToken && (
-                      <>
-                        <p className="text-xs text-gray-500">
-                          Current market price for {watchBondToken?.symbol} is {initialMarketPrice}.
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Set sale price is{" "}
-                          <span className="text-white">
-                            {((watchBondSalePrice / initialMarketPrice) * 100).toFixed(0)}%
-                          </span>{" "}
-                          of the current market price.
-                        </p>
-                      </>
-                    )}
-                  </FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col items-end">
-                      <div className="flex gap-2">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button type="button" variant="ghost" size="icon" onClick={() => decrease()}>
-                                <MinusCircleIcon className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="left">
-                              <p>Decrease by 1%</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <Input {...field} className="w-24" />
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button type="button" variant="ghost" size="icon" onClick={() => increase()}>
-                                <PlusCircleIcon className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right">
-                              <p>Increase by 1%</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-
-                      <FormMessage />
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <div className="divider" />
 
             <Button type="submit" variant="brand" className="w-full">
               Create bond

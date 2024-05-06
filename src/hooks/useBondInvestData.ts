@@ -12,8 +12,8 @@ export const useBondInvestData = (dataId: string) => {
     // Ideally we can use TanStack Query here too
 
     // Retrieve from local storage
-    const localData = localStorage.getItem("bondInvestData");
-    const mockData = localData ? JSON.parse(localData) : ([] as BondColumnsInvest[]);
+    const localData = localStorage.getItem("bondDataInvest");
+    const mockData: BondColumnsInvest[] = localData ? JSON.parse(localData) : [];
 
     // const mockData = [
     //   {
@@ -135,8 +135,8 @@ export const useBondInvestData = (dataId: string) => {
 
     // This timeout is mock to simulate fetching data
     setTimeout(() => {
-      setData(mockData.filter((item) => item.bondRemaining.remaining > 0));
-      setHistoricData(mockData.filter((item) => item.bondRemaining.remaining === 0));
+      setData(mockData?.filter((item) => item.bondRemaining.remaining > 0));
+      setHistoricData(mockData?.filter((item) => item.bondRemaining.remaining === 0));
       setIsFetching(false);
     }, 1000);
   };

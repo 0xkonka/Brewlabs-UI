@@ -21,6 +21,10 @@ export const bondCreateSchema = z.object({
   bondSalePrice: z.number(),
   bondVestingPeriod: z.coerce.number().optional(),
   bondName: z.string(),
+  bondRemaining: z.object({
+    total: z.coerce.number(),
+    remaining: z.coerce.number(),
+  }),
 });
 
 // Bond invest Schema
