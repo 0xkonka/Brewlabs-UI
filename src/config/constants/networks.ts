@@ -55,6 +55,7 @@ export const PAGE_SUPPORTED_CHAINS: { [key: string]: ChainId[] } = {
     ChainId.AVALANCHE,
     ChainId.CRONOS,
     ChainId.BRISE,
+    ChainId.ARBITRUM,
   ],
 };
 

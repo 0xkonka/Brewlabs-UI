@@ -18,7 +18,7 @@ export const bondCreateSchema = z.object({
   bondType: bondTypeSchema,
   bondToken: tokenSchema,
   bondSaleToken: tokenSchema,
-  bondSalePrice: z.number(),
+  bondSalePrice: z.coerce.number(),
   bondVestingPeriod: z.coerce.number().optional(),
   bondName: z.string(),
   bondRemaining: z.object({
@@ -36,7 +36,7 @@ export const bondCommonSchema = z.object({
   bondMarketPrice: z.coerce.number(),
   bondToken: tokenSchema,
   bondSaleToken: tokenSchema,
-  bondSalePrice: z.number(),
+  bondSalePrice: z.coerce.number(),
   bondName: z.string(),
   bondVariance: bondVarianceSchema,
   bondVestingPeriod: z.coerce.number().optional(),
