@@ -30,6 +30,14 @@ const BondCreate = () => {
   const onSubmit = (data: z.infer<typeof bondCreateSchema>) => {
     console.log(data);
     // Throw in local storage for now
+
+    // Get from local storage
+    const bondData = localStorage.getItem("bondCreateData");
+    // Merge the data
+    if (bondData) {
+      const mergedData = { ...JSON.parse(bondData), ...data };
+      localStorage.setItem("bondDataInvest", JSON.stringify(mergedData));
+    }
   };
 
   const form = useForm<z.infer<typeof bondCreateSchema>>({
@@ -43,6 +51,9 @@ const BondCreate = () => {
       bondSalePrice: 0,
     },
   });
+
+  console.log(form.formState.errors);
+  console.log(supportedNetworks);
 
   const watchBondType = form.watch("bondType");
   const watchBondToken = form.watch("bondToken");
@@ -89,7 +100,7 @@ const BondCreate = () => {
                   <FormControl>
                     <>
                       <ChainSelect id="chain-select" networks={supportedNetworks} />
-                      <input type="hidden" {...field} value={chainId} />
+                      <input type="hiddenx" {...field} />
                     </>
                   </FormControl>
                   <FormMessage />
