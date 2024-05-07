@@ -1,23 +1,21 @@
 import { useMemo } from "react";
 
-import { Token } from "@brewlabs/sdk";
+// import { Token } from "@brewlabs/sdk";
 
-import { formatUnits } from "viem";
-import { CircleAlertIcon } from "lucide-react";
+// import { formatUnits } from "viem";
+// import { CircleAlertIcon } from "lucide-react";
 
-import { useMarketData } from "@hooks/useMarketData";
-import MarketPrice24h from "components/MarketPrice24h";
-import getTokenLogoURL from "utils/getTokenLogoURL";
+// import { useMarketData } from "@hooks/useMarketData";
+// import MarketPrice24h from "components/MarketPrice24h";
+// import getTokenLogoURL from "utils/getTokenLogoURL";
 
-import { Skeleton } from "@components/ui/skeleton";
+// import { Skeleton } from "@components/ui/skeleton";
 
 import { EvmNftData } from "moralis/common-evm-utils";
 
-import { useMarketNFTCollectionData } from "@hooks/useMarketNFTCollectionData";
-import { useMoralisNFTPrice } from "@hooks/useMoralisNftPrice";
+// import { useMarketNFTCollectionData } from "@hooks/useMarketNFTCollectionData";
+// import { useMoralisNFTPrice } from "@hooks/useMoralisNftPrice";
 
-// TODO: Better placement of type def
-import { WalletTokensFromMoralis } from "hooks/useMoralisWalletTokens";
 import { getNftImage } from "utils/getNftImage";
 
 type CurrencySelectorItemProps = {
