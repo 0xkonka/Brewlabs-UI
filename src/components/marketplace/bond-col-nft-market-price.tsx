@@ -6,7 +6,7 @@ import { useMarketNFTCollectionData } from "@hooks/useMarketNFTCollectionData";
 import { Skeleton } from "@components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/ui/tooltip";
 
-const BondColMarketPrice = ({ chain, address }: { chain: number; address: string }) => {
+const BondColNftMarketPrice = ({ chain, address }: { chain: number; address: string }) => {
   const { data, isError, isLoading, isSuccess } = useMarketNFTCollectionData({ chain, address });
 
   if (isLoading) return <Skeleton className="h-4 w-20" />;
@@ -36,4 +36,4 @@ const BondColMarketPrice = ({ chain, address }: { chain: number; address: string
   );
 };
 
-export default BondColMarketPrice;
+export default BondColNftMarketPrice;

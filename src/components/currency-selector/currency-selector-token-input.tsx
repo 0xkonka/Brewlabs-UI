@@ -20,8 +20,6 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 const CurrencySelectorTokenInput = forwardRef<HTMLInputElement, InputProps>(
   ({ selectedCurrency, setSelectCurrency, supportedTokens, ...props }, ref) => {
-    console.log("selectedCurrency", selectedCurrency);
-
     const currencyPanel = (
       <CurrencySelectorWrapper
         supportedTokens={supportedTokens}

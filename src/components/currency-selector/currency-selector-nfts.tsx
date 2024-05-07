@@ -1,6 +1,5 @@
 import { useAccount } from "wagmi";
-
-import { Token } from "@brewlabs/sdk";
+import { EvmNftData } from "moralis/common-evm-utils";
 
 import { setUserSidebarOpen } from "state";
 
@@ -12,16 +11,11 @@ import { useMoralisWalletNFTs } from "@hooks/useMoralisWalletNFTs";
 import CurrencySelectorSkeleton from "@components/currency-selector/currency-selector-skeleton";
 import CurrencySelectorNFTItem from "./currency-selector-nft-item";
 
-type SupportedToken = {
-  chainId: number;
-  name: string;
-  symbol: string;
-  address: string;
-};
+import type { SupportedToken } from "config/constants/bond-tokens";
 
 type CurrencySelectorFromWalletProps = {
   supportedNFTs?: SupportedToken[];
-  onCurrencySelect: (token: Token, tokenPrice: number) => void;
+  onCurrencySelect: (token: EvmNftData, nftImage: string) => void;
 };
 
 const CurrencySelectorNFTs = ({ onCurrencySelect, supportedNFTs = [] }: CurrencySelectorFromWalletProps) => {
@@ -30,11 +24,11 @@ const CurrencySelectorNFTs = ({ onCurrencySelect, supportedNFTs = [] }: Currency
 
   const { walletNFTs, isLoading } = useMoralisWalletNFTs({ walletAddress: address, chainId });
 
-  const handleCurrencySelection = (token) => {
+  const handleCurrencySelection = (token: EvmNftData, nftImage: string) => {
     // Close the side panel
     setUserSidebarOpen(false);
     // Convert currency type to token type
-    onCurrencySelect(token, 0);
+    onCurrencySelect(token, nftImage);
   };
 
   return (

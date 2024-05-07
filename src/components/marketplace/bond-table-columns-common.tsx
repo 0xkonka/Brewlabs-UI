@@ -18,6 +18,8 @@ import BondColNFTName from "@components/marketplace/bond-col-nft-name";
 import BondColNFTVariance from "@components/marketplace/bond-col-nft-variance";
 import BondColNFTMarketPrice from "@components/marketplace/bond-col-nft-market-price";
 
+import { setNftModalOpen, setViewableNft } from "state/marketplace.store";
+
 export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] = [
   {
     accessorKey: "bondChain",
@@ -40,8 +42,8 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
       const bond = row.original;
       return (
         <div>
-          <img src={CHAIN_ICONS[bond.bondChainId]} alt="chain logo" width={24} height={24} />
-          <span className="sr-only">{bond.bondChainId}</span>
+          <img src={CHAIN_ICONS[bond.bondChainId]} alt={NETWORKS[bond.bondChainId].chainName} width={24} height={24} />
+          <span className="sr-only">{NETWORKS[bond.bondChainId].chainName}</span>
         </div>
       );
     },
@@ -55,7 +57,19 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
       return (
         <>
           {bond.bondType === "nft" && (
-            <BondColNFTName bondName={bond.bondName} bondToken={bond.bondToken} bondSaleToken={bond.bondSaleToken} />
+            <button
+              onClick={() => {
+                setNftModalOpen(true);
+                setViewableNft(bond.bondNftToken);
+              }}
+              className="transition-all duration-500 hover:scale-125"
+            >
+              <BondColNFTName
+                bondName={bond.bondName}
+                bondNftToken={bond.bondNftToken}
+                bondSaleToken={bond.bondSaleToken}
+              />
+            </button>
           )}
           {bond.bondType !== "nft" && (
             <BondColTokenName bondName={bond.bondName} bondToken={bond.bondToken} bondSaleToken={bond.bondSaleToken} />
@@ -82,7 +96,7 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
       return (
         <>
           {bond.bondType === "nft" && (
-            <BondColNFTMarketPrice address={bond.bondToken.address} chain={bond.bondToken.chainId} />
+            <BondColNFTMarketPrice address={bond.bondNftToken.tokenAddress.lowercase} chain={bond.bondChainId} />
           )}
           {bond.bondType !== "nft" && (
             <BondColTokenMarketPrice address={bond.bondToken.address} chain={bond.bondToken.chainId} />
@@ -110,8 +124,8 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
         <>
           {bond.bondType === "nft" && (
             <BondColNFTVariance
-              address={bond.bondToken.address}
-              chain={bond.bondToken.chainId}
+              address={bond.bondNftToken.tokenAddress.lowercase}
+              chain={bond.bondChainId}
               bondSalePrice={bond.bondSalePrice}
             />
           )}

@@ -30,8 +30,16 @@ const BondInvest = () => {
 
   const [investmentBond] = useMarketplaceStore("investmentBond");
   const [investModalOpen] = useMarketplaceStore("investModalOpen");
-  const { bondName, bondType, bondToken, bondSaleToken, bondVestingPeriod, bondSalePrice, bondRemaining } =
-    investmentBond;
+  const {
+    bondName,
+    bondType,
+    bondToken,
+    bondNftToken,
+    bondSaleToken,
+    bondVestingPeriod,
+    bondSalePrice,
+    bondRemaining,
+  } = investmentBond;
 
   const formSchema = z.object({
     investmentAmount: z.coerce.number().min(1).max(10),
@@ -73,7 +81,7 @@ const BondInvest = () => {
           <div className="flex flex-col items-start gap-2">
             <>
               {bondType === "nft" && (
-                <BondColNFTName bondName={bondName} bondToken={bondToken} bondSaleToken={bondSaleToken} />
+                <BondColNFTName bondName={bondName} bondNftToken={bondNftToken} bondSaleToken={bondSaleToken} />
               )}
               {bondType !== "nft" && (
                 <BondColTokenName bondName={bondName} bondToken={bondToken} bondSaleToken={bondSaleToken} />

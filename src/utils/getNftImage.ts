@@ -1,4 +1,4 @@
-import type { EvmNft } from "@moralisweb3/common-evm-utils";
+import type { EvmNftData } from "@moralisweb3/common-evm-utils";
 
 function removeAfterIpfs(url) {
   const ipfsIndex = url.indexOf("/ipfs/");
@@ -16,7 +16,9 @@ const createIPFSURL = (tokenUri, imagePath) => {
   return x;
 };
 
-export const getNftImage = (nft: EvmNft): string => {
+export const getNftImage = (nft: EvmNftData): string => {
+  if (!nft) return "/images/nfts/default.png";
+
   // If brewlabs NFT
   if (nft.name.includes("Brewlabs Flask NFT")) {
     return "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png";

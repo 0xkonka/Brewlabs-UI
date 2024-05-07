@@ -6,6 +6,7 @@ import { Button } from "@components/ui/button";
 import Container from "@components/layout/Container";
 import PageWrapper from "@components/layout/PageWrapper";
 
+import BondNft from "@components/marketplace/bond-nft";
 import BondTable from "@components/marketplace/bond-table";
 import BondInvest from "@components/marketplace/bond-invest";
 
@@ -53,6 +54,7 @@ export default function Page() {
       </main>
 
       <BondInvest />
+      <BondNft />
     </PageWrapper>
   );
 }

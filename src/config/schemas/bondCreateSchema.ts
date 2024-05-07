@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { nftSchema } from "config/schemas/nftSchema";
 import { tokenSchema } from "config/schemas/tokenSchema";
 import { bondVarianceSchema } from "config/schemas/bondVarianceSchema";
 import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
@@ -11,12 +12,24 @@ export const bondTypeSchema = z.enum(["token", "nft", "tokenVested"], {
   required_error: "You need to select a bond type.",
 });
 
+// bondToken: tokenSchema
+// .refine(() => bondCreateSchema.shape.bondType !== "nft", {
+//   message: "Bond token is required.",
+// })
+// .nullable(),
+// bondNftToken: nftSchema
+// .refine((bondNftToken) => bondCreateSchema.shape.bondType === "nft" && Object.keys(bondNftToken).length < 0, {
+//   message: "Bond NFT is required.",
+// })
+// .nullable(),
+
 export const bondCreateSchema = z.object({
   bondChainId: z.coerce
     .number()
     .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
   bondType: bondTypeSchema,
-  bondToken: tokenSchema,
+  bondToken: tokenSchema.nullable(),
+  bondNftToken: nftSchema.nullable(),
   bondSaleToken: tokenSchema,
   bondSalePrice: z.coerce.number(),
   bondVestingPeriod: z.coerce.number().optional(),
@@ -35,6 +48,7 @@ export const bondCommonSchema = z.object({
   bondType: bondTypeSchema,
   bondMarketPrice: z.coerce.number(),
   bondToken: tokenSchema,
+  bondNftToken: nftSchema,
   bondSaleToken: tokenSchema,
   bondSalePrice: z.coerce.number(),
   bondName: z.string(),
