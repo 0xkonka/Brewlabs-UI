@@ -1,38 +1,33 @@
 import { forwardRef } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-import { setUserSidebarOpen, setUserSidebarContent } from "state";
-
 import getTokenLogoURL from "utils/getTokenLogoURL";
 import { mustBeConnected } from "utils/mustBeConnected";
+import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
 import { Button } from "@components/ui/button";
-
 import TokenLogo from "components/logo/TokenLogo";
-
-import CurrencySelectorNFTs from "@components/currency-selector/currency-selector-nfts";
 import CurrencySelectorWrapper from "@components/currency-selector/currency-selector-wrapper";
 
-// TODO: type this
+import type { Token } from "config/schemas/tokenSchema";
+import type { SupportedToken } from "config/constants/bond-tokens";
+
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  selectedCurrency: any;
-  supportedTokens?: any[];
-  walletTokenType?: "token" | "nft";
-  setSelectCurrency: (currency, tokenPrice) => void;
+  selectedCurrency: Token;
+  supportedTokens?: SupportedToken[];
+  setSelectCurrency: (currency, tokenPrice?: number) => void;
 }
 
-const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ selectedCurrency, setSelectCurrency, supportedTokens, walletTokenType = "token", ...props }, ref) => {
-    // Determine the currency panel to display
-    const currencyPanel =
-      walletTokenType === "token" ? (
-        <CurrencySelectorWrapper
-          supportedTokens={supportedTokens}
-          onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
-        />
-      ) : (
-        <CurrencySelectorNFTs onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)} />
-      );
+const CurrencySelectorTokenInput = forwardRef<HTMLInputElement, InputProps>(
+  ({ selectedCurrency, setSelectCurrency, supportedTokens, ...props }, ref) => {
+    console.log("selectedCurrency", selectedCurrency);
+
+    const currencyPanel = (
+      <CurrencySelectorWrapper
+        supportedTokens={supportedTokens}
+        onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
+      />
+    );
 
     return (
       <Button
@@ -42,7 +37,7 @@ const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
         onClick={() => mustBeConnected([() => setUserSidebarOpen(true), () => setUserSidebarContent(currencyPanel)])}
       >
         {selectedCurrency ? (
-          <div className="flex flex-1 items-center gap-2 text-ellipsis whitespace-nowrap">
+          <div className="flex flex-1 items-center gap-4 text-ellipsis whitespace-nowrap">
             <TokenLogo
               src={getTokenLogoURL(selectedCurrency.address, selectedCurrency.chainId, selectedCurrency.logo)}
               classNames="h-6 w-6"
@@ -55,12 +50,13 @@ const CurrencySelectorInput = forwardRef<HTMLInputElement, InputProps>(
         ) : (
           <span className="text-gray-500">Select a token...</span>
         )}
+
         <ChevronDownIcon className="ml-auto h-5 w-5 dark:text-brand" />
       </Button>
     );
   }
 );
 
-CurrencySelectorInput.displayName = "CurrencySelectorInput";
+CurrencySelectorTokenInput.displayName = "CurrencySelectorTokenInput";
 
-export { CurrencySelectorInput };
+export { CurrencySelectorTokenInput };
