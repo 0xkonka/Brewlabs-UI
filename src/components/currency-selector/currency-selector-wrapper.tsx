@@ -4,8 +4,6 @@ import { setUserSidebarOpen } from "state";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
 
-import { useMoralisTokenMeta } from "@hooks/useMoralisTokenMeta";
-
 import CurrencySelectorTokens from "components/currency-selector/currency-selector-tokens";
 import CurrencySelectorSupportedTokens from "components/currency-selector/currency-selector-supported-tokens";
 
@@ -28,14 +26,6 @@ const CurrencySelectorWrapper = ({ onCurrencySelect, supportedTokens = [] }: Cur
     onCurrencySelect(token, tokenPrice);
   };
 
-  const supportedTokenAddresses = supportedTokens.map((token) => token.address);
-
-  const {
-    data: supportedTokensData,
-    isError,
-    isLoading,
-  } = useMoralisTokenMeta({ tokenAddress: supportedTokenAddresses, chainId: 1 });
-
   return (
     <div className="relative w-full">
       <div className="mb-6 flex items-center justify-between">
@@ -55,9 +45,7 @@ const CurrencySelectorWrapper = ({ onCurrencySelect, supportedTokens = [] }: Cur
             <CurrencySelectorTokens supportedTokens={supportedTokens} onCurrencySelect={handleCurrencySelection} />
           </TabsContent>
           <TabsContent value="supported">
-            {!isLoading &&
-              !isError &&
-              supportedTokensData.map((token, index) => <CurrencySelectorSupportedTokens key={index} token={token} />)}
+            <CurrencySelectorSupportedTokens supportedTokens={supportedTokens} />
           </TabsContent>
         </Tabs>
       </div>

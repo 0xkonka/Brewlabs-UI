@@ -4,23 +4,18 @@ import { useAccount } from "wagmi";
 import { Token } from "@brewlabs/sdk";
 import { BananaIcon } from "lucide-react";
 
-import { setUserSidebarOpen, setUserSidebarContent } from "state";
+import { setUserSidebarOpen } from "state";
 
 import CurrencySelectorItem from "./currency-selector-token-item";
 
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useMoralisWalletTokens } from "@hooks/useMoralisWalletTokens";
 
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 import CurrencySelectorNative from "@components/currency-selector/currency-selector-native";
 import CurrencySelectorSkeleton from "@components/currency-selector/currency-selector-skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
-type SupportedToken = {
-  chainId: number;
-  name: string;
-  symbol: string;
-  address: string;
-};
+import type { SupportedToken } from "config/constants/bond-tokens";
 
 type CurrencySelectorFromWalletProps = {
   supportedTokens?: SupportedToken[];
@@ -49,6 +44,14 @@ const CurrencySelectorTokens = ({ onCurrencySelect, supportedTokens = [] }: Curr
 
   return (
     <>
+      {!hasSupportedTokens && (
+        <Alert className="my-4 border-brand bg-yellow-500/10 text-brand">
+          <BananaIcon className="h-4 w-4 !text-brand" />
+          <AlertTitle>Slip up!</AlertTitle>
+          <AlertDescription>You do not own any supported tokens.</AlertDescription>
+        </Alert>
+      )}
+
       <CurrencySelectorNative supportedTokens={supportedTokens} handleCurrencySelection={handleCurrencySelection} />
 
       {isLoading && <CurrencySelectorSkeleton count={6} />}
@@ -70,14 +73,6 @@ const CurrencySelectorTokens = ({ onCurrencySelect, supportedTokens = [] }: Curr
             />
           );
         })}
-
-      {!hasSupportedTokens && (
-        <Alert className="my-4 border-brand bg-yellow-100/10 text-brand">
-          <BananaIcon className="h-4 w-4 !text-brand" />
-          <AlertTitle>Slip up!</AlertTitle>
-          <AlertDescription>You do not own any supported tokens.</AlertDescription>
-        </Alert>
-      )}
     </>
   );
 };

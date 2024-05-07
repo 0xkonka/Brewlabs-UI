@@ -30,7 +30,7 @@ const CurrencySelectorTokenItem = ({
 
   // Get the token price
   // Will retrieve cached value if available
-  const { data: tokenPrice, isLoading, isError } = useMarketData({ chain: chainId, address: token.token_address });
+  const { data: tokenPrice, isLoading } = useMarketData({ chain: chainId, address: token.token_address });
 
   // Convert WalletTokensFromMoralis to Token
   const asToken = (currency: WalletTokensFromMoralis): Token => {
