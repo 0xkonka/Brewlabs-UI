@@ -322,13 +322,6 @@ const BondCreate = () => {
                           <p className="text-xs text-gray-500">
                             Current market price for {watchBondToken?.symbol} is {initialMarketPrice} USD.
                           </p>
-                          <p className="text-xs text-gray-500">
-                            Set sale price is{" "}
-                            <span className="text-white">
-                              {((watchBondSalePrice / initialMarketPrice) * 100).toFixed(0)}%
-                            </span>{" "}
-                            of the current market price.
-                          </p>
                         </>
                       )}
                     </FormLabel>
