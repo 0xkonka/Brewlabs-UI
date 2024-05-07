@@ -14,6 +14,8 @@ const IncrementorInput = React.forwardRef<HTMLInputElement, InputProps>(({ symbo
   React.useImperativeHandle(ref, () => incrementInput.current!, []);
 
   const increment = () => {
+    if (props.disabled || props.readOnly) return;
+
     incrementInput.current?.stepUp();
     incrementInput.current?.dispatchEvent(new Event("change", { bubbles: true }));
 
@@ -22,6 +24,8 @@ const IncrementorInput = React.forwardRef<HTMLInputElement, InputProps>(({ symbo
   };
 
   const decrement = () => {
+    if (props.disabled || props.readOnly) return;
+
     incrementInput.current?.stepDown();
     incrementInput.current?.dispatchEvent(new Event("change", { bubbles: true }));
 
