@@ -31,7 +31,7 @@ export const bondCreateSchema = z.object({
   bondToken: tokenSchema.nullable(),
   bondNftToken: nftSchema.nullable(),
   bondSaleToken: tokenSchema,
-  bondSalePrice: z.coerce.number(),
+  bondSalePrice: z.coerce.number().min(0.001),
   bondVestingPeriod: z.coerce.number().optional(),
   bondName: z.string(),
   bondRemaining: z.object({

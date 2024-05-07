@@ -21,8 +21,6 @@ import ChainSelect from "views/swap/components/ChainSelect";
 import { CurrencySelectorNftInput } from "@components/currency-selector/currency-selector-nft-input";
 import { CurrencySelectorTokenInput } from "@components/currency-selector/currency-selector-token-input";
 
-import type { NftToken } from "config/schemas/nftSchema";
-
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { bondCreateSchema, supportedNetworks } from "config/schemas/bondCreateSchema";
 import { supportedBondListingTokens, supportedBondSaleTokens } from "config/constants/bond-tokens";
@@ -38,7 +36,6 @@ const BondCreate = () => {
     // Throw in local storage for now - This will be replaced with a contract call
     const bondData = JSON.parse(localStorage.getItem("bondDataInvest")) || [];
     const mergedData = [...bondData, data];
-    // const stringifiedMergedData = JSON.stringify(mergedData, (_, v) => (typeof v === "bigint" ? v.toString() : v));
     localStorage.setItem("bondDataInvest", JSON.stringify(mergedData));
 
     // TODO: Add some confirmation message
@@ -58,7 +55,7 @@ const BondCreate = () => {
       },
       bondSaleToken: null,
       bondVestingPeriod: 1,
-      bondSalePrice: 0,
+      bondSalePrice: 1,
     },
   });
 
@@ -107,10 +104,10 @@ const BondCreate = () => {
 
   // Set the bond name based on the selected token
   useEffect(() => {
-    if ((watchBondType !== "nft" && watchBondToken) || watchBondSaleToken) {
+    if (watchBondType !== "nft" && watchBondToken && watchBondSaleToken) {
       form.setValue("bondName", `${watchBondToken?.symbol}/${watchBondSaleToken?.symbol}`);
     }
-    if ((watchBondType === "nft" && watchBondNftToken) || watchBondSaleToken) {
+    if (watchBondType === "nft" && watchBondNftToken && watchBondSaleToken) {
       form.setValue("bondName", `${watchBondNftToken?.symbol}/${watchBondSaleToken?.symbol}`);
     }
   }, [watchBondToken, watchBondSaleToken, form, watchBondType, watchBondNftToken]);
@@ -323,7 +320,7 @@ const BondCreate = () => {
                       {watchBondToken && (
                         <>
                           <p className="text-xs text-gray-500">
-                            Current market price for {watchBondToken?.symbol} is {initialMarketPrice}.
+                            Current market price for {watchBondToken?.symbol} is {initialMarketPrice} USD.
                           </p>
                           <p className="text-xs text-gray-500">
                             Set sale price is{" "}
