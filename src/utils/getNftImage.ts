@@ -21,7 +21,10 @@ export const getNftImage = (nft: EvmNftData): string => {
 
   // If brewlabs NFT
   if (nft.name.includes("Brewlabs Flask NFT")) {
-    return "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png";
+    // Get rarity
+    const rarity = "image" in nft.metadata ? (nft.metadata.image as string).split("/").pop() : "common";
+    // Construct image URL
+    return `/images/nfts/brewlabs-flask-nfts/brewlabs-flask-${rarity.toLowerCase()}`;
   }
 
   // Try that - Metadata image
