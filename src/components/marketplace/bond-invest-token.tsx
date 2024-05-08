@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@components/ui/alert";
 import { IncrementorInput } from "@components/ui/incrementor-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 
-import { useMarketplaceStore, setInvestModalOpen } from "state/marketplace.store";
+import { useMarketplaceStore, setInvestTokenModalOpen } from "state/marketplace.store";
 
 import Modal from "components/Modal";
 import BondColType from "components/marketplace/bond-col-type";
@@ -28,18 +28,10 @@ import BondColTokenMarketPrice from "components/marketplace/bond-col-token-marke
 const BondInvest = () => {
   const { address } = useAccount();
 
-  const [investmentBond] = useMarketplaceStore("investmentBond");
-  const [investModalOpen] = useMarketplaceStore("investModalOpen");
-  const {
-    bondName,
-    bondType,
-    bondToken,
-    bondNftToken,
-    bondSaleToken,
-    bondVestingPeriod,
-    bondSalePrice,
-    bondRemaining,
-  } = investmentBond;
+  const [investmentBond] = useMarketplaceStore("investmentTokenBond");
+  const [investModalOpen] = useMarketplaceStore("investTokenModalOpen");
+  const { bondName, bondType, bondToken, bondSaleToken, bondVestingPeriod, bondSalePrice, bondRemaining, bondChainId } =
+    investmentBond;
 
   const formSchema = z.object({
     investmentAmount: z.coerce.number().min(1).max(10),
@@ -73,24 +65,16 @@ const BondInvest = () => {
     <Modal
       open={investModalOpen}
       onClose={() => {
-        setInvestModalOpen(false);
+        setInvestTokenModalOpen(false);
       }}
     >
       <div className="flex w-full flex-col gap-6 p-6">
         <div className="flex items-start gap-2">
           <div className="flex flex-col items-start gap-2">
-            <>
-              {bondType === "nft" && (
-                <BondColNFTName bondName={bondName} bondNftToken={bondNftToken} bondSaleToken={bondSaleToken} />
-              )}
-              {bondType !== "nft" && (
-                <BondColTokenName bondName={bondName} bondToken={bondToken} bondSaleToken={bondSaleToken} />
-              )}
-            </>
-            <h2 className="text-4xl font-bold">Invest in bond</h2>
-            <p>
-              {bondToken.symbol} {bondType === "nft" ? "NFT" : "token"} sold for {bondSaleToken.symbol}
-            </p>
+            <BondColTokenName bondName={bondName} bondToken={bondToken} bondSaleToken={bondSaleToken} />
+
+            <h2 className="text-4xl font-bold">Buy bond</h2>
+            <p>{bondType !== "nft" && bondToken.symbol + " token sold for " + bondSaleToken.symbol}</p>
 
             <dl className="space-y-1 text-sm">
               <div className="flex gap-2">
@@ -115,8 +99,7 @@ const BondInvest = () => {
           <div className="pr-4">
             <h2 className="text-gray-400">Market price</h2>
             <div className="mx-auto w-fit">
-              {bondType === "nft" && <BondColNFTMarketPrice address={bondToken.address} chain={bondToken.chainId} />}
-              {bondType !== "nft" && <BondColTokenMarketPrice address={bondToken.address} chain={bondToken.chainId} />}
+              <BondColTokenMarketPrice address={bondToken.address} chain={bondChainId} />
             </div>
           </div>
 
@@ -128,20 +111,7 @@ const BondInvest = () => {
           <div className="px-4">
             <h2 className="text-gray-400">Variance</h2>
             <div className="mx-auto w-fit">
-              {bondType === "nft" && (
-                <BondColNFTVariance
-                  address={bondToken.address}
-                  chain={bondToken.chainId}
-                  bondSalePrice={bondSalePrice}
-                />
-              )}
-              {bondType !== "nft" && (
-                <BondColTokenVariance
-                  address={bondToken.address}
-                  chain={bondToken.chainId}
-                  bondSalePrice={bondSalePrice}
-                />
-              )}
+              <BondColTokenVariance address={bondToken.address} chain={bondChainId} bondSalePrice={bondSalePrice} />
             </div>
           </div>
         </div>

@@ -8,7 +8,8 @@ import PageWrapper from "@components/layout/PageWrapper";
 
 import BondNft from "@components/marketplace/bond-nft";
 import BondTable from "@components/marketplace/bond-table";
-import BondInvest from "@components/marketplace/bond-invest";
+import BondInvestNft from "@components/marketplace/bond-invest-nft";
+import BondInvestToken from "@components/marketplace/bond-invest-token";
 
 export default function Page() {
   return (
@@ -53,7 +54,8 @@ export default function Page() {
         </Container>
       </main>
 
-      <BondInvest />
+      <BondInvestToken />
+      <BondInvestNft />
       <BondNft />
     </PageWrapper>
   );
