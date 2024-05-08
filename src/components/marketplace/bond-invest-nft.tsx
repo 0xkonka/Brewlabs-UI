@@ -130,7 +130,9 @@ const BondInvestNft = () => {
 
           <div className="px-4">
             <h2 className="text-gray-400">Listing price</h2>
-            <span>{asPrice(bondSalePrice, 3)}</span>
+            <span>
+              {asPrice(bondSalePrice, 3)} {bondSaleToken.symbol}
+            </span>
           </div>
 
           <div className="px-4">
