@@ -32,7 +32,7 @@ export const SUPPORTED_CHAIN_IDS = [
 
 // For testing purposes
 // Make sure this is not included in production
-const TEST_NETWORKS = [ChainId.GOERLI, ChainId.BSC_TESTNET];
+const TEST_NETWORKS = [ChainId.BSC_TESTNET];
 
 export const PAGE_SUPPORTED_CHAINS = {
   chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
