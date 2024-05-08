@@ -112,6 +112,12 @@ const BondInvestNft = () => {
             className="mx-auto w-3/4 rounded-lg ring ring-white/10"
             alt="NFT Image"
           />
+          <div>
+            <h4 className="text-xl">{bondNftToken.name}</h4>
+            <p className="text-gray-400">
+              {bondNftToken.symbol} - {bondNftToken.tokenId}
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4 divide-x-2 divide-gray-600 py-3">
@@ -147,7 +153,7 @@ const BondInvestNft = () => {
               <span className="font-bold text-gray-100 underline">{Number(usersBalance.formatted).toFixed(2)}</span>{" "}
               {usersBalance.symbol} in your wallet on {NETWORKS[bondSaleToken.chainId].chainName}.
               {Number(usersBalance.formatted) < bondSalePrice && (
-                <div className="w-full text-red-500"> You do not have enough funds to invest in this bond.</div>
+                <div className="w-full text-red-500"> You do not have enough funds to buy this NFT.</div>
               )}
             </AlertDescription>
           </Alert>
