@@ -91,36 +91,42 @@ export const supportedBondListingNfts = [
     name: "BREWLABS",
     symbol: "BREWLABS",
     address: "0x680650268F8f307bC19b6DA6A9aaAe18D3bEF468",
+    image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-epic.png",
   },
   {
     chainId: 1,
     name: "PUDGEY PENGUINS",
     symbol: "PPG",
     address: "0xBd3531dA5CF5857e7CfAA92426877b022e612cf8",
+    image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
   },
   {
     chainId: 1,
     name: "NAKAMIGOS",
     symbol: "NAKAMIGOS",
     address: "0xd774557b647330C91Bf44cfEAB205095f7E6c367",
+    image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
   },
   {
     chainId: 1,
     name: "Bored Ape Yacht Club",
     symbol: "BAYC",
     address: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+    image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
   },
   {
     chainId: 1,
     name: "RELAY",
     symbol: "RELAY",
     address: "0xC630BAd95A9AEa1f0367e69a2a5F7c19901493fC",
+    image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
   },
   {
     chainId: 1,
     name: "RELAYUP",
     symbol: "RELAYUP",
     address: "0x0CAaBC5cB665679747048541520BA68119F59359",
+    image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
   },
 ];
 
@@ -390,4 +396,12 @@ export type SupportedToken = {
   name: string;
   symbol: string;
   address: string;
+};
+
+export type SupportedNft = {
+  chainId: number;
+  name: string;
+  symbol: string;
+  address: string;
+  image: string;
 };
