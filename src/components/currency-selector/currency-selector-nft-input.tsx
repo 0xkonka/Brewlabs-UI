@@ -8,11 +8,11 @@ import { setUserSidebarOpen, setUserSidebarContent } from "state";
 import { Button } from "@components/ui/button";
 import CurrencySelectorNftWrapper from "@components/currency-selector/currency-selector-nft-wrapper";
 
-import type { SupportedToken } from "config/constants/bond-tokens";
+import type { SupportedNft } from "config/constants/bond-tokens";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   selectedCurrency: any;
-  supportedTokens?: SupportedToken[];
+  supportedTokens?: SupportedNft[];
   setSelectCurrency: (currency: EvmNftData) => void;
 }
 

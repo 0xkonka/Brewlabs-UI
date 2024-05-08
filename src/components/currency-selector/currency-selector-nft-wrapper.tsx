@@ -1,14 +1,14 @@
 import { EvmNftData } from "moralis/common-evm-utils";
 
 import { setUserSidebarOpen } from "state";
-import type { SupportedToken } from "config/constants/bond-tokens";
+import type { SupportedNft } from "config/constants/bond-tokens";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
 import CurrencySelectorNfts from "components/currency-selector/currency-selector-nfts";
 import CurrencySelectorSupportedNfts from "components/currency-selector/currency-selector-supported-nfts";
 
 type CurrencySelectorFromWalletProps = {
-  supportedNfts?: SupportedToken[];
+  supportedNfts?: SupportedNft[];
   onCurrencySelect: (token: EvmNftData, nftImage: string) => void;
 };
 
