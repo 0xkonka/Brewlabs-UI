@@ -4,7 +4,12 @@ import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { mustBeConnected } from "utils/mustBeConnected";
-import { setInvestModalOpen, setInvestmentBond } from "state/marketplace.store";
+import {
+  setInvestTokenModalOpen,
+  setInvestmentTokenBond,
+  setInvestNftModalOpen,
+  setInvestmentNftBond,
+} from "state/marketplace.store";
 import { bondCommonSchema, bondInvestSchema } from "config/schemas/bondCreateSchema";
 
 import { Button } from "@components/ui/button";
@@ -42,16 +47,32 @@ export const investTableColumns: ColumnDef<BondColumnsInvest>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
+      const bond = row.original;
       return (
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            mustBeConnected([() => setInvestModalOpen(true), () => setInvestmentBond(row.original)]);
-          }}
-        >
-          Invest in bond
-        </Button>
+        <>
+          {bond.bondType !== "nft" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                mustBeConnected([() => setInvestTokenModalOpen(true), () => setInvestmentTokenBond(row.original)]);
+              }}
+            >
+              Invest in bond
+            </Button>
+          )}
+          {bond.bondType === "nft" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                mustBeConnected([() => setInvestNftModalOpen(true), () => setInvestmentNftBond(row.original)]);
+              }}
+            >
+              Invest in bond
+            </Button>
+          )}
+        </>
       );
     },
   },

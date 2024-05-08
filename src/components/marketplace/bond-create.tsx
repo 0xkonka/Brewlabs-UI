@@ -23,7 +23,11 @@ import { CurrencySelectorTokenInput } from "@components/currency-selector/curren
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { bondCreateSchema, supportedNetworks } from "config/schemas/bondCreateSchema";
-import { supportedBondListingTokens, supportedBondSaleTokens } from "config/constants/bond-tokens";
+import {
+  supportedBondSaleTokens,
+  supportedBondListingNfts,
+  supportedBondListingTokens,
+} from "config/constants/bond-tokens";
 
 const BondCreate = () => {
   const router = useRouter();
@@ -231,7 +235,7 @@ const BondCreate = () => {
                             form.setValue("bondNftToken", currency);
                             form.trigger("bondNftToken");
                           }}
-                          supportedTokens={supportedBondListingTokens.filter((t) => t.chainId === chainId)}
+                          supportedTokens={supportedBondListingNfts.filter((t) => t.chainId === chainId)}
                         />
                       </FormControl>
                       <FormMessage />
