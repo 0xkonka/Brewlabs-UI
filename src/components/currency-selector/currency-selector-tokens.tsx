@@ -44,7 +44,7 @@ const CurrencySelectorTokens = ({ onCurrencySelect, supportedTokens = [] }: Curr
 
   return (
     <>
-      {!hasSupportedTokens && (
+      {!hasSupportedTokens && !isLoading && (
         <Alert className="my-4 border-brand bg-yellow-500/10 text-brand">
           <BananaIcon className="h-4 w-4 !text-brand" />
           <AlertTitle>Slip up!</AlertTitle>

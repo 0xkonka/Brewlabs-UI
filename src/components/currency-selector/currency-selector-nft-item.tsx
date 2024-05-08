@@ -25,7 +25,7 @@ type CurrencySelectorItemProps = {
   onCurrencySelect?: (token: EvmNftData, nftImage: string) => void;
 };
 
-const CurrencySelectorNFTItem = ({ nft, chainId, onCurrencySelect }: CurrencySelectorItemProps) => {
+const CurrencySelectorNftItem = ({ nft, chainId, onCurrencySelect }: CurrencySelectorItemProps) => {
   const nftName = nft.metadata && "name" in nft.metadata ? (nft.metadata.name as string) : nft.name;
   const nftImage = useMemo(() => getNftImage(nft), [nft]);
 
@@ -67,4 +67,4 @@ const CurrencySelectorNFTItem = ({ nft, chainId, onCurrencySelect }: CurrencySel
   );
 };
 
-export default CurrencySelectorNFTItem;
+export default CurrencySelectorNftItem;

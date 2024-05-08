@@ -6,7 +6,7 @@ import { mustBeConnected } from "utils/mustBeConnected";
 import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
 import { Button } from "@components/ui/button";
-import CurrencySelectorNFTs from "@components/currency-selector/currency-selector-nfts";
+import CurrencySelectorNftWrapper from "@components/currency-selector/currency-selector-nft-wrapper";
 
 import type { SupportedToken } from "config/constants/bond-tokens";
 
@@ -22,7 +22,8 @@ const CurrencySelectorNftInput = forwardRef<HTMLInputElement, InputProps>(
 
     // Determine the currency panel to display
     const currencyPanel = (
-      <CurrencySelectorNFTs
+      <CurrencySelectorNftWrapper
+        supportedNfts={supportedTokens}
         onCurrencySelect={(currency, nftImage) => {
           setNftImage(nftImage);
           setSelectCurrency(currency);

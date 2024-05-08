@@ -2,17 +2,11 @@ import { Token } from "@brewlabs/sdk";
 
 import { setUserSidebarOpen } from "state";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
+import type { SupportedToken } from "config/constants/bond-tokens";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
 import CurrencySelectorTokens from "components/currency-selector/currency-selector-tokens";
 import CurrencySelectorSupportedTokens from "components/currency-selector/currency-selector-supported-tokens";
-
-type SupportedToken = {
-  chainId: number;
-  name: string;
-  symbol: string;
-  address: string;
-};
 
 type CurrencySelectorFromWalletProps = {
   supportedTokens?: SupportedToken[];
