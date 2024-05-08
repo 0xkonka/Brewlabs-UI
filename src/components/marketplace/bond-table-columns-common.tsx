@@ -111,7 +111,11 @@ export const commonTableColumns: ColumnDef<z.infer<typeof bondCommonSchema>>[] =
     id: "bondPrice",
     cell: ({ row }) => {
       const bond = row.original;
-      return <span>${Number(bond.bondSalePrice.toFixed(3))}</span>;
+      return (
+        <span>
+          {Number(bond.bondSalePrice.toFixed(3))} {bond.bondSaleToken.symbol}
+        </span>
+      );
     },
   },
   {
