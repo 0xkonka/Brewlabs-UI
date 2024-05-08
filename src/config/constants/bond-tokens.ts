@@ -15,7 +15,7 @@ export const supportedBondSaleTokens = [
     chainId: 56,
     name: "USDC",
     symbol: "USDC",
-    address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    address: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
   },
   {
     chainId: 56,
