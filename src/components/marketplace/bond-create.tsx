@@ -183,10 +183,10 @@ const BondCreate = () => {
                         <span className="text-xs">ERC20 token with vested period, up to 10 days.</span>
                       </RadioButton>
 
-                      <RadioButton value="nft">
+                      <RadioButton value="nft" disabled={chainId !== 1}>
                         <ImagesIcon className="mb-3 h-12 w-12 " />
                         NFT (always instant)
-                        <span className="text-xs">NFT bonds have no vesting period.</span>
+                        <span className="text-xs">NFT bonds have no vesting period. Only on Ethereum network.</span>
                       </RadioButton>
                     </RadioGroup>
                   </FormControl>

@@ -7,6 +7,7 @@ import { cn } from "lib/utils";
 interface RadioButtonProps extends React.InputHTMLAttributes<HTMLLabelElement> {
   value: string;
   children: ReactNode;
+  disabled?: boolean;
   contentAlign?: "left" | "center" | "right";
 }
 
@@ -27,11 +28,11 @@ const radioButtonVariants = cva(
 );
 
 // To be used in the form inside a radio group
-export const RadioButton = ({ className, contentAlign, value, children }: RadioButtonProps) => {
+export const RadioButton = ({ className, contentAlign, value, children, disabled }: RadioButtonProps) => {
   return (
     <FormItem className="rounded-lg shadow">
       <FormControl>
-        <RadioGroupItem value={value} className="peer sr-only" />
+        <RadioGroupItem value={value} className="peer sr-only" disabled={disabled} />
       </FormControl>
       <FormLabel className={cn(radioButtonVariants({ contentAlign, className }))}>{children}</FormLabel>
     </FormItem>
