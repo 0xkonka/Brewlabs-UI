@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useAccount } from "wagmi";
 import { EvmNftData } from "moralis/common-evm-utils";
 
@@ -6,6 +7,8 @@ import { NETWORKS } from "config/constants/networks";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 import { useMoralisWalletNFTs } from "@hooks/useMoralisWalletNFTs";
 
+import { BananaIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "components/ui/alert";
 import CurrencySelectorSkeleton from "components/currency-selector/currency-selector-skeleton";
 import CurrencySelectorNftItem from "components/currency-selector/currency-selector-nft-item";
 
@@ -22,8 +25,24 @@ const CurrencySelectorNfts = ({ onCurrencySelect, supportedNfts = [] }: Currency
 
   const { walletNFTs, isLoading } = useMoralisWalletNFTs({ walletAddress: address, chainId });
 
+  const hasSupportedNfts = useMemo(() => {
+    if (supportedNfts.length === 0) return false;
+
+    return walletNFTs?.some((token) => {
+      return supportedNfts.some((t) => t.address.toLowerCase() === token.tokenAddress.lowercase);
+    });
+  }, [supportedNfts, walletNFTs]);
+
   return (
     <>
+      {!hasSupportedNfts && !isLoading && (
+        <Alert className="my-4 border-brand bg-yellow-500/10 text-brand">
+          <BananaIcon className="h-4 w-4 !text-brand" />
+          <AlertTitle>Slip up!</AlertTitle>
+          <AlertDescription>You do not own any supported NFTs.</AlertDescription>
+        </Alert>
+      )}
+
       {isLoading && <CurrencySelectorSkeleton count={6} />}
 
       {!isLoading && walletNFTs.length === 0 && (
@@ -32,9 +51,19 @@ const CurrencySelectorNfts = ({ onCurrencySelect, supportedNfts = [] }: Currency
         </div>
       )}
 
-      {walletNFTs?.map((nft) => (
-        <CurrencySelectorNftItem key={nft.tokenHash} chainId={chainId} nft={nft} onCurrencySelect={onCurrencySelect} />
-      ))}
+      {walletNFTs?.map((nft) => {
+        const isSupported = supportedNfts.some((t) => t.address.toLowerCase() === nft.tokenAddress.lowercase);
+
+        return (
+          <CurrencySelectorNftItem
+            nft={nft}
+            chainId={chainId}
+            key={nft.tokenHash}
+            isSupported={isSupported}
+            onCurrencySelect={onCurrencySelect}
+          />
+        );
+      })}
     </>
   );
 };
