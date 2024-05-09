@@ -3,20 +3,45 @@ import MarketPrice24h from "components/MarketPrice24h";
 import { useMarketData } from "@hooks/useMarketData";
 import { useActiveChainId } from "@hooks/useActiveChainId";
 
+import { Token } from "@brewlabs/sdk";
 import type { Erc20Token } from "moralis/common-evm-utils";
 
-const CurrencySelectorSupportedTokenItem = ({ token: { token } }: { token: { token: Erc20Token } }) => {
+type CurrencySelectorSupportedTokensProps = {
+  token: Erc20Token;
+  onCurrencySelect: (token: Token, tokenPrice: number) => void;
+  supportedDisabled?: boolean;
+};
+
+const CurrencySelectorSupportedTokenItem = ({
+  token,
+  onCurrencySelect,
+  supportedDisabled,
+}: CurrencySelectorSupportedTokensProps) => {
   const { chainId } = useActiveChainId();
 
   // Get the token price
   // Will retrieve cached value if available
   const { data: tokenPrice } = useMarketData({ chain: chainId, address: token.contractAddress.lowercase });
 
+  // Convert WalletTokensFromMoralis to Token
+  const asToken = (currency: Erc20Token): Token => {
+    return new Token(
+      chainId,
+      currency.contractAddress.lowercase,
+      currency.decimals,
+      currency.symbol,
+      currency.name,
+      undefined,
+      currency.logo
+    );
+  };
+
   return (
     <button
       type="button"
-      disabled={true}
+      disabled={supportedDisabled}
       key={token.contractAddress.lowercase}
+      onClick={() => onCurrencySelect(asToken(token), tokenPrice.usd)}
       className="group flex w-full justify-between border-b border-gray-600 from-transparent via-gray-800 to-transparent text-start animate-in fade-in enabled:hover:bg-gradient-to-r"
     >
       <div className="flex w-full items-center justify-between p-5 pl-0">

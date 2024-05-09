@@ -14,14 +14,16 @@ import type { SupportedToken } from "config/constants/bond-tokens";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   selectedCurrency: Token;
+  supportedDisabled?: boolean;
   supportedTokens?: SupportedToken[];
   setSelectCurrency: (currency, tokenPrice?: number) => void;
 }
 
 const CurrencySelectorTokenInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ selectedCurrency, setSelectCurrency, supportedTokens, ...props }, ref) => {
+  ({ selectedCurrency, setSelectCurrency, supportedTokens, supportedDisabled = false, ...props }, ref) => {
     const currencyPanel = (
       <CurrencySelectorWrapper
+        supportedDisabled={supportedDisabled}
         supportedTokens={supportedTokens}
         onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
       />

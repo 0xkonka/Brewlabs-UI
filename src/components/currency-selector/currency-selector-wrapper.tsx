@@ -9,11 +9,16 @@ import CurrencySelectorTokens from "components/currency-selector/currency-select
 import CurrencySelectorSupportedTokens from "components/currency-selector/currency-selector-supported-tokens";
 
 type CurrencySelectorFromWalletProps = {
+  supportedDisabled?: boolean;
   supportedTokens?: SupportedToken[];
   onCurrencySelect: (token: Token, tokenPrice: number) => void;
 };
 
-const CurrencySelectorWrapper = ({ onCurrencySelect, supportedTokens = [] }: CurrencySelectorFromWalletProps) => {
+const CurrencySelectorWrapper = ({
+  onCurrencySelect,
+  supportedTokens = [],
+  supportedDisabled,
+}: CurrencySelectorFromWalletProps) => {
   const handleCurrencySelection = (token: Token, tokenPrice: number) => {
     // Close the side panel
     setUserSidebarOpen(false);
@@ -39,7 +44,11 @@ const CurrencySelectorWrapper = ({ onCurrencySelect, supportedTokens = [] }: Cur
             <CurrencySelectorTokens supportedTokens={supportedTokens} onCurrencySelect={handleCurrencySelection} />
           </TabsContent>
           <TabsContent value="supported">
-            <CurrencySelectorSupportedTokens supportedTokens={supportedTokens} />
+            <CurrencySelectorSupportedTokens
+              supportedTokens={supportedTokens}
+              supportedDisabled={supportedDisabled}
+              onCurrencySelect={handleCurrencySelection}
+            />
           </TabsContent>
         </Tabs>
       </div>
