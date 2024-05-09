@@ -18,7 +18,7 @@ export const tokenSchema = z.object(
         symbol: z.string().min(2, { message: "Symbol must be at least 2 characters." }),
         name: z.string().min(2, { message: "Name must be at least 2 characters." }),
         address: addressSchema,
-        logoURI: z.string(),
+        logoURI: z.string().optional(),
         decimals: z.coerce.number(),
         quote: z.string().optional(),
       })

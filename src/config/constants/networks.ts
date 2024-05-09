@@ -310,7 +310,7 @@ export const NETWORKS = {
       symbol: "MATIC",
       decimals: 18,
     },
-    rpcUrls: ["https://polygon.llamarpc.com", "https://polygon.meowrpc.com"],
+    rpcUrls: ["https://rpc-mainnet.matic.quiknode.pro", "https://polygon.meowrpc.com"],
     blockExplorerUrls: ["https://polygonscan.com"],
   },
   [ChainId.FANTOM]: {
