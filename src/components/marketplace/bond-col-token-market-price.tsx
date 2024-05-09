@@ -23,7 +23,7 @@ const BondColTokenMarketPrice = ({ chain, address }: { chain: number; address: s
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-1">
-            {asPrice(data.usd, 4)}
+            ${asPrice(data.usd, 4)}
             {data.usd_24h_change > 0 && <TrendingUpIcon className="h-4 w-4 text-green-500" />}
             {data.usd_24h_change < 0 && <TrendingDownIcon className="h-4 w-4 text-red-500" />}
           </div>

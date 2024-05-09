@@ -8,7 +8,6 @@ import {
 
 import { Field } from "../state/swap/actions";
 import { basisPointsToPercent } from "./index";
-import { de } from "date-fns/locale";
 
 const BASE_FEE = new Percent(JSBI.BigInt(25), JSBI.BigInt(10000));
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
@@ -98,5 +97,5 @@ export const multiplyPriceByAmount = (price: Price, amount: number, significantD
  * @returns number to fixed without trailing zeros
  */
 export const asPrice = (price: number, decimals?: number) => {
-  return `$${Number(price?.toFixed(decimals || 2))}`;
+  return Number(price?.toFixed(decimals || 2));
 };

@@ -23,7 +23,7 @@ const BondColNftMarketPrice = ({ chain, address }: { chain: number; address: str
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-1">
-            {asPrice(data.floor_price.usd, 4)}
+            ${asPrice(data.floor_price.usd, 4)}
             {data.floor_price_in_usd_24h_percentage_change > 0 && <TrendingUpIcon className="h-4 w-4 text-green-500" />}
             {data.floor_price_in_usd_24h_percentage_change < 0 && <TrendingDownIcon className="h-4 w-4 text-red-500" />}
           </div>
