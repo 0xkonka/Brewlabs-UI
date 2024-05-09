@@ -214,6 +214,7 @@ const BondCreate = () => {
                             form.setValue("bondToken", currency);
                             form.trigger("bondToken");
                           }}
+                          supportedDisabled={true}
                           supportedTokens={supportedBondListingTokens.filter((t) => t.chainId === chainId)}
                         />
                       </FormControl>
@@ -394,6 +395,12 @@ const BondCreate = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+
+            <p className="text-xs text-gray-300">
+              Disclaimer: Please consider market price variance for both assets when creating your bond. Bond prices are
+              set at fixed values you nominate. You can cancel your bond at anytime after it has been created. If a
+              portion of your bond (token) has been sold, it is non-refundable. All NFT sales are instant.
+            </p>
 
             <Button type="submit" variant="brand" className="w-full">
               Create bond
