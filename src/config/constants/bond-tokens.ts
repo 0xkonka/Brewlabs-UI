@@ -103,7 +103,7 @@ export const supportedBondListingNfts = [
   {
     chainId: 1,
     name: "NAKAMIGOS",
-    symbol: "NAKAMIGOS",
+    symbol: "NKMGS",
     address: "0xd774557b647330C91Bf44cfEAB205095f7E6c367",
     image: "/images/nfts/brewlabs-flask-nfts/brewlabs-flask-common.png",
   },
