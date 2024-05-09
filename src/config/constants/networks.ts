@@ -140,7 +140,7 @@ export const CHAIN_ICONS = {
 };
 
 export const EXPLORER_LOGO = {
-  [ChainId.ETHEREUM]: "/images/explorer/etherscan.png",
+  [ChainId.ETHEREUM]: "/images/explorer/etherscan.svg",
   [ChainId.ARBITRUM]: "/images/explorer/arbiscan.png",
   [ChainId.BSC_MAINNET]: "/images/explorer/bscscan.png",
   [ChainId.POLYGON]: "/images/explorer/polygonscan.png",
@@ -149,7 +149,7 @@ export const EXPLORER_LOGO = {
   [ChainId.CRONOS]: "/images/networks/cronoscan.png",
   [ChainId.BRISE]: "/images/networks/brisescan.png",
 
-  [ChainId.GOERLI]: "/images/explorer/etherscan.png",
+  [ChainId.GOERLI]: "/images/explorer/etherscan.svg",
   [ChainId.BSC_TESTNET]: "/images/explorer/bscscan.png",
 };
 
