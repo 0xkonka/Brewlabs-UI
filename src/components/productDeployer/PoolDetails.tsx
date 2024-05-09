@@ -101,6 +101,7 @@ const PoolDetails = () => {
       poolReflectionToken,
       poolFeeAddress,
       poolDeployChainId,
+      poolInitialRewardSupply
     },
   ] = useDeployerPoolState("poolInfo");
 
@@ -114,7 +115,7 @@ const PoolDetails = () => {
       poolType: poolType || "standard",
       poolRewardToken: poolRewardToken,
       poolReflectionToken: poolReflectionToken,
-      poolInitialRewardSupply: 0.5,
+      poolInitialRewardSupply: poolInitialRewardSupply || 0.5,
       poolDuration: poolDuration || "90",
       poolLockPeriod: poolLockPeriod || "0",
       poolWithdrawFee: poolWithdrawFee || 0.05,
@@ -131,7 +132,8 @@ const PoolDetails = () => {
   const rewardCurrency = useCurrency(watchPoolRewardToken?.address);
   const totalSupply = useTotalSupply(rewardCurrency as Token) || 0;
 
-  const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {
+  const onSubmit = (data: z.infer<typeof poolDeployerSchema>) => {    
+    data.poolDeployChainId = chainId;
     // Set the form data to the global state
     setPoolInfo(data);
     // Progress to the confirm step

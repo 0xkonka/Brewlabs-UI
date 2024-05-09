@@ -32,7 +32,7 @@ export const SUPPORTED_CHAIN_IDS = [
 
 // For testing purposes
 // Make sure this is not included in production
-const TEST_NETWORKS = [ChainId.GOERLI, ChainId.BSC_TESTNET];
+const TEST_NETWORKS = [ChainId.BSC_TESTNET];
 
 export const PAGE_SUPPORTED_CHAINS = {
   chart: [ChainId.ETHEREUM, ChainId.BSC_MAINNET],
@@ -310,7 +310,7 @@ export const NETWORKS = {
       symbol: "MATIC",
       decimals: 18,
     },
-    rpcUrls: ["https://polygon.llamarpc.com", "https://polygon.meowrpc.com"],
+    rpcUrls: ["https://rpc-mainnet.matic.quiknode.pro", "https://polygon.meowrpc.com"],
     blockExplorerUrls: ["https://polygonscan.com"],
   },
   [ChainId.FANTOM]: {

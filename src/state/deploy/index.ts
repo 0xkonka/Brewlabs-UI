@@ -63,7 +63,7 @@ const initialState = {
       };
     })
     .filter(Boolean), // Filter out null values
-  poolFactory: PAGE_SUPPORTED_CHAINS.deployerPoolFactory
+  poolFactory: PAGE_SUPPORTED_CHAINS["deploy-pool"]
     .map((chainId) => {
       return {
         chainId,
@@ -89,7 +89,6 @@ export const fetchFarmFactoryDataAsync = (chainId) => async (dispatch) => {
 
 export const fetchPoolFactoryDataAsync = (chainId) => async (dispatch) => {
   const result = await fetchPoolFactoryData(chainId);
-
   dispatch(setDeployPublicData({ type: "poolFactory", data: result }));
 };
 

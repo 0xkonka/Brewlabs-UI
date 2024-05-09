@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 
@@ -25,6 +25,7 @@ import useTotalSupply from "@hooks/useTotalSupply";
 import { Token } from "@brewlabs/sdk";
 import PoolFactoryAbi from "config/abi/staking/brewlabsPoolFactory.json";
 import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
+import { usePoolFactoryContract } from "@hooks/useContract";
 
 const initialDeploySteps = [
   {
@@ -54,11 +55,7 @@ const PoolDeployConfirm = () => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySteps, setDeploySteps] = useState(initialDeploySteps);
   const factoryState = usePoolFactoryState(chainId);
-  const { onCreateSinglePool, onCreateLockupPool, onCreateLockupPoolWithPenalty } = usePoolFactory(
-    chainId,
-    factoryState?.serviceFee
-  );
-
+  const poolFactoryContract = usePoolFactoryContract(chainId);
   const { onApprove } = useTokenApprove();
   const [
     {
@@ -81,7 +78,7 @@ const PoolDeployConfirm = () => {
     if (errorMsg) toast.error(errorMsg);
   };
 
-  const handleDeploy = async () => {
+  const handleDeploy = useCallback(async () => {
     if (chainId !== poolDeployChainId) {
       toast.error("Connected chain is not the same as the selected deploy chain");
       return;
@@ -122,9 +119,8 @@ const PoolDeployConfirm = () => {
 
       // Deploy farm contract
       let tx;
-      console.log(poolDuration, poolLockPeriod);
       if (Number(poolLockPeriod) > 0) {
-        tx = await onCreateLockupPool(
+        const pendingTx = await poolFactoryContract.createBrewlabsLockupPools(
           poolToken.address,
           poolRewardToken.address,
           dividendToken,
@@ -132,8 +128,10 @@ const PoolDeployConfirm = () => {
           [Number(poolLockPeriod)],
           [rewardPerBlock.toString()],
           [(poolDepositFee * 100).toFixed(0)],
-          [(poolWithdrawFee * 100).toFixed(0)]
+          [(poolWithdrawFee * 100).toFixed(0)],
+          { value: factoryState.serviceFee }
         );
+        tx = await pendingTx.wait();       
         // Complete 2nd step
         updateDeployStatus({
           setStepsFn: setDeploySteps,
@@ -146,17 +144,19 @@ const PoolDeployConfirm = () => {
           targetStep: "Supply reward tokens",
           updatedStatus: "current",
         });
-      } else {
-        tx = await onCreateSinglePool(
+      } else {        
+        const pendingTx = await poolFactoryContract.createBrewlabsSinglePool(
           poolToken.address,
           poolRewardToken.address,
           dividendToken,
           Number(poolDuration),
           rewardPerBlock.toString(),
-          (poolDepositFee * 100).toFixed(0),
+          (poolDepositFee * 100).toFixed(0),          
           (poolWithdrawFee * 100).toFixed(0),
-          hasDividend
+          hasDividend,
+          { value: factoryState.serviceFee }
         );
+        tx = await pendingTx.wait();
         // Complete 2nd step
         updateDeployStatus({
           setStepsFn: setDeploySteps,
@@ -216,7 +216,7 @@ const PoolDeployConfirm = () => {
         updatedDescription: "Deployment failed",
       });
     }
-  };
+  },[chainId, deploySteps, factoryState.address, factoryState.payingToken.address, factoryState.payingToken.isToken, factoryState.serviceFee, onApprove, poolDeployChainId, poolDepositFee, poolDuration, poolFactoryContract, poolInitialRewardSupply, poolLockPeriod, poolRewardToken.address, poolRewardToken.decimals, poolToken, poolWithdrawFee, totalSupply]);
 
   return (
     <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
