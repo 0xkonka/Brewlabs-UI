@@ -28,7 +28,7 @@ const CurrencySelectorNftWrapper = ({ onCurrencySelect, supportedNfts = [] }: Cu
         </div>
       </div>
 
-      <div className="mt-3 h-[75svh] w-full overflow-y-auto px-2">
+      <div className="mt-3 h-[82svh] w-full overflow-y-auto px-2 pb-8">
         <Tabs defaultValue="wallet">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="wallet">NFTs owned</TabsTrigger>
@@ -41,6 +41,7 @@ const CurrencySelectorNftWrapper = ({ onCurrencySelect, supportedNfts = [] }: Cu
             <CurrencySelectorSupportedNfts supportedNfts={supportedNfts} />
           </TabsContent>
         </Tabs>
+        <div className="absolute bottom-0 z-0 h-20 w-full bg-zinc-900 [mask-image:linear-gradient(to_top,black_5%,transparent)]" />
       </div>
     </div>
   );

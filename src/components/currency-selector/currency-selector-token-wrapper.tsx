@@ -10,14 +10,16 @@ import CurrencySelectorSupportedTokens from "components/currency-selector/curren
 
 type CurrencySelectorFromWalletProps = {
   supportedDisabled?: boolean;
+  activeTab?: "wallet" | "supported";
   supportedTokens?: SupportedToken[];
   onCurrencySelect: (token: Token, tokenPrice: number) => void;
 };
 
-const CurrencySelectorWrapper = ({
+const CurrencySelectorTokenWrapper = ({
   onCurrencySelect,
   supportedTokens = [],
   supportedDisabled,
+  activeTab = "wallet",
 }: CurrencySelectorFromWalletProps) => {
   const handleCurrencySelection = (token: Token, tokenPrice: number) => {
     // Close the side panel
@@ -34,8 +36,8 @@ const CurrencySelectorWrapper = ({
         </div>
       </div>
 
-      <div className="mt-3 h-[75svh] w-full overflow-y-auto px-2">
-        <Tabs defaultValue="wallet">
+      <div className="mt-3 h-[82svh] w-full overflow-y-auto px-2 pb-8">
+        <Tabs defaultValue={activeTab}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="wallet">Tokens owned</TabsTrigger>
             <TabsTrigger value="supported">Supported tokens</TabsTrigger>
@@ -51,9 +53,10 @@ const CurrencySelectorWrapper = ({
             />
           </TabsContent>
         </Tabs>
+        <div className="absolute bottom-0 z-0 h-20 w-full bg-zinc-900 [mask-image:linear-gradient(to_top,black_5%,transparent)]" />
       </div>
     </div>
   );
 };
 
-export default CurrencySelectorWrapper;
+export default CurrencySelectorTokenWrapper;
