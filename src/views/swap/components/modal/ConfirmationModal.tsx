@@ -75,7 +75,7 @@ const ConfirmationModal = ({ open, setOpen, type, tx }: ModalProps): ReactElemen
                     href={getExplorerLink(chainId, "transaction", tx)}
                     rel="noreferrer"
                   >
-                    <img src={"/images/explorer/etherscan.png"} alt={""} className="mr-2 w-4" />
+                    <img src={"/images/explorer/etherscan.svg"} alt={""} className="mr-2 w-4" />
                     <div>Transaction</div>
                   </a>
                   <div
