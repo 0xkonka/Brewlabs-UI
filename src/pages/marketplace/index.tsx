@@ -17,7 +17,7 @@ export default function Page() {
       <Button
         asChild
         variant="outline"
-        className="absolute right-4 top-4 z-10 animate-in slide-in-from-right-60 fill-mode-both"
+        className="absolute right-4 top-4 z-10 hidden animate-in slide-in-from-right-60 fill-mode-both lg:flex"
       >
         <Link href="/marketplace/create-bond">
           Create a new bond <ZapIcon className="ml-2 h-4 w-4" />
@@ -37,6 +37,11 @@ export default function Page() {
                 Brewlabs Earn is where you can build your future. We have a unique set of tools and utilities to build
                 your portfolio.
               </p>
+              <Button asChild variant="outline" className="animate-in slide-in-from-right-60 fill-mode-both">
+                <Link href="/marketplace/create-bond">
+                  Create a new bond <ZapIcon className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
 
               <div className="mt-4 flex w-full flex-col sm:w-[400px]">
                 <div className="flex flex-col flex-wrap xmd:flex-row"></div>
