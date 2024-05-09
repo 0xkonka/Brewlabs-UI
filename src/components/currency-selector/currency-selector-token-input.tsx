@@ -7,7 +7,7 @@ import { setUserSidebarOpen, setUserSidebarContent } from "state";
 
 import { Button } from "@components/ui/button";
 import TokenLogo from "components/logo/TokenLogo";
-import CurrencySelectorWrapper from "@components/currency-selector/currency-selector-wrapper";
+import CurrencySelectorWrapper from "components/currency-selector/currency-selector-token-wrapper";
 
 import type { Token } from "config/schemas/tokenSchema";
 import type { SupportedToken } from "config/constants/bond-tokens";
@@ -16,15 +16,17 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   selectedCurrency: Token;
   supportedDisabled?: boolean;
   supportedTokens?: SupportedToken[];
+  activeTab?: "wallet" | "supported";
   setSelectCurrency: (currency, tokenPrice?: number) => void;
 }
 
 const CurrencySelectorTokenInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ selectedCurrency, setSelectCurrency, supportedTokens, supportedDisabled = false, ...props }, ref) => {
+  ({ selectedCurrency, setSelectCurrency, supportedTokens, supportedDisabled = false, activeTab, ...props }, ref) => {
     const currencyPanel = (
       <CurrencySelectorWrapper
-        supportedDisabled={supportedDisabled}
+        activeTab={activeTab}
         supportedTokens={supportedTokens}
+        supportedDisabled={supportedDisabled}
         onCurrencySelect={(currency, tokenPrice) => setSelectCurrency(currency, tokenPrice)}
       />
     );

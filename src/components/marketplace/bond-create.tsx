@@ -302,6 +302,7 @@ const BondCreate = () => {
                     <FormLabel className="text-xl">Select a sale token</FormLabel>
                     <FormControl>
                       <CurrencySelectorTokenInput
+                        activeTab="supported"
                         selectedCurrency={field.value}
                         setSelectCurrency={(currency) => {
                           form.setValue("bondSaleToken", currency);
