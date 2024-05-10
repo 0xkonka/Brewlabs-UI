@@ -337,8 +337,8 @@ const BondCreate = () => {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button type="button" variant="ghost" size="icon" onClick={() => decrease()}>
-                                  <MinusCircleIcon className="h-4 w-4" />
+                                <Button type="button" variant="ghost" size="icon" onClick={() => increase()}>
+                                  <PlusCircleIcon className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent side="left">
@@ -350,8 +350,8 @@ const BondCreate = () => {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button type="button" variant="ghost" size="icon" onClick={() => increase()}>
-                                  <PlusCircleIcon className="h-4 w-4" />
+                                <Button type="button" variant="ghost" size="icon" onClick={() => decrease()}>
+                                  <MinusCircleIcon className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent side="right">
