@@ -103,19 +103,20 @@ const PoolDeployConfirm = () => {
       // Approve paying token for deployment
       if (factoryState.payingToken.isToken && +factoryState.serviceFee > 0) {
         await onApprove(factoryState.payingToken.address, factoryState.address);
-        // Complete 1st step
-        updateDeployStatus({
-          setStepsFn: setDeploySteps,
-          targetStep: "Deploy staking pool",
-          updatedStatus: "complete",
-        });
-        // Change status of 2nd step
-        updateDeployStatus({
-          setStepsFn: setDeploySteps,
-          targetStep: "Approve reward tokens",
-          updatedStatus: "current",
-        });
       }
+
+      // Complete 1st step
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Deploy staking pool",
+        updatedStatus: "complete",
+      });
+      // Change status of 2nd step
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Approve reward tokens",
+        updatedStatus: "current",
+      });
 
       // Deploy farm contract
       let tx;
@@ -131,7 +132,7 @@ const PoolDeployConfirm = () => {
           [(poolWithdrawFee * 100).toFixed(0)],
           { value: factoryState.serviceFee }
         );
-        tx = await pendingTx.wait();       
+        tx = await pendingTx.wait();
         // Complete 2nd step
         updateDeployStatus({
           setStepsFn: setDeploySteps,
@@ -144,14 +145,14 @@ const PoolDeployConfirm = () => {
           targetStep: "Supply reward tokens",
           updatedStatus: "current",
         });
-      } else {        
+      } else {
         const pendingTx = await poolFactoryContract.createBrewlabsSinglePool(
           poolToken.address,
           poolRewardToken.address,
           dividendToken,
           Number(poolDuration),
           rewardPerBlock.toString(),
-          (poolDepositFee * 100).toFixed(0),          
+          (poolDepositFee * 100).toFixed(0),
           (poolWithdrawFee * 100).toFixed(0),
           hasDividend,
           { value: factoryState.serviceFee }
@@ -216,7 +217,26 @@ const PoolDeployConfirm = () => {
         updatedDescription: "Deployment failed",
       });
     }
-  },[chainId, deploySteps, factoryState.address, factoryState.payingToken.address, factoryState.payingToken.isToken, factoryState.serviceFee, onApprove, poolDeployChainId, poolDepositFee, poolDuration, poolFactoryContract, poolInitialRewardSupply, poolLockPeriod, poolRewardToken.address, poolRewardToken.decimals, poolToken, poolWithdrawFee, totalSupply]);
+  }, [
+    chainId,
+    deploySteps,
+    factoryState.address,
+    factoryState.payingToken.address,
+    factoryState.payingToken.isToken,
+    factoryState.serviceFee,
+    onApprove,
+    poolDeployChainId,
+    poolDepositFee,
+    poolDuration,
+    poolFactoryContract,
+    poolInitialRewardSupply,
+    poolLockPeriod,
+    poolRewardToken.address,
+    poolRewardToken.decimals,
+    poolToken,
+    poolWithdrawFee,
+    totalSupply,
+  ]);
 
   return (
     <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
