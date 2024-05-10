@@ -26,7 +26,7 @@ export default function Page() {
       <section className="relative flex flex-col justify-center overflow-hidden pt-32 md:justify-end lg:pt-32">
         <Container>
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
-            <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none xl:col-span-6">
+            <div className="relative z-10 max-w-2xl lg:col-span-7 lg:mx-auto lg:max-w-none xl:col-span-6">
               <header className="mb-4 mt-4 font-brand sm:mt-5 lg:mt-6">
                 <h1 className="bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-4xl text-transparent lg:text-5xl">
                   Get ready for the next generation in blockchain utilities
@@ -37,7 +37,7 @@ export default function Page() {
                 Brewlabs Earn is where you can build your future. We have a unique set of tools and utilities to build
                 your portfolio.
               </p>
-              <Button asChild variant="outline" className="animate-in slide-in-from-right-60 fill-mode-both">
+              <Button asChild variant="outline" className="animate-in slide-in-from-right-60 fill-mode-both lg:hidden">
                 <Link href="/marketplace/create-bond">
                   Create a new bond <ZapIcon className="ml-2 h-4 w-4" />
                 </Link>
