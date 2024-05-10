@@ -24,19 +24,17 @@ import { useCurrency } from "@hooks/Tokens";
 import useTotalSupply from "@hooks/useTotalSupply";
 import { Token } from "@brewlabs/sdk";
 import PoolFactoryAbi from "config/abi/staking/brewlabsPoolFactory.json";
+import stakingAbi from "config/abi/staking/stakingImpl.json";
 import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 import { usePoolFactoryContract } from "@hooks/useContract";
+import { useSigner } from "utils/wagmi";
+import { getContract, getBep20Contract } from "utils/contractHelpers";
 
 const initialDeploySteps = [
   {
     name: "Deploy staking pool",
     status: "current",
     description: "Confirm contract creation in your wallet",
-  },
-  {
-    name: "Approve reward tokens",
-    status: "upcoming",
-    description: "Approve reward token in your wallet",
   },
   {
     name: "Supply reward tokens",
@@ -57,6 +55,7 @@ const PoolDeployConfirm = () => {
   const factoryState = usePoolFactoryState(chainId);
   const poolFactoryContract = usePoolFactoryContract(chainId);
   const { onApprove } = useTokenApprove();
+  const { data: signer } = useSigner();
   const [
     {
       poolToken,
@@ -88,6 +87,7 @@ const PoolDeployConfirm = () => {
     setDeploySteps(initialDeploySteps);
     // Shows initial the deployment progress
     setIsDeploying(true);
+    const rewardTokenContract = getBep20Contract(chainId, poolRewardToken?.address, signer);
     try {
       let rewardPerBlock = ethers.utils.parseUnits(
         ((+totalSupply.toFixed(2) * poolInitialRewardSupply) / 100).toFixed(poolRewardToken.decimals),
@@ -109,12 +109,6 @@ const PoolDeployConfirm = () => {
       updateDeployStatus({
         setStepsFn: setDeploySteps,
         targetStep: "Deploy staking pool",
-        updatedStatus: "complete",
-      });
-      // Change status of 2nd step
-      updateDeployStatus({
-        setStepsFn: setDeploySteps,
-        targetStep: "Approve reward tokens",
         updatedStatus: "current",
       });
 
@@ -133,18 +127,6 @@ const PoolDeployConfirm = () => {
           { value: factoryState.serviceFee }
         );
         tx = await pendingTx.wait();
-        // Complete 2nd step
-        updateDeployStatus({
-          setStepsFn: setDeploySteps,
-          targetStep: "Approve reward tokens",
-          updatedStatus: "complete",
-        });
-        // Change status of 3rd step
-        updateDeployStatus({
-          setStepsFn: setDeploySteps,
-          targetStep: "Supply reward tokens",
-          updatedStatus: "current",
-        });
       } else {
         const pendingTx = await poolFactoryContract.createBrewlabsSinglePool(
           poolToken.address,
@@ -158,20 +140,37 @@ const PoolDeployConfirm = () => {
           { value: factoryState.serviceFee }
         );
         tx = await pendingTx.wait();
-        // Complete 2nd step
-        updateDeployStatus({
-          setStepsFn: setDeploySteps,
-          targetStep: "Approve reward tokens",
-          updatedStatus: "complete",
-        });
-        // Change status of 3rd step
-        updateDeployStatus({
-          setStepsFn: setDeploySteps,
-          targetStep: "Supply reward tokens",
-          updatedStatus: "current",
-        });
       }
+      // Complete 2nd step
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Deploy staking pool",
+        updatedStatus: "complete",
+      });
+      // Change status of 3rd step
+      updateDeployStatus({
+        setStepsFn: setDeploySteps,
+        targetStep: "Supply reward tokens",
+        updatedStatus: "current",
+      });
 
+      // let pool = "";
+      let poolAddress = "";
+      const iface = new ethers.utils.Interface(PoolFactoryAbi);
+      for (let i = 0; i < tx.logs.length; i++) {
+        try {
+          const log = iface.parseLog(tx.logs[i]);
+          if (log.name === "SinglePoolCreated") {
+            poolAddress = log.args.pool;
+            setDeployedPoolAddress(log.args.pool);
+            break;
+          }
+        } catch (e) { }
+      }
+      const poolContract = getContract(chainId, poolAddress, stakingAbi, signer);
+      const rewardAmount = await poolContract.insufficientRewards();
+      const transferPendingTx = await rewardTokenContract.transfer(poolContract.address, rewardAmount);
+      await transferPendingTx.wait();
       // Complete 3rd step
       updateDeployStatus({
         setStepsFn: setDeploySteps,
@@ -184,19 +183,7 @@ const PoolDeployConfirm = () => {
         targetStep: "Starting pool",
         updatedStatus: "current",
       });
-
-      // let pool = "";
-      const iface = new ethers.utils.Interface(PoolFactoryAbi);
-      for (let i = 0; i < tx.logs.length; i++) {
-        try {
-          const log = iface.parseLog(tx.logs[i]);
-          if (log.name === "SinglePoolCreated") {
-            // pool = log.args.pool;
-            setDeployedPoolAddress(log.args.pool);
-            break;
-          }
-        } catch (e) {}
-      }
+      await poolContract.startReward();
       // When all steps are complete the success step will be shown
       // See the onSuccess prop in the DeployProgress component for more details
 
@@ -217,26 +204,7 @@ const PoolDeployConfirm = () => {
         updatedDescription: "Deployment failed",
       });
     }
-  }, [
-    chainId,
-    deploySteps,
-    factoryState.address,
-    factoryState.payingToken.address,
-    factoryState.payingToken.isToken,
-    factoryState.serviceFee,
-    onApprove,
-    poolDeployChainId,
-    poolDepositFee,
-    poolDuration,
-    poolFactoryContract,
-    poolInitialRewardSupply,
-    poolLockPeriod,
-    poolRewardToken.address,
-    poolRewardToken.decimals,
-    poolToken,
-    poolWithdrawFee,
-    totalSupply,
-  ]);
+  }, [chainId, deploySteps, signer, onApprove, factoryState, poolDeployChainId, poolDepositFee, poolDuration, poolFactoryContract, poolInitialRewardSupply, poolLockPeriod, poolReflectionToken, poolToken.address, poolWithdrawFee, totalSupply]);
 
   return (
     <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
