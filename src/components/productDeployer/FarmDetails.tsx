@@ -74,7 +74,7 @@ const FarmDetails = () => {
     resolver: zodResolver(farmDeployerSchema),
     defaultValues: {
       farmDeployChainId: chainId,
-      farmLpAddress: farmLpAddress,
+      farmLpAddress: farmLpAddress || ("" as `0x${string}`),
       farmRouter: farmRouters[chainId],
       farmDepositFee: farmDepositFee || 0.05,
       farmWithdrawFee: farmWithdrawFee || 0.05,
@@ -133,7 +133,7 @@ const FarmDetails = () => {
                   <FormLabel className="sr-only">Choose a router</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input className="rounded-3xl pl-10" value={farmRouters[chainId].name} />
+                      <Input className="rounded-3xl pl-10" value={farmRouters[chainId].name} readOnly />
                       <div
                         className="absolute inset-y-0 left-2 my-auto h-6 w-6 overflow-hidden rounded-full bg-slate-800 bg-cover bg-no-repeat"
                         style={{
