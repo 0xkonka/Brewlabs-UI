@@ -42,7 +42,7 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
   return (
     <div className="p-4 font-brand">
       <h5 className="mb-2 text-2xl dark:text-slate-400">Networks</h5>
-      <p className="dark:text-gray-500">Select a network to send fund from</p>
+      <p className="dark:text-gray-500">Select a network to send funds from</p>
 
       {!canSwitch && bSwitchChain && (
         <div
