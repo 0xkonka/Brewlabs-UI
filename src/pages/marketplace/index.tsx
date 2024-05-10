@@ -29,13 +29,13 @@ export default function Page() {
             <div className="relative z-10 max-w-2xl lg:col-span-7 lg:mx-auto lg:max-w-none xl:col-span-6">
               <header className="mb-4 mt-4 font-brand sm:mt-5 lg:mt-6">
                 <h1 className="bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-4xl text-transparent lg:text-5xl">
-                  Get ready for the next generation in blockchain utilities
+                  Brewlabs marketplace peer-to-peer marketplace for NFT's and tokens
                 </h1>
               </header>
 
               <p className="mb-12 max-w-sm text-base text-dark dark:text-gray-400 sm:mb-4">
-                Brewlabs Earn is where you can build your future. We have a unique set of tools and utilities to build
-                your portfolio.
+                Brewlabs marketplace offers a complete on-chain, decentralised, over the counter or peer-to-peer transaction facilitator 
+                for ERC20 (tokens), ERC721 (NFT) and ERC1155 (NFT) powered by Brewlabs marketplace escrow smart contracts.
               </p>
               <Button asChild variant="outline" className="animate-in slide-in-from-right-60 fill-mode-both lg:hidden">
                 <Link href="/marketplace/create-bond">
