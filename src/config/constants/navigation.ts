@@ -8,6 +8,7 @@ type NavigationItem = {
   isBeta?: boolean;
   count?: number;
   new?: boolean;
+  children?: NavigationItem[];
 };
 
 export const navigationData = [
@@ -23,7 +24,6 @@ export const navigationData = [
     external: false,
     icon: "ClockIcon",
   },
-
   {
     name: "Indexes",
     href: "/indexes",
@@ -36,7 +36,6 @@ export const navigationData = [
     external: false,
     icon: "ArrowsRightLeftIcon",
   },
-
   {
     name: "Swap",
     href: "/swap",
@@ -48,6 +47,30 @@ export const navigationData = [
     href: "/constructor",
     external: false,
     icon: "ArrowDownOnSquareIcon",
+  },
+  {
+    name: "Marketplace",
+    href: "/marketplace",
+    external: false,
+    icon: "ShoppingCartIcon",
+    new: true,
+    children: [
+      {
+        name: "Create bond",
+        href: "/marketplace/create-bond",
+        external: false,
+      },
+      {
+        name: "Purchase bonds",
+        href: "/marketplace?tab=purchased",
+        external: false,
+      },
+      {
+        name: "Sold bonds",
+        href: "/marketplace?tab=sold",
+        external: false,
+      },
+    ],
   },
   {
     name: "Product deployer",
