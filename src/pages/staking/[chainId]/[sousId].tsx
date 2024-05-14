@@ -23,7 +23,7 @@ const Staking: NextPage = () => {
   ];
 
   const data = allPools.find(
-    (pool: any) => pool.type === 1 && pool["sousId"] === +sousId && pool["chainId"] / 1 === chainId / 1
+    (pool: any) => pool.type === 1 && (pool.contractAddress === sousId || pool["sousId"] === +sousId ) && pool["chainId"] / 1 === chainId / 1
   );
   if (!data) return;
 
