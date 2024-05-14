@@ -33,8 +33,14 @@ const PoolSuccessfulDeploy = () => {
               </div>
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-white">Link to pool</dt>
-                <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                  TODO: Add link
+                <dd className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">                  
+                  <a
+                    href={`/staking/${chainId}/${deployedPoolAddress}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    To staking pool
+                  </a>
                 </dd>
               </div>
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

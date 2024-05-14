@@ -160,7 +160,7 @@ const PoolDeployConfirm = () => {
       for (let i = 0; i < tx.logs.length; i++) {
         try {
           const log = iface.parseLog(tx.logs[i]);
-          if (log.name === "SinglePoolCreated") {
+          if (log.name === "SinglePoolCreated" || log.name === "LockupPoolCreated") {
             poolAddress = log.args.pool;
             setDeployedPoolAddress(log.args.pool);
             break;
@@ -171,6 +171,7 @@ const PoolDeployConfirm = () => {
       const rewardAmount = await poolContract.insufficientRewards();
       const transferPendingTx = await rewardTokenContract.transfer(poolContract.address, rewardAmount);
       await transferPendingTx.wait();
+
       // Complete 3rd step
       updateDeployStatus({
         setStepsFn: setDeploySteps,
@@ -183,7 +184,10 @@ const PoolDeployConfirm = () => {
         targetStep: "Starting pool",
         updatedStatus: "current",
       });
-      await poolContract.startReward();
+      const pendingStartTx =  await poolContract.startReward();
+      await pendingStartTx.wait();
+      const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
+      await sleep(30000);
       // When all steps are complete the success step will be shown
       // See the onSuccess prop in the DeployProgress component for more details
 
