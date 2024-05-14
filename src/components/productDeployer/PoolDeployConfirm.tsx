@@ -210,6 +210,7 @@ const PoolDeployConfirm = () => {
     }
   }, [chainId, deploySteps, signer, onApprove, factoryState, poolDeployChainId, poolDepositFee, poolDuration, poolFactoryContract, poolInitialRewardSupply, poolLockPeriod, poolReflectionToken, poolToken.address, poolWithdrawFee, totalSupply]);
 
+
   return (
     <div className="mx-auto my-8 max-w-2xl animate-in fade-in slide-in-from-right">
       {isDeploying && (
