@@ -77,7 +77,7 @@ const CurrencyRow = ({
 }) => {
   const { account } = useActiveWeb3React();
 
-  const { usd_24h_change: priceChange24h, usd: tokenPrice } = marketData;
+  const { usd: tokenPrice } = marketData;
   const balance = useCurrencyBalance(account, currency);
   const { onCurrencySelection } = useSwapActionHandlers();
   const [, setSidebarContent] = useGlobalState("userSidebarContent");
@@ -131,7 +131,7 @@ const CurrencyRow = ({
           <CurrencyLogo currency={currency} size="36px" />
           <div>
             <p className="text-start text-lg">{currency?.symbol}</p>
-            <p className="flex items-center justify-start gap-1 text-sm">
+            {/* <p className="flex items-center justify-start gap-1 text-sm">
               {priceChange24h > 0 ? (
                 <span className="flex items-center text-green">
                   {priceChange24h.toFixed(3)}% <ArrowTrendingUpIcon className="h-3 w-3" />
@@ -145,7 +145,7 @@ const CurrencyRow = ({
             </p>
             <p className={`${priceChange24h > 0 ? "dark:text-green" : "dark:text-danger"} text-[10px]`}>
               {tokenPrice} USD = 1.00 {currency?.symbol}
-            </p>
+            </p> */}
           </div>
         </div>
         {balance && !balance.equalTo(0) && (
