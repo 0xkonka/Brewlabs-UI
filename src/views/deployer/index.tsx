@@ -203,7 +203,7 @@ const Deployer = ({ page, type }: { page: number; type?: string }) => {
                    The Brewlabs product deployer is a simple tool that uses a step-by-step process to assist in the 
                     deployment of smart contracts across a range of networks.  All contracts that are deployed by the
                     Brewlabs deployer are safe, transparent and verified to ensure user security. Deploy and share your 
-                    latest products with your community, get started below..
+                    latest products with your community, get started below.
                   </>
                 }
                 infoLink="https://brewlabs.gitbook.io/welcome-to-brewlabs/brewlabs-defi-products/brewlabs-2023/live-product-deployer"
