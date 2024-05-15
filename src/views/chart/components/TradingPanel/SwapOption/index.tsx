@@ -26,7 +26,7 @@ export default function SwapOption({
     <div className="flex w-fit flex-col sm:w-full sm:flex-row 2xl:sm:flex-col">
       <div className="primary-shadow relative flex h-fit w-[320px] flex-col gap-1 rounded-[6px] bg-[#B9B8B80D] p-3 2xl:w-full">
         <div className="mb-1 flex items-center justify-between">
-          <Security />
+          {/* <Security /> */}
           <div className="flex items-center">
             <SlippageText />
             <div onClick={() => setOpenSettingModal(true)} className="ml-1">

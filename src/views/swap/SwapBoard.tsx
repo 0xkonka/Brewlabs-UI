@@ -83,8 +83,8 @@ export default function SwapBoard({ type = "swap", disableChainSelect = false })
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        {swapTab !== 1 && <Security size="lg" />}
+      <div className="flex items-center justify-end">
+        {/* {swapTab !== 1 && <Security size="lg" />} */}
         <SlippageText className="!text-xs" />
       </div>
 

@@ -51,7 +51,7 @@ const CurrencyOutputPanel = ({
   const { chainId } = useActiveWeb3React();
   const tokenAddress = currency?.wrapped?.address?.toLowerCase();
   const tokenMarketData = useTokenMarketChart(chainId);
-  const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
+  // const { usd_24h_change: priceChange24h } = tokenMarketData[tokenAddress] || defaultMarketData;
   const { price: tokenPrice } = useDexPrice(
     chainId,
     currency?.isNative ? WNATIVE[chainId]?.address?.toLowerCase() : currency?.address?.toLowerCase()
@@ -131,7 +131,7 @@ const CurrencyOutputPanel = ({
             )}
           </div>
         </div>
-        {priceChange24h && (
+        {/* {priceChange24h && (
           <div className="ml-1 flex items-center gap-1 text-sm opacity-40">
             {priceChange24h > 0 ? (
               <>
@@ -144,7 +144,7 @@ const CurrencyOutputPanel = ({
             )}
             24HR
           </div>
-        )}
+        )} */}
       </div>
       {price ? (
         <div className={`${size === "sm" ? "" : "sm:mx-6"} mx-2 mb-2 mt-3 flex flex-col`}>
