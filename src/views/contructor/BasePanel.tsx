@@ -73,7 +73,7 @@ export function TokenItem({ data, i }) {
               />
             </div>
             <div className="relative ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-white">
-              {data.token0.symbol}-{data.token1.symbol}
+              {data.symbol}
               <div className="absolute whitespace-nowrap text-[10px]">
                 Vol. ${numberWithCommas(data.volume.toFixed(2))}
               </div>
