@@ -1,7 +1,7 @@
 import { EXCHANGE_MAP } from "@brewlabs/sdk";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
@@ -196,7 +196,7 @@ export default function BasePanel({
   );
 }
 
-const StyledContainer = styled.div<{ showCount: number }>`
+const StyledContainer = styled.div<{ showCount: number; children: ReactNode; className?: string }>`
   > div {
     ::-webkit-scrollbar {
       width: 16px;
