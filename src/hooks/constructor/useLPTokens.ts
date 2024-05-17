@@ -47,7 +47,7 @@ export const useLPTokens = () => {
           } else {
             // const url = `https://api.dexscreener.com/latest/dex/pairs/${DEXSCREENER_CHAINNAME[chainId]}/${data.address}`;
             const url = `https://api.geckoterminal.com/api/v2/networks/${GECKO_CHAINNAME[chainId]}/pools/${data.address}`;
-
+            
             const { data: response } = await axios.get(url);
             lpTokenInfo = response.data.attributes
             pair = response.data.relationships;
@@ -72,7 +72,7 @@ export const useLPTokens = () => {
             const result = await multicall(ERC20_ABI, calls, chainId);
             pair = {
               baseToken: { address: token0Addr, decimals: result[0][0] },
-              quoteToken: { address: token0Addr, decimals: result[1][0] },
+              quoteToken: { address: token1Addr, decimals: result[1][0] },
               totalSupply: ethers.utils.formatEther(result[2][0]).toString(),
               a: pair.dex.data.id,
             };
@@ -81,7 +81,7 @@ export const useLPTokens = () => {
             timeStamp: Math.floor((new Date(lpTokenInfo.pool_created_at).getTime()) / 1000),
             address: getAddress(data.address),
             balance: data.balance,
-            symbol: data.symbol,
+            symbol: lpTokenInfo.name,
             token0: pair.baseToken,
             token1: pair.quoteToken,
             price: lpTokenInfo.reserve_in_usd / pair.totalSupply,
