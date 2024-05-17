@@ -192,7 +192,7 @@ async function getAggregatorTxs(chainId, period, marketData, tokenList) {
   }
 }
 
-export async function getTradingPairHistories(chainId, period, marketData, tokenList) {
+export async function getTradingPairHistories(chainId, period, nodeCount, marketData, tokenList) {
   if (!Object.keys(ROUTER_SUBGRAPH_NAMES).includes(chainId.toString()))
     return { volumeHistory: [], feeHistory: [], tvlHistory: [] };
   try {
@@ -213,8 +213,8 @@ export async function getTradingPairHistories(chainId, period, marketData, token
     let j = 0,
       v = 0,
       fee = 0;
-    for (let i = 1; i <= 10; i++) {
-      while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) <= timestamp + (period / 10) * i) {
+    for (let i = 1; i <= nodeCount; i++) {
+      while (j < totalSwaps.length && Number(totalSwaps[j].timestamp) <= timestamp + (period / nodeCount) * i) {
         v += Number(totalSwaps[j].amountUSD);
         fee += Number(totalSwaps[j].amountFeeUSD);
         j++;
@@ -274,12 +274,12 @@ export async function getTradingPairHistories(chainId, period, marketData, token
       let price0 = getPriceByTx(lastTx).price0;
       let price1 = getPriceByTx(lastTx).price1;
 
-      for (let j = 0; j < 10; j++) {
+      for (let j = 0; j < nodeCount; j++) {
         let reserve0 = Number(pairs[i].reserve0);
         let reserve1 = Number(pairs[i].reserve1);
 
         let k = 0;
-        while (k < swapsByPair.length && Number(swapsByPair[k].timestamp) > Date.now() / 1000 - (period / 10) * j) {
+        while (k < swapsByPair.length && Number(swapsByPair[k].timestamp) > Date.now() / 1000 - (period / nodeCount) * j) {
           reserve0 += Number(swapsByPair[k].amount0Out);
           reserve0 -= Number(swapsByPair[k].amount0In);
           reserve1 += Number(swapsByPair[k].amount1Out);
@@ -293,7 +293,7 @@ export async function getTradingPairHistories(chainId, period, marketData, token
       historiesByPair.push(history);
     }
 
-    for (let i = 9; i >= 0; i--) {
+    for (let i = nodeCount-1; i >= 0; i--) {
       let s = 0;
       for (let j = 0; j < historiesByPair.length; j++) s += historiesByPair[j][i];
       tvlHistory.push(s);
