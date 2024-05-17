@@ -120,7 +120,7 @@ const PoolDeployConfirm = () => {
           poolRewardToken.address,
           dividendToken,
           Number(poolDuration),
-          [Number(poolLockPeriod)],
+          [Number(poolLockPeriod) * 30],
           [rewardPerBlock.toString()],
           [(poolDepositFee * 100).toFixed(0)],
           [(poolWithdrawFee * 100).toFixed(0)],
@@ -184,7 +184,7 @@ const PoolDeployConfirm = () => {
         targetStep: "Starting pool",
         updatedStatus: "current",
       });
-      const pendingStartTx =  await poolContract.startReward();
+      const pendingStartTx = await poolContract.startReward();
       await pendingStartTx.wait();
       const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
       await sleep(30000);
