@@ -230,7 +230,7 @@ const MintNFTModal = ({ open, setOpen }) => {
     ) : (
       <StyledButton className="p-[10px_12px] !font-normal">
         Get&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;&&nbsp;
-        <span className="font-bold">USDC</span>
+        <span className="font-bold">USDT</span>
       </StyledButton>
     );
   };
