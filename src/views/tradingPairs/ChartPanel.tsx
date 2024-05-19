@@ -2,7 +2,7 @@
 import { ChainId } from "@brewlabs/sdk";
 import { NETWORKS } from "config/constants/networks";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Oval } from "react-loader-spinner";
 import { useTokenList } from "state/home/hooks";
 import { useAllLists } from "state/lists/hooks";
@@ -32,22 +32,23 @@ export default function ChartPanel() {
   const polyTokenListStringified = JSON.stringify(polyTokenList);
 
   const periodTypes = [
-    { name: "24 HRS", period: 86400 },
-    { name: "7 DAYS", period: 86400 * 7 },
-    { name: "30 DAYS", period: 86400 * 30 },
+    { name: "24 HRS", period: 86400, nodeCount: 24 },
+    { name: "7 DAYS", period: 86400 * 7, nodeCount: 7 },
+    { name: "30 DAYS", period: 86400 * 30, nodeCount: 30 },
   ];
   const showTypes = ["Volume USD", "TVL"];
 
   useEffect(() => {
     Promise.all([
-      getTradingPairHistories(ChainId.BSC_MAINNET, periodTypes[selectedPeriod].period, bscMarketData, bscTokenList),
-      getTradingPairHistories(ChainId.POLYGON, periodTypes[selectedPeriod].period, polyMarketData, polyTokenList),
+      getTradingPairHistories(ChainId.BSC_MAINNET, periodTypes[selectedPeriod].period,  periodTypes[selectedPeriod].nodeCount, bscMarketData, bscTokenList),
+      getTradingPairHistories(ChainId.POLYGON, periodTypes[selectedPeriod].period,  periodTypes[selectedPeriod].nodeCount, polyMarketData, polyTokenList),
     ])
       .then((result: any) => {
+        console.log('result', result)
         let feeHistory = [],
           tvlHistory = [],
           volumeHistory = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < periodTypes[selectedPeriod].nodeCount; i++) {
           let fee = 0,
             tvl = 0,
             volume = 0;
@@ -225,7 +226,7 @@ export default function ChartPanel() {
   );
 }
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.div<{className: string; children: ReactNode}>`
   .apexcharts-tooltip {
     color: white;
     top: 50% !important;

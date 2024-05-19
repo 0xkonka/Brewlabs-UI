@@ -5,7 +5,7 @@ import { getAddress } from "ethers/lib/utils.js";
 
 import { ERC20_ABI } from "config/abi/erc20";
 
-import { DEXSCREENER_CHAINNAME } from "config";
+import { DEXSCREENER_CHAINNAME, GECKO_CHAINNAME } from "config";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useAppDispatch } from "state";
 import { useTokenMarketChart } from "state/prices/hooks";
@@ -31,11 +31,10 @@ export const useLPTokens = () => {
   const [lpTokens, setLPTokens] = useState(null);
 
   async function fetchLPInfo(data: any, chainId: ChainId) {
-    console.log(data);
     const pairInfos = await Promise.all(
       data.map(async (data) => {
         try {
-          let pair;
+          let lpTokenInfo, pair;
           if (data.symbol === "BREWSWAP-LP") {
             const brewSwapUrl = `${API_URL}/chart/search/pairs?q=${data.address}`;
             const { data: brewPairs } = await axios.get(brewSwapUrl);
@@ -46,45 +45,49 @@ export const useLPTokens = () => {
               liquidity: { ...pair.liquidity, quote: pair.liquidity.usd / (pair.totalSupply ?? 1) },
             };
           } else {
-            const url = `https://api.dexscreener.com/latest/dex/pairs/${DEXSCREENER_CHAINNAME[chainId]}/${data.address}`;
-            const { data: response } = await axios.post("https://pein-api.vercel.app/api/tokenController/getHTML", {
-              url,
-            });
-            pair = response.result.pair;
+            // const url = `https://api.dexscreener.com/latest/dex/pairs/${DEXSCREENER_CHAINNAME[chainId]}/${data.address}`;
+            const url = `https://api.geckoterminal.com/api/v2/networks/${GECKO_CHAINNAME[chainId]}/pools/${data.address}`;
+            
+            const { data: response } = await axios.get(url);
+            lpTokenInfo = response.data.attributes
+            pair = response.data.relationships;
+
+            const token0Addr = pair.base_token.data.id.replace(`${GECKO_CHAINNAME[chainId]}_`, "")
+            const token1Addr = pair.quote_token.data.id.replace(`${GECKO_CHAINNAME[chainId]}_`, "")
+
             const calls = [
               {
                 name: "decimals",
-                address: pair.baseToken.address,
+                address: token0Addr,
               },
               {
                 name: "decimals",
-                address: pair.quoteToken.address,
+                address: token1Addr,
               },
               {
                 name: "totalSupply",
-                address: pair.pairAddress,
+                address: data.address,
               },
             ];
             const result = await multicall(ERC20_ABI, calls, chainId);
             pair = {
-              ...pair,
-              baseToken: { ...pair.baseToken, decimals: result[0][0] },
-              quoteToken: { ...pair.quoteToken, decimals: result[1][0] },
+              baseToken: { address: token0Addr, decimals: result[0][0] },
+              quoteToken: { address: token1Addr, decimals: result[1][0] },
               totalSupply: ethers.utils.formatEther(result[2][0]).toString(),
-              a: pair.dexId,
+              a: pair.dex.data.id,
             };
           }
           return {
-            timeStamp: Math.floor(pair.pairCreatedAt / 1000),
+            timeStamp: Math.floor((new Date(lpTokenInfo.pool_created_at).getTime()) / 1000),
             address: getAddress(data.address),
             balance: data.balance,
-            symbol: data.symbol,
+            symbol: lpTokenInfo.name,
             token0: pair.baseToken,
             token1: pair.quoteToken,
-            price: pair.liquidity.usd / pair.totalSupply,
-            volume: pair.volume.h24 ?? 0,
+            price: lpTokenInfo.reserve_in_usd / pair.totalSupply,
+            volume: Number(lpTokenInfo.volume_usd.h24) ?? 0,
             chainId,
-            a: pair.a === "pancakeswap" ? "pcs-v2" : pair.a === "uniswap" ? "uniswap-v2" : pair.a,
+            a: pair.a.includes("pancakeswap") ? "pcs-v2" : pair.a.includes("uniswap") ? "uniswap-v2" : pair.a,
           };
         } catch (e) {
           console.log(e);
