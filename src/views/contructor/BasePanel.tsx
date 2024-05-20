@@ -1,7 +1,7 @@
 import { EXCHANGE_MAP } from "@brewlabs/sdk";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
@@ -73,7 +73,7 @@ export function TokenItem({ data, i }) {
               />
             </div>
             <div className="relative ml-2 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-white">
-              {data.token0.symbol}-{data.token1.symbol}
+              {data.symbol}
               <div className="absolute whitespace-nowrap text-[10px]">
                 Vol. ${numberWithCommas(data.volume.toFixed(2))}
               </div>
@@ -196,7 +196,7 @@ export default function BasePanel({
   );
 }
 
-const StyledContainer = styled.div<{ showCount: number }>`
+const StyledContainer = styled.div<{ showCount: number; children: ReactNode; className?: string }>`
   > div {
     ::-webkit-scrollbar {
       width: 16px;

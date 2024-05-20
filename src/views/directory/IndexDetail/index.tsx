@@ -22,7 +22,7 @@ import { TokenPriceContext } from "contexts/TokenPriceContext";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import useTokenPrice from "hooks/useTokenPrice";
-import { getExplorerLink, getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSymbol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useIndexFactory } from "state/deploy/hooks";
 import { fetchIndexFeeHistories } from "state/indexes/fetchIndexes";
@@ -222,7 +222,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
       toast.success("Index NFT was mint");
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(data.chainId));
+      handleWalletError(e, showError, getNativeSymbol(data.chainId));
     }
     setPending(false);
   };
@@ -470,7 +470,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                       <div className="text-xs leading-none text-[#FFFFFF80]">
                         <div className="relative mt-1 flex">
                           Deposit Fee {data.category >= 0 ? data.depositFee + factory?.brewsFee ?? 0 : data.fee}%{" "}
-                          {getNativeSybmol(data.chainId)}
+                          {getNativeSymbol(data.chainId)}
                           <ReactTooltip
                             anchorId={"Depositfees"}
                             place="right"
@@ -494,7 +494,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         </div>
                         <div className="relative mt-1 flex">
                           Performance Fee {ethers.utils.formatEther(data.performanceFee ?? "0")}{" "}
-                          {getNativeSybmol(data.chainId)}
+                          {getNativeSymbol(data.chainId)}
                           <ReactTooltip
                             anchorId={"Performancefee"}
                             place="right"
@@ -551,7 +551,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                   <div className="w-full md:w-[40%]">
                     <TotalStakedChart
                       data={graphData()}
-                      symbols={curGraph === 1 ? [getNativeSybmol(data.chainId)] : tokens.map((t) => t.symbol)}
+                      symbols={curGraph === 1 ? [getNativeSymbol(data.chainId)] : tokens.map((t) => t.symbol)}
                       prices={
                         curGraph === 1 || curGraph === 3
                           ? [nativeTokenPrice]
@@ -629,7 +629,7 @@ const IndexDetail = ({ detailDatas }: { detailDatas: { data: any } }) => {
                         ) : (
                           <SkeletonComponent />
                         )}
-                        <span className="ml-1 text-[#FFFFFF80]">{getNativeSybmol(data.chainId)}</span>
+                        <span className="ml-1 text-[#FFFFFF80]">{getNativeSymbol(data.chainId)}</span>
                       </div>
                     </div>
 

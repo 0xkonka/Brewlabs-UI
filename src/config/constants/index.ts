@@ -12,6 +12,8 @@ export const DAY_INTERVAL = 60000 * 24 * 60;
 export const SECOND_INTERVAL = 1000;
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
+export const TREASURY_ADDRESS_SOLANA = process.env.NEXT_PUBLIC_TREASURY_ADDRESS_SOLANA;
 export const GURU_API_KEY = process.env.NEXT_PUBLIC_GURU_API_KEY;
 // export const API_URL = "http://localhost:5050/api";
 export const MULTICALL_FETCH_LIMIT = 120;
@@ -246,6 +248,16 @@ export const BLOCKS_PER_DAY = {
   [ChainId.ETHEREUM]: 6426,
   [ChainId.BSC_MAINNET]: 28800,
   [ChainId.POLYGON]: 40000,
+  [ChainId.BSC_TESTNET]: 28800,
+};
+
+export const BLOCKS_PER_DAY2 = {
+  [ChainId.ETHEREUM]: 7120,
+  [ChainId.BSC_MAINNET]: 28800,
+  [ChainId.POLYGON]: 40000,
+  [ChainId.ARBITRUM]: 7120,
+  [ChainId.BASE]: 7120,
+  [ChainId.BSC_TESTNET]: 28800,
 };
 
 export const BANANA_PER_BLOCK = new BigNumber(10);

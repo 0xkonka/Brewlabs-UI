@@ -12,7 +12,7 @@ import { useCurrency } from "hooks/Tokens";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useTokenApprove } from "hooks/useApprove";
 import useTotalSupply from "hooks/useTotalSupply";
-import { getExplorerLink, getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getExplorerLink, getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useFarmFactory } from "state/deploy/hooks";
 import { fetchFarmsPublicDataFromApiAsync } from "state/farms";
@@ -28,7 +28,7 @@ import LoadingText from "components/LoadingText";
 import TokenLogo from "components/logo/TokenLogo";
 
 import StyledButton from "../../StyledButton";
-import TokenSelect from "../TokenSelect";
+import { TokenSelect } from "../TokenSelect";
 import { useFactory } from "./hooks";
 import { useUserTokenData } from "state/wallet/hooks";
 import { useAccount } from "wagmi";
@@ -127,7 +127,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       handleTransferRewards(farm);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(chainId));
+      handleWalletError(e, showError, getNativeSymbol(chainId));
       setStep(2);
     }
     setPending(false);
@@ -154,7 +154,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       handleStartFarming(farm);
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(chainId));
+      handleWalletError(e, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -177,7 +177,7 @@ const Deploy = ({ setOpen, step, setStep, router, lpInfo }) => {
       dispatch(fetchFarmsPublicDataFromApiAsync());
     } catch (e) {
       console.log(e);
-      handleWalletError(e, showError, getNativeSybmol(chainId));
+      handleWalletError(e, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };

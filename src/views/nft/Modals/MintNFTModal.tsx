@@ -27,7 +27,7 @@ import { rarities } from "config/constants/nft";
 import { DashboardContext } from "contexts/DashboardContext";
 import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useTokenApprove } from "@hooks/useApprove";
-import { getNativeSybmol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSymbol, getNetworkLabel, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { fetchFlaskNftUserDataAsync } from "state/nfts";
 import { useFlaskNftData } from "state/nfts/hooks";
@@ -108,7 +108,7 @@ const MintNFTModal = ({ open, setOpen }) => {
       toast.success(`${selectedCurrency.symbol} was approved`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -125,7 +125,7 @@ const MintNFTModal = ({ open, setOpen }) => {
       toast.success(`BREWLABS was approved`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -158,7 +158,7 @@ const MintNFTModal = ({ open, setOpen }) => {
       setIsMinted(true);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -230,7 +230,7 @@ const MintNFTModal = ({ open, setOpen }) => {
     ) : (
       <StyledButton className="p-[10px_12px] !font-normal">
         Get&nbsp;<span className="font-bold">BREWLABS</span>&nbsp;&&nbsp;
-        <span className="font-bold">USDC</span>
+        <span className="font-bold">USDT</span>
       </StyledButton>
     );
   };

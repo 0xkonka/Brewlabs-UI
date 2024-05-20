@@ -4,7 +4,7 @@ import { TokenPriceContext } from "contexts/TokenPriceContext";
 import axios from "axios";
 import { DEXTOOLS_CHAINNAME, DEX_GURU_CHAIN_NAME } from "config";
 import { useSlowRefreshEffect } from "./useRefreshEffect";
-import { API_URL } from "config/constants";
+import { API_URL, GURU_API_KEY } from "config/constants";
 import { isAddress } from "utils";
 
 export const useTokenPrices = () => {
@@ -27,15 +27,19 @@ export async function fetchDexGuruPrice(chainId: number, address: string) {
   try {
     if (!isAddress(address)) return 0;
 
-    const { status, data: response } = await axios.post(`${API_URL}/chart/getDexData`, {
-      url: `https://api.dextools.io/v1/token?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${address}&page=1&pageSize=5`,
-    });
+    // const { status, data: response } = await axios.post(`${API_URL}/chart/getDexData`, {
+    //   url: `https://api.dextools.io/v1/token?chain=${DEXTOOLS_CHAINNAME[chainId]}&address=${address}&page=1&pageSize=5`,
+    // });
 
-    if (status !== 200) return 0;
+    // if (status !== 200) return 0;
+    // if (response.success === false) return 0;
 
-    if (response.success === false) return 0;
+    // return response.result.data.reprPair.price;
+    
+    const { data : response } = await axios.get(`https://api.dev.dex.guru/v1/chain/${chainId}/tokens/${address}/market?api-key=${GURU_API_KEY}`)
 
-    return response.result.data.reprPair.price;
+    return response.price_usd;
+
   } catch (e) {
     console.log(e, address, chainId);
     return 0;

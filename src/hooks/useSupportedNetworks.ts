@@ -9,7 +9,7 @@ export const useSupportedNetworks = () => {
   const { pathname } = useRouter();
 
   useEffect(() => {
-    const page = pathname.split("/")[1];
+    const page = pathname.split("/").slice(-1)[0];
     setNetworks(
       NetworkOptions.filter((network) =>
         PAGE_SUPPORTED_CHAINS[page]

@@ -1,4 +1,5 @@
 import { AppId, Chef } from "./types";
+import { ChainId } from "@brewlabs/sdk";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -6,6 +7,13 @@ export default {
     97: "0x98b27B9E4C11611B282c4ED9f8d48e876DBd2bE1",
     56: "0x479EBabB0e8870188Aa1700489054Ec489a6AB28",
     8453: "0xB9Ab5DA93D209E2a81195E6A0Be3f0BF4A452D47",
+  },
+  poolFactory: {
+    [ChainId.ETHEREUM]: "0x9bdb1c7E9e0F3F5fdD079caB6f75E39B4eF3BccA",
+    [ChainId.BSC_MAINNET]: "0x4d289858A374A6DB9Dd8e20D8677B7F7CE0098D7",
+    [ChainId.ARBITRUM]: "0x06b217aa21617402C5B06fa997cbDf8889807e01",
+    [ChainId.BASE]: "0x38c8Ec418134653F0eDDDF3352A415C25dE8A434",
+    [ChainId.BSC_TESTNET]: "0x00c18CF51fbf86CAfD9D6427E50cb39ACeDe0566",
   },
   farmFactory: {
     1: "0xB35dB6963Ee19Fad44bA2a30aA6D3730572F894d",

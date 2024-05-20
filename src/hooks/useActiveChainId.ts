@@ -4,8 +4,8 @@ import { useSearchParams } from "next/navigation";
 
 import { ChainId } from "@brewlabs/sdk";
 
-import { useRouter } from "next/router";
 import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { useRouter } from "next/router";
 
 export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean } => {
   const { chain } = useNetwork();
@@ -41,6 +41,25 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean 
       }
     }
   }, [chainId, chainIdFromUrl, isWrongNetwork, page, status]);
+
+  // const { setIsSolanaNetwork } = useSolanaNetwork();
+  // useEffect(() => {
+  //   if (queryChainId === 900) setIsSolanaNetwork(true);
+  //   else setIsSolanaNetwork(false);
+  // }, [queryChainId, setIsSolanaNetwork]);
+
+  // const chainId = useMemo(() => {
+  //   const chainId = localChainId ?? (queryChainId <= 0 ? 900 : queryChainId);
+  //   return chainId;
+  // }, [localChainId, queryChainId]);
+
+  // if (localChainId == undefined && queryChainId <= 0) {
+  //   return {
+  //     chainId: 56,
+  //     isWrongNetwork: (chain?.unsupported ?? false) || isNotMatched,
+  //     isNotMatched,
+  //   };
+  // }
 
   return {
     chainId,

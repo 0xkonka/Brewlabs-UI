@@ -22,6 +22,17 @@ import { cn } from "lib/utils";
 import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
 
+//Solana
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
+import useUserSOLBalanceStore from "../../store/useUserSOLBalanceStore";
+import { ChainId } from "@brewlabs/sdk";
+
+interface ConnectWalletProps {
+  allowDisconnect?: boolean;
+}
+
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
 }
@@ -63,28 +74,32 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
   const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
+  // Solana
+  const { connected } = useWallet();
+  const wallet = useWallet();
+  const { connection } = useConnection();
+  const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
+  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const { getUserSOLBalance } = useUserSOLBalanceStore();
 
   // Get URL chainId
   const searchParams = useSearchParams();
   const chainIdFromUrl = Number(searchParams.get("chainId"));
 
-  // useEffect(() => {
-  //   // Need to add support check
-  //   // Id URL is 5685 then do nothing
-  //   const urlDoesNotMatchChain = chainIdFromUrl !== undefined && chainIdFromUrl !== chainId;
-  //   if (urlDoesNotMatchChain) {
-  //     setOpenWrongNetworkModal(true);
-  //   }
-  //   if (isWrongNetwork) {
-  //     setOpenWrongNetworkModal(true);
-  //   }
-  //   if (!isWrongNetwork && !urlDoesNotMatchChain) {
-  //     setOpenWrongNetworkModal(false);
-  //   }
-
-  //   console.log("wrong url", urlDoesNotMatchChain);
-  //   console.log("wrong network", isWrongNetwork);
-  // }, [chainId, chainIdFromUrl, isWrongNetwork]);
+  useEffect(() => {
+    // Need to add support check
+    // Id URL is 5685 then do nothing
+    const urlDoesNotMatchChain = chainIdFromUrl !== undefined && chainIdFromUrl !== chainId;
+    if (urlDoesNotMatchChain) {
+      setOpenWrongNetworkModal(true);
+    }
+    if (isWrongNetwork) {
+      setOpenWrongNetworkModal(true);
+    }
+    if (!isWrongNetwork && !urlDoesNotMatchChain) {
+      setOpenWrongNetworkModal(false);
+    }
+  }, [chainId, chainIdFromUrl, isWrongNetwork]);
 
   // When mounted on client, now we can show the UI
   // Solves Next hydration error
@@ -95,6 +110,18 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
       disconnect();
     }
   }, [isConnected, connector, disconnect]);
+
+  useEffect(() => {
+    if (chainId === (900 as ChainId)) {
+      setIsSolanaNetwork(true);
+    } else setIsSolanaNetwork(false);
+  }, [chainId, setIsSolanaNetwork]);
+
+  useEffect(() => {
+    if (wallet.publicKey) {
+      getUserSOLBalance(wallet.publicKey, connection);
+    }
+  }, [wallet.publicKey, connection, getUserSOLBalance]);
 
   if (!mounted) return null;
 

@@ -27,6 +27,7 @@ import {
   getIndexContract,
   getBrewlabsFeeManagerContract,
   getFarmFactoryContract,
+  getPoolFactoryContract,
   getFarmImplContract,
   getIndexFactoryContract,
   getOldIndexContract,
@@ -110,6 +111,11 @@ export const useTokenFactoryContract = (chainId: ChainId) => {
 export const useFarmFactoryContract = (chainId: ChainId) => {
   const { data: signer } = useSigner();
   return useMemo(() => getFarmFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
+};
+
+export const usePoolFactoryContract = (chainId: ChainId) => {
+  const { data: signer } = useSigner();
+  return useMemo(() => getPoolFactoryContract(chainId, signer ?? undefined), [chainId, signer]);
 };
 
 export const useIndexFactoryContract = (chainId: ChainId) => {

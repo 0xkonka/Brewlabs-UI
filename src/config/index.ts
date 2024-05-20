@@ -178,6 +178,16 @@ export const DEXSCREENER_CHAINNAME = {
   43114: "avalanche",
 };
 
+export const GECKO_CHAINNAME = {
+  1: "eth",
+  56: "bsc",
+  42161: "arbitrum",
+  137: "polygon_pos",
+  300: "optimism",
+  8453: "base",
+  43114: "avax",
+};
+
 export const DEXSCREENER_VERSION = ["v1", "v2", "v3"];
 
 export const DEXSCREENER_DEXID = ["uniswap", "pancakeswap", "pcsv3"];

@@ -8,6 +8,7 @@ type NavigationItem = {
   isBeta?: boolean;
   count?: number;
   new?: boolean;
+  children?: NavigationItem[];
 };
 
 export const navigationData = [
@@ -36,7 +37,6 @@ export const navigationData = [
     external: false,
     icon: "ArrowsRightLeftIcon",
   },
-
   {
     name: "Swap",
     href: "/swap",
@@ -55,6 +55,28 @@ export const navigationData = [
     external: false,
     icon: "BeakerIcon",
     new: true,
+    children: [
+      {
+        name: "Yield Farm",
+        href: "/deployer/deploy-farm",
+        external: false,
+      },
+      {
+        name: "Index",
+        href: "/deployer/deploy-index",
+        external: false,
+      },
+      {
+        name: "Token",
+        href: "/deployer/deploy-token",
+        external: false,
+      },
+      {
+        name: "Staking Pool",
+        href: "/deployer/deploy-pool",
+        external: false,
+      },
+    ],
   },
   {
     name: "Brewlabs NFT",

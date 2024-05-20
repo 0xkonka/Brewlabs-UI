@@ -13,7 +13,7 @@ import useActiveWeb3React from "@hooks/useActiveWeb3React";
 import { useFlaskNftContract } from "@hooks/useContract";
 import { useSwitchNetwork } from "@hooks/useSwitchNetwork";
 import useTokenPrice from "@hooks/useTokenPrice";
-import { getNativeSybmol, handleWalletError } from "lib/bridge/helpers";
+import { getNativeSymbol, handleWalletError } from "lib/bridge/helpers";
 import { useAppDispatch } from "state";
 import { useChainCurrentBlock } from "state/block/hooks";
 import { fetchNftUserDataAsync } from "state/nfts";
@@ -86,7 +86,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
       toast.success(`Brewlabs Flask NFT was staked and Brewlabs Mirror NFT was minted.`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -106,7 +106,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
       toast.success(`Brewlabs Flask NFT was unstaked and Brewlabs Mirror NFT was burned.`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -126,7 +126,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
       toast.success(`Rewards harvested!`);
     } catch (error) {
       console.log(error);
-      handleWalletError(error, showError, getNativeSybmol(chainId));
+      handleWalletError(error, showError, getNativeSymbol(chainId));
     }
     setPending(false);
   };
@@ -190,7 +190,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
               </div>
             ) : (
               <div className="relative w-[80px] overflow-hidden text-ellipsis whitespace-nowrap text-center leading-[1.2] text-white">
-                {earnings.toFixed(3)} {getNativeSybmol(nft.chainId)}
+                {earnings.toFixed(3)} {getNativeSymbol(nft.chainId)}
                 <div className="text-right text-[10px] text-[#FFFFFF80]">${(earnings * ethPrice).toFixed(2)} USD</div>
               </div>
             )}
@@ -251,7 +251,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 </div>
               ) : (
                 <div className="relative w-fit leading-[1.2] text-white">
-                  EARNING: {earnings.toFixed(3)} {getNativeSybmol(nft.chainId)}
+                  EARNING: {earnings.toFixed(3)} {getNativeSymbol(nft.chainId)}
                   <div className="absolute right-0 text-right text-[10px] text-[#FFFFFF80]">
                     ${(earnings * ethPrice).toFixed(2)} USD
                   </div>
