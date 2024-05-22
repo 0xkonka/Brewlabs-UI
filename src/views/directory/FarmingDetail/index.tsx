@@ -443,7 +443,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                       </div>
                     </div>
 
-                    <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_12px_8px_12px] sm:p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
+                    {/* <div className="primary-shadow ml-0 mt-4 flex w-full max-w-full flex-wrap justify-between bg-[#B9B8B80D] p-[6px_12px_8px_12px] sm:p-[6px_25px_8px_25px] md:ml-[30px] md:max-w-[520px]">
                       <div className="mt-2">
                         <div className="text-xl">Pool Rewards</div>
                         <div className=" text-[#FFFFFF80]">
@@ -506,7 +506,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                         )}
                       </div>
                       <div className="mt-2">
-                        <div className="text-xl">Total</div>
+                        <div className="text-xl">Total Earned</div>
                         <div className=" flex text-primary">
                           {!address ? (
                             "0.00"
@@ -547,7 +547,7 @@ const FarmingDetail = ({ detailDatas }: { detailDatas: any }) => {
                           </div>
                         )}
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="mt-7">

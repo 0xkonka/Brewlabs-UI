@@ -189,9 +189,9 @@ const NFTCard = ({ nft }: { nft: any }) => {
                 <div className="absolute right-0 text-[10px] font-normal text-[#FFFFFF80]">Pool opens</div>
               </div>
             ) : (
-              <div className="relative w-[80px] overflow-hidden text-ellipsis whitespace-nowrap text-center leading-[1.2] text-white">
-                {earnings.toFixed(3)} {getNativeSymbol(nft.chainId)}
-                <div className="text-right text-[10px] text-[#FFFFFF80]">${(earnings * ethPrice).toFixed(2)} USD</div>
+              <div className="relative w-[90px] overflow-hidden text-ellipsis whitespace-nowrap text-center leading-[1.2] text-white">
+                {earnings.toFixed(4)} {getNativeSymbol(nft.chainId)}
+                <div className="text-right text-[10px] text-[#FFFFFF80]">${(earnings * ethPrice).toFixed(3)} USD</div>
               </div>
             )}
             <div className="w-[84px]">
