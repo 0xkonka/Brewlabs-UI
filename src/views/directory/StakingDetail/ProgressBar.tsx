@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import styled from "styled-components";
 import { SkeletonComponent } from "components/SkeletonComponent";
 import { Menu, Transition } from "@headlessui/react";
@@ -38,7 +38,11 @@ const ProgressBar = ({
       <div>Pool Query</div>
       <div className="flex">
         <div className="min-w-[150px] sm:min-w-[180px]">
-          <Menu as="div" className="relative inline-block w-full text-left text-xs sm:text-sm">
+          <div className="inline-flex items-center primary-shadow rounded-md bg-gray-700 p-[8px_10px]">
+            <SignalLight></SignalLight>
+            <span className="text-primary">Blocks Remaining</span>
+          </div>
+          {/* <Menu as="div" className="relative inline-block w-full text-left text-xs sm:text-sm">
             <div>
               <Menu.Button className="inline-flex w-full items-center justify-between whitespace-nowrap rounded-lg bg-gray-300/10 py-1.5 pl-2 pr-2 font-medium hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 sm:pr-3">
                 <SignalLight></SignalLight>
@@ -63,7 +67,7 @@ const ProgressBar = ({
                         className={`${
                           active ? "bg-gray-400/20 text-white" : ""
                         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                        onClick={() => setFilter(0)}
+                        // onClick={() => setFilter(0)}
                       >
                         Blocks Remaining
                       </button>
@@ -84,30 +88,30 @@ const ProgressBar = ({
                 </div>
               </Menu.Items>
             </Transition>
-          </Menu>
+          </Menu> */}
         </div>
         <div className="mt-1 w-full sm:mt-1.5">
           <StyledProgressBar percent={percent}>
             <div />
           </StyledProgressBar>
           <div className="ml-3 mt-1 text-xs">
-            {filter === 0 ? (
-              <>
-                Blocks Remaining:{" "}
-                {!block.current || !block.start || !block.end ? (
-                  <SkeletonComponent />
-                ) : (
-                  <a
-                    href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/block/${block.end}`}
-                    target={"_blank"}
-                    rel={"noreferrer"}
-                    className="dark:text-primary"
-                  >
-                    {remaining}
-                  </a>
-                )}
-              </>
-            ) : (
+            {/* {filter === 0 ? ( */}
+            <>
+              Blocks Remaining:{" "}
+              {!block.current || !block.start || !block.end ? (
+                <SkeletonComponent />
+              ) : (
+                <a
+                  href={`https://${chainId === 1 ? "etherscan.io" : "bscscan.com"}/block/${block.end}`}
+                  target={"_blank"}
+                  rel={"noreferrer"}
+                  className="dark:text-primary"
+                >
+                  {remaining}
+                </a>
+              )}
+            </>
+            {/* ) : (
               <>
                 Reward Balance:&nbsp;
                 {!rewards.available || !rewards.deposit ? (
@@ -116,7 +120,7 @@ const ProgressBar = ({
                   <span className="dark:text-primary">{remaining.toFixed(2)}</span>
                 )}
               </>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -133,7 +137,7 @@ const SignalLight = styled.div`
   box-shadow: 0px 0px 1px 1px rgba(47, 211, 93, 0.75);
 `;
 
-const StyledProgressBar = styled.div<{ percent: number }>`
+const StyledProgressBar = styled.div<{ percent: number; children: ReactNode }>`
   border: 1px solid rgba(185, 184, 184, 0.5);
   width: 100%;
   height: 22px;
