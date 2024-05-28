@@ -9,6 +9,7 @@ import replaceBrowserHistory from "utils/replaceBrowserHistory";
 import { setGlobalState } from "state";
 
 import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
+import { ExtendedChainId } from "config/constants/networks";
 
 export function useSwitchNetworkLocal() {
   const { query } = useRouter();
@@ -76,7 +77,7 @@ export function useSwitchNetwork() {
   const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
   const switchNetwork = useCallback(
     (chainId: number) => {
-      if (chainId === 900) {
+      if (chainId === ExtendedChainId.SOLANA) {
         setIsSolanaNetwork(true);
         return switchNetworkSolana(chainId);
       } else {
@@ -98,12 +99,12 @@ export function useSwitchNetwork() {
     () =>
       isEVMConnected
         ? !!_switchNetworkAsync &&
-          connector?.id !== ConnectorNames.WalletConnect &&
-          !(
-            typeof window !== "undefined" &&
-            // @ts-ignore // TODO: add type later
-            (window.ethereum?.isSafePal || window.ethereum?.isMathWallet)
-          )
+        connector?.id !== ConnectorNames.WalletConnect &&
+        !(
+          typeof window !== "undefined" &&
+          // @ts-ignore // TODO: add type later
+          (window.ethereum?.isSafePal || window.ethereum?.isMathWallet)
+        )
         : true,
     [_switchNetworkAsync, isEVMConnected, connector]
   );

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { ExtendedChainId, NetworkOptions, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 
 export const supportedNetworks = NetworkOptions.filter((network) =>
   PAGE_SUPPORTED_CHAINS["deploy-token"].includes(network.id)
@@ -26,5 +26,5 @@ export const tokenDeployerSchema = z.object({
   tokenRevokeMint: z.boolean(),
   tokenDeployChainId: z.coerce
     .number()
-    .refine((chainId) => supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." }),
+    .refine((chainId) => chainId === ExtendedChainId.SOLANA || supportedNetworks.some((network) => network.id === chainId), { message: "Invalid chain id." })
 });

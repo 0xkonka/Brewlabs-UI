@@ -136,8 +136,12 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
       <WrongNetworkModal open={isWrongNetwork} />
-
-      {!isConnected ? (
+      {isSolanaNetwork ? (
+        <div className="flex flex-col">
+          <WalletMultiButton />
+          {wallet && <p>SOL Balance: {(balance || 0).toLocaleString()}</p>}
+        </div>
+      ) : !isConnected ? (
         <button
           onClick={() => {
             open({ view: "Connect" });
