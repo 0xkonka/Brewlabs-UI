@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 
-import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { ExtendedChainId, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { serializeToken } from "state/user/hooks/helpers";
 import {
   getFarmFactoryAddress,
@@ -17,8 +17,8 @@ import { fetchPoolFactoryData } from "./fetchPoolFactory";
 const initialState = {
   token: PAGE_SUPPORTED_CHAINS["deploy-token"]
     .map((chainId) => {
-      if (chainId == 900) {
-        return null; // Skip mapping for chainId 900 or 901
+      if (chainId == ExtendedChainId.SOLANA) {
+        return null; // Skip mapping for chainId 900
       }
       return {
         chainId,
@@ -40,8 +40,8 @@ const initialState = {
     .filter(Boolean), // Filter out null values
   pool: PAGE_SUPPORTED_CHAINS["deploy-pool"]
     .map((chainId) => {
-      if (chainId === 900) {
-        return null; // Skip mapping for chainId 900 or 901
+      if (chainId === ExtendedChainId.SOLANA) {
+        return null; // Skip mapping for chainId 900
       }
       return {
         chainId,

@@ -8,6 +8,8 @@ import { NetworkConfig } from "config/constants/types";
 import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { useTokenPrices } from "hooks/useTokenPrice";
+import useSolPrice from "@hooks/useSolPrice";
+
 import getCurrencyId from "utils/getCurrencyId";
 
 type SwitchNetworkModalProps = {
@@ -20,6 +22,7 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
   const { canSwitch, switchNetwork, isLoading, isSuccess, error, pendingChainId } = useSwitchNetwork();
   const { chainId } = useActiveChainId();
   const tokenPrices = useTokenPrices();
+  const solPrice = useSolPrice();
 
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -86,14 +89,13 @@ const SwitchNetworkModal = ({ open, networks, onDismiss }: SwitchNetworkModalPro
                         <p className="text-sm font-medium text-gray-200">{network.name}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-500">
                           Current price: {` $`}
-                          {network.id == (900 as ChainId)
-                            ? "Solana token value"
+                          {network.id == (900 as ChainId) ? solPrice
                             : tokenPrices[
-                                getCurrencyId(
-                                  network.id,
-                                  NATIVE_CURRENCIES[network.id === 0 ? ChainId.BSC_MAINNET : network.id].wrapped.address
-                                )
-                              ]?.toFixed(5) ?? "0.000"}
+                              getCurrencyId(
+                                network.id,
+                                NATIVE_CURRENCIES[network.id === 0 ? ChainId.BSC_MAINNET : network.id].wrapped.address
+                              )]?.toFixed(5) ?? "0.000"
+                          }
                         </p>
                       </div>
 

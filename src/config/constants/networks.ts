@@ -2,7 +2,7 @@ import { ChainId } from "@brewlabs/sdk";
 import { bsc, mainnet, arbitrum, polygon, avalanche, fantom, cronos, brise, bscTestnet, goerli } from "contexts/wagmi";
 
 // Extend ChainId enum with new chain ids
-enum ExtendedChainId {
+export const enum ExtendedChainId {
   ETHEREUM = 1,
   BSC_MAINNET = 56,
   FANTOM = 250,
@@ -367,5 +367,21 @@ export const NETWORKS = {
     },
     rpcUrls: ["https://mainnet.era.zksync.io"],
     blockExplorerUrls: ["https://explorer.zksync.io/"],
+  },
+  [ExtendedChainId.SOLANA]: {
+    // chainId: `0x${Number(ExtendedChainId.SOLANA).toString(16)}`,
+    chainName: "Solana Mainnet",
+    nativeCurrency: {
+      name: "SOL",
+      symbol: "SOL",
+      decimals: 9,
+    },
+    // rpcUrls: [
+    //   "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+    //   // "https://eth.llamarpc.com",
+    //   "https://ethereum.publicnode.com",
+    //   "https://eth.meowrpc.com",
+    // ],
+    // blockExplorerUrls: ["https://etherscan.io"],
   },
 };

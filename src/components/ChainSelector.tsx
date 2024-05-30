@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { ChainId, NATIVE_CURRENCIES } from "@brewlabs/sdk";
 import { CheckIcon } from "@heroicons/react/24/outline";
-import { toast } from "react-toastify";
 
 import { NetworkConfig } from "config/constants/types";
-import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { NetworkOptions } from "config/constants/networks";
+import { useSwitchNetwork } from "hooks/useSwitchNetwork";
 import { useTokenPrices } from "hooks/useTokenPrice";
+import useSolPrice from "@hooks/useSolPrice";
 import getCurrencyId from "utils/getCurrencyId";
 
 type ChainSelectorProps = {
@@ -20,6 +21,7 @@ type ChainSelectorProps = {
 const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDismiss }: ChainSelectorProps) => {
   const { canSwitch, switchNetwork, isLoading, isSuccess, error, pendingChainId } = useSwitchNetwork();
   const tokenPrices = useTokenPrices();
+  const solPrice = useSolPrice();
 
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -90,14 +92,13 @@ const ChainSelector = ({ networks, bSwitchChain, currentChainId, selectFn, onDis
                 <p className="text-sm font-medium text-gray-100">{network.name}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-500">
                   Current price: {` $`}
-                  {network.id == (900 as ChainId)
-                    ? "Solana token value"
+                  {network.id == (900 as ChainId) ? solPrice
                     : tokenPrices[
-                        getCurrencyId(
-                          network.id,
-                          NATIVE_CURRENCIES[network.id === 0 ? ChainId.BSC_MAINNET : network.id].wrapped.address
-                        )
-                      ]?.toFixed(5) ?? "0.000"}
+                      getCurrencyId(
+                        network.id,
+                        NATIVE_CURRENCIES[network.id === 0 ? ChainId.BSC_MAINNET : network.id].wrapped.address
+                      )]?.toFixed(5) ?? "0.000"
+                  }
                 </p>
               </div>
 

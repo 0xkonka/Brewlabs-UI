@@ -1,8 +1,9 @@
 import { useState, useEffect, ChangeEvent } from "react";
+import { useForm } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
+import { Upload } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Upload } from "lucide-react";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
@@ -15,6 +16,7 @@ import ChainSelect from "views/swap/components/ChainSelect";
 
 import { useActiveChainId } from "hooks/useActiveChainId";
 import { tokenDeployerSchema, supportedNetworks } from "config/schemas/tokenDeployerSchema";
+import { ExtendedChainId } from "config/constants/networks";
 import {
   setTokenInfo,
   setDeployerTokenStep,
@@ -77,15 +79,23 @@ const TokenDetails = () => {
     setDeployerTokenStep("confirm");
   };
 
+  // Get URL chainId
+  const searchParams = useSearchParams();
+  const chainIdFromUrl = Number(searchParams.get("chainId"));
+
   // By setting this state we can show/hide the conditional fields based on the pool type
   useEffect(() => {
-    if (watchTokenDeployChainId === 900) {
+    // if (watchTokenDeployChainId === 900) {
+    //   setShowConditionalField(["tokenImage", "tokenDescription"]);
+    // }
+    // if (watchTokenDeployChainId !== 900) {
+    //   setShowConditionalField([]);
+    // }
+    if (chainIdFromUrl == ExtendedChainId.SOLANA)
       setShowConditionalField(["tokenImage", "tokenDescription"]);
-    }
-    if (watchTokenDeployChainId !== 900) {
+    else
       setShowConditionalField([]);
-    }
-  }, [watchTokenDeployChainId]);
+  }, [chainIdFromUrl]);
 
   return (
     <Form {...form}>

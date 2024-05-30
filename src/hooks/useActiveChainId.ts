@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 
 import { ChainId } from "@brewlabs/sdk";
 
-import { PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
+import { ExtendedChainId, PAGE_SUPPORTED_CHAINS } from "config/constants/networks";
 import { useRouter } from "next/router";
 
 export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean } => {
@@ -13,7 +13,7 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean 
 
   const [isWrongNetwork, setIsWrongNetwork] = useState(false);
 
-  const chainId = chain?.id;
+  let chainId = chain?.id;
 
   const { pathname } = useRouter();
   const page = pathname.split("/").slice(-1)[0];
@@ -21,6 +21,10 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean 
   // Get URL chainId
   const searchParams = useSearchParams();
   const chainIdFromUrl = Number(searchParams.get("chainId"));
+
+  if (chainIdFromUrl == ExtendedChainId.SOLANA) {
+    chainId = ExtendedChainId.SOLANA;
+  }
 
   useEffect(() => {
     const pageValid = Object.keys(PAGE_SUPPORTED_CHAINS).includes(page) ? page : "default";
@@ -39,6 +43,10 @@ export const useActiveChainId = (): { chainId: ChainId; isWrongNetwork: boolean 
       if (!isWrongNetwork && !urlDoesNotMatchChain) {
         setIsWrongNetwork(false);
       }
+    }
+
+    if (chainIdFromUrl == ExtendedChainId.SOLANA) {
+      setIsWrongNetwork(false);
     }
   }, [chainId, chainIdFromUrl, isWrongNetwork, page, status]);
 
