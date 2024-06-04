@@ -244,59 +244,62 @@ const TokenDetails = () => {
 
         <div className="divider" />
 
-        <h4 className="mb-6 text-xl">Advanced options</h4>
+        {chainIdFromUrl === undefined &&
+          <>
+            <h4 className="mb-6 text-xl">Advanced options</h4>
 
-        <FormField
-          control={form.control}
-          name="tokenImmutable"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Make contract immutable</FormLabel>
-                <FormDescription>Secure your token contract so it cannot be changed later on.</FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="tokenImmutable"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Make contract immutable</FormLabel>
+                    <FormDescription>Secure your token contract so it cannot be changed later on.</FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="tokenRevokeFreeze"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Revoke freeze function</FormLabel>
-                <FormDescription>
-                  Required for decentralised exchanges and security for holders. If enabled, you can freeze holder
-                  tokens.
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="tokenRevokeFreeze"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Revoke freeze function</FormLabel>
+                    <FormDescription>
+                      Required for decentralised exchanges and security for holders. If enabled, you can freeze holder
+                      tokens.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="tokenRevokeMint"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Revoke mint function</FormLabel>
-                <FormDescription>Remove the ability to mint more tokens for your token contract.</FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
-
+            <FormField
+              control={form.control}
+              name="tokenRevokeMint"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Revoke mint function</FormLabel>
+                    <FormDescription>Remove the ability to mint more tokens for your token contract.</FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </>
+        }
         <Button variant="brand" type="submit" className="w-full">
           Confirm and finalise
         </Button>

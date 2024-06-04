@@ -51,6 +51,7 @@ import { useSigner } from "utils/wagmi";
 import "animate.css";
 import "../styles/global.css";
 import "../styles/animations.scss";
+import "../styles/wallet.css";
 import SEO from "../../next-seo.config.mjs";
 
 import UserSidebar from "components/dashboard/UserSidebar";
