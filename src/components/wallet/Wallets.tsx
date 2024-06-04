@@ -16,7 +16,7 @@ const Wallets = () => {
 
     return (
         <>
-            {!wallet ?
+            {(!wallet || wallet == undefined)?
                 <WalletModalButton className='group block w-full flex-shrink-0'>
                     <div className="flex items-center">
                         <div className="relative shrink-0 p-2">
