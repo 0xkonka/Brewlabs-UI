@@ -23,16 +23,13 @@ import SwitchNetworkModal from "../network/SwitchNetworkModal";
 import WrongNetworkModal from "../network/WrongNetworkModal";
 
 //Solana
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useSolanaNetwork } from "contexts/SolanaNetworkContext";
-import useUserSOLBalanceStore from "../../store/useUserSOLBalanceStore";
 import { ChainId } from "@brewlabs/sdk";
-
+import dynamic from "next/dynamic";
+const Wallets = dynamic(() => import("./Wallets"), { ssr: false });
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
 }
-
 interface ConnectWalletProps {
   allowDisconnect?: boolean;
 }
@@ -74,13 +71,7 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
 
   const [userSidebarOpen, setUserSidebarOpen] = useGlobalState("userSidebarOpen");
   const [userSidebarContent, setUserSidebarContent] = useGlobalState("userSidebarContent");
-  // Solana
-  const { connected } = useWallet();
-  const wallet = useWallet();
-  const { connection } = useConnection();
   const { isSolanaNetwork, setIsSolanaNetwork } = useSolanaNetwork();
-  const balance = useUserSOLBalanceStore((s) => s.balance);
-  const { getUserSOLBalance } = useUserSOLBalanceStore();
 
   // Get URL chainId
   const searchParams = useSearchParams();
@@ -117,11 +108,11 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
     } else setIsSolanaNetwork(false);
   }, [chainId, setIsSolanaNetwork]);
 
-  useEffect(() => {
-    if (wallet.publicKey) {
-      getUserSOLBalance(wallet.publicKey, connection);
-    }
-  }, [wallet.publicKey, connection, getUserSOLBalance]);
+  // useEffect(() => {
+  //   if (wallet.publicKey) {
+  //     getUserSOLBalance(wallet.publicKey, connection);
+  //   }
+  // }, [wallet.publicKey, connection, getUserSOLBalance]);
 
   if (!mounted) return null;
 
@@ -136,75 +127,71 @@ const ConnectWallet = ({ allowDisconnect }: ConnectWalletProps) => {
         onDismiss={() => setOpenSwitchNetworkModal(false)}
       />
       <WrongNetworkModal open={isWrongNetwork} />
-      {isSolanaNetwork ? (
-        <div className="flex flex-col">
-          <WalletMultiButton />
-          {wallet && <p>SOL Balance: {(balance || 0).toLocaleString()}</p>}
-        </div>
-      ) : !isConnected ? (
-        <button
-          onClick={() => {
-            open({ view: "Connect" });
-          }}
-          className="group block w-full flex-shrink-0"
-        >
-          <div className="flex items-center">
-            <div className="relative shrink-0 p-2">
-              <div className="absolute inset-0 m-auto h-8 w-8 animate-ping rounded-full border-2 border-brand"></div>
-              <WalletIcon className="inline-block h-6 w-6 rounded-full text-yellow-200" />
-            </div>
+      {isSolanaNetwork ? <Wallets /> :
+        !isConnected ? (
+          <button
+            onClick={() => {
+              open({ view: "Connect" });
+            }}
+            className="group block w-full flex-shrink-0"
+          >
+            <div className="flex items-center">
+              <div className="relative shrink-0 p-2">
+                <div className="absolute inset-0 m-auto h-8 w-8 animate-ping rounded-full border-2 border-brand"></div>
+                <WalletIcon className="inline-block h-6 w-6 rounded-full text-yellow-200" />
+              </div>
 
-            <div className="ml-3">
-              <p className="whitespace-nowrap text-sm font-medium text-gray-700 group-hover:text-gray-500">
-                {isConnecting ? `Connecting wallet` : `Connect wallet`}
-              </p>
-              <p className="whitespace-nowrap text-sm font-medium text-gray-500 group-hover:text-gray-400">
-                Connect to interact
-              </p>
+              <div className="ml-3">
+                <p className="whitespace-nowrap text-sm font-medium text-gray-700 group-hover:text-gray-500">
+                  {isConnecting ? `Connecting wallet` : `Connect wallet`}
+                </p>
+                <p className="whitespace-nowrap text-sm font-medium text-gray-500 group-hover:text-gray-400">
+                  Connect to interact
+                </p>
+              </div>
             </div>
-          </div>
-        </button>
-      ) : (
-        <div className="group block w-full flex-shrink-0">
-          <div className="flex items-center">
-            <div
-              onClick={(e) => {
-                if (supportedNetworks.length > 1 && !allowDisconnect) {
-                  e.stopPropagation();
-                  setOpenSwitchNetworkModal(true);
-                }
-              }}
-              className="rounded-full border-2"
-            >
+          </button>
+        ) : (
+          <div className="group block w-full flex-shrink-0">
+            <div className="flex items-center">
               <div
-                className={cn(
-                  networkIconVariants({
-                    chain: camelCase(chain?.name.toLowerCase()) as VariantProps<typeof networkIconVariants>["chain"],
-                  })
-                )}
-                style={{
-                  backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
+                onClick={(e) => {
+                  if (supportedNetworks.length > 1 && !allowDisconnect) {
+                    e.stopPropagation();
+                    setOpenSwitchNetworkModal(true);
+                  }
                 }}
-              />
-            </div>
+                className="rounded-full border-2"
+              >
+                <div
+                  className={cn(
+                    networkIconVariants({
+                      chain: camelCase(chain?.name.toLowerCase()) as VariantProps<typeof networkIconVariants>["chain"],
+                    })
+                  )}
+                  style={{
+                    backgroundImage: `url('${NetworkOptions.find((network) => network.id === chainId)?.image}')`,
+                  }}
+                />
+              </div>
 
-            <button
-              className="ml-3 overflow-hidden"
-              onClick={() => {
-                setUserSidebarOpen(!allowDisconnect ? 1 : 0);
-                setUserSidebarContent(<UserDashboard />);
-              }}
-            >
-              <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
-                {isLoading ? "..." : truncatedAddress(address)}
-              </p>
-              <p className="whitespace-nowrap text-left text-sm font-medium">
-                <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
-              </p>
-            </button>
+              <button
+                className="ml-3 overflow-hidden"
+                onClick={() => {
+                  setUserSidebarOpen(!allowDisconnect ? 1 : 0);
+                  setUserSidebarContent(<UserDashboard />);
+                }}
+              >
+                <p className="truncate text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100">
+                  {isLoading ? "..." : truncatedAddress(address)}
+                </p>
+                <p className="whitespace-nowrap text-left text-sm font-medium">
+                  <span className={clsx(isWrongNetwork ? "text-red-400" : "text-slate-400")}>{chain?.name}</span>
+                </p>
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
