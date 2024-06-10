@@ -244,7 +244,7 @@ const TokenDetails = () => {
 
         <div className="divider" />
 
-        {chainIdFromUrl === undefined &&
+        {chainIdFromUrl === ExtendedChainId.SOLANA &&
           <>
             <h4 className="mb-6 text-xl">Advanced options</h4>
 
