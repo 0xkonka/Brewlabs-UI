@@ -72,19 +72,39 @@ const harvestDividend = async (stakingContract, performanceFee, gasPrice) => {
 };
 
 const compoundPool = async (stakingContract, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.compoundReward({ value: performanceFee });
+
+  const query = await stakingContract.precomputeCompound(false)
+
+  const trade = {
+    amountIn: 0,
+    amountOut: 0,
+    path: query.adapters,
+    adapters: query.path
+  };
+
+  let gasLimit = await stakingContract.estimateGas.compoundReward(trade, { value: performanceFee });
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await stakingContract.compoundReward({ gasPrice, gasLimit, value: performanceFee });
+  const tx = await stakingContract.compoundReward(trade, { gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
   return receipt;
 };
 
 const compoundDividend = async (stakingContract, performanceFee, gasPrice) => {
-  let gasLimit = await stakingContract.estimateGas.compoundDividend({ value: performanceFee });
+  const query = await stakingContract.precomputeCompound(true)
+
+  const trade = {
+    amountIn: 0,
+    amountOut: 0,
+    path: query.adapters,
+    adapters: query.path
+  };
+
+
+  let gasLimit = await stakingContract.estimateGas.compoundDividend(trade, { value: performanceFee });
   gasLimit = calculateGasMargin(gasLimit);
 
-  const tx = await stakingContract.compoundDividend({ gasPrice, gasLimit, value: performanceFee });
+  const tx = await stakingContract.compoundDividend(trade, { gasPrice, gasLimit, value: performanceFee });
   const receipt = await tx.wait();
   return receipt;
 };

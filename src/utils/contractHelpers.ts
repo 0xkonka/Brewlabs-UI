@@ -13,6 +13,7 @@ import brewlabsFeeManagerAbi from "config/abi/swap/brewlabsFeeManager.json";
 import brewlabsAggregationRouterAbi from "config/abi/swap/BrewlabsAggregationRouter.json";
 import verifictionAbi from "config/abi/brewlabsFactoryVerification.json";
 import lockupStaking from "config/abi/staking/brewlabsLockup.json";
+import stakingImpl from "config/abi/staking/stakingImpl.json";
 import lockupStakingImpl from "config/abi/staking/brewlabsLockupImpl.json";
 import lpManagerAbi from "config/abi/brewlabsLiquidityManager.json";
 import lpManagerV2Abi from "config/abi/brewlabsLiquidityManagerV2.json";
@@ -116,7 +117,7 @@ export const getSingleStakingContract = (
   address: string,
   signer?: ethers.Signer | ethers.providers.Provider
 ) => {
-  return getContract(chainId, address, singleStaking, signer);
+  return getContract(chainId, address, stakingImpl, signer);
 };
 export const getLockupStakingContract = (
   chainId: ChainId,

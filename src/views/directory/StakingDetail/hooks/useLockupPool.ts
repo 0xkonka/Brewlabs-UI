@@ -89,7 +89,7 @@ const compoundPool = async (stakingContract, type, performanceFee, gasPrice) => 
 };
 
 const compoundDividend = async (stakingContract, type, performanceFee, gasPrice) => {
-  const query = await stakingContract.precomputeCompound(type, false)
+  const query = await stakingContract.precomputeCompound(type, true)
 
   const trade = {
     amountIn: 0,
